@@ -14,7 +14,7 @@ import {
 import { PayrollPdfType } from '@/types/financial/payroll'
 
 // Utils
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatDateOnly } from '@/lib/formatDate'
 import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
 import { numberToWords } from '@/lib/numberToWords'
 
@@ -362,15 +362,13 @@ export function PayrollPdf({
               <Text style={styles.bottomText}>
                 Vencimento em:{' '}
                 {data.payables?.[0]?.installments?.[0]?.dueDate
-                  ? formatToLocaleDate(data.payables[0].installments[0].dueDate)
+                  ? formatDateOnly(data.payables[0].installments[0].dueDate)
                   : ''}
               </Text>
               <Text style={styles.bottomText}>
                 Pagamento em:{' '}
                 {data.payables?.[0]?.installments?.[0]?.paidDate
-                  ? formatToLocaleDate(
-                      data.payables[0].installments[0].paidDate,
-                    )
+                  ? formatDateOnly(data.payables[0].installments[0].paidDate)
                   : ''}
               </Text>
             </View>

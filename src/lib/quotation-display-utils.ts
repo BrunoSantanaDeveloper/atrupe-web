@@ -277,6 +277,14 @@ export function getInferredUnitCode(composition: MeasurementValues): string {
 }
 
 /**
+ * Código da unidade como aparece na tela: minúsculo e sem ponto final, para
+ * "un" sair igual em todo lugar (o cadastro da API às vezes traz "UN.").
+ */
+export function unitCodeLabel(code?: string | null): string {
+  return (code || 'un').trim().toLowerCase().replace(/\.+$/, '')
+}
+
+/**
  * Obtém o código da unidade baseado no tipo
  */
 function getUnitCodeFromKind(unitKind: string): string {
@@ -316,7 +324,7 @@ export function generateMeasurementDetails(
 
   // Para quantidade simples, mostrar apenas a quantidade
   if (unitKind === 'UNITY' || !unitKind) {
-    return `${quantity} ${unitOfMeasure.code.toLowerCase()}`
+    return `${quantity} ${unitCodeLabel(unitOfMeasure.code)}`
   }
 
   const details: string[] = []
@@ -398,7 +406,7 @@ export function generateMeasurementDetails(
 
   return details.length > 0
     ? details.join(', ')
-    : `${quantity} ${unitOfMeasure.code.toLowerCase()}`
+    : `${quantity} ${unitCodeLabel(unitOfMeasure.code)}`
 }
 
 /**
@@ -580,6 +588,6 @@ export function getUnitDisplayCode(unitOfMeasure?: UnitOfMeasure): string {
       return 'HR'
     case 'UNITY':
     default:
-      return unitOfMeasure.code || 'UN'
+      return unitOfMeasure.code?.replace(/\.+$/, '') || 'UN'
   }
 }

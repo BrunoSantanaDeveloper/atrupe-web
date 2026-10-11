@@ -4,7 +4,7 @@ import { FiscalSettingsClient } from './FiscalSettingsClient'
 
 export function metadata() {
   return {
-    title: 'Configurações de Nota Fiscal',
+    title: 'Configurações de nota fiscal',
   }
 }
 

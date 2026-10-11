@@ -1,10 +1,10 @@
 'use client'
 
 import { Suspense } from 'react'
-import { Loader2 } from 'lucide-react'
 import { ClientData } from './components/ClientData'
 import { useClientById } from '@/hooks/queries/useClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { IconLoader2 } from '@tabler/icons-react'
 
 interface Props {
   params: {
@@ -24,7 +24,7 @@ export default function ClientDataPage({ params }: Props) {
         </div>
       }
     >
-      <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
+      <Suspense fallback={<IconLoader2 className="size-16 animate-spin p-8" />}>
         <ClientData data={data} />
       </Suspense>
     </PermissionGate>

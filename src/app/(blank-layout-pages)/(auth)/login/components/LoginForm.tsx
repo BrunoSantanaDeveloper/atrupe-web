@@ -155,7 +155,7 @@ export function LoginForm() {
         </Button>
       </form>
       <div className="flex justify-center items-center mt-6 w-full gap-1">
-        <span className="text-sm font-medium text-[#344054]">
+        <span className="text-sm font-medium text-gray-700">
           Não tem uma conta?
         </span>
         <Link

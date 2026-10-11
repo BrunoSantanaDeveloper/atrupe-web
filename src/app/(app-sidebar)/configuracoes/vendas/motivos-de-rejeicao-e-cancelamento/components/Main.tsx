@@ -34,7 +34,7 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconTrash, IconPencil, IconSquarePlus } from '@tabler/icons-react'
+import { IconTrash, IconPencil, IconPlus } from '@tabler/icons-react'
 
 // Types
 import type {
@@ -93,7 +93,7 @@ export function Main({ searchParams }: SearchParamsType) {
                                   ]}
                                 >
                                   <ActionButton
-                                    Icon={IconSquarePlus}
+                                    Icon={IconPlus}
                                     tooltip="Novo motivo"
                                     onClick={() => {
                                       setOpenDialog('new')

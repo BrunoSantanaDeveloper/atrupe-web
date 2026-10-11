@@ -20,18 +20,18 @@ export default function StatusTagSandboxPage() {
     <div className="min-h-screen bg-gray-50 py-12 pb-32">
       <div className="max-w-6xl mx-auto px-6 space-y-12">
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             Status Tags — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Visualização de todos os estados e tamanhos dos componentes de
             Fase/Status (Figma).
           </p>
         </div>
 
         {/* --- TAMANHO LARGE (Semelhante à proporção maior padrão) --- */}
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Tamanho: Large (lg)
           </h2>
           <div className="flex flex-wrap gap-8 items-end">
@@ -95,8 +95,8 @@ export default function StatusTagSandboxPage() {
         </section>
 
         {/* --- TAMANHO MEDIUM (Tamanho Padrão MD) --- */}
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Tamanho: Medium (md) - Padrão
           </h2>
           <div className="flex flex-wrap gap-6 items-end">
@@ -152,8 +152,8 @@ export default function StatusTagSandboxPage() {
         </section>
 
         {/* --- TAMANHO SMALL (SM) --- */}
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Tamanho: Small (sm) - Compacto
           </h2>
           <div className="flex flex-wrap gap-4 items-end">

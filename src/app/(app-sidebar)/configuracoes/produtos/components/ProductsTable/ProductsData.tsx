@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 // Components
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
+import { DuplicateProductButton } from '../DuplicateProductButton'
 import { ProductFiscalDataDialog } from '../ProductFiscalData'
 import { BulkNcmDialog } from '../ProductFiscalData/BulkNcmDialog'
 import { TablePagination } from '@/components/common/TablePagination'
@@ -32,20 +33,46 @@ import { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getDataOld, getItemOld, updateItemNew } from '@/actions/_cruds'
+import { productBodyFrom, rawMeasureOf } from '../productBody'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import {
+  convertRawToUnitCost,
+  convertUnitCostToRaw,
+} from '@/components/common/form/global-inputs/products/UnitCostInput'
+import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
+import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
+import {
+  unitSymbol,
+  type UnitKind,
+} from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import {
+  getAssembly,
+  updateAssembly,
+  getComposedProductIds,
+} from '@/actions/product-assembly'
 import { Badge } from '@/components/ui/badge'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
-import { IconReceiptTax } from '@tabler/icons-react'
+import {
+  IconReceiptTax,
+  IconStack2,
+  IconCurrencyReal,
+} from '@tabler/icons-react'
+
+// Components
+import { ActionButton } from '@/components/common/ActionButton'
+
+// Consts
+import { FEATURES } from '@/consts/features'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -54,6 +81,84 @@ interface Props extends SearchParamsType {
 export function ProductsData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string>('')
+  const queryClient = useQueryClient()
+  // Precificar o produto pela lista (03/10/2026): o mesmo modal dos
+  // materiais. O custo vem da composição, quando existir; o preço gravado é
+  // o valor de venda do cadastro
+  const [pricing, setPricing] = useState<PricingItem | undefined>()
+  const [pricingUnitKind, setPricingUnitKind] = useState('UNITY')
+  const openPricing = async (product: ProductListType) => {
+    const unitKind = product?.items?.[0]?.unitKind || 'UNITY'
+    setPricingUnitKind(unitKind)
+    const price = Math.round(
+      convertRawToUnitCost(unitKind, Number(product?.unitCost || 0)),
+    )
+    const assembly = await getAssembly({ productId: product.id })
+    const computed = assembly?.data
+    const cost =
+      computed && computed.blocks.length && computed.cost > 0
+        ? Math.round(computed.cost / Math.max(computed.saleAmount || 1, 0.0001))
+        : null
+    setPricing({
+      id: product.id,
+      name: product.name,
+      code: product.code,
+      sector: product.sectorName || '',
+      unit: unitSymbol[unitKind as UnitKind] || unitKind,
+      cost,
+      costUpdatedAt: null,
+      rule: 'FIXED',
+      price: price || null,
+      margin:
+        cost !== null && price
+          ? Math.round(((price - cost) / price) * 1000) / 10
+          : null,
+      status:
+        cost === null
+          ? 'NO_COST'
+          : !price
+            ? 'PENDING'
+            : price < cost
+              ? 'BELOW_COST'
+              : 'PRICED',
+    })
+  }
+  // Grava o valor de venda no cadastro do produto (API) e espelha no mock da
+  // composição, para o comparativo preço × custo continuar certo
+  const saveProductPrice = async ({ price }: { price: number }) => {
+    if (!pricing) return { success: false, message: 'Produto não encontrado' }
+    const source = await getItemOld({ route: 'productRoute', id: pricing.id })
+    if (!source?.id)
+      return { success: false, message: 'Produto não encontrado' }
+    const body = productBodyFrom(source)
+    if (!body.items.length) {
+      return { success: false, message: 'O produto não tem unidade de venda' }
+    }
+    const first = body.items[0]
+    const rawUnitCost = convertUnitCostToRaw(first.unitKind, price)
+    body.items[0] = {
+      ...first,
+      unitCost: rawUnitCost,
+      salePrice: Math.round(rawUnitCost * rawMeasureOf(source.items?.[0])),
+    }
+    const result = await updateItemNew({
+      route: `/product/${pricing.id}`,
+      data: body,
+    })
+    if (!result.success)
+      return {
+        success: false,
+        message: result.message || 'Erro ao gravar o preço',
+      }
+    await updateAssembly({
+      productId: pricing.id,
+      values: { unitPrice: price },
+    })
+    queryClient.invalidateQueries({ queryKey: ['product-list'] })
+    queryClient.invalidateQueries({ queryKey: ['product', pricing.id] })
+    queryClient.invalidateQueries({ queryKey: ['assembly', pricing.id] })
+    return { success: true, message: '' }
+  }
   const [selectedProductName, setSelectedProductName] = useState<string>('')
 
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -62,7 +167,15 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const [selecionouTodos, setSelecionouTodos] = useState(false)
 
   const { hasAllPermissions } = usePermissions()
-  const { hasFiscalModule } = usePlanFeatures()
+  const { hasFiscalModule, hasFeature } = usePlanFeatures()
+
+  // A composição é recurso do PRO e vive dentro do produto, sem cadastro
+  // paralelo: o mesmo produto do START ganha custo e margem (CP-16, CP-17).
+  const showComposition = hasFeature(FEATURES.COSTS.COST_BASE)
+
+  // EC-26: a permissão "Valores" também vale aqui — quem não pode ver preço
+  // não vê a tabela de preços da empresa
+  const canSeeValues = hasAllPermissions(['values:values:view'])
 
   const showNcmColumn = hasFiscalModule()
   const canConfigureFiscalData =
@@ -70,17 +183,38 @@ export function ProductsData({ searchParams, tabs }: Props) {
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
-  const filters = { ...searchParams, status }
+  // O filtro de composição ainda não vai à API: é aplicado aqui (CP-17)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { composicao, ...apiParams } = searchParams
+  const filters = { ...apiParams, status }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['product-list', searchParams],
+    queryKey: ['product-list', apiParams],
     queryFn: () => getDataOld({ route: 'productRoute', filters }),
   })
 
+  const { data: composedRes } = useQuery({
+    queryKey: ['composed-products'],
+    queryFn: () => getComposedProductIds(),
+    enabled: showComposition,
+  })
+  const composed = useMemo(
+    () => new Set(composedRes?.data || []),
+    [composedRes],
+  )
+
   // useMemo para o array não trocar de identidade a cada render e invalidar
   // os memos de seleção abaixo.
-  const products: ProductListType[] = useMemo(() => data?.data || [], [data])
+  const products: ProductListType[] = useMemo(() => {
+    const list: ProductListType[] = data?.data || []
+    if (!showComposition || !composicao) return list
+    return list.filter((product) =>
+      composicao === 'com'
+        ? composed.has(product.id)
+        : !composed.has(product.id),
+    )
+  }, [data, composicao, composed, showComposition])
   const hasData = products.length
 
   // A seleção vale para a página visível: trocar de página, aba ou filtro
@@ -232,7 +366,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
                 <TableHead>Produto</TableHead>
                 <TableHead>Setor</TableHead>
                 {showNcmColumn && <TableHead>NCM</TableHead>}
-                <TableHead>P.V.</TableHead>
+                {canSeeValues && <TableHead>Preço de venda</TableHead>}
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -251,7 +385,17 @@ export function ProductsData({ searchParams, tabs }: Props) {
                     </TableCell>
                   )}
                   <TableCell>
-                    <p className="font-medium">{product?.name}</p>
+                    <p className="font-medium">
+                      {product?.name}
+                      {showComposition && composed.has(product?.id) && (
+                        <Badge
+                          variant="blueLight"
+                          className="ml-2 align-middle"
+                        >
+                          Com composição
+                        </Badge>
+                      )}
+                    </p>
                     <p className="text-gray">{product?.code}</p>
                   </TableCell>
                   <TableCell className="text-gray-600">
@@ -264,22 +408,51 @@ export function ProductsData({ searchParams, tabs }: Props) {
                       )}
                     </TableCell>
                   )}
-                  <TableCell className="text-success-700">
-                    {(() => {
-                      const unitKind = product?.items?.[0]?.unitKind || 'UNITY'
-                      const visualUnitCost = convertRawToUnitCost(
-                        unitKind,
-                        product?.unitCost || 0,
-                      )
-                      return formatCurrencyToBrl(visualUnitCost)
-                    })()}
-                  </TableCell>
+                  {canSeeValues && (
+                    <TableCell className="text-success-700">
+                      {(() => {
+                        const unitKind =
+                          product?.items?.[0]?.unitKind || 'UNITY'
+                        const visualUnitCost = convertRawToUnitCost(
+                          unitKind,
+                          product?.unitCost || 0,
+                        )
+                        return formatCurrencyToBrl(visualUnitCost)
+                      })()}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
+                        {showComposition && (
+                          <ActionButton
+                            Icon={IconStack2}
+                            tooltip={`Composição de ${product?.name}`}
+                            link={`/configuracoes/produtos/${product?.id}/composicao`}
+                          />
+                        )}
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >
+                          <ActionButton
+                            Icon={IconCurrencyReal}
+                            tooltip={`Precificar ${product?.name}`}
+                            onClick={() => {
+                              openPricing(product).catch(() =>
+                                toast.error('Erro ao abrir a precificação'),
+                              )
+                            }}
+                          />
+                          {/* Duplicar: outro produto com os mesmos dados e a
+                              mesma composição, aberto para edição */}
+                          <DuplicateProductButton
+                            productId={product?.id}
+                            name={product?.name}
+                            onDone={(newId) => {
+                              setSelectedProductId(newId)
+                              setOpenDialog('edit-product')
+                            }}
+                          />
                           <NewProductTriggerButton
                             editMode
                             onOpenChange={() => {
@@ -308,12 +481,34 @@ export function ProductsData({ searchParams, tabs }: Props) {
         )}
       </CardContent>
 
+      <EditPriceModal
+        group="products"
+        item={pricing}
+        open={!!pricing}
+        onOpenChange={() => setPricing(undefined)}
+        onSave={saveProductPrice}
+        priceTiers={
+          pricing
+            ? { productId: pricing.id, unitKind: pricingUnitKind }
+            : undefined
+        }
+      />
       <NewProduct
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}
         onSuccess={(product) => {
           const canConfigureFiscalData =
             hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
+
+          // No PRO o produto nasce e então ganha composição (CP-16): reabre
+          // direto na aba do fluxo de etapas
+          if (showComposition) {
+            setTimeout(() => {
+              setSelectedProductId(product.id)
+              setOpenDialog('compose-product')
+            }, 500)
+            return
+          }
 
           if (canConfigureFiscalData) {
             // Increased timeout to ensure NewProduct modal is fully closed and state is settled
@@ -326,9 +521,12 @@ export function ProductsData({ searchParams, tabs }: Props) {
         }}
       />
       <NewProduct
-        open={openDialog === 'edit-product'}
+        open={openDialog === 'edit-product' || openDialog === 'compose-product'}
         editMode
         productId={selectedProductId}
+        initialTab={
+          openDialog === 'compose-product' ? 'composition' : 'general'
+        }
         onOpenChange={(open) => {
           if (!open) {
             setOpenDialog('')

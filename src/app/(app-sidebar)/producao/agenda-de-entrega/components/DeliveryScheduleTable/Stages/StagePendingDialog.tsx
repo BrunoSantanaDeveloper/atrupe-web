@@ -78,7 +78,7 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
         return
       }
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
-      toast.success('Status alterado!')
+      toast.success('Status alterado')
     },
     onSettled: () => {
       handleOpenChange(false)

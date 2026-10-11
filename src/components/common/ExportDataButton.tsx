@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
   IconDownload,
@@ -67,6 +68,7 @@ export function ExportDataButton<T>({
   variant = 'neutralOutline',
 }: ExportDataButtonProps<T>) {
   const [isLoading, setIsLoading] = useState(false)
+  const { data: session } = useSession()
 
   const handleExport = async (format: ExportFormat) => {
     try {
@@ -83,6 +85,13 @@ export function ExportDataButton<T>({
         data,
         fileName,
         sheetName,
+        // SEG-3: toda exportação do sistema passa por aqui, então é aqui que a
+        // identificação entra — uma vez, valendo para todas as telas
+        signature: {
+          company: session?.company?.name || '',
+          user: session?.user?.name || session?.user?.email || '',
+          date: new Date(),
+        },
       })
 
       toast.success(successMessage)

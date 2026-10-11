@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
 
@@ -20,17 +23,10 @@ import { IconPrinter } from '@tabler/icons-react'
 // Actions
 import { getCommissionPdfData } from '@/actions/commission-report-pdf'
 
-import {
-  calculatePeriodDates,
-  formatDateToISO,
-  type PeriodType,
-} from '@/lib/filter-utils'
-
-// Types
-import type { CommissionType } from '../../types'
+// Mode
+import { commissionFilters, commissionModeOf } from '../../mode'
 
 // PDF Component
-import { CommissionReportPdf } from './CommissionReportPdf'
 
 // Excel
 import { generateCommissionExcel } from './generateCommissionExcel'
@@ -39,27 +35,18 @@ export function CommissionReportPrintButton() {
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
 
-  const getFilters = () => {
-    let startDate = searchParams.get('startDate') || undefined
-    let endDate = searchParams.get('endDate') || undefined
+  // As mesmas datas e o mesmo modo da tela, inclusive o vendedor filtrado:
+  // antes a impressão saía com todos os vendedores
+  const getFilters = () =>
+    commissionFilters({
+      commissionType: searchParams.get('commissionType'),
+      period: searchParams.get('period'),
+      startDate: searchParams.get('startDate'),
+      endDate: searchParams.get('endDate'),
+      sellerId: searchParams.get('sellerId'),
+    })
 
-    if (!startDate || !endDate) {
-      const period = (searchParams.get('period') ||
-        'current_month') as PeriodType
-      const dates = calculatePeriodDates(period)
-      if (dates) {
-        startDate = formatDateToISO(dates.startDate)
-        endDate = formatDateToISO(dates.endDate)
-      }
-    }
-
-    return {
-      commissionType:
-        (searchParams.get('commissionType') as CommissionType) || undefined,
-      startDate,
-      endDate,
-    }
-  }
+  const mode = commissionModeOf(searchParams.get('commissionType'))
 
   const handleGeneratePDF = async () => {
     setIsLoading(true)
@@ -70,7 +57,15 @@ export function CommissionReportPrintButton() {
         throw new Error('Erro ao buscar dados do PDF')
       }
 
-      const blob = await pdf(<CommissionReportPdf data={pdfData} />).toBlob()
+      const [{ pdf }, { CommissionReportPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+
+        import('./CommissionReportPdf'),
+      ])
+
+      const blob = await pdf(
+        <CommissionReportPdf data={pdfData} mode={mode} />,
+      ).toBlob()
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
     } catch (error) {
@@ -90,7 +85,7 @@ export function CommissionReportPrintButton() {
         throw new Error('Erro ao buscar dados')
       }
 
-      generateCommissionExcel(data)
+      generateCommissionExcel(data, mode)
     } catch (error) {
       console.error('Erro ao gerar Excel:', error)
       toast.error('Erro ao gerar Excel')

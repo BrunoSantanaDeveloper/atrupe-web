@@ -23,6 +23,7 @@ import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitO
 // Icon Imports
 import { PermissionGate } from '@/components/common/PermissionGate'
 import {
+  IconArrowLeft,
   IconCircleCheck,
   IconHelpCircle,
   IconPackage,
@@ -43,7 +44,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
-import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import {
+  UnitCostInput,
+  convertUnitCostToRaw,
+} from '@/components/common/form/global-inputs/products/UnitCostInput'
 import {
   defaultProductValues,
   productSchema,
@@ -53,15 +57,26 @@ import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import { parseCurrencyToBrl, cn } from '@/lib/utils'
 import { useParams } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
 
 import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { FEATURES } from '@/consts/features'
+import { SaleCompositionFields } from './SaleCompositionFields'
+import {
+  saveItemComposition,
+  recalculateItemLines,
+} from '@/actions/quotation-composition'
+import { getPriceTiers, getProductVariations } from '@/actions/product-assembly'
+import type { ItemComposition } from '../../[quotationId]/composicao/types'
 
 interface Props {
   open: boolean
   editMode?: boolean
   data?: QuotationItemType
+  // O que o vendedor já escolheu na composição deste item, ao editar
+  composition?: ItemComposition
 }
 
 // Função auxiliar para calcular medida básica baseada no unitKind (valores brutos)
@@ -101,13 +116,27 @@ function calculateRawMeasurement(
   }
 }
 
-export function QuotationProdDetailModal({ open, editMode, data }: Props) {
+export function QuotationProdDetailModal({
+  open,
+  editMode,
+  data,
+  composition: savedComposition,
+}: Props) {
   const params = useParams()
+  // Produto com composição (PRO): o vendedor preenche só o que é editável
+  // nela, dentro deste mesmo modal (IP-36, ORC-3)
+  const [composition, setComposition] = React.useState<
+    ItemComposition | undefined
+  >()
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
   // const { data: unitOfMeasure } = useUnitOfMeasure()
+  // Na edição, o produto é o do item (originalProductId); o productId do
+  // contexto é o último produto escolhido para adicionar, e carregava as
+  // regras e as escolhas de outro produto (corrigido em 05/10/2026)
   const { data: product, isLoading } = useProductDetail(
-    quotationData.productId || '',
+    (editMode ? data?.product?.originalProductId : quotationData.productId) ||
+      '',
   )
 
   const { quotationId } = params
@@ -270,6 +299,86 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     return total
   }, [calculateSalesValue, watch])
 
+  // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
+  // e muda o valor por unidade do item simples conforme a quantidade
+  const tierProductId = product?.id || data?.product?.originalProductId || null
+  const { data: tiersRes } = useQuery({
+    enabled: !!tierProductId && open,
+    staleTime: 60_000,
+    queryKey: ['price-tiers', tierProductId],
+    queryFn: () => getPriceTiers({ productId: tierProductId as string }),
+  })
+  const tiers = tiersRes?.data || []
+  const itemQuantity = Number(watch('items.0.quantity') || 1)
+  // A unidade do item manda (fix da medida do item): sem ela, vale a unidade
+  const itemUnitKind = watch('items.0.unitKind') ?? 'UNITY'
+  // Quantidade e medida do item para o aproveitamento de folha (AP-5): o
+  // formulário guarda milímetros; a composição calcula em metros
+  const compositionMeasure = {
+    quantity:
+      itemQuantity *
+      ((watch('items') || []).length > 1 ? Number(watch('quantity') || 1) : 1),
+    width: Number(watch('items.0.width') || 0) / 1000,
+    height: Number(watch('items.0.height') || 0) / 1000,
+  }
+  const activeTier =
+    tiers.length && (watch('items') || []).length === 1
+      ? [...tiers]
+          .sort((a, b) => b.from - a.from)
+          .find((tier) => itemQuantity >= tier.from) || null
+      : null
+  const baseUnitCost = product?.items?.[0]?.unitCost ?? null
+
+  // Variações do produto (PV-6, já no START): o vendedor escolhe uma, e o
+  // preço e o nome do item seguem a escolha. Com variação escolhida, as faixas
+  // do produto não se aplicam
+  const { data: variationsRes } = useQuery({
+    enabled: !!product?.id && open && !editMode,
+    staleTime: 60_000,
+    queryKey: ['product-variations', product?.id],
+    queryFn: () => getProductVariations({ productId: product?.id as string }),
+  })
+  const variations =
+    (watch('items') || []).length === 1 ? variationsRes?.data || [] : []
+  const [variationId, setVariationId] = React.useState<string | null>(null)
+  useEffect(() => {
+    if (open) setVariationId(null)
+  }, [open, product?.id])
+  const chooseVariation = (id: string) => {
+    const variation = variations.find((item) => item.id === id)
+    if (!variation) return
+    setVariationId(id)
+    const target =
+      variation.unitPrice !== null
+        ? convertUnitCostToRaw(itemUnitKind, variation.unitPrice)
+        : baseUnitCost
+    if (target !== null && target !== undefined) {
+      setValue('items.0.unitCost', target)
+      const { total, measurementValue } = calculateSalesValue(0)
+      setValue('items.0.salePrice', total)
+      setValue('items.0.measurementValue', measurementValue)
+    }
+    if (product?.name) {
+      setValue('description', `${product.name} · ${variation.name}`)
+    }
+  }
+
+  useEffect(() => {
+    if (variationId) return
+    if (!tiers.length || (watch('items') || []).length !== 1) return
+    const target =
+      activeTier !== null
+        ? convertUnitCostToRaw(itemUnitKind, activeTier.unitPrice)
+        : baseUnitCost
+    if (target === null || target === undefined) return
+    if (Number(watch('items.0.unitCost')) === target) return
+    setValue('items.0.unitCost', target)
+    const { total, measurementValue } = calculateSalesValue(0)
+    setValue('items.0.salePrice', total)
+    setValue('items.0.measurementValue', measurementValue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemQuantity, activeTier?.from, tiers.length])
+
   if (!open) return null
 
   function handleToggleModal(open: boolean) {
@@ -283,6 +392,10 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     product?.allowEditDescription || data?.allowEditDescription
 
   async function onSubmit(data: ProductsFormType) {
+    if (!editMode && variations.length > 0 && !variationId) {
+      toast.error('Escolha a variação do produto')
+      return
+    }
     // Função auxiliar para omitir campos undefined (null é mantido para limpar campos no backend)
     // eslint-disable-next-line
     const omitUndefined = (obj: Record<string, any>) => {
@@ -334,8 +447,41 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
         return
       }
 
+      // Na edição, o productId do formulário é o id do item
+      if (composition && data?.productId) {
+        await saveItemComposition({
+          quotationId: String(quotationId),
+          key: String(data.productId),
+          composition,
+        })
+      }
+      // Mudou a medida do item: as linhas acrescentadas que acompanham a
+      // base são recalculadas; as de medida própria ficam (05/10/2026)
+      if (data?.productId) {
+        const first = data.items?.[0]
+        const recalculated = await recalculateItemLines({
+          quotationId: String(quotationId),
+          itemId: String(data.productId),
+          measure: {
+            quantity: Number(data.quantity || 1),
+            width: first?.width ? Number(first.width) / 1000 : 1,
+            height: first?.height ? Number(first.height) / 1000 : 1,
+          },
+        })
+        if (recalculated.success && recalculated.data?.changed) {
+          toast.info(
+            recalculated.data.changed === 1
+              ? 'Uma linha acrescentada foi recalculada com a medida nova'
+              : `${recalculated.data.changed} linhas acrescentadas foram recalculadas com a medida nova`,
+          )
+          queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
+        }
+      }
       handleToggleModal(false)
-      toast.success('Produto editado com sucesso!')
+      toast.success('Item editado')
+      queryClient.invalidateQueries({
+        queryKey: ['quotation-item-compositions'],
+      })
       await queryClient.invalidateQueries({
         queryKey: [QUOTATION_DATA_QUERY_KEY],
       })
@@ -353,9 +499,22 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       return
     }
 
+    if (composition) {
+      const created = res.data as { id?: string } | undefined
+      await saveItemComposition({
+        quotationId: String(quotationId),
+        key: created?.id || String(data.productId),
+        composition,
+      })
+    }
+
     handleToggleModal(false)
+    toast.success('Item adicionado')
     queryClient.invalidateQueries({
       queryKey: [QUOTATION_DATA_QUERY_KEY],
+    })
+    queryClient.invalidateQueries({
+      queryKey: ['quotation-item-compositions'],
     })
     reset()
   }
@@ -409,6 +568,44 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                   placeholder="Digite aqui"
                   disabled={!canEditDescription}
                 />
+                {variations.length > 0 && (
+                  <div className="w-full space-y-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      Variação
+                    </p>
+                    <div
+                      role="radiogroup"
+                      aria-label="Variação"
+                      className="flex flex-wrap gap-2"
+                    >
+                      {variations.map((variation) => {
+                        const selected = variationId === variation.id
+                        return (
+                          <button
+                            key={variation.id}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() => chooseVariation(variation.id)}
+                            className={cn(
+                              'h-10 rounded-lg border px-4 text-sm font-medium transition-colors',
+                              selected
+                                ? 'border-brand bg-success-25 text-brand-700'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
+                            )}
+                          >
+                            {variation.name}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {!variationId && (
+                      <p className="text-xs text-gray">
+                        Escolha a variação para o preço e o nome do item.
+                      </p>
+                    )}
+                  </div>
+                )}
                 {items?.fields?.length > 1 && (
                   <>
                     <FormInput<ProductsFormType>
@@ -510,15 +707,35 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                         <FormBrlInput<ProductsFormType>
                           disabled={!canEditValue}
                           name={`items.${index}.salePrice`}
-                          label="Valor de venda"
+                          label="Preço de venda"
                           placeholder="0,00"
                           startAdornment={<>R$</>}
                           width="flex-[1_0_130px]"
                         />
                       </PermissionGate>
+                      {index === 0 && tiers.length > 0 && !variationId && (
+                        <p className="w-full text-xs text-gray">
+                          {activeTier
+                            ? `Preço da faixa a partir de ${activeTier.from}: R$ ${(activeTier.unitPrice / 100).toFixed(2).replace('.', ',')} por unidade de venda.`
+                            : `Abaixo de ${Math.min(...tiers.map((tier) => tier.from))} vale o valor de venda do produto.`}
+                        </p>
+                      )}
                     </div>
                   )
                 })}
+                <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+                  <div className="w-full">
+                    <SaleCompositionFields
+                      key={data?.id || product?.id}
+                      productId={
+                        product?.id || data?.product?.originalProductId
+                      }
+                      initial={editMode ? savedComposition : undefined}
+                      measure={compositionMeasure}
+                      onChange={setComposition}
+                    />
+                  </div>
+                </FeatureGate>
                 <FormTextarea<ProductsFormType>
                   name="technicalDescription"
                   label="Descritivo técnico"
@@ -552,6 +769,20 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                 }}
               >
                 Teste
+              </Button>
+            )}
+            {/* Ao adicionar, volta à lista para escolher outro produto */}
+            {!editMode && (
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconArrowLeft}
+                onClick={() => {
+                  reset()
+                  openChangeModal(true, 'productsList')
+                }}
+              >
+                Voltar
               </Button>
             )}
             <Button

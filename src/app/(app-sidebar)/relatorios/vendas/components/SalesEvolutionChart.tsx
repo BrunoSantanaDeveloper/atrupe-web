@@ -290,7 +290,7 @@ export function SalesEvolutionChart({
   )
 
   return (
-    <Card className="rounded-xl">
+    <Card>
       <CardHeader>
         <CardTitle>Evolução de vendas do período</CardTitle>
       </CardHeader>

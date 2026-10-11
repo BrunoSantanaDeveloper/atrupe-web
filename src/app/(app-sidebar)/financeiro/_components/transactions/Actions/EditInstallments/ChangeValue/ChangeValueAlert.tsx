@@ -84,7 +84,7 @@ export function ChangeTotalValueAlertDialog(props: Props) {
     onSuccess: (result) => {
       if (result.success) {
         queryClient.invalidateQueries()
-        toast.success('Movimentação alterada!')
+        toast.success('Movimentação alterada')
         handleOpenChange(false)
         onCloseParentDialog?.()
       } else {
@@ -163,7 +163,7 @@ export function ChangeTotalValueAlertDialog(props: Props) {
             </form>
           </Form>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <Button
               type="submit"
               form="change-transaction-value"

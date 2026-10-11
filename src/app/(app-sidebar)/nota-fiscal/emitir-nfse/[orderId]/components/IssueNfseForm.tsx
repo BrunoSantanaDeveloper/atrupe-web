@@ -567,7 +567,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
       }
 
       setPreviewOpen(false)
-      toast.success('NFS-e emitida com sucesso!')
+      toast.success('NFS-e emitida')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message =
@@ -761,7 +761,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                 <IconArrowLeft size={20} />
               </Button>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="type-page-title">
                   {isConsolidated ? 'NFS-e Consolidada' : 'Emissão de NFS-e'}
                 </h1>
                 <span className="text-xl text-gray-400">

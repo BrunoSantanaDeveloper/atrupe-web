@@ -79,7 +79,7 @@ export function PersonFields() {
 
       <FormInput
         name="email"
-        label="Email"
+        label="E-mail"
         placeholder="Digite aqui"
         width="flex-[1_0_250px]"
       />

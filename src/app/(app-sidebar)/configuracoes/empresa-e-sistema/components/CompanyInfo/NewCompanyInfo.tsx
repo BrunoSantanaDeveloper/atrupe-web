@@ -35,7 +35,7 @@ import {
   IconArrowRight,
   IconBuildingStore,
   IconCircleCheck,
-  IconCirclePlus,
+  IconPlus,
 } from '@tabler/icons-react'
 
 // Form
@@ -351,7 +351,7 @@ export function NewCompanyTriggerButton({
         title="Não disponível no plano atual"
         className="hidden"
       >
-        <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+        <FeaturedIcon variant="light" Icon={IconPlus} rounded />
         Adicionar empresa
       </Button>
     )
@@ -364,7 +364,7 @@ export function NewCompanyTriggerButton({
       size="default"
       onClick={() => onOpenChange(true)}
     >
-      <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+      <FeaturedIcon variant="light" Icon={IconPlus} rounded />
       Adicionar empresa
     </Button>
   )

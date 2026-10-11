@@ -53,8 +53,8 @@ export const CustomButton = forwardRef<HTMLButtonElement, Props>(
           />
         )}
         <div className="text-start">
-          <p className="text-xs font-normal text-gray">{caption}</p>
-          <p className="text-gray-600 font-medium">{title}</p>
+          <p className="type-body-strong">{title}</p>
+          {caption ? <p className="type-caption">{caption}</p> : null}
         </div>
       </Button>
     )

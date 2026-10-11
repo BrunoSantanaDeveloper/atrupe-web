@@ -1,5 +1,12 @@
 'use client'
 
+// Aprovar o orçamento (vira ordem de serviço). Duas travas, com mensagem
+// clara (decisões de 05/10/2026):
+// - a condição de pagamento é obrigatória para aprovar (concluir sem ela
+//   pode; aprovar, não);
+// - um item cujo produto foi inativado (PAD-7) trava a aprovação até ser
+//   trocado ou retirado.
+
 // React
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -16,6 +23,7 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
@@ -32,8 +40,15 @@ import { QuotationType } from '@/types/sales/quotation'
 // Actions
 import { createItemNew } from '@/actions/_cruds'
 
+// Hooks
+import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationItems'
+
 // Icons
-import { IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
+import {
+  IconBan,
+  IconCircleCheck,
+  IconAlertTriangle,
+} from '@tabler/icons-react'
 
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 
@@ -47,6 +62,10 @@ function dateInputToSaoPauloIso(date: string) {
 
 export function ApproveQuotation({ data }: Props) {
   const [open, setOpen] = useState(false)
+  const [openPayment, setOpenPayment] = useState(false)
+  const [openBlocked, setOpenBlocked] = useState<'payment' | 'inactive' | null>(
+    null,
+  )
   const [approvedAt, setApprovedAt] = useState('')
 
   const queryClient = useQueryClient()
@@ -61,8 +80,15 @@ export function ApproveQuotation({ data }: Props) {
     isNoInvoice ||
     (hasInstallments && !!data?.paymentConditions?.paymentCondition?.id)
 
+  const { inactiveItems } = useInactiveQuotationItems(data)
+
   const handleTriggerClick = () => {
+    if (inactiveItems.length) {
+      setOpenBlocked('inactive')
+      return
+    }
     if (!hasPaymentCondition) {
+      setOpenBlocked('payment')
       return
     }
     setApprovedAt('')
@@ -110,25 +136,96 @@ export function ApproveQuotation({ data }: Props) {
 
   return (
     <>
-      {!hasPaymentCondition && (
-        <PaymentConditionsDialog
-          quotationData={data}
-          onFinish={handlePaymentConditionsSaved}
-          actionIcon={IconCircleCheck}
-          actionTitle="Aprovar orçamento"
-          actionIconVariant="successLight"
-          submitLabel="Salvar e continuar"
-        />
-      )}
+      <CustomButton
+        icon={IconCircleCheck}
+        title="Aprovar orçamento"
+        iconVariant="successLight"
+        onClick={handleTriggerClick}
+      />
+
+      {/* A trava, com o motivo dito */}
+      <AlertDialog
+        open={openBlocked !== null}
+        onOpenChange={(value) => !value && setOpenBlocked(null)}
+      >
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <FeaturedIcon
+              Icon={openBlocked === 'inactive' ? IconBan : IconAlertTriangle}
+              rounded
+              size="lg"
+              variant={
+                openBlocked === 'inactive'
+                  ? 'errorBorderedLight'
+                  : 'warningBorderedLight'
+              }
+              className="mx-auto mb-2"
+            />
+            <AlertDialogTitle>
+              {openBlocked === 'inactive'
+                ? 'Este orçamento não pode ser aprovado'
+                : 'Informe a condição de pagamento para aprovar'}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-2 text-left">
+                {openBlocked === 'inactive' ? (
+                  <>
+                    <p>
+                      {inactiveItems.length === 1
+                        ? 'O produto deste item foi inativado:'
+                        : 'Os produtos destes itens foram inativados:'}
+                    </p>
+                    <ul className="list-disc space-y-1 pl-5 text-sm text-gray-700">
+                      {inactiveItems.map((item) => (
+                        <li key={item.id}>{item.description}</li>
+                      ))}
+                    </ul>
+                    <p>
+                      Troque ou retire o item em Itens para aprovar. Aprovado, o
+                      orçamento viraria uma ordem de serviço com um produto que
+                      a empresa não vende mais.
+                    </p>
+                  </>
+                ) : (
+                  <p>
+                    Concluir sem condição de pagamento pode; aprovar, não. A
+                    ordem de serviço nasce com as parcelas e a forma de
+                    pagamento, então elas precisam estar informadas antes.
+                  </p>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              {openBlocked === 'inactive' ? 'Fechar' : 'Cancelar'}
+            </AlertDialogCancel>
+            {openBlocked === 'payment' && (
+              <Button
+                type="button"
+                RightIcon={IconCircleCheck}
+                onClick={() => {
+                  setOpenBlocked(null)
+                  setOpenPayment(true)
+                }}
+              >
+                Informar condição de pagamento
+              </Button>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <PaymentConditionsDialog
+        quotationData={data}
+        open={openPayment}
+        onOpenChange={setOpenPayment}
+        hideTrigger
+        onFinish={handlePaymentConditionsSaved}
+        submitLabel="Salvar e continuar"
+      />
+
       <AlertDialog open={open} onOpenChange={setOpen}>
-        {hasPaymentCondition && (
-          <CustomButton
-            icon={IconCircleCheck}
-            title="Aprovar orçamento"
-            iconVariant="successLight"
-            onClick={handleTriggerClick}
-          />
-        )}
         <AlertDialogContent>
           <AlertDialogHeader>
             <FeaturedIcon
@@ -145,7 +242,7 @@ export function ApproveQuotation({ data }: Props) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleApprove}
               RightIcon={IconCircleCheck}

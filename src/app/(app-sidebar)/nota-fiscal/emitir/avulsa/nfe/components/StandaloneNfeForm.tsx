@@ -618,7 +618,7 @@ export function StandaloneNfeForm() {
       }
 
       setPreviewOpen(false)
-      toast.success('NF-e emitida com sucesso!')
+      toast.success('NF-e emitida')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao emitir NF-e'
@@ -679,7 +679,7 @@ export function StandaloneNfeForm() {
                 <IconArrowLeft size={20} />
               </Button>
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-xl font-semibold text-gray-900">
+                <h1 className="type-page-title">
                   {isDevolution
                     ? 'NF-e de Devolução'
                     : isComplementary
@@ -778,7 +778,7 @@ export function StandaloneNfeForm() {
             </p>
             {data.motivoRejeicao && (
               <p className="text-warning-700 text-xs mt-2 p-2 bg-white/60 border border-warning-200 rounded">
-                <strong className="block text-[10px] uppercase mb-0.5">
+                <strong className="type-eyebrow block mb-0.5">
                   Motivo da Rejeição SEFAZ:
                 </strong>
                 {data.motivoRejeicao}
@@ -889,9 +889,7 @@ export function StandaloneNfeForm() {
                           variant="neutralOutline"
                           Icon={IconMessage}
                         />
-                        <CardTitle className="text-gray-700 font-semibold text-base">
-                          Informações complementares
-                        </CardTitle>
+                        <CardTitle>Informações complementares</CardTitle>
                       </div>
                       <AccordionTrigger
                         className={cn(

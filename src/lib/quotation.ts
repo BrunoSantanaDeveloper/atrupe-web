@@ -20,3 +20,10 @@ export const actionDisabled = (actionType: string, status: string) => {
 
   return !rule?.includes(status)
 }
+
+// Preço de venda do terceirizado avulso a partir do custo (MS-16, T-4):
+// custo ÷ (1 − markup). Valores em centavos; markup em percentual
+export const outsourcedPriceFromCost = (cost: number, markup: number) => {
+  const factor = 1 - Math.min(Math.max(markup, 0), 99) / 100
+  return Math.round(cost / factor)
+}

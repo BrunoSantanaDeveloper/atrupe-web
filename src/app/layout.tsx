@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: 'Atrupe',
-      template: '%s | Atrupe',
+      template: '%s · Atrupe',
     },
     description: 'Sistema de gestão para comunicação visual',
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || ''),
@@ -51,7 +51,9 @@ export default async function RootLayout({
   const session = await auth()
 
   return (
-    <html lang="pt-BR">
+    // suppressHydrationWarning: o next-themes põe a classe do tema no <html>
+    // antes da hidratação (carregar sem piscar)
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         {/* Google Tag Manager */}
         <Script

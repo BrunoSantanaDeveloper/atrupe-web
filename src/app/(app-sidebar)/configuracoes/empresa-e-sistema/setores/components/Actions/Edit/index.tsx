@@ -1,7 +1,11 @@
 'use client'
 
+// React
+import { useEffect, useState } from 'react'
+
 // UI
 import { toast } from 'sonner'
+import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogBody,
@@ -39,11 +43,21 @@ import { ListSectorDataType } from '@/types/settings/sector'
 import { updateItemNew } from '@/actions/_cruds'
 
 // Consts
-import { sectorIcons } from '@/consts/sectors'
+import { sectorIcons, SECTOR_PALETTE } from '@/consts/sectors'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
+import { useSectorColor, SECTOR_COLORS_QUERY_KEY } from '@/hooks/useSectorColor'
+
+// Actions (cor do setor, mock até a API ter o campo)
+import { setSectorColor } from '@/actions/sector-colors'
+
+// Components
+import { SectorIcon } from '@/components/common/SectorIcon'
+
+// Lib
+import { cn } from '@/lib/utils'
 
 interface Props extends SearchParamsType {
   open: boolean
@@ -80,11 +94,36 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     },
   })
 
-  const { handleSubmit, setValue } = form
+  const { handleSubmit, setValue, watch } = form
+
+  // A cor do setor (área 9 §4.14): a escolhida ou o padrão. Fica no mock por
+  // id e nome até a API do setor ganhar o campo
+  const colorOf = useSectorColor()
+  const [color, setColor] = useState('')
+  useEffect(() => {
+    if (open && rowData) {
+      setColor(
+        colorOf({ id: rowData.id, name: rowData.name, icon: rowData.icon }),
+      )
+    }
+  }, [open, rowData, colorOf])
 
   const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItemNew({ route: `/sector/${rowData?.id}`, data }),
+    mutationFn: async (data: FormType) => {
+      const res = await updateItemNew({
+        route: `/sector/${rowData?.id}`,
+        data,
+      })
+      // A cor só é gravada depois que o servidor aceitou o setor
+      if (res.success) {
+        await setSectorColor({
+          sectorId: String(rowData?.id),
+          name: data.name,
+          color: color || null,
+        })
+      }
+      return res
+    },
     onSuccess: (res) => {
       if (!res.success) {
         // Setores e etapas de produção são recursos de plano: o servidor
@@ -93,7 +132,8 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
         return
       }
       queryClient.invalidateQueries()
-      toast.success('Setor atualizado!')
+      queryClient.invalidateQueries({ queryKey: [SECTOR_COLORS_QUERY_KEY] })
+      toast.success('Setor atualizado')
       handleOpenChange(false)
     },
     onError: () => {
@@ -142,6 +182,54 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                 label="Nome"
                 width="flex-[1_0_190px]"
               />
+              {/* A cor acompanha o setor em todo lugar: gerenciador, ficha,
+                  agenda, composição e lista de processos */}
+              <div className="w-full space-y-1.5">
+                <Label>Cor</Label>
+                <div className="flex flex-wrap items-center gap-3">
+                  <SectorIcon
+                    size="lg"
+                    name={watch('name')}
+                    icon={watch('icon')}
+                    style={{
+                      color,
+                      backgroundColor: `${color}1A`,
+                      borderColor: `${color}66`,
+                    }}
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    {SECTOR_PALETTE.map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        aria-label={`Cor ${option}`}
+                        aria-pressed={color === option}
+                        onClick={() => setColor(option)}
+                        className={cn(
+                          'size-7 rounded-full border-2',
+                          color === option ? 'border-gray-900' : 'border-white',
+                        )}
+                        style={{ backgroundColor: option }}
+                      />
+                    ))}
+                    <label className="flex size-7 cursor-pointer items-center justify-center rounded-full border border-dashed border-gray-300 text-xs text-gray">
+                      <input
+                        type="color"
+                        aria-label="Outra cor"
+                        value={color || '#4B5563'}
+                        onChange={(event) =>
+                          setColor(event.target.value.toUpperCase())
+                        }
+                        className="size-5 cursor-pointer border-0 bg-transparent p-0"
+                      />
+                    </label>
+                  </div>
+                </div>
+                <p className="text-xs text-gray">
+                  Aparece no gerenciador, na ficha de produção, na Agenda de
+                  entrega e na composição do produto.
+                </p>
+              </div>
             </form>
           </Form>
         </DialogBody>

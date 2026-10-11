@@ -100,7 +100,7 @@ export default function ResetingPasswordPage() {
         <Logo text width={154} />
         <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
           <CardHeader className="p-0 mb-8 text-center">
-            <CardTitle className="text-xl font-bold">Validando dados</CardTitle>
+            <CardTitle>Validando dados</CardTitle>
             <CardDescription>Estamos redefinindo sua senha.</CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">

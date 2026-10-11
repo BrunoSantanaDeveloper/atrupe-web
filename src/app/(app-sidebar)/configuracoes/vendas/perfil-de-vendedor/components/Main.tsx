@@ -18,6 +18,8 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 // Components
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
+import { PermissionGate } from '@/components/common/PermissionGate'
+import { usePermissions } from '@/hooks/usePermissions'
 import { AddSellerDialog } from './Actions/AddSeller'
 import { DeleteSellerDialog } from './Actions/DeleteSeller'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -54,6 +56,10 @@ import { UserInfo } from '@/components/common/UserInfo'
 import { DeleteProfileDialog } from './Actions/DeleteProfile'
 
 export function Main({ searchParams }: SearchParamsType) {
+  // EC-26: o valor mínimo de venda é valor — respeita a permissão
+  const { hasAllPermissions } = usePermissions()
+  const canSeeValues = hasAllPermissions(['values:values:view'])
+
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<SellerProfileType>()
   const [employeeData, setEmployeeData] = useState<SellerProfileEmployeesType>()
@@ -72,7 +78,13 @@ export function Main({ searchParams }: SearchParamsType) {
       <Topbar
         title="Perfil de vendedor"
         previousPage="/configuracoes/vendas"
-        primaryCta={<NewItemDialog />}
+        primaryCta={
+          <PermissionGate
+            permissions={['sales_settings:seller_profile:create']}
+          >
+            <NewItemDialog />
+          </PermissionGate>
+        }
       />
       <div className="space-y-2">
         <Card>
@@ -83,7 +95,13 @@ export function Main({ searchParams }: SearchParamsType) {
               icon={IconUserCircle}
               title="Nenhum perfil cadastrado"
               description="Crie o primeiro perfil"
-              cta={<NewItemDialog />}
+              cta={
+                <PermissionGate
+                  permissions={['sales_settings:seller_profile:create']}
+                >
+                  <NewItemDialog />
+                </PermissionGate>
+              }
             />
           ) : (
             <>
@@ -92,55 +110,71 @@ export function Main({ searchParams }: SearchParamsType) {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead>Perfil</TableHead>
-                      <TableHead>Desconto máximo</TableHead>
-                      <TableHead>Valor mínimo venda</TableHead>
-                      <TableHead>Comissão</TableHead>
+                      <TableHead numeric>Desconto máximo</TableHead>
+                      <TableHead numeric>Valor mínimo de venda</TableHead>
+                      <TableHead numeric>Comissão</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {profiles.map((group) => (
                       <Fragment key={group.profile?.id}>
-                        <TableRow className="bg-gray-100">
-                          <TableCell className="text-gray font-medium text-xs py-0">
+                        {/* O perfil é a entidade principal: linha de dado, não
+                            cabeçalho de grupo. Os vendedores vêm abaixo. */}
+                        <TableRow>
+                          <TableCell className="type-body-strong">
                             {group?.profile?.name}
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell numeric>
                             {group?.profile?.maxDiscount} %
                           </TableCell>
-                          <TableCell className="py-0">
-                            {formatCurrencyToBrl(group?.profile?.minValue)}
+                          <TableCell numeric>
+                            {canSeeValues
+                              ? formatCurrencyToBrl(group?.profile?.minValue)
+                              : '••••••'}
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell numeric>
                             {group?.profile?.commission} %
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell>
                             <div className="flex justify-end gap-1">
                               <TooltipProvider>
-                                <ActionButton
-                                  Icon={IconUserPlus}
-                                  tooltip="Adicionar vendedor"
-                                  onClick={() => {
-                                    setOpenDialog('addSeller')
-                                    setRowData(group?.profile)
-                                  }}
-                                />
-                                <ActionButton
-                                  Icon={IconSettings}
-                                  tooltip="Configurar perfil do vendedor"
-                                  onClick={() => {
-                                    setOpenDialog('configure')
-                                    setRowData(group?.profile)
-                                  }}
-                                />
-                                <ActionButton
-                                  Icon={IconTrash}
-                                  tooltip="Remover perfil"
-                                  onClick={() => {
-                                    setOpenDialog('removeProfile')
-                                    setRowData(group?.profile)
-                                  }}
-                                />
+                                <PermissionGate
+                                  permissions={[
+                                    'sales_settings:seller_profile:edit',
+                                  ]}
+                                >
+                                  <ActionButton
+                                    Icon={IconUserPlus}
+                                    tooltip="Adicionar vendedor"
+                                    onClick={() => {
+                                      setOpenDialog('addSeller')
+                                      setRowData(group?.profile)
+                                    }}
+                                  />
+                                  <ActionButton
+                                    Icon={IconSettings}
+                                    tooltip="Configurar perfil do vendedor"
+                                    onClick={() => {
+                                      setOpenDialog('configure')
+                                      setRowData(group?.profile)
+                                    }}
+                                  />
+                                </PermissionGate>
+                                <PermissionGate
+                                  permissions={[
+                                    'sales_settings:seller_profile:delete',
+                                  ]}
+                                >
+                                  <ActionButton
+                                    Icon={IconTrash}
+                                    tooltip="Remover perfil"
+                                    onClick={() => {
+                                      setOpenDialog('removeProfile')
+                                      setRowData(group?.profile)
+                                    }}
+                                  />
+                                </PermissionGate>
                               </TooltipProvider>
                             </div>
                           </TableCell>
@@ -149,27 +183,30 @@ export function Main({ searchParams }: SearchParamsType) {
                           group?.employees.map((item) => {
                             return (
                               <TableRow key={item?.id}>
-                                <TableCell className="flex items-center gap-3">
+                                <TableCell colSpan={4} className="pl-12">
                                   <UserInfo
                                     name={item?.name}
                                     description={item?.role}
                                     imageUrl={item?.avatar}
                                   />
                                 </TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
                                 <TableCell>
                                   <div className="flex justify-end gap-1">
                                     <TooltipProvider>
-                                      <ActionButton
-                                        Icon={IconTrash}
-                                        tooltip="Remover vendedor"
-                                        onClick={() => {
-                                          setOpenDialog('removeSeller')
-                                          setEmployeeData(item)
-                                        }}
-                                      />
+                                      <PermissionGate
+                                        permissions={[
+                                          'sales_settings:seller_profile:delete',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          tooltip="Remover vendedor"
+                                          onClick={() => {
+                                            setOpenDialog('removeSeller')
+                                            setEmployeeData(item)
+                                          }}
+                                        />
+                                      </PermissionGate>
                                     </TooltipProvider>
                                   </div>
                                 </TableCell>

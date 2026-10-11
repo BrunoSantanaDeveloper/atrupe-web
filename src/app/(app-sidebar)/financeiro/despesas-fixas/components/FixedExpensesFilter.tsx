@@ -148,7 +148,7 @@ export function FixedExpensesFilter({
         selectedIds.length > 1
           ? `Deseja lançar as ${selectedIds.length} despesas fixas selecionadas?`
           : 'Deseja lançar a despesa fixa selecionada?',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmLabel: 'Lançar',
       toastMsg: undefined,
       onConfirm: async () => {
@@ -191,8 +191,12 @@ export function FixedExpensesFilter({
         />
       </div>
       <div className="flex items-end w-full sm:w-auto">
-        <PermissionGate permissions={['financial:fixed_expenses:edit']}>
+        {/* EC-22: a chave era 'fixed_expenses' (plural), que pertence às
+            configurações. A linha da matriz "Lançamento de despesas fixas" é
+            'fixed_expense', então nenhum cargo recebia este botão */}
+        <PermissionGate permissions={['financial:fixed_expense:edit']}>
           <Button
+            variant="neutralOutline"
             LeftIcon={IconPlus}
             onClick={handlePostSelectedExpenses}
             disabled={selectedIds.length === 0}

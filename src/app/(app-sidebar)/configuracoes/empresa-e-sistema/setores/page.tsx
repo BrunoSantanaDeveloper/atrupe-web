@@ -9,6 +9,12 @@ import type { SearchParamsType } from '@/types/coreTypes'
 // Constants
 import { FEATURES } from '@/consts/features'
 
+export function metadata() {
+  return {
+    title: 'Setores',
+  }
+}
+
 export default function Page({ searchParams }: SearchParamsType) {
   return (
     <FeatureGate

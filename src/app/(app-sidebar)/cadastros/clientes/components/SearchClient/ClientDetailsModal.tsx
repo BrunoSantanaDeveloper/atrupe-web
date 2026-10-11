@@ -9,10 +9,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { TextSearchIcon } from 'lucide-react'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
-import { IconArrowRight } from '@tabler/icons-react'
+import { IconArrowRight, IconSearch } from '@tabler/icons-react'
 import { maskCpfCnpj, MaskPhoneNumber, maskCep } from '@/lib/utils'
 import { useState } from 'react'
 import { NewClientModal } from '../NewClient'
@@ -61,11 +60,11 @@ export function ClientDetailsModal({
 }: ClientDetailsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[830px]">
+      <DialogContent className="sm:max-w-[830px]">
         <DialogHeader className="border-none">
           <div className="flex items-center justify-between mb-6 border-b pb-4">
             <div className="flex items-center gap-3">
-              <FeaturedIcon variant="neutralOutline" Icon={TextSearchIcon} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
               <DialogTitle>
                 Informações do {clientData.documentType}
               </DialogTitle>
@@ -82,11 +81,11 @@ export function ClientDetailsModal({
             {clientData.documentType === 'CNPJ' ? (
               <>
                 <TextSupportingText
-                  supporting="Razão Social"
+                  supporting="Razão social"
                   text={clientData.legalName}
                 />
                 <TextSupportingText
-                  supporting="Nome Fantasia"
+                  supporting="Nome fantasia"
                   text={clientData.name}
                 />
               </>
@@ -94,7 +93,7 @@ export function ClientDetailsModal({
               <>
                 <TextSupportingText supporting="Nome" text={clientData.name} />
                 <TextSupportingText
-                  supporting="Data de Nascimento"
+                  supporting="Data de nascimento"
                   text={formatBirthdate(clientData.birthdate)}
                 />
               </>
@@ -223,11 +222,11 @@ export function ClientDetailsModalWithNewClient({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[830px]">
+        <DialogContent className="sm:max-w-[830px]">
           <DialogHeader className="border-none">
             <div className="flex items-center justify-between mb-6 border-b pb-4">
               <div className="flex items-center gap-3">
-                <FeaturedIcon variant="neutralOutline" Icon={TextSearchIcon} />
+                <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
                 <DialogTitle>
                   Informações do {clientData.documentType}
                 </DialogTitle>
@@ -244,11 +243,11 @@ export function ClientDetailsModalWithNewClient({
               {clientData.documentType === 'CNPJ' ? (
                 <>
                   <TextSupportingText
-                    supporting="Razão Social"
+                    supporting="Razão social"
                     text={clientData.legalName}
                   />
                   <TextSupportingText
-                    supporting="Nome Fantasia"
+                    supporting="Nome fantasia"
                     text={clientData.name}
                   />
                 </>
@@ -259,7 +258,7 @@ export function ClientDetailsModalWithNewClient({
                     text={clientData.name}
                   />
                   <TextSupportingText
-                    supporting="Data de Nascimento"
+                    supporting="Data de nascimento"
                     text={formatBirthdate(clientData.birthdate)}
                   />
                 </>

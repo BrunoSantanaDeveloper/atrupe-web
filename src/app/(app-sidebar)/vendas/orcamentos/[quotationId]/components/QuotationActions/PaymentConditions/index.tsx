@@ -43,12 +43,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import {
-  IconCoin,
-  IconPencil,
-  IconCircleCheck,
-  IconProgressCheck,
-} from '@tabler/icons-react'
+import { IconCoin, IconPencil, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -73,17 +68,33 @@ interface Props {
   actionIcon?: ComponentProps<typeof CustomButton>['icon']
   actionIconVariant?: ComponentProps<typeof CustomButton>['iconVariant']
   submitLabel?: string
+  // Controlado de fora (06/10/2026): concluir e aprovar abrem o diálogo
+  // depois de avisar o que falta, sem um botão próprio dele na tela
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  hideTrigger?: boolean
 }
 
 export function PaymentConditionsDialog({
   quotationData,
   onFinish,
   actionTitle = 'Concluir orçamento',
-  actionIcon = IconProgressCheck,
+  actionIcon = IconCircleCheck,
   actionIconVariant = 'lightBlueBorderedLight',
   submitLabel,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger,
 }: Props) {
-  const [open, setOpen] = useState(false)
+  // EC-17: desconto acima do limite do vendedor não salva
+  const [exceedsDiscountLimit, setExceedsDiscountLimit] = useState(false)
+
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const setOpen = (value: boolean) => {
+    setInternalOpen(value)
+    onOpenChange?.(value)
+  }
 
   // const isFetching = useIsFetching()
 
@@ -221,29 +232,31 @@ export function PaymentConditionsDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <TooltipProvider>
-        <DialogTrigger asChild>
-          {onFinish ? (
-            <CustomButton
-              icon={actionIcon}
-              title={actionTitle}
-              iconVariant={actionIconVariant}
-            />
-          ) : (
-            <ActionButton
-              Icon={IconPencil}
-              tooltip="Editar condições de pagamento"
-              className={cn(
-                buttonVariants({ variant: 'neutralLight', size: 'icon' }),
-              )}
-              disabled={actionDisabled(
-                'paymentConditions',
-                quotationData?.status,
-              )}
-            />
-          )}
-        </DialogTrigger>
-      </TooltipProvider>
+      {!hideTrigger && (
+        <TooltipProvider>
+          <DialogTrigger asChild>
+            {onFinish ? (
+              <CustomButton
+                icon={actionIcon}
+                title={actionTitle}
+                iconVariant={actionIconVariant}
+              />
+            ) : (
+              <ActionButton
+                Icon={IconPencil}
+                tooltip="Editar condições de pagamento"
+                className={cn(
+                  buttonVariants({ variant: 'neutralLight', size: 'icon' }),
+                )}
+                disabled={actionDisabled(
+                  'paymentConditions',
+                  quotationData?.status,
+                )}
+              />
+            )}
+          </DialogTrigger>
+        </TooltipProvider>
+      )}
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
@@ -292,7 +305,7 @@ export function PaymentConditionsDialog({
 
               <FormBrlInput
                 name="commission.totalCommission"
-                label="Valor Comissão"
+                label="Valor da comissão"
                 startAdornment={<>R$</>}
                 width="flex-[1_0_200px]"
                 disabled
@@ -302,6 +315,7 @@ export function PaymentConditionsDialog({
               <DiscountAndTotal
                 addComissionValue={addComissionValue}
                 quotationData={quotationData}
+                onDiscountLimitChange={setExceedsDiscountLimit}
               />
 
               <FormTextarea
@@ -351,7 +365,7 @@ export function PaymentConditionsDialog({
               type="submit"
               form="quotation-payment-conditions"
               RightIcon={IconCircleCheck}
-              disabled={isBusy}
+              disabled={isBusy || exceedsDiscountLimit}
               isLoading={isSubmitting}
             >
               {saveButtonLabel}

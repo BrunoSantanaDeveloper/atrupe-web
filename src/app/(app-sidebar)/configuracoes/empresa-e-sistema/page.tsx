@@ -4,7 +4,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 export function metadata() {
   return {
-    title: 'Configurações da Empresa e do Sistema',
+    title: 'Configurações da empresa e do sistema',
   }
 }
 

@@ -8,8 +8,8 @@ import { Card, CardHeader } from '@/components/ui/card'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
 
-// Config
-import { commissionOptions } from '../config'
+// Mode
+import { commissionModeOf, commissionModeCopy } from '../mode'
 
 // Utils
 import {
@@ -61,25 +61,13 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
     searchParams?.endDate as string,
   )
 
-  const defaultReceivedDateRange = getDateRangeFromParams(
-    searchParams?.receivedStartDate as string,
-    searchParams?.receivedEndDate as string,
-  )
+  // Um período só: o modo decide se ele é a data da venda ou a do
+  // recebimento. Dois filtros de data juntos deixavam o resultado ambíguo
+  const mode = commissionModeOf(searchParams?.commissionType as string)
 
   return (
     <Card className="hidden lg:block">
       <CardHeader className="flex-row flex-wrap space-y-0 gap-4">
-        <SelectBasic
-          name="commissionType"
-          label="Comissão"
-          placeholder="Selecione"
-          className="lg:w-[200px] w-full hidden"
-          options={commissionOptions}
-          value={(searchParams?.commissionType as string) || 'all'}
-          onChange={(value) =>
-            updateFilterParam('commissionType', value, updateOptions)
-          }
-        />
         <SelectBasic
           name="period"
           label="Período"
@@ -92,23 +80,11 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           }
         />
         <DateRangePickerBasic
-          label="Data de venda"
+          label={commissionModeCopy[mode].dateLabel}
           placeholder="Selecione um período"
           className="lg:w-[260px] w-full"
           value={defaultSaleDateRange}
           onChange={(range) => updateDateRangeParams(range, updateOptions)}
-        />
-        <DateRangePickerBasic
-          label="Data de recebimento"
-          placeholder="Selecione um período"
-          className="lg:w-[260px] w-full"
-          value={defaultReceivedDateRange}
-          onChange={(range) =>
-            updateDateRangeParams(range, updateOptions, {
-              startKey: 'receivedStartDate',
-              endKey: 'receivedEndDate',
-            })
-          }
         />
         {canSeeOtherSellers && (
           <SelectBasic

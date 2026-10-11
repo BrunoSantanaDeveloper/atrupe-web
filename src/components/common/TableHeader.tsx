@@ -13,7 +13,6 @@ import { CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input-uncontrolled'
 
 // Icon Imports
-import { Search } from 'lucide-react'
 import { IconSearch } from '@tabler/icons-react'
 
 // Type Imports
@@ -63,15 +62,15 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
             type="search"
             value={search}
             placeholder="Buscar por..."
-            startAdornment={<Search size={18} />}
+            startAdornment={<IconSearch size={20} />}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <Button
           type="submit"
-          size="iconMd"
-          title="buscar"
-          aria-label="Botão de busca"
+          size="icon"
+          title="Buscar"
+          aria-label="Buscar"
           LeftIcon={IconSearch}
         />
       </form>

@@ -101,13 +101,13 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Condições de pagamento
-                </CardTitle>
+                <CardTitle>Condições de pagamento</CardTitle>
               </div>
               <div className="flex gap-3">
                 <PermissionGate permissions={['sale:quotation:edit']}>
-                  <PaymentConditionsDialog quotationData={quotationData} />
+                  <PermissionGate permissions={['sale:quotation:edit']}>
+                    <PaymentConditionsDialog quotationData={quotationData} />
+                  </PermissionGate>
                 </PermissionGate>
                 <AccordionTrigger
                   className={cn(

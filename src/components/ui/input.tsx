@@ -22,9 +22,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return (
         <div
           className={cn(
-            'flex items-center justify-center h-11 rounded-lg border text-base border-[#d0d5dd] bg-white shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 overflow-hidden transition-all duration-200 ease-in-out',
+            'flex items-center justify-center h-10 rounded-lg border text-sm border-gray-300 bg-white shadow-xs focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 overflow-hidden transition-all duration-200 ease-in-out',
             error &&
-              'border-error focus-visible:ring-error focus-visible:border-error',
+              'border-error-300 focus-within:border-error-300 focus-within:ring-error-100',
             className,
           )}
           data-disabled={props.disabled}
@@ -32,7 +32,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {startAdornment && (
             <div
               className={cn(
-                'flex pt-px items-center justify-center text-[#667085] pl-3.5',
+                'flex pt-px items-center justify-center text-gray pl-3.5',
               )}
             >
               {startAdornment}
@@ -40,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           <input
             className={cn(
-              'flex h-full w-full ml-1 rounded-md bg-transparent px-2 text-base text-[#101828] file:bg-transparent file:text-sm file:font-medium placeholder:text-[#667085] shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
+              'flex h-full w-full ml-1 rounded-md bg-transparent px-2 text-sm text-gray-900 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
             )}
             ref={ref}
             {...props}
@@ -60,9 +60,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         className={cn(
-          'flex h-11 w-full rounded-lg border border-[#d0d5dd] bg-white shadow-sm px-3.5 py-2.5 text-base text-[#101828] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[#667085] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out',
+          'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2.5 text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out',
           error &&
-            'border-error focus-visible:ring-error focus-visible:border-error',
+            'border-error-300 focus-visible:border-error-300 focus-visible:ring-error-100',
           className,
         )}
         ref={ref}

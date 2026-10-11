@@ -4,6 +4,11 @@ const nextConfig = {
     serverActions: {
       bodySizeLimit: '10mb',
     },
+    // EC-3: @react-pdf/renderer quebra a renderização no servidor ("Element
+    // type is invalid" em desenvolvimento, React #419 em produção) nas 12
+    // páginas que importam algum botão de PDF. Declarada como externa, a
+    // biblioteca deixa de ser processada no servidor.
+    serverComponentsExternalPackages: ['@react-pdf/renderer'],
   },
   images: {
     remotePatterns: [

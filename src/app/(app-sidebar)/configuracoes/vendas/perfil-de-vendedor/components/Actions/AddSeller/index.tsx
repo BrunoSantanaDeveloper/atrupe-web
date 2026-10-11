@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { SelectEmployeeProfileField } from '@/components/common/form/global-inputs/EmployeeProfileSelectField'
 
 // Icons
-import { IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck, IconPlus } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -33,6 +33,7 @@ import type { SellerProfileType } from '@/types/settings/sellerProfile'
 
 // Actions
 import { createItem } from '@/actions/_cruds'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -59,7 +60,7 @@ export function AddSellerDialog({ open, setOpen, rowData }: Props) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Sucesso!')
+      toast.success('Vendedor adicionado')
       handleOpenChange(false)
     },
     onError: (err) => {
@@ -81,7 +82,10 @@ export function AddSellerDialog({ open, setOpen, rowData }: Props) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Adicionar vendedor</DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
+            <DialogTitle>Adicionar vendedor</DialogTitle>
+          </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>

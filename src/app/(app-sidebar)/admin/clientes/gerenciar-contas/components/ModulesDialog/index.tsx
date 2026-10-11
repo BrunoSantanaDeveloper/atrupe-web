@@ -137,10 +137,7 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
                   {groups.map((group) => (
                     <Fragment key={group.label}>
                       <tr className="bg-gray-50">
-                        <td
-                          colSpan={3}
-                          className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600"
-                        >
+                        <td colSpan={3} className="type-eyebrow px-3 py-2">
                           {group.label}
                         </td>
                       </tr>
@@ -287,7 +284,7 @@ function CourtesyDialog({
     >
       <DialogContent className="sm:max-w-[480px] bg-white p-6 rounded-xl">
         <DialogHeader className="mb-2">
-          <DialogTitle className="text-lg font-bold text-gray-900">
+          <DialogTitle>
             {granting ? 'Conceder cortesia' : 'Retirar recurso'}
           </DialogTitle>
           <DialogDescription>

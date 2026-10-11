@@ -2,8 +2,9 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { NewClientFormType } from '../schema'
-import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
+import { maskCpf, maskCnpj, isValidCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
+
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 import { useMemo, useCallback, useState } from 'react'
 import { useDocumentSearch } from '@/hooks/useDocumentSearch'
@@ -22,7 +23,7 @@ interface Props {
 }
 
 export function GeneralInfoTab({ type, context = 'client' }: Props) {
-  const { setValue, watch } = useFormContext<NewClientFormType>()
+  const { setValue, watch, getValues } = useFormContext<NewClientFormType>()
   const { searchByDocument } = useDocumentSearch()
   const { canManageClientResponsible } = usePlanFeatures()
   const showResponsible = context === 'client' && canManageClientResponsible()
@@ -47,57 +48,56 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
       if (!isComplete) return
 
-      // Reset fields before searching
-      setValue('general.name', '')
-      setValue('general.phone', '')
-      setValue('general.rg', '')
-      setValue('general.birthdate', undefined)
-      setValue('general.corporateName', '')
-      setValue('addresses.0.street', '')
-      setValue('addresses.0.number', '')
-      setValue('addresses.0.complement', '')
-      setValue('addresses.0.city', '')
-      setValue('addresses.0.state', '')
-      setValue('addresses.0.zipcode', '')
-      setValue('addresses.0.neighborhood', '')
+      // EC-14: documento inválido não consulta. Antes, um CPF digitado errado
+      // trazia e gravava os dados de outra pessoa — o cadastro era salvo com o
+      // nome de um terceiro.
+      if (!isValidCpfCnpj(cleanDocument)) return
 
       const searchData = await searchByDocument(cleanDocument)
 
       if (searchData) {
-        // Fill general data
-        setValue('general.name', searchData.name)
-        if (searchData.phone) {
-          setValue('general.phone', searchData.phone)
+        // EC-14: a consulta não apaga mais o que o usuário digitou. Só
+        // preenche o que estiver vazio.
+        const fillIfEmpty = (
+          field: Parameters<typeof setValue>[0],
+          value?: string | null,
+        ) => {
+          if (!value) return
+          if (getValues(field)) return
+
+          setValue(field, value)
         }
-        if (searchData.rg) {
-          setValue('general.rg', searchData.rg)
-        }
-        if (searchData.birthdate) {
+
+        fillIfEmpty('general.name', searchData.name)
+        fillIfEmpty('general.phone', searchData.phone)
+        fillIfEmpty('general.rg', searchData.rg)
+
+        if (searchData.birthdate && !getValues('general.birthdate')) {
           const date = new Date(
             searchData.birthdate.split('T')[0] + 'T12:00:00',
           )
           setValue('general.birthdate', date)
         }
-        if (documentType === 'CNPJ' && searchData.corporateName) {
-          setValue('general.corporateName', searchData.corporateName)
+
+        if (documentType === 'CNPJ') {
+          fillIfEmpty('general.corporateName', searchData.corporateName)
         }
-        // Fill address data if available
+
         if (searchData.address) {
-          setValue('addresses.0.street', searchData.address.street)
-          if (searchData.address.number) {
-            setValue('addresses.0.number', searchData.address.number)
-          }
-          if (searchData.address.complement) {
-            setValue('addresses.0.complement', searchData.address.complement)
-          }
-          setValue('addresses.0.city', searchData.address.city)
-          setValue('addresses.0.state', searchData.address.state)
-          setValue('addresses.0.zipcode', searchData.address.zipcode)
-          setValue('addresses.0.neighborhood', searchData.address.neighborhood)
+          fillIfEmpty('addresses.0.street', searchData.address.street)
+          fillIfEmpty('addresses.0.number', searchData.address.number)
+          fillIfEmpty('addresses.0.complement', searchData.address.complement)
+          fillIfEmpty('addresses.0.city', searchData.address.city)
+          fillIfEmpty('addresses.0.state', searchData.address.state)
+          fillIfEmpty('addresses.0.zipcode', searchData.address.zipcode)
+          fillIfEmpty(
+            'addresses.0.neighborhood',
+            searchData.address.neighborhood,
+          )
         }
       }
     },
-    [setValue, searchByDocument],
+    [setValue, getValues, searchByDocument],
   )
 
   const [isRefreshing, setIsRefreshing] = useState(false)
@@ -135,7 +135,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         freshData.corporateName !== watch('general.corporateName')
       ) {
         setValue('general.corporateName', freshData.corporateName)
-        updated.push('Razão Social')
+        updated.push('Razão social')
       }
       if (freshData.phone && freshData.phone !== watch('general.phone')) {
         setValue('general.phone', freshData.phone)

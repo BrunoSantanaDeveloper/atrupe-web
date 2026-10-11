@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 
 // Components
 import { SetClient } from './SetClient'
@@ -21,9 +21,12 @@ import { IconPrinter } from '@tabler/icons-react'
 
 interface Props {
   data: QuotationType
+  // Substitui concluir e aprovar. É o caso da venda rápida, em que o vendedor
+  // não monta condição de pagamento: ele cobra ou envia ao caixa (FC-1)
+  primaryAction?: ReactNode
 }
 
-export function QuotationActions({ data }: Props) {
+export function QuotationActions({ data, primaryAction }: Props) {
   const [openPrint, setOpenPrint] = useState(false)
 
   const status = {
@@ -67,14 +70,18 @@ export function QuotationActions({ data }: Props) {
               <RejectQuotation data={data} />
             </PermissionGate>
           ) : null}
-          <PermissionGate permissions={['sale:quotation:edit']}>
-            <FinishQuotation data={data} canFinish={canFinish} />
-          </PermissionGate>
-          {canApprove ? (
-            <PermissionGate permissions={['sale:order:create']}>
-              <ApproveQuotation data={data} />
-            </PermissionGate>
-          ) : null}
+          {primaryAction ?? (
+            <>
+              <PermissionGate permissions={['sale:quotation:edit']}>
+                <FinishQuotation data={data} canFinish={canFinish} />
+              </PermissionGate>
+              {canApprove ? (
+                <PermissionGate permissions={['sale:order:create']}>
+                  <ApproveQuotation data={data} />
+                </PermissionGate>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
       <PrintQuotationDialog

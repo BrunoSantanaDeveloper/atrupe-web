@@ -17,6 +17,7 @@ import {
 } from '../components/checkout/CheckoutLayout'
 import { Button } from '@/components/ui/button'
 import { createItemNew } from '@/actions/_cruds'
+import { SUBSCRIPTION_PAGE } from '@/config/routes'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 
 type SubscriptionStatus = 'processing' | 'success' | 'error' | 'waiting_payment'
@@ -163,6 +164,10 @@ export default function FinishSubscriptionPage() {
 
       if (ACTIVATED.includes(checkResult.status)) {
         await finishActivated(checkResult)
+      } else if (checkResult.status === 'not_found') {
+        // Sem contratação em andamento: não há pagamento a aguardar (EC-6)
+        toast.info('Nenhuma assinatura em andamento')
+        router.replace(SUBSCRIPTION_PAGE)
       } else {
         setStatus('waiting_payment')
         setErrorMessage(
@@ -214,8 +219,12 @@ export default function FinishSubscriptionPage() {
             'Aguardando confirmação do pagamento. Você receberá um e-mail quando o pagamento for confirmado.',
           )
           setCountdown(30)
+        } else if (checkResult.status === 'not_found') {
+          // Sem contratação em andamento: não há pagamento a aguardar (EC-6)
+          toast.info('Nenhuma assinatura em andamento')
+          router.replace(SUBSCRIPTION_PAGE)
         } else {
-          // Outro status (not_found, no_payments, etc.)
+          // Outro status (no_payments, etc.)
           setStatus('waiting_payment')
           setErrorMessage(
             'Assinatura em processamento. Você receberá um e-mail quando o pagamento for confirmado.',
@@ -290,7 +299,7 @@ export default function FinishSubscriptionPage() {
         }
       >
         <p>{errorMessage}</p>
-        <p className="text-[11px] text-gray-400">
+        <p className="text-xs text-gray-400">
           Indo para o dashboard em{' '}
           <span className="font-semibold text-gray-600">{countdown}s</span>
         </p>
@@ -349,8 +358,8 @@ function ResultCard({
             {icon}
           </div>
         )}
-        <h1 className="text-lg font-bold text-gray-900">{title}</h1>
-        <div className="flex flex-col gap-3 text-[13px] text-gray-600">
+        <h1 className="type-section-title">{title}</h1>
+        <div className="flex flex-col gap-3 text-sm text-gray-600">
           {children}
         </div>
         {actions && <div className="mt-2 w-full">{actions}</div>}

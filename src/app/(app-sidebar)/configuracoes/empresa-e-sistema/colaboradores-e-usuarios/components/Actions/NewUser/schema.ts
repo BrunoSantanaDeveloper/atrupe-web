@@ -10,7 +10,7 @@ const passwordSchema = z
 
 const baseSchema = {
   name: z.string().min(1, 'Campo obrigatório'),
-  email: z.string().email('Email inválido'),
+  email: z.string().email('E-mail inválido'),
 }
 
 const createSchema = z

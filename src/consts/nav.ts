@@ -1,17 +1,25 @@
 import {
   IconCoin,
+  IconFileInvoice,
+  IconListCheck,
+  IconClipboardList,
   IconNews,
   IconBook,
   IconCoins,
   IconGraph,
   IconUsers,
   IconUpload,
+  IconBolt,
   IconBoxSeam,
+  IconPackages,
   IconBuilding,
   IconSettings,
   IconChartBar,
+  IconChartPie,
   IconBrandAsana,
   IconCalculator,
+  IconTag,
+  IconTargetArrow,
   IconListSearch,
   IconDatabaseImport,
   IconLayoutGrid,
@@ -33,11 +41,11 @@ import {
   IconDeviceDesktopDollar,
   IconReceiptTax,
   IconTicket,
-  IconSquareRoundedPlusFilled,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
 import type { IconProps } from '@tabler/icons-react'
+import type { ReviewMarkKind } from './revisao'
 
 export interface MainNavigationType {
   icon:
@@ -51,10 +59,13 @@ export interface MainNavigationType {
   action?: boolean
   permission?: string | string[] // Nova propriedade para permissões (string ou array para múltiplas permissões)
   requireAllPermissions?: boolean // Se true, requer todas as permissões (AND), senão requer qualquer uma (OR)
-  requiredModule?: string // Módulo contratado necessário para exibir o item
+  // Módulo contratado à parte necessário para exibir o item (hoje só
+  // nota_fiscal); recurso de plano vai em requiredFeature
+  requiredModule?: string
   // Recurso do plano necessário para exibir o item (com lista, basta um). A
   // composição dos planos é configurada pelo superadmin.
   requiredFeature?: string | string[]
+  review?: ReviewMarkKind // Marcação temporária da revisão: azul = novo, vermelho = a desenvolver
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
 
@@ -76,6 +87,18 @@ export const defaultMainNavigation: MainNavigationType[] = [
     title: 'Vendas',
     path: '/vendas',
     children: [
+      // Venda rápida é o mesmo orçamento, nascendo com menos perguntas: vem
+      // primeiro porque é o caminho do balcão, e só aparece quando ligada em
+      // Configurações › Vendas (VR-4)
+      {
+        icon: IconBolt,
+        title: 'Venda rápida',
+        path: '/vendas/orcamentos?novo=venda-rapida',
+        review: 'new',
+        permission: 'sale:quotation:create',
+        requiredFeature: 'quotation_quick_sale',
+        action: true,
+      },
       {
         icon: IconReportMoney,
         title: 'Orçamentos',
@@ -84,19 +107,9 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconNews,
-        title: 'Ordens de Serviço',
+        title: 'Ordens de serviço',
         path: '/vendas/ordens-de-servico',
         permission: 'sale:order:view',
-      },
-      {
-        icon: IconSquareRoundedPlusFilled,
-        title: 'Nova venda rápida',
-        // A lista de orçamentos abre o formulário da venda rápida.
-        path: '/vendas/orcamentos',
-        query: '?venda-rapida=1',
-        action: true,
-        permission: 'sale:quotation:create',
-        requiredFeature: 'quotation_quick_sale',
       },
     ],
   },
@@ -133,14 +146,16 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconCoins,
         title: 'Controle de caixa',
         path: '/financeiro/controle-de-caixa',
+        review: 'new',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredFeature: 'cash_control',
       },
       {
         icon: IconDeviceDesktopDollar,
-        title: 'PDV',
+        title: 'Frente de caixa (PDV)',
         path: '/financeiro/frente-de-caixa',
+        review: 'new',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredFeature: 'pdv_screen',
@@ -161,11 +176,49 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
     ],
   },
+  // Custo e preço são o método do PRO: telas onde se define quanto custa e
+  // por quanto se vende. Ficavam sem entrada no menu, alcançáveis só por
+  // dentro de Configurações — que é onde se ajusta o sistema, não onde se
+  // trabalha (revisao-telas.md §1)
+  {
+    icon: IconTargetArrow,
+    title: 'Custos e preços',
+    review: 'new',
+    path: '/base-de-custos',
+    permission: 'values:values:view',
+    requiredFeature: 'cost_base',
+    children: [
+      {
+        icon: IconChartPie,
+        title: 'Base de custos',
+        path: '/base-de-custos',
+        permission: ['cost:base:view', 'values:values:view'],
+        review: 'new',
+        requireAllPermissions: true,
+        requiredFeature: 'cost_base',
+      },
+      {
+        icon: IconTag,
+        title: 'Precificação',
+        path: '/precificacao',
+        review: 'new',
+        permission: ['cost:pricing:view', 'values:values:view'],
+        requireAllPermissions: true,
+        requiredFeature: 'pricing_center',
+      },
+    ],
+  },
   {
     icon: IconListSearch,
     title: 'Produção',
     path: '/producao',
-    requiredFeature: 'delivery_production_tabs',
+    // O grupo aparece com qualquer uma das chaves dos itens: com a da Agenda
+    // no grupo inteiro, um ELITE sem ela perderia o Gerenciador
+    requiredFeature: [
+      'delivery_production_tabs',
+      'production_manager',
+      'productivity_tracking',
+    ],
     children: [
       // {
       //   icon: IconClipboardList,
@@ -179,15 +232,41 @@ export const defaultMainNavigation: MainNavigationType[] = [
       // },
       {
         icon: IconTruckLoading,
-        title: 'Agenda de Entrega',
+        title: 'Agenda de entrega',
         path: '/producao/agenda-de-entrega',
+        review: 'todo',
         permission: 'production:delivery_schedule:view',
+        requiredFeature: 'delivery_production_tabs',
+      },
+      {
+        icon: IconListCheck,
+        title: 'Gerenciador de produção',
+        path: '/producao/gerenciador',
+        review: 'new',
+        permission: 'production:production:view',
+        requiredFeature: 'production_manager',
+      },
+      {
+        icon: IconClipboardList,
+        title: 'Projetos',
+        path: '/producao/projetos',
+        review: 'new',
+        permission: 'production:production:view',
+        requiredFeature: 'production_manager',
+      },
+      {
+        icon: IconChartBar,
+        title: 'Produtividade',
+        path: '/producao/produtividade',
+        review: 'new',
+        permission: 'production:production:view',
+        requiredFeature: 'productivity_tracking',
       },
     ],
   },
   {
     icon: IconFileSymlink,
-    title: 'Nota Fiscal',
+    title: 'Nota fiscal',
     path: '/nota-fiscal/emitir',
     permission: 'nota_fiscal:emitir:view',
     requiredModule: 'nota_fiscal',
@@ -210,12 +289,63 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/cadastros/fornecedores',
         permission: 'register:supplier:view',
       },
+      // Produtos, materiais e processos são cadastros do dia a dia, não
+      // configuração: ficavam escondidos em abas dentro de Configurações.
+      // Ordem pedida pelo time (03/10/2026): materiais → processos →
+      // produtos, a ordem em que a composição é montada
+      {
+        icon: IconPackages,
+        title: 'Materiais',
+        path: '/configuracoes/produtos/materiais',
+        review: 'new',
+        permission: 'product_settings:products:view',
+        requiredFeature: 'cost_base',
+      },
+      {
+        icon: IconListCheck,
+        title: 'Processos',
+        path: '/configuracoes/produtos/processos',
+        review: 'new',
+        permission: 'product_settings:products:view',
+        requiredFeature: 'cost_base',
+      },
+      {
+        icon: IconBoxSeam,
+        title: 'Produtos',
+        path: '/configuracoes/produtos',
+        permission: 'product_settings:products:view',
+      },
       /* {
         icon: IconSquareRoundedPlusFilled,
         title: 'Novo cliente',
         path: '#',
         action: true,
       }, */
+    ],
+  },
+  {
+    icon: IconBoxSeam,
+    title: 'Estoque',
+    path: '/estoque',
+    permission: 'stock:stock:view',
+    requiredFeature: 'stock_control',
+    children: [
+      {
+        icon: IconBoxSeam,
+        title: 'Saldo do estoque',
+        path: '/estoque',
+        permission: 'stock:stock:view',
+        requiredFeature: 'stock_control',
+        review: 'new',
+      },
+      {
+        icon: IconFileInvoice,
+        title: 'Entrada de nota',
+        path: '/estoque/entrada-de-nota',
+        review: 'new',
+        permission: 'stock:invoice_entry:view',
+        requiredFeature: 'invoice_entry',
+      },
     ],
   },
   {
@@ -294,12 +424,6 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requireAllPermissions: false,
       },
       {
-        icon: IconBoxSeam,
-        title: 'Produtos',
-        path: '/configuracoes/produtos',
-        permission: 'product_settings:products:view',
-      },
-      {
         icon: IconCalculator,
         title: 'Financeiro',
         path: '/configuracoes/financeiro',
@@ -315,7 +439,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconReceitaFederal,
-        title: 'Nota Fiscal',
+        title: 'Nota fiscal',
         path: '/configuracoes/nota-fiscal',
         permission: 'nota_fiscal:config:view',
         requiredModule: 'nota_fiscal',
@@ -331,6 +455,14 @@ export const defaultMainNavigation: MainNavigationType[] = [
           'sales_settings:quotation_status:view',
         ],
         requireAllPermissions: false,
+      },
+      {
+        icon: IconListCheck,
+        title: 'Produção',
+        path: '/configuracoes/producao',
+        review: 'new',
+        permission: 'production:production:view',
+        requiredFeature: 'production_manager',
       },
       {
         icon: IconUpload,
@@ -439,7 +571,7 @@ export const adminMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconReceiptTax,
-        title: 'Parâmetros Fiscais',
+        title: 'Parâmetros fiscais',
         path: '/admin/sistema/fiscal',
       },
       {

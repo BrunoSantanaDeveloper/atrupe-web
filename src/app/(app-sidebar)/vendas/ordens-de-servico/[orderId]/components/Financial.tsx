@@ -61,9 +61,7 @@ function OrderFinancialContent({
         <CardHeader>
           <div className="flex gap-3 items-center">
             <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
-            <CardTitle className="text-gray-700 font-semibold text-base">
-              Financeiro
-            </CardTitle>
+            <CardTitle>Financeiro</CardTitle>
             <Badge status variant="neutralLight">
               Sem dados financeiros
             </Badge>
@@ -85,9 +83,7 @@ function OrderFinancialContent({
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Financeiro
-                </CardTitle>
+                <CardTitle>Financeiro</CardTitle>
                 {financialData?.status && (
                   <Badge
                     status

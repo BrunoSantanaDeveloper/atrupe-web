@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 // Icons
@@ -13,7 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 // Component
 import { Logo } from '@/components/Logo'
 
+// Config
+import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/config/routes'
+
 // Actions
+import { auth } from '@/lib/auth'
 import { getPendingPaymentUrl } from '@/actions/subscription'
 import { TryAgainButton } from './components/TryAgainButton'
 
@@ -25,6 +30,13 @@ export const metadata: Metadata = {
 }
 
 export default async function BlockedPage() {
+  const session = await auth()
+
+  // Só o middleware envia para cá, e apenas com bloqueio total (EC-6)
+  if (session?.company?.blockLevel !== 'FULL') {
+    redirect(session?.user?.isSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE)
+  }
+
   // Get dynamic payment URL
   const { paymentUrl } = await getPendingPaymentUrl()
 
@@ -49,9 +61,7 @@ export default async function BlockedPage() {
                   rounded
                 />
               </div>
-              <CardTitle className="text-lg font-semibold text-gray-700">
-                Conta Suspensa
-              </CardTitle>
+              <CardTitle>Conta Suspensa</CardTitle>
             </CardHeader>
             <CardContent className="p-0 space-y-6">
               <p className="text-gray-600 text-center text-sm">

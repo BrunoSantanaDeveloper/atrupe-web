@@ -18,7 +18,7 @@ const statusTagWrapperVariants = cva(
 )
 
 const statusTabVariants = cva(
-  'flex justify-center items-center font-bold text-white tracking-wide z-10 relative left-[-2px] top-[2px]',
+  'flex justify-center items-center font-semibold text-white tracking-wide z-10 relative left-[-2px] top-[2px]',
   {
     variants: {
       variant: {
@@ -32,7 +32,7 @@ const statusTabVariants = cva(
         complete: 'bg-[#7AC31C]',
       },
       size: {
-        sm: 'px-2 py-0.5 text-[10px] rounded-t-md',
+        sm: 'px-2 py-0.5 text-xs rounded-t-md',
         md: 'px-3 py-1 text-xs rounded-t-lg',
         lg: 'px-4 py-1.5 text-sm rounded-t-xl',
       },
@@ -73,14 +73,14 @@ const statusIconWrapperVariants = cva(
   {
     variants: {
       variant: {
-        draft: 'bg-[#E5E8F0] text-[#9098A6]',
-        approval: 'bg-[#FFEADE] text-[#FF7426]',
-        inProgress: 'bg-[#DEE1FF] text-[#5869FF]',
-        inReview: 'bg-[#E7DEFF] text-[#8358FE]',
-        rejected: 'bg-[#FDF5E0] text-[#F2B720]',
-        readyForDev: 'bg-[#FFDEEE] text-[#FF007A]',
-        blocked: 'bg-[#FFDEDE] text-[#F43535]',
-        complete: 'bg-[#F1FFDE] text-[#7AC41C]',
+        draft: 'bg-[#E5E8F0] text-[#9098A6] dark:bg-[#9098A6]/20',
+        approval: 'bg-[#FFEADE] text-[#FF7426] dark:bg-[#FF7426]/20',
+        inProgress: 'bg-[#DEE1FF] text-[#5869FF] dark:bg-[#5869FF]/20',
+        inReview: 'bg-[#E7DEFF] text-[#8358FE] dark:bg-[#8358FE]/20',
+        rejected: 'bg-[#FDF5E0] text-[#F2B720] dark:bg-[#F2B720]/20',
+        readyForDev: 'bg-[#FFDEEE] text-[#FF007A] dark:bg-[#FF007A]/20',
+        blocked: 'bg-[#FFDEDE] text-[#F43535] dark:bg-[#F43535]/20',
+        complete: 'bg-[#F1FFDE] text-[#7AC41C] dark:bg-[#7AC41C]/20',
       },
       size: {
         sm: 'w-6 h-6 rounded',

@@ -25,7 +25,7 @@ export default function Error({ error, reset }: ErrorProps) {
           variant="warningBorderedLight"
           rounded
         />
-        <h2 className="text-2xl font-semibold">Algo deu errado!</h2>
+        <h2 className="type-section-title">Algo deu errado!</h2>
         <div className="flex gap-5">
           <Button
             type="button"

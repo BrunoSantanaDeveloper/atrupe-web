@@ -172,7 +172,7 @@ export function InutilizarNfceDialog({
               id="justificativa-inutilizacao"
               value={justificativa}
               onChange={(e) => setJustificativa(e.target.value)}
-              placeholder="Ex: Falha de transmissao na emissao dos numeros"
+              placeholder="Ex: Falha de transmissão na emissão dos numeros"
             />
             <p className="text-xs text-muted-foreground">
               Mínimo de 15 caracteres, exigido pela SEFAZ.

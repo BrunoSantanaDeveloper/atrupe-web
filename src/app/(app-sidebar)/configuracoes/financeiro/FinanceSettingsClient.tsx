@@ -30,21 +30,22 @@ export function FinanceSettingsClient() {
       category: 'Financeiro',
       items: [
         {
-          title: 'Configuração de Bancos e Contas',
+          title: 'Bancos e contas',
           icon: IconBuildingBank,
           description: 'Cadastre as contas bancárias da sua empresa',
           link: `${defaultPath}/contas-bancarias`,
           permission: 'financial_settings:bank_accounts:view',
+          review: 'todo',
         },
         {
-          title: 'Configuração de Pagamentos',
+          title: 'Pagamentos',
           icon: IconCreditCardPay,
           description: 'Cadastre as condições de pagamento da sua empresa',
           link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
           permission: 'financial_settings:payment_methods:view',
         },
         {
-          title: 'Configuração do Plano de Contas',
+          title: 'Plano de contas',
           icon: IconCoins,
           description:
             'Defina a relação de códigos e classificações para registrar as movimentações financeiras da empresa',
@@ -52,7 +53,7 @@ export function FinanceSettingsClient() {
           permission: 'financial_settings:chart_accounts:view',
         },
         {
-          title: 'Cadastro das Despesas Fixas',
+          title: 'Despesas fixas',
           icon: IconCalendarDollar,
           description:
             'Cadastre as despesas regulares de acordo com a sua recorrência',
@@ -66,7 +67,7 @@ export function FinanceSettingsClient() {
         ...(hasFinancialModule('credit_limit')
           ? [
               {
-                title: 'Configuração do Limite de Crédito',
+                title: 'Limite de crédito',
                 icon: IconFoldUp,
                 description:
                   'Defina o padrão de limite de crédito para os clientes',
@@ -76,12 +77,17 @@ export function FinanceSettingsClient() {
             ]
           : []),
         {
-          title: 'Configuração da Folha de Pagamento',
+          title: 'Folha de pagamento',
           icon: IconFileDollar,
           description: 'Gerencie os custos por colaborador',
           link: `${defaultPath}/folhas-de-pagamento`,
           permission: ['financial_settings:payroll:view', 'values:values:view'],
         },
+        // Base de custos e Precificação saíram daqui em 24/09/2026: elas têm
+        // menu próprio, "Custos e preços". Não são configuração — é onde a
+        // empresa descobre quanto custa e decide por quanto vende, trabalho
+        // de uso frequente. Mantê-las nos dois lugares dividia a entrada e
+        // sugeria que fossem ajuste de sistema
       ],
     },
   ]

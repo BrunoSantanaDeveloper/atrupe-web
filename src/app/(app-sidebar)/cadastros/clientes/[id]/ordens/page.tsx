@@ -1,9 +1,9 @@
 import { OrdersData } from '@/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersData'
-import { Loader2 } from 'lucide-react'
 import { Suspense } from 'react'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
+import { IconLoader2 } from '@tabler/icons-react'
 
 interface Props {
   params: {
@@ -31,7 +31,9 @@ export default function ClientOrdersPage({ params }: Props) {
         }
       >
         <div className="rounded-lg my-6 bg-white overflow-hidden">
-          <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
+          <Suspense
+            fallback={<IconLoader2 className="size-16 animate-spin p-8" />}
+          >
             <OrdersData
               searchParams={{ clientId: params.id }}
               searchDescription="Nenhuma ordem de serviço encontrada para esse cliente"

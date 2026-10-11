@@ -26,7 +26,7 @@ import {
   IconDotsVertical,
   IconFileCheck,
   IconDownload,
-  IconEdit,
+  IconPencil,
   IconArrowBackUp,
   IconPlus,
   IconBan,
@@ -302,7 +302,7 @@ export function NfeActionsDropdown({
                         cceDisabled ? 'opacity-50 cursor-not-allowed' : ''
                       }
                     >
-                      <IconEdit className="mr-2 h-4 w-4" />
+                      <IconPencil className="mr-2 h-4 w-4" />
                       <span>Carta de Correção</span>
                     </DropdownMenuItem>
                   </div>
@@ -350,7 +350,7 @@ export function NfeActionsDropdown({
                 )
               }
             >
-              <IconEdit className="mr-2 h-4 w-4 text-warning-600" />
+              <IconPencil className="mr-2 h-4 w-4 text-warning-600" />
               <span className="text-warning-600">Corrigir e Reemitir</span>
             </DropdownMenuItem>
           )}

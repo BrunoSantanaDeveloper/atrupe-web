@@ -122,7 +122,7 @@ export function EmitNfseButton({ orderId, orderStatus, tooltip }: Props) {
 
       if (result.data.status === 'AUTHORIZED') {
         toast.success(
-          `NFS-e ${result.data.numero}/${result.data.serie} emitida com sucesso!`,
+          `NFS-e ${result.data.numero}/${result.data.serie} emitida`,
         )
         queryClient.invalidateQueries({ queryKey: ['order-list'] })
         queryClient.invalidateQueries({ queryKey: ['order', orderId] })

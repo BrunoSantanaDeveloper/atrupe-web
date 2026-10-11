@@ -22,6 +22,10 @@ import { HelpButton } from './HelpButton'
 // Hooks
 import { useHelpData } from '@/hooks/queries/useHelpData'
 
+// Revisão (temporário)
+import { reviewTextClass } from '@/consts/revisao'
+import type { ReviewMarkKind } from '@/consts/revisao'
+
 export type TabNavType = {
   value: string
   tab: string
@@ -41,6 +45,9 @@ interface Props {
   badge?: BadgeType
   supportText?: string
   classNames?: { title?: string; label?: string }
+  // Marcação temporária da revisão: 'new' pinta o título de azul,
+  // 'todo' de vermelho. Sai junto com src/consts/revisao.ts
+  review?: ReviewMarkKind
 }
 
 export function Topbar({
@@ -55,6 +62,7 @@ export function Topbar({
   badge,
   supportText,
   classNames,
+  review,
 }: Props) {
   const { helpData } = useHelpData()
   const hasHelpContent =
@@ -64,45 +72,50 @@ export function Topbar({
     <div className="space-y-3">
       <div
         className={cn(
-          'flex flex-wrap justify-between gap-2 rounded-lg min-h-11',
+          'flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg min-h-12',
           label && 'bg-brand-200 px-6',
           classNames?.label,
         )}
       >
-        <div className="flex justify-center items-center gap-2">
-          <div className="flex justify-center items-center gap-1">
-            {previousPage ? (
-              <Button
-                asChild
-                type="button"
-                size="icon"
-                variant="neutralLight"
-                className="bg-transparent"
-              >
-                <Link href={previousPage}>
-                  <IconArrowLeft />
-                </Link>
-              </Button>
-            ) : null}
-            {title ? (
-              <h1
-                className={cn(
-                  'text-gray-800 font-semibold text-lg',
-                  classNames?.title,
-                )}
-              >
-                {title}
-              </h1>
-            ) : (
-              <Skeleton className="h-5 w-48 bg-gray-300" />
-            )}
-          </div>
-          <h3 className="text-gray font-medium text-lg">{supportText}</h3>
-          {badge ? (
-            <Badge status variant={badge.variant || 'default'}>
-              {badge.text || '-'}
-            </Badge>
+        <div className="flex min-w-0 items-center gap-2">
+          {previousPage ? (
+            <Button
+              asChild
+              type="button"
+              size="icon"
+              variant="neutralLight"
+              className="bg-transparent"
+            >
+              <Link href={previousPage} aria-label="Voltar">
+                <IconArrowLeft />
+              </Link>
+            </Button>
           ) : null}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              {title ? (
+                <h1
+                  className={cn(
+                    'type-page-title',
+                    classNames?.title,
+                    reviewTextClass(review),
+                  )}
+                >
+                  {title}
+                </h1>
+              ) : (
+                <Skeleton className="h-8 w-56 bg-gray-300" />
+              )}
+              {badge ? (
+                <Badge status variant={badge.variant || 'default'}>
+                  {badge.text || '-'}
+                </Badge>
+              ) : null}
+            </div>
+            {supportText ? (
+              <p className="type-page-subtitle truncate">{supportText}</p>
+            ) : null}
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {label ? (
@@ -114,7 +127,7 @@ export function Topbar({
         </div>
       </div>
       {tabs?.length ? (
-        <Tabs value={activeTab} className="overflow-x-auto">
+        <Tabs value={activeTab} variant="pill" className="overflow-x-auto">
           <TabsList>
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.tab} asChild>
@@ -123,7 +136,7 @@ export function Topbar({
                   {tab?.count && tab?.count > 0 ? (
                     <Badge
                       variant={activeTab === tab.tab ? 'light' : 'neutralLight'}
-                      className="ml-2"
+                      className="ml-2 font-semibold"
                     >
                       {tab.count}
                     </Badge>

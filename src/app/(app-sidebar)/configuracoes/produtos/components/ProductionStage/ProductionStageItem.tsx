@@ -18,7 +18,7 @@ interface IStageItemProps {
   onInactive: (index: number) => void
 }
 const tableRowStyle =
-  'border-b transition-colors hover:bg-gray-100/50 data-[state=selected]:bg-gray-100 dark:hover:bg-gray-800/50 dark:data-[state=selected]:bg-gray-800'
+  'border-b transition-colors hover:bg-gray-100/50 data-[state=selected]:bg-gray-100'
 
 export function ProductionStageItem({
   stage,

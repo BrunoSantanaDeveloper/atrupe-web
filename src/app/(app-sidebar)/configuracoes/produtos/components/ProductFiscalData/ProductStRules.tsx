@@ -207,7 +207,7 @@ export function ProductStRules({ productId }: { productId: string }) {
     <div className="space-y-4 border-t pt-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h3 className="font-medium">Substituição tributária por UF</h3>
+          <h3 className="type-card-title">Substituição tributária por UF</h3>
           <p className="text-xs text-muted-foreground mt-1">
             A MVA vem de protocolo entre estados e muda conforme o destino. Sem
             regra para a UF, valem os campos de ST acima como padrão.

@@ -42,9 +42,7 @@ export function Step5() {
           <IconReceipt className="h-7 w-7 text-brand-600" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-gray-900">
-            Módulo Fiscal não contratado
-          </h3>
+          <h3 className="type-card-title">Módulo Fiscal não contratado</h3>
           <p className="text-sm text-gray-500 max-w-xs mx-auto">
             Para emitir NF-e, NFS-e e NFC-e, ative o módulo fiscal no seu plano.
           </p>
@@ -66,7 +64,7 @@ export function Step5() {
           <IconClock className="h-7 w-7 text-amber-500" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-gray-900">
+          <h3 className="type-card-title">
             {isPending
               ? 'Configuração em andamento'
               : 'Módulo Fiscal não configurado'}
@@ -106,7 +104,7 @@ export function Step5() {
     <div className="space-y-6">
       {/* Dados fiscais cadastrais */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-3">Dados Fiscais</p>
+        <p className="text-sm font-medium text-gray-700 mb-3">Dados fiscais</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormInput
             name="fiscal.cnae"

@@ -533,7 +533,7 @@ export function StandaloneNfseForm() {
       }
 
       setPreviewOpen(false)
-      toast.success('NFS-e avulsa emitida com sucesso!')
+      toast.success('NFS-e avulsa emitida')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message =
@@ -619,9 +619,7 @@ export function StandaloneNfseForm() {
                 <IconArrowLeft size={20} />
               </Button>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  Nota Fiscal Avulsa — NFS-e
-                </h1>
+                <h1 className="type-page-title">Nota Fiscal Avulsa — NFS-e</h1>
                 {selectedClient && (
                   <span className="text-xl text-gray-400">
                     {selectedClient.name}

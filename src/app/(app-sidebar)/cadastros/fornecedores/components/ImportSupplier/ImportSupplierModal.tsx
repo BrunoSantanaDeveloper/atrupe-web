@@ -183,7 +183,7 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
     }
 
     toast.success(
-      `${processResult.data.successRows} fornecedor(es) importado(s) com sucesso!`,
+      `${processResult.data.successRows} fornecedor(es) importado(s)`,
     )
 
     await queryClient.invalidateQueries({ queryKey: ['suppliers'] })

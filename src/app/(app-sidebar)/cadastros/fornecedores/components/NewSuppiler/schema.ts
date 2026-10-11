@@ -4,7 +4,7 @@ export const newSupplierSchema = z.object({
   type: z.enum(['PERSON', 'COMPANY']),
   general: z.object({
     name: z.string().min(1, 'Nome é obrigatório'),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    email: z.string().email('E-mail inválido').optional().or(z.literal('')),
     cpf: z.string().optional(),
     rg: z.string().optional(),
     cnpj: z.string().optional(),
@@ -33,7 +33,7 @@ export const newSupplierSchema = z.object({
   responsibilities: z.array(
     z.object({
       name: z.string(),
-      email: z.string().email('Email inválido').optional().or(z.literal('')),
+      email: z.string().email('E-mail inválido').optional().or(z.literal('')),
       phone: z.string().optional(),
       mobile: z.string(),
       notes: z.string().optional(),

@@ -58,26 +58,26 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
     {
       label: 'Aguardando resposta',
       value: formatValue(data?.noResponseTotal || 0),
-      detail: `${data?.noResponseCount || 0} orcamentos`,
+      detail: `${data?.noResponseCount || 0} orçamentos`,
       icon: IconClockCheck,
       variant: 'warningLight',
     },
     {
-      label: 'Nao aprovadas',
+      label: 'Não aprovadas',
       value: formatValue(lostTotal),
       detail: `${lostCount} registros`,
       icon: IconCircleX,
       variant: 'errorLight',
     },
     {
-      label: 'Ticket medio',
+      label: 'Ticket médio',
       value: formatValue(data?.averageTicket || 0),
-      detail: `Aprovacao media ${data?.approvalTime || '0d 0h'}`,
+      detail: `Aprovação média ${data?.approvalTime || '0d 0h'}`,
       icon: IconCoin,
       variant: 'neutralLight',
     },
     {
-      label: 'Comissao estimada',
+      label: 'Comissão estimada',
       value: formatValue(data?.commission || 0),
       detail: 'Sobre vendas aprovadas',
       icon: IconReceiptDollar,
@@ -88,9 +88,7 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Resumo de vendas
-        </CardTitle>
+        <CardTitle>Resumo de vendas</CardTitle>
         <PermissionGate
           requireAll
           permissions={['reports:sales:view', 'values:values:view']}
@@ -99,7 +97,7 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
             <Link
               href={`/relatorios/vendas?startDate=${filters.startDate}&endDate=${filters.endDate}`}
             >
-              Ver relatorio
+              Ver relatório
             </Link>
           </Button>
         </PermissionGate>
@@ -125,10 +123,8 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
                     Icon={card.icon}
                   />
                   <div className="min-w-0">
-                    <p className="text-xs text-gray truncate">{card.label}</p>
-                    <p className="text-lg font-semibold text-gray-900 truncate">
-                      {card.value}
-                    </p>
+                    <p className="type-kpi-label truncate">{card.label}</p>
+                    <p className="type-kpi-value truncate">{card.value}</p>
                     <p className="text-xs text-gray truncate">{card.detail}</p>
                   </div>
                 </div>

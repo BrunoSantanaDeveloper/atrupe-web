@@ -14,14 +14,14 @@ const Progress = React.forwardRef<
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
-      'relative h-2 w-full overflow-hidden rounded-full bg-[#f2f4f7]',
+      'relative h-2 w-full overflow-hidden rounded-full bg-gray-100',
       className,
     )}
     {...props}
   >
     <ProgressPrimitive.Indicator
       className={cn(
-        'h-full w-full flex-1 bg-[#099260] transition-all',
+        'h-full w-full flex-1 bg-brand-500 transition-all',
         indicatorClassName,
       )}
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
@@ -78,7 +78,7 @@ const ProgressBar = React.forwardRef<
               }}
             >
               <div className="flex flex-col items-start justify-start relative px-3 py-2 rounded-lg bg-white">
-                <p className="text-xs font-semibold text-center text-[#344054]">
+                <p className="text-xs font-semibold text-center text-gray-700">
                   {label || `${value}%`}
                 </p>
               </div>
@@ -100,7 +100,7 @@ const ProgressBar = React.forwardRef<
           )}
         </div>
         {labelRight && (
-          <p className="flex-grow-0 flex-shrink-0 text-sm font-medium text-left text-[#344054]">
+          <p className="flex-grow-0 flex-shrink-0 text-sm font-medium text-left text-gray-700">
             {label || `${value}%`}
           </p>
         )}

@@ -148,7 +148,7 @@ export function PayrollFilter({
         selectedIds.length > 1
           ? `Deseja lançar as ${selectedIds.length} folhas de pagamento selecionadas?`
           : 'Deseja lançar a folha de pagamento selecionada?',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmLabel: 'Lançar',
       toastMsg: undefined,
       onConfirm: async () => {
@@ -193,6 +193,7 @@ export function PayrollFilter({
       <div className="flex items-end w-full sm:w-auto">
         <PermissionGate permissions={['financial:payroll:edit']}>
           <Button
+            variant="neutralOutline"
             LeftIcon={IconPlus}
             onClick={handlePostSelectedPayroll}
             disabled={selectedIds.length === 0}

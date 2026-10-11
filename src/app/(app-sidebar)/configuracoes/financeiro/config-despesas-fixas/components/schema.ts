@@ -31,7 +31,7 @@ export const newFixedExpensesSchema = z.object({
     .number({ required_error: 'Campo obrigatório' })
     .min(1, { message: 'Deve ser entre 1 e 31' })
     .max(31, { message: 'Deve ser entre 1 e 31' }),
-  amount: z.number().min(1, 'Digite um valor'),
+  amount: z.number().positive('Digite um valor'),
 })
 
 export type FixedExpensesFormType = z.infer<typeof newFixedExpensesSchema>

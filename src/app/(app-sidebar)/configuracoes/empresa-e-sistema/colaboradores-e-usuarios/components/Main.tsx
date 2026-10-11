@@ -146,7 +146,7 @@ export function Main({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconUserShield}
-                title="Sem colaboradores cadastrados"
+                title="Nenhum colaborador cadastrado"
                 description="Cadastre seu primeiro colaborador"
                 cta={
                   <PermissionGate

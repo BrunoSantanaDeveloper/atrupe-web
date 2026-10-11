@@ -137,9 +137,7 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
             <>
               {(companyInfo || lastAccess) && (
                 <div className="mb-4 rounded-lg bg-gray-50 p-4">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                    Resumo da Conta
-                  </h3>
+                  <h3 className="type-body-strong mb-2">Resumo da Conta</h3>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     {companyInfo && (
                       <>

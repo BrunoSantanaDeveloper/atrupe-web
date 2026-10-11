@@ -6,7 +6,7 @@ import { FiscalModuleGate } from '../../components/FiscalModuleGate'
 import { IssueConsolidatedInvoiceForm } from './components/IssueConsolidatedInvoiceForm'
 
 export const metadata: Metadata = {
-  title: 'Emissao consolidada de NF-e',
+  title: 'Emissão consolidada de NF-e',
   description: 'Emissao de Nota Fiscal Eletronica consolidada',
 }
 

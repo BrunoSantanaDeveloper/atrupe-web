@@ -7,7 +7,7 @@ export const newClientSchema = z
     general: z.object({
       name: z.string().min(1, 'Nome é obrigatório'),
       corporateName: z.string().optional(),
-      email: z.string().email('Email inválido').optional().or(z.literal('')),
+      email: z.string().email('E-mail inválido').optional().or(z.literal('')),
       cpf: z.string().optional(),
       rg: z.string().optional(),
       cnpj: z.string().optional(),
@@ -38,7 +38,7 @@ export const newClientSchema = z
       z.object({
         name: z.string(),
         sector: z.string().optional(),
-        email: z.string().email('Email inválido').optional().or(z.literal('')),
+        email: z.string().email('E-mail inválido').optional().or(z.literal('')),
         phone: z.string().optional(),
         mobile: z.string(),
         notes: z.string().optional(),

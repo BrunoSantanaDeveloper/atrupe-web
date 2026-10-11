@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ArrowLeft, ArrowRight, MoreHorizontal } from 'lucide-react'
+import { IconArrowLeft, IconArrowRight, IconDots } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 import { ButtonProps, buttonVariants } from '@/components/ui/button'
@@ -51,7 +51,7 @@ const PaginationLink = ({
   rounded,
   ...props
 }: PaginationLinkProps) => {
-  let defaultVariant: any = variant || 'neutralLight'
+  let defaultVariant: ButtonProps['variant'] = variant || 'neutralLight'
 
   if (isActive && !variant) {
     if (activeVariant === 'brand') defaultVariant = 'light'
@@ -95,7 +95,7 @@ const PaginationPrevious = ({
     className={cn(size === 'icon' ? '' : 'gap-1 pl-2.5', className)}
     {...props}
   >
-    <ArrowLeft className="h-4 w-4" />
+    <IconArrowLeft className="h-5 w-5" />
     {size !== 'icon' && <span>Anterior</span>}
   </PaginationLink>
 )
@@ -115,7 +115,7 @@ const PaginationNext = ({
     {...props}
   >
     {size !== 'icon' && <span>Próximo</span>}
-    <ArrowRight className="h-4 w-4" />
+    <IconArrowRight className="h-5 w-5" />
   </PaginationLink>
 )
 PaginationNext.displayName = 'PaginationNext'
@@ -126,10 +126,10 @@ const PaginationEllipsis = ({
 }: React.ComponentProps<'span'>) => (
   <span
     aria-hidden
-    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    className={cn('flex h-10 w-10 items-center justify-center', className)}
     {...props}
   >
-    <MoreHorizontal className="h-4 w-4" />
+    <IconDots className="h-4 w-4" />
     <span className="sr-only">Mais páginas</span>
   </span>
 )

@@ -20,7 +20,7 @@ import { schema, type FormType } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icon Imports
-import { IconNotes, IconCircleCheck } from '@tabler/icons-react'
+import { IconMessage, IconCircleCheck } from '@tabler/icons-react'
 import { useEffect } from 'react'
 
 // Third-party
@@ -66,7 +66,7 @@ export function DeliveryScheduleNotesDialog({ open, rowData, setOpen }: Props) {
 
   const onSubmit = async (data: FormType) => {
     await mutation.mutateAsync(data).then(() => {
-      toast.success('Observações salvas!')
+      toast.success('Observações salvas')
       setOpen('')
     })
   }
@@ -80,7 +80,7 @@ export function DeliveryScheduleNotesDialog({ open, rowData, setOpen }: Props) {
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconNotes} />
+            <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
             <DialogTitle>Observação</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

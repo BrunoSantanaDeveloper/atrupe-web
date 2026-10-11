@@ -75,6 +75,48 @@ export const permissionsData = [
     ],
   },
   {
+    section: 'Custos e precificação',
+    key: 'cost',
+    items: [
+      {
+        name: 'Base de custos',
+        key: 'base',
+      },
+      {
+        name: 'Precificação',
+        key: 'pricing',
+      },
+    ],
+  },
+  {
+    section: 'Produção',
+    key: 'production',
+    items: [
+      {
+        name: 'Gerenciador de produção',
+        key: 'production',
+      },
+      {
+        name: 'Agenda de entrega',
+        key: 'delivery_schedule',
+      },
+    ],
+  },
+  {
+    section: 'Estoque',
+    key: 'stock',
+    items: [
+      {
+        name: 'Estoque',
+        key: 'stock',
+      },
+      {
+        name: 'Entrada de nota',
+        key: 'invoice_entry',
+      },
+    ],
+  },
+  {
     section: 'Relatorios',
     key: 'reports',
     items: [
@@ -117,16 +159,6 @@ export const permissionsData = [
       {
         name: 'Limite de crédito do cliente',
         key: 'credit_limit',
-      },
-    ],
-  },
-  {
-    section: 'Produção',
-    key: 'production',
-    items: [
-      {
-        name: 'Agenda de entrega',
-        key: 'delivery_schedule',
       },
     ],
   },

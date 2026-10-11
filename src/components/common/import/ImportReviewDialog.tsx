@@ -92,7 +92,7 @@ export function ImportReviewDialog({
 
               {groups.map((group) => (
                 <div key={group.type} className="mt-4">
-                  <p className="text-xs font-semibold uppercase text-gray-500 mb-2">
+                  <p className="type-eyebrow mb-2">
                     {group.label} ({group.items.length})
                   </p>
                   <ul className="bg-white border border-gray-200 rounded-md divide-y divide-gray-200">

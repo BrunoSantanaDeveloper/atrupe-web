@@ -2,6 +2,10 @@
 
 // Components
 import { CompanyInfo } from '../components/CompanyInfo'
+
+// Hooks / Consts
+import { FEATURES } from '@/consts/features'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { CompanySettingsList } from '../../components/CompanySettingsList'
 
 // Types
@@ -14,14 +18,14 @@ import {
   IconFileDollar,
   IconUserShield,
   IconSettingsCog,
+  IconBuildingWarehouse,
 } from '@tabler/icons-react'
 import { MeasureDefaultsDialog } from '../padrao-de-medida/components/MeasureDefaultsDialog'
-import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 const defaultPath = 'empresa-e-sistema'
 
 export function CompanySettingsClient() {
-  const { canManageSectors } = usePlanFeatures()
+  const { canManageSectors, hasFeature } = usePlanFeatures()
 
   const settings: CompanySettingsType[] = [
     {
@@ -71,6 +75,19 @@ export function CompanySettingsClient() {
           link: `${defaultPath}/colaboradores-e-usuarios`,
           permission: 'company_settings:users:view',
         },
+        // Recurso do PRO: aparece só quando o plano tiver a chave
+        ...(hasFeature(FEATURES.COSTS.COST_BASE)
+          ? [
+              {
+                title: 'Patrimônios',
+                icon: IconBuildingWarehouse,
+                description:
+                  'Cadastre máquinas, equipamentos, móveis e veículos, com depreciação e custo por unidade',
+                link: `${defaultPath}/patrimonios`,
+                permission: ['cost:base:view', 'values:values:view'],
+              },
+            ]
+          : []),
       ],
     },
   ]

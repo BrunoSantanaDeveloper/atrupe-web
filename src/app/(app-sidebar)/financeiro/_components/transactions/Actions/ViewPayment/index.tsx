@@ -30,7 +30,7 @@ import type {
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
 
 // Utils
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatDateOnly } from '@/lib/formatDate'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -104,9 +104,7 @@ export function ViewPaymentDialog({
             />
             <TextSupportingText
               supporting={`Data de ${typeText}`}
-              text={formatToLocaleDate(
-                rowData?.paymentDate || rowData?.paidDate,
-              )}
+              text={formatDateOnly(rowData?.paymentDate || rowData?.paidDate)}
             />
           </DetailCardRowItem>
           <DetailCardRowItem
@@ -115,7 +113,7 @@ export function ViewPaymentDialog({
           >
             <TextSupportingText
               supporting="Data de compensação"
-              text={formatToLocaleDate(
+              text={formatDateOnly(
                 rowData?.compensateDate || rowData?.paidDate,
               )}
             />

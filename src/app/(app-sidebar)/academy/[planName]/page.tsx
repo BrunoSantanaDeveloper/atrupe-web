@@ -100,9 +100,7 @@ export default function AcademyPage() {
               size="xl"
               className="mb-4"
             />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Erro ao carregar Academy
-            </h3>
+            <h3 className="type-card-title mb-2">Erro ao carregar Academy</h3>
             <p className="text-gray-600 mb-4">
               {academyResponse?.message || error?.message}
             </p>
@@ -129,7 +127,7 @@ export default function AcademyPage() {
               size="xl"
               className="mb-4"
             />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            <h3 className="type-card-title mb-2">
               Academy{' '}
               {currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}
             </h3>
@@ -229,9 +227,7 @@ export default function AcademyPage() {
                       ) : (
                         <IconCircleFilled className="text-gray-200" />
                       )}
-                      <CardTitle className="text-gray-700 font-semibold text-base">
-                        {section.title}
-                      </CardTitle>
+                      <CardTitle>{section.title}</CardTitle>
                       <span className="text-xs text-gray-400 ml-2">
                         {section.items.filter((i) => i.checked).length}/
                         {section.items.length}

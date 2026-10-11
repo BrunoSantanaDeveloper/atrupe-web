@@ -62,7 +62,7 @@ const PaginationDots = React.forwardRef<HTMLDivElement, PaginationDotsProps>(
 
     const wrapperClasses = {
       none: '',
-      successDark: 'p-2 rounded-xl bg-[#085d40] shadow-sm',
+      successDark: 'p-2 rounded-xl bg-brand-700 shadow-sm',
       successLight: 'p-2 rounded-xl bg-success-50 shadow-sm',
       glassDark: 'p-2 rounded-xl bg-black/90 backdrop-blur shadow-sm',
       glassLight:
@@ -71,7 +71,7 @@ const PaginationDots = React.forwardRef<HTMLDivElement, PaginationDotsProps>(
 
     const wrapperClassMd = {
       none: '',
-      successDark: 'p-3 rounded-[17px] bg-[#085d40] shadow-sm',
+      successDark: 'p-3 rounded-[17px] bg-brand-700 shadow-sm',
       successLight: 'p-3 rounded-[17px] bg-success-50 shadow-sm',
       glassDark: 'p-3 rounded-[17px] bg-black/90 backdrop-blur shadow-sm',
       glassLight:

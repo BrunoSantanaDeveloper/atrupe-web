@@ -3,8 +3,19 @@
 import * as XLSX from 'xlsx'
 import type { CommissionPdfData } from '../../pdf-types'
 import { formatCurrencyToBrl } from '@/lib/utils'
+import {
+  commissionOf,
+  commissionModeCopy,
+  type CommissionMode,
+} from '../../mode'
 
-export function generateCommissionExcel(data: CommissionPdfData) {
+export function generateCommissionExcel(
+  data: CommissionPdfData,
+  mode: CommissionMode,
+) {
+  const groupCommission = (group: CommissionPdfData['groups'][0]) =>
+    group.records.reduce((sum, r) => sum + commissionOf(r, mode), 0)
+
   const rows: (string | number)[][] = []
 
   // Header row
@@ -16,6 +27,7 @@ export function generateCommissionExcel(data: CommissionPdfData) {
     'Venda',
     'Recebimento',
     '%',
+    `Comissão (${commissionModeCopy[mode].label.toLowerCase()})`,
   ])
 
   data.groups.forEach((group) => {
@@ -28,6 +40,7 @@ export function generateCommissionExcel(data: CommissionPdfData) {
       group.saleTotal,
       group.receivedTotal,
       '',
+      groupCommission(group),
     ])
 
     // Group records
@@ -40,6 +53,7 @@ export function generateCommissionExcel(data: CommissionPdfData) {
         record.saleValue,
         record.receivedValue,
         record.percentage,
+        commissionOf(record, mode),
       ])
     })
   })
@@ -53,6 +67,7 @@ export function generateCommissionExcel(data: CommissionPdfData) {
     data.totalSaleValue,
     data.totalReceivedValue,
     '',
+    data.groups.reduce((sum, group) => sum + groupCommission(group), 0),
   ])
 
   const ws = XLSX.utils.aoa_to_sheet(rows)
@@ -66,6 +81,7 @@ export function generateCommissionExcel(data: CommissionPdfData) {
     { wch: 18 }, // Venda
     { wch: 18 }, // Recebimento
     { wch: 10 }, // %
+    { wch: 18 }, // Comissão
   ]
 
   // Format value columns as currency and percentage column
@@ -82,6 +98,12 @@ export function generateCommissionExcel(data: CommissionPdfData) {
     if (receivedCell && typeof receivedCell.v === 'number') {
       receivedCell.t = 's'
       receivedCell.v = formatCurrencyToBrl(receivedCell.v as number)
+    }
+    // Comissão column (index 7)
+    const commissionCell = ws[XLSX.utils.encode_cell({ r, c: 7 })]
+    if (commissionCell && typeof commissionCell.v === 'number') {
+      commissionCell.t = 's'
+      commissionCell.v = formatCurrencyToBrl(commissionCell.v as number)
     }
     // % column (index 6)
     const pctCell = ws[XLSX.utils.encode_cell({ r, c: 6 })]

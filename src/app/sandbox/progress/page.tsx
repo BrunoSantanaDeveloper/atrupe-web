@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progress, ProgressBar } from '@/components/ui/progress'
+import { ProgressBar } from '@/components/ui/progress'
 import { ProgressCircle } from '@/components/ui/progress-circle'
 
 export const dynamic = 'force-dynamic'
@@ -50,9 +50,7 @@ export default function ProgressSandbox() {
             <div className="flex gap-8 items-center">
               <ProgressCircle value={40} size={84} strokeWidth={8}>
                 <div className="flex flex-col items-center justify-center">
-                  <span className="text-lg font-medium text-[#101828]">
-                    40%
-                  </span>
+                  <span className="text-lg font-medium text-gray-900">40%</span>
                   <span className="text-[10px] text-gray-500">Usuários</span>
                 </div>
               </ProgressCircle>
@@ -62,7 +60,7 @@ export default function ProgressSandbox() {
                   <span className="text-xs text-gray-500 font-medium mb-1">
                     Usuários ativos
                   </span>
-                  <span className="text-2xl font-medium text-[#101828]">
+                  <span className="text-2xl font-medium text-gray-900">
                     40%
                   </span>
                 </div>
@@ -73,7 +71,7 @@ export default function ProgressSandbox() {
                   <span className="text-sm text-gray-500 font-medium mb-1">
                     Usuários ativos
                   </span>
-                  <span className="text-4xl font-medium text-[#101828]">
+                  <span className="text-4xl font-medium text-gray-900">
                     40%
                   </span>
                 </div>
@@ -98,7 +96,7 @@ export default function ProgressSandbox() {
                   <span className="text-xs text-gray-500 font-medium">
                     Usuários ativos
                   </span>
-                  <span className="text-2xl font-medium text-[#101828]">
+                  <span className="text-2xl font-medium text-gray-900">
                     40%
                   </span>
                 </div>
@@ -114,7 +112,7 @@ export default function ProgressSandbox() {
                   <span className="text-sm text-gray-500 font-medium mb-1">
                     Usuários ativos
                   </span>
-                  <span className="text-4xl font-medium text-[#101828]">
+                  <span className="text-4xl font-medium text-gray-900">
                     40%
                   </span>
                 </div>
@@ -127,7 +125,7 @@ export default function ProgressSandbox() {
                 strokeWidth={28}
               >
                 <div className="flex flex-col items-center justify-center translate-y-5">
-                  <span className="text-5xl font-medium text-[#101828]">
+                  <span className="text-5xl font-medium text-gray-900">
                     40%
                   </span>
                 </div>

@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Calendar as CalendarIcon } from 'lucide-react'
+import { IconCalendarMonth as CalendarIcon } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 import { Calendar, CalendarProps } from '@/components/ui/calendar'
@@ -42,7 +42,7 @@ export function DatePicker({
       )}
     >
       {label && (
-        <label className="text-sm font-medium text-left text-[#344054]">
+        <label className="text-sm font-medium text-left text-gray-700">
           {label}
         </label>
       )}
@@ -52,22 +52,22 @@ export function DatePicker({
           <button
             type="button"
             className={cn(
-              'flex justify-between items-center w-full h-11 px-3.5 py-2.5 gap-2',
+              'flex justify-between items-center w-full h-10 px-3.5 py-2.5 gap-2',
               'rounded-lg border outline-none transition-all duration-200',
               // Normal state
-              'bg-white border-[#d0d5dd] shadow-sm',
-              // Focus ring matching inputs (Figma specifies #38cf8f border and shadow ring)
-              'focus-visible:border-[#38cf8f] focus-visible:ring-4 focus-visible:ring-[#D2F9E3]',
+              'bg-white border-gray-300 shadow-xs',
+              // Foco igual ao input: borda Brand/300 e anel Brand/50 (design.md §3.4)
+              'focus-visible:border-brand-300 focus-visible:ring-4 focus-visible:ring-brand-50',
               // Open State acts like focus if focus is lost but popover is open
-              open && !disabled && 'border-[#38cf8f] ring-4 ring-[#D2F9E3]',
+              open && !disabled && 'border-brand-300 ring-4 ring-brand-50',
               // Text Color formatting
-              value ? 'text-[#101828]' : 'text-[#98a2b3]',
+              value ? 'text-gray-900' : 'text-gray-400',
               // Disabled state overrides
               disabled &&
-                'disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-[#98a2b3]',
+                'disabled:bg-gray-50 disabled:cursor-not-allowed disabled:text-gray-400',
             )}
           >
-            <span className="flex-grow text-base text-left truncate">
+            <span className="flex-grow text-sm text-left truncate">
               {value
                 ? format(value, 'dd/MM/yyyy', { locale: ptBR })
                 : placeholder}
@@ -75,7 +75,7 @@ export function DatePicker({
             <CalendarIcon
               className={cn(
                 'flex-shrink-0 w-5 h-5',
-                disabled ? 'stroke-[#98A2B3]' : 'stroke-[#667085]',
+                disabled ? 'text-gray-400' : 'text-gray',
               )}
             />
           </button>

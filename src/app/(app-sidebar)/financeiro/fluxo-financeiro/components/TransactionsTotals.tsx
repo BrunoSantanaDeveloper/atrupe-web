@@ -116,20 +116,20 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-gray">A receber</p>
-            <p className="text-lG font-medium text-gray-600">
+            <p className="type-kpi-label">A receber</p>
+            <p className="type-kpi-value">
               {formatCurrencyToBrl(receivablesOpen)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray">A pagar</p>
-            <p className="text-lG font-medium text-gray-600">
+            <p className="type-kpi-label">A pagar</p>
+            <p className="type-kpi-value">
               {formatCurrencyToBrl(payablesOpen)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray">Saldo</p>
-            <p className="text-lG font-medium">
+            <p className="type-kpi-label">Saldo</p>
+            <p className="type-kpi-value">
               {formatCurrencyToBrl(receivablesOpen - payablesOpen)}
             </p>
           </div>
@@ -147,20 +147,20 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-gray">Recebido</p>
-            <p className="text-lG font-medium text-gray-600">
+            <p className="type-kpi-label">Recebido</p>
+            <p className="type-kpi-value">
               {formatCurrencyToBrl(totals.receivables.totalPaid)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray">Pago</p>
-            <p className="text-lG font-medium text-gray-600">
+            <p className="type-kpi-label">Pago</p>
+            <p className="type-kpi-value">
               {formatCurrencyToBrl(totals.payables.totalPaid)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray">Saldo</p>
-            <p className="text-lG font-medium">
+            <p className="type-kpi-label">Saldo</p>
+            <p className="type-kpi-value">
               {formatCurrencyToBrl(
                 totals.receivables.totalPaid - totals.payables.totalPaid,
               )}

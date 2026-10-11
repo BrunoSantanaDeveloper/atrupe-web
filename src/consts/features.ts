@@ -37,6 +37,24 @@ export const FEATURES = {
     DELIVERY_STAGE_STATUS_CHANGE: 'delivery_stage_status_change',
   },
 
+  // Custos e precificação (PRO)
+  COSTS: {
+    COST_BASE: 'cost_base',
+    PRICING_CENTER: 'pricing_center',
+  },
+
+  // Produção (ELITE)
+  PRODUCTION: {
+    PRODUCTION_MANAGER: 'production_manager',
+    PRODUCTIVITY_TRACKING: 'productivity_tracking',
+  },
+
+  // Estoque e compras (FULL)
+  STOCK: {
+    STOCK_CONTROL: 'stock_control',
+    INVOICE_ENTRY: 'invoice_entry',
+  },
+
   // Configurações Gerais
   SYSTEM: {
     SECTORS_CONFIGURATION: 'sectors_configuration',
@@ -56,6 +74,9 @@ export type FeatureKey =
   | keyof typeof FEATURES.FINANCIAL
   | keyof typeof FEATURES.SALES
   | keyof typeof FEATURES.PRODUCTS
+  | keyof typeof FEATURES.COSTS
+  | keyof typeof FEATURES.PRODUCTION
+  | keyof typeof FEATURES.STOCK
   | keyof typeof FEATURES.SYSTEM
   | keyof typeof FEATURES.CONTACTS
 
@@ -85,5 +106,11 @@ export const FEATURE_NAMES: Record<string, string> = {
   multiple_companies: 'Mais de uma empresa',
   transaction_cancel_reasons: 'Motivo ao cancelar lançamento',
   can_bill_on_delivery_and_checkout: 'Faturar na entrega e na frente de caixa',
+  cost_base: 'Base de custos',
+  pricing_center: 'Precificação',
+  production_manager: 'Gerenciador de produção',
+  productivity_tracking: 'Produtividade',
+  stock_control: 'Estoque',
+  invoice_entry: 'Entrada de nota',
   // adicionar conforme necessário...
 }

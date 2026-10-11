@@ -143,6 +143,12 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'company_settings.sectors': ['sectors_configuration'],
   'sales_settings.rejection_reasons': ['quotation_rejection_reasons'],
   'sales_settings.quotation_status': ['quotation_status_configuration'],
+  // Telas do PRO, do ELITE e do FULL
+  'cost.base': ['cost_base'],
+  'cost.pricing': ['pricing_center'],
+  'production.production': ['production_manager'],
+  'stock.stock': ['stock_control'],
+  'stock.invoice_entry': ['invoice_entry'],
 }
 
 export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
@@ -235,7 +241,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
         queryKey: ['role-permissions', rowData?.id],
       })
       queryClient.invalidateQueries({ queryKey: ['roles'] })
-      toast.success('Permissões salvas!')
+      toast.success('Permissões salvas')
       handleOpenChange(false)
     },
     onError: () => {

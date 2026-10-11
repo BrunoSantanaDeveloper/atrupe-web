@@ -42,7 +42,10 @@ import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
 import { toast } from 'sonner'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { useQuery } from '@tanstack/react-query'
 import { ordersStatusObj } from '@/consts/orders'
 
@@ -53,7 +56,6 @@ import {
   IconHistory,
   IconFileInvoice,
 } from '@tabler/icons-react'
-import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
 
@@ -108,6 +110,12 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
       }
 
       const pdfData = result.data
+
+      const [{ pdf }, { GeneratePdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+
+        import('@/components/common/PrintQuotation/GeneratePdf'),
+      ])
 
       const blob = await pdf(
         <GeneratePdf

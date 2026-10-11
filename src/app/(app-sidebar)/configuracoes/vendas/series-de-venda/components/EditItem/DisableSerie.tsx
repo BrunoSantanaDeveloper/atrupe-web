@@ -85,7 +85,7 @@ export function DisableSerieAlertDialog(props: Props) {
             <AlertDialogDescription className="sr-only"></AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <Button
               type="button"
               onClick={handleDisable}

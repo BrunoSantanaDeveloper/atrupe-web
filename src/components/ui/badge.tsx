@@ -2,7 +2,6 @@ import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
-import { IconCircleFilled } from '@tabler/icons-react'
 
 const badgeVariants = cva(
   'inline-flex items-center gap-1 rounded-full text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 mix-blend-multiply',
@@ -73,7 +72,7 @@ const badgeVariants = cva(
       },
       size: {
         default: 'px-2 py-0.5',
-        sm: 'px-1.5 py-0 text-[10px]',
+        sm: 'px-1.5 py-0 text-xs leading-4',
         md: 'px-2.5 py-0.5 text-sm',
         lg: 'px-3 py-1 text-sm',
         roundXs: 'p-0.5 h-3 w-3',

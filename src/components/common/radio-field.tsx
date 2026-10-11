@@ -4,7 +4,6 @@ import * as React from 'react'
 import { RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { VariantProps } from 'class-variance-authority'
 
 export interface RadioFieldProps
   extends React.ComponentPropsWithoutRef<typeof RadioGroupItem> {
@@ -51,7 +50,7 @@ export const RadioField = React.forwardRef<
           <Label
             htmlFor={radioId}
             className={cn(
-              'self-stretch w-full font-medium text-[#344054] cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+              'self-stretch w-full font-medium text-gray-700 cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
               size === 'md' ? 'text-base' : 'text-sm',
             )}
           >
@@ -60,7 +59,7 @@ export const RadioField = React.forwardRef<
           {hint && (
             <p
               className={cn(
-                'self-stretch w-full text-[#667085]',
+                'self-stretch w-full text-gray-500',
                 size === 'md' ? 'text-base' : 'text-sm',
               )}
             >

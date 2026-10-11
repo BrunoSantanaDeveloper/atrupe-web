@@ -32,7 +32,7 @@ import { SelectContactSourceField } from '@/components/common/form/global-inputs
 
 // Icons
 import {
-  IconCirclePlus,
+  IconPlus,
   IconArrowRight,
   IconReportMoney,
   IconBolt,
@@ -44,6 +44,7 @@ import { useForm, type FieldErrors } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
+import { useCompany } from '@/hooks/queries/useCompany'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { useNewClientStore } from '../store/useNewClientStore'
@@ -60,7 +61,10 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   data?: QuotationType
-  /** Nova venda rápida: o cliente é opcional. */
+  /**
+   * Venda rápida: o mesmo orçamento, já marcado — é atalho, não outra tela.
+   * O cliente é opcional.
+   */
   quickSale?: boolean
 }
 export function NewQuotationModal({
@@ -75,6 +79,7 @@ export function NewQuotationModal({
   const { data: sellers } = useSeller()
   const { data: series } = useSerie(true)
   const { data: contactSources } = useContactSources()
+  const { data: companies } = useCompany()
   const { canManageMultipleCompanies } = usePlanFeatures()
   const { notifyActionError } = usePlanErrorToast()
   const { setOnClientCreated } = useNewClientStore()
@@ -91,7 +96,7 @@ export function NewQuotationModal({
       contactSourceId: '',
       seriesId: '',
       sellerId: '',
-      quickSale: false,
+      quickSale: Boolean(quickSale),
     },
   })
 
@@ -206,7 +211,7 @@ export function NewQuotationModal({
       toast.success(
         seriesChanged
           ? 'Orçamento atualizado. A nova série gerou uma nova numeração.'
-          : 'Orçamento atualizado com sucesso!',
+          : 'Orçamento atualizado',
       )
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
@@ -230,9 +235,7 @@ export function NewQuotationModal({
     }
 
     handleToggleModal(false)
-    toast.success(
-      isQuickSale ? 'Venda rápida criada!' : 'Orçamento criado com sucesso!',
-    )
+    toast.success(isQuickSale ? 'Venda rápida criada' : 'Orçamento criado')
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
@@ -241,6 +244,11 @@ export function NewQuotationModal({
 
   // @ts-expect-error any
   const clientId = form.watch('clientId')?.value
+
+  // O campo Empresa só faz sentido com mais de um CNPJ ativo; com um só,
+  // o orçamento já nasce na empresa da sessão (companyId do defaultValues)
+  const hasMultipleCompanies =
+    canManageMultipleCompanies() && (companies?.length ?? 0) > 1
 
   return (
     <PermissionGate
@@ -310,7 +318,7 @@ export function NewQuotationModal({
                   clientId={clientId}
                   disabled={!clientId}
                 />
-                {canManageMultipleCompanies() && (
+                {hasMultipleCompanies && (
                   <SelectCompanyField<QuotationFormType>
                     name="companyId"
                     label="Empresa"
@@ -357,9 +365,9 @@ export function NewQuotationModal({
               >
                 {!editMode
                   ? isQuickSale
-                    ? 'Criar venda rápida'
-                    : 'Criar orçamento'
-                  : 'Salvar edição'}
+                    ? 'Cadastrar venda rápida'
+                    : 'Cadastrar orçamento'
+                  : 'Salvar'}
               </Button>
             </div>
           </DialogFooter>
@@ -400,7 +408,7 @@ export function NewQuotationTriggerButton({
     <PermissionGate permissions={['sale:quotation:create']}>
       <Button
         type="button"
-        LeftIcon={IconCirclePlus}
+        LeftIcon={IconPlus}
         onClick={() => onOpenChange(true)}
       >
         Novo<span className="hidden sm:inline"> orçamento</span>

@@ -3,7 +3,7 @@ import { Main } from './components/Main'
 
 export function metadata() {
   return {
-    title: 'Origens de Contato',
+    title: 'Origens de contato',
   }
 }
 

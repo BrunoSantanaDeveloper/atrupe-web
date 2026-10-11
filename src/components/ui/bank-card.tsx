@@ -9,9 +9,9 @@ const bankCardVariants = cva(
       intent: {
         glass: 'bg-white/10 backdrop-blur-md', // Linear gradients are applied via style prop to match Figma
         peach: 'bg-[#f4d9d0]',
-        mint: 'bg-[#a9f1cc]',
-        dark: 'bg-gradient-to-tr from-[#101828] to-[#475467]',
-        light: 'bg-[#f2f4f7]',
+        mint: 'bg-brand-100',
+        dark: 'bg-gradient-to-tr from-gray-900 to-gray-600',
+        light: 'bg-gray-100',
         vibrant: 'bg-gradient-to-tr from-[#011e69] to-[#ef4123]',
       },
       layout: {
@@ -180,20 +180,20 @@ export const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
     if (hasVerticalSplit) {
       titleColor = 'text-white' // Left bound logic inside the dark slate
     } else {
-      if (isPeachMintLight) titleColor = 'text-[#344054]'
+      if (isPeachMintLight) titleColor = 'text-gray-700'
     }
 
     let bottomDataColor = 'text-white'
     if (hasVerticalSplit || hasHorizontalSplit) {
       bottomDataColor = 'text-white' // Bottom-left region intersects with dark slate
     } else {
-      if (isPeachMintLight) bottomDataColor = 'text-[#344054]'
+      if (isPeachMintLight) bottomDataColor = 'text-gray-700'
     }
 
     // Contactless icon sits top-right (rarely impacted by splits unless vibrant background)
     let iconColor = 'text-white'
     if (!hasVerticalSplit && !hasHorizontalSplit && isPeachMintLight)
-      iconColor = 'text-[#344054]'
+      iconColor = 'text-gray-700'
 
     // Resolve Logo appearance
     let logoVariant: 'white' | 'colored' | 'dark' = 'white'
@@ -220,18 +220,18 @@ export const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
         {/* TOPOGRAPHIC LAYER */}
         {hasLines && (
           <TopographicLines
-            color={isPeachMintLight ? 'text-[#344054]' : 'text-white'}
+            color={isPeachMintLight ? 'text-gray-700' : 'text-white'}
           />
         )}
 
         {/* HORIZONTAL SPLIT LAYER */}
         {hasHorizontalSplit && (
-          <div className="w-[316px] h-[95px] absolute left-0 top-[95px] bg-[#344054]" />
+          <div className="w-[316px] h-[95px] absolute left-0 top-[95px] bg-gray-700" />
         )}
 
         {/* VERTICAL SPLIT LAYER */}
         {hasVerticalSplit && (
-          <div className="w-[228px] h-[190px] absolute left-0 top-0 bg-[#344054]" />
+          <div className="w-[228px] h-[190px] absolute left-0 top-0 bg-gray-700" />
         )}
 
         {/* LOGO */}
@@ -258,6 +258,7 @@ export const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
 
         <p
           className={cn(
+            // eslint-disable-next-line no-restricted-syntax -- bandeira impressa no cartão em maiúsculas
             'absolute left-4 top-32 text-xs font-semibold uppercase z-10',
             bottomDataColor,
           )}

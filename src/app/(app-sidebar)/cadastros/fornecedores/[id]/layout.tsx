@@ -92,7 +92,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
             <ClientActions params={params} data={data} entityType="supplier" />
           }
         />
-        <Tabs value={params.tab} defaultValue="cadastro">
+        <Tabs value={params.tab} defaultValue="cadastro" variant="pill">
           {tabs.length > 1 && (
             <TabsList>
               {tabs.map((tab) => (

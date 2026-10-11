@@ -40,8 +40,8 @@ function getDigitVisuals(
 ): DigitVisuals {
   if (globalState === 'disabled') {
     return {
-      innerBorder: 'border-[#d0d5dd]',
-      textColor: 'text-[#eaecf0]',
+      innerBorder: 'border-gray-300',
+      textColor: 'text-gray-200',
       outerRing: false,
       bgColor: 'bg-gray-50',
     }
@@ -52,8 +52,8 @@ function getDigitVisuals(
 
   if (isError) {
     return {
-      innerBorder: 'border-[#fda29b]',
-      textColor: hasValue ? 'text-[#101828]' : 'text-[#d0d5dd]',
+      innerBorder: 'border-error-300',
+      textColor: hasValue ? 'text-gray-900' : 'text-gray-300',
       outerRing: false,
       bgColor: 'bg-white',
     }
@@ -61,16 +61,16 @@ function getDigitVisuals(
 
   if (isFocused || hasValue) {
     return {
-      innerBorder: 'border-[#38cf8f]',
-      textColor: 'text-[#077550]',
+      innerBorder: 'border-brand-300',
+      textColor: 'text-brand-600',
       outerRing: isFocused,
       bgColor: 'bg-white',
     }
   }
 
   return {
-    innerBorder: 'border-[#d0d5dd]',
-    textColor: 'text-[#d0d5dd]',
+    innerBorder: 'border-gray-300',
+    textColor: 'text-gray-300',
     outerRing: false,
     bgColor: 'bg-white',
   }
@@ -120,7 +120,7 @@ function DigitBox({
         s.wrapper,
         'flex-shrink-0 rounded-lg',
         outerRing
-          ? 'p-[3px] border-[3px] border-[#a9f1cc]'
+          ? 'p-[3px] border-[3px] border-brand-100'
           : 'p-0 border-[3px] border-transparent', // reserve space so layout doesn't shift
       )}
     >
@@ -254,7 +254,7 @@ export function OtpInput({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-[#344054]">
+        <label htmlFor={id} className="text-sm font-medium text-gray-700">
           {label}
         </label>
       )}
@@ -274,7 +274,7 @@ export function OtpInput({
                   : size === 'md'
                     ? 'text-5xl'
                     : 'text-6xl',
-                'text-[#d0d5dd]',
+                'text-gray-300',
               )}
             >
               -
@@ -288,7 +288,7 @@ export function OtpInput({
         <p
           className={cn(
             'text-sm',
-            isError ? 'text-[#f04438]' : 'text-[#667085]',
+            isError ? 'text-error-500' : 'text-gray-500',
           )}
         >
           {hint}

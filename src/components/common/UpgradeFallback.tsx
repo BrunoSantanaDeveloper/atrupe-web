@@ -90,9 +90,7 @@ export function UpgradeFallback({
         rounded
         className="mb-6"
       />
-      <Heading className="text-lg font-semibold text-gray-900 mb-2">
-        {title}
-      </Heading>
+      <Heading className="type-card-title mb-2">{title}</Heading>
       {description ? (
         <p className="text-gray-600 max-w-md mb-2">{description}</p>
       ) : null}

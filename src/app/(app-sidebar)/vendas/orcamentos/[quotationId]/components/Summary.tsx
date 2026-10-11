@@ -1,5 +1,6 @@
 // React
 import { useEffect, useState } from 'react'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { useSession } from 'next-auth/react'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -114,7 +115,7 @@ function EditableDateField({
       return
     }
 
-    toast.success('Data atualizada com sucesso!')
+    toast.success('Data atualizada')
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
@@ -167,32 +168,36 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconFileInvoice} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Resumo
-                </CardTitle>
+                <CardTitle>Resumo</CardTitle>
               </div>
               <div className="flex gap-3">
                 <TooltipProvider>
-                  <DuplicateDialog quotationData={data} />
-                  <Button
-                    type="button"
-                    variant="neutralLight"
-                    size="icon"
-                    LeftIcon={IconPencil}
-                    title="Editar"
-                    onClick={() => {
-                      if (onEditClick) {
-                        onEditClick()
-                      } else {
-                        setOpenDialog('editQuotation')
+                  {/* Abrir o orçamento basta "Visualiza" (decisão de 07/10/2026);
+                      duplicar e editar continuam exigindo a permissão própria */}
+                  <PermissionGate permissions={['sale:quotation:create']}>
+                    <DuplicateDialog quotationData={data} />
+                  </PermissionGate>
+                  <PermissionGate permissions={['sale:quotation:edit']}>
+                    <Button
+                      type="button"
+                      variant="neutralLight"
+                      size="icon"
+                      LeftIcon={IconPencil}
+                      title="Editar"
+                      onClick={() => {
+                        if (onEditClick) {
+                          onEditClick()
+                        } else {
+                          setOpenDialog('editQuotation')
+                        }
+                      }}
+                      disabled={
+                        editDisabled !== undefined
+                          ? editDisabled
+                          : actionDisabled('editQuotation', data?.status)
                       }
-                    }}
-                    disabled={
-                      editDisabled !== undefined
-                        ? editDisabled
-                        : actionDisabled('editQuotation', data?.status)
-                    }
-                  />
+                    />
+                  </PermissionGate>
                 </TooltipProvider>
                 <AccordionTrigger
                   className={cn(
@@ -301,7 +306,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
                     text={data?.client?.email || '-'}
                   />
                   <TextSupportingText
-                    supporting="Telefone Cliente"
+                    supporting="Telefone do cliente"
                     text={data?.client?.phoneNumber || '-'}
                   />
                   <TextSupportingText

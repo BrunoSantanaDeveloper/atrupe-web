@@ -77,7 +77,7 @@ export function BillServiceDialog({ open, rowData, setOpen }: Props) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleBill} RightIcon={IconCircleCheck}>
               Faturar
             </AlertDialogAction>

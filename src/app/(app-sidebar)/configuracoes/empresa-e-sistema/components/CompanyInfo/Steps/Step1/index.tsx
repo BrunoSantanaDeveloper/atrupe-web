@@ -13,12 +13,12 @@ export function Step1() {
     <div className="grid grid-cols-2 gap-4">
       <FormInput
         name="general.name"
-        label="Nome Fantasia"
+        label="Nome fantasia"
         placeholder="Digite aqui"
       />
       <FormInput
         name="general.legalName"
-        label="Razão Social"
+        label="Razão social"
         placeholder="Digite aqui"
       />
       <FormInput

@@ -15,6 +15,8 @@ import type { IconProps } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { reviewTextClass } from '@/consts/revisao'
+import type { ReviewMarkKind } from '@/consts/revisao'
 
 export type CompanySettingsType = {
   category?: string
@@ -28,6 +30,8 @@ export type CompanySettingsType = {
     showPrimaryElement?: boolean
     isInactive?: boolean
     permission?: string | string[]
+    // Marcação temporária da revisão (src/consts/revisao.ts)
+    review?: ReviewMarkKind
   }[]
 }
 
@@ -41,9 +45,7 @@ export function CompanySettingsList({
       {settings.map((setting, index) => (
         <div key={index} className="space-y-4">
           {setting.category ? (
-            <h1 className="text-gray-800 font-semibold text-lg">
-              {setting.category}
-            </h1>
+            <h1 className="type-page-title">{setting.category}</h1>
           ) : null}
           {setting.items.map((item, itemIndex) => (
             <PermissionGate
@@ -74,7 +76,12 @@ export function CompanySettingsList({
                     <FeaturedIcon variant="neutralOutline" Icon={item.icon} />
                   )}
                   <div className="w-full sm:w-auto">
-                    <p className="font-semibold mb-2 relative pr-20 sm:pr-0">
+                    <p
+                      className={cn(
+                        'font-semibold mb-2 relative pr-20 sm:pr-0',
+                        reviewTextClass(item.review),
+                      )}
+                    >
                       {item.title}
                     </p>
                     <p className="text-sm text-gray">{item.description}</p>
@@ -92,7 +99,16 @@ export function CompanySettingsList({
                       RightIcon={IconArrowRight}
                       className="w-full sm:w-auto"
                     >
-                      <Link href={`/configuracoes/${item.link}`}>
+                      {/* O link costuma ser relativo a /configuracoes, mas
+                          alguns itens apontam para telas fora dela (Base de
+                          custos, Precificação): aí vem com a barra na frente */}
+                      <Link
+                        href={
+                          item.link.startsWith('/')
+                            ? item.link
+                            : `/configuracoes/${item.link}`
+                        }
+                      >
                         Configurar
                       </Link>
                     </Button>

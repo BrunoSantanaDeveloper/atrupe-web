@@ -4,14 +4,7 @@
 import { useEffect } from 'react'
 
 // UI
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 
@@ -19,9 +12,6 @@ import { Form } from '@/components/ui/form'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
-
-// Icons
-import { IconDeviceFloppy } from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -78,7 +68,7 @@ export function CfopFormModal({
           code: cfop.code || '',
           description: cfop.description || '',
           type: cfop.type || 'SAIDA',
-          info: (cfop as any).info || '',
+          info: cfop.info || '',
         })
       } else {
         form.reset({
@@ -135,9 +125,7 @@ export function CfopFormModal({
                 <path d="M5 12l14 0" />
               </svg>
             </div>
-            <DialogTitle className="text-lg font-semibold text-gray-900">
-              {isEditing ? 'Editar CFOP' : 'Novo CFOP'}
-            </DialogTitle>
+            <DialogTitle>{isEditing ? 'Editar CFOP' : 'Novo CFOP'}</DialogTitle>
           </div>
           {/* Close button is handled by DialogPrimitive usually, but we can have a custom one if needed. 
                          The default generic DialogContent usually adds a close X. We will rely on that or user can click outside. 

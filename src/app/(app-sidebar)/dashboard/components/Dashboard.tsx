@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { IconEye, IconEyeOff } from '@tabler/icons-react'
 
 import { Card, CardContent } from '@/components/ui/card'
+import { Heading } from '@/components/ui/typography'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -54,7 +55,10 @@ function getDashboardDateRange(period: DashboardPeriod) {
 }
 
 function ToggleValuesButton() {
-  const { showValues, toggleValues } = useDashboardValues()
+  const { showValues, canSeeValues, toggleValues } = useDashboardValues()
+
+  // EC-24: sem a permissão "Valores" não há o que mostrar
+  if (!canSeeValues) return null
 
   return (
     <TooltipProvider>
@@ -92,17 +96,20 @@ function DashboardContent() {
     <div className="space-y-4 mt-1 w-full">
       <FiscalOnboardingBanner />
 
-      <div className="flex items-center justify-end gap-2">
-        <DashboardPeriodFilter value={period} onChange={setPeriod} />
-        <ToggleValuesButton />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Heading as="h1">Painel</Heading>
+        <div className="flex items-center gap-2">
+          <DashboardPeriodFilter value={period} onChange={setPeriod} />
+          <ToggleValuesButton />
+        </div>
       </div>
 
       {!canSeeDashboard && (
         <Card>
           <CardContent className="p-8 text-center">
-            <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>
+            <h3 className="type-card-title mb-2">Acesso restrito</h3>
             <p className="text-gray-600">
-              Voce nao tem permissao para visualizar informacoes gerais do
+              Você não tem permissão para visualizar informações gerais do
               dashboard.
             </p>
           </CardContent>

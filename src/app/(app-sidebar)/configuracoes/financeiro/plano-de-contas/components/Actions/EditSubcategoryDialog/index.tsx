@@ -75,7 +75,7 @@ export function EditSubcategoryDialog({
     onSuccess: () => {
       queryClient.invalidateQueries()
       handleOpenChange(false)
-      toast.success('Sucesso!')
+      toast.success('Sucesso')
     },
     onError: (error) => {
       console.error(error)

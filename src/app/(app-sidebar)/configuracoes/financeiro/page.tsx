@@ -4,7 +4,7 @@ import { FinanceSettingsClient } from './FinanceSettingsClient'
 
 export function metadata() {
   return {
-    title: 'Configurações de Financeiro',
+    title: 'Configurações do financeiro',
   }
 }
 

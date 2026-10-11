@@ -180,7 +180,7 @@ export function NavItem({
       onKeyDown={(e) => e.key === 'Enter' && handleClick()}
       className={cn(
         'flex justify-between items-center h-10 p-2 rounded cursor-pointer transition-colors select-none',
-        isActive && 'bg-[#ecfdf4]',
+        isActive && 'bg-brand-25',
         !isActive && !isCta && 'hover:bg-gray-50',
       )}
     >
@@ -254,7 +254,7 @@ export function NavGroup({
   return (
     <div
       id={`nav-group-${group.id}`}
-      className="flex flex-col gap-3 pb-5 border-b border-[#eaecf0]"
+      className="flex flex-col gap-3 pb-5 border-b border-gray-200"
     >
       {/* Group header */}
       <div

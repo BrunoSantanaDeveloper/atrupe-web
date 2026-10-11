@@ -94,11 +94,9 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       {/* Fluxo de Caixa */}
-      <Card className="rounded-xl">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            Fluxo de Caixa
-          </CardTitle>
+          <CardTitle>Fluxo de Caixa</CardTitle>
         </CardHeader>
         <CardContent className="p-6 min-h-[250px]">
           {loadingCashFlow ? (
@@ -199,11 +197,9 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
       </Card>
 
       {/* Receitas x Despesas */}
-      <Card className="rounded-xl">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            Receitas x Despesas
-          </CardTitle>
+          <CardTitle>Receitas x Despesas</CardTitle>
         </CardHeader>
         <CardContent className="p-6 min-h-[250px]">
           {loadingRevenueExpense ? (

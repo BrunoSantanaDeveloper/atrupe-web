@@ -48,7 +48,7 @@ export function SalesEvolutionChart({ filters }: SalesEvolutionChartProps) {
   if (!chartData.length) {
     return (
       <div className="flex h-[260px] items-center justify-center text-sm text-gray">
-        Nenhuma venda aprovada no periodo.
+        Nenhuma venda aprovada no período.
       </div>
     )
   }

@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
 
@@ -30,7 +33,6 @@ import {
 } from '@/lib/filter-utils'
 
 // PDF Component
-import { RankingReportPdf } from './RankingReportPdf'
 
 interface RankingItem {
   name: string
@@ -77,6 +79,12 @@ export function RankingPrintButton({
     setIsLoading(true)
     try {
       const reportData = await getSalesReportPdfData(getPeriodFilters())
+
+      const [{ pdf }, { RankingReportPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+
+        import('./RankingReportPdf'),
+      ])
 
       const blob = await pdf(
         <RankingReportPdf

@@ -2,11 +2,13 @@
 
 // Libs
 import { useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 
 // Components
 import { toast } from 'sonner'
-import { PayrollPdf } from './PayrollPdf'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -29,7 +31,7 @@ import { updateItemNew, getItem } from '@/actions/_cruds'
 
 // Icons
 import {
-  IconRestore,
+  IconArrowBackUp,
   IconPrinter,
   IconCircleCheck,
   IconAlertTriangle,
@@ -103,6 +105,11 @@ export function PayrollActions({ data }: Props) {
 
       const pdfData: PayrollPdfType = result.data
 
+      const [{ pdf }, { PayrollPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./PayrollPdf'),
+      ])
+
       const blob = await pdf(
         <PayrollPdf data={pdfData} showSignature={withSignature} />,
       ).toBlob()
@@ -155,7 +162,7 @@ export function PayrollActions({ data }: Props) {
             </DialogClose>
             <Button
               type="button"
-              RightIcon={IconCircleCheck}
+              RightIcon={IconPrinter}
               isLoading={isLoadingPDF}
               onClick={() => handleGeneratePDF(data, showSignature)}
             >
@@ -188,7 +195,7 @@ export function PayrollActions({ data }: Props) {
           session?.user?.role === 'Admin' && (
             <PermissionGate permissions={['financial:payroll:delete']}>
               <CustomButton
-                icon={IconRestore}
+                icon={IconArrowBackUp}
                 title="Reabrir folha"
                 iconVariant="lightBlueBorderedLight"
                 onClick={handleTogglePayroll}

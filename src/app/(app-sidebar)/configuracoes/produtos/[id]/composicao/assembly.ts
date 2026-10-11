@@ -1,0 +1,779 @@
+// O produto composto montado por etapas — o "item pronto" do legado na nova
+// versão (área 8, §3.4.1, IP-14 a IP-24, e MS-3 a MS-8). Valores em
+// centavos; medidas em metros.
+//
+// Vocabulário: "base" é o que recebe o acabamento (a lona impressa do
+// banner). O legado chamava de "item pai".
+
+// Types
+import type {
+  FormulaKey,
+  ResourceKind,
+  DimensionRule,
+} from '@/app/(app-sidebar)/configuracoes/produtos/processos/types'
+
+// Situação do produto composto (IP-14): compor leva tempo, e o vendedor não
+// pode pegar no orçamento um produto pela metade
+export type AssemblyStatus = 'DRAFT' | 'RELEASED' | 'PART'
+
+// A cobrança segue o cadastro de produtos do START (IP-17): a unidade
+// comercial, o valor de venda por essa unidade e o padrão de medidas. A
+// composição só acrescenta o custo e o preço sugerido, na mesma unidade
+export type UnitKind =
+  | 'AREA'
+  | 'LENGTH'
+  | 'WEIGHT'
+  | 'CAPACITY'
+  | 'DISTANCE'
+  | 'DURATION'
+  | 'UNITY'
+
+// Os mesmos rótulos do cadastro do START (UnitOfMeasureField)
+export const unitKindObj: { [key in UnitKind]: string } = {
+  LENGTH: 'Metro Linear (m)',
+  WEIGHT: 'Peso (kg)',
+  CAPACITY: 'Litro (l)',
+  DISTANCE: 'Distância (km)',
+  DURATION: 'Tempo (h)',
+  UNITY: 'Unidade (un)',
+  AREA: 'Metro Quadrado (m²)',
+}
+
+// "Preço de venda m²", como no START (UnitCostInput)
+export const unitSaleLabel: { [key in UnitKind]: string } = {
+  AREA: 'Preço de venda m²',
+  LENGTH: 'Preço de venda metro',
+  CAPACITY: 'Preço de venda litro',
+  WEIGHT: 'Preço de venda kg',
+  DISTANCE: 'Preço de venda km',
+  DURATION: 'Preço de venda hora',
+  UNITY: 'Preço de venda unitário',
+}
+
+export const unitSymbol: { [key in UnitKind]: string } = {
+  AREA: 'm²',
+  LENGTH: 'm',
+  CAPACITY: 'l',
+  WEIGHT: 'kg',
+  DISTANCE: 'km',
+  DURATION: 'h',
+  UNITY: 'un',
+}
+
+// O campo do padrão de medidas quando a unidade não é m² nem unidade
+export const unitAmountLabel: { [key in UnitKind]: string } = {
+  AREA: 'Área total',
+  LENGTH: 'Medida',
+  CAPACITY: 'Quantidade',
+  WEIGHT: 'Peso',
+  DISTANCE: 'Distância',
+  DURATION: 'Tempo',
+  UNITY: '',
+}
+
+// A medida do produto no orçamento (IP-16)
+export type ProductDimension = 'SALE' | 'FIXED'
+
+export const productDimensionObj: { [key in ProductDimension]: string } = {
+  SALE: 'Medida informada na venda',
+  FIXED: 'Medida fixa',
+}
+
+// Regras de venda do processo (MS-3 a MS-6). O processo define; o produto
+// pode sobrescrever só para ele (IP-18)
+export type QuantityMode = 'HIDDEN_ONE' | 'FREE' | 'AREA_RATIO'
+
+export const quantityModeObj: { [key in QuantityMode]: string } = {
+  HIDDEN_ONE: 'Uma unidade, sem perguntar ao vendedor',
+  FREE: 'O vendedor informa',
+  AREA_RATIO: 'Quantas cabem na base (área da base ÷ área desta etapa)',
+}
+
+export type ExtraFieldKind = 'NONE' | 'DECIMAL' | 'INTEGER'
+
+export const extraFieldKindObj: { [key in ExtraFieldKind]: string } = {
+  NONE: 'Sem campo extra',
+  DECIMAL: 'Número com casas decimais',
+  INTEGER: 'Número inteiro',
+}
+
+export type SaleRules = {
+  quantityMode: QuantityMode
+  // Acompanha a quantidade da base (500 cartões → 500 laminações) ou entra
+  // uma vez por pedido (a arte, o preparo)
+  followsBase: boolean
+  dimension: DimensionRule
+  timeField: boolean
+  // Tempo padrão da etapa, em minutos: a criação com 1 h já preenchida
+  // (IP-32). O vendedor ajusta no orçamento, em hh:mm (IP-33)
+  timeFieldDefault: number
+  extraField: ExtraFieldKind
+  extraFieldName: string
+  extraFieldDefault: number
+  descriptionEditable: boolean
+}
+
+// Uma linha da etapa: um recurso, ou um grupo de recursos (IP-21)
+export type LineMode = 'SINGLE' | 'CHOOSE' | 'LIST'
+
+export const lineModeObj: { [key in LineMode]: string } = {
+  SINGLE: 'Recurso único',
+  CHOOSE: 'Escolha de um',
+  LIST: 'Lista para o vendedor preencher',
+}
+
+export type ResourceOption = {
+  // Identidade da opção dentro da linha
+  id: string
+  // O recurso de verdade, quando a opção é uma configuração dele: o mesmo
+  // refile aparece como "Refile lona", "Refile PVC" e "Refile ACM" (IP-27)
+  resourceId?: string
+  configName?: string
+  name: string
+  unit: string
+  // Custo por unidade do recurso. Mão de obra: por minuto
+  unitCost: number
+  // Preço de venda por unidade do recurso, como no legado (IP-25): o do
+  // cadastro do material, ou a hora vendida da mão de obra e da máquina.
+  // Sem ele, vale o custo com o markup de referência da Precificação
+  unitSale?: number
+  // Papel e chapa têm medida (AP-2), em metros: é o que permite o
+  // aproveitamento de folha
+  sheet?: { width: number; height: number; wholeSheets?: boolean }
+  // Perfil e barra têm lados (MT-10.1), em milímetros: X é a primeira medida
+  // do catálogo, Y a segunda. A fórmula lê "linha · X" e "linha · Y" (CP-18)
+  profile?: {
+    x: number
+    y: number
+    barLength?: number | null
+  }
+  // Peso em quilos por unidade de venda do material (por m², por metro,
+  // por unidade), como o cadastro guarda
+  weight?: number | null
+  // Consumo, perda e mínimo próprios desta opção (IP-26): no mesmo grupo,
+  // o ACM usa 1,0 e o PVC 1,2 com mínimo de 0,5. Vazio, vale o da linha
+  perUnit?: number
+  lossPercent?: number
+  minimum?: number | null
+}
+
+// O aproveitamento de folha (AP-1): as duas posições da peça na folha
+export type SheetYield = {
+  sheetName: string
+  firstFit: number
+  secondFit: number
+  perSheet: number
+  sheets: number
+  leftover: number
+  // Folhas cobradas: inteiras, ou só a fração aproveitada (AP-4)
+  charged: number
+  marginMm: number
+  gapMm: number
+}
+
+// Preço por faixa de quantidade (FQ-1): tabela, não desconto. A faixa vale
+// para o total da venda, não em degraus (FQ-2)
+export type PriceTier = {
+  from: number
+  unitPrice: number
+}
+
+export type AssemblyLine = {
+  id: string
+  name: string
+  kind: ResourceKind
+  mode: LineMode
+  options: ResourceOption[]
+  selectedId: string
+  // Consumo por unidade da fórmula (2,2 m de madeira por metro de largura)
+  perUnit: number
+  formula: FormulaKey
+  // Perda e mínimo são de cada linha, não regra do sistema (CP-8)
+  lossPercent: number
+  minimum: number | null
+  // Ajustada neste produto: deixa de acompanhar o processo e fica como está
+  // quando o processo muda (CP-21)
+  overridden: boolean
+  // A linha do processo de onde esta veio: é o que liga a etapa ao processo
+  // e deixa a mudança do processo chegar ao produto (CP-21)
+  sourceLineId?: string
+  // Acrescentada neste produto numa etapa que veio de um processo
+  addedHere?: boolean
+  // Opcional (IP-28): o vendedor decide no orçamento se entra — a cantoneira
+  // do quadro com lona. Não confundir com linha vazia, que é erro de cadastro
+  optional?: boolean
+  // Se a opcional já vem marcada no orçamento; é também o que o custo e o
+  // sugerido da composição consideram
+  optionalDefault?: boolean
+  // O campo do orçamento que a fórmula lê como "campo extra" (IP-4): por
+  // nome, porque o processo não conhece o produto. O produto cria o campo
+  // com esse nome se ainda não tiver, e o vendedor preenche um valor só
+  fieldName?: string
+  // A fórmula do produto que a linha usa, quando o tipo é 'CUSTOM'
+  formulaId?: string
+  // Mão de obra: quantas pessoas trabalham ao mesmo tempo (IP-13, decidido
+  // em 05/10/2026). Multiplica o tempo da linha; padrão 1
+  people?: number
+  // Aproveitamento de folha (AP-3, AP-4), na linha que escolhe a folha:
+  // margem da borda e espaçamento entre peças, em milímetros; e se cobra a
+  // folha inteira ou só o que foi aproveitado
+  sheetMargin?: number
+  sheetGap?: number
+  chargeWholeSheets?: boolean
+}
+
+export type AssemblyMeasure = {
+  quantity: number
+  width: number
+  height: number
+}
+
+export type BlockRole = 'BASE' | 'FINISHING'
+
+// A etapa é do produto: o trabalho de um setor, com os recursos e o tempo
+// que ele usa. Pode ser montada ali mesmo ou incluída de um processo já
+// cadastrado — o processo é um cadastro à parte, não a origem obrigatória
+export type AssemblyBlock = {
+  id: string
+  // O processo de onde a etapa foi incluída; nulo na etapa montada no produto
+  processId: string | null
+  name: string
+  // Nome desta etapa só neste produto, quando veio de um processo (IP-30)
+  localName?: string
+  // Parte (IP-9): a etapa é outro produto com composição — a estrutura de
+  // metalon dentro da placa. O custo vem da composição dela, na medida da
+  // etapa, e ela não tem linhas próprias aqui
+  partProductId?: string
+  sector: string
+  role: BlockRole
+  // A composição é o caminho da produção (FL-1): cada etapa depende de
+  // nenhuma, uma ou várias etapas anteriores. É o que desenha o fluxo, e o
+  // que a produção vai seguir (FL-10, FL-13)
+  dependsOn: string[]
+  // A etapa cuja medida esta usa quando a regra é "mesma medida da base"
+  // (MS-5): a primeira de que ela depende, por padrão
+  baseBlockId: string | null
+  setupMinutes: number
+  // Custo-hora do setor, para o preparo. Vem da Base de custos
+  sectorHourCost: number
+  taskType: string
+  // Tipo de tarefa escolhido só neste produto; sem ele, vale o do processo
+  localTaskType?: string
+  // Linhas do processo tiradas só deste produto: não voltam quando o
+  // processo muda, até alguém restaurar (CP-21)
+  removedSourceLineIds?: string[]
+  // As regras do processo e, quando houver, as deste produto
+  originalRules: SaleRules
+  localRules: SaleRules | null
+  lines: AssemblyLine[]
+  // Medida fixa da etapa, que ignora as regras: é a base simulada na tela do
+  // processo (§9.1, 06/10/2026). Não é gravada em produto
+  fixedMeasure?: AssemblyMeasure
+}
+
+// Variação do produto (PV-1 a PV-7): P, M, G; 4x0, 4x4; com ou sem
+// laminação. Nasce igual à base, e só o que for mudado passa a ser dela
+// (PV-2). O preço próprio é opcional: sem ele vale o do produto (PV-4)
+export type VariationOverride = {
+  blockId: string
+  lineId: string
+  selectedId?: string
+  perUnit?: number
+}
+
+export type ProductVariation = {
+  id: string
+  name: string
+  unitPrice: number | null
+  // Faixas próprias da variação (FQ-4); sem elas, vale a tabela do produto
+  priceTiers?: PriceTier[]
+  // Etapas que só esta variação tem (PV-7): a laminação do "com laminação"
+  extraBlocks?: AssemblyBlock[]
+  overrides: VariationOverride[]
+}
+
+// O que o cadastro do START/LITE já tem e a composição herda ao abrir pela
+// primeira vez (CP-16: o produto chega ao PRO como está): unidade, valor,
+// medida padrão, descritivo e permissões de edição
+export type AssemblySeed = {
+  name: string
+  code: string
+  unitKind: UnitKind
+  unitPrice: number | null
+  width?: number
+  height?: number
+  technicalDescription?: string
+  allowEditValues?: boolean
+  allowEditDescription?: boolean
+}
+
+// Campo do orçamento (IP-4, IP-6): declarado uma vez no produto, lido pelas
+// linhas que precisam dele e preenchido pelo vendedor na venda. Substitui o
+// campo extra de cada etapa do legado (decidido em 03/10/2026)
+export type QuoteField = {
+  id: string
+  name: string
+  defaultValue: number
+  // Aceita fração (IP-19, decidido em 05/10/2026): desligado, o campo é um
+  // número inteiro (nº de letras, ilhoses) e recusa decimal na venda e na
+  // simulação; ligado, aceita fração (metros)
+  allowsFraction?: boolean
+}
+
+// Fórmula do produto (IP-2, decidida em 03/10/2026): a conta escrita por quem
+// monta, só para este produto, lendo medidas, tempo e os campos do orçamento
+// dele. Entra na lista de tipos de cálculo das linhas deste produto. O
+// processo também tem as suas (05/10/2026): o produto que o inclui recebe
+// uma cópia, marcada com o processo de origem, que acompanha a dele (CP-21)
+export type ProductFormula = {
+  id: string
+  name: string
+  expression: string
+  processId?: string
+}
+
+// Variação do produto na lista do produto base (03/10/2026)
+export type ProductVariantRef = { id: string; name: string }
+
+export type ProductAssembly = {
+  productId: string
+  name: string
+  code: string
+  status: AssemblyStatus
+  dimension: ProductDimension
+  unitKind: UnitKind
+  // Preço de venda por unidade comercial, como no START
+  unitPrice: number | null
+  // Padrão de medidas: no m², largura × altura; nas outras unidades, a
+  // quantidade nelas (3 m, 2 kg). Largura e altura também alimentam a
+  // composição, mesmo quando o produto é vendido por unidade
+  measure: AssemblyMeasure
+  unitAmount: number
+  allowEditValues: boolean
+  allowEditDescription: boolean
+  // O vendedor pode renomear as etapas no orçamento (era regra por etapa,
+  // "descriptionEditable"; passou a ser do produto em 03/10/2026)
+  allowRenameStages?: boolean
+  priceTiers: PriceTier[]
+  technicalDescription: string
+  blocks: AssemblyBlock[]
+  variations: ProductVariation[]
+  fields?: QuoteField[]
+  formulas?: ProductFormula[]
+  // Variações do produto (P, M, G…) como cópias independentes da composição
+  // (decisão de 03/10/2026, no lugar da herança da PV-2). Cada uma é outra
+  // composição, com id "<produto>::v:<id>"; esta lista fica no produto base
+  variants?: ProductVariantRef[]
+  // Produto inativado no cadastro (PAD-7, 05/10/2026): continua como parte
+  // onde já é usado, marcado "produto inativo"; não é oferecido como parte
+  // nova. O cadastro (API) é a fonte; o mock guarda a marca para a composição
+  inactive?: boolean
+}
+
+// O que o servidor devolve depois de calcular (SEG-1)
+export type ComputedLine = AssemblyLine & {
+  // Mudada na variação que está sendo vista (PV-2)
+  variationOverride: boolean
+  // O valor do campo do orçamento que a fórmula leu; null quando não lê
+  extraValue: number | null
+  // O nome da fórmula do produto, quando a linha usa uma
+  formulaName: string | null
+  sheetYield: SheetYield | null
+  selected: ResourceOption | null
+  quantity: number | null
+  // O mínimo substituiu a conta (IP-35): a peça pequena pagou o mínimo
+  minimumApplied: boolean
+  // O que vale para a opção escolhida: o dela, ou o da linha (IP-26)
+  effective: {
+    perUnit: number
+    lossPercent: number
+    minimum: number | null
+    own: boolean
+  }
+  cost: number | null
+  // Quantidade × preço de venda do recurso (IP-25)
+  sale: number | null
+}
+
+// Uma caixa do fluxo, como a tela desenha (FL-5): serve à composição do
+// produto, ao que a parte tem por dentro (IP-9) e ao item montado no
+// orçamento (ORC-11)
+export type FlowStage = {
+  id: string
+  name: string
+  sector: string
+  dependsOn: string[]
+  processId: string | null
+  partProductId: string | null
+  // O que a parte tem por dentro, até três níveis (IP-9)
+  partFlow: FlowStage[] | null
+}
+
+export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
+  rules: SaleRules
+  measure: AssemblyMeasure
+  setupCost: number
+  setupSale: number
+  cost: number
+  sale: number
+  lines: ComputedLine[]
+  // A parte calculada: nome e quantas etapas ela tem
+  part: { productId: string; name: string; stages: number } | null
+  // O fluxo da parte, para a caixa que abre (FL-5, IP-9)
+  partFlow: FlowStage[] | null
+  // As linhas e o preparo das etapas da parte, para a produção saber o que
+  // ela consome (GP-16)
+  partLines: ComputedLine[]
+  partSetupMinutes: number
+  // Etapa que só a variação vista tem (PV-7)
+  variationOnly: boolean
+  // O processo de onde a etapa veio foi inativado (PAD-7): a etapa fica, e
+  // a tela avisa
+  processInactive: boolean
+  // A parte é um produto inativado no cadastro (PAD-7)
+  partInactive: boolean
+}
+
+// Cada recurso uma vez, somado de todas as etapas (IP-34): a lista do que o
+// produto consome, para a produção e o estoque
+export type ResourceSummary = {
+  id: string
+  name: string
+  kind: ResourceKind
+  unit: string
+  quantity: number
+  cost: number
+  sale: number
+  // Mão de obra: o maior número de pessoas entre as linhas somadas (IP-13);
+  // a quantidade já é o tempo multiplicado por elas
+  people?: number
+}
+
+export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
+  area: number
+  blocks: ComputedBlock[]
+  resourceSummary: ResourceSummary[]
+  // Os campos do orçamento e em que etapas cada um é lido
+  fields: (QuoteField & { usedBy: string[] })[]
+  // As fórmulas do produto, onde são usadas e se calculam na medida padrão
+  formulas: (ProductFormula & { usedBy: string[]; error: string | null })[]
+  cost: number
+  // A soma do preço de venda de cada recurso, como o "valor sugerido" do
+  // legado (IP-25). Não muda o valor de venda: adotá-lo é decisão do usuário
+  suggestedPrice: number
+  // Quanto de unidade comercial há na medida (1,08 m², 3 m, 1 un)
+  saleAmount: number
+  // O valor de venda aplicado à medida: é o "Valor" do START
+  priceForMeasure: number | null
+  // O sugerido pela composição, na unidade comercial (por m², por metro…)
+  suggestedUnitPrice: number
+  margin: number | null
+  // A variação calculada, quando há uma escolhida
+  activeVariation: ProductVariation | null
+  // Custo e preço de cada variação na medida padrão, para comparar a margem
+  // A faixa vigente para a quantidade simulada, e cada faixa com o custo
+  // naquela quantidade, para ver se a tabela aperta a margem (FQ-3)
+  activeTier: PriceTier | null
+  // A tabela que vale: a da variação vista, ou a do produto (FQ-4)
+  effectiveTiers: PriceTier[]
+  tiersFromVariation: boolean
+  tierSummary: {
+    from: number
+    unitPrice: number
+    unitCost: number
+    margin: number | null
+  }[]
+  variationSummary: {
+    id: string
+    name: string
+    cost: number
+    priceForMeasure: number | null
+    margin: number | null
+  }[]
+}
+
+// Um processo do catálogo, para adicionar ao produto
+// O que o processo prefere quando entra depois de outra etapa (decidido em
+// 03/10/2026): herdar a medida e a quantidade da base, ou pedir as próprias.
+// Começando um caminho, ele sempre pede as próprias. Substitui o "é
+// acabamento de" do legado (MS-2, CP-12)
+export type AfterBase = 'INHERIT' | 'OWN'
+
+export type ProcessCatalogItem = {
+  id: string
+  name: string
+  sector: string
+  afterBase: AfterBase
+}
+
+// O que "+ etapa seguinte" oferece (FL-7): primeiro os processos marcados
+// como usuais depois desta etapa, e "ver todos" para o resto. Sem marcação,
+// valem os acabamentos do setor da etapa, como no legado
+export type NextStepCandidates = {
+  usual: ProcessCatalogItem[]
+  all: ProcessCatalogItem[]
+}
+
+// A marcação "costuma vir depois de" entre dois processos (FL-7), vista de
+// um dos lados: a lista de todos os outros processos, com a marca
+export type UsualNeighbor = ProcessCatalogItem & { usual: boolean }
+
+// O item montado no orçamento (ORC-11), como o vendedor vê: etapas com o
+// preço de venda de cada recurso e NUNCA o custo (ORC-7). O custo continua
+// sendo calculado e gravado no retrato da venda (ORC-10), mas não sai daqui
+export type ComposedItemView = {
+  productId: string
+  name: string
+  measure: AssemblyMeasure
+  stages: {
+    id: string
+    name: string
+    sector: string
+    dependsOn: string[]
+    processId: string | null
+    partProductId: string | null
+    partFlow: FlowStage[] | null
+    sale: number
+    setupMinutes: number
+    lines: {
+      id: string
+      name: string
+      kind: ResourceKind
+      resource: string | null
+      quantity: number | null
+      unit: string
+      sale: number | null
+    }[]
+  }[]
+  // Soma do preço de venda de todas as etapas
+  total: number
+}
+
+// Os recursos que uma etapa montada no produto pode usar
+export type AssemblyResource = ResourceOption & { kind: ResourceKind }
+
+export type AssemblyResources = {
+  // Os setores de exemplo do mock: a tela usa o cadastro de setores da
+  // empresa e cai aqui só quando ele não responde (05/10/2026)
+  sectors: string[]
+  // "Como este setor vende" (29/09/2026, área 8 §3.13): 'hora', ou a unidade
+  // do equipamento (m², metro, unidade, km). A composição não oferece mão de
+  // obra de setor que vende por equipamento
+  sectorSales: { [sector: string]: string }
+  resources: AssemblyResource[]
+}
+
+// O setor vende a produção do equipamento, e não horas
+export const sellsByEquipment = (
+  sectorSales: { [sector: string]: string } | undefined,
+  sector: string,
+) => {
+  const unit = sectorSales?.[sector]
+  return !!unit && unit !== 'hora'
+}
+
+export type NewLineValues = {
+  name: string
+  kind: ResourceKind
+  mode: LineMode
+  optionIds: string[]
+  perUnit: number
+  formula: FormulaKey
+  lossPercent: number
+  minimum: number | null
+  optional: boolean
+  optionalDefault: boolean
+  // O campo do orçamento que a fórmula lê, quando o tipo de cálculo pede;
+  // o padrão só é usado se o campo ainda não existir no produto
+  fieldName?: string
+  fieldDefault?: number
+  // A fórmula do produto, quando o tipo é 'CUSTOM'
+  formulaId?: string
+  // Pessoas na mão de obra (IP-13); padrão 1
+  people?: number
+}
+
+/* ---------------------------------------------------------------------------
+ * O produto na venda (IP-36): o vendedor preenche só o que é editável, e a
+ * composição completa fica num relatório de consulta, sem custo (ORC-7)
+ * ------------------------------------------------------------------------- */
+
+export type SaleChoice = { blockId: string; lineId: string; optionId: string }
+export type SaleListEntry = SaleChoice & { quantity: number }
+// `fieldId` é o campo do produto; "block:<id>" é o campo extra legado da etapa
+export type SaleExtra = { fieldId: string; value: number }
+export type SaleTime = { blockId: string; minutes: number }
+export type SaleOptional = {
+  blockId: string
+  lineId: string
+  included: boolean
+}
+
+export type SaleForm = {
+  // As etapas, para a observação de produção de cada uma (MS-13)
+  stages: { blockId: string; name: string; sector: string }[]
+  // Os campos do orçamento do produto (nº de letras, distância dos ilhoses)
+  extras: {
+    fieldId: string
+    name: string
+    kind: ExtraFieldKind
+    defaultValue: number
+  }[]
+  // Campo tempo das etapas que pedem (a criação da arte), em minutos
+  times: {
+    blockId: string
+    name: string
+    defaultMinutes: number
+  }[]
+  // Linhas de escolha: o vendedor troca o recurso (a lona 380 ou 440)
+  choices: {
+    blockId: string
+    lineId: string
+    name: string
+    stage: string
+    defaultId: string
+    options: { id: string; name: string }[]
+  }[]
+  // Opcionais: o vendedor marca se entram nesta venda
+  optionals: {
+    blockId: string
+    lineId: string
+    name: string
+    stage: string
+    defaultIncluded: boolean
+  }[]
+  // Listas: o vendedor informa quanto usou de cada item
+  lists: {
+    blockId: string
+    lineId: string
+    name: string
+    stage: string
+    options: { id: string; name: string; unit: string }[]
+  }[]
+  // Instruções ao vendedor dos processos usados (CP-13, 05/10/2026): texto
+  // de apoio, só leitura, no item do orçamento
+  instructions: { blockId: string; stage: string; text: string }[]
+}
+
+export type SaleCompositionReport = {
+  name: string
+  // O texto que a proposta resumida mostra (IP-12, IP-24)
+  technicalDescription: string
+  measure: AssemblyMeasure
+  variation: string | null
+  blocks: {
+    id: string
+    name: string
+    // Peso da etapa no preço sugerido: é o que reparte o valor do item entre
+    // as etapas na proposta detalhada com valores (IP-12)
+    sale: number
+    sector: string
+    // O tipo de tarefa que a etapa gera na produção (IP-23)
+    taskType: string
+    role: BlockRole
+    baseName: string | null
+    measure: AssemblyMeasure
+    extra: string | null
+    // Observação de produção deixada na venda (MS-13)
+    note: string | null
+    // Preparo da etapa, em minutos: entra no tempo estimado da tarefa
+    setupMinutes: number
+    lines: {
+      id: string
+      name: string
+      kind: ResourceKind
+      resource: string | null
+      quantity: number | null
+      unit: string
+      // Na lista, os itens que o vendedor informou
+      entries: { name: string; quantity: number; unit: string }[] | null
+      // Aproveitamento de folha ou chapa (AP-1, AP-5): quantas peças cabem e
+      // quantas folhas a venda usa
+      sheetYield: SheetYield | null
+    }[]
+  }[]
+}
+
+// O aproveitamento de cada folha ou chapa de uma venda, para o orçamento
+// mostrar "24 por folha · 42 folhas" antes de o item ser gravado (AP-5)
+export type SaleSheetUsage = {
+  blockId: string
+  blockName: string
+  lineName: string
+  resource: string
+  // Unidade do material: folha, chapa…
+  unit: string
+  sheetYield: SheetYield
+}
+
+// Tempo digitado em hh:mm, como no legado (IP-33): "1:30" → 90 minutos.
+// Aceita também só minutos ("45")
+export const hhmmToMinutes = (value: string) => {
+  const text = value.trim()
+  if (!text) return 0
+  if (!text.includes(':')) return Math.max(0, Math.round(Number(text) || 0))
+  const [hours, minutes] = text.split(':')
+  return Math.max(0, (Number(hours) || 0) * 60 + (Number(minutes) || 0))
+}
+
+export const minutesToHhmm = (minutes: number) =>
+  `${Math.floor(minutes / 60)}:${String(Math.round(minutes % 60)).padStart(2, '0')}`
+
+// O que cada fórmula consome da etapa (IP-35): é o que a tela destaca, e o
+// que vira alerta quando está zerado
+export type FormulaInput =
+  | 'quantidade'
+  | 'largura'
+  | 'altura'
+  | 'área'
+  | 'perímetro'
+  | 'campo extra'
+  | 'tempo'
+  | 'folha'
+
+export const formulaInputs: { [key in FormulaKey]: FormulaInput[] } = {
+  FIXED: [],
+  SELLER: [],
+  PER_AREA: ['área', 'quantidade'],
+  PER_UNIT: ['quantidade'],
+  PER_PERIMETER: ['perímetro', 'quantidade'],
+  PER_WIDTH: ['largura', 'quantidade'],
+  PER_HEIGHT: ['altura', 'quantidade'],
+  PER_EXTRA: ['campo extra', 'quantidade'],
+  PER_TIME: ['tempo', 'quantidade'],
+  PER_PERIMETER_DIV_EXTRA: ['perímetro', 'campo extra', 'quantidade'],
+  TIME_TIMES_EXTRA: ['tempo', 'campo extra'],
+  EQUAL_TIME: ['tempo'],
+  PER_WIDTH_EXTRA: ['largura', 'campo extra', 'quantidade'],
+  PER_HEIGHT_EXTRA: ['altura', 'campo extra', 'quantidade'],
+  EXTRA_ONLY: ['campo extra'],
+  PER_AREA_DIV_EXTRA: ['área', 'campo extra', 'quantidade'],
+  PER_PERIMETER_EXTRA: ['perímetro', 'campo extra', 'quantidade'],
+  DIV_EXTRA: ['campo extra'],
+  AREA_EXTRA: ['área', 'campo extra'],
+  PER_AREA_EXTRA: ['área', 'campo extra', 'quantidade'],
+  SHEET_YIELD: ['folha', 'largura', 'altura', 'quantidade'],
+  // O que a fórmula do produto lê está na expressão dela
+  CUSTOM: [],
+}
+
+// Biblioteca de composições prontas (IP-7): curadoria do Atrupe, importada
+// para o produto do cliente já com etapas e materiais. É o passo 2 do
+// caminho do produto até o PRO (CP-16)
+export type LibraryEntry = {
+  id: string
+  name: string
+  segment: string
+  description: string
+  stages: { name: string; sector: string; role: BlockRole }[]
+  resources: number
+}
+
+// Os tipos de tarefa que a etapa gera na produção (IP-23, MS-8)
+export const TASK_TYPES = [
+  'Criação',
+  'Impressão',
+  'Produção',
+  'Acabamento',
+  'Instalação',
+]

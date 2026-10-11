@@ -6,9 +6,9 @@ import { Button } from '@/components/ui/button'
 export type DashboardPeriod = 'current_month' | 'last_30_days' | 'next_30_days'
 
 const periodOptions: { value: DashboardPeriod; label: string }[] = [
-  { value: 'current_month', label: 'Mes atual' },
-  { value: 'last_30_days', label: 'Ultimos 30 dias' },
-  { value: 'next_30_days', label: 'Proximos 30 dias' },
+  { value: 'current_month', label: 'Mês atual' },
+  { value: 'last_30_days', label: 'Últimos 30 dias' },
+  { value: 'next_30_days', label: 'Próximos 30 dias' },
 ]
 
 interface DashboardPeriodFilterProps {

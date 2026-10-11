@@ -20,6 +20,7 @@ import { CardFooter, CardContent } from '@/components/ui/card'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { NewPaymentCondition } from '../NewPaymentCondition'
 import { ActionButton } from '@/components/common/ActionButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
@@ -74,7 +75,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
     await alertDialog.open({
       title: `Deseja inativar a condição de pagamento?`,
       description: '',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       confirmLabel: 'Inativar',
       onConfirm: async () => {
@@ -141,23 +142,29 @@ export function PaymentConditionsData({ searchParams }: Props) {
                             <TableCell>
                               <div className="flex justify-end gap-1">
                                 <TooltipProvider>
-                                  <ActionButton
-                                    Icon={IconPencil}
-                                    tooltip="Editar"
-                                    onClick={() => {
-                                      setRowData(condition)
-                                      setOpenDialog('edit')
-                                    }}
-                                  />
-                                  <ActionButton
-                                    Icon={IconCircleX}
-                                    tooltip="Desativar"
-                                    onClick={() => {
-                                      handleDisablePaymentCondition(
-                                        condition?.id || '',
-                                      )
-                                    }}
-                                  />
+                                  <PermissionGate
+                                    permissions={[
+                                      'financial_settings:payment_methods:edit',
+                                    ]}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar"
+                                      onClick={() => {
+                                        setRowData(condition)
+                                        setOpenDialog('edit')
+                                      }}
+                                    />
+                                    <ActionButton
+                                      Icon={IconCircleX}
+                                      tooltip="Desativar"
+                                      onClick={() => {
+                                        handleDisablePaymentCondition(
+                                          condition?.id || '',
+                                        )
+                                      }}
+                                    />
+                                  </PermissionGate>
                                 </TooltipProvider>
                               </div>
                             </TableCell>

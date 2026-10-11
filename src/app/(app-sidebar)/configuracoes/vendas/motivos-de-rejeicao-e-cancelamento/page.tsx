@@ -11,7 +11,7 @@ import { FEATURES } from '@/consts/features'
 
 export function metadata() {
   return {
-    title: 'Motivos de Rejeição e Cancelamento',
+    title: 'Motivos de rejeição e cancelamento',
   }
 }
 

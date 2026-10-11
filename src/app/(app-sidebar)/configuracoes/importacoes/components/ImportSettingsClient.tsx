@@ -21,21 +21,21 @@ export function ImportSettingsClient() {
       category: 'Importações',
       items: [
         {
-          title: 'Importar Clientes',
+          title: 'Importar clientes',
           icon: IconUpload,
           description: 'Traga sua base de clientes para o Atrupe.',
           cta: <ImportClientModal />,
           permission: 'import_settings:clients:view',
         },
         {
-          title: 'Importar Fornecedores',
+          title: 'Importar fornecedores',
           icon: IconUpload,
           description: 'Cadastre seus fornecedores no sistema.',
           cta: <ImportSupplierModal />,
           permission: 'import_settings:suppliers:view',
         },
         {
-          title: 'Importar Produtos',
+          title: 'Importar produtos',
           icon: IconUpload,
           description: 'Importe seus produtos ou serviços.',
           cta: <ImportProductModal />,
@@ -49,7 +49,7 @@ export function ImportSettingsClient() {
           permission: 'import_settings:quotations:view',
         },
         {
-          title: 'Importar Ordens de Serviço',
+          title: 'Importar ordens de serviço',
           icon: IconUpload,
           description: 'Importe suas ordens de serviço para o sistema.',
           cta: <ImportOrderModal />,

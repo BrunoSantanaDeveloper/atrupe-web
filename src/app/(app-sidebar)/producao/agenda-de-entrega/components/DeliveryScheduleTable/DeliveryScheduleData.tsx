@@ -15,7 +15,6 @@ import { DeliveryScheduleDateDialog } from '../Actions/ScheduleDate'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
-import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { EditInstallments } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/EditInstallments'
 
 // UI
@@ -26,6 +25,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TableGroupRow,
 } from '@/components/ui/table'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -49,16 +49,18 @@ import { cn, truncateString } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 
 // Icons
 import {
   IconSearch,
   IconPrinter,
-  IconMoneybag,
-  IconMessage,
   IconRefreshDot,
+  IconMessage,
   IconCircleCheck,
   IconQuestionMark,
   IconCalendarRepeat,
@@ -70,6 +72,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Consts
 import { FEATURES } from '@/consts/features'
+import { useSectorColor } from '@/hooks/useSectorColor'
 import { sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
 
@@ -78,6 +81,7 @@ interface Props extends SearchParamsType {
 }
 
 export function DeliveryScheduleData({ searchParams, tabs }: Props) {
+  const colorOf = useSectorColor()
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
   const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
@@ -172,6 +176,11 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
 
       const pdfData = result.data
 
+      const [{ pdf }, { GeneratePdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('@/components/common/PrintQuotation/GeneratePdf'),
+      ])
+
       const blob = await pdf(
         <GeneratePdf
           data={pdfData}
@@ -210,14 +219,9 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
               <TableBody>
                 {deliveryScheduleArray.map((group) => (
                   <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={6}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {formatToWeekDate(group?.date)}
-                      </TableCell>
-                    </TableRow>
+                    <TableGroupRow>
+                      {formatToWeekDate(group?.date)}
+                    </TableGroupRow>
                     {group?.deliveries?.length
                       ? group?.deliveries?.map((deliverySchedule) => {
                           const link = `/vendas/ordens-de-servico/${deliverySchedule?.order?.id}`
@@ -286,6 +290,22 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                         : 'neutralLight'
                                                     }
                                                     className="p-2"
+                                                    // A cor do setor no ícone
+                                                    // da etapa (área 9 §4.14)
+                                                    style={
+                                                      stage?.status === 'DONE'
+                                                        ? undefined
+                                                        : {
+                                                            color: colorOf({
+                                                              id: stage?.stage
+                                                                ?.id,
+                                                              name: stage?.stage
+                                                                ?.name,
+                                                              icon: stage?.stage
+                                                                ?.icon,
+                                                            }),
+                                                          }
+                                                    }
                                                   />
                                                 </StageStatusDropdown>
                                               )
@@ -360,7 +380,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       >
                                         <ActionButton
                                           variant="neutralLight"
-                                          Icon={IconMoneybag}
+                                          Icon={IconRefreshDot}
                                           badge="errorLight"
                                           tooltip="Faturar"
                                           onClick={() => {

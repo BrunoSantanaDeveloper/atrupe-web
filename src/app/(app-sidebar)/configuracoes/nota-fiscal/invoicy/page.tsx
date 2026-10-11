@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 
 /**
- * Tela legada de "Configurações Gerais" do Invoicy.
+ * Tela legada de "Configurações gerais" do Invoicy.
  *
  * Não era linkada em FiscalSettingsClient nem na navegação — só alcançável por
  * URL direta — e estava quebrada: enviava `emitCmun` (ausente do

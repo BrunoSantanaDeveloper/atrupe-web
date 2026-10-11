@@ -60,7 +60,7 @@ export function RemoveModuleDialog({
       // função do login (GET /subscriptions/session).
       await refreshCompanySession().catch(() => null)
 
-      toast.success(`Módulo ${moduleName} removido com sucesso.`)
+      toast.success(`Módulo ${moduleName} removido.`)
       queryClient.invalidateQueries({ queryKey: ['subscription-active'] })
       handleClose()
     } catch {

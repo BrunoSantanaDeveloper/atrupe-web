@@ -25,7 +25,6 @@ import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
-import { PayrollPdf } from './PayrollPdf'
 import { NewItemDialog } from './NewItem'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -39,7 +38,7 @@ import {
   IconTrash,
   IconPencil,
   IconPrinter,
-  IconCirclePlus,
+  IconPlus,
   IconLayoutGrid,
   IconAlertTriangle,
 } from '@tabler/icons-react'
@@ -52,7 +51,10 @@ import type {
 } from '@/types/financial/payroll'
 
 // Libs
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { getItem, deleteItemNew, createItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDateTime } from '@/lib/formatDate'
@@ -92,6 +94,11 @@ export function PayrollItems({ data }: Props) {
       }
 
       const pdfData: PayrollPdfType = result.data
+      const [{ pdf }, { PayrollPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./PayrollPdf'),
+      ])
+
       const blob = await pdf(
         <PayrollPdf data={pdfData} type="advance" />,
       ).toBlob()
@@ -166,9 +173,7 @@ export function PayrollItems({ data }: Props) {
           <div className="flex justify-between items-center">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Itens
-              </CardTitle>
+              <CardTitle>Itens</CardTitle>
             </div>
             <div className="flex gap-3 items-center">
               <TooltipProvider>
@@ -315,7 +320,7 @@ export function PayrollItems({ data }: Props) {
             >
               <FeaturedIcon
                 variant={data?.status === 'CLOSED' ? 'neutralLight' : 'light'}
-                Icon={IconCirclePlus}
+                Icon={IconPlus}
                 rounded
               />
               <p className="text-sm text-gray-600 font-medium">

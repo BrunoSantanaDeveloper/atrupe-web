@@ -106,10 +106,10 @@ function Trigger({ label }: { label: string }) {
   return (
     <button
       id={`trigger-${label.replace(/\s+/g, '-').toLowerCase()}`}
-      className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#D0D5DD] text-sm font-medium text-[#344054] bg-white shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)] hover:bg-gray-50 transition-colors"
+      className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 bg-white shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)] hover:bg-gray-50 transition-colors"
     >
       {label}
-      <ChevronDown className="w-4 h-4 text-[#667085]" />
+      <ChevronDown className="w-4 h-4 text-gray-500" />
     </button>
   )
 }
@@ -129,9 +129,9 @@ function VariantCard({
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-xs font-semibold text-[#101828]">{title}</p>
+        <p className="text-xs font-semibold text-gray-900">{title}</p>
         {description && (
-          <p className="text-[11px] text-[#667085]">{description}</p>
+          <p className="text-[11px] text-gray-500">{description}</p>
         )}
       </div>
       <div className="flex items-start gap-4 flex-wrap">{children}</div>
@@ -151,7 +151,7 @@ function Section({
 }) {
   return (
     <div className="space-y-6">
-      <h2 className="text-base font-bold text-[#101828] border-b border-[#F2F4F7] pb-2">
+      <h2 className="text-base font-bold text-gray-900 border-b border-gray-100 pb-2">
         {title}
       </h2>
       {children}
@@ -168,14 +168,14 @@ export default function DropdownSandboxPage() {
       <div className="max-w-4xl mx-auto space-y-12">
         {/* Page header */}
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             Dropdown Menu — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             6 variantes do <code>AccountDropdownMenu</code> mapeadas diretamente
             do Figma.
           </p>
-          <p className="text-xs text-[#667085] mt-0.5">
+          <p className="text-xs text-gray-500 mt-0.5">
             Clique nos triggers para abrir os menus interativos.
           </p>
         </div>

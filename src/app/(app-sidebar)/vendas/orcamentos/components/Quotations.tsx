@@ -32,9 +32,12 @@ import type { ExportColumn } from '@/lib/export-excel'
 import type { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { getData, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getData, getDataOld } from '@/actions/_cruds'
+import { getQuickSaleSettings } from '@/actions/quick-sale'
 
 // Third-party
+import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
@@ -45,6 +48,13 @@ import { usePermissions } from '@/hooks/usePermissions'
 type QuotationExportType = QuotationType & {
   groupDate?: string
 }
+
+// VR-4 do fork: a venda rápida que cria o orçamento direto com a configuração
+// de src/actions/quick-sale.ts (dado de demonstração) e cobra pelo checkout
+// em memória. Desligado: a etapa da fronteira do mock troca esta constante
+// pela flag de demonstração. Até lá vale o formulário da venda rápida, que
+// segue Concluir/Aprovar e Informar cliente.
+const QUICK_SALE_DIRECT = false as boolean
 
 function getQuotationReference(quotation: QuotationExportType) {
   const serie = quotation.serie?.quotation || ''
@@ -82,7 +92,7 @@ function getQuotationFinalValue(quotation: QuotationExportType) {
 
 const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
   {
-    header: 'Referencia',
+    header: 'Referência',
     getValue: getQuotationReference,
   },
   {
@@ -90,7 +100,7 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
     getValue: (quotation) => quotation.client?.name,
   },
   {
-    header: 'Email do cliente',
+    header: 'E-mail do cliente',
     getValue: (quotation) => quotation.client?.email,
   },
   {
@@ -103,7 +113,7 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
     getValue: (quotation) => quotation.tag?.text,
   },
   {
-    header: 'Venda rapida',
+    header: 'Venda rápida',
     type: 'boolean',
     key: 'quickSale',
   },
@@ -113,12 +123,12 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
     type: 'date',
   },
   {
-    header: 'Concluido em',
+    header: 'Concluído em',
     key: 'finishedAt',
     type: 'date',
   },
   {
-    header: 'Valido ate',
+    header: 'Válido até',
     key: 'dueDate',
     type: 'date',
   },
@@ -142,7 +152,7 @@ const QUOTATION_VALUE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
       (quotation.quotationPayment?.discountTotal ?? 0) / 100,
   },
   {
-    header: 'Comissao adicionada',
+    header: 'Comissão adicionada',
     type: 'currency',
     getValue: (quotation) =>
       quotation.quotationPayment?.commission?.type === 'ADD'
@@ -158,16 +168,76 @@ const QUOTATION_VALUE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
 
 export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
-
-  // "Nova venda rápida" no menu abre o formulário aqui.
   const router = useRouter()
   const pathname = usePathname()
-  const quickSaleFromMenu = searchParams?.['venda-rapida'] === '1'
+  const { data: session } = useSession()
+
+  // "Venda rápida" no menu leva para cá com ?novo=venda-rapida (o link antigo,
+  // ?venda-rapida=1, continua valendo)
+  const quickSaleRequested =
+    searchParams?.novo === 'venda-rapida' ||
+    searchParams?.['venda-rapida'] === '1'
+  // ALT-22 / VR-1 (fork): com a configuração completa, a venda rápida pula o
+  // modal e o orçamento nasce direto, abrindo na tela dos itens. A
+  // configuração ainda vem de dado de demonstração, por isso o caminho fica
+  // desligado (QUICK_SALE_DIRECT) e o menu abre o formulário da venda rápida
+  const isQuickSale = QUICK_SALE_DIRECT && quickSaleRequested
+  const [creatingQuickSale, setCreatingQuickSale] = useState(false)
+
+  // Caminho padrão: o formulário da venda rápida, com cliente opcional
   useEffect(() => {
-    if (!quickSaleFromMenu) return
+    if (!quickSaleRequested || isQuickSale) return
     setOpenDialog('quick-sale')
     router.replace(pathname)
-  }, [quickSaleFromMenu, router, pathname])
+  }, [quickSaleRequested, isQuickSale, router, pathname])
+
+  useEffect(() => {
+    if (!isQuickSale || creatingQuickSale) return
+
+    const createQuickSale = async () => {
+      setCreatingQuickSale(true)
+
+      const config = await getQuickSaleSettings()
+      const settings = config?.data
+
+      // Sem configuração completa não há como criar sozinho. Em vez de falhar
+      // calado, a venda rápida cai no formulário da venda rápida e diz o que
+      // falta — o vendedor termina a venda e alguém ajusta a configuração
+      // depois
+      if (!settings?.enabled || !settings?.clientId || !settings?.seriesId) {
+        toast.info(
+          'Venda rápida ainda não configurada: escolha o cliente padrão e a série em Configurações › Vendas › Venda rápida',
+        )
+        setOpenDialog('quick-sale')
+        return
+      }
+
+      const res = await createItemNew({
+        route: '/sale/quotation',
+        data: {
+          companyId: session?.company?.id,
+          clientId: settings.clientId,
+          contactId: '',
+          description: settings.description,
+          contactSourceId: settings.serviceTypeId,
+          seriesId: settings.seriesId,
+          sellerId: session?.user?.employeeId,
+          quickSale: true,
+        },
+      })
+
+      if (!res.success || !res.data?.id) {
+        toast.error(res.message || 'Erro ao abrir a venda rápida')
+        setOpenDialog('quick-sale')
+        return
+      }
+
+      // Já com o modal "Qual item deseja adicionar?" aberto (VR-4)
+      window.location.href = `/vendas/orcamentos/${res.data.id}?adicionar=1`
+    }
+
+    createQuickSale()
+  }, [isQuickSale, creatingQuickSale, session])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({
@@ -228,7 +298,9 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
   const getExportQuotations = async () => {
     const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
-    const filters = { ...searchParams, status: exportStatus }
+    // mesmo cuidado da listagem: `novo` é da tela, a API recusa
+    const { novo: _novo, ...exportParams } = searchParams
+    const filters = { ...exportParams, status: exportStatus }
     const result = await getData({ route: '/sale/quotation/export', filters })
 
     if (!result.success) {
@@ -236,6 +308,17 @@ export function Quotations({ searchParams }: SearchParamsType) {
     }
 
     return (result.data || []) as QuotationExportType[]
+  }
+
+  // Enquanto a venda rápida cria o orçamento, não faz sentido piscar a lista:
+  // o destino é a tela dos itens, não esta
+  if (isQuickSale && openDialog !== 'quick-sale') {
+    return (
+      <div className="space-y-5">
+        <Topbar title="Venda rápida" />
+        <Skeleton className="h-[calc(100vh-150px)]" />
+      </div>
+    )
   }
 
   return (
@@ -254,8 +337,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
                 columns={exportColumns}
                 fileName="orcamentos"
                 getData={getExportQuotations}
-                sheetName="Orcamentos"
-                emptyMessage="Nenhum orcamento disponivel para exportacao"
+                sheetName="Orçamentos"
+                emptyMessage="Nenhum orçamento disponível para exportação"
               />
             </PermissionGate>
             <NewQuickSaleTriggerButton
@@ -276,7 +359,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={`Nenhum orçamento para o status ${statusLabel ? `: ${statusLabel}` : 'selecionado'}`}
+                title={`Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`}
                 icon={IconReportOff}
               />
             ) : (
@@ -292,7 +375,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : (
             <ListDataTotalEmpty
               icon={IconReportOff}
-              title="Sem orçamentos cadastrados"
+              title="Nenhum orçamento cadastrado"
               description="Cadastre seu primeiro orçamento"
               cta={
                 <NewQuotationTriggerButton

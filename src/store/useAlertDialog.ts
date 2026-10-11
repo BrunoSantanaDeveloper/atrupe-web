@@ -45,8 +45,10 @@ type AlertDialogStore = BaseAlertDialog & {
   confirm: () => Promise<boolean>
 }
 
-export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
-  isOpen: false,
+// Cada janela começa do padrão: sem isso, a janela aberta sem `onConfirm`
+// (ou sem textos e cores próprios) herdava os da janela anterior, e o botão
+// de confirmar podia executar a ação de outra tela (corrigido em 07/10/2026)
+const DIALOG_DEFAULTS = {
   title: 'Confirmar ação',
   description: '',
   confirmLabel: '',
@@ -58,8 +60,13 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
   confirmVariant: 'default',
   toastMsg: DEFAULT_MESSAGES,
   timeout: DEFAULT_TIMEOUT,
+} satisfies Omit<BaseAlertDialog, 'isOpen'>
+
+export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
+  isOpen: false,
+  ...DIALOG_DEFAULTS,
   open: (props) => {
-    set({ isOpen: true, ...props })
+    set({ ...DIALOG_DEFAULTS, isOpen: true, ...props })
     return get().confirm()
   },
   close: () => set({ isOpen: false }),

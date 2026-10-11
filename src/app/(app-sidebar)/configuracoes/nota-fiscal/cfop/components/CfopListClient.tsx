@@ -65,7 +65,7 @@ export function CfopListClient() {
   })
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: unknown) => {
       return createItemNew({
         route: '/fiscal/cfops',
         data,
@@ -76,7 +76,7 @@ export function CfopListClient() {
         toast.error(result.message || 'Erro ao criar CFOP')
         return
       }
-      toast.success('CFOP criado com sucesso!')
+      toast.success('CFOP criado')
       queryClient.invalidateQueries({ queryKey: ['cfops'] })
     },
     onError: (error) => {
@@ -86,7 +86,7 @@ export function CfopListClient() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+    mutationFn: async ({ id, data }: { id: string; data: unknown }) => {
       return updateItemNew({
         route: `/fiscal/cfops/${id}`,
         data,
@@ -97,7 +97,7 @@ export function CfopListClient() {
         toast.error(result.message || 'Erro ao atualizar CFOP')
         return
       }
-      toast.success('CFOP atualizado com sucesso!')
+      toast.success('CFOP atualizado')
       queryClient.invalidateQueries({ queryKey: ['cfops'] })
     },
     onError: (error) => {
@@ -117,7 +117,7 @@ export function CfopListClient() {
         toast.error(result.message || 'Erro ao excluir CFOP')
         return
       }
-      toast.success('CFOP excluído com sucesso!')
+      toast.success('CFOP excluído')
       queryClient.invalidateQueries({ queryKey: ['cfops'] })
     },
     onError: (error) => {
@@ -138,7 +138,7 @@ export function CfopListClient() {
     setModalOpen(true)
   }
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: Record<string, unknown>) => {
     console.log('[CfopList] handleSave start', data)
     try {
       if (selectedCfop?.id) {
@@ -185,8 +185,8 @@ export function CfopListClient() {
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="outline" Icon={IconArrowsSplit} />
             <div>
-              <h2 className="text-lg font-semibold">Tabela de CFOP</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="type-section-title">Tabela de CFOP</h2>
+              <p className="type-secondary">
                 Gerencie os CFOPs utilizados na emissão de notas fiscais
               </p>
             </div>
@@ -205,9 +205,7 @@ export function CfopListClient() {
         ) : cfops.length === 0 ? (
           <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
             <IconArrowsSplit className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
-              Nenhum CFOP cadastrado
-            </h3>
+            <h3 className="type-card-title mb-2">Nenhum CFOP cadastrado</h3>
             <p className="text-gray-500 mb-4">
               Adicione CFOPs customizados para usar nas suas notas fiscais
             </p>
@@ -223,16 +221,14 @@ export function CfopListClient() {
                   <th className="px-4 py-3 text-left w-12">
                     {/* Status indicator space or similar if needed */}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Código
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="type-eyebrow px-4 py-3 text-left">Código</th>
+                  <th className="type-eyebrow px-4 py-3 text-left">
                     Descrição
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="type-eyebrow px-4 py-3 text-left">
                     Informações de uso
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">
+                  <th className="type-eyebrow px-4 py-3 text-left w-16">
                     Ações
                   </th>
                 </tr>

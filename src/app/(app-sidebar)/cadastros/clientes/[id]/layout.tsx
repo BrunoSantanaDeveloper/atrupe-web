@@ -106,7 +106,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
             <ClientActions params={params} data={data} entityType="client" />
           }
         />
-        <Tabs value={params.tab} defaultValue="cadastro">
+        <Tabs value={params.tab} defaultValue="cadastro" variant="pill">
           {tabs.length > 1 && (
             <TabsList>
               {tabs.map((tab) => (

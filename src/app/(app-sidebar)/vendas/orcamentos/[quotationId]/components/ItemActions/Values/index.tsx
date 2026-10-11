@@ -39,7 +39,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
 // Libs
-import { parseCurrencyToBrl } from '@/lib/utils'
+import { cn, parseCurrencyToBrl } from '@/lib/utils'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 interface Props {
@@ -75,11 +75,16 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     return 0
   }, [discount, discountType, baseValue])
 
-  // Calcular o valor original total sem nenhum desconto (soma dos totalValue dos produtos)
+  // EC-2: a referência do limite de desconto é o PREÇO BASE do cadastro, não
+  // o preço já editado pelo vendedor. Editar o item para menos passa a contar
+  // como desconto; editar para mais não gera desconto negativo. Quando o
+  // originalValue não vier preenchido, vale o totalValue — o comportamento
+  // antigo, para não quebrar orçamentos existentes.
   const originalValue = useMemo(() => {
     return (
       quotationData?.quotationItems?.reduce(
-        (sum, item) => sum + (item?.totalValue || 0),
+        (sum, item) =>
+          sum + Math.max(item?.originalValue || 0, item?.totalValue || 0),
         0,
       ) || 0
     )
@@ -102,9 +107,22 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     return quotationData?.paymentConditions?.discount?.discountTotal || 0
   }, [quotationData?.paymentConditions?.discount?.discountTotal])
 
-  // Desconto total combinado (item atual + outros itens + desconto geral)
+  // Redução do preço editado abaixo do preço base, somada ao desconto (EC-2)
+  const priceReduction = useMemo(() => {
+    return (
+      quotationData?.quotationItems?.reduce(
+        (sum, item) =>
+          sum +
+          Math.max((item?.originalValue || 0) - (item?.totalValue || 0), 0),
+        0,
+      ) || 0
+    )
+  }, [quotationData?.quotationItems])
+
+  // Desconto total combinado (item atual + outros itens + desconto geral +
+  // a redução do preço editado)
   const combinedDiscountTotal =
-    currentItemDiscount + otherItemsDiscount + generalDiscount
+    currentItemDiscount + otherItemsDiscount + generalDiscount + priceReduction
 
   // Calcular o percentual de desconto total
   const totalDiscountPercentage =
@@ -186,6 +204,23 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountType])
 
+  // MS-16: o vendedor ajusta o valor do item para mais, para menos ou só para
+  // arredondar. Para mais, a diferença é valor agregado (vai como desconto
+  // negativo até a API ter o campo próprio); para menos, é desconto e vale o
+  // limite do perfil
+  const surcharge = Math.max(finalValue - baseValue, 0)
+  const surchargePercent = baseValue > 0 ? (surcharge / baseValue) * 100 : 0
+
+  const roundTotal = (direction: 'down' | 'up') => {
+    // Arredonda para o real inteiro; valores em centavos
+    const rounded =
+      direction === 'down'
+        ? Math.floor(finalValue / 100) * 100
+        : Math.ceil(finalValue / 100) * 100
+    setValue('finalValue', rounded)
+    handleTotalValueChange(rounded)
+  }
+
   // Atualiza os valores no submit
   const mutation = useMutation({
     mutationFn: (body: FormType) =>
@@ -210,13 +245,13 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     try {
       const result = await mutation.mutateAsync(data)
       if (result.success) {
-        toast.success('Valores atualizados!')
+        toast.success('Valores atualizados')
         setOpen('')
       } else {
         toast.error(result.message || 'Erro ao atualizar os valores!')
       }
     } catch (error) {
-      toast.error('Erro ao atualizar os valores!')
+      toast.error('Erro ao atualizar os valores')
     }
   }
 
@@ -230,9 +265,14 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-            <DialogTitle>Editar valores do item</DialogTitle>
+            <div>
+              <DialogTitle>Editar valores do item</DialogTitle>
+              <DialogDescription>
+                Mude o valor total para mais, para menos ou para arredondar.
+                Para menos, conta como desconto e vale o seu limite.
+              </DialogDescription>
+            </div>
           </div>
-          <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>
@@ -279,17 +319,60 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                 {exceedsMaxDiscount && (
                   <p className="mt-1 text-xs text-error">
                     Desconto total ({totalDiscountPercentage.toFixed(1)}%)
-                    excede o limite do vendedor ({maxDiscount}%)
+                    excede o limite do vendedor ({maxDiscount}%). Reduza o
+                    desconto para salvar.
                   </p>
                 )}
               </div>
-              <FormBrlInput<FormType>
-                name="finalValue"
-                label="Valor total"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-                additionalOnChange={handleTotalValueChange}
-              />
+              <div className="flex flex-[1_0_200px] flex-col gap-1">
+                <FormBrlInput<FormType>
+                  name="finalValue"
+                  label="Valor total"
+                  startAdornment={<>R$</>}
+                  width="w-full"
+                  additionalOnChange={handleTotalValueChange}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="link"
+                    className="h-auto p-0"
+                    onClick={() => roundTotal('down')}
+                  >
+                    Arredondar para baixo
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="link"
+                    className="h-auto p-0"
+                    onClick={() => roundTotal('up')}
+                  >
+                    para cima
+                  </Button>
+                </div>
+              </div>
+              {/* ALT-25: a diferença para mais sobre o preço base é o valor
+                  agregado. Fica embutido no valor do item: aparece aqui, no
+                  registro, e não como linha própria na proposta */}
+              <div className="flex w-full flex-col gap-1">
+                <p className="text-sm font-medium text-gray-700">
+                  Valor agregado
+                </p>
+                <p
+                  className={cn(
+                    'rounded-lg px-4 py-2 text-sm',
+                    surcharge > 0
+                      ? 'bg-success-50 text-success-700'
+                      : 'bg-gray-50 text-gray',
+                  )}
+                >
+                  {surcharge > 0
+                    ? `+ R$ ${parseCurrencyToBrl(surcharge)} (${surchargePercent.toFixed(1)}%) sobre o valor base. Fica embutido no valor do item e não conta como desconto.`
+                    : 'Nenhum. Suba o valor total para registrar um acréscimo; ele fica embutido no valor do item, sem linha própria na proposta.'}
+                </p>
+              </div>
             </form>
           </Form>
         </DialogBody>
@@ -306,11 +389,14 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
             >
               Cancelar
             </Button>
+            {/* EC-17: o limite do perfil de vendedor passa a valer de fato —
+                o aviso continua, e o salvamento fica bloqueado */}
             <Button
               type="submit"
               form="quotation-values"
               RightIcon={IconCircleCheck}
               isLoading={mutation.isPending}
+              disabled={exceedsMaxDiscount}
             >
               Salvar
             </Button>

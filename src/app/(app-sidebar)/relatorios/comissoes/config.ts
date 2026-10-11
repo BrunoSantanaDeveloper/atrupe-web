@@ -1,11 +1,5 @@
 // Filter options for Commission Report (Comissões)
 
-export const commissionOptions = [
-  { value: 'all', label: 'Todos' },
-  { value: 'sold_value', label: 'Valor vendido' },
-  { value: 'received_value', label: 'Valor recebido' },
-]
-
 export const groupByOptions = [
   { value: 'none', label: 'Sem agrupamento' },
   { value: 'vendedor', label: 'Vendedor' },

@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
 
@@ -27,7 +30,6 @@ import {
 } from '@/lib/filter-utils'
 
 // PDF Component
-import { SectorReportPdf } from './SectorReportPdf'
 
 // Excel
 import { generateSectorExcel } from './generateSectorExcel'
@@ -61,6 +63,12 @@ export function SectorReportPrintButton() {
       if (!pdfData) {
         throw new Error('Erro ao buscar dados do PDF')
       }
+
+      const [{ pdf }, { SectorReportPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+
+        import('./SectorReportPdf'),
+      ])
 
       const blob = await pdf(<SectorReportPdf data={pdfData} />).toBlob()
       const url = URL.createObjectURL(blob)

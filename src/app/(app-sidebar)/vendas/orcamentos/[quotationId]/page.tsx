@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function QuotationPage({ params }: ParamsType) {
   return (
     <PermissionGate
-      permissions={['sale:quotation:edit']}
+      permissions={['sale:quotation:view', 'sale:quotation:edit']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar este orçamento.

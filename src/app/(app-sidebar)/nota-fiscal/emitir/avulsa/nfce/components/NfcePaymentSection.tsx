@@ -113,9 +113,7 @@ export function NfcePaymentSection({
       <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
         <FeaturedIcon variant="successOutline" Icon={IconCash} />
         <div className="flex-1">
-          <CardTitle className="text-gray-700 font-semibold text-base">
-            Forma de Pagamento
-          </CardTitle>
+          <CardTitle>Forma de Pagamento</CardTitle>
         </div>
       </CardHeader>
 
@@ -217,34 +215,26 @@ export function NfcePaymentSection({
           {/* Payment Summary Info */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 text-center">
             <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="text-xs text-gray-500 font-medium uppercase">
-                Total da Nota
-              </div>
+              <div className="type-eyebrow">Total da Nota</div>
               <div className="text-base font-semibold text-gray-900 mt-1">
                 {formatCurrency(totalNota)}
               </div>
             </div>
             <div className="p-3 bg-green-50/40 rounded-lg">
-              <div className="text-xs text-green-700 font-medium uppercase">
-                Total Pago
-              </div>
-              <div className="text-base font-bold text-green-700 mt-1">
+              <div className="type-eyebrow text-green-700">Total Pago</div>
+              <div className="type-body-strong text-green-700 mt-1">
                 {formatCurrency(totalPago)}
               </div>
             </div>
             <div className="p-3 bg-blue-50/40 rounded-lg">
-              <div className="text-xs text-blue-700 font-medium uppercase">
-                Restante
-              </div>
-              <div className="text-base font-bold text-blue-700 mt-1">
+              <div className="type-eyebrow text-blue-700">Restante</div>
+              <div className="type-body-strong text-blue-700 mt-1">
                 {formatCurrency(restante)}
               </div>
             </div>
             <div className="p-3 bg-amber-50/40 rounded-lg">
-              <div className="text-xs text-amber-700 font-medium uppercase">
-                Troco
-              </div>
-              <div className="text-base font-bold text-amber-700 mt-1">
+              <div className="type-eyebrow text-amber-700">Troco</div>
+              <div className="type-body-strong text-amber-700 mt-1">
                 {formatCurrency(valorTroco)}
               </div>
             </div>

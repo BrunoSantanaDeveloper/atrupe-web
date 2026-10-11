@@ -26,7 +26,7 @@ import { SelectRoleField } from '@/components/common/form/global-inputs/RoleSele
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 
 // Icons
-import { IconCircleCheck, IconCirclePlus } from '@tabler/icons-react'
+import { IconCircleCheck, IconPlus } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -63,7 +63,7 @@ export function NewEmployeeDialog() {
       createItem({ route: 'employeeRoute', data }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Colaborador criado!')
+      toast.success('Colaborador criado')
       if (insertAnother) {
         reset(defaultValues)
         handleOpenChange(true)
@@ -91,7 +91,7 @@ export function NewEmployeeDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" LeftIcon={IconCirclePlus}>
+        <Button type="button" LeftIcon={IconPlus}>
           Novo colaborador
         </Button>
       </DialogTrigger>
@@ -99,7 +99,7 @@ export function NewEmployeeDialog() {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCirclePlus} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
               <span>Novo colaborador</span>
             </div>
           </DialogTitle>

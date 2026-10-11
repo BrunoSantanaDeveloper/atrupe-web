@@ -283,7 +283,7 @@ export function Payroll({ searchParams }: SearchParamsType) {
               </Table>
             ) : (
               <ListDataTotalEmpty
-                title="Sem folha de pagamento cadastrada"
+                title="Nenhuma folha de pagamento cadastrada"
                 icon={IconBusinessplan}
                 description=""
               />

@@ -7,7 +7,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
-    title: 'Condições de Pagamento',
+    title: 'Condições de pagamento',
   }
 }
 

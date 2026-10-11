@@ -53,7 +53,7 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
       icon: IconCheck,
     },
     {
-      label: 'Nao aprovados',
+      label: 'Não aprovados',
       value: rejectedCount,
       icon: IconCircleX,
     },
@@ -64,13 +64,11 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
       <CardHeader className="flex-row flex-wrap items-center justify-between gap-3">
         <div className="flex gap-3 items-center">
           <FeaturedIcon variant="indigoLight" Icon={IconCoin} />
-          <CardTitle className="text-gray-700 font-semibold text-base">
-            Orcamentos
-          </CardTitle>
+          <CardTitle>Orçamentos</CardTitle>
         </div>
         <PermissionGate permissions={['sale:quotation:view']}>
           <Button asChild type="button" size="sm" variant="neutralOutline">
-            <Link href="/vendas/orcamentos">Ver orcamentos</Link>
+            <Link href="/vendas/orcamentos">Ver orçamentos</Link>
           </Button>
         </PermissionGate>
       </CardHeader>
@@ -87,8 +85,8 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
             : items.map((item) => (
                 <div key={item.label} className="flex items-center gap-2">
                   <item.icon size={20} className="text-gray" />
-                  <span className="text-sm text-gray">{item.label}</span>
-                  <span className="text-lg font-semibold">{item.value}</span>
+                  <span className="type-kpi-label">{item.label}</span>
+                  <span className="type-kpi-value">{item.value}</span>
                 </div>
               ))}
         </div>

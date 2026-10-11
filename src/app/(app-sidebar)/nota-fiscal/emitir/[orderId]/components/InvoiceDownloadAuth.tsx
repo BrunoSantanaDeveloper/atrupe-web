@@ -78,9 +78,7 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconCloudDownload} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Autorização de download (autXML)
-              </CardTitle>
+              <CardTitle>Autorização de download (autXML)</CardTitle>
             </div>
             <div>
               <AccordionTrigger

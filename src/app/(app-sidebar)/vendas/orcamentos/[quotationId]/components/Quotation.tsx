@@ -16,6 +16,7 @@ import { QuotationDelivery } from './Delivery'
 import { QuotationItems } from './QuotationItems'
 import { Topbar } from '@/components/common/Topbar'
 import { QuotationActions } from './QuotationActions'
+import { QuickSaleQuotation } from './QuickSaleQuotation'
 import { QuotationPaymentConditions } from './PaymentConditions'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -45,6 +46,11 @@ interface Props {
 }
 
 export const QUOTATION_DATA_QUERY_KEY = 'quotation-data'
+
+// Checkout da venda rápida do fork (QuickSaleQuotation, sobre cash-front e
+// quick-sale, dados de demonstração). Desligado: a etapa da fronteira do mock
+// troca esta constante pela flag de demonstração.
+const QUICK_SALE_CHECKOUT = false as boolean
 
 export function Quotation({ id }: Props) {
   const previousUrl = '/vendas/orcamentos' // TODO : incluir parametros de busca anteriores se houver
@@ -114,6 +120,14 @@ export function Quotation({ id }: Props) {
 
   if (error || !data) notFound()
 
+  // A venda rápida tem arranjo próprio: recebimento no lugar das condições de
+  // pagamento, e a situação no caixa depois que ela sai. O checkout é de
+  // demonstração (caixa em memória), então fica desligado: a venda rápida
+  // real segue Concluir/Aprovar e Informar cliente
+  if (data.quickSale && QUICK_SALE_CHECKOUT) {
+    return <QuickSaleQuotation data={data} previousUrl={previousUrl} />
+  }
+
   if (data.status === 'APPROVED' && !isAdmin) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-150px)]">
@@ -161,7 +175,7 @@ export function Quotation({ id }: Props) {
                 variant: 'neutralLight',
               }
             }
-            label={data?.quickSale ? 'Venda Rápida' : ''}
+            label={data?.quickSale ? 'Venda rápida' : ''}
           />
           <Card className="w-full">
             <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
@@ -218,7 +232,7 @@ export function Quotation({ id }: Props) {
               variant: 'neutralLight',
             }
           }
-          label={data?.quickSale ? 'Venda Rápida' : ''}
+          label={data?.quickSale ? 'Venda rápida' : ''}
         />
         <div className="space-y-3">
           <QuotationActions data={data} />

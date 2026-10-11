@@ -31,7 +31,7 @@ export default function SignupPage() {
           className="mx-auto mb-2"
           rounded
         />
-        <CardTitle className="text-xl">E-mail enviado com sucesso</CardTitle>
+        <CardTitle>E-mail enviado com sucesso</CardTitle>
       </CardHeader>
       <CardContent className="mb-8 text-center text-sm text-gray">
         <p className="mb-3">
@@ -41,7 +41,7 @@ export default function SignupPage() {
         <p>
           Se não receber em 10 minutos, verifique a lixeira e o spam. Se o
           problema persistir, favor entrar em contato com o{' '}
-          <Link href="mailto:suporte@example.com" className="underline">
+          <Link href="mailto:suporte@atrupe.com.br" className="underline">
             nosso suporte
           </Link>
           .

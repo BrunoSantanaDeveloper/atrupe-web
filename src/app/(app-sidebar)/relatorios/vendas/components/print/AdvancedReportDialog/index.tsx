@@ -1,7 +1,10 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
@@ -53,7 +56,6 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { useContactSources } from '@/hooks/queries/useContactSources'
 
 // PDF & Excel
-import { SalesReportPdf } from '../SalesReportPdf'
 import { generateSalesExcel } from '../generateSalesExcel'
 
 // Lib
@@ -163,6 +165,11 @@ export function AdvancedReportDialog() {
       }
 
       if (data.format === 'pdf') {
+        const [{ pdf }, { SalesReportPdf }] = await Promise.all([
+          import('@react-pdf/renderer'),
+          import('../SalesReportPdf'),
+        ])
+
         const blob = await pdf(
           <SalesReportPdf data={reportData} groupBy={data.groupBy} />,
         ).toBlob()

@@ -8,7 +8,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const radioItemVariants = cva(
-  'aspect-square rounded-full border border-[#D0D5DD] bg-white text-[#099260] transition-all duration-200 ease-in-out outline-none disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#F2F4F7] hover:ring-4 hover:ring-[#D2F9E3] focus-visible:ring-4 focus-visible:ring-[#D2F9E3] data-[state=checked]:bg-[#D2F9E3] data-[state=checked]:border-[#099260] disabled:data-[state=checked]:bg-[#F2F4F7] disabled:data-[state=checked]:text-[#D0D5DD] disabled:data-[state=checked]:border-[#D0D5DD]',
+  'aspect-square rounded-full border border-gray-300 bg-white text-brand-500 transition-all duration-200 ease-in-out outline-none disabled:cursor-not-allowed disabled:border-gray-300 disabled:bg-gray-100 hover:ring-4 hover:ring-brand-50 focus-visible:ring-4 focus-visible:ring-brand-50 data-[state=checked]:bg-brand-50 data-[state=checked]:border-brand-500 disabled:data-[state=checked]:bg-gray-100 disabled:data-[state=checked]:text-gray-300 disabled:data-[state=checked]:border-gray-300',
   {
     variants: {
       size: {

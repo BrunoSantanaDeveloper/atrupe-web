@@ -222,7 +222,7 @@ export function NfseListClient() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Numero/Serie</TableHead>
+              <TableHead>Número/Série</TableHead>
               <TableHead>RPS</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Ambiente</TableHead>
@@ -334,7 +334,7 @@ export function NfseListClient() {
       ) : (
         <FilteredDataEmpty
           title="Nenhuma NFS-e encontrada"
-          description="Nao ha notas fiscais de servico emitidas com os filtros selecionados"
+          description="Não há notas fiscais de serviço emitidas com os filtros selecionados"
         />
       )}
     </>

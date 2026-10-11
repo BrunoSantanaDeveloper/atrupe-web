@@ -92,7 +92,7 @@ export function ExportXmlButton() {
             `${faltantes} nota(s) sem XML no provedor — veja FALTANTES.txt no arquivo.`,
         )
       } else {
-        toast.success('XMLs exportados com sucesso!')
+        toast.success('XMLs exportados')
       }
       setIsOpen(false)
     } catch (err: unknown) {

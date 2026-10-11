@@ -1,3 +1,6 @@
+// React
+import { useEffect } from 'react'
+
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -15,9 +18,15 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 interface Props {
   addComissionValue: number
   quotationData: QuotationType
+  // EC-17: o pai precisa saber do estouro para bloquear o salvamento
+  onDiscountLimitChange?: (exceeds: boolean) => void
 }
 
-export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
+export function DiscountAndTotal({
+  addComissionValue,
+  quotationData,
+  onDiscountLimitChange,
+}: Props) {
   const form = useFormContext<QuotationPaymentConditionsType>()
 
   const { watch, setValue } = form
@@ -33,10 +42,14 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
   const mainAdditionalFee = watch('mainAdditionalFee') || 0
   const downPaymentAdditionalFee = watch('downPayment.additionalFee') || 0
 
-  // Calcular o valor original sem nenhum desconto (soma dos totalValue dos produtos)
+  // EC-2: a referência é o PREÇO BASE do cadastro, não o preço já editado.
+  // Sem isso, baixar o preço do item no orçamento escapava do limite de
+  // desconto do vendedor. Quando originalValue não vier preenchido, vale o
+  // totalValue — o comportamento antigo.
   const originalValue =
     quotationData?.quotationItems?.reduce(
-      (sum, item) => sum + (item?.totalValue || 0),
+      (sum, item) =>
+        sum + Math.max(item?.originalValue || 0, item?.totalValue || 0),
       0,
     ) || 0
 
@@ -47,8 +60,18 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
       return sum + Math.max(itemDiscount, 0)
     }, 0) || 0
 
-  // Desconto total combinado (itens + desconto geral)
-  const combinedDiscountTotal = itemsDiscountTotal + discountTotal
+  // Redução do preço editado abaixo do preço base — também é desconto (EC-2).
+  // Aumentar o preço não gera desconto negativo.
+  const priceReduction =
+    quotationData?.quotationItems?.reduce(
+      (sum, item) =>
+        sum + Math.max((item?.originalValue || 0) - (item?.totalValue || 0), 0),
+      0,
+    ) || 0
+
+  // Desconto total combinado (itens + desconto geral + redução do preço)
+  const combinedDiscountTotal =
+    itemsDiscountTotal + discountTotal + priceReduction
 
   // Calcular o percentual de desconto total.
   // Arredondado como no checkout do backend: sem isso, 10% de 1.163,73 vira
@@ -231,6 +254,10 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
     updateInstallments(totalValue)
   }
 
+  useEffect(() => {
+    onDiscountLimitChange?.(Boolean(exceedsMaxDiscount))
+  }, [exceedsMaxDiscount, onDiscountLimitChange])
+
   // Mensagem de erro do desconto
   const discountErrorMessage = exceedsMaxDiscount
     ? `Desconto total (${totalDiscountPercentage.toFixed(1)}%) excede o limite do vendedor (${maxDiscount}%)`
@@ -282,7 +309,7 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
       <PermissionGate permissions={['values:values:edit']}>
         <FormBrlInput
           name="totalValue"
-          label="Valor Total"
+          label="Valor total"
           startAdornment={<>R$</>}
           width="flex-[1_0_200px]"
           additionalOnChange={handleTotalValueChange}

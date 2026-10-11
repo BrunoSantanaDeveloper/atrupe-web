@@ -66,7 +66,7 @@ export function RadialProgressChart({
   centerSubLabel,
   startAngle = 90,
   endAngle = -270,
-  totalValue = 100, // By default out of 100
+  totalValue: _totalValue = 100, // By default out of 100
 }: RadialProgressChartProps) {
   // Normalize data relative to radial maximum of `totalValue` so it fills part of the ring.
   // Recharts RadialBar natively uses domain in PolarRadiusAxis, but standard way is 0-max in PolarAngleAxis.
@@ -75,11 +75,9 @@ export function RadialProgressChart({
     <div className="flex flex-col items-center justify-center p-6 rounded-md bg-white border border-dashed border-[#7b61ff] overflow-hidden">
       {(title || subtitle) && (
         <div className="w-full mb-2 text-center">
-          {title && (
-            <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-          )}
+          {title && <h3 className="type-body-strong">{title}</h3>}
           {subtitle && (
-            <p className="text-xs font-medium text-[#667085]">{subtitle}</p>
+            <p className="text-xs font-medium text-gray-500">{subtitle}</p>
           )}
         </div>
       )}
@@ -106,7 +104,7 @@ export function RadialProgressChart({
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + (centerSubLabel ? -4 : 4)}
-                          className="fill-gray-900 text-2xl font-bold"
+                          className="fill-gray-900 type-kpi-value"
                         >
                           {centerLabel}
                         </tspan>
@@ -114,7 +112,7 @@ export function RadialProgressChart({
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 16}
-                            className="fill-[#667085] text-xs font-medium"
+                            className="fill-gray-500 text-xs font-medium"
                           >
                             {centerSubLabel}
                           </tspan>
@@ -130,7 +128,7 @@ export function RadialProgressChart({
 
           <RadialBar
             dataKey="value"
-            background={{ fill: '#F2F4F7' }}
+            background={{ fill: 'var(--gray-100)' }}
             cornerRadius={10}
           />
           <ChartTooltip

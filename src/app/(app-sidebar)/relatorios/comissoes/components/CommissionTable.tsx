@@ -1,6 +1,9 @@
 'use client'
 
-import { Fragment, useMemo, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { usePermissions } from '@/hooks/usePermissions'
+
+import { Fragment, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -27,10 +30,18 @@ import { getCommissionTable } from '@/actions/commission-report'
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
 
+// Mode
+import {
+  commissionOf,
+  commissionBase,
+  commissionFilters,
+  commissionModeOf,
+  commissionModeCopy,
+} from '../mode'
+
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import type {
-  CommissionType,
   CommissionGroupBy,
   CommissionOrderBy,
   CommissionRecord,
@@ -39,8 +50,27 @@ import type {
 interface CommissionTableProps extends SearchParamsType {}
 
 export function CommissionTable({ searchParams }: CommissionTableProps) {
-  const [groupBy, setGroupBy] = useState<CommissionGroupBy>('none')
-  const [orderBy, setOrderBy] = useState<CommissionOrderBy>('saleDate')
+  // EC-25: sem a permissão de ver vendas de outros vendedores, o relatório
+  // vai preso ao vendedor da sessão — o de Vendas já faz isso
+  const { data: session } = useSession()
+  const { hasAnyPermission } = usePermissions()
+  const canSeeOtherSellers = hasAnyPermission([
+    'sale:other_quotation:view',
+    'sale:other_sellers:view',
+  ])
+  const restrictedSellerId = canSeeOtherSellers
+    ? undefined
+    : session?.user?.employeeId
+
+  const mode = commissionModeOf(searchParams?.commissionType as string)
+  const copy = commissionModeCopy[mode]
+
+  // A comissão é paga por vendedor: agrupar por ele é o ponto de partida
+  const [groupBy, setGroupBy] = useState<CommissionGroupBy>('vendedor')
+  // Sem escolha do usuário, ordena pela data que o modo filtra
+  const [chosenOrderBy, setOrderBy] = useState<CommissionOrderBy>()
+  const orderBy =
+    chosenOrderBy ?? (mode === 'received_value' ? 'receivedDate' : 'saleDate')
 
   const page = parseInt((searchParams?.page as string) || '1')
 
@@ -50,21 +80,25 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       searchParams?.commissionType,
       searchParams?.startDate,
       searchParams?.endDate,
-      searchParams?.receivedStartDate,
-      searchParams?.receivedEndDate,
+      searchParams?.period,
       searchParams?.sellerId,
+      restrictedSellerId,
       groupBy,
       orderBy,
       page,
     ],
     queryFn: () =>
       getCommissionTable({
-        commissionType: searchParams?.commissionType as CommissionType,
-        startDate: searchParams?.startDate as string,
-        endDate: searchParams?.endDate as string,
-        receivedStartDate: searchParams?.receivedStartDate as string,
-        receivedEndDate: searchParams?.receivedEndDate as string,
-        sellerId: searchParams?.sellerId as string,
+        ...commissionFilters(
+          {
+            commissionType: searchParams?.commissionType as string,
+            period: searchParams?.period as string,
+            startDate: searchParams?.startDate as string,
+            endDate: searchParams?.endDate as string,
+            sellerId: searchParams?.sellerId as string,
+          },
+          restrictedSellerId,
+        ),
         groupBy,
         orderBy,
         page,
@@ -72,44 +106,59 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       }),
   })
 
-  const totalFiltered = useMemo(() => {
-    if (!data) return 0
-    if (data.grouped && data.groups?.length > 0) {
-      return data.groups.reduce((sum, g) => sum + g.saleTotal, 0)
-    }
-    return data.records.reduce((sum, r) => sum + r.saleValue, 0)
-  }, [data])
+  // Colunas na ordem da leitura: a venda, a base do modo, o percentual do
+  // vendedor e a comissão. O outro valor fica em segundo plano, como
+  // referência — no modo recebido, é o que mostra que a venda é de outro mês
+  const renderRecord = (record: CommissionRecord) => (
+    <TableRow key={record.id}>
+      <TableCell>
+        <div className="flex flex-col">
+          <span className="font-medium">{record.clientName}</span>
+          <span className="text-sm text-gray">{record.description}</span>
+        </div>
+      </TableCell>
+      <TableCell className="text-gray-600">
+        {mode === 'received_value' ? record.receivedDate : record.saleDate}
+        <span className="block text-xs text-gray">
+          {mode === 'received_value'
+            ? `vendida em ${record.saleDate}`
+            : record.receivedDate
+              ? `recebida em ${record.receivedDate}`
+              : 'ainda não recebida'}
+        </span>
+      </TableCell>
+      <TableCell numeric className="text-gray">
+        {formatCurrencyToBrl(
+          mode === 'received_value' ? record.saleValue : record.receivedValue,
+        )}
+      </TableCell>
+      <TableCell numeric className="font-medium text-gray-900">
+        {formatCurrencyToBrl(commissionBase(record, mode))}
+      </TableCell>
+      <TableCell numeric className="text-gray-600">
+        {record.percentage}%
+      </TableCell>
+      <TableCell numeric className="font-semibold text-success-700">
+        {formatCurrencyToBrl(commissionOf(record, mode))}
+      </TableCell>
+    </TableRow>
+  )
 
-  const renderRecord = (record: CommissionRecord) => {
-    const commissionValue = record.saleValue * (record.percentage / 100)
-    const pct =
-      totalFiltered > 0
-        ? ((record.saleValue / totalFiltered) * 100).toFixed(1)
-        : '0.0'
-
-    return (
-      <TableRow key={record.id}>
-        <TableCell>
-          <div className="flex flex-col">
-            <span className="font-medium">{record.clientName}</span>
-            <span className="text-sm text-gray">{record.description}</span>
-          </div>
-        </TableCell>
-        <TableCell className="text-gray-600">{record.saleDate}</TableCell>
-        <TableCell className="text-gray-600">{record.receivedDate}</TableCell>
-        <TableCell className="text-right text-gray-900">
-          {formatCurrencyToBrl(record.saleValue)}
-        </TableCell>
-        <TableCell className="text-right text-success-700 font-medium">
-          {formatCurrencyToBrl(record.receivedValue)}
-        </TableCell>
-        <TableCell className="text-right text-gray-900 font-medium">
-          {formatCurrencyToBrl(commissionValue)}
-        </TableCell>
-        <TableCell className="text-right text-gray-600">{pct}%</TableCell>
-      </TableRow>
-    )
-  }
+  const headers = (
+    <>
+      <TableHead>
+        {mode === 'received_value' ? 'Recebido em' : 'Vendido em'}
+      </TableHead>
+      <TableHead numeric>
+        {mode === 'received_value' ? 'Valor da venda' : 'Já recebido'}
+      </TableHead>
+      <TableHead className="text-right">{copy.baseLabel}</TableHead>
+      <TableHead numeric className="w-16">
+        %
+      </TableHead>
+      <TableHead className="text-right">Comissão</TableHead>
+    </>
+  )
 
   return (
     <Card>
@@ -137,13 +186,8 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
-                <TableHead>Serviços</TableHead>
-                <TableHead>Data da venda</TableHead>
-                <TableHead>Data do recebimento</TableHead>
-                <TableHead className="text-right">Venda</TableHead>
-                <TableHead className="text-right">Recebimento</TableHead>
-                <TableHead className="text-right">Comissão</TableHead>
-                <TableHead className="text-right w-16">%</TableHead>
+                <TableHead>Venda</TableHead>
+                {headers}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -156,9 +200,6 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                         <Skeleton className="h-4 w-32" />
                         <Skeleton className="h-3 w-48" />
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-20" />
                     </TableCell>
                     <TableCell>
                       <Skeleton className="h-4 w-20" />
@@ -192,18 +233,13 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                 <TableRow className="bg-gray-50">
                   <TableHead>
                     <div className="flex items-center gap-2">
-                      <span>Serviços</span>
+                      <span>Venda</span>
                       <Badge variant="neutralLight" className="font-medium">
                         {data.totalCount}
                       </Badge>
                     </div>
                   </TableHead>
-                  <TableHead>Data da venda</TableHead>
-                  <TableHead>Data do recebimento</TableHead>
-                  <TableHead className="text-right">Venda</TableHead>
-                  <TableHead className="text-right">Recebimento</TableHead>
-                  <TableHead className="text-right">Comissão</TableHead>
-                  <TableHead className="text-right w-16">100%</TableHead>
+                  {headers}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -213,7 +249,7 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                         {/* Group Header */}
                         <TableRow className="bg-gray-100">
                           <TableCell
-                            colSpan={3}
+                            colSpan={2}
                             className="text-gray font-medium text-xs py-3"
                           >
                             <div className="flex items-center gap-2">
@@ -225,22 +261,38 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                               </Badge>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right text-gray-900 font-medium text-xs py-3">
-                            {formatCurrencyToBrl(group.saleTotal)}
+                          <TableCell
+                            numeric
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {formatCurrencyToBrl(
+                              mode === 'received_value'
+                                ? group.saleTotal
+                                : group.receivedTotal,
+                            )}
                           </TableCell>
-                          <TableCell className="text-right text-success-700 font-medium text-xs py-3">
-                            {formatCurrencyToBrl(group.receivedTotal)}
+                          <TableCell
+                            numeric
+                            className="text-gray-900 font-medium text-xs py-3"
+                          >
+                            {formatCurrencyToBrl(
+                              mode === 'received_value'
+                                ? group.receivedTotal
+                                : group.saleTotal,
+                            )}
                           </TableCell>
-                          <TableCell className="text-right text-gray-900 font-medium text-xs py-3">
+                          <TableCell />
+                          <TableCell
+                            numeric
+                            className="text-success-700 font-semibold text-xs py-3"
+                          >
                             {formatCurrencyToBrl(
                               group.records.reduce(
-                                (sum, r) =>
-                                  sum + r.saleValue * (r.percentage / 100),
+                                (sum, r) => sum + commissionOf(r, mode),
                                 0,
                               ),
                             )}
                           </TableCell>
-                          <TableCell />
                         </TableRow>
 
                         {/* Group Records */}

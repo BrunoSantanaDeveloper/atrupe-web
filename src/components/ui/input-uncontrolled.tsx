@@ -16,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return (
         <div
           className={cn(
-            'flex items-center justify-center h-11 rounded-lg border text-sm border-gray-300 bg-white shadow-sm focus-within:border-brand focus-within:ring-1 focus-within:ring-brand data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 overflow-hidden',
+            'flex items-center justify-center h-10 rounded-lg border text-sm border-gray-300 bg-white shadow-xs focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 overflow-hidden',
             className,
           )}
           data-disabled={props.disabled}
@@ -33,7 +33,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={type}
             className={cn(
-              'flex h-full w-full rounded-md bg-transparent px-2 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
+              'flex h-full w-full rounded-md bg-transparent px-2 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
             )}
             ref={ref}
             {...props}
@@ -54,7 +54,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          'flex h-11 w-full rounded-lg border border-gray-300 bg-white shadow-sm px-3.5 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:ring-offset-gray-950 dark:placeholder:text-gray-400 dark:focus-visible:ring-gray-300',
+          'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2 text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50',
           className,
         )}
         ref={ref}

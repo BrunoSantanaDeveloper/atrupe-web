@@ -71,14 +71,14 @@ export function ResourceCard({
         <div className="flex flex-col relative gap-1 w-full">
           <div
             className={cn(
-              'text-base font-semibold text-[#101828] truncate whitespace-normal line-clamp-2',
+              'text-base font-semibold text-gray-900 truncate whitespace-normal line-clamp-2',
               classNames?.title,
             )}
           >
             {title}
           </div>
           {subtitle && (
-            <div className={cn('text-sm text-[#667085]', classNames?.subtitle)}>
+            <div className={cn('text-sm text-gray-500', classNames?.subtitle)}>
               {subtitle}
             </div>
           )}

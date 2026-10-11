@@ -7,7 +7,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
-    title: 'Plano de Contas',
+    title: 'Plano de contas',
   }
 }
 

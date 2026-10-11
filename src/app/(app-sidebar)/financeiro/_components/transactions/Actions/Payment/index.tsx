@@ -258,7 +258,7 @@ export function PaymentDialog({
       const confirmed = await alertDialog.open({
         title: 'Alterar valor?',
         description: `O ${paymentLabel.toLowerCase()} é diferente do valor da parcela. Deseja alterar o valor da movimentação?`,
-        cancelLabel: 'Voltar',
+        cancelLabel: 'Cancelar',
         confirmLabel: 'Alterar',
         confirmVariant: 'default',
         toastMsg: {

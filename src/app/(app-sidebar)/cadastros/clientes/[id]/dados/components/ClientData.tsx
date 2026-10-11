@@ -10,7 +10,7 @@ import { formatToLocaleDateTime } from '@/lib/formatDate'
 import { ClientInfoType } from '@/types/cadastros/client'
 
 import { DetailCardRowItem } from '../../components/DetailCardRowItem'
-import { DetailCard } from '../../components/DetailCard'
+import { DetailCard } from '@/components/common/DetailCard'
 import {
   IconFileInvoice,
   IconMapPin,
@@ -41,7 +41,7 @@ export function ClientData({ data }: Props) {
         <DetailCard title="Resumo" icon={IconFileInvoice}>
           <DetailCardRowItem>
             <TextSupportingText
-              supporting="Razão Social"
+              supporting="Razão social"
               text={data.general.name}
             />
             {data.general.cnpj ? (
@@ -73,7 +73,7 @@ export function ClientData({ data }: Props) {
             {canManageClientResponsible() && (
               <TextSupportingText
                 supporting="Responsável"
-                text={data.general.responsible?.name || 'Sem Responsável'}
+                text={data.general.responsible?.name || 'Sem responsável'}
               />
             )}
           </DetailCardRowItem>
@@ -94,7 +94,7 @@ export function ClientData({ data }: Props) {
 
       {/* Dados Fiscais */}
       {data.general && (
-        <DetailCard title="Dados Fiscais" icon={IconReceiptTax}>
+        <DetailCard title="Dados fiscais" icon={IconReceiptTax}>
           <DetailCardRowItem showSeparator={false}>
             <TextSupportingText
               supporting="Inscrição Estadual (IE)"

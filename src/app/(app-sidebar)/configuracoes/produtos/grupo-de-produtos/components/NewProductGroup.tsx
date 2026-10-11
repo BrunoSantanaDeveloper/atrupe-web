@@ -8,11 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  IconCircleCheck,
-  IconCirclePlus,
-  IconPencil,
-} from '@tabler/icons-react'
+import { IconCircleCheck, IconPlus, IconPencil } from '@tabler/icons-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -26,6 +22,7 @@ import { DangerActionProductGroupDialog } from './DangerActionProductGroupDialog
 import { useState } from 'react'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const newProductsGroupSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -88,14 +85,14 @@ export function NewProductGroup({
         await queryClient.invalidateQueries({
           queryKey: ['productGroup', groupId],
         })
-        toast.success('Grupo editado com sucesso!')
+        toast.success('Grupo editado')
       } else {
         await createItem({
           route: 'productGroupRoute',
           data: { ...data, kind: 'PRODUCT' },
         })
 
-        toast.success('Grupo criado com sucesso!')
+        toast.success('Grupo criado')
       }
 
       await queryClient.invalidateQueries({
@@ -123,7 +120,13 @@ export function NewProductGroup({
         {open && (
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editMode ? 'Editar' : 'Novo'} grupo</DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon
+                  variant="neutralOutline"
+                  Icon={editMode ? IconPencil : IconPlus}
+                />
+                <DialogTitle>{editMode ? 'Editar' : 'Novo'} grupo</DialogTitle>
+              </div>
             </DialogHeader>
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <Form {...form}>
@@ -208,7 +211,7 @@ export function NewProductGroupTriggerButton({
       type="button"
       variant={editMode ? 'neutralGhost' : 'default'}
       size={editMode ? 'icon' : 'default'}
-      LeftIcon={editMode ? IconPencil : IconCirclePlus}
+      LeftIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo grupo'}

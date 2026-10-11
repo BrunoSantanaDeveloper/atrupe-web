@@ -115,7 +115,7 @@ export function DeliveryScheduleDateDialog({ open, rowData, setOpen }: Props) {
     }
 
     await mutation.mutateAsync(body).then(() => {
-      toast.success('Data salva!')
+      toast.success('Data salva')
       handleOpenChange(false)
     })
   }

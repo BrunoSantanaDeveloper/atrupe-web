@@ -48,7 +48,7 @@ const CLIENT_EXPORT_COLUMNS: ExportColumn<ListClientsDataType>[] = [
     key: 'name',
   },
   {
-    header: 'Razao social',
+    header: 'Razão social',
     key: 'corporateName',
   },
   {
@@ -64,11 +64,11 @@ const CLIENT_EXPORT_COLUMNS: ExportColumn<ListClientsDataType>[] = [
     key: 'cnpj',
   },
   {
-    header: 'Inscricao estadual',
+    header: 'Inscrição estadual',
     key: 'stateRegistration',
   },
   {
-    header: 'Email',
+    header: 'E-mail',
     key: 'email',
   },
   {
@@ -125,7 +125,7 @@ export function Clients({ searchParams }: SearchParamsType) {
     {
       value: 'PROSPECT',
       tab: 'preCadastros',
-      label: 'Pré-Cadastros',
+      label: 'Pré-cadastros',
       count: totals?.preCadastros,
     },
     {
@@ -179,7 +179,7 @@ export function Clients({ searchParams }: SearchParamsType) {
                 fileName="clientes"
                 getData={getExportClients}
                 sheetName="Clientes"
-                emptyMessage="Nenhum cliente disponivel para exportacao"
+                emptyMessage="Nenhum cliente disponível para exportação"
               />
             </PermissionGate>
             <PermissionGate permissions={['register:client:edit']}>
@@ -235,7 +235,7 @@ export function Clients({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconUserOff}
-                title="Nenhum cliente criado"
+                title="Nenhum cliente cadastrado"
                 description="Crie seu primeiro cliente"
                 cta={
                   <PermissionGate permissions={['register:client:create']}>

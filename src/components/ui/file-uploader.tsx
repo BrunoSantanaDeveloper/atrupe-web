@@ -1,10 +1,8 @@
 'use client'
 
 import React, { useCallback, useEffect, useState } from 'react'
-import Image from 'next/image'
 import Dropzone, { DropzoneProps, FileRejection } from 'react-dropzone'
 import { toast } from 'sonner'
-import { Progress } from '@/components/ui/progress'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn, formatBytes } from '@/lib/utils'
 
@@ -220,14 +218,14 @@ export function FileUploader(props: FileUploaderProps) {
           {({ getRootProps, getInputProps, isDragActive }) => {
             const isError = errorStatus
             const bgClass = isError
-              ? 'bg-[#fffbfa]'
+              ? 'bg-error-25'
               : isDragActive
-                ? 'bg-[#f4fdf8]'
+                ? 'bg-[#f4fdf8] dark:bg-brand-25'
                 : 'bg-white'
             const borderClass = isError
-              ? 'border-[#fda29b]'
+              ? 'border-error-300'
               : isDragActive
-                ? 'border-[#099260]'
+                ? 'border-brand-500'
                 : 'border-black/25'
 
             const titleFirstPart = imageOnly
@@ -253,7 +251,7 @@ export function FileUploader(props: FileUploaderProps) {
                 <div className="flex flex-col items-center gap-4">
                   <IconUploadCloud />
                   <div className="flex flex-col  items-center flex-grow relative gap-1">
-                    <p className="flex-grow-0 flex-shrink-0 text-sm font-medium text-left text-[#1d2939]">
+                    <p className="flex-grow-0 flex-shrink-0 text-sm font-medium text-left text-gray-800">
                       {titleFirstPart}
                     </p>
                     <p className="self-stretch flex-grow-0 flex-shrink-0 text-xs text-left text-[#949494] whitespace-pre-wrap">
@@ -261,8 +259,8 @@ export function FileUploader(props: FileUploaderProps) {
                     </p>
                   </div>
                 </div>
-                <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 h-10 relative gap-2 px-4 rounded-lg border-2 border-[#099260] hover:bg-[#f4fdf8] transition-colors mt-3">
-                  <p className="flex-grow-0 flex-shrink-0 text-sm font-semibold text-left text-[#099260]">
+                <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 h-10 relative gap-2 px-4 rounded-lg border-2 border-brand-500 hover:bg-[#f4fdf8] dark:hover:bg-brand-25 transition-colors mt-3">
+                  <p className="flex-grow-0 flex-shrink-0 text-sm font-semibold text-left text-brand-500">
                     Selecionar arquivo
                   </p>
                 </div>
@@ -315,12 +313,12 @@ function ProgressFileCard({
   }
 
   return (
-    <div className="flex flex-col justify-center items-start flex-grow-0 flex-shrink-0 w-full relative overflow-hidden rounded-lg bg-[#d0d5dd]">
+    <div className="flex flex-col justify-center items-start flex-grow-0 flex-shrink-0 w-full relative overflow-hidden rounded-lg bg-gray-300">
       <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 relative px-4 py-2 bg-white">
         <p
           className={cn(
-            'flex-grow-0 flex-shrink-0 text-sm text-center text-[#344054]',
-            isError && 'text-[#b42318]',
+            'flex-grow-0 flex-shrink-0 text-sm text-center text-gray-700',
+            isError && 'text-error-700',
           )}
         >
           {file.name}
@@ -330,7 +328,7 @@ function ProgressFileCard({
             <button
               type="button"
               onClick={onRetry}
-              className="text-xs font-semibold text-[#b42318] hover:underline focus:outline-none"
+              className="text-xs font-semibold text-error-700 hover:underline focus:outline-none"
             >
               Tentar novamente
             </button>
@@ -347,7 +345,7 @@ function ProgressFileCard({
       <div
         className={cn(
           'flex-grow-0 flex-shrink-0 h-[3px] rounded-[10px] transition-all duration-300',
-          isError ? 'bg-[#d92d20]' : 'bg-[#46b43c]',
+          isError ? 'bg-error-600' : 'bg-[#46b43c]',
         )}
         style={{ width: `${progress}%` }}
       />
@@ -375,7 +373,7 @@ export function UploadedFilesCard({
     >
       <div className="flex justify-between items-center self-stretch flex-grow-0 flex-shrink-0 px-4">
         <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 gap-4 overflow-hidden">
-          <div className="flex flex-col justify-center items-center flex-grow-0 flex-shrink-0 h-[86px] w-[86px] relative overflow-hidden gap-2.5 p-2.5 rounded bg-white border border-[#d0d5dd]">
+          <div className="flex flex-col justify-center items-center flex-grow-0 flex-shrink-0 h-[86px] w-[86px] relative overflow-hidden gap-2.5 p-2.5 rounded bg-white border border-gray-300">
             {uploadedFileUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) ||
             uploadedFileUrl.startsWith('blob:') ? (
               <div
@@ -387,17 +385,17 @@ export function UploadedFilesCard({
             )}
           </div>
           <div className="flex flex-col justify-start items-start flex-grow-0 w-full relative gap-2 overflow-hidden">
-            <p className="flex-grow-0 flex-shrink-0 text-lg font-semibold text-left text-[#475467] truncate w-full max-w-[400px]">
+            <p className="flex-grow-0 flex-shrink-0 text-lg font-semibold text-left text-gray-600 truncate w-full max-w-[400px]">
               {fileName}
             </p>
             <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 relative gap-3">
               {sizeText && (
-                <p className="flex-grow-0 flex-shrink-0 text-[15px] text-left text-[#888]">
+                <p className="flex-grow-0 flex-shrink-0 text-sm text-left text-[#888]">
                   {sizeText}
                 </p>
               )}
               <div className="flex justify-start items-start flex-grow-0 flex-shrink-0 mix-blend-multiply">
-                <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 relative gap-1 pl-3 pr-2.5 py-1 rounded-2xl bg-[#ecfdf3]">
+                <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 relative gap-1 pl-3 pr-2.5 py-1 rounded-2xl bg-success-50">
                   <svg
                     width={12}
                     height={12}
@@ -411,7 +409,7 @@ export function UploadedFilesCard({
                       fill="#12B76A"
                     />
                   </svg>
-                  <p className="flex-grow-0 flex-shrink-0 text-sm font-medium text-center text-[#027a48]">
+                  <p className="flex-grow-0 flex-shrink-0 text-sm font-medium text-center text-success-700">
                     Concluído
                   </p>
                 </div>

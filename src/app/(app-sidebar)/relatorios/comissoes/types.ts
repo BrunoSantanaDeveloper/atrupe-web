@@ -1,5 +1,7 @@
 // Types for Commission Report (Comissões)
 
+// 'all' não é mais oferecido: a comissão é sempre sobre uma das duas bases
+// (ALT-23). Continua no tipo porque a API já o aceitava
 export type CommissionType = 'all' | 'sold_value' | 'received_value'
 
 export type CommissionGroupBy =

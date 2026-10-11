@@ -1,5 +1,6 @@
 // UI
 import { Card } from '@/components/ui/card'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -13,9 +14,15 @@ export function PaymentConditions({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
       <Topbar
-        title="Condições de Pagamento"
+        title="Condições de pagamento"
         previousPage="/configuracoes/financeiro"
-        primaryCta={<NewPaymentCondition />}
+        primaryCta={
+          <PermissionGate
+            permissions={['financial_settings:payment_methods:create']}
+          >
+            <NewPaymentCondition />
+          </PermissionGate>
+        }
       />
       <Card>
         <PaymentConditionsData searchParams={searchParams} />

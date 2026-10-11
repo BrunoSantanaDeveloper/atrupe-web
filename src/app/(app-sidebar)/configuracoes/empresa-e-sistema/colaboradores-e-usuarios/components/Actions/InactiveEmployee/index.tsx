@@ -103,7 +103,7 @@ export function InactiveEmployeeAlertDialog(props: Props) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <Button
               type="button"
               onClick={handleDisable}

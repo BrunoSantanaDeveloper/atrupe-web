@@ -19,7 +19,7 @@ export default function ModalSandboxPage() {
     title: '',
     description: '' as React.ReactNode,
     customIcon: undefined as React.ReactNode | undefined,
-    primaryAction: { label: '', intent: undefined as ModalIntent | undefined },
+    primaryAction: { label: '' } as { label: string; intent?: ModalIntent },
     secondaryAction: undefined as { label: string } | undefined,
     tertiaryAction: undefined as
       | { label: string; intent?: 'neutral' | 'success' | 'danger' }
@@ -31,9 +31,8 @@ export default function ModalSandboxPage() {
     children: undefined as React.ReactNode | undefined,
   })
 
-  const [ignoreChecked, setIgnoreChecked] = useState(false)
-  const openModal = (newConfig: any) => {
-    setConfig(newConfig)
+  const openModal = (newConfig: Partial<typeof config>) => {
+    setConfig(newConfig as typeof config)
     setModalOpen(true)
   }
 
@@ -84,7 +83,7 @@ export default function ModalSandboxPage() {
           ].map((p) => (
             <div key={p.label} className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full border border-gray-300 bg-white" />
-              <p className="text-sm font-medium text-[#344054]">{p.label}</p>
+              <p className="text-sm font-medium text-gray-700">{p.label}</p>
             </div>
           ))}
         </div>
@@ -99,9 +98,9 @@ export default function ModalSandboxPage() {
       layout: 'vertical',
       title: 'Por favor verifique seu email.',
       description: (
-        <span className="text-sm text-[#667085]">
+        <span className="text-sm text-gray-500">
           Enviamos um código para{' '}
-          <strong className="font-semibold text-[#667085]">
+          <strong className="font-semibold text-gray-500">
             maicol@atrupe.com.br
           </strong>
         </span>
@@ -114,13 +113,13 @@ export default function ModalSandboxPage() {
             {['3', '0', '6', '6'].map((d, i) => (
               <div
                 key={i}
-                className={`flex justify-center items-center h-16 w-16 sm:h-20 sm:w-20 rounded-lg bg-white border shadow-sm ${i === 3 ? 'border-[#a9f1cc] border-4' : 'border-[#38cf8f]'}`}
+                className={`flex justify-center items-center h-16 w-16 sm:h-20 sm:w-20 rounded-lg bg-white border shadow-sm ${i === 3 ? 'border-brand-100 border-4' : 'border-brand-300'}`}
               >
-                <span className="text-5xl font-medium text-[#077550]">{d}</span>
+                <span className="text-5xl font-medium text-brand-600">{d}</span>
               </div>
             ))}
           </div>
-          <p className="text-sm text-[#667085] cursor-pointer hover:underline text-center">
+          <p className="text-sm text-gray-500 cursor-pointer hover:underline text-center">
             Não recebeu um código? Clique para reenviar.
           </p>
         </div>
@@ -153,8 +152,8 @@ export default function ModalSandboxPage() {
       secondaryAction: { label: 'Cancelar' },
       children: (
         <div className="flex flex-col w-full gap-3 mt-2">
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-[#ECFDF3] border border-[#38cf8f] cursor-pointer relative">
-            <div className="w-5 h-5 mt-0.5 rounded-full bg-[#12b76a] text-white flex items-center justify-center absolute right-4 top-4">
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-success-50 border border-brand-300 cursor-pointer relative">
+            <div className="w-5 h-5 mt-0.5 rounded-full bg-success-500 text-white flex items-center justify-center absolute right-4 top-4">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
                 <path
                   d="M11.33 5.5L6.75 10.08L4.66 8"
@@ -165,29 +164,29 @@ export default function ModalSandboxPage() {
                 />
               </svg>
             </div>
-            <div className="w-10 h-10 rounded-full bg-[#D1FADF] flex items-center justify-center flex-shrink-0 text-[#039855]">
+            <div className="w-10 h-10 rounded-full bg-success-100 flex items-center justify-center flex-shrink-0 text-success-600">
               ◆
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-[#084c36]">
-                Basic plan <span className="text-[#38cf8f] ml-1">$10/mês</span>
+              <p className="text-sm font-medium text-brand-800">
+                Basic plan <span className="text-brand-300 ml-1">$10/mês</span>
               </p>
-              <p className="text-sm text-[#38cf8f]">
+              <p className="text-sm text-brand-300">
                 Up to 10 users and 20GB individual data.
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-white border border-[#eaecf0] cursor-pointer hover:bg-gray-50 relative">
-            <div className="w-4 h-4 rounded-full border border-[#d0d5dd] absolute right-4 top-4" />
-            <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center flex-shrink-0 text-[#344054]">
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-white border border-gray-200 cursor-pointer hover:bg-gray-50 relative">
+            <div className="w-4 h-4 rounded-full border border-gray-300 absolute right-4 top-4" />
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-gray-700">
               ❖
             </div>
             <div className="flex flex-col">
-              <p className="text-sm font-medium text-[#344054]">
+              <p className="text-sm font-medium text-gray-700">
                 Business plan{' '}
-                <span className="text-[#667085] ml-1">$20/mês</span>
+                <span className="text-gray-500 ml-1">$20/mês</span>
               </p>
-              <p className="text-sm text-[#667085]">
+              <p className="text-sm text-gray-500">
                 Up to 20 users and 40GB individual data.
               </p>
             </div>
@@ -207,18 +206,18 @@ export default function ModalSandboxPage() {
       children: (
         <div className="flex flex-col w-full gap-4 mt-2">
           <div className="flex flex-col gap-1.5 w-full">
-            <label className="text-sm font-medium text-[#344054]">
+            <label className="text-sm font-medium text-gray-700">
               Email or username
             </label>
-            <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#101828]">
+            <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-900">
               maicol@atrupe.com.br
             </div>
           </div>
           <div className="flex flex-col gap-1.5 w-full">
-            <label className="text-sm font-medium text-[#344054]">
+            <label className="text-sm font-medium text-gray-700">
               Password
             </label>
-            <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#667085]">
+            <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-500">
               ••••••••
             </div>
           </div>
@@ -256,10 +255,10 @@ export default function ModalSandboxPage() {
       ),
       children: (
         <div className="flex justify-center items-center gap-3 w-full mt-2">
-          <div className="w-2 h-2 rounded-full bg-[#12b76a]" />
-          <div className="w-2 h-2 rounded-full bg-[#eaecf0]" />
-          <div className="w-2 h-2 rounded-full bg-[#eaecf0]" />
-          <div className="w-2 h-2 rounded-full bg-[#eaecf0]" />
+          <div className="w-2 h-2 rounded-full bg-success-500" />
+          <div className="w-2 h-2 rounded-full bg-gray-200" />
+          <div className="w-2 h-2 rounded-full bg-gray-200" />
+          <div className="w-2 h-2 rounded-full bg-gray-200" />
         </div>
       ),
     })
@@ -275,18 +274,18 @@ export default function ModalSandboxPage() {
       children: (
         <div className="flex flex-col gap-4 w-full mt-2">
           <div className="flex flex-col gap-1.5 w-full">
-            <label className="text-sm font-medium text-[#344054]">
+            <label className="text-sm font-medium text-gray-700">
               Nome no cartão
             </label>
-            <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#101828]">
+            <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-900">
               Olivia Rhye
             </div>
           </div>
           <div className="flex flex-col gap-1.5 w-full">
-            <label className="text-sm font-medium text-[#344054]">
+            <label className="text-sm font-medium text-gray-700">
               Número do cartão
             </label>
-            <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#101828] flex items-center gap-2">
+            <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-900 flex items-center gap-2">
               <div className="w-8 h-5 bg-gray-200 rounded flex gap-0.5 p-0.5 items-center justify-center">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500 opacity-80" />
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-500 opacity-80 -ml-1.5" />
@@ -296,16 +295,16 @@ export default function ModalSandboxPage() {
           </div>
           <div className="flex gap-4 w-full">
             <div className="flex flex-col gap-1.5 w-1/2">
-              <label className="text-sm font-medium text-[#344054]">
+              <label className="text-sm font-medium text-gray-700">
                 Expira
               </label>
-              <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#101828]">
+              <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-900">
                 06/2024
               </div>
             </div>
             <div className="flex flex-col gap-1.5 w-1/2">
-              <label className="text-sm font-medium text-[#344054]">CVV</label>
-              <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#101828]">
+              <label className="text-sm font-medium text-gray-700">CVV</label>
+              <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-900">
                 •••
               </div>
             </div>
@@ -353,10 +352,10 @@ export default function ModalSandboxPage() {
       children: (
         <div className="flex flex-col gap-4 w-full mt-2">
           <div className="flex flex-col gap-1.5 w-full">
-            <label className="text-sm font-medium text-[#344054]">
+            <label className="text-sm font-medium text-gray-700">
               Nome no cartão
             </label>
-            <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#101828]">
+            <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-900">
               Olivia Rhye
             </div>
           </div>
@@ -375,7 +374,7 @@ export default function ModalSandboxPage() {
       secondaryAction: { label: 'Cancelar' },
       children: (
         <div className="flex flex-col w-full gap-4 mt-2 items-center">
-          <div className="w-full max-w-[311px] h-32 bg-[#F9FAFB] rounded-lg border border-[#eaecf0] flex items-center justify-center px-4">
+          <div className="w-full max-w-[311px] h-32 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-center px-4">
             {/* Generic QR box simulation */}
             <div className="w-[100px] h-[100px] border-[8px] border-black p-2 bg-white relative">
               <div className="absolute top-1 left-1 w-4 h-4 bg-black" />
@@ -399,10 +398,10 @@ export default function ModalSandboxPage() {
             </div>
           </div>
           <div className="flex flex-col gap-1.5 w-full">
-            <label className="text-sm font-medium text-[#344054]">
+            <label className="text-sm font-medium text-gray-700">
               Código de Verificação
             </label>
-            <div className="w-full px-3.5 py-2.5 rounded-lg border border-[#d0d5dd] shadow-sm text-base text-[#667085]">
+            <div className="w-full px-3.5 py-2.5 rounded-lg border border-gray-300 shadow-sm text-base text-gray-500">
               000 000
             </div>
           </div>
@@ -456,7 +455,7 @@ export default function ModalSandboxPage() {
       primaryAction: { label: 'Confirmar' },
       secondaryAction: { label: 'Cancelar' },
       footerLeftContent: (
-        <button className="flex items-center gap-1.5 text-sm font-semibold text-[#667085] hover:text-[#344054]">
+        <button className="flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-gray-700">
           <svg
             width="20"
             height="20"
@@ -479,16 +478,16 @@ export default function ModalSandboxPage() {
     <div className="min-h-screen bg-gray-50 py-12 pb-32">
       <div className="max-w-4xl mx-auto px-6 space-y-12">
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             Feedback Modal — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Catálogo completo de modais construídos sobre a primitiva Base.
           </p>
         </div>
 
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Estruturas Básicas
           </h2>
           <div className="flex gap-4">
@@ -513,8 +512,8 @@ export default function ModalSandboxPage() {
           </div>
         </section>
 
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6 overflow-hidden mt-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 overflow-hidden mt-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Avançados - Grupo 1 (Transacionais Iniciais)
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -527,90 +526,90 @@ export default function ModalSandboxPage() {
           </div>
         </section>
 
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6 overflow-hidden mt-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 overflow-hidden mt-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Avançados - Grupo 2 (Figma Complementar)
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button
               onClick={openEmailVerification}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               OTP Verification (Email)
             </button>
             <button
               onClick={openImageCover}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Image Cover Banner
             </button>
             <button
               onClick={openVideoGuide}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Video Player Guide
             </button>
             <button
               onClick={openPricingPlan}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Pricing / Plan Update
             </button>
             <button
               onClick={openPaymentUpdate}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Credit Card Form
             </button>
             <button
               onClick={openPaymentCover}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               CC Form + Card Avatar
             </button>
             <button
               onClick={openTwoFactorAuth}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               2FA Setup (QR Code)
             </button>
             <button
               onClick={openPasswordValidation}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Password Gateway
             </button>
           </div>
         </section>
 
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6 overflow-hidden mt-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 overflow-hidden mt-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Avançados - Grupo 3 (Footers do Figma)
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button
               onClick={openConfirmLeft}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Botoões à Esquerda
             </button>
             <button
               onClick={openReverseRight}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Cancelar na Esq, Deletar na Dir
             </button>
             <button
               onClick={openTertiaryAction}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
               Tertiary Action (Leia mais)
             </button>
             <button
               onClick={openLeftConfig}
-              className="px-4 py-3 border border-[#EAECF0] rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
+              className="px-4 py-3 border border-gray-200 rounded-lg text-sm text-left hover:bg-gray-50 font-medium"
             >
-              Link "Configurações" à Esquerda
+              Link &quot;Configurações&quot; à Esquerda
             </button>
           </div>
         </section>

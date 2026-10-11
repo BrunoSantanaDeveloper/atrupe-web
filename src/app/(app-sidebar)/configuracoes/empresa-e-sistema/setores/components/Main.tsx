@@ -23,26 +23,20 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Types
 import type { ListSectorDataType } from '@/types/settings/sector'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Icons
-import {
-  IconPencil,
-  IconSettingsOff,
-  IconQuestionMark,
-} from '@tabler/icons-react'
+import { IconPencil, IconSettingsOff } from '@tabler/icons-react'
 
 // Actions
 import { getDataOld, updateItemNew } from '@/actions/_cruds'
 
 // Third-party
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-
-import { sectorIcons } from '@/consts/sectors'
 
 // Hooks
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
@@ -131,15 +125,13 @@ export function Main({ searchParams }: Props) {
                           return (
                             <TableRow key={item?.id}>
                               <TableCell className="flex items-center gap-3">
-                                <FeaturedIcon
-                                  rounded
-                                  variant={
-                                    item?.isActive ? 'light' : 'neutralLight'
-                                  }
-                                  Icon={
-                                    sectorIcons[item?.icon]?.icon ||
-                                    IconQuestionMark
-                                  }
+                                {/* O setor com a cor dele (área 9 §4.14) */}
+                                <SectorIcon
+                                  size="lg"
+                                  sectorId={item?.id}
+                                  name={item?.name}
+                                  icon={item?.icon}
+                                  state={item?.isActive ? 'default' : 'muted'}
                                   className="[&_path]:stroke-[3px]"
                                 />
                                 <p className="font-medium">

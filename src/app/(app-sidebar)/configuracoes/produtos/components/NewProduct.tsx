@@ -21,8 +21,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Components
-import { LucideIcon } from '@/components/LucideIcon'
 import { ProductionStages } from './ProductionStages'
+import { ProductVariations } from './ProductVariations'
+import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -36,6 +38,7 @@ import { MeasurementInput } from '@/components/common/form/global-inputs/product
 import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
+import { InactivateProductDialog } from './InactivateProductDialog'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -54,10 +57,12 @@ import {
 // Icons
 import {
   IconPackage,
-  IconCirclePlus,
+  IconPlus,
   IconCircleCheck,
   IconPencil,
   IconReceiptTax,
+  IconHierarchy2,
+  IconTrash,
 } from '@tabler/icons-react'
 
 // Action
@@ -70,15 +75,24 @@ import {
 
 // Hooks
 import { useSector } from '@/hooks/queries/useSector'
-import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
+import { cn } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+
+export type ProductTab = 'general' | 'composition' | 'fiscal'
 
 interface Props {
   editMode?: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
   productId?: string
+  // Aba em que o diálogo abre: depois de criar o produto no PRO ele reabre
+  // direto na composição (CP-16: o produto nasce e então ganha composição)
+  initialTab?: ProductTab
+  // Valores já preenchidos ao criar (o nome e o descritivo de um item da
+  // biblioteca de produtos, 03/10/2026)
+  initialValues?: Partial<NewProductsFormType>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess?: (product: any) => void
 }
@@ -116,21 +130,36 @@ function NewProductModal({
   productId,
   open,
   onOpenChange,
+  initialTab = 'general',
+  initialValues,
   onSuccess,
 }: Props) {
   const queryClient = useQueryClient()
-  const { canManageProducts, canManageProductionStages, hasFiscalModule } =
-    usePlanFeatures()
+  const {
+    canManageProducts,
+    canManageProductionStages,
+    hasFiscalModule,
+    hasFeature,
+  } = usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
 
   const [insertAnother, setInsertAnother] = useState(false)
-  const [activeTab, setActiveTab] = useState('general')
-
-  const alertDialog = useAlertDialog()
+  const [activeTab, setActiveTab] = useState<ProductTab>(initialTab)
+  // Inativar com "onde é usado" (PAD-7, 05/10/2026): o diálogo lista os
+  // produtos em que este é parte e os orçamentos abertos que o têm
+  const [inactivateOpen, setInactivateOpen] = useState(false)
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
   const showFiscalTab = hasFiscalModule()
+  // A composição é recurso do cadastro do produto, não tela à parte (CP-17):
+  // do PRO em diante o diálogo ganha a aba, e o fluxo de etapas (FL-1) toma o
+  // lugar da lista simples de etapas do LITE (ET-1)
+  const showCompositionTab = hasFeature(FEATURES.COSTS.COST_BASE)
+
+  useEffect(() => {
+    if (open) setActiveTab(initialTab)
+  }, [open, initialTab])
 
   const { data: product, isLoading } = useQuery({
     staleTime: Infinity,
@@ -214,7 +243,7 @@ function NewProductModal({
     resolver: zodResolver(newProductsSchema),
     // mode: 'onChange',
     values: !editMode
-      ? defaultNewProductValues
+      ? { ...defaultNewProductValues, ...initialValues }
       : {
           ...product,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -300,7 +329,7 @@ function NewProductModal({
           throw new Error(result.message)
         }
 
-        toast.success('Produto atualizado com sucesso!')
+        toast.success('Produto atualizado')
       } else {
         const result = await createItemNew({
           route: '/product',
@@ -312,7 +341,7 @@ function NewProductModal({
         }
         createdProduct = result.data
 
-        toast.success('Produto criado com sucesso!')
+        toast.success('Produto criado')
       }
 
       // Save fiscal data if fiscal tab is shown and productId is available
@@ -366,7 +395,7 @@ function NewProductModal({
   }
 
   // O Tabs desmonta a aba inativa, então o <form id="new-product"> não existe no
-  // DOM enquanto "Dados Fiscais" está aberta e um submit nativo não encontraria
+  // DOM enquanto "Dados fiscais" está aberta e um submit nativo não encontraria
   // o formulário. Disparar o handleSubmit direto salva a partir de qualquer aba.
   const handleSave = handleSubmit(onSubmit, () => {
     // Os campos inválidos estão na aba Produto — traz o usuário até eles
@@ -387,40 +416,6 @@ function NewProductModal({
     items.remove(index)
   }
 
-  const handleToggleStatus = async () => {
-    if (!productId) return
-
-    const confirmed = await alertDialog.open({
-      title: `Deseja ${isActive ? 'inativar' : 'ativar'} este produto?`,
-      description: isActive
-        ? 'O produto ficará indisponível para novos orçamentos e vendas.'
-        : 'O produto ficará disponível novamente para orçamentos e vendas.',
-      confirmLabel: isActive ? 'Inativar' : 'Ativar',
-      confirmVariant: isActive ? 'error' : 'default',
-      onConfirm: async () => {
-        const result = await createItemNew({
-          route: `/product/${productId}/toggle-status`,
-          data: {
-            isActive: !isActive,
-          },
-        })
-
-        if (!result.success) {
-          throw new Error(result.message)
-        }
-      },
-      toastMsg: {
-        loading: 'Aguarde...',
-        success: `Produto ${isActive ? 'inativado' : 'ativado'} com sucesso!`,
-        error: `Erro ao ${isActive ? 'inativar' : 'ativar'} produto`,
-      },
-    })
-
-    if (confirmed) {
-      await queryClient.invalidateQueries()
-    }
-  }
-
   return (
     <PermissionGate
       permissions={[
@@ -432,7 +427,13 @@ function NewProductModal({
       requireAll={true}
     >
       <Dialog open={open} onOpenChange={handleToggleModal}>
-        <DialogContent className="sm:max-w-[855px]">
+        <DialogContent
+          className={cn(
+            activeTab === 'composition'
+              ? 'sm:max-w-[1180px]'
+              : 'sm:max-w-[855px]',
+          )}
+        >
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
@@ -445,7 +446,7 @@ function NewProductModal({
           <DialogBody className="p-0">
             <Tabs
               value={activeTab}
-              onValueChange={setActiveTab}
+              onValueChange={(value) => setActiveTab(value as ProductTab)}
               className="flex flex-col h-full"
             >
               <div className="px-6 pt-4 border-b border-gray-100">
@@ -454,6 +455,12 @@ function NewProductModal({
                     <IconPackage size={14} className="mr-1.5" />
                     Produto
                   </TabsTrigger>
+                  {showCompositionTab && (
+                    <TabsTrigger value="composition">
+                      <IconHierarchy2 size={14} className="mr-1.5" />
+                      Composição
+                    </TabsTrigger>
+                  )}
                   {showFiscalTab && (
                     <TabsTrigger value="fiscal">
                       <IconReceiptTax size={14} className="mr-1.5" />
@@ -521,7 +528,7 @@ function NewProductModal({
                           {watch('items.0.unitKind') &&
                             watch('items.0.unitKind') !== 'UNITY' && (
                               <div className="w-full">
-                                <h4 className="text-md font-semibold text-gray-700 mb-2">
+                                <h4 className="type-card-title mb-2">
                                   Padrão de medidas do produto
                                 </h4>
                                 <div className="flex flex-wrap gap-3 p-6 bg-blue-light-50 rounded-xl border border-blue-light-300">
@@ -540,6 +547,28 @@ function NewProductModal({
                                 </div>
                               </div>
                             )}
+
+                          {/* Variações já no START (PV-6, 05/10/2026). No PRO
+                              elas vivem na aba Composição */}
+                          {!showCompositionTab && (
+                            <div className="w-full rounded-xl border border-gray-200 p-4">
+                              {editMode && productId ? (
+                                <ProductVariations
+                                  productId={productId}
+                                  unitKind={watch('items.0.unitKind')}
+                                />
+                              ) : (
+                                <p className="text-sm text-gray">
+                                  <span className="font-medium text-gray-700">
+                                    Variações
+                                  </span>{' '}
+                                  · Tamanhos ou cores do mesmo produto (P, M, G;
+                                  4x0, 4x4) entram depois de salvar, na edição
+                                  do produto.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </>
                       )}
                       {items?.fields?.length > 1 &&
@@ -558,12 +587,12 @@ function NewProductModal({
                                   handleRemoveCompositionProducts(index)
                                 }
                               >
-                                <LucideIcon icon="Trash2" className="size-5" />
+                                <IconTrash className="size-5" />
                               </Button>
                             )}
                             <FormInput
                               name={`items.${index}.name`}
-                              label="Nome da composição"
+                              label="Nome da unidade de venda"
                               width="flex-[1_0_100%]"
                             />
 
@@ -584,7 +613,7 @@ function NewProductModal({
                             {watch(`items.${index}.unitKind`) &&
                               watch(`items.${index}.unitKind`) !== 'UNITY' && (
                                 <div className="w-full">
-                                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                                  <h4 className="type-body-strong mb-3">
                                     Padrão de medidas do produto
                                   </h4>
                                   <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
@@ -617,11 +646,11 @@ function NewProductModal({
                           >
                             <FeaturedIcon
                               variant="light"
-                              Icon={IconCirclePlus}
+                              Icon={IconPlus}
                               rounded
                             />
                             <p className="text-sm text-gray-600 font-medium">
-                              Adicionar composição
+                              Adicionar outra unidade de venda
                             </p>
                           </Button>
                         </div>
@@ -646,10 +675,53 @@ function NewProductModal({
                           label="Permitir editar descrição"
                         />
                       </div>
-                      {canShowProductionStages && <ProductionStages />}
+                      {canShowProductionStages && !showCompositionTab && (
+                        <ProductionStages />
+                      )}
                     </form>
                   </Form>
                 </TabsContent>
+
+                {showCompositionTab && (
+                  <TabsContent value="composition" className="mt-0 p-6">
+                    {editMode && productId ? (
+                      <TooltipProvider>
+                        <div className="space-y-5">
+                          <AssemblyEditor productId={productId} embedded />
+                          {canShowProductionStages && (
+                            <Form {...form}>
+                              <div className="space-y-1">
+                                <ProductionStages />
+                                <p className="text-sm text-gray">
+                                  Enquanto a Agenda de entrega não lê o fluxo,
+                                  ela usa esta lista de setores. As caixas do
+                                  fluxo acima são as etapas que vão substituí-la
+                                  (ET-1).
+                                </p>
+                              </div>
+                            </Form>
+                          )}
+                        </div>
+                      </TooltipProvider>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3 py-16 text-center">
+                        <FeaturedIcon
+                          variant="light"
+                          Icon={IconHierarchy2}
+                          rounded
+                        />
+                        <p className="text-base font-semibold text-gray-700">
+                          O fluxo de etapas vem depois de salvar
+                        </p>
+                        <p className="max-w-md text-sm text-gray">
+                          Preencha a aba Produto e salve. O produto reabre nesta
+                          aba para você montar as etapas, com os processos,
+                          materiais e tempos de cada uma.
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                )}
 
                 {showFiscalTab && (
                   <TabsContent value="fiscal" className="mt-0 p-6">
@@ -682,8 +754,8 @@ function NewProductModal({
                 >
                   <Button
                     type="button"
-                    variant={isActive ? 'error' : 'default'}
-                    onClick={handleToggleStatus}
+                    variant={isActive ? 'errorOutline' : 'successOutline'}
+                    onClick={() => setInactivateOpen(true)}
                   >
                     {isActive ? 'Inativar' : 'Ativar'}
                   </Button>
@@ -723,6 +795,17 @@ function NewProductModal({
             </div>
           </DialogFooter>
         </DialogContent>
+        {editMode && productId && (
+          <InactivateProductDialog
+            product={{
+              id: productId,
+              name: product?.name || 'este produto',
+              active: !!isActive,
+            }}
+            open={inactivateOpen}
+            onOpenChange={setInactivateOpen}
+          />
+        )}
       </Dialog>
     </PermissionGate>
   )
@@ -742,7 +825,7 @@ export function NewProductTriggerButton({
       type="button"
       variant={editMode ? 'neutralGhost' : 'default'}
       size={editMode ? 'icon' : 'default'}
-      RightIcon={editMode ? IconPencil : IconCirclePlus}
+      RightIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo produto'}

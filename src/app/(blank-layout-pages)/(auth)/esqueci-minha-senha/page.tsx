@@ -21,7 +21,7 @@ export default function SignupPage() {
   return (
     <>
       <CardHeader className="p-0 mb-8 text-center">
-        <CardTitle className="text-xl font-bold">Recuperar senha</CardTitle>
+        <CardTitle>Recuperar senha</CardTitle>
         <CardDescription>
           Digite o e-mail cadastrado para redefinir sua senha.
         </CardDescription>

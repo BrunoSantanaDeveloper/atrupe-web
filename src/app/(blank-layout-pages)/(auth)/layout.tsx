@@ -10,7 +10,7 @@ import type { PropsWithChildren } from 'react'
 
 export default async function AuthLayout({ children }: PropsWithChildren) {
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-[#f2f4f7] py-8 overflow-y-auto">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 py-8 overflow-y-auto">
       {/* Captura oppref + UTMs na entrada do funil (§6) */}
       <AttributionCapture />
       <div className="w-full max-w-[1440px] flex justify-center items-center gap-10 flex-col-reverse lg:flex-row mx-auto px-4 my-auto">
@@ -32,7 +32,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
           <a href="http://www.atrupe.com.br/" target="_blank" rel="noreferrer">
             <Logo text width={154} />
           </a>
-          <Card className="rounded-2xl w-full px-8 py-10 bg-white border border-[#eaecf0] shadow-sm">
+          <Card className="rounded-2xl w-full px-8 py-10 bg-white border border-gray-200 shadow-sm">
             {children}
           </Card>
         </div>

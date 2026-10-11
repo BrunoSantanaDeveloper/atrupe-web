@@ -50,12 +50,7 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import {
-  IconPencil,
-  IconHistory,
-  IconUserEdit,
-  IconUserPlus,
-} from '@tabler/icons-react'
+import { IconPencil, IconHistory, IconUserPlus } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 import { isUsersQuotaFull } from '@/lib/plans/planAccess'
@@ -246,7 +241,7 @@ export function TableData({ tabs, searchParams, usersQuota }: Props) {
                                         <ActionButton
                                           Icon={
                                             item?.user
-                                              ? IconUserEdit
+                                              ? IconPencil
                                               : IconUserPlus
                                           }
                                           tooltip={

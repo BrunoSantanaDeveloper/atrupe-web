@@ -15,7 +15,7 @@ export default function BankCardsSandboxPage() {
   const layouts = ['full', 'split-horizontal', 'split-vertical'] as const
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#d0d5dd] p-8">
+    <div className="flex flex-col min-h-screen bg-gray-300 p-8">
       <div className="max-w-[1500px] mx-auto space-y-8">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-medium text-[#252e3b]">
@@ -36,7 +36,7 @@ export default function BankCardsSandboxPage() {
               key={layout}
               className="flex flex-col gap-6 p-6 rounded-2xl bg-white/30 border border-white/40 shadow-sm backdrop-blur-sm"
             >
-              <h3 className="uppercase tracking-widest text-[#344054] text-xs font-bold border-b border-[#344054]/10 pb-2">
+              <h3 className="uppercase tracking-widest text-gray-700 text-xs font-bold border-b border-[#344054]/10 pb-2">
                 Layout: {layout}
               </h3>
 

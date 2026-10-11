@@ -11,7 +11,7 @@ import { FEATURES } from '@/consts/features'
 
 export function metadata() {
   return {
-    title: 'Movimentações a Receber',
+    title: 'Movimentações a receber',
   }
 }
 
