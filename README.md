@@ -82,6 +82,22 @@ bun dev
 
 A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
+## 🚧 Telas em implantação
+
+Parte das telas novas ainda roda sobre dados de exemplo em memória (as actions marcadas `PROVISÓRIO` em `src/actions`): base de custos, precificação, patrimônios, materiais, processos, composição, gerenciador de produção, projetos, produtividade, estoque e as versões novas de contas bancárias, controle de caixa, frente de caixa e configuração da folha. Elas ficam atrás da flag de build `NEXT_PUBLIC_DEMO_DATA` (`src/lib/demo.ts`).
+
+- **Onde ligar:** só em homolog e local, com `NEXT_PUBLIC_DEMO_DATA=on` (no `.env.local` ou nas variáveis do ambiente de homolog). O Next embute a variável no build, e o build de produção sai sem ela.
+- **O que some sem a flag:** as rotas de `DEMO_ROUTES` (`src/config/routes.ts`) e o `/sandbox` respondem "página não encontrada"; os itens do menu e os cartões de configuração marcados `demo` não aparecem; as actions de exemplo devolvem vazio na leitura e "Recurso em implantação" na gravação; contas bancárias, controle de caixa, frente de caixa e configuração da folha abrem as telas reais; e a venda rápida abre o formulário do orçamento.
+- **Com a flag:** o estado dos dados de exemplo é compartilhado entre as contas e some quando o servidor reinicia.
+- **Saída:** por módulo. Quando a API de uma tela existir, a guarda sai das actions dela, a rota sai de `DEMO_ROUTES` e o item do menu perde o `demo: true`.
+
+As marcas de revisão (azul e vermelho no menu e nos títulos, a legenda e os cartões de recurso a desenvolver) seguem a mesma regra, com `NEXT_PUBLIC_REVIEW_MARKS=on`. O teste `e2e/fronteira.spec.ts` confere, num build sem a flag, que nada disso vaza.
+
+## 📐 Design e contrato da API
+
+- `design/`: o OpenSpec de design, com o sistema visual, a tipografia, o tema e as mudanças em andamento e arquivadas que as telas seguem.
+- `docs/backend/`: o contrato da API que as telas em implantação esperam (`contrato-api.md`), com as pendências, a matriz de planos e as regras de segurança. É o roteiro para trocar cada action de exemplo pela rota real.
+
 ## 📁 Estrutura do Projeto (deprecated)
 
 ```

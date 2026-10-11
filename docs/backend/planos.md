@@ -1,5 +1,14 @@
 # Matriz de planos — quais chaves de recurso formam cada plano
 
+> **Decisões de 10/10/2026** (plano de implementação dos planos, 4.2 e 4.10). Valem sobre a matriz abaixo, escrita em 08/10:
+>
+> - `quotation_require_rejection_reason` continua aposentada (inativa no catálogo desde 30/09) e não entra no LITE.
+> - Setores (`sectors_configuration`) fica no START, como decidido em 29/09 e já gravado no seed.
+> - `basic_management`, `basic_quotations` e `basic_service_orders` não existem: nenhuma tela pede e a API não usa.
+> - O limite de crédito completo (o bloqueio do orçamento e da O.S. pelo limite) é a chave `credit_limit_enforcement`; o plano e a regra estão a decidir. O cadastro do limite continua em `credit_limit_configuration` (LITE).
+> - `can_bill_on_delivery_and_checkout` está no catálogo sem plano, até a decisão da Agenda de entrega.
+> - A API monta o pacote: as chaves e os limites vêm do login e de `GET /subscriptions/session`. A simulação do front (`NEXT_PUBLIC_DEV_FEATURES`, `DEV_PLAN_NAME` e `DEV_IGNORE_BLOCK`) saiu; para conferir um plano, entre com a conta de teste dele.
+
 Escrito em 08/10/2026 para o backend (Bruno) poder cadastrar os cinco planos e criar contas de cada um. Fonte: as chaves que as telas do front pedem hoje, a lista do LITE que já existe na API e os conceitos de PRO, ELITE e FULL. **Onde está escrito "a confirmar", a decisão é do dono do produto.**
 
 ## Como funciona
@@ -8,7 +17,7 @@ O sistema **não pergunta o nome do plano**: cada tela pergunta por uma **chave 
 
 **Planos são cumulativos:** cada um tem tudo o que o anterior tem, mais as chaves da sua linha. A API precisa devolver **a lista completa** (não só as chaves novas do plano).
 
-**Hoje na API de desenvolvimento:** só START e LITE existem com preço; PRO, ELITE e FULL aparecem como "não definido" e a lista de chaves vem vazia. O front simula as chaves pela variável local `NEXT_PUBLIC_DEV_FEATURES` (`src/hooks/usePlanFeatures.ts` no front); quando a API montar o pacote, essa simulação sai.
+**Hoje na API de desenvolvimento:** só START e LITE existem com preço; PRO, ELITE e FULL aparecem como "não definido" e a lista de chaves vem vazia. A simulação que o front fazia pela variável local `NEXT_PUBLIC_DEV_FEATURES` saiu em 10/10/2026 (nota no topo).
 
 ## A matriz
 

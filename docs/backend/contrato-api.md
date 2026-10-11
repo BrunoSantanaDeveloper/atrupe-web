@@ -1879,7 +1879,7 @@ Sem endpoint (sem chamador): `production-manager.ts › getTask` (o diálogo usa
 
 ### Features de plano e setor
 
-ALT-14: a sessão (`company.plan.features`, montada em `src/lib/auth.ts`) passa a trazer `cost_base` (PRO) e `pricing_center` (PRO), associadas ao plano. O servidor confere a feature em cada rota deste módulo: `cost_base` em `/cost-base/*`, `/asset/*` e nas mudanças da folha que calculam encargos; `pricing_center` em `/pricing/*`. Sem a feature, 403 com "Recurso disponível no plano PRO". Quando as chaves chegarem, o front apaga o bloco de `NEXT_PUBLIC_DEV_FEATURES` em `src/hooks/usePlanFeatures.ts`.
+ALT-14: a sessão (`company.plan.features`, montada em `src/lib/auth.ts`) passa a trazer `cost_base` (PRO) e `pricing_center` (PRO), associadas ao plano. O servidor confere a feature em cada rota deste módulo: `cost_base` em `/cost-base/*`, `/asset/*` e nas mudanças da folha que calculam encargos; `pricing_center` em `/pricing/*`. Sem a feature, 403 com "Recurso disponível no plano PRO". A simulação das chaves pelo front (`NEXT_PUBLIC_DEV_FEATURES`) saiu em 10/10/2026: o pacote vem só da API.
 
 #### PATCH /sector/:id (muda)
 
