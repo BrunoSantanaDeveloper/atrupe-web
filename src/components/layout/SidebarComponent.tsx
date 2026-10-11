@@ -35,6 +35,7 @@ import logo from '@public/logo/logo-text.png'
 import { cn, getFirstAndLastName } from '@/lib/utils'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
 import { DEMO_DATA } from '@/lib/demo'
+import { navPermissionAllowed, openNavGroupPath } from './navAccess'
 
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
@@ -94,25 +95,13 @@ export function SidebarComponent(props: Props) {
     return hasFeature(requiredModule)
   }
 
-  // Função auxiliar que verifica permissão considerando admin
-  // Suporta uma única permissão (string) ou múltiplas permissões (array - lógica AND)
-  const checkPermission = (item: MainNavigationType) => {
-    const { permission, requireAllPermissions } = item
-
-    if (!permission) return true
-
-    if (session.user.isAdmin) return true
-
-    if (requireAllPermissions) {
-      return hasAllPermissions(
-        Array.isArray(permission) ? permission : [permission],
-      )
-    }
-
-    return hasAnyPermission(
-      Array.isArray(permission) ? permission : [permission],
-    )
-  }
+  // A regra de permissão do item, a mesma do menu do celular (navAccess)
+  const checkPermission = (item: MainNavigationType) =>
+    navPermissionAllowed(item, {
+      isAdmin: session.user.isAdmin,
+      hasAnyPermission,
+      hasAllPermissions,
+    })
 
   // Função que verifica se um item deve ser exibido baseado em permissões, features do plano e módulos contratados
   const checkItemAccess = (item: MainNavigationType): boolean => {
@@ -279,11 +268,7 @@ export function SidebarComponent(props: Props) {
                 type="single"
                 collapsible
                 className="w-full px-4"
-                defaultValue={
-                  filteredNavigation.find((item) =>
-                    pathname.startsWith(item.path || ''),
-                  )?.path
-                }
+                defaultValue={openNavGroupPath(filteredNavigation, pathname)}
               >
                 {filteredNavigation.map((item, index) => {
                   const hasChildren = item.hasOriginalChildren

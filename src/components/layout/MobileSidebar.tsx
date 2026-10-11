@@ -45,6 +45,7 @@ import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { cn, getFirstAndLastName } from '@/lib/utils'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
 import { DEMO_DATA } from '@/lib/demo'
+import { navPermissionAllowed, openNavGroupPath } from './navAccess'
 
 // Types
 import type { IconProps } from '@tabler/icons-react'
@@ -61,6 +62,7 @@ interface NavigationItem {
   counter?: number
   action?: boolean
   permission?: string | string[]
+  requireAllPermissions?: boolean
   requiredModule?: string
   requiredFeature?: string | string[]
   demo?: boolean
@@ -78,7 +80,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
 
-  const { hasPermission } = usePermissions()
+  const { hasAnyPermission, hasAllPermissions } = usePermissions()
   const { hasFeature, hasAnyFeature } = usePlanFeatures()
   const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
     useFiscalOnboardingStatus()
@@ -98,22 +100,21 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
     return hasFeature(requiredModule)
   }
 
-  const checkPermission = (permission?: string | string[]) => {
-    if (!permission) return true
-    if (session.user.role === 'Admin') return true
-
-    if (Array.isArray(permission)) {
-      return permission.some((perm) => hasPermission(perm))
-    }
-
-    return hasPermission(permission)
-  }
+  // A regra de permissão do item, a mesma do menu do computador (navAccess):
+  // antes o celular ignorava o requireAllPermissions e mostrava itens que o
+  // computador esconde
+  const checkPermission = (item: NavigationItem) =>
+    navPermissionAllowed(item, {
+      isAdmin: session.user.isAdmin,
+      hasAnyPermission,
+      hasAllPermissions,
+    })
 
   const checkItemAccess = (item: NavigationItem): boolean => {
     // Tela de demonstração (dados de exemplo): só com a flag
     if (item.demo && !DEMO_DATA) return false
 
-    if (!checkPermission(item.permission)) {
+    if (!checkPermission(item)) {
       return false
     }
 
@@ -238,11 +239,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
             type="single"
             collapsible
             className="w-full"
-            defaultValue={
-              filteredNavigation.find((item) =>
-                pathname.startsWith(item.path || ''),
-              )?.path
-            }
+            defaultValue={openNavGroupPath(filteredNavigation, pathname)}
           >
             {filteredNavigation.map((item, index) => {
               const hasChildren = item.hasOriginalChildren
