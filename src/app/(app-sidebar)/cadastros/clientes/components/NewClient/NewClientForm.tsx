@@ -1,6 +1,7 @@
+import { useRef } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
-import { GeneralInfoTab } from './tabs/GeneralInfoTab'
+import { GeneralInfoTab, type DocumentLookup } from './tabs/GeneralInfoTab'
 import { IconUser, IconBuilding } from '@tabler/icons-react'
 import {
   defaultPersonValues,
@@ -30,6 +31,10 @@ export function NewClientForm({
   const { reset, watch, trigger } = form
 
   const clientType = watch('type')
+
+  // A consulta do CPF/CNPJ guarda o que preencheu; o registro fica aqui,
+  // porque a aba de informações gerais desmonta ao trocar de aba (UX-2)
+  const documentLookup = useRef<DocumentLookup | null>(null)
 
   const toggleOptions = [
     {
@@ -90,7 +95,7 @@ export function NewClientForm({
         </TabsList>
 
         <TabsContent value="general">
-          <GeneralInfoTab type={clientType} />
+          <GeneralInfoTab type={clientType} lookupRef={documentLookup} />
         </TabsContent>
         <TabsContent value="addresses">
           <AddressTab />

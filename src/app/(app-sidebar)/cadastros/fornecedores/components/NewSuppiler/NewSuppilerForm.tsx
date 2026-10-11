@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 
 import { IconUser, IconBuilding } from '@tabler/icons-react'
@@ -9,7 +10,10 @@ import {
   defaultCompanyValues,
   defaultPersonValues,
 } from '../../../clientes/components/NewClient/schema'
-import { GeneralInfoTab } from '../../../clientes/components/NewClient/tabs/GeneralInfoTab'
+import {
+  GeneralInfoTab,
+  type DocumentLookup,
+} from '../../../clientes/components/NewClient/tabs/GeneralInfoTab'
 import { AddressTab } from '../../../clientes/components/NewClient/tabs/AddressTab'
 import { ResponsibilitiesTab } from '../../../clientes/components/NewClient/tabs/ResponsibilitiesTab'
 import { NewSupplierFormType } from './schema'
@@ -25,6 +29,10 @@ export function NewSupplierForm({ activeTab, setActiveTab }: Props) {
   const { reset, watch, trigger } = form
 
   const clientType = watch('type')
+
+  // A consulta do CPF/CNPJ guarda o que preencheu; o registro fica aqui,
+  // porque a aba de informações gerais desmonta ao trocar de aba (UX-2)
+  const documentLookup = useRef<DocumentLookup | null>(null)
 
   const toggleOptions = [
     {
@@ -79,7 +87,11 @@ export function NewSupplierForm({ activeTab, setActiveTab }: Props) {
         </TabsList>
 
         <TabsContent value="general">
-          <GeneralInfoTab type={clientType} context="supplier" />
+          <GeneralInfoTab
+            type={clientType}
+            context="supplier"
+            lookupRef={documentLookup}
+          />
         </TabsContent>
         <TabsContent value="address">
           <AddressTab />

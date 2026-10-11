@@ -7,6 +7,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 import { useMemo, useCallback, useRef, useState } from 'react'
+import type { MutableRefObject } from 'react'
 import { useDocumentSearch } from '@/hooks/useDocumentSearch'
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
@@ -17,12 +18,23 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
 
+/**
+ * O último documento consultado e o que a consulta preencheu (UX-2). Fica no
+ * formulário, e não na aba: a aba desmonta ao trocar para outra, e o registro
+ * se perderia no caminho.
+ */
+export type DocumentLookup = {
+  document: string
+  values: Record<string, string | Date>
+}
+
 interface Props {
   type: 'PERSON' | 'COMPANY'
   context?: 'client' | 'supplier'
+  lookupRef?: MutableRefObject<DocumentLookup | null>
 }
 
-export function GeneralInfoTab({ type, context = 'client' }: Props) {
+export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
   const { setValue, watch, getValues } = useFormContext<NewClientFormType>()
   const { searchByDocument } = useDocumentSearch()
   const { canManageClientResponsible } = usePlanFeatures()
@@ -40,11 +52,10 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
   type FieldName = Parameters<typeof setValue>[0]
 
   // O último documento consultado e o que a consulta preencheu: trocar o
-  // documento limpa o que veio da consulta anterior (UX-2)
-  const lastLookup = useRef<{
-    document: string
-    values: Partial<Record<FieldName, string | Date>>
-  } | null>(null)
+  // documento limpa o que veio da consulta anterior (UX-2). Vem do formulário;
+  // sem ele, vale enquanto a aba estiver montada
+  const ownLookup = useRef<DocumentLookup | null>(null)
+  const lastLookup = lookupRef ?? ownLookup
 
   const handleDocumentChange = useCallback(
     async (document: string, documentType: 'CPF' | 'CNPJ') => {
@@ -90,7 +101,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
       if (searchData) {
         // EC-14: a consulta não apaga mais o que o usuário digitou. Só
         // preenche o que estiver vazio.
-        const filled: Partial<Record<FieldName, string | Date>> = {}
+        const filled: Record<string, string | Date> = {}
         const fillIfEmpty = (field: FieldName, value?: string | null) => {
           if (!value) return
           if (getValues(field)) return
@@ -139,7 +150,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         }
       }
     },
-    [setValue, getValues, searchByDocument],
+    [setValue, getValues, searchByDocument, lastLookup],
   )
 
   const [isRefreshing, setIsRefreshing] = useState(false)
