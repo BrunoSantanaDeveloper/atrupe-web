@@ -53,7 +53,9 @@ export const ALLOWED_WHEN_TRIAL_EXPIRED = ['/logout', '/assinatura'] as const
  * (as actions PROVISÓRIO de src/actions). Sem a flag de demonstração
  * (src/lib/demo.ts), o middleware responde "página não encontrada" para elas
  * e para as subpáginas. Um segmento entre colchetes vale qualquer valor. A
- * rota sai da lista quando a API dela estiver publicada.
+ * rota sai da lista quando a API dela estiver publicada. O /sandbox (as
+ * vitrines) também está aqui: o notFound() do layout dele, sozinho, mostrava a
+ * página de não encontrada com status 200 e às vezes quebrava no navegador.
  */
 export const DEMO_ROUTES = [
   '/base-de-custos',
@@ -71,6 +73,7 @@ export const DEMO_ROUTES = [
   '/configuracoes/vendas/venda-rapida',
   '/vendas/orcamentos/[quotationId]/composicao',
   '/vendas/orcamentos/[quotationId]/resultado',
+  '/sandbox',
 ] as const
 
 /** O caminho é uma rota de demonstração ou uma subpágina dela */

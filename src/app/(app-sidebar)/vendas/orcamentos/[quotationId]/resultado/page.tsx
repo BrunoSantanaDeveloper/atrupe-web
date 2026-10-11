@@ -4,6 +4,10 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Consts
 import { FEATURES } from '@/consts/features'
+import { DEMO_DATA } from '@/lib/demo'
+
+// Next
+import { notFound } from 'next/navigation'
 
 export function metadata() {
   return { title: 'Resultado previsto do orçamento' }
@@ -17,6 +21,10 @@ export default function QuotationResultPage({
 }: {
   params: { quotationId: string }
 }) {
+  // Tela de demonstração: sem a flag, "não encontrada" também aqui, e não
+  // só no middleware, que não vê URL com ponto no segmento (MOCK-8)
+  if (!DEMO_DATA) notFound()
+
   return (
     <PermissionGate
       requireAll
