@@ -28,8 +28,10 @@ import { IconPrinter, IconPlus } from '@tabler/icons-react'
 
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
-import { refreshPlanFeatures } from '@/actions/subscription'
 import { fetchOwnership } from '@/actions/ownership'
+
+// Hooks
+import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 
 // Types
 import type { BadgeType, SearchParamsType } from '@/types/coreTypes'
@@ -48,7 +50,8 @@ const statusMap: Record<string, BadgeType> = {
 export function SubscriptionManagementClient({
   searchParams,
 }: SearchParamsType) {
-  const { data: session, update } = useSession()
+  const { data: session } = useSession()
+  const { refresh: refreshCompanySession } = useRefreshCompanySession()
   const [cancelOpen, setCancelOpen] = useState(false)
 
   const page = Number(searchParams?.page) || 1
@@ -92,37 +95,13 @@ export function SubscriptionManagementClient({
   const statusInfo = subscription ? statusMap[subscription.status] : undefined
   const isTrial = subscription?.plan?.planType === 'TRIAL'
 
-  // Auto-sync: atualiza a sessão se as features do backend diferirem do JWT
+  // Ao abrir a assinatura, a sessão passa a refletir o plano do servidor
+  // (recursos, limites, bloqueio e cobrança), montado pela mesma função do
+  // login. Respeita o intervalo mínimo: a montagem da página já pode ter
+  // buscado.
   useEffect(() => {
-    if (!subscription || !session) return
-
-    async function syncSession() {
-      const result = await refreshPlanFeatures()
-      if (!result.success) return
-
-      const sessionFeatures = session?.company?.plan?.features || []
-      const backendFeatures = result.features
-
-      // Comparar features: se divergirem, atualizar a sessão
-      const isDifferent =
-        sessionFeatures.length !== backendFeatures.length ||
-        backendFeatures.some((f) => !sessionFeatures.includes(f))
-
-      if (isDifferent) {
-        await update({
-          company: {
-            plan: {
-              name: result.planName,
-              active: result.active,
-              features: result.features,
-              limits: result.limits,
-            },
-          },
-        })
-      }
-    }
-
-    syncSession()
+    if (!subscription) return
+    refreshCompanySession({ force: false }).catch(() => null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subscription])
 

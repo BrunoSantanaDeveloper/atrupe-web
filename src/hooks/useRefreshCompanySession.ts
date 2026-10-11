@@ -3,6 +3,7 @@
 import { useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { fetchCompanySession } from '@/actions/checkout'
+import { useCompanySessionContext } from '@/contexts/nextAuthProvider'
 import type { CompanySessionBlock } from '@/types/checkout'
 
 /**
@@ -15,6 +16,7 @@ import type { CompanySessionBlock } from '@/types/checkout'
  */
 export function useRefreshCompanySession() {
   const { update } = useSession()
+  const companySession = useCompanySessionContext()
 
   const apply = useCallback(
     async (block: CompanySessionBlock) => {
@@ -30,12 +32,24 @@ export function useRefreshCompanySession() {
     [update],
   )
 
-  const refresh = useCallback(async () => {
-    const res = await fetchCompanySession()
-    if (!res.success || !res.data) return null
-    await apply(res.data)
-    return res.data
-  }, [apply])
+  /**
+   * Busca na hora, sem o intervalo mínimo do provider (contratação,
+   * pagamento, 403 de plano). Com `{ force: false }`, respeita o intervalo:
+   * para quem pode chamar várias vezes seguidas.
+   */
+  const refresh = useCallback(
+    async (options?: { force?: boolean }) => {
+      const force = options?.force ?? true
+      if (companySession) {
+        return companySession.refreshCompanyState({ force })
+      }
+      const res = await fetchCompanySession()
+      if (!res.success || !res.data) return null
+      await apply(res.data)
+      return res.data
+    },
+    [apply, companySession],
+  )
 
   return { refresh, apply }
 }

@@ -15,9 +15,8 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { toast } from 'sonner'
 import { IconAlertTriangle } from '@tabler/icons-react'
 import { deleteItemNew } from '@/actions/_cruds'
-import { refreshPlanFeatures } from '@/actions/subscription'
 import { useQueryClient } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
+import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 interface RemoveModuleDialogProps {
@@ -39,7 +38,7 @@ export function RemoveModuleDialog({
 }: RemoveModuleDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const queryClient = useQueryClient()
-  const { update: updateSession } = useSession()
+  const { refresh: refreshCompanySession } = useRefreshCompanySession()
 
   const handleClose = () => {
     onOpenChange(false)
@@ -57,20 +56,9 @@ export function RemoveModuleDialog({
         return
       }
 
-      // Refresh session to update features
-      const refreshResult = await refreshPlanFeatures()
-      if (refreshResult.success) {
-        await updateSession({
-          company: {
-            plan: {
-              name: refreshResult.planName,
-              active: refreshResult.active,
-              features: refreshResult.features,
-              limits: refreshResult.limits,
-            },
-          },
-        })
-      }
+      // A sessão passa a refletir o plano sem o módulo, montada pela mesma
+      // função do login (GET /subscriptions/session).
+      await refreshCompanySession().catch(() => null)
 
       toast.success(`Módulo ${moduleName} removido com sucesso.`)
       queryClient.invalidateQueries({ queryKey: ['subscription-active'] })

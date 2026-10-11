@@ -6,12 +6,44 @@ import type { Session } from 'next-auth'
 
 // Types Imports
 import type { PropsWithChildren } from 'react'
-import { useEffect, useRef, useCallback } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import { fetchCompanySession } from '@/actions/checkout'
+import type { CompanySessionBlock } from '@/types/checkout'
 
 interface Props {
   basePath?: string
   session: Session | null
+}
+
+/** Intervalo mínimo entre duas buscas do estado da empresa sem `force`. */
+const COMPANY_REFRESH_MIN_INTERVAL = 60 * 1000
+
+interface CompanySessionContextValue {
+  /**
+   * Busca no servidor o estado da empresa e o leva à sessão. Sem `force`,
+   * ignora a chamada feita a menos de 1 min da anterior (montagem, foco, a
+   * cada 5 min); com `force`, busca na hora — a API recusou por plano, então
+   * a sessão está velha. Devolve o bloco lido, ou `null` quando não buscou.
+   */
+  refreshCompanyState: (options?: {
+    force?: boolean
+  }) => Promise<CompanySessionBlock | null>
+}
+
+const CompanySessionContext = createContext<CompanySessionContextValue | null>(
+  null,
+)
+
+/** O refresh do estado da empresa do provider; `null` fora dele. */
+export function useCompanySessionContext() {
+  return useContext(CompanySessionContext)
 }
 
 /**
@@ -28,22 +60,50 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
    * token, sem consultar nada: bloqueio e pagamento confirmado só apareciam
    * no login seguinte.
    */
-  const refreshCompanyState = useCallback(async () => {
-    if (!session?.company?.id) return
-    if (Date.now() - lastCompanyRefreshRef.current < 60 * 1000) return
-    lastCompanyRefreshRef.current = Date.now()
-    const res = await fetchCompanySession().catch(() => null)
-    if (res?.success && res.data) {
-      await update({
-        company: {
-          plan: res.data.plan,
-          blockLevel: res.data.blockLevel,
-          billing: res.data.billing,
-          isOwner: res.data.isOwner,
-        },
+  const companyRefreshInFlightRef =
+    useRef<Promise<CompanySessionBlock | null> | null>(null)
+  const refreshCompanyState = useCallback(
+    async (options?: { force?: boolean }) => {
+      if (!session?.company?.id) return null
+      // Uma busca em andamento já traz o estado novo: vários 403 juntos não
+      // disparam várias buscas.
+      if (companyRefreshInFlightRef.current) {
+        return companyRefreshInFlightRef.current
+      }
+      if (
+        !options?.force &&
+        Date.now() - lastCompanyRefreshRef.current <
+          COMPANY_REFRESH_MIN_INTERVAL
+      ) {
+        return null
+      }
+      lastCompanyRefreshRef.current = Date.now()
+
+      const run = async () => {
+        const res = await fetchCompanySession().catch(() => null)
+        if (!res?.success || !res.data) return null
+        await update({
+          company: {
+            plan: res.data.plan,
+            blockLevel: res.data.blockLevel,
+            billing: res.data.billing,
+            isOwner: res.data.isOwner,
+          },
+        })
+        return res.data
+      }
+
+      companyRefreshInFlightRef.current = run().finally(() => {
+        companyRefreshInFlightRef.current = null
       })
-    }
-  }, [session?.company?.id, update])
+      return companyRefreshInFlightRef.current
+    },
+    [session?.company?.id, update],
+  )
+  const companySessionContext = useMemo(
+    () => ({ refreshCompanyState }),
+    [refreshCompanyState],
+  )
   const initialRefreshDoneRef = useRef(false)
   const refreshInFlightRef = useRef(false)
 
@@ -230,7 +290,11 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     return () => clearInterval(interval)
   }, [refreshCompanyState, status])
 
-  return <>{children}</>
+  return (
+    <CompanySessionContext.Provider value={companySessionContext}>
+      {children}
+    </CompanySessionContext.Provider>
+  )
 }
 
 // eslint-disable-next-line
