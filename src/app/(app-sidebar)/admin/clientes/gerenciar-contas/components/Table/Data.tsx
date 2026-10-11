@@ -304,14 +304,21 @@ export function Data({ searchParams, searchDescription }: Props) {
                             setIsChangePlanDialogOpen(true)
                           }}
                         />
-                        <ActionButton
-                          Icon={IconGift}
-                          tooltip="Plano manual, sem cobrança"
-                          onClick={() => {
-                            setRowData(item)
-                            setIsManualPlanDialogOpen(true)
-                          }}
-                        />
+                        {/* Plano manual é para conta sem cobrança no Asaas
+                            (teste ou manual), como o plano 5.5 aprovou: na
+                            conta pagante, a assinatura viva seria encerrada
+                            e as parcelas do anual seguiriam sendo cobradas */}
+                        {(item.billingMode === 'MANUAL' ||
+                          item.billingMode === 'TRIAL') && (
+                          <ActionButton
+                            Icon={IconGift}
+                            tooltip="Plano manual, sem cobrança"
+                            onClick={() => {
+                              setRowData(item)
+                              setIsManualPlanDialogOpen(true)
+                            }}
+                          />
+                        )}
                         <ActionButton
                           Icon={IconRefresh}
                           tooltip="Verificar Asaas"
