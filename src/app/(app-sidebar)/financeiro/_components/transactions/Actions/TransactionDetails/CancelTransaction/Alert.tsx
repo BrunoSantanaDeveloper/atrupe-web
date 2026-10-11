@@ -160,7 +160,7 @@ export function CancelAlertDialog(props: Props) {
           </Form>
         )}
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>Voltar</AlertDialogCancel>
           {canCancel && (
             <Button
               type="submit"

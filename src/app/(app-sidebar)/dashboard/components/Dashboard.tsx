@@ -110,7 +110,7 @@ function DashboardContent() {
             <h3 className="type-card-title mb-2">Acesso restrito</h3>
             <p className="text-gray-600">
               Você não tem permissão para visualizar informações gerais do
-              dashboard.
+              painel.
             </p>
           </CardContent>
         </Card>

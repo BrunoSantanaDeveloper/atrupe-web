@@ -267,7 +267,7 @@ export default function ConfigurarFiscalPage() {
             <h2 className="type-section-title mb-2">Módulo fiscal ativado!</h2>
             <p className="text-muted-foreground mb-4">{resultMessage}</p>
             <p className="text-sm text-muted-foreground">
-              Redirecionando para o dashboard...
+              Redirecionando para o painel...
             </p>
           </CardContent>
         </Card>
@@ -292,7 +292,7 @@ export default function ConfigurarFiscalPage() {
               className="mt-6"
               onClick={() => router.replace('/dashboard')}
             >
-              Ir para o Dashboard
+              Ir para o painel
             </Button>
           </CardContent>
         </Card>

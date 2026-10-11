@@ -82,7 +82,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
           {pendingMessage}
         </p>
         <Button variant="ghost" onClick={() => router.push('/dashboard')}>
-          Voltar ao Dashboard
+          Voltar ao painel
         </Button>
       </div>
     )

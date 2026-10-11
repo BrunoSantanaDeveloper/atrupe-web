@@ -146,7 +146,9 @@ export function DfcTable({ searchParams }: SearchParamsType) {
                 <TableRow
                   key={row.id}
                   className={cn(
-                    row.level === 0 && 'bg-gray-50 font-semibold',
+                    // A célula nova da tabela traz o papel tipográfico e
+                    // venceria o peso posto na linha: o negrito vai na célula
+                    row.level === 0 && 'bg-gray-50 [&>td]:font-semibold',
                     isNegative && row.level === 0 && 'bg-red-50',
                     !isNegative && row.level === 0 && 'bg-success-50',
                   )}

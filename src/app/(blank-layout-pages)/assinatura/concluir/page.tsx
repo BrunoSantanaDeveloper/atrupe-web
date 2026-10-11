@@ -247,7 +247,7 @@ export default function FinishSubscriptionPage() {
 
   const goToDashboard = (
     <ProceedButton onClick={() => router.replace('/dashboard')}>
-      Ir para o dashboard
+      Ir para o painel
     </ProceedButton>
   )
 
@@ -272,7 +272,7 @@ export default function FinishSubscriptionPage() {
       >
         <p>
           O pagamento foi confirmado e a sua assinatura está ativa. Você será
-          levado ao dashboard em instantes.
+          levado ao painel em instantes.
         </p>
       </ResultCard>
     )
@@ -300,7 +300,7 @@ export default function FinishSubscriptionPage() {
       >
         <p>{errorMessage}</p>
         <p className="text-xs text-gray-400">
-          Indo para o dashboard em{' '}
+          Indo para o painel em{' '}
           <span className="font-semibold text-gray-600">{countdown}s</span>
         </p>
       </ResultCard>
