@@ -6,7 +6,7 @@ import { maskCpf, maskCnpj, isValidCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
 
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
-import { useMemo, useCallback, useState } from 'react'
+import { useMemo, useCallback, useRef, useState } from 'react'
 import { useDocumentSearch } from '@/hooks/useDocumentSearch'
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
@@ -37,6 +37,15 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
   const categoryOptions = useMemo(() => categoryData || [], [categoryData])
 
+  type FieldName = Parameters<typeof setValue>[0]
+
+  // O último documento consultado e o que a consulta preencheu: trocar o
+  // documento limpa o que veio da consulta anterior (UX-2)
+  const lastLookup = useRef<{
+    document: string
+    values: Partial<Record<FieldName, string | Date>>
+  } | null>(null)
+
   const handleDocumentChange = useCallback(
     async (document: string, documentType: 'CPF' | 'CNPJ') => {
       const cleanDocument = document.replace(/[.\-/]/g, '')
@@ -53,19 +62,41 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
       // nome de um terceiro.
       if (!isValidCpfCnpj(cleanDocument)) return
 
+      // UX-2: com outro documento, o que a consulta anterior preencheu e o
+      // usuário não mexeu sai. Sem isso, trocar o CNPJ da empresa A pelo da B
+      // deixava o cadastro com o CNPJ de B e o nome e o endereço de A. O que
+      // o usuário digitou ou editou fica (EC-14)
+      const previous = lastLookup.current
+      if (previous && previous.document !== cleanDocument) {
+        for (const [field, value] of Object.entries(previous.values)) {
+          const name = field as FieldName
+          const current = getValues(name)
+          if (value instanceof Date) {
+            if (
+              current instanceof Date &&
+              current.getTime() === value.getTime()
+            ) {
+              setValue('general.birthdate', undefined)
+            }
+          } else if (current === value) {
+            setValue(name, '' as never)
+          }
+        }
+        lastLookup.current = null
+      }
+
       const searchData = await searchByDocument(cleanDocument)
 
       if (searchData) {
         // EC-14: a consulta não apaga mais o que o usuário digitou. Só
         // preenche o que estiver vazio.
-        const fillIfEmpty = (
-          field: Parameters<typeof setValue>[0],
-          value?: string | null,
-        ) => {
+        const filled: Partial<Record<FieldName, string | Date>> = {}
+        const fillIfEmpty = (field: FieldName, value?: string | null) => {
           if (!value) return
           if (getValues(field)) return
 
           setValue(field, value)
+          filled[field] = value
         }
 
         fillIfEmpty('general.name', searchData.name)
@@ -77,6 +108,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
             searchData.birthdate.split('T')[0] + 'T12:00:00',
           )
           setValue('general.birthdate', date)
+          filled['general.birthdate'] = date
         }
 
         if (documentType === 'CNPJ') {
@@ -94,6 +126,16 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
             'addresses.0.neighborhood',
             searchData.address.neighborhood,
           )
+        }
+
+        // A mesma consulta de novo soma ao que já tinha vindo dela
+        const keep =
+          lastLookup.current?.document === cleanDocument
+            ? lastLookup.current.values
+            : {}
+        lastLookup.current = {
+          document: cleanDocument,
+          values: { ...keep, ...filled },
         }
       }
     },
