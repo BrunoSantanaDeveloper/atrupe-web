@@ -88,8 +88,9 @@ export const defaultMainNavigation: MainNavigationType[] = [
     path: '/vendas',
     children: [
       // Venda rápida é o mesmo orçamento, nascendo com menos perguntas: vem
-      // primeiro porque é o caminho do balcão, e só aparece quando ligada em
-      // Configurações › Vendas (VR-4)
+      // primeiro porque é o caminho do balcão. Aparece com o recurso de
+      // venda rápida do plano e abre o formulário da venda rápida na lista
+      // de orçamentos (o VR-4 do fork espera a flag de demonstração)
       {
         icon: IconBolt,
         title: 'Venda rápida',
