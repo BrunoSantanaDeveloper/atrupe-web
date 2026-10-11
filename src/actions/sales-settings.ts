@@ -5,6 +5,9 @@
 
 import { auth } from '@/lib/auth'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 // Markup padrão do terceirizado avulso (MS-16, T-4, decisão de 05/10/2026):
 // o preço de venda do terceirizado é custo ÷ (1 − markup). O legado aplicava
 // 45 % sem mostrar; aqui o percentual é configurável e aparece no painel
@@ -23,12 +26,15 @@ const companyKey = async () => {
 }
 
 export const getSalesSettings = async () => {
+  if (!DEMO_DATA)
+    return { success: true, data: { outsourcedMarkup: 0 }, message: '' }
   const key = await companyKey()
   const settings = byCompany.get(key) || DEFAULTS
   return { success: true, data: settings, message: '' }
 }
 
 export const updateSalesSettings = async (values: Partial<SalesSettings>) => {
+  if (!DEMO_DATA) return demoOff()
   if (values.outsourcedMarkup !== undefined) {
     const markup = Number(values.outsourcedMarkup)
     if (!Number.isFinite(markup) || markup < 0 || markup >= 100) {

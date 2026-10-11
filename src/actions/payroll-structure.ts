@@ -15,6 +15,9 @@ import type {
   PayrollStructureEmployee,
 } from '@/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/types'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 type ItemOptions = {
   derived?: boolean
   fixedByLaw?: boolean
@@ -118,11 +121,14 @@ const employees: PayrollStructureEmployee[] = [
   },
 ]
 
-export const getPayrollStructure = async () => ({
-  success: true,
-  data: employees,
-  message: '',
-})
+export const getPayrollStructure = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return {
+    success: true,
+    data: employees,
+    message: '',
+  }
+}
 
 const find = (employeeId: string, itemId: string) =>
   employees
@@ -136,6 +142,7 @@ export const updatePayrollItem = async (
     Pick<PayrollStructureItem, 'behavior' | 'increase' | 'discount'>
   >,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const current = find(employeeId, itemId)
 
   if (!current) {
@@ -168,6 +175,7 @@ export const setPayrollItem = async (
   itemId: string,
   isSet: boolean,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const current = find(employeeId, itemId)
 
   if (!current) {

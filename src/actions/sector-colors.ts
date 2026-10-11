@@ -8,6 +8,9 @@
 
 import { auth } from '@/lib/auth'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const normalize = (value: string) =>
   value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
@@ -21,6 +24,7 @@ const companyKey = async () => {
 }
 
 export const getSectorColors = async () => {
+  if (!DEMO_DATA) return { success: true, data: {}, message: '' }
   const key = await companyKey()
   return { success: true, data: byCompany.get(key) || {}, message: '' }
 }
@@ -35,6 +39,7 @@ export const setSectorColor = async ({
   // Vazio volta ao padrão
   color: string | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (color && !/^#[0-9a-fA-F]{6}$/.test(color)) {
     return { success: false, data: null, message: 'Cor inválida' }
   }

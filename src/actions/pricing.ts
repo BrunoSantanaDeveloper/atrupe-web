@@ -19,6 +19,9 @@ import { materials, materialUnitSymbol } from './materials-data'
 // O custo da máquina acompanha o rateio manual do setor (BC-3.1)
 import { SETUP_BY_RESOURCE, allocatedUnitCost } from './sector-allocation-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const REFERENCE_MONTH = '2026-08'
 
 // Percentuais em décimos de ponto: 60 = 6,0%
@@ -174,6 +177,22 @@ const items: { [key in PricingGroup]: PricingItem[] } = {
 }
 
 export const getPricingSummary = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        referenceMonth: '',
+        parameters: {
+          taxation: 0,
+          commission: 0,
+          financialCost: 0,
+          desiredMargin: 0,
+          markup: 0,
+        },
+        groups: [],
+      },
+      message: '',
+    }
   const data: PricingSummary = {
     referenceMonth: REFERENCE_MONTH,
     parameters: withMarkup(parameters),
@@ -268,6 +287,7 @@ export const getPricingItems = async ({
   group: PricingGroup
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const status = filters?.status
   const search = filters?.search?.trim().toLowerCase()
 
@@ -287,6 +307,7 @@ export const getPricingItems = async ({
 export const updatePricingParameters = async (
   values: Omit<PricingParameters, 'markup'>,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   Object.assign(parameters, values)
 
   return { success: true, data: withMarkup(parameters), message: '' }
@@ -303,6 +324,7 @@ export const updateItemPrice = async ({
   rule: PriceRule
   price: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   // Material: grava no cadastro, na variação quando houver (MT-3, DC-6)
   if (group === 'materials') {
     const [, materialId, variationId] = id.split(':')

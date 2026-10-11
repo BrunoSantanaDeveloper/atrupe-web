@@ -179,7 +179,7 @@ export function ImportMaterialsDialog({
       })),
     })
     setSaving(false)
-    if (!res.success) return toast.error(res.message)
+    if (!res.success || !res.data) return toast.error(res.message)
     toast.success(
       `${res.data.created} ${res.data.created === 1 ? 'material cadastrado' : 'materiais cadastrados'} · ${res.data.updated} ${res.data.updated === 1 ? 'atualizado' : 'atualizados'}`,
     )

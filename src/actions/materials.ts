@@ -15,11 +15,15 @@ import type {
 // a lista de recursos e para as medidas do perfil nas fórmulas
 import { materials } from './materials-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 export const getMaterials = async ({
   filters,
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const search = filters?.search?.trim().toLowerCase()
   const status = filters?.status || 'ativos'
 
@@ -59,6 +63,7 @@ export const createMaterial = async ({
   productionMaterial: boolean
   advanced?: MaterialAdvanced
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do material' }
   }
@@ -89,6 +94,7 @@ export const updateMaterial = async ({
   id,
   ...values
 }: Partial<Material> & { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const material = materials.find((item) => item.id === id)
 
   if (!material) {
@@ -120,6 +126,7 @@ export const createMaterialVariations = async ({
   cost: number
   price: number | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const material = materials.find((item) => item.id === materialId)
 
   if (!material) {
@@ -164,6 +171,7 @@ export const updateMaterialVariation = async ({
   cost: number | null
   price: number | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const material = materials.find((item) => item.id === materialId)
   const variation = material?.variations.find((item) => item.id === variationId)
 
@@ -186,6 +194,7 @@ export const setMaterialActive = async ({
   id: string
   active: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const material = materials.find((item) => item.id === id)
 
   if (!material) {
@@ -303,12 +312,23 @@ const classify = (row: ImportRow, line: number): ImportPreviewRow => {
   return { ...base, status: 'NEW' }
 }
 
-export const previewMaterialImport = async ({ rows }: { rows: ImportRow[] }) =>
-  ({
+export const previewMaterialImport = async ({
+  rows,
+}: {
+  rows: ImportRow[]
+}) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: [] as ImportPreviewRow[],
+      message: '',
+    } as const
+  return {
     success: true,
     data: rows.map((row, index) => classify(row, index + 1)),
     message: '',
-  }) as const
+  } as const
+}
 
 export const importMaterials = async ({
   rows,
@@ -317,6 +337,7 @@ export const importMaterials = async ({
   // sistema), e vazio cadastra material novo
   rows: (ImportRow & { materialId: string | null; sector?: string })[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   let created = 0
   let updated = 0
   rows.forEach((row) => {

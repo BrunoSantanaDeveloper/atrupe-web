@@ -13,6 +13,9 @@ import type {
   QuickSaleCheckout,
 } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/types'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const hoje = (hora: string) =>
   `${new Date().toISOString().slice(0, 10)}T${hora}`
 
@@ -172,13 +175,22 @@ const checkouts: Record<string, QuickSaleCheckout> = {}
 // reservar: "Atender esta venda" e a marca de quem atende nem aparecem (FC-5)
 const openCashFronts = 2
 
-export const getCashFront = async () => ({
-  success: true,
-  data: { session, sales, openCashFronts },
-  message: '',
-})
+export const getCashFront = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { session: null, sales: [], openCashFronts: 0 },
+      message: '',
+    }
+  return {
+    success: true,
+    data: { session, sales, openCashFronts },
+    message: '',
+  }
+}
 
 export const openCashSession = async (openingBalance: number) => {
+  if (!DEMO_DATA) return demoOff()
   session = {
     id: `c${Date.now()}`,
     number: (session?.number ?? 12) + 1,
@@ -214,6 +226,7 @@ export const addCashMovement = async (
   // empresa). Não é receita nem despesa: é dinheiro mudando de lugar
   account = 'Caixa Empresa',
 ) => {
+  if (!DEMO_DATA) return demoOff()
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
   }
@@ -255,6 +268,7 @@ export const receiveSale = async (
   // vira desconto na venda, registrado na hora, e não quebra de caixa
   discount = 0,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId)
 
   if (!sale) {
@@ -320,6 +334,7 @@ export const receiveSale = async (
 
 // O estorno acontece pelo cancelamento da venda, com justificativa (FC-13)
 export const reverseSale = async (saleId: string, reason: string) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId)
 
   if (!sale || !session) {
@@ -360,6 +375,7 @@ export const closeCashSession = async (
   keep = 0,
   note = '',
 ) => {
+  if (!DEMO_DATA) return demoOff()
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
   }
@@ -455,6 +471,7 @@ export const closeCashSession = async (
 // passa para "Aguardando retirada". Com o gerenciador de produção, é a
 // conclusão da ordem que marca; sem ele, o caixa ou o vendedor marca aqui
 export const markSaleReady = async (saleId: string) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId)
   if (!sale) {
     return { success: false, data: null, message: 'Venda não encontrada' }
@@ -471,6 +488,7 @@ export const markSaleReady = async (saleId: string) => {
 // lança como perda o que não foi pago, com o sinal recebido abatendo. Pede
 // justificativa e fica registrado (quem e quando)
 export const discardPickup = async (saleId: string, reason: string) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId && item.ready)
   if (!sale) {
     return { success: false, data: null, message: 'Trabalho não encontrado' }
@@ -496,11 +514,28 @@ export const discardPickup = async (saleId: string, reason: string) => {
   }
 }
 
-export const getQuickSaleCheckout = async (quotationId: string) => ({
-  success: true,
-  data: checkouts[quotationId] ?? null,
-  message: '',
-})
+export const getQuickSaleCheckout = async (quotationId: string) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        quotationId: '',
+        path: 'CASH_ONLY' as const,
+        sentAt: '',
+        total: 0,
+        paid: 0,
+        delivered: false,
+        cancelled: false,
+        parts: [],
+      },
+      message: '',
+    }
+  return {
+    success: true,
+    data: checkouts[quotationId] ?? null,
+    message: '',
+  }
+}
 
 type QuickSaleOrigin = {
   quotationId: string
@@ -513,6 +548,7 @@ type QuickSaleOrigin = {
 // Enviar a venda rápida ao caixa. Não é um gesto além da aprovação: aprovar
 // a venda rápida já a coloca na fila (FC-12), e a partir daí ela trava (FC-11)
 export const sendQuickSaleToCash = async (origin: QuickSaleOrigin) => {
+  if (!DEMO_DATA) return demoOff()
   if (checkouts[origin.quotationId]) {
     return {
       success: false,
@@ -560,6 +596,7 @@ export const chargeQuickSaleNow = async (
   // Arredondamento no balcão (FC-18), como desconto na venda
   discount = 0,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const paid = parts.reduce((total, part) => total + part.amount, 0)
 
   if (discount > register.roundingLimit) {
@@ -595,6 +632,7 @@ export const chargeQuickSaleNow = async (
 
 // Com mais de um caixa, cada um puxa para si a venda que vai atender (FC-5)
 export const claimSale = async (saleId: string) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId)
   if (!sale || !session) {
     return { success: false, data: null, message: 'Venda não encontrada' }
@@ -614,6 +652,7 @@ export const claimSale = async (saleId: string) => {
 }
 
 export const releaseSale = async (saleId: string) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId)
   if (sale && sale.paid === 0) sale.claimedBy = null
   return { success: true, data: null, message: '' }
@@ -632,6 +671,7 @@ export const reverseToBilling = async (
     notes?: string
   },
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const sale = sales.find((item) => item.id === saleId)
   if (!sale) {
     return { success: false, data: null, message: 'Venda não encontrada' }

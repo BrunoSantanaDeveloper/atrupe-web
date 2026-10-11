@@ -46,6 +46,9 @@ import {
 } from './cost-base-data'
 import { configOf } from './sector-allocation-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const REFERENCE_MONTH = '2026-08'
 
 const groups: AdminExpenseGroup[] = [
@@ -61,6 +64,12 @@ export const getAdminExpenses = async ({
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { referenceMonth: '', groups: [], accounts: [] },
+      message: '',
+    }
   const search = filters?.search?.trim().toLowerCase()
 
   const data: AdminExpensesResponse = {
@@ -87,6 +96,19 @@ export const getAdminExpenses = async ({
 }
 
 export const getAdminExpensesTotals = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        total: 0,
+        byAverage: 0,
+        manual: 0,
+        referenceValue: 0,
+        allocatedValue: 0,
+        remainingValue: 0,
+      },
+      message: '',
+    }
   const all = accounts.map(withReference)
 
   const data: AdminExpensesTotals = {
@@ -109,6 +131,7 @@ export const getAdminExpensesTotals = async () => {
 // `PUT /cost-base/admin-expense/:id/allocation` (backend-pendente.md)
 
 export const getExpenseAllocation = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const account = accounts.find((item) => item.id === id)
 
   if (!account) {
@@ -143,6 +166,7 @@ export const updateExpenseAllocation = async ({
   id: string
   percentages: { sectorId: string; percentage: number }[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const account = accounts.find((item) => item.id === id)
 
   if (!account) {
@@ -195,6 +219,7 @@ export const updateAdminExpenseCriterion = async ({
   criterion: CostCriterion
   manualValue?: number | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const account = accounts.find((item) => item.id === id)
 
   if (!account) {
@@ -221,6 +246,12 @@ export const updateAdminExpenseCriterion = async ({
 // --- Aba Distribuição ---------------------------------------------------
 
 export const getDistribution = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { referenceMonth: '', sectors: [] },
+      message: '',
+    }
   const data: DistributionResponse = {
     referenceMonth: REFERENCE_MONTH,
     // O custo próprio vem dos itens do setor, já com o rateio por item (BC-8)
@@ -234,6 +265,18 @@ export const getDistribution = async () => {
 }
 
 export const getDistributionTotals = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        administrativeCost: 0,
+        allocatedByItem: 0,
+        distributedCost: 0,
+        notDistributedCost: 0,
+        receivingSectors: 0,
+      },
+      message: '',
+    }
   const data: DistributionTotals = {
     administrativeCost: administrativeCost(),
     allocatedByItem: allocatedTotal(),
@@ -252,6 +295,7 @@ export const updateDistribution = async ({
 }: {
   percentages: { id: string; percentage: number }[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const received = sectors.filter((sector) => sector.nature === 'PRODUCTIVE')
   const productive = percentages.filter((item) =>
     received.some((sector) => sector.id === item.id),
@@ -299,6 +343,12 @@ const sumOrigin = (items: SectorCostItem[], origin: SectorCostOrigin) => {
 }
 
 export const getSectorCosts = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { referenceMonth: '', isDistributing: false, sectors: [] },
+      message: '',
+    }
   const distributed = distributedCost()
 
   const data: SectorCostsResponse = {
@@ -338,6 +388,20 @@ export const getSectorCosts = async () => {
 // --- Aba Resumo ---------------------------------------------------------
 
 export const getCostSummary = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        referenceMonth: '',
+        total: 0,
+        byOrigin: { adminExpenses: 0, labor: 0, assets: 0, depreciation: 0 },
+        productiveCost: 0,
+        administrativeCost: 0,
+        distributedCost: 0,
+        bySector: [],
+      },
+      message: '',
+    }
   const response = await getSectorCosts()
   const all = response.data?.sectors || []
 
@@ -396,6 +460,7 @@ const salePrices: { [key: string]: number } = {
 }
 
 export const getLaborSectors = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const response = await getSectorCosts()
 
   const data: LaborSector[] = (response.data?.sectors || [])
@@ -434,6 +499,7 @@ export const updateLaborHours = async ({
   sectorId: string
   hours: { id: string; hours: number }[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const team = collaborators[sectorId]
 
   if (!team) {
@@ -591,6 +657,7 @@ export const getDepreciationAssets = async ({
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const tab = filters?.status || 'ativos'
   const search = filters?.search?.trim().toLowerCase()
 
@@ -603,6 +670,18 @@ export const getDepreciationAssets = async ({
 }
 
 export const getDepreciationTotals = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        invested: 0,
+        depreciated: 0,
+        remaining: 0,
+        monthlyDepreciation: 0,
+        activeAssets: 0,
+      },
+      message: '',
+    }
   const all = assetSeeds.map(withDepreciation)
   const active = all.filter((asset) => asset.status !== 'INACTIVE')
 
@@ -621,6 +700,7 @@ export const getDepreciationTotals = async () => {
 }
 
 export const getDepreciationCounts = async () => {
+  if (!DEMO_DATA) return { success: true, data: {}, message: '' }
   const all = assetSeeds.map(withDepreciation)
 
   const data = Object.fromEntries(
@@ -734,6 +814,16 @@ export const getCostComparison = async ({
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        period: '',
+        accounts: [],
+        coverage: { total: 0, withEstimate: 0, withoutEstimate: 0 },
+      },
+      message: '',
+    }
   const period = filters?.period || '12'
   const months = monthsByPeriod[period] || 12
   const status = filters?.status || 'todas'

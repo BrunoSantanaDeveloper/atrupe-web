@@ -10,6 +10,9 @@ import type {
   StockMovement,
 } from '@/app/(app-sidebar)/estoque/types'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const items: StockItem[] = [
   {
     id: 'st1',
@@ -142,6 +145,7 @@ export const getStockItems = async ({
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const search = filters?.search?.trim().toLowerCase()
   const status = filters?.status
 
@@ -157,17 +161,23 @@ export const getStockItems = async ({
   return { success: true, data, message: '' }
 }
 
-export const getStockMovements = async () => ({
-  success: true,
-  data: movements,
-  message: '',
-})
+export const getStockMovements = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return {
+    success: true,
+    data: movements,
+    message: '',
+  }
+}
 
-export const getInvoices = async () => ({
-  success: true,
-  data: invoices,
-  message: '',
-})
+export const getInvoices = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return {
+    success: true,
+    data: invoices,
+    message: '',
+  }
+}
 
 // Conciliação: o item do fornecedor é ligado ao material interno, com o fator
 // de conversão da unidade de compra para a unidade de venda (§13 e DC-9)
@@ -184,6 +194,7 @@ export const matchInvoiceItem = async ({
   materialName: string
   conversionFactor: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const invoice = invoices.find((item) => item.id === invoiceId)
   const item = invoice?.items.find((current) => current.id === itemId)
 
@@ -209,6 +220,7 @@ export const confirmInvoiceEntry = async ({
 }: {
   invoiceId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const invoice = invoices.find((item) => item.id === invoiceId)
 
   if (!invoice) {

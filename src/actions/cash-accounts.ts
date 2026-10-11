@@ -15,6 +15,9 @@ import {
   type BankAccount,
 } from '@/app/(app-sidebar)/financeiro/controle-de-caixa/types'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const OPERATOR = 'Renata Alves'
 
 const day = (offset: number) => {
@@ -359,9 +362,15 @@ const ok = <T>(data: T) => ({ success: true, data, message: '' })
  * Contas
  * ------------------------------------------------------------------------- */
 
-export const getBankAccounts = async () => ok(withBalance(accounts))
+export const getBankAccounts = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(withBalance(accounts))
+}
 
-export const getPaymentMethods = async () => ok(methods)
+export const getPaymentMethods = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(methods)
+}
 
 export const saveBankAccount = async (
   input: Omit<
@@ -371,6 +380,7 @@ export const saveBankAccount = async (
     id?: string
   },
 ) => {
+  if (!DEMO_DATA) return demoOff()
   if (!input.name.trim()) return fail('Dê um nome para a conta')
 
   const values = {
@@ -419,6 +429,7 @@ export const saveBankAccount = async (
 // "Excluir" é um botão só; o sistema decide (CX-2). Com histórico, inativa —
 // e só com saldo zero e sem caixa aberto
 export const removeBankAccount = async (id: string) => {
+  if (!DEMO_DATA) return demoOff()
   const account = accounts.find((item) => item.id === id)
 
   if (!account) return fail('Conta não encontrada')
@@ -443,6 +454,7 @@ export const removeBankAccount = async (id: string) => {
 }
 
 export const reactivateBankAccount = async (id: string) => {
+  if (!DEMO_DATA) return demoOff()
   accounts = accounts.map((account) =>
     account.id === id ? { ...account, isActive: true } : account,
   )
@@ -453,8 +465,14 @@ export const reactivateBankAccount = async (id: string) => {
  * Caixa do dia
  * ------------------------------------------------------------------------- */
 
-export const getCashControl = async () =>
-  ok({
+export const getCashControl = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { accounts: [], days: [], today: '' },
+      message: '',
+    }
+  return ok({
     accounts: withBalance(accounts).filter((account) => account.isActive),
     days: [...days].sort(
       (a, b) =>
@@ -462,6 +480,7 @@ export const getCashControl = async () =>
     ),
     today: day(0),
   })
+}
 
 const openDayOf = (accountId: string, date?: string) =>
   days.find(
@@ -472,6 +491,7 @@ const openDayOf = (accountId: string, date?: string) =>
   )
 
 export const openCashDay = async (accountId: string, date: string) => {
+  if (!DEMO_DATA) return demoOff()
   const account = accounts.find((item) => item.id === accountId)
 
   if (!account) return fail('Conta não encontrada')
@@ -525,6 +545,7 @@ export const addAdjustment = async (
   reason: string,
   category: string,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const target = days.find((item) => item.id === dayId)
 
   if (!target || target.status !== 'OPEN') {
@@ -557,6 +578,7 @@ export const transferBetweenAccounts = async (values: {
   amount: number
   date: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const { fromId, toId, method, amount, date } = values
 
   if (!fromId || !toId) return fail('Escolha a origem e o destino')
@@ -615,6 +637,7 @@ export const closeCashDay = async (
   informed: number,
   note: string,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   const target = days.find((item) => item.id === dayId)
   const account = accounts.find((item) => item.id === target?.accountId)
 
@@ -661,6 +684,7 @@ export const closeCashDay = async (
 
 // Reabrir exige justificativa e anula a conferência daquele dia (ALT-7)
 export const reopenCashDay = async (dayId: string, reason: string) => {
+  if (!DEMO_DATA) return demoOff()
   const target = days.find((item) => item.id === dayId)
 
   if (!target || target.status !== 'CLOSED') {
@@ -687,6 +711,7 @@ export const reopenCashDay = async (dayId: string, reason: string) => {
 // deixa de ser previsto e passa a compor o saldo, com o registro de quem
 // conferiu
 export const approveMovement = async (dayId: string, movementId: string) => {
+  if (!DEMO_DATA) return demoOff()
   const target = days.find((item) => item.id === dayId)
   const movement = target?.movements.find((item) => item.id === movementId)
   if (!target || !movement) return fail('Lançamento não encontrado')

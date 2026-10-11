@@ -10,6 +10,9 @@ import type {
   ProductComposition,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/types'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
 
@@ -257,6 +260,26 @@ const findOrCreate = (id: string): Seed => {
 }
 
 export const getComposition = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        id: '',
+        name: '',
+        code: '',
+        unit: '',
+        price: null,
+        priceRule: 'FIXED' as const,
+        steps: [],
+        variations: [],
+        releasedForSale: false,
+        fields: [],
+        cost: null,
+        margin: null,
+        suggestedPrice: null,
+      },
+      message: '',
+    }
   return { success: true, data: withCost(findOrCreate(id)), message: '' }
 }
 
@@ -269,6 +292,7 @@ export const addCompositionStep = async ({
   step: Omit<CompositionStep, 'id'>
   fields?: { name: string; defaultValue: number }[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
 
   seed.steps.push({ ...step, id: `step-${Date.now()}` })
@@ -311,6 +335,7 @@ export const updateCompositionStep = async ({
   setupMinutes?: number
   cost?: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const step = seed.steps.find((item) => item.id === stepId)
 
@@ -349,6 +374,7 @@ export const moveCompositionStep = async ({
   stepId: string
   direction: 'UP' | 'DOWN'
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const index = seed.steps.findIndex((item) => item.id === stepId)
   const target = direction === 'UP' ? index - 1 : index + 1
@@ -371,6 +397,7 @@ export const removeCompositionStep = async ({
   productId: string
   stepId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const removed = seed.steps.find((step) => step.id === stepId)
 
@@ -389,6 +416,7 @@ export const removeCompositionStep = async ({
 // A decisão de preço é produto a produto: manter o praticado ou adotar o
 // sugerido (DC-14). O preço praticado continua livre.
 export const applySuggestedPrice = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(id)
   const product = withCost(seed)
 
@@ -416,6 +444,7 @@ export const addProductField = async ({
   name: string
   defaultValue: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do campo' }
   }
@@ -456,6 +485,7 @@ export const updateProductField = async ({
   name?: string
   defaultValue?: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const field = seed.fields.find((item) => item.id === fieldId)
 
@@ -479,6 +509,7 @@ export const removeProductField = async ({
   productId: string
   fieldId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const field = seed.fields.find((item) => item.id === fieldId)
 
@@ -502,6 +533,7 @@ export const getAvailableParts = async ({
 }: {
   productId: string
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const data = seeds
     .filter((seed) => seed.id !== productId)
     .map((seed) => ({
@@ -531,6 +563,7 @@ export const setReleasedForSale = async ({
   productId: string
   released: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
 
   seed.releasedForSale = released
@@ -545,6 +578,7 @@ export const addProductVariation = async ({
   productId: string
   name: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome da variação' }
   }
@@ -582,6 +616,7 @@ export const removeProductVariation = async ({
   productId: string
   variationId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
 
   seed.variations = seed.variations.filter(
@@ -606,6 +641,7 @@ export const setVariationOverride = async ({
   cost: number
   estimatedMinutes: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const variation = seed.variations.find((item) => item.id === variationId)
 
@@ -635,6 +671,7 @@ export const clearVariationOverride = async ({
   variationId: string
   stepId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const variation = seed.variations.find((item) => item.id === variationId)
 
@@ -658,6 +695,7 @@ export const setVariationPrice = async ({
   variationId: string
   price: number | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const seed = findOrCreate(productId)
   const variation = seed.variations.find((item) => item.id === variationId)
 

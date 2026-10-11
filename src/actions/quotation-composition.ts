@@ -19,6 +19,9 @@ import { getProcessDetail, resolveComposedItem } from './product-assembly'
 // Os materiais de venda direta entram na busca do orçamento (ORG-1)
 import { materials } from './materials-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 /* ---------------------------------------------------------------------------
  * O item montado na hora (ORC-11): o vendedor monta o fluxo com o mesmo
  * editor do produto, só naquele item. A linha guarda o retrato da venda
@@ -272,8 +275,10 @@ export const getOpenQuotationsUsingProduct = async ({
   productId,
 }: {
   productId: string
-}) =>
-  ({
+}) => {
+  if (!DEMO_DATA)
+    return { success: true, message: '', data: [] as never[] } as const
+  return {
     success: true,
     message: '',
     data: quotations
@@ -289,15 +294,23 @@ export const getOpenQuotationsUsingProduct = async ({
             itemName: item.name,
           })),
       ),
-  }) as const
+  } as const
+}
 
 export const getQuotation = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { id: '', reference: '', client: '', items: [] },
+      message: '',
+    }
   return { success: true, data: find(id), message: '' }
 }
 
 // O que o vendedor encontra ao acrescentar UM ITEM ao orçamento: produtos
 // liberados para venda, organizados por setor (ORC-1)
 export const getQuotationProducts = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const data: AddOption[] = [
     {
       id: 'banner',
@@ -387,6 +400,8 @@ export const getQuotationProducts = async () => {
 // (produtos não liberados para venda). O terceirizado avulso entra pelo
 // formulário próprio (T-4)
 export const getItemOptions = async () => {
+  if (!DEMO_DATA)
+    return { success: true, data: { processes: [], parts: [] }, message: '' }
   const processes: AddOption[] = [
     {
       id: 'impressao-lona',
@@ -453,6 +468,7 @@ export const addQuotationItem = async ({
   variation?: string | null
   composition?: ItemComposition
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const quotation = find(quotationId)
 
   const item: QuotationItem = {
@@ -489,6 +505,7 @@ export const addQuotationLine = async ({
   itemId: string
   line: Omit<QuotationLine, 'id'>
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const quotation = find(quotationId)
   const item = quotation.items.find((current) => current.id === itemId)
 
@@ -518,6 +535,7 @@ export const updateQuotationItem = async ({
   variation?: string | null
   composition?: ItemComposition
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const quotation = find(quotationId)
   const item = quotation.items.find((current) => current.id === itemId)
 
@@ -539,6 +557,7 @@ export const removeQuotationLine = async ({
   itemId: string
   lineId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const quotation = find(quotationId)
   const item = quotation.items.find((current) => current.id === itemId)
 
@@ -558,6 +577,7 @@ export const removeQuotationItem = async ({
   quotationId: string
   itemId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const quotation = find(quotationId)
 
   quotation.items = quotation.items.filter((item) => item.id !== itemId)
@@ -622,6 +642,7 @@ export const getItemLines = async ({
 }: {
   quotationId: string
 }) => {
+  if (!DEMO_DATA) return { success: true, data: {}, message: '' }
   const data: Record<string, QuotationLine[]> = {}
   itemLines.forEach((lines, key) => {
     const [quotation, itemId] = key.split('::')
@@ -639,6 +660,7 @@ export const addItemLine = async ({
   itemId: string
   line: Omit<QuotationLine, 'id'>
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!line.name.trim())
     return { success: false, data: null, message: 'Informe o que acrescentar' }
   const key = `${quotationId}::${itemId}`
@@ -661,6 +683,7 @@ export const recalculateItemLines = async ({
   itemId: string
   measure: { quantity: number; width: number; height: number }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const key = `${quotationId}::${itemId}`
   const lines = itemLines.get(key) || []
   let changed = 0
@@ -739,6 +762,7 @@ export const removeItemLine = async ({
   itemId: string
   lineId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const key = `${quotationId}::${itemId}`
   itemLines.set(
     key,
@@ -776,6 +800,7 @@ export const saveItemComposition = async ({
   key: string
   composition: ItemComposition
 }) => {
+  if (!DEMO_DATA) return demoOff()
   itemCompositions.set(`${quotationId}:${key}`, composition)
   return { success: true, data: null, message: '' }
 }
@@ -785,6 +810,7 @@ export const getItemCompositions = async ({
 }: {
   quotationId: string
 }) => {
+  if (!DEMO_DATA) return { success: true, data: {}, message: '' }
   const data: Record<string, ItemComposition> = {}
   itemCompositions.forEach((value, key) => {
     const [quotation, item] = key.split(':')
@@ -908,6 +934,7 @@ export type DirectSaleMaterial = {
 }
 
 export const getDirectSaleMaterials = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const data: DirectSaleMaterial[] = materials
     .filter((material) => material.active && material.directSale)
     .map((material) => ({
@@ -977,6 +1004,7 @@ export const addMaterialItem = async ({
   variationId?: string | null
   quantity: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const material = (await getDirectSaleMaterials()).data.find(
     (item) => item.id === materialId,
   )
@@ -1019,6 +1047,7 @@ export const updateMaterialItem = async ({
   variationId?: string | null
   quantity: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const index = composedItems.findIndex(
     (item) =>
       item.quotationId === quotationId &&
@@ -1070,6 +1099,7 @@ export const addComposedItem = async ({
   width: number
   height: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name.trim()) {
     return { success: false, data: null, message: 'Informe o nome do item' }
   }
@@ -1104,6 +1134,7 @@ export const updateComposedItem = async ({
   width: number
   height: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const index = composedItems.findIndex(
     (item) => item.quotationId === quotationId && item.id === itemId,
   )
@@ -1136,6 +1167,7 @@ export const removeComposedItem = async ({
   quotationId: string
   itemId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const index = composedItems.findIndex(
     (item) => item.quotationId === quotationId && item.id === itemId,
   )
@@ -1148,10 +1180,13 @@ export const getComposedItems = async ({
   quotationId,
 }: {
   quotationId: string
-}) => ({
-  success: true,
-  data: composedItems
-    .filter((item) => item.quotationId === quotationId)
-    .map(summaryOf),
-  message: '',
-})
+}) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return {
+    success: true,
+    data: composedItems
+      .filter((item) => item.quotationId === quotationId)
+      .map(summaryOf),
+    message: '',
+  }
+}

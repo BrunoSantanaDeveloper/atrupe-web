@@ -16,11 +16,15 @@ import type {
 import { assets, groups } from './assets-data'
 import { allocatedUnitCost } from './sector-allocation-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 export const getAssets = async ({
   filters,
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const search = filters?.search?.trim().toLowerCase()
   const status = filters?.status || 'ativos'
 
@@ -38,6 +42,7 @@ export const getAssets = async ({
 }
 
 export const getAsset = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const asset = assets.find((item) => item.id === id)
 
   if (!asset) {
@@ -60,6 +65,7 @@ export const getAsset = async ({ id }: { id: string }) => {
 }
 
 export const getAssetGroups = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   // Custo pela média e capacidade pela soma dos bens do grupo (P-28)
   const data = groups.map((group) => {
     const members = assets.filter(
@@ -95,6 +101,7 @@ export const createAssetGroup = async ({
   unit: AssetGroupItem['unit']
   sector: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do grupo' }
   }
@@ -119,6 +126,7 @@ export const renameAssetGroup = async ({
   id: string
   name: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const group = groups.find((item) => item.id === id)
 
   if (!group) {
@@ -163,6 +171,7 @@ export const createAsset = async ({
   | 'acquisitionValue'
   | 'groupId'
 >) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do bem' }
   }
@@ -208,6 +217,7 @@ export const updateAsset = async ({
   id,
   ...values
 }: Partial<Asset> & { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const asset = assets.find((item) => item.id === id)
 
   if (!asset) {
@@ -236,6 +246,7 @@ export const createAssetCost = async ({
   assetId: string
   cost: Omit<AssetCost, 'id' | 'monthlyCost'>
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const asset = assets.find((item) => item.id === assetId)
 
   if (!asset) {
@@ -264,6 +275,7 @@ export const createAssetSetup = async ({
   assetId: string
   setup: Omit<AssetSetup, 'id' | 'unitCost' | 'salePrice'>
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const asset = assets.find((item) => item.id === assetId)
 
   if (!asset) {
@@ -293,6 +305,7 @@ export const sellAsset = async ({
   id: string
   value: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const asset = assets.find((item) => item.id === id)
 
   if (!asset) {
@@ -324,6 +337,7 @@ export const setAssetActive = async ({
   id: string
   active: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const asset = assets.find((item) => item.id === id)
 
   if (!asset) {
@@ -347,6 +361,7 @@ export const setAssetActive = async ({
 // O grupo de bens equivalentes não tem histórico próprio: ele agrupa. Pode ser
 // excluído, desde que nenhum bem esteja nele
 export const deleteAssetGroup = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const group = groups.find((item) => item.id === id)
 
   if (!group) {

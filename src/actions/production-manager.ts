@@ -38,6 +38,9 @@ import type { AssemblyMeasure } from '@/app/(app-sidebar)/configuracoes/produtos
 // Actions
 import { getSaleComposition } from '@/actions/product-assembly'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const uid = () => Math.random().toString(36).slice(2, 9)
 const code = () => Math.random().toString(16).slice(2, 7).toUpperCase()
 const ok = <T>(data: T) => ({ success: true, data, message: '' })
@@ -692,11 +695,25 @@ const projectRisk = (project: ProductionProject) => {
  * Leitura
  * ------------------------------------------------------------------------- */
 
-export const getManagerConfig = async () =>
-  ok({ flows, managers, taskTypes, collaborators, vehicles })
+export const getManagerConfig = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        flows: [],
+        managers: [],
+        taskTypes: [],
+        collaborators: [],
+        vehicles: [],
+      },
+      message: '',
+    }
+  return ok({ flows, managers, taskTypes, collaborators, vehicles })
+}
 
 // O cartão de cada gerenciador, com quantas tarefas abertas ele tem
 export const getManagerSummary = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   await seed()
   return ok(
     managers
@@ -746,6 +763,7 @@ export const getManagerBoard = async ({
   managerId: string
   viewer?: BoardViewer
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const manager = managers.find((item) => item.id === managerId)
   if (!manager) return fail('Gerenciador não encontrado')
@@ -783,6 +801,12 @@ export const getViewer = async ({
   email: string | null
   isManager: boolean
 }) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { collaboratorId: null, name: null, manager: false },
+      message: '',
+    }
   const person = email
     ? collaborators.find(
         (item) => item.email?.toLowerCase() === email.toLowerCase(),
@@ -798,6 +822,12 @@ export const getViewer = async ({
 // A agenda viva (§4.8): as tarefas agendadas de todos os gerenciadores, por
 // dia, mais a ocupação dos veículos (VS-7)
 export const getAgenda = async ({ from, to }: { from: string; to: string }) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { scheduled: [], unscheduled: [], vehicles: [], managers: [] },
+      message: '',
+    }
   await seed()
   const scheduled = tasks
     .map(viewOf)
@@ -828,6 +858,7 @@ export const getAgenda = async ({ from, to }: { from: string; to: string }) => {
 }
 
 export const getTask = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -835,6 +866,7 @@ export const getTask = async ({ id }: { id: string }) => {
 }
 
 export const getProjects = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   await seed()
   return ok(
     projects.map((project) => {
@@ -855,6 +887,7 @@ export const getProjects = async () => {
 }
 
 export const getProject = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const project = projects.find((item) => item.id === id)
   if (!project) return fail('Projeto não encontrado')
@@ -886,6 +919,7 @@ export const saveManager = async ({
     intervalMinutes: number
   }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!values.name.trim()) return fail('Informe o nome do gerenciador')
   if (!values.sector.trim()) return fail('Escolha o setor do gerenciador')
   const interval = Math.max(0, Math.round(values.intervalMinutes || 0))
@@ -919,6 +953,7 @@ export const inactivateManager = async ({
   id: string
   destinationId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const manager = managers.find((item) => item.id === id)
   const destination = managers.find(
     (item) => item.id === destinationId && item.active && item.id !== id,
@@ -935,6 +970,7 @@ export const inactivateManager = async ({
 }
 
 export const reactivateManager = async ({ id }: { id: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const manager = managers.find((item) => item.id === id)
   if (!manager) return fail('Gerenciador não encontrado')
   manager.active = true
@@ -951,6 +987,7 @@ export const setManagerUser = async ({
   // Sem acesso, com acesso a tudo, ou só às tarefas atribuídas (GP-11)
   access: 'NONE' | 'ALL' | 'ASSIGNED'
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const manager = managers.find((item) => item.id === managerId)
   if (!manager) return fail('Gerenciador não encontrado')
   manager.users = manager.users.filter(
@@ -970,6 +1007,7 @@ export const setCollaboratorRole = async ({
   collaboratorId: string
   role: CollaboratorRole
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const person = collaborators.find((item) => item.id === collaboratorId)
   if (!person) return fail('Colaborador não encontrado')
   person.role = role
@@ -989,6 +1027,7 @@ export const saveTaskType = async ({
     managerId?: string
   }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!values.name.trim()) return fail('Informe o nome do tipo de tarefa')
   const existing = taskTypes.find((item) => item.id === id)
   if (existing) {
@@ -1019,6 +1058,7 @@ export const setTaskTypeActive = async ({
   id: string
   active: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const type = taskTypes.find((item) => item.id === id)
   if (!type) return fail('Tipo de tarefa não encontrado')
   type.active = active
@@ -1036,6 +1076,7 @@ export const saveTaskStep = async ({
   name: string
   managerId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const type = taskTypes.find((item) => item.id === typeId)
   if (!type) return fail('Tipo de tarefa não encontrado')
   if (!name.trim()) return fail('Informe o nome da etapa')
@@ -1056,6 +1097,7 @@ export const removeTaskStep = async ({
   typeId: string
   stepId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const type = taskTypes.find((item) => item.id === typeId)
   if (!type) return fail('Tipo de tarefa não encontrado')
   if (type.steps.length <= 1)
@@ -1073,6 +1115,7 @@ export const moveTaskStep = async ({
   stepId: string
   direction: 'UP' | 'DOWN'
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const type = taskTypes.find((item) => item.id === typeId)
   if (!type) return fail('Tipo de tarefa não encontrado')
   const index = type.steps.findIndex((item) => item.id === stepId)
@@ -1091,6 +1134,7 @@ export const saveVehicle = async ({
   id?: string
   values: { name: string; plate: string }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!values.name.trim()) return fail('Informe o nome do veículo')
   const existing = vehicles.find((item) => item.id === id)
   if (existing) {
@@ -1117,6 +1161,7 @@ export const setVehicleActive = async ({
   id: string
   active: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const vehicle = vehicles.find((item) => item.id === id)
   if (!vehicle) return fail('Veículo não encontrado')
   vehicle.active = active
@@ -1182,6 +1227,7 @@ export const actOnTask = async ({
   by: string
   collaboratorId?: string | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1251,6 +1297,7 @@ export const addPendency = async ({
   text: string
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1274,6 +1321,7 @@ export const releaseNext = async ({
   by: string
   quantity?: number | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1307,6 +1355,7 @@ export const scheduleTask = async ({
   schedule: { date: string; start: string; minutes: number } | null
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1330,6 +1379,7 @@ export const assignTask = async ({
   collaboratorId: string | null
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1351,6 +1401,7 @@ export const setTaskVehicle = async ({
   km: number | null
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1381,6 +1432,7 @@ export const startWork = async ({
   collaboratorId: string
   source?: 'CLOCK' | 'DRAG'
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   const person = collaborators.find((item) => item.id === collaboratorId)
@@ -1414,6 +1466,7 @@ export const stopWork = async ({
 }: {
   collaboratorId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const person = collaborators.find((item) => item.id === collaboratorId)
   if (!person?.working) return ok(null)
   const task = tasks.find((item) => item.id === person.working!.taskId)
@@ -1449,6 +1502,7 @@ export const correctTimeEntry = async ({
   note: string
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1498,6 +1552,7 @@ export const addTimeEntry = async ({
   note: string
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1538,6 +1593,7 @@ export const addAttachment = async ({
   file: { fileName: string; size: number; mime: string; dataUrl: string | null }
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   if (!task) return fail('Tarefa não encontrada')
@@ -1581,6 +1637,7 @@ export const setCurrentVersion = async ({
   version: number
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const task = tasks.find((item) => item.id === id)
   const attachment = task?.attachments.find((item) => item.id === attachmentId)
@@ -1606,6 +1663,7 @@ export const setProjectStatus = async ({
   status: 'PRODUCTION' | 'DONE' | 'CANCELED'
   by: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const project = projects.find((item) => item.id === id)
   if (!project) return fail('Projeto não encontrado')
@@ -1633,6 +1691,7 @@ export const changeDelivery = async ({
   id: string
   due: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   const project = projects.find((item) => item.id === id)
   if (!project) return fail('Projeto não encontrado')
@@ -1666,6 +1725,7 @@ export const createProjectFromSale = async ({
   }[]
   releaseNow?: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   await seed()
   if (!number.trim() || !client.trim()) {
     return fail('Informe o número da venda e o cliente')
@@ -1714,6 +1774,8 @@ export const getProductivity = async ({
 }: {
   perPerson: boolean
 }) => {
+  if (!DEMO_DATA)
+    return { success: true, data: { bySector: [], people: [] }, message: '' }
   await seed()
   const done = tasks.filter((task) => task.status === 'DONE')
   const bySector = Array.from(new Set(done.map((task) => task.sector))).map(

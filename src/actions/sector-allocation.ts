@@ -21,11 +21,15 @@ import {
   sectorAllocation,
 } from './sector-allocation-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 const fail = (message: string) => ({ success: false, data: null, message })
 
 // Os setores produtivos que têm equipamento detalhado: são os que têm o que
 // ratear entre equipamentos (P-15, P-16)
 export const getSectorAllocations = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const data = sectors
     .filter((sector) => sector.nature === 'PRODUCTIVE')
     .filter((sector) => equipmentOf(sector.name).length)
@@ -45,6 +49,7 @@ export const updateSectorAllocation = async ({
   // Só no critério manual: o percentual de cada equipamento
   percentages?: { id: string; percentage: number }[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const sector = sectors.find((item) => item.id === sectorId)
   if (!sector) return fail('Setor não encontrado')
   if (sector.nature !== 'PRODUCTIVE') {

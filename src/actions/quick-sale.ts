@@ -14,6 +14,9 @@ import { getData, getDataOld } from '@/actions/_cruds'
 // Types
 import type { QuickSaleSettings } from '@/app/(app-sidebar)/configuracoes/vendas/venda-rapida/types'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 type Option = { value: string; label: string }
 
 const byCompany = new Map<string, QuickSaleSettings>()
@@ -106,6 +109,24 @@ async function defaults(): Promise<QuickSaleSettings> {
 }
 
 export const getQuickSaleSettings = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: {
+        payment: 'CASH_ONLY' as const,
+        cashMethods: [],
+        downPaymentRequired: false,
+        downPaymentPercent: 0,
+        enabled: false,
+        clientId: '',
+        clientName: '',
+        description: '',
+        seriesId: '',
+        serviceTypeId: '',
+        responsibleId: null,
+      },
+      message: '',
+    }
   const key = await companyKey()
 
   let settings = byCompany.get(key)
@@ -131,6 +152,7 @@ const clean = (settings?: QuickSaleSettings) =>
 export const updateQuickSaleSettings = async (
   values: Partial<QuickSaleSettings>,
 ) => {
+  if (!DEMO_DATA) return demoOff()
   // Sem cliente padrão a venda rápida não consegue criar o orçamento, que é
   // justamente o que ela existe para fazer (ALT-22)
   if (values.enabled && values.clientId !== undefined && !values.clientId) {
@@ -164,6 +186,12 @@ export const updateQuickSaleSettings = async (
 
 // Opções vindas dos cadastros reais da empresa
 export const getQuickSaleOptions = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { series: [], serviceTypes: [], cashMethods: [], users: [] },
+      message: '',
+    }
   const [series, sources] = await Promise.all([
     realSeries(),
     realContactSources(),

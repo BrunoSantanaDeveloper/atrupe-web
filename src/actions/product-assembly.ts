@@ -52,6 +52,9 @@ import {
 import { materialResources } from './materials-data'
 import { SETUP_BY_RESOURCE, allocatedUnitCost } from './sector-allocation-data'
 
+// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
+import { DEMO_DATA, demoOff } from '@/lib/demo'
+
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
 
@@ -2244,6 +2247,7 @@ export const getAssembly = async ({
   // O cadastro do produto, para a composição nascer com ele (CP-16)
   seed?: AssemblySeed
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId, seed)
   const base = measure ? { ...assembly, measure } : assembly
   const variation =
@@ -2287,8 +2291,9 @@ export const getAssembly = async ({
   return ok(result)
 }
 
-export const getProcessCatalog = async () =>
-  ok(
+export const getProcessCatalog = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     processTemplates().map(
       (item): ProcessCatalogItem => ({
         id: item.processId,
@@ -2298,6 +2303,7 @@ export const getProcessCatalog = async () =>
       }),
     ),
   )
+}
 
 export const updateAssembly = async ({
   productId,
@@ -2320,6 +2326,7 @@ export const updateAssembly = async ({
     >
   >
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
 
   if (values.status === 'RELEASED') {
@@ -2386,8 +2393,14 @@ const resourceMap = () => {
   return map
 }
 
-export const getAssemblyResources = async () =>
-  ok({
+export const getAssemblyResources = async () => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { sectors: [], sectorSales: {}, resources: [] },
+      message: '',
+    }
+  return ok({
     sectors: Object.keys(HOUR),
     sectorSales: { ...SECTOR_SALES },
     // A mão de obra do setor que vende por equipamento não é oferecida
@@ -2400,6 +2413,7 @@ export const getAssemblyResources = async () =>
         ),
     ),
   })
+}
 
 // A etapa montada no próprio produto: o trabalho de um setor, com os
 // recursos e o tempo que ele usa. Não passa por Processos
@@ -2418,6 +2432,7 @@ export const addOwnBlock = async ({
   // Inserir no meio da ligação: a etapa que passa a depender da nova
   insertBefore?: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name.trim()) return fail('Informe o nome da etapa')
   const assembly = findOrCreate(productId)
   const block: AssemblyBlock = {
@@ -2448,6 +2463,7 @@ export const addAssemblyLine = async ({
   blockId: string
   values: NewLineValues
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const block = assembly.blocks.find((item) => item.id === blockId)
   if (!block) return fail('Etapa não encontrada')
@@ -2528,6 +2544,7 @@ export const addProductField = async ({
   defaultValue: number
   allowsFraction?: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) return fail('Informe o nome do campo')
   const assembly = findOrCreate(productId)
   if (findField(assembly, name)) {
@@ -2556,6 +2573,7 @@ export const updateProductField = async ({
   defaultValue?: number
   allowsFraction?: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const field = (assembly.fields || []).find((item) => item.id === fieldId)
   if (!field) return fail('Campo não encontrado')
@@ -2598,6 +2616,7 @@ export const removeProductField = async ({
   productId: string
   fieldId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const field = (assembly.fields || []).find((item) => item.id === fieldId)
   if (!field) return fail('Campo não encontrado')
@@ -2626,6 +2645,7 @@ export const addProductFormula = async ({
   name: string
   expression: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name?.trim()) return fail('Dê um nome à fórmula')
   const assembly = findOrCreate(productId)
   const check = evaluateFormula(
@@ -2660,6 +2680,7 @@ export const updateProductFormula = async ({
   name?: string
   expression?: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const formula = (assembly.formulas || []).find(
     (item) => item.id === formulaId,
@@ -2685,6 +2706,7 @@ export const removeProductFormula = async ({
   productId: string
   formulaId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const usedBy =
     formulaUsage(assembly).find((item) => item.id === formulaId)?.usedBy || []
@@ -2709,6 +2731,7 @@ export const copyCompositionFrom = async ({
   productId: string
   sourceProductId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (productId === sourceProductId) return fail('Escolha outro produto')
   syncLinks()
   const source = assemblies.find((item) => item.productId === sourceProductId)
@@ -2769,11 +2792,18 @@ export const getProductVariants = async ({
   productId,
 }: {
   productId: string
-}) =>
-  ok({
+}) => {
+  if (!DEMO_DATA)
+    return {
+      success: true,
+      data: { baseProductId: '', variants: [] },
+      message: '',
+    }
+  return ok({
     baseProductId: baseOf(productId),
     variants: findOrCreate(baseOf(productId)).variants || [],
   })
+}
 
 export const createProductVariant = async ({
   productId,
@@ -2783,6 +2813,7 @@ export const createProductVariant = async ({
   productId: string
   name: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name.trim()) return fail('Dê um nome à variação (P, M, G…)')
   syncLinks()
   const base = findOrCreate(baseOf(productId))
@@ -2818,6 +2849,7 @@ export const renameProductVariant = async ({
   variantId: string
   name: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name.trim()) return fail('Dê um nome à variação')
   const base = findOrCreate(baseOf(productId))
   const variant = (base.variants || []).find((item) => item.id === variantId)
@@ -2833,6 +2865,7 @@ export const removeProductVariant = async ({
   productId: string
   variantId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const base = findOrCreate(baseOf(productId))
   const index = assemblies.findIndex(
     (item) => item.productId === `${base.productId}${VARIANT_SEP}${variantId}`,
@@ -2851,6 +2884,7 @@ export const removeAssemblyLine = async ({
   blockId: string
   lineId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
@@ -2875,6 +2909,7 @@ export const restoreProcessLines = async ({
   productId: string
   blockId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
@@ -2895,6 +2930,7 @@ export const addAssemblyBlock = async ({
   dependsOn?: string[]
   insertBefore?: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const template = templateOf(processId)
   if (!template) return fail('Processo não encontrado')
@@ -2913,6 +2949,7 @@ export const removeAssemblyBlock = async ({
   productId: string
   blockId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   assembly.blocks = unwire(assembly.blocks, blockId)
   assembly.variations.forEach((variation) => {
@@ -2942,6 +2979,7 @@ export const linkBlock = async ({
   blockId: string
   toId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const block = assembly.blocks.find((item) => item.id === blockId)
   const target = assembly.blocks.find((item) => item.id === toId)
@@ -2967,6 +3005,7 @@ export const unlinkBlock = async ({
   blockId: string
   fromId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const block = assembly.blocks.find((item) => item.id === blockId)
   if (!block) return fail('Etapa não encontrada')
@@ -2988,6 +3027,7 @@ export const replaceBlockProcess = async ({
   blockId: string
   processId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const index = assembly.blocks.findIndex((item) => item.id === blockId)
   if (index < 0) return fail('Etapa não encontrada')
@@ -3009,6 +3049,8 @@ export const getNextStepCandidates = async ({
   productId: string
   blockId: string | null
 }) => {
+  if (!DEMO_DATA)
+    return { success: true, data: { usual: [], all: [] }, message: '' }
   const assembly = findOrCreate(productId)
   const block = blockId
     ? assembly.blocks.find((item) => item.id === blockId)
@@ -3044,6 +3086,7 @@ export const moveAssemblyBlock = async ({
   blockId: string
   direction: 'UP' | 'DOWN'
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const index = assembly.blocks.findIndex((block) => block.id === blockId)
   const target = direction === 'UP' ? index - 1 : index + 1
@@ -3094,6 +3137,7 @@ export const updateAssemblyLine = async ({
     }[]
   }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const block = assembly.blocks.find((item) => item.id === blockId)
   const line = block?.lines.find((item) => item.id === lineId)
@@ -3144,6 +3188,7 @@ export const resetAssemblyLine = async ({
   blockId: string
   lineId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
@@ -3178,6 +3223,7 @@ export const setBlockLocalRules = async ({
   // Tipo de tarefa que a etapa gera na produção (IP-23)
   taskType?: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
@@ -3226,6 +3272,7 @@ export const getMaterialUsage = async ({
 }: {
   materialId: string
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const usage: { kind: 'PRODUCT' | 'PROCESS'; name: string; stage: string }[] =
     []
   processStore.forEach(({ block }) => {
@@ -3262,6 +3309,7 @@ export const removeMaterialFromCompositions = async ({
 }: {
   materialId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const strip = (block: AssemblyBlock) => {
     block.lines = block.lines
       .map((line) => {
@@ -3292,14 +3340,16 @@ export const getProductVariations = async ({
   productId,
 }: {
   productId: string
-}) =>
-  ok(
+}) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     findOrCreate(productId).variations.map(({ id, name, unitPrice }) => ({
       id,
       name,
       unitPrice,
     })),
   )
+}
 
 export const saveProductVariations = async ({
   productId,
@@ -3308,6 +3358,7 @@ export const saveProductVariations = async ({
   productId: string
   variations: { id?: string; name: string; unitPrice: number | null }[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const names = variations.map((item) => item.name.trim())
   if (names.some((name) => !name)) return fail('Dê um nome para cada variação')
   if (new Set(names.map((name) => name.toLowerCase())).size !== names.length)
@@ -3334,6 +3385,7 @@ export const addVariation = async ({
   productId: string
   name: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name.trim()) return fail('Dê um nome para a variação')
   const assembly = findOrCreate(productId)
   const variation: ProductVariation = {
@@ -3353,6 +3405,7 @@ export const removeVariation = async ({
   productId: string
   variationId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   assembly.variations = assembly.variations.filter(
     (item) => item.id !== variationId,
@@ -3369,6 +3422,7 @@ export const setVariationPrice = async ({
   variationId: string
   unitPrice: number | null
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
   )
@@ -3392,6 +3446,7 @@ export const setVariationLine = async ({
   lineId: string
   values: { selectedId?: string; perUnit?: number }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
   )
@@ -3416,6 +3471,7 @@ export const clearVariationLine = async ({
   blockId: string
   lineId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
   )
@@ -3428,8 +3484,10 @@ export const clearVariationLine = async ({
 
 // Tabela de preço por faixa (FQ-1). Vazia, vale o valor de venda do produto
 // A tabela por faixa do produto, para o cadastro (LITE) e para a venda
-export const getPriceTiers = async ({ productId }: { productId: string }) =>
-  ok<PriceTier[]>(findOrCreate(productId).priceTiers)
+export const getPriceTiers = async ({ productId }: { productId: string }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok<PriceTier[]>(findOrCreate(productId).priceTiers)
+}
 
 export const setPriceTiers = async ({
   productId,
@@ -3443,6 +3501,7 @@ export const setPriceTiers = async ({
   variationId?: string
   inherit?: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (variationId) {
     const variation = findOrCreate(productId).variations.find(
       (item) => item.id === variationId,
@@ -3474,6 +3533,7 @@ export const setPriceTiers = async ({
 
 // Só o que o vendedor pode mudar: campos extras, escolhas e listas
 export const getSaleForm = async ({ productId }: { productId: string }) => {
+  if (!DEMO_DATA) return { success: true, data: null, message: '' }
   syncLinks()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
@@ -3604,6 +3664,7 @@ export const getSaleComposition = async ({
   optionals?: SaleOptional[]
   lists?: SaleListEntry[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   syncLinks()
   const original = assemblies.find((item) => item.productId === productId)
   if (!original || !original.blocks.length) {
@@ -3743,6 +3804,7 @@ export const getSaleSheetUsage = async ({
   variationName?: string | null
   choices?: SaleChoice[]
 }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly) return ok<SaleSheetUsage[]>([])
 
@@ -3793,6 +3855,7 @@ export const addLineOption = async ({
   configName?: string
   perUnit?: number
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
@@ -3860,6 +3923,7 @@ export const removeLineOption = async ({
   lineId: string
   optionId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
@@ -3881,8 +3945,13 @@ export const removeLineOption = async ({
 
 // Produtos com composição que podem entrar como parte: os marcados como
 // parte primeiro, mas qualquer produto composto serve
-export const getPartCandidates = async ({ productId }: { productId: string }) =>
-  ok(
+export const getPartCandidates = async ({
+  productId,
+}: {
+  productId: string
+}) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     assemblies
       .filter(
         (item) =>
@@ -3901,6 +3970,7 @@ export const getPartCandidates = async ({ productId }: { productId: string }) =>
       }))
       .sort((a, b) => (a.status === 'PART' ? -1 : b.status === 'PART' ? 1 : 0)),
   )
+}
 
 // Um produto não pode conter a si mesmo, nem por dentro de outra parte
 const containsProduct = (
@@ -3930,6 +4000,7 @@ export const addPartBlock = async ({
   dependsOn?: string[]
   insertBefore?: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   const part = assemblies.find((item) => item.productId === partProductId)
   if (!part || !part.blocks.length) return fail('Parte sem composição')
@@ -3964,8 +4035,9 @@ export const addPartBlock = async ({
 
 // Onde o produto é parte (PAD-7, 05/10/2026): a lista que o diálogo de
 // inativar mostra antes de confirmar
-export const getProductUsage = async ({ productId }: { productId: string }) =>
-  ok(
+export const getProductUsage = async ({ productId }: { productId: string }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     assemblies
       .filter((item) => !isHidden(item.productId))
       .flatMap((item) =>
@@ -3978,6 +4050,7 @@ export const getProductUsage = async ({ productId }: { productId: string }) =>
           })),
       ),
   )
+}
 
 // Inativar o produto no cadastro marca, aqui, os produtos onde ele é parte:
 // a etapa fica, com o aviso "produto inativo". Reativar tira a marca
@@ -3988,6 +4061,7 @@ export const setProductActive = async ({
   productId: string
   active: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = findOrCreate(productId)
   assembly.inactive = active ? undefined : true
   return ok(null)
@@ -3995,12 +4069,14 @@ export const setProductActive = async ({
 
 // Os produtos que já têm composição (CP-17): alimenta o filtro "com / sem
 // composição" da lista de produtos até a API filtrar (hasComposition)
-export const getComposedProductIds = async () =>
-  ok(
+export const getComposedProductIds = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     assemblies
       .filter((item) => !isHidden(item.productId) && item.blocks.length)
       .map((item) => item.productId),
   )
+}
 
 /* ---------------------------------------------------------------------------
  * Biblioteca de composições prontas (IP-7)
@@ -4054,8 +4130,9 @@ const library: (Omit<LibraryEntry, 'stages' | 'resources'> & {
   },
 ]
 
-export const getLibrary = async () =>
-  ok(
+export const getLibrary = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     library.map(({ processes, ...entry }): LibraryEntry => {
       const templates = processes
         .map((id) => templateOf(id))
@@ -4071,6 +4148,7 @@ export const getLibrary = async () =>
       }
     }),
   )
+}
 
 // Importar é copiar: a composição passa a ser do produto e muda sem afetar a
 // biblioteca. Os acabamentos se ligam à base que veio antes deles
@@ -4081,6 +4159,7 @@ export const importFromLibrary = async ({
   productId: string
   libraryId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const entry = library.find((item) => item.id === libraryId)
   if (!entry) return fail('Composição não encontrada na biblioteca')
   const assembly = findOrCreate(productId)
@@ -4114,6 +4193,7 @@ export const addVariationBlock = async ({
   processId: string
   dependsOn?: string[]
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
   )
@@ -4136,6 +4216,7 @@ export const removeVariationBlock = async ({
   variationId: string
   blockId: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
   )
@@ -4177,8 +4258,9 @@ const usedIn = (processId: string) =>
 
 // Os produtos que usam o processo, pela etapa (PAD-7): o diálogo de inativar
 // mostra a lista antes de confirmar. A etapa não sai do produto
-export const getProcessUsage = async ({ processId }: { processId: string }) =>
-  ok(
+export const getProcessUsage = async ({ processId }: { processId: string }) => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     assemblies
       .filter((item) => !isHidden(item.productId))
       .flatMap((item) =>
@@ -4191,9 +4273,11 @@ export const getProcessUsage = async ({ processId }: { processId: string }) =>
           })),
       ),
   )
+}
 
-export const getProcessList = async () =>
-  ok(
+export const getProcessList = async () => {
+  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  return ok(
     Array.from(processStore.entries()).map(([id, { block, meta }]) => ({
       id,
       name: block.name,
@@ -4212,6 +4296,7 @@ export const getProcessList = async () =>
       usedIn: usedIn(id).length,
     })),
   )
+}
 
 export const getProcessDetail = async ({
   processId,
@@ -4227,6 +4312,7 @@ export const getProcessDetail = async ({
   // medida própria do processo, usada quando as regras pedem
   baseMeasure?: AssemblyMeasure
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const entry = processStore.get(processId)
   if (!entry) return fail('Processo não encontrado')
   const host = findOrCreate(PROCESS_PREFIX + processId)
@@ -4300,6 +4386,7 @@ export const createProcessDef = async ({
   sector: string
   afterBase?: AfterBase
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!name.trim()) return fail('Informe o nome do processo')
   const processId = `proc-${uid()}`
   const block: AssemblyBlock = {
@@ -4338,6 +4425,7 @@ export const updateProcessMeta = async ({
     active?: boolean
   }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const entry = processStore.get(processId)
   if (!entry) return fail('Processo não encontrado')
   const { block, meta } = entry
@@ -4388,6 +4476,7 @@ const neighborsOf = (processId: string, direction: 'before' | 'after') =>
 // Visto do processo: de quem ele "costuma vir depois", e quais são as
 // "etapas seguintes usuais" dele
 export const getUsualNext = async ({ processId }: { processId: string }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!processStore.has(processId)) return fail('Processo não encontrado')
   return ok({
     before: neighborsOf(processId, 'before'),
@@ -4404,6 +4493,7 @@ export const setUsualNext = async ({
   toProcessId: string
   usual: boolean
 }) => {
+  if (!DEMO_DATA) return demoOff()
   if (!processStore.has(fromProcessId) || !processStore.has(toProcessId)) {
     return fail('Processo não encontrado')
   }
@@ -4428,6 +4518,7 @@ export const createDraftAssembly = async ({
   name?: string
   measure?: AssemblyMeasure
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const productId = `${DRAFT_PREFIX}${uid()}`
   assemblies.push({
     productId,
@@ -4459,6 +4550,7 @@ export const getComposedItemView = async ({
   productId: string
   measure?: AssemblyMeasure
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly) return fail('Item não encontrado')
   const computed = compute(measure ? { ...assembly, measure } : assembly)
@@ -4501,6 +4593,7 @@ export const resolveComposedItem = async ({
   productId: string
   measure: AssemblyMeasure
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly) return fail('Item não encontrado')
   const computed = compute({ ...assembly, measure })
@@ -4535,6 +4628,7 @@ export const updateDraftAssembly = async ({
   productId: string
   values: { name?: string; measure?: AssemblyMeasure }
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly || !isDraft(productId)) return fail('Item não encontrado')
   if (values.name !== undefined)
@@ -4553,6 +4647,7 @@ export const saveDraftAsProduct = async ({
   productId: string
   name: string
 }) => {
+  if (!DEMO_DATA) return demoOff()
   const draft = assemblies.find((item) => item.productId === productId)
   if (!draft) return fail('Item não encontrado')
   if (!draft.blocks.length) return fail('Monte ao menos uma etapa antes')
@@ -4570,6 +4665,7 @@ export const saveDraftAsProduct = async ({
 // O fluxo de um produto, para a parte que abre (IP-9) e para quem só precisa
 // desenhar
 export const getFlow = async ({ productId }: { productId: string }) => {
+  if (!DEMO_DATA) return demoOff()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly) return fail('Produto não encontrado')
   return ok<FlowStage[]>(flowOf(assembly))
