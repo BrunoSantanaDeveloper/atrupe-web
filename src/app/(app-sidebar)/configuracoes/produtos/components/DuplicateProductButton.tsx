@@ -81,6 +81,8 @@ export function DuplicateProductButton({ productId, name, onDone }: Props) {
       }
 
       await queryClient.invalidateQueries({ queryKey: ['product-list'] })
+      // O contador da aba Ativos
+      await queryClient.invalidateQueries({ queryKey: ['product-totals'] })
       await queryClient.invalidateQueries({ queryKey: ['composed-products'] })
       onDone?.(created.data.id)
     } catch (error) {

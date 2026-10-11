@@ -450,15 +450,24 @@ export function ProductsData({ searchParams, tabs }: Props) {
                             />
                           )}
                           {/* Duplicar: outro produto com os mesmos dados e a
-                              mesma composição, aberto para edição */}
-                          <DuplicateProductButton
-                            productId={product?.id}
-                            name={product?.name}
-                            onDone={(newId) => {
-                              setSelectedProductId(newId)
-                              setOpenDialog('edit-product')
-                            }}
-                          />
+                              mesma composição, aberto para edição. Cria um
+                              produto, então pede também "Cria" (CC-9). Só
+                              com a flag até o dono decidir os dados fiscais,
+                              a confirmação e o código da cópia (CC-3) */}
+                          {DEMO_DATA && (
+                            <PermissionGate
+                              permissions={['product_settings:products:create']}
+                            >
+                              <DuplicateProductButton
+                                productId={product?.id}
+                                name={product?.name}
+                                onDone={(newId) => {
+                                  setSelectedProductId(newId)
+                                  setOpenDialog('edit-product')
+                                }}
+                              />
+                            </PermissionGate>
+                          )}
                           <NewProductTriggerButton
                             editMode
                             onOpenChange={() => {
@@ -487,18 +496,22 @@ export function ProductsData({ searchParams, tabs }: Props) {
         )}
       </CardContent>
 
-      <EditPriceModal
-        group="products"
-        item={pricing}
-        open={!!pricing}
-        onOpenChange={() => setPricing(undefined)}
-        onSave={saveProductPrice}
-        priceTiers={
-          pricing
-            ? { productId: pricing.id, unitKind: pricingUnitKind }
-            : undefined
-        }
-      />
+      {/* O modal da Precificação roda sobre dados de exemplo: montado só com
+          a flag, para a consulta dele não sair em produção (CC-11) */}
+      {DEMO_DATA && (
+        <EditPriceModal
+          group="products"
+          item={pricing}
+          open={!!pricing}
+          onOpenChange={() => setPricing(undefined)}
+          onSave={saveProductPrice}
+          priceTiers={
+            pricing
+              ? { productId: pricing.id, unitKind: pricingUnitKind }
+              : undefined
+          }
+        />
+      )}
       <NewProduct
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}
