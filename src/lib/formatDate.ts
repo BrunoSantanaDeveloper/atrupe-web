@@ -32,21 +32,18 @@ export function parseDateFromISO(dateString: string): Date {
  *
  * EC-1: essas datas chegam do backend à meia-noite UTC (2026-09-15T00:00:00Z).
  * Formatar em America/Sao_Paulo (UTC-3) faz a data recuar para as 21h do dia
- * anterior, e o dia 15 vira 14. Aqui a leitura é em UTC, sem conversão de
- * fuso, então o dia exibido é o dia que o backend gravou.
+ * anterior, e o dia 15 vira 14: a meia-noite UTC é lida em UTC.
+ *
+ * Qualquer outro horário é um instante (validade da proposta, data de
+ * pagamento confirmada às 21h30) e é lido em America/Sao_Paulo, como em
+ * produção: lido em UTC, o que nasce entre 21h e 23h59 saía no dia seguinte.
+ * É a regra de formatToCalendarDate, que esta função passa a seguir.
  *
  * Para data E hora reais (criado em, atualizado em), use
  * formatToLocaleDateTime, que deve mesmo converter para o fuso local.
  */
 export function formatDateOnly(date: string | Date | undefined) {
-  if (!date) return '-'
-
-  return new Date(date).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'UTC',
-  })
+  return formatToCalendarDate(date)
 }
 
 export function formatToLocaleDate(date: string | Date | undefined) {
