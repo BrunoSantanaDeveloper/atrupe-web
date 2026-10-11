@@ -38,7 +38,11 @@ const shouldEndSession = (error: AxiosError | Error): boolean => {
       url.includes('extend-trial') ||
       url.includes('assign-manual') ||
       PASSWORD_ERROR_CODES.includes(code) ||
-      String(message).includes('Senha do administrador')
+      String(message).includes('Senha do administrador') ||
+      // Editar cliente, Alterar status e Endereço Asaas, em Gerenciar contas,
+      // respondem 401 "Senha incorreta" na API em produção; a versão nova da
+      // API passa a dizer "Senha do administrador incorreta."
+      String(message).includes('Senha incorreta')
     ) {
       return false
     }

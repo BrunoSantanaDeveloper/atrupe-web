@@ -107,7 +107,7 @@ export function ChangePlanDialog({ open, setOpen, rowData }: Props) {
     })
 
     if (!res?.success) {
-      toast.error(res.message || 'Não foi possível alterar o plano.')
+      toast.error(res?.message || 'Não foi possível alterar o plano.')
       return
     }
 
