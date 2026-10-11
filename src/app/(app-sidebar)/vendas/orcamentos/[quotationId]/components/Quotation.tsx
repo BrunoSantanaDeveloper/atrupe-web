@@ -23,6 +23,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Lib
 import { cn } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -46,11 +47,6 @@ interface Props {
 }
 
 export const QUOTATION_DATA_QUERY_KEY = 'quotation-data'
-
-// Checkout da venda rápida do fork (QuickSaleQuotation, sobre cash-front e
-// quick-sale, dados de demonstração). Desligado: a etapa da fronteira do mock
-// troca esta constante pela flag de demonstração.
-const QUICK_SALE_CHECKOUT = false as boolean
 
 export function Quotation({ id }: Props) {
   const previousUrl = '/vendas/orcamentos' // TODO : incluir parametros de busca anteriores se houver
@@ -121,10 +117,10 @@ export function Quotation({ id }: Props) {
   if (error || !data) notFound()
 
   // A venda rápida tem arranjo próprio: recebimento no lugar das condições de
-  // pagamento, e a situação no caixa depois que ela sai. O checkout é de
-  // demonstração (caixa em memória), então fica desligado: a venda rápida
-  // real segue Concluir/Aprovar e Informar cliente
-  if (data.quickSale && QUICK_SALE_CHECKOUT) {
+  // pagamento, e a situação no caixa depois que ela sai. O checkout ainda é
+  // de demonstração (caixa em memória): só com a flag. Sem ela, a venda
+  // rápida segue Concluir/Aprovar e Informar cliente
+  if (data.quickSale && DEMO_DATA) {
     return <QuickSaleQuotation data={data} previousUrl={previousUrl} />
   }
 

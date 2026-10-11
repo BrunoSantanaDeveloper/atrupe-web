@@ -56,6 +56,7 @@ import {
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import { parseCurrencyToBrl, cn } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
@@ -302,8 +303,10 @@ export function QuotationProdDetailModal({
   // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
   // e muda o valor por unidade do item simples conforme a quantidade
   const tierProductId = product?.id || data?.product?.originalProductId || null
+  // As faixas e as variações ainda ficam em dado de demonstração: só com a
+  // flag (src/lib/demo.ts)
   const { data: tiersRes } = useQuery({
-    enabled: !!tierProductId && open,
+    enabled: !!tierProductId && open && DEMO_DATA,
     staleTime: 60_000,
     queryKey: ['price-tiers', tierProductId],
     queryFn: () => getPriceTiers({ productId: tierProductId as string }),
@@ -333,7 +336,7 @@ export function QuotationProdDetailModal({
   // preço e o nome do item seguem a escolha. Com variação escolhida, as faixas
   // do produto não se aplicam
   const { data: variationsRes } = useQuery({
-    enabled: !!product?.id && open && !editMode,
+    enabled: !!product?.id && open && !editMode && DEMO_DATA,
     staleTime: 60_000,
     queryKey: ['product-variations', product?.id],
     queryFn: () => getProductVariations({ productId: product?.id as string }),
@@ -456,8 +459,9 @@ export function QuotationProdDetailModal({
         })
       }
       // Mudou a medida do item: as linhas acrescentadas que acompanham a
-      // base são recalculadas; as de medida própria ficam (05/10/2026)
-      if (data?.productId) {
+      // base são recalculadas; as de medida própria ficam (05/10/2026). As
+      // linhas ainda ficam em dado de demonstração: só com a flag
+      if (DEMO_DATA && data?.productId) {
         const first = data.items?.[0]
         const recalculated = await recalculateItemLines({
           quotationId: String(quotationId),
@@ -723,19 +727,25 @@ export function QuotationProdDetailModal({
                     </div>
                   )
                 })}
-                <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
-                  <div className="w-full">
-                    <SaleCompositionFields
-                      key={data?.id || product?.id}
-                      productId={
-                        product?.id || data?.product?.originalProductId
-                      }
-                      initial={editMode ? savedComposition : undefined}
-                      measure={compositionMeasure}
-                      onChange={setComposition}
-                    />
-                  </div>
-                </FeatureGate>
+                {/* O formulário de venda da composição ainda roda sobre dados
+                    de demonstração: só com a flag */}
+                {DEMO_DATA && (
+                  <FeatureGate
+                    features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}
+                  >
+                    <div className="w-full">
+                      <SaleCompositionFields
+                        key={data?.id || product?.id}
+                        productId={
+                          product?.id || data?.product?.originalProductId
+                        }
+                        initial={editMode ? savedComposition : undefined}
+                        measure={compositionMeasure}
+                        onChange={setComposition}
+                      />
+                    </div>
+                  </FeatureGate>
+                )}
                 <FormTextarea<ProductsFormType>
                   name="technicalDescription"
                   label="Descritivo técnico"

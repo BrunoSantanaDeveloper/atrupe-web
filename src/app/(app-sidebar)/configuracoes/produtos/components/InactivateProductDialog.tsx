@@ -31,6 +31,9 @@ import { createItemNew } from '@/actions/_cruds'
 import { getProductUsage, setProductActive } from '@/actions/product-assembly'
 import { getOpenQuotationsUsingProduct } from '@/actions/quotation-composition'
 
+// Libs
+import { DEMO_DATA } from '@/lib/demo'
+
 // Third-party
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -55,15 +58,17 @@ export function InactivateProductDialog({
   const [saving, setSaving] = useState(false)
   const inactivating = product.active
 
+  // "Onde é usado" vem da composição, que ainda roda sobre dados de exemplo:
+  // só com a flag de demonstração
   const { data, isLoading } = useQuery({
     queryKey: ['product-usage', product.id],
     queryFn: () => getProductUsage({ productId: product.id }),
-    enabled: open && inactivating,
+    enabled: open && inactivating && DEMO_DATA,
   })
   const { data: quotationsRes } = useQuery({
     queryKey: ['product-open-quotations', product.id],
     queryFn: () => getOpenQuotationsUsingProduct({ productId: product.id }),
-    enabled: open && inactivating,
+    enabled: open && inactivating && DEMO_DATA,
   })
   const usage = data?.data || []
   const openQuotations = quotationsRes?.data || []
@@ -79,7 +84,9 @@ export function InactivateProductDialog({
       toast.error(result.message || 'Não foi possível alterar o produto')
       return
     }
-    await setProductActive({ productId: product.id, active: !inactivating })
+    if (DEMO_DATA) {
+      await setProductActive({ productId: product.id, active: !inactivating })
+    }
     setSaving(false)
     toast.success(inactivating ? 'Produto inativado' : 'Produto ativado')
     await queryClient.invalidateQueries()
@@ -109,17 +116,20 @@ export function InactivateProductDialog({
         <DialogBody className="space-y-4">
           {!inactivating ? (
             <p className="text-sm text-gray">
-              O produto fica disponível de novo para orçamentos e vendas, e as
-              etapas em que ele é parte perdem a marca de produto inativo.
+              {DEMO_DATA
+                ? 'O produto fica disponível de novo para orçamentos e vendas, e as etapas em que ele é parte perdem a marca de produto inativo.'
+                : 'O produto fica disponível de novo para orçamentos e vendas.'}
             </p>
           ) : isLoading ? (
             <p className="text-sm text-gray">Procurando onde ele é usado…</p>
           ) : (
             <>
               <p className="text-sm text-gray">
-                {usage.length === 0
-                  ? 'Ele não é parte de nenhum outro produto. Fica indisponível para novos orçamentos e vendas.'
-                  : `Ele é parte de ${usage.length} ${usage.length === 1 ? 'produto' : 'produtos'}. A etapa continua lá, marcada "produto inativo"; ele só deixa de ser oferecido em novos orçamentos e como parte nova.`}
+                {!DEMO_DATA
+                  ? 'Ele fica indisponível para novos orçamentos e vendas.'
+                  : usage.length === 0
+                    ? 'Ele não é parte de nenhum outro produto. Fica indisponível para novos orçamentos e vendas.'
+                    : `Ele é parte de ${usage.length} ${usage.length === 1 ? 'produto' : 'produtos'}. A etapa continua lá, marcada "produto inativo"; ele só deixa de ser oferecido em novos orçamentos e como parte nova.`}
               </p>
               {usage.length > 0 && (
                 <ul className="max-h-64 divide-y divide-gray-100 overflow-y-auto rounded-lg border border-gray-200">

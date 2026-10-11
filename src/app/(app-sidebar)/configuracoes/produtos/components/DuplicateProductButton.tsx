@@ -15,6 +15,9 @@ import { getItemOld, createItemNew } from '@/actions/_cruds'
 import { copyCompositionFrom } from '@/actions/product-assembly'
 import { productBodyFrom } from './productBody'
 
+// Libs
+import { DEMO_DATA } from '@/lib/demo'
+
 // Third-party
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
@@ -57,12 +60,16 @@ export function DuplicateProductButton({ productId, name, onDone }: Props) {
       }
 
       // A composição vai junto, como cópia independente (etapas, campos e
-      // fórmulas). Falhar aqui não desfaz o produto: ele fica sem composição
-      const composition = await copyCompositionFrom({
-        productId: created.data.id,
-        sourceProductId: productId,
-      })
+      // fórmulas). Falhar aqui não desfaz o produto: ele fica sem composição.
+      // Ela ainda roda sobre dados de exemplo: sem a flag, não há o que copiar
+      const composition = DEMO_DATA
+        ? await copyCompositionFrom({
+            productId: created.data.id,
+            sourceProductId: productId,
+          })
+        : null
       if (
+        composition &&
         !composition.success &&
         !/não tem composição/.test(composition.message)
       ) {

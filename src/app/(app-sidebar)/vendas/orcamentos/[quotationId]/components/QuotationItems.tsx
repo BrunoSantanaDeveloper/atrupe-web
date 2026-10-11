@@ -61,6 +61,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 // Libs
 import { actionDisabled } from '@/lib/quotation'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 import { useQuotation } from '@/contexts/quotationContext'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 import {
@@ -121,11 +122,12 @@ export function QuotationItems({ data }: Props) {
   const queryClient = useQueryClient()
 
   // A composição que o vendedor escolheu em cada item (IP-36). Fica no mock
-  // até a API guardar o campo no item (backend-pendente.md)
+  // até a API guardar o campo no item (backend-pendente.md). O mock, aqui e
+  // nos itens montados e acrescentados abaixo, só com a flag de demonstração
   const { data: compositionsRes } = useQuery({
     queryKey: ['quotation-item-compositions', data?.id],
     queryFn: () => getItemCompositions({ quotationId: String(data?.id) }),
-    enabled: !!data?.id,
+    enabled: !!data?.id && DEMO_DATA,
   })
   const [report, setReport] = useState<ReportTarget | null>(null)
 
@@ -147,7 +149,7 @@ export function QuotationItems({ data }: Props) {
   const { data: composedRes } = useQuery({
     queryKey: ['composed-items', data?.id],
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
-    enabled: !!data?.id,
+    enabled: !!data?.id && DEMO_DATA,
   })
   const composed = composedRes?.data || []
 
@@ -156,7 +158,7 @@ export function QuotationItems({ data }: Props) {
   const { data: linesRes } = useQuery({
     queryKey: ['quotation-item-lines', data?.id],
     queryFn: () => getItemLines({ quotationId: String(data?.id) }),
-    enabled: !!data?.id,
+    enabled: !!data?.id && DEMO_DATA,
   })
   const linesOf = (item: QuotationItemType) => linesRes?.data?.[item.id] || []
   const [addingTo, setAddingTo] = useState<string | null>(null)
@@ -624,7 +626,9 @@ export function QuotationItems({ data }: Props) {
                               ) : null}
 
                               <div className="flex flex-wrap gap-2">
-                                {addingTo !== item.id && (
+                                {/* As linhas acrescentadas ainda ficam em
+                                    dado de demonstração: só com a flag */}
+                                {DEMO_DATA && addingTo !== item.id && (
                                   <FeatureGate
                                     features={[
                                       FEATURES.PRODUCTS.PRODUCT_COMPOSITION,

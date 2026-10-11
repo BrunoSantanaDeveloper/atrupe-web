@@ -58,6 +58,7 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Lib
 import { cn } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 
 interface Props extends SearchParamsType {
   open: boolean
@@ -114,8 +115,9 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
         route: `/sector/${rowData?.id}`,
         data,
       })
-      // A cor só é gravada depois que o servidor aceitou o setor
-      if (res.success) {
+      // A cor só é gravada depois que o servidor aceitou o setor (e só com a
+      // flag de demonstração, enquanto a API do setor não tem o campo)
+      if (res.success && DEMO_DATA) {
         await setSectorColor({
           sectorId: String(rowData?.id),
           name: data.name,
@@ -183,8 +185,9 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                 width="flex-[1_0_190px]"
               />
               {/* A cor acompanha o setor em todo lugar: gerenciador, ficha,
-                  agenda, composição e lista de processos */}
-              <div className="w-full space-y-1.5">
+                  agenda, composição e lista de processos. Ainda é gravada
+                  em dado de demonstração: o campo só aparece com a flag */}
+              <div className={cn('w-full space-y-1.5', !DEMO_DATA && 'hidden')}>
                 <Label>Cor</Label>
                 <div className="flex flex-wrap items-center gap-3">
                   <SectorIcon

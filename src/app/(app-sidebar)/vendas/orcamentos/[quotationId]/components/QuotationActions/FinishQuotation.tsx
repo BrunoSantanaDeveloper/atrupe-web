@@ -41,6 +41,7 @@ import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationI
 
 // Lib
 import { cn } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Icons
 import {
@@ -78,11 +79,12 @@ export function FinishQuotation({ data, canFinish }: Props) {
   const queryClient = useQueryClient()
 
   // Item de composição sem nenhuma etapa não bloqueia a conclusão (MS-12,
-  // 05/10/2026): é a saída do dia a dia, e o aviso fica no item
+  // 05/10/2026): é a saída do dia a dia, e o aviso fica no item. Os itens
+  // montados ainda ficam em dado de demonstração: só com a flag
   const { data: composedRes } = useQuery({
     queryKey: ['composed-items', data?.id],
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
-    enabled: !!data?.id,
+    enabled: !!data?.id && DEMO_DATA,
   })
   const composedAttention = !!composedRes?.data?.some((item) => item.attention)
 

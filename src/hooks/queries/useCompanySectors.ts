@@ -4,7 +4,7 @@
 // ELITE é assim; no ELITE passa a vir da configuração do gerenciador (área 8,
 // nota de 03/10/2026). Quando o cadastro não responde (servidor de
 // desenvolvimento sem API), valem os setores de exemplo do mock, para a tela
-// não ficar sem opção
+// não ficar sem opção — só com a flag de demonstração (src/lib/demo.ts)
 
 import { useMemo } from 'react'
 
@@ -13,6 +13,9 @@ import { getAssemblyResources } from '@/actions/product-assembly'
 
 // Hooks
 import { useSector } from './useSector'
+
+// Libs
+import { DEMO_DATA } from '@/lib/demo'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -23,15 +26,15 @@ export function useCompanySectors() {
     staleTime: Infinity,
     queryKey: ['assembly-resources'],
     queryFn: () => getAssemblyResources(),
+    enabled: DEMO_DATA,
   })
 
   const names = useMemo(() => {
     const fromRegister = (sectors || [])
       .filter((sector) => sector.isActive)
       .map((sector) => sector.name)
-    return fromRegister.length
-      ? fromRegister
-      : resourcesRes?.data?.sectors || []
+    if (fromRegister.length || !DEMO_DATA) return fromRegister
+    return resourcesRes?.data?.sectors || []
   }, [sectors, resourcesRes])
 
   return {

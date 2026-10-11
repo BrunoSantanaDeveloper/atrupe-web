@@ -1,6 +1,10 @@
 // Components
 import { Main } from './components/Main'
+import { Main as DemoMain } from './components/demo/Main'
 import { PermissionGate } from '@/components/common/PermissionGate'
+
+// Libs
+import { DEMO_DATA } from '@/lib/demo'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -23,7 +27,9 @@ export default function Page({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Main searchParams={searchParams} />
+      {/* A estrutura nova da folha (ALT-18 e ALT-19) ainda roda sobre dados
+          de exemplo: só com a flag de demonstração. Sem ela, a tela real */}
+      {DEMO_DATA ? <DemoMain /> : <Main searchParams={searchParams} />}
     </PermissionGate>
   )
 }

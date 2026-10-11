@@ -78,6 +78,7 @@ import { useSector } from '@/hooks/queries/useSector'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
 import { cn } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 export type ProductTab = 'general' | 'composition' | 'fiscal'
@@ -154,8 +155,10 @@ function NewProductModal({
   const showFiscalTab = hasFiscalModule()
   // A composição é recurso do cadastro do produto, não tela à parte (CP-17):
   // do PRO em diante o diálogo ganha a aba, e o fluxo de etapas (FL-1) toma o
-  // lugar da lista simples de etapas do LITE (ET-1)
-  const showCompositionTab = hasFeature(FEATURES.COSTS.COST_BASE)
+  // lugar da lista simples de etapas do LITE (ET-1). A composição e as
+  // variações ainda rodam sobre dados de exemplo: só com a flag
+  const showCompositionTab = DEMO_DATA && hasFeature(FEATURES.COSTS.COST_BASE)
+  const showVariations = DEMO_DATA && !showCompositionTab
 
   useEffect(() => {
     if (open) setActiveTab(initialTab)
@@ -550,7 +553,7 @@ function NewProductModal({
 
                           {/* Variações já no START (PV-6, 05/10/2026). No PRO
                               elas vivem na aba Composição */}
-                          {!showCompositionTab && (
+                          {showVariations && (
                             <div className="w-full rounded-xl border border-gray-200 p-4">
                               {editMode && productId ? (
                                 <ProductVariations

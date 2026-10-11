@@ -436,15 +436,19 @@ export function ProductsData({ searchParams, tabs }: Props) {
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >
-                          <ActionButton
-                            Icon={IconCurrencyReal}
-                            tooltip={`Precificar ${product?.name}`}
-                            onClick={() => {
-                              openPricing(product).catch(() =>
-                                toast.error('Erro ao abrir a precificação'),
-                              )
-                            }}
-                          />
+                          {/* Precificar é o modal da Precificação, que ainda
+                              roda sobre dados de exemplo: só com a flag */}
+                          {DEMO_DATA && (
+                            <ActionButton
+                              Icon={IconCurrencyReal}
+                              tooltip={`Precificar ${product?.name}`}
+                              onClick={() => {
+                                openPricing(product).catch(() =>
+                                  toast.error('Erro ao abrir a precificação'),
+                                )
+                              }}
+                            />
+                          )}
                           {/* Duplicar: outro produto com os mesmos dados e a
                               mesma composição, aberto para edição */}
                           <DuplicateProductButton
