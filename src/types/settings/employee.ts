@@ -133,3 +133,17 @@ export type EmployeeHistoryResponse = {
   total: number
   history: EmployeeHistoryItem[]
 }
+
+/**
+ * A cota de usuários do plano, em `USERS` de GET /employee/quantity
+ * (contrato da camada de planos, §5).
+ */
+export type UsersQuotaType = {
+  /** Colaboradores ativos com usuário ativo: a mesma conta do limite. */
+  used: number
+  /**
+   * Já soma os usuários adicionais; -1 = ilimitado; nulo = o plano não
+   * limita ou a empresa não tem assinatura ativa.
+   */
+  limit: number | null
+}

@@ -26,7 +26,10 @@ import type { UserType } from '@/types/settings/employee'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
+
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props extends SearchParamsType {
   rowData?: UserType
@@ -36,11 +39,23 @@ export function InactiveUserAlertDialog(props: Props) {
   const { rowData, onChange } = props
 
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const mutation = useMutation({
     mutationFn: (body: { isActive: boolean }) =>
-      updateItem('userRoute', rowData?.id || '', body),
-    onSuccess: () => {
+      updateItemNew({ route: `/user/${rowData?.id}`, data: body }),
+    onSuccess: (res) => {
+      if (!res.success) {
+        // Reativar acima da cota do plano: o servidor recusa com
+        // PLAN_LIMIT_REACHED, e o diálogo da cota substitui o do usuário.
+        // Antes, o helper antigo perdia a mensagem ("Ocorreu um erro.").
+        if (res.planError?.code === 'PLAN_LIMIT_REACHED') {
+          onChange(false)
+          queryClient.invalidateQueries({ queryKey: ['employees-totals'] })
+        }
+        notifyActionError(res, 'Ocorreu um erro.')
+        return
+      }
       queryClient.invalidateQueries()
       // toast.success('Status alterado.')
       onChange(false)

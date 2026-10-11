@@ -12,12 +12,14 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { NewEmployeeDialog } from './NewEmployee'
+import { UsersQuotaNotice } from './UsersQuotaNotice'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { UsersQuotaType } from '@/types/settings/employee'
 
 // Actions
 import { getDataOld } from '@/actions/_cruds'
@@ -42,6 +44,10 @@ export function Main({ searchParams }: SearchParamsType) {
     inativos: data?.INACTIVES,
     todos: data?.TOTAL,
   }
+
+  // A cota conta a empresa inteira no servidor: a conta feita no front só
+  // via a página e o filtro carregados.
+  const usersQuota: UsersQuotaType | undefined = data?.USERS
 
   const status = searchParams.status
   const statusEmpty = totals?.[status] === 0
@@ -99,6 +105,7 @@ export function Main({ searchParams }: SearchParamsType) {
             </PermissionGate>
           }
         />
+        {usersQuota ? <UsersQuotaNotice quota={usersQuota} /> : null}
         <div>
           <Card>
             {isLoading ? (
@@ -114,7 +121,11 @@ export function Main({ searchParams }: SearchParamsType) {
                   <TableFiltersHeader searchParams={searchParams}>
                     {/* <EmployeeFilter searchParams={searchParams} /> */}
                   </TableFiltersHeader>
-                  <TableData searchParams={searchParams} tabs={tabs} />
+                  <TableData
+                    searchParams={searchParams}
+                    tabs={tabs}
+                    usersQuota={usersQuota}
+                  />
                 </>
               )
             ) : (

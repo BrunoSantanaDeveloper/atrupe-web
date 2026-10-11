@@ -44,6 +44,8 @@ interface SubscriptionSummaryCardsProps {
       name: string
       basePrice: number
       planType: string
+      /** Preço do usuário adicional no plano, em centavos. */
+      additionalUserPrice?: number | null
     }
     value: number
     additionalUsers: number
@@ -74,6 +76,9 @@ export function SubscriptionSummaryCards({
   )
 
   const nfTotal = nfMainModule ? nfMainModule.price || 0 : 0
+
+  // O preço do usuário adicional é do plano: era R$ 15 fixo.
+  const additionalUserPrice = subscription.plan.additionalUserPrice
 
   const isTrial = subscription.plan.planType === 'TRIAL'
   const isCanceled = subscription.status !== 'ACTIVE'
@@ -150,9 +155,11 @@ export function SubscriptionSummaryCards({
                 Usuário adicional ({subscription.additionalUsers || 0})
               </p>
               <p className="text-lg font-semibold text-gray-800">
-                {formatCurrencyToBrl(
-                  (subscription.additionalUsers || 0) * 1500,
-                )}
+                {typeof additionalUserPrice === 'number'
+                  ? formatCurrencyToBrl(
+                      (subscription.additionalUsers || 0) * additionalUserPrice,
+                    )
+                  : '–'}
               </p>
             </div>
             {canChange && (

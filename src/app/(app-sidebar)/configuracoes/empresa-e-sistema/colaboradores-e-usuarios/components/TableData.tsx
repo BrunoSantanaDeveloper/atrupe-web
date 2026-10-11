@@ -2,10 +2,6 @@
 
 // React
 import { Fragment, useState } from 'react'
-import { useRouter } from 'next/navigation'
-
-// Auth
-import { useSession } from 'next-auth/react'
 
 // Components
 import { NewEmployeeDialog } from './NewEmployee'
@@ -19,9 +15,6 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-// Hooks
-import { useAlertDialog } from '@/store/useAlertDialog'
-
 // UI
 import {
   Table,
@@ -32,13 +25,20 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
 
 // Types
 import type {
   EmployeeType,
   ListEmployeeDataType,
+  UsersQuotaType,
 } from '@/types/settings/employee'
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
@@ -58,22 +58,25 @@ import {
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { isUsersQuotaFull } from '@/lib/plans/planAccess'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
+  /** A cota de usuários do plano, contada pelo servidor na empresa inteira. */
+  usersQuota?: UsersQuotaType
 }
 
-export function TableData({ tabs, searchParams }: Props) {
+export function TableData({ tabs, searchParams, usersQuota }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<EmployeeType>()
   const [editUser, setEditUser] = useState(false)
 
-  const router = useRouter()
-  const { data: session } = useSession()
-  const { open: openAlertDialog } = useAlertDialog()
-
-  // Conversão: getUserLimit usando acesso direto à sessão
-  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
+  // Na cota, "Novo usuário" fica desabilitado com o motivo. Sem a cota (ou
+  // com -1), não há limite na tela: o servidor confere ao criar.
+  const usersQuotaFull = isUsersQuotaFull(usersQuota)
+  const usersQuotaReason = usersQuotaFull
+    ? `Limite do plano atingido: ${usersQuota?.used} de ${usersQuota?.limit} usuários com acesso.`
+    : ''
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -88,16 +91,8 @@ export function TableData({ tabs, searchParams }: Props) {
   const employeeArray: ListEmployeeDataType[] = data?.data || []
   const hasData = employeeArray.length
 
-  // Contar usuários ativos (funcionários que têm usuário ativo)
-  const activeUsersCount = employeeArray.reduce((count, group) => {
-    return count + group.employees.filter((emp) => emp.user?.isActive).length
-  }, 0)
-
-  // Função para verificar limite antes de criar usuário
   const handleCreateUser = (item: EmployeeType) => {
-    const userLimit = getUserLimit()
-
-    // Se está editando usuário existente, permite
+    // Editar o usuário que já existe não conta na cota.
     if (item?.user) {
       setRowData(item)
       setEditUser(true)
@@ -105,27 +100,8 @@ export function TableData({ tabs, searchParams }: Props) {
       return
     }
 
-    // Se atingiu o limite, mostra alerta
-    if (activeUsersCount >= userLimit) {
-      openAlertDialog({
-        title: 'Limite de usuários atingido',
-        description: `Seu plano permite apenas ${userLimit} usuário${
-          userLimit > 1 ? 's' : ''
-        }. Para criar mais usuários, faça upgrade do seu plano.`,
-        confirmLabel: 'Fazer Upgrade',
-        cancelLabel: 'Entendi',
-        iconVariant: 'warningBorderedLight',
-        onConfirm: () => {
-          router.push('/assinatura')
-        },
-        toastMsg: {
-          success: 'Redirecionando para a página de upgrade...',
-        },
-      })
-      return
-    }
+    if (usersQuotaFull) return
 
-    // Se não atingiu o limite, permite criar
     setRowData(item)
     setEditUser(false)
     setOpenDialog('new-user')
@@ -243,19 +219,44 @@ export function TableData({ tabs, searchParams }: Props) {
                                           : 'company_settings:users:edit',
                                       ]}
                                     >
-                                      <ActionButton
-                                        Icon={
-                                          item?.user
-                                            ? IconUserEdit
-                                            : IconUserPlus
-                                        }
-                                        tooltip={
-                                          item?.user
-                                            ? 'Editar usuário'
-                                            : 'Novo usuário'
-                                        }
-                                        onClick={() => handleCreateUser(item)}
-                                      />
+                                      {!item?.user && usersQuotaFull ? (
+                                        // Botão desabilitado não dispara o
+                                        // tooltip: o motivo fica no span.
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span
+                                              className="inline-flex"
+                                              tabIndex={0}
+                                            >
+                                              <Button
+                                                type="button"
+                                                size="icon"
+                                                variant="neutralGhost"
+                                                aria-label="Novo usuário"
+                                                RightIcon={IconUserPlus}
+                                                disabled
+                                              />
+                                            </span>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>{usersQuotaReason}</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      ) : (
+                                        <ActionButton
+                                          Icon={
+                                            item?.user
+                                              ? IconUserEdit
+                                              : IconUserPlus
+                                          }
+                                          tooltip={
+                                            item?.user
+                                              ? 'Editar usuário'
+                                              : 'Novo usuário'
+                                          }
+                                          onClick={() => handleCreateUser(item)}
+                                        />
+                                      )}
                                     </PermissionGate>
                                     <PermissionGate
                                       permissions={[

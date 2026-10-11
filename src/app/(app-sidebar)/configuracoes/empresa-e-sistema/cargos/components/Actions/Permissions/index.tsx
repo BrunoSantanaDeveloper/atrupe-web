@@ -46,6 +46,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 
 // Lib
 import { cn } from '@/lib/utils'
+import { planAllowsUsers } from '@/lib/plans/planAccess'
 
 // Types
 import type { RoleType } from '@/types/settings/role'
@@ -149,16 +150,15 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const { data: session } = useSession()
   const { hasAnyFeature } = usePlanFeatures()
 
-  // Função para obter limite de usuários da sessão
-  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
-
   // Só aparece a permissão de uma tela que o plano da empresa inclui.
   const _shouldShowPermission = (section: string, item: string) => {
     const features = PERMISSION_FEATURES[`${section}.${item}`]
     if (features && !hasAnyFeature(features)) return false
 
+    // -1 (ilimitado) e a chave ausente mostram a permissão; só o limite 0
+    // a esconde.
     if (section === 'company_settings' && item === 'users') {
-      return getUserLimit() > 0
+      return planAllowsUsers(session?.company?.plan?.limits)
     }
 
     // A seção fiscal só aparece com o módulo contratado.

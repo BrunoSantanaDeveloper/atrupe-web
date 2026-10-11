@@ -49,6 +49,9 @@ import {
 } from '@tabler/icons-react'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
+
 interface Props extends SearchParamsType {
   editMode?: boolean
   open?: boolean
@@ -76,6 +79,7 @@ export function NewUserDialog({
   )
 
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const form = useForm<FormType>({
     resolver: zodResolver(getSchema(!!editMode)),
@@ -128,7 +132,13 @@ export function NewUserDialog({
         })
 
     if (!res.success) {
-      toast.error(res.message)
+      // Na cota do plano, o servidor recusa com PLAN_LIMIT_REACHED: o diálogo
+      // da cota substitui o formulário, e a cota da tela é relida.
+      if (res.planError?.code === 'PLAN_LIMIT_REACHED') {
+        handleOpenChange(false)
+        queryClient.invalidateQueries({ queryKey: ['employees-totals'] })
+      }
+      notifyActionError(res)
       return
     }
 

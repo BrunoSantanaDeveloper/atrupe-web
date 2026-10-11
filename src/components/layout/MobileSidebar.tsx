@@ -40,6 +40,7 @@ import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
+import { planAllowsUsers } from '@/lib/plans/planAccess'
 
 // Types
 import type { IconProps } from '@tabler/icons-react'
@@ -92,8 +93,6 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
     return hasFeature(requiredModule)
   }
 
-  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
-
   const checkPermission = (permission?: string | string[]) => {
     if (!permission) return true
     if (session.user.role === 'Admin') return true
@@ -114,8 +113,9 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
       return false
     }
 
+    // -1 e a chave ausente são ilimitados; só o limite 0 esconde.
     if (item.path?.includes('/colaboradores-e-usuarios')) {
-      return getUserLimit() > 0
+      return planAllowsUsers(session?.company?.plan?.limits)
     }
 
     // Recurso do plano que o item exige (declarado em consts/nav.ts)

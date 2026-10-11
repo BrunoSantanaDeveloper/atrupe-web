@@ -33,6 +33,7 @@ import logo from '@public/logo/logo-text.png'
 
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
+import { planAllowsUsers } from '@/lib/plans/planAccess'
 
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
@@ -91,9 +92,6 @@ export function SidebarComponent(props: Props) {
     return hasFeature(requiredModule)
   }
 
-  // Conversão: getUserLimit usando acesso direto à sessão
-  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
-
   // Função auxiliar que verifica permissão considerando admin
   // Suporta uma única permissão (string) ou múltiplas permissões (array - lógica AND)
   const checkPermission = (item: MainNavigationType) => {
@@ -139,8 +137,9 @@ export function SidebarComponent(props: Props) {
     }
 
     // Controle de Colaboradores e Usuários - baseado no limite de usuários
+    // (-1 e a chave ausente são ilimitados; só o limite 0 esconde)
     if (item.path?.includes('/colaboradores-e-usuarios')) {
-      return getUserLimit() > 0
+      return planAllowsUsers(session?.company?.plan?.limits)
     }
 
     // Outras verificações de features podem ser adicionadas aqui
