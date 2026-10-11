@@ -1,3 +1,5 @@
+import type { PlanAvailableFrom } from './planError'
+
 export interface PlanFeature {
   title: string
   description?: string
@@ -46,4 +48,19 @@ export interface ModuleType {
   description?: string
   category?: string
   features?: ModuleFeatureType[]
+}
+
+/** Uma chave do mapa público (GET /plan/public/feature-map). */
+export interface PlanFeatureMapEntry {
+  key: string
+  name: string
+  category: string | null
+  /** O plano a partir do qual a chave existe; nulo se nenhum plano a tem. */
+  availableFrom: PlanAvailableFrom | null
+  /** Módulo contratado à parte (preço próprio), fora dos planos. */
+  module: boolean
+}
+
+export interface PlanFeatureMap {
+  features: PlanFeatureMapEntry[]
 }

@@ -2,7 +2,6 @@
 import { Main } from './components/Main'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -24,12 +23,12 @@ export default function Page({ searchParams }: SearchParamsType) {
         FEATURES.SALES.SERVICE_ORDER_CANCELLATION_REASON,
       ]}
       requireAll={false}
-      fallback={
-        <UpgradeFallback
-          title="Motivos de Rejeição e Cancelamento"
-          description="A configuração de motivos de rejeição e cancelamento não está incluída no seu plano atual. Faça upgrade para personalizar os motivos dos seus orçamentos e ordens de serviço."
-        />
-      }
+      wall={{
+        title: 'Motivos de rejeição e cancelamento',
+        description:
+          'Personalize os motivos de rejeição dos orçamentos e de cancelamento das ordens de serviço.',
+        pageTitle: true,
+      }}
     >
       <PermissionGate
         permissions={['sales_settings:rejection_reasons:view']}

@@ -2,7 +2,6 @@
 import { Main } from './components/Main'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -14,12 +13,12 @@ export default function Page({ searchParams }: SearchParamsType) {
   return (
     <FeatureGate
       features={[FEATURES.SYSTEM.SECTORS_CONFIGURATION]}
-      fallback={
-        <UpgradeFallback
-          title="Setores"
-          description="A configuração de setores não está incluída no seu plano atual."
-        />
-      }
+      wall={{
+        title: 'Configuração de setores',
+        description:
+          'Organize a empresa em setores e indique quais são etapas de produção.',
+        pageTitle: true,
+      }}
     >
       <PermissionGate
         permissions={['company_settings:sectors:view']}

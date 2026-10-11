@@ -5,14 +5,10 @@ import { useRouter } from 'next/navigation'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { FiscalOnboardingModal } from '@/components/fiscal/FiscalOnboardingModal'
+import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import {
-  IconLock,
-  IconFileInvoice,
-  IconSettings,
-  IconLoader2,
-} from '@tabler/icons-react'
+import { IconFileInvoice, IconSettings, IconLoader2 } from '@tabler/icons-react'
 
 interface FiscalModuleGateProps {
   children: React.ReactNode
@@ -35,26 +31,18 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
     )
   }
 
-  // User doesn't have the nota_fiscal feature at all
+  // Módulo não contratado: a parede de módulo leva à trilha de contratação
+  // (/assinatura), que oferece os módulos — a página de gestão da
+  // assinatura não contrata nada. Só o titular contrata.
   if (!hasFeature('nota_fiscal')) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-4">
-        <FeaturedIcon variant="neutralOutline" Icon={IconLock} />
-        <h2 className="text-lg font-semibold mt-6 mb-2 text-center">
-          Módulo Nota Fiscal não contratado
-        </h2>
-        <p className="text-sm text-gray text-center max-w-md mb-6">
-          Para emitir e gerenciar notas fiscais, é necessário contratar o módulo
-          Nota Fiscal na sua assinatura.
-        </p>
-        <Button
-          onClick={() =>
-            router.push('/configuracoes/empresa-e-sistema/assinatura')
-          }
-        >
-          Ver planos e módulos
-        </Button>
-      </div>
+      <UpgradeFallback
+        kind="module"
+        feature="nota_fiscal"
+        title="Módulo Nota Fiscal não contratado"
+        description="Para emitir e gerenciar notas fiscais, contrate o módulo Nota Fiscal na sua assinatura."
+        pageTitle
+      />
     )
   }
 

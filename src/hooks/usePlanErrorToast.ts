@@ -8,12 +8,10 @@ import { IconAlertTriangle } from '@tabler/icons-react'
 
 import { SUBSCRIPTION_PAGE } from '@/config/routes'
 import { planErrorFromResult } from '@/lib/api-error-message'
+import { ASK_PRINCIPAL_ADMIN } from '@/lib/plans/planAccess'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 import type { PlanError } from '@/types/planError'
-
-/** Quem não é o titular não contrata: o aviso diz a quem pedir. */
-export const ASK_PRINCIPAL_ADMIN = 'Peça ao administrador principal da conta.'
 
 /** O retorno de erro de uma ação: helpers de `_cruds` ou `domainCall`. */
 interface ActionErrorResult {

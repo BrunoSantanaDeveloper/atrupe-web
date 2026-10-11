@@ -2,7 +2,6 @@
 import { Main } from './components/Main'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Constants
 import { FEATURES } from '@/consts/features'
@@ -15,12 +14,11 @@ export default function QuotationStatusPage() {
   return (
     <FeatureGate
       features={[FEATURES.SALES.QUOTATION_STATUS_CONFIGURATION]}
-      fallback={
-        <UpgradeFallback
-          title="Configuração de Status de Orçamento"
-          description="A configuração de status de orçamento não está incluída no seu plano atual. Faça upgrade para personalizar os status dos seus orçamentos."
-        />
-      }
+      wall={{
+        title: 'Status de orçamento',
+        description: 'Personalize os status dos seus orçamentos.',
+        pageTitle: true,
+      }}
     >
       <PermissionGate
         permissions={['sales_settings:quotation_status:view']}

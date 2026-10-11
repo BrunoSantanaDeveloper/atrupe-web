@@ -2,7 +2,6 @@
 import { Transactions } from '@/app/(app-sidebar)/financeiro/_components/transactions/Transactions'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -20,12 +19,12 @@ export default function ReceivablesPage({ searchParams }: SearchParamsType) {
   return (
     <FeatureGate
       features={[FEATURES.FINANCIAL.ACCOUNTS_RECEIVABLE]}
-      fallback={
-        <UpgradeFallback
-          title="Módulo Contas a Receber"
-          description="O módulo de contas a receber não está incluído no seu plano atual. Faça upgrade para gerenciar seus recebimentos."
-        />
-      }
+      wall={{
+        title: 'Movimentações a receber',
+        description:
+          'Gerencie as contas a receber e os recebimentos da empresa.',
+        pageTitle: true,
+      }}
     >
       <PermissionGate
         requireAll

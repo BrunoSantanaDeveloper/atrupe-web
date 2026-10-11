@@ -1,6 +1,5 @@
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 import { EntityFinancialSummary } from '@/components/common/entity-financial/EntityFinancialSummary'
 import { FEATURES } from '@/consts/features'
 
@@ -15,12 +14,11 @@ export default function SupplierFinancialPage({ params }: Props) {
   return (
     <FeatureGate
       features={[FEATURES.CONTACTS.SUPPLIER_ADDITIONAL_TABS]}
-      fallback={
-        <UpgradeFallback
-          title="Abas adicionais de fornecedor"
-          description="A aba financeiro no cadastro do fornecedor faz parte do plano Lite. Faça upgrade para acessá-la."
-        />
-      }
+      wall={{
+        title: 'Abas adicionais de fornecedor',
+        description:
+          'A aba Financeiro reúne no cadastro o saldo, as contas e as movimentações do fornecedor.',
+      }}
     >
       <PermissionGate
         requireAll

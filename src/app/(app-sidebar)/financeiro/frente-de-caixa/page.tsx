@@ -2,7 +2,6 @@
 import { PDV } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Type Imports
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -20,12 +19,11 @@ export default function PDVsPage({ searchParams }: SearchParamsType) {
   return (
     <FeatureGate
       features={[FEATURES.FINANCIAL.PDV_SCREEN]}
-      fallback={
-        <UpgradeFallback
-          title="Módulo Frente de Caixa"
-          description="O módulo de frente de caixa (PDV) não está incluído no seu plano atual. Faça upgrade para gerenciar vendas diretas."
-        />
-      }
+      wall={{
+        title: 'Frente de caixa',
+        description: 'Registre as vendas diretas no caixa (PDV).',
+        pageTitle: true,
+      }}
     >
       <PermissionGate
         permissions={['financial:pdv:view']}
