@@ -670,8 +670,11 @@ export function QuotationItems({ data }: Props) {
                                     Observações
                                   </Button>
                                 </PermissionGate>
+                                {/* Trocar ou remover a imagem é editar o
+                                    item: quem só visualiza abre o orçamento,
+                                    mas não chega aqui */}
                                 <PermissionGate
-                                  permissions={['sale:quotation:view']}
+                                  permissions={['sale:quotation:edit']}
                                 >
                                   <Button
                                     type="button"

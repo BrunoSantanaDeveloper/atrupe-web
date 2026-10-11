@@ -52,6 +52,12 @@ interface Props {
   data: QuotationType
   onEditClick?: () => void
   editDisabled?: boolean
+  /**
+   * A permissão do lápis do Resumo. No orçamento é editar o orçamento; a
+   * ordem de serviço reaproveita o Resumo para "Editar informações da OS",
+   * que pede editar a OS (o mesmo gate do EditOrderInfoDialog).
+   */
+  editPermissions?: string[]
 }
 
 function formatDateForInput(date?: string | Date) {
@@ -155,7 +161,12 @@ function EditableDateField({
   )
 }
 
-export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
+export function QuotationSummary({
+  data,
+  onEditClick,
+  editDisabled,
+  editPermissions = ['sale:quotation:edit'],
+}: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const { data: session } = useSession()
   const isAdmin = session?.user?.isAdmin
@@ -177,7 +188,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
                   <PermissionGate permissions={['sale:quotation:create']}>
                     <DuplicateDialog quotationData={data} />
                   </PermissionGate>
-                  <PermissionGate permissions={['sale:quotation:edit']}>
+                  <PermissionGate permissions={editPermissions}>
                     <Button
                       type="button"
                       variant="neutralLight"

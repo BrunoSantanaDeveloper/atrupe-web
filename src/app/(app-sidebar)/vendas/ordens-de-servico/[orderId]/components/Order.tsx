@@ -140,6 +140,7 @@ export function Order({ id }: Props) {
             data={data?.quotation}
             onEditClick={() => setEditOrderOpen(true)}
             editDisabled={data?.status === 'CANCELED'}
+            editPermissions={['sale:order:edit']}
           />
           <EditOrderInfoDialog
             data={data}
