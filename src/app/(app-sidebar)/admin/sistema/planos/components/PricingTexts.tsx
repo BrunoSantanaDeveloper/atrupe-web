@@ -329,11 +329,9 @@ function ConfirmPricingDialog({
         if (!value && !saving) onClose()
       }}
     >
-      <DialogContent className="sm:max-w-[480px] bg-white p-6 rounded-xl">
-        <DialogHeader className="mb-2">
-          <DialogTitle className="text-lg font-bold text-gray-900">
-            Alterar o preço do plano {plan.name}
-          </DialogTitle>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Alterar o preço do plano {plan.name}</DialogTitle>
         </DialogHeader>
         <DialogBody className="space-y-3 text-sm text-gray-600">
           <ul className="space-y-1">
@@ -366,7 +364,7 @@ function ConfirmPricingDialog({
             </p>
           )}
         </DialogBody>
-        <DialogFooter className="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
+        <DialogFooter className="flex justify-end gap-2">
           <Button
             type="button"
             variant="neutralOutline"

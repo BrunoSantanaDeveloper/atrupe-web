@@ -482,8 +482,8 @@ export default function AdminCouponsPage() {
 
       {/* dialog para Criar/Editar Cupom */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[650px] bg-white p-6 rounded-xl">
-          <DialogHeader className="mb-4">
+        <DialogContent className="sm:max-w-[650px]">
+          <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
               <IconTicket size={22} className="text-[#FF4201]" />
               <span>{editingCoupon ? 'Editar Cupom' : 'Criar Novo Cupom'}</span>
@@ -729,7 +729,7 @@ export default function AdminCouponsPage() {
               </div>
             </DialogBody>
 
-            <DialogFooter className="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
+            <DialogFooter className="flex justify-end gap-2">
               <Button
                 type="button"
                 variant="neutralOutline"
@@ -755,8 +755,8 @@ export default function AdminCouponsPage() {
 
       {/* dialog para Visualizar Usos do Cupom */}
       <Dialog open={isUsagesOpen} onOpenChange={setIsUsagesOpen}>
-        <DialogContent className="sm:max-w-[750px] bg-white p-6 rounded-xl">
-          <DialogHeader className="mb-4">
+        <DialogContent className="sm:max-w-[750px]">
+          <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <IconEye size={22} className="text-[#FF4201]" />
               <span>
@@ -822,7 +822,7 @@ export default function AdminCouponsPage() {
             )}
           </DialogBody>
 
-          <DialogFooter className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+          <DialogFooter className="flex justify-end">
             <Button
               type="button"
               variant="neutralOutline"

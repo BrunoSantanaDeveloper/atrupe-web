@@ -282,8 +282,8 @@ function CourtesyDialog({
         if (!open && !saving) onClose()
       }}
     >
-      <DialogContent className="sm:max-w-[480px] bg-white p-6 rounded-xl">
-        <DialogHeader className="mb-2">
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
           <DialogTitle>
             {granting ? 'Conceder cortesia' : 'Retirar recurso'}
           </DialogTitle>
@@ -347,7 +347,7 @@ function CourtesyDialog({
           )}
         </DialogBody>
 
-        <DialogFooter className="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
+        <DialogFooter className="flex justify-end gap-2">
           <Button
             type="button"
             variant="neutralOutline"

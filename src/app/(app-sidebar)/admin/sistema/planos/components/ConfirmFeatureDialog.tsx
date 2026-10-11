@@ -222,9 +222,9 @@ export function ConfirmFeatureDialog({
         if (!open && !saving) onClose()
       }}
     >
-      <DialogContent className="sm:max-w-[560px] bg-white p-6 rounded-xl">
-        <DialogHeader className="mb-2">
-          <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-gray-900">
+      <DialogContent className="sm:max-w-[560px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2.5">
             <IconAlertTriangle size={22} className="text-[#FF4201]" />
             <span>
               {request?.enabled
@@ -407,7 +407,7 @@ export function ConfirmFeatureDialog({
           )}
         </DialogBody>
 
-        <DialogFooter className="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
+        <DialogFooter className="flex justify-end gap-2">
           <Button
             type="button"
             variant="neutralOutline"
