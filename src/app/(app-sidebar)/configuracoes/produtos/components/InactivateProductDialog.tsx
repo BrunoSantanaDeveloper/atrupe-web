@@ -87,10 +87,13 @@ export function InactivateProductDialog({
     if (DEMO_DATA) {
       await setProductActive({ productId: product.id, active: !inactivating })
     }
-    setSaving(false)
+    // Fecha antes de recarregar, como em produção: recarregando com o
+    // diálogo aberto, o título e o botão viravam "Ativar" e um segundo
+    // clique reativava o produto (CC-10)
     toast.success(inactivating ? 'Produto inativado' : 'Produto ativado')
-    await queryClient.invalidateQueries()
     onOpenChange(false)
+    await queryClient.invalidateQueries()
+    setSaving(false)
     onDone?.()
   }
 
