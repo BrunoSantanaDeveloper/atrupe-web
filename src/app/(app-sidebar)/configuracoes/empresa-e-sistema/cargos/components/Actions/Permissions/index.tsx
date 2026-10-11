@@ -46,6 +46,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 
 // Lib
 import { cn } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
 
 // Types
@@ -151,6 +152,20 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'stock.invoice_entry': ['invoice_entry'],
 }
 
+/**
+ * Permissões de telas que ainda rodam sobre dados de exemplo (DEMO_ROUTES):
+ * sem a flag de demonstração elas não aparecem no editor, como em produção
+ * hoje, mesmo para quem tem a chave do plano por cortesia ou ajuste de matriz.
+ * Cada uma sai desta lista quando a rota dela sair de DEMO_ROUTES.
+ */
+const DEMO_PERMISSIONS = [
+  'cost.base',
+  'cost.pricing',
+  'production.production',
+  'stock.stock',
+  'stock.invoice_entry',
+]
+
 export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
   const { data: session } = useSession()
@@ -158,6 +173,10 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
 
   // Só aparece a permissão de uma tela que o plano da empresa inclui.
   const _shouldShowPermission = (section: string, item: string) => {
+    if (!DEMO_DATA && DEMO_PERMISSIONS.includes(`${section}.${item}`)) {
+      return false
+    }
+
     const features = PERMISSION_FEATURES[`${section}.${item}`]
     if (features && !hasAnyFeature(features)) return false
 
