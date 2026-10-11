@@ -71,8 +71,27 @@ export interface PlanFeatureChange {
   key: string
   name: string
   enabled: boolean
-  /** Entrou por dependência de outro recurso. */
+  /** Entrou por dependência de outro recurso ou pela regra cumulativa. */
   cascade: boolean
+  /** Mudança num plano acima do pedido (regra cumulativa). */
+  crossPlan?: boolean
+}
+
+/** Um plano citado pelo servidor: na prévia, na cascata e nos bloqueios. */
+export interface PlanRef {
+  planId: string
+  planName: string
+  planType: string
+}
+
+/**
+ * As mudanças de um plano. Regra cumulativa: incluir um recurso num plano
+ * inclui também nos planos acima que não o têm.
+ */
+export interface PlanFeaturePlanChanges extends PlanRef {
+  order: number
+  currentSubscriptions: number
+  changes: PlanFeatureChange[]
 }
 
 export interface PlanFeaturePreview {
@@ -92,6 +111,13 @@ export interface PlanFeaturePreview {
   courtesyGrants: number
   requiresChoice: boolean
   enforcement: { level: FeatureEnforcementLevel; detail: string }
+  /**
+   * Todos os planos que mudam: o pedido primeiro, depois os de cima. Na
+   * inclusão, `affectedIfApplied` soma as assinaturas atuais de todos.
+   */
+  plans?: PlanFeaturePlanChanges[]
+  /** Retirada recusada: os planos de baixo que ainda têm o recurso. */
+  blockedBy?: PlanRef[] | null
 }
 
 export interface PlanFeatureChangeResult {
@@ -100,6 +126,18 @@ export interface PlanFeatureChangeResult {
   affected: number
   retainedGrantsCreated?: number
   retainedGrantsRemoved?: number
+  /** O que mudou em cada plano. */
+  plans?: PlanFeaturePlanChanges[]
+}
+
+/**
+ * Restaurar o padrão deixaria a matriz fora da regra cumulativa (422
+ * NOT_CUMULATIVE): o plano de cima não tem as chaves que o de baixo tem.
+ */
+export interface CumulativeViolation {
+  lowerPlan: PlanRef
+  higherPlan: PlanRef
+  keys: string[]
 }
 
 export interface PlanDefaultsDiff {

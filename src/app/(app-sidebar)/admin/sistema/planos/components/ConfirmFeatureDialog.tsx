@@ -18,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Skeleton } from '@/components/ui/skeleton'
 import { fetchFeaturePreview, savePlanFeature } from '@/actions/planConfig'
+import type { PlanFeaturePlanChanges, PlanRef } from '@/types/planConfig'
 
 import {
   EnforcementBadge,
@@ -42,6 +43,9 @@ export interface FeatureToggleRequest {
 
 type Scope = '' | 'keep' | 'all'
 
+const planNames = (plans: { planName: string }[]) =>
+  plans.map((plan) => plan.planName).join(', ')
+
 /**
  * Confirmação de incluir ou retirar um recurso de um plano.
  *
@@ -49,6 +53,12 @@ type Scope = '' | 'keep' | 'all'
  * retirada atinge as assinaturas atuais do plano (se não, elas mantêm o
  * recurso e só as novas contratações ficam sem ele); a senha gerencial só é
  * pedida quando a alteração atinge assinaturas.
+ *
+ * Regra cumulativa (contrato da camada de planos, §2): o plano de cima
+ * inclui tudo o que o de baixo tem. Incluir num plano inclui também nos
+ * planos acima que não têm o recurso — a prévia lista cada plano, e a
+ * contagem de assinaturas (e a senha) vale sobre a soma. Retirar fica
+ * bloqueado enquanto um plano de baixo tiver o recurso.
  */
 export function ConfirmFeatureDialog({
   request,
@@ -62,11 +72,15 @@ export function ConfirmFeatureDialog({
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  // Retirada que o servidor recusou (422 LOWER_PLAN_HAS_FEATURE) depois de
+  // uma prévia que ainda não a bloqueava.
+  const [blockedByError, setBlockedByError] = useState<PlanRef[] | null>(null)
 
   useEffect(() => {
     setScope('')
     setPassword('')
     setError(null)
+    setBlockedByError(null)
   }, [request])
 
   const previewQuery = useQuery({
@@ -97,12 +111,23 @@ export function ConfirmFeatureDialog({
   const removing = !!request && !request.enabled
   const current = preview?.currentSubscriptions ?? 0
   const needsChoice = !!preview?.requiresChoice
-  // Quem é atingido: ao incluir, todas as atuais ganham o recurso; ao retirar,
-  // só perdem se o superadmin escolher atingir as atuais.
+  // Os planos de cima que também mudam (regra cumulativa).
+  const otherPlans: PlanFeaturePlanChanges[] = (preview?.plans ?? []).filter(
+    (plan) => plan.planId !== request?.planId && plan.changes.length > 0,
+  )
+  const otherPlansSubscriptions = otherPlans.reduce(
+    (total, plan) => total + plan.currentSubscriptions,
+    0,
+  )
+  const blockedBy: PlanRef[] | null =
+    blockedByError ?? (preview?.blockedBy?.length ? preview.blockedBy : null)
+  // Quem é atingido: ao incluir, as atuais de todos os planos que mudam (a
+  // soma vem da prévia); ao retirar, só se o superadmin escolher atingir as
+  // atuais do plano.
   const affected: number | null = !preview
     ? null
     : !removing
-      ? current
+      ? (preview.affectedIfApplied ?? current)
       : !needsChoice
         ? 0
         : scope === 'keep'
@@ -116,6 +141,7 @@ export function ConfirmFeatureDialog({
   const canConfirm =
     !!preview &&
     !preview.noChange &&
+    !blockedBy &&
     !saving &&
     affected !== null &&
     (!needsPassword || password.trim().length > 0)
@@ -136,6 +162,8 @@ export function ConfirmFeatureDialog({
         enabled: request.enabled,
         keepCurrentSubscriptions:
           removing && needsChoice ? scope === 'keep' : undefined,
+        // A cascata (dependências e planos de cima) está na prévia que o
+        // superadmin acabou de confirmar.
         cascade: preview.requiresCascade,
         expectedAffected: affected,
         password: needsPassword ? password : undefined,
@@ -144,15 +172,40 @@ export function ConfirmFeatureDialog({
       })
 
       if (res.success) {
+        const changedPlans = res.data?.plans
+          ? res.data.plans.filter(
+              (plan) =>
+                plan.planId !== request.planId && plan.changes.length > 0,
+            )
+          : otherPlans
         toast.success(
-          successMessage(request, current, removing, scope, cascade.length),
+          successMessage(
+            request,
+            current,
+            removing,
+            scope,
+            cascade.length,
+            changedPlans,
+          ),
         )
         invalidate()
         onClose()
         return
       }
 
-      if (res.code === 'PREVIEW_CHANGED') {
+      if (res.code === 'LOWER_PLAN_HAS_FEATURE') {
+        const plans = (res.details?.plans as PlanRef[] | undefined) ?? []
+        if (plans.length > 0) {
+          setBlockedByError(plans)
+          return
+        }
+      }
+      // A prévia ficou velha: outra mudança alterou as assinaturas ou a
+      // cascata. Ela é relida para o superadmin confirmar de novo.
+      if (
+        res.code === 'PREVIEW_CHANGED' ||
+        res.code === 'DEPENDENCY_REQUIRED'
+      ) {
         setScope('')
         await previewQuery.refetch()
       }
@@ -201,10 +254,25 @@ export function ConfirmFeatureDialog({
             <p className="text-error-700">{previewQuery.error.message}</p>
           ) : preview?.noChange ? (
             <p>O plano já está assim. Nada a alterar.</p>
+          ) : blockedBy ? (
+            <div
+              className="rounded-lg border border-warning-200 bg-warning-50 p-3 text-warning-800"
+              role="alert"
+            >
+              <p className="font-medium">
+                Retire primeiro &quot;{request?.featureName}&quot;{' '}
+                {blockedBy.length === 1 ? 'do plano' : 'dos planos'}{' '}
+                {planNames(blockedBy)}.
+              </p>
+              <p className="mt-1">
+                O plano de cima inclui tudo o que os de baixo têm: a retirada
+                começa pelo plano mais baixo que tem o recurso.
+              </p>
+            </div>
           ) : preview ? (
             <>
               {cascade.length > 0 && (
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-amber-800">
+                <div className="rounded-lg border border-warning-200 bg-warning-50 p-3 text-warning-800">
                   <p className="font-medium">
                     {request?.enabled
                       ? 'Por dependência, também serão incluídos:'
@@ -218,11 +286,34 @@ export function ConfirmFeatureDialog({
                 </div>
               )}
 
+              {otherPlans.length > 0 && (
+                <div className="rounded-lg border border-warning-200 bg-warning-50 p-3 text-warning-800">
+                  <p className="font-medium">
+                    Também em: {planNames(otherPlans)} (
+                    {subscriptionsLabel(otherPlansSubscriptions)})
+                  </p>
+                  <p className="mt-1">
+                    O plano de cima inclui tudo o que os de baixo têm.
+                  </p>
+                  <ul className="mt-1 list-disc pl-5">
+                    {otherPlans.map((plan) => (
+                      <li key={plan.planId}>
+                        <strong>{plan.planName}:</strong>{' '}
+                        {plan.changes.map((c) => c.name).join(', ')}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               {!removing ? (
                 <p>
                   {current > 0
                     ? `As ${subscriptionsLabel(current)} do plano passam a ter o recurso agora.`
                     : 'O plano não tem assinaturas atuais: vale para as próximas contratações.'}
+                  {otherPlans.length > 0 && (affected ?? 0) > 0
+                    ? ` Ao todo, ${subscriptionsLabel(affected ?? 0)} passam a ter o recurso agora.`
+                    : null}
                 </p>
               ) : !needsChoice ? (
                 <p>
@@ -323,20 +414,28 @@ export function ConfirmFeatureDialog({
             onClick={onClose}
             disabled={saving}
           >
-            Cancelar
+            {blockedBy ? 'Fechar' : 'Cancelar'}
           </Button>
-          <Button type="button" onClick={handleConfirm} disabled={!canConfirm}>
-            {saving ? (
-              <span className="flex items-center gap-1">
-                <IconLoader size={16} className="animate-spin" />
-                Salvando...
-              </span>
-            ) : request?.enabled ? (
-              'Incluir'
-            ) : (
-              'Retirar'
-            )}
-          </Button>
+          {!blockedBy && (
+            <Button
+              type="button"
+              onClick={handleConfirm}
+              disabled={!canConfirm}
+            >
+              {saving ? (
+                <span className="flex items-center gap-1">
+                  <IconLoader size={16} className="animate-spin" />
+                  Salvando...
+                </span>
+              ) : !request?.enabled ? (
+                'Retirar'
+              ) : otherPlans.length > 0 ? (
+                `Incluir em ${otherPlans.length + 1} planos`
+              ) : (
+                'Incluir'
+              )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -349,13 +448,15 @@ function successMessage(
   removing: boolean,
   scope: Scope,
   cascadeCount: number,
+  otherPlans: { planName: string }[],
 ) {
   const extra =
     cascadeCount > 0
       ? ` (e ${pluralize(cascadeCount, 'recurso dependente', 'recursos dependentes')})`
       : ''
   if (!removing) {
-    return `"${request.featureName}"${extra} incluído no plano ${request.planName}.`
+    const alsoIn = otherPlans.length > 0 ? ` e em ${planNames(otherPlans)}` : ''
+    return `"${request.featureName}"${extra} incluído no plano ${request.planName}${alsoIn}.`
   }
   if (current === 0) {
     return `"${request.featureName}"${extra} retirado do plano ${request.planName}.`

@@ -18,8 +18,11 @@ import type {
  * Usa o `domainCall` para preservar o código de domínio do erro, que o painel
  * usa para decidir o que fazer: CHOICE_REQUIRED (falta dizer se a retirada
  * atinge as assinaturas atuais), DEPENDENCY_REQUIRED (falta confirmar a
- * cascata), PASSWORD_REQUIRED / INVALID_PASSWORD e PREVIEW_CHANGED (a
- * contagem de assinaturas mudou desde a prévia).
+ * cascata, com os planos em `details.plans`), LOWER_PLAN_HAS_FEATURE (a
+ * retirada esbarra num plano de baixo que tem o recurso), NOT_CUMULATIVE (o
+ * restaurar padrão quebraria a regra cumulativa, com `details.violations`),
+ * PASSWORD_REQUIRED / INVALID_PASSWORD e PREVIEW_CHANGED (a contagem de
+ * assinaturas mudou desde a prévia).
  */
 
 export async function fetchPlanMatrix() {

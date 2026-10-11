@@ -21,7 +21,11 @@ import {
   fetchPlanDefaultsDiff,
   restorePlanDefaults,
 } from '@/actions/planConfig'
-import type { PlanMatrixPlan } from '@/types/planConfig'
+import type {
+  CumulativeViolation,
+  PlanMatrix,
+  PlanMatrixPlan,
+} from '@/types/planConfig'
 
 import {
   HISTORY_QUERY_KEY,
@@ -47,12 +51,24 @@ export function RestoreDefaultsDialog({
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  // 422 NOT_CUMULATIVE: o padrão deixaria um plano de cima sem o que o de
+  // baixo tem. Nada foi alterado.
+  const [violations, setViolations] = useState<CumulativeViolation[] | null>(
+    null,
+  )
 
   useEffect(() => {
     setScope('')
     setPassword('')
     setError(null)
+    setViolations(null)
   }, [plan])
+
+  /** O nome do recurso pela matriz já carregada; sem ela, a chave. */
+  const featureName = (key: string) =>
+    queryClient
+      .getQueryData<PlanMatrix>(MATRIX_QUERY_KEY)
+      ?.features.find((feature) => feature.key === key)?.name ?? key
 
   const diffQuery = useQuery({
     queryKey: ['plan-defaults-diff', plan?.id],
@@ -87,6 +103,7 @@ export function RestoreDefaultsDialog({
   const canConfirm =
     !!diff &&
     !diff.noChange &&
+    !violations &&
     !saving &&
     affected !== null &&
     (!needsPassword || password.trim().length > 0)
@@ -109,6 +126,14 @@ export function RestoreDefaultsDialog({
         queryClient.invalidateQueries({ queryKey: HISTORY_QUERY_KEY })
         onClose()
         return
+      }
+      if (res.code === 'NOT_CUMULATIVE') {
+        const list =
+          (res.details?.violations as CumulativeViolation[] | undefined) ?? []
+        if (list.length > 0) {
+          setViolations(list)
+          return
+        }
       }
       if (res.code === 'PREVIEW_CHANGED') {
         setScope('')
@@ -238,6 +263,30 @@ export function RestoreDefaultsDialog({
               )}
             </>
           ) : null}
+
+          {violations && (
+            <div
+              className="rounded-lg border border-warning-200 bg-warning-50 p-3 text-warning-800"
+              role="alert"
+            >
+              <p className="font-medium">
+                Restaurar o padrão deixaria a matriz fora da regra cumulativa (o
+                plano de cima inclui tudo o que os de baixo têm). Nada foi
+                alterado.
+              </p>
+              <ul className="mt-1 list-disc pl-5">
+                {violations.map((violation) => (
+                  <li
+                    key={`${violation.lowerPlan.planId}-${violation.higherPlan.planId}`}
+                  >
+                    O {violation.higherPlan.planName} não tem{' '}
+                    {violation.keys.map(featureName).join(', ')}, que o{' '}
+                    {violation.lowerPlan.planName} tem.
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {error && (
             <p className="text-sm text-error-700" role="alert">
