@@ -5,6 +5,11 @@ on:
     branches:
       - dev
   workflow_dispatch:
+    inputs:
+      demonstracao:
+        description: 'Telas em implantação (dados de exemplo). Desligue para a rodada de regressão das telas reais antes de um trem para produção.'
+        type: boolean
+        default: true
 
 jobs:
   deploy:
@@ -13,8 +18,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Versão fixa, a mesma do deploy de produção
       - name: Install Vercel CLI
-        run: npm install --global vercel
+        run: npm install --global vercel@63.1.0
 
       - name: Pull Vercel Project Info
         run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
@@ -25,14 +31,15 @@ jobs:
       # Telas em implantação (dados de exemplo) e marcas de revisão: só em
       # homolog. São variáveis de build do Next, declaradas aqui para ficarem
       # versionadas; o deploy.yml de produção recusa o build se encontrar
-      # alguma delas ligada. Ver "Telas em implantação" no README.
+      # alguma delas ligada. Ver "Telas em implantação" no README. Rodado à
+      # mão com "demonstracao" desligado, homolog sobe sem elas, como produção.
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          NEXT_PUBLIC_DEMO_DATA: 'on'
-          NEXT_PUBLIC_REVIEW_MARKS: 'on'
+          NEXT_PUBLIC_DEMO_DATA: ${{ github.event_name == 'workflow_dispatch' && !inputs.demonstracao && 'off' || 'on' }}
+          NEXT_PUBLIC_REVIEW_MARKS: ${{ github.event_name == 'workflow_dispatch' && !inputs.demonstracao && 'off' || 'on' }}
 
       # O deployment carrega o metadado de branch (dev), então a Vercel atribui
       # homolog.atrupe.com.br automaticamente por ser branch domain da dev.

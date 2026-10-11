@@ -86,16 +86,22 @@ A aplicação estará disponível em [http://localhost:3000](http://localhost:30
 
 Parte das telas novas ainda roda sobre dados de exemplo em memória (as actions marcadas `PROVISÓRIO` em `src/actions`): base de custos, precificação, patrimônios, materiais, processos, composição, gerenciador de produção, projetos, produtividade, estoque e as versões novas de contas bancárias, controle de caixa, frente de caixa e configuração da folha. Elas ficam atrás da flag de build `NEXT_PUBLIC_DEMO_DATA` (`src/lib/demo.ts`).
 
-- **Onde ligar:** só em homolog e local, com `NEXT_PUBLIC_DEMO_DATA=on`. Em homolog quem liga é o `deploy-homolog.yml`, no passo de build; em local, o `.env.local`. O Next embute a variável no build, e o build de produção sai sem ela: o `deploy.yml` para o deploy se encontrar a flag ligada no ambiente Production da Vercel.
+- **Onde ligar:** só em homolog e local, com `NEXT_PUBLIC_DEMO_DATA=on`. Em homolog quem liga é o `deploy-homolog.yml`, no passo de build (rodado à mão com `demonstracao` desligado, homolog sobe sem a flag, para a rodada de regressão das telas reais); em local, o `.env.local`. O valor é fixado no build (`next.config.mjs`, `env`) e embutido nos pacotes do navegador, do servidor e do middleware: o servidor não lê a flag do ambiente de execução. O `deploy.yml` faz o build de produção com as duas flags em `off` e para o deploy se encontrar alguma ligada no ambiente Production da Vercel.
 - **O que some sem a flag:** as rotas de `DEMO_ROUTES` (`src/config/routes.ts`) e o `/sandbox` respondem "página não encontrada"; os itens do menu e os cartões de configuração marcados `demo` não aparecem; as actions de exemplo devolvem vazio na leitura e "Recurso em implantação" na gravação; contas bancárias, controle de caixa, frente de caixa e configuração da folha abrem as telas reais; e a venda rápida abre o formulário do orçamento.
 - **Com a flag:** o estado dos dados de exemplo é compartilhado entre as contas e some quando o servidor reinicia.
 - **Saída:** por módulo. Quando a API de uma tela existir, a guarda sai das actions dela, a rota sai de `DEMO_ROUTES` e o item do menu perde o `demo: true`.
 
 As marcas de revisão (azul e vermelho no menu e nos títulos, a legenda e os cartões de recurso a desenvolver) seguem a mesma regra, com `NEXT_PUBLIC_REVIEW_MARKS=on`.
 
-Nos testes e2e, os specs de UI dessas telas levam `@mock` no título e só valem contra um alvo com a flag (`npx playwright test --grep @mock`). O `e2e/fronteira.spec.ts` (`--grep @fronteira`) confere, num build sem a flag, que nada disso vaza; contra um alvo com a flag, declare `NEXT_PUBLIC_DEMO_DATA=on` no ambiente do teste e ele é pulado.
+Nos testes e2e, os specs de UI dessas telas levam `@mock` no título e só valem contra um alvo com a flag (`npx playwright test --grep @mock`). O `e2e/fronteira.spec.ts` confere, num build sem a flag, que nada disso vaza: as rotas de demonstração respondem "não encontrada" (inclusive com ponto no segmento), o menu não leva a elas com uma sessão de todas as chaves de plano e nenhuma tela real mostra a versão de demonstração (marcada com `data-demo`) nem nome de exemplo. Roda pela config própria, com o build já feito, uma API de mentira e uma sessão de teste, sem homolog nem conta:
 
-Na CI (`e2e.yml`, a cada push em `dev`) são dois jobs. O `e2e-tests` roda contra homolog sem os specs `@mock` e `@captura`; os `@mock` entram com a conta padrão dos testes, então só passam quando ela tem as chaves até o FULL, e aí basta criar a variável de repositório `E2E_INCLUDE_MOCK=true`. O `fronteira` faz um build sem a flag no próprio runner, sobe esse build contra a API de homolog e roda a suíte `@fronteira`.
+```bash
+node scripts/check-demo-guards.mjs        # toda action de exemplo começa pela guarda da flag
+NEXT_PUBLIC_DEMO_DATA=off AUTH_SECRET=x API_URL=http://localhost:9999 npx next build
+AUTH_SECRET=x npx playwright test -c playwright.fronteira.config.ts
+```
+
+Na CI, o `e2e.yml` (a cada push em `dev`) tem dois jobs. O `e2e-tests` roda contra homolog sem os specs `@mock` e `@captura`; os `@mock` entram com a conta padrão dos testes, então só passam quando ela tem as chaves até o FULL, e aí basta criar a variável de repositório `E2E_INCLUDE_MOCK=true`. O `fronteira` chama o `fronteira.yml`, que faz a checagem das guardas, o build sem a flag, confere que a flag ficou embutida e roda a suíte pela config própria, tudo no runner. O `deploy.yml` chama o mesmo `fronteira.yml` e só publica em produção se ele passar.
 
 ## 📐 Design e contrato da API
 

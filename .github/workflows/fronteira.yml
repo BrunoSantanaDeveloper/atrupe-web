@@ -1,0 +1,70 @@
+name: Fronteira do mock
+
+# Num build SEM a flag de demonstração, como o de produção, nenhuma tela,
+# dado ou ação de exemplo pode aparecer (README, "Telas em implantação").
+# Roda inteiro no runner, sem homolog nem conta de teste: o build sobe com uma
+# API de mentira e uma sessão de teste com todas as chaves de plano
+# (playwright.fronteira.config.ts). Chamado pelo e2e.yml (push em dev) e pelo
+# deploy.yml, que só publica em produção se ele passar.
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  fronteira:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_DEMO_DATA: 'off'
+      NEXT_PUBLIC_REVIEW_MARKS: 'off'
+      NEXT_PUBLIC_ENV: development
+      # O GTM é o mesmo em todo ambiente: um id que não existe evita mandar
+      # as visitas do teste para o container de produção
+      NEXT_PUBLIC_GTM_ID: GTM-0000000
+      NEXT_PUBLIC_APP_URL: http://localhost:3100
+      API_URL: http://localhost:9999
+      AUTH_TRUST_HOST: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+
+      # Só vale para este runner: o mesmo valor no build, no servidor e na
+      # sessão de teste
+      - name: Segredo de sessão descartável
+        run: echo "AUTH_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
+      - name: Toda action de exemplo começa pela guarda da flag
+        run: node scripts/check-demo-guards.mjs
+
+      - name: Build sem a flag de demonstração
+        run: npx next build
+
+      # Com a flag fixada no build (next.config.mjs), o servidor e o
+      # middleware não leem mais a variável do ambiente de execução
+      - name: A flag ficou embutida no build
+        run: |
+          if grep -rlF --exclude='*.map' "process.env.NEXT_PUBLIC_DEMO_DATA" .next/server .next/static; then
+            echo "::error::O build ainda lê NEXT_PUBLIC_DEMO_DATA em tempo de execução nos arquivos acima."
+            exit 1
+          fi
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Suíte da fronteira
+        run: npx playwright test -c playwright.fronteira.config.ts
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fronteira-report
+          path: |
+            playwright-report/
+            test-results/fronteira/
+          retention-days: 15

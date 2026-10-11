@@ -6,14 +6,23 @@ on:
       - main
 
 jobs:
+  # A fronteira do mock barra o deploy (plano 8.4): o build sem a flag não
+  # pode mostrar tela, dado nem ação de exemplo. Roda inteiro no runner, sem
+  # depender de homolog (fronteira.yml).
+  fronteira:
+    uses: ./.github/workflows/fronteira.yml
+
   deploy:
+    needs: fronteira
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Versão fixa: a que fez o último deploy verde de produção. Trocar
+      # quando for o caso, de propósito, e não a cada execução
       - name: Install Vercel CLI
-        run: npm install --global vercel
+        run: npm install --global vercel@63.1.0
 
       - name: Pull Vercel Project Info
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
@@ -33,11 +42,22 @@ jobs:
             exit 1
           fi
 
+      # As duas flags vão desligadas para o build, que as embute
+      # (next.config.mjs): o servidor de produção não as lê do ambiente
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_DEMO_DATA: 'off'
+          NEXT_PUBLIC_REVIEW_MARKS: 'off'
+
+      - name: A flag ficou embutida no build
+        run: |
+          if grep -rlF --exclude='*.map' "process.env.NEXT_PUBLIC_DEMO_DATA" .vercel/output; then
+            echo "::error::O build ainda lê NEXT_PUBLIC_DEMO_DATA em tempo de execução nos arquivos acima."
+            exit 1
+          fi
 
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

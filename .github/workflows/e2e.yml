@@ -8,6 +8,9 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -16,6 +19,31 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
+
+      # O push em dev dispara este workflow e o deploy-homolog.yml ao mesmo
+      # tempo: sem esperar, os testes pegavam a versão anterior de homolog.
+      # Espera o deploy deste mesmo commit terminar; se ele falhou, para aqui.
+      - name: Esperar o deploy de homolog deste commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 60); do
+            RUN=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow deploy-homolog.yml --commit "$GITHUB_SHA" --limit 1 --json status,conclusion --jq '.[0] | "\(.status) \(.conclusion)"' 2>/dev/null || true)
+            case "$RUN" in
+              "completed success")
+                echo "Deploy de homolog concluído"
+                exit 0
+                ;;
+              completed*)
+                echo "::error::O deploy de homolog deste commit terminou com: $RUN"
+                exit 1
+                ;;
+            esac
+            echo "Aguardando o deploy de homolog... ($i/60: ${RUN:-ainda não começou})"
+            sleep 15
+          done
+          echo "::error::O deploy de homolog deste commit não terminou em 15 minutos"
+          exit 1
 
       - name: Wait for Backend Health
         env:
@@ -39,8 +67,8 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       # Alvo: homolog, publicado COM a flag de demonstração (deploy-homolog.yml).
-      # - NEXT_PUBLIC_DEMO_DATA declara a flag do alvo: a suíte @fronteira, que
-      #   só vale num build sem a flag, é pulada aqui e roda no job abaixo.
+      # - NEXT_PUBLIC_DEMO_DATA declara a flag do alvo. A suíte @fronteira só
+      #   roda pela config dela, no job abaixo (fronteira.yml).
       # - @captura só grava imagens, sem asserção: fica fora da CI.
       # - @mock são os specs das telas em implantação. Entram com a conta
       #   padrão (E2E_USER_*), que precisa ter as chaves até o FULL. Enquanto
@@ -81,82 +109,7 @@ jobs:
             test-results/
           retention-days: 15
 
-  # Fronteira do mock: num build SEM a flag de demonstração, como o de
-  # produção, nenhuma tela, dado ou ação de exemplo pode aparecer. O build sobe
-  # no próprio runner e fala com a API de homolog; a suíte confere as rotas de
-  # demonstração (não encontrada), o menu e as telas reais.
+  # Fronteira do mock: o build sem a flag, no próprio runner, com API de
+  # mentira e sessão de teste; não depende de homolog (fronteira.yml)
   fronteira:
-    runs-on: ubuntu-latest
-    env:
-      API_URL: ${{ secrets.BACKEND_HOMOLOG_URL || 'https://dev.atrupe.com.br' }}
-      NEXT_PUBLIC_APP_URL: http://localhost:3000
-      NEXT_PUBLIC_ENV: development
-      AUTH_TRUST_HOST: 'true'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-      - run: npm ci
-
-      # Só vale para este runner: o mesmo valor no build e no servidor.
-      - name: Segredo de sessão descartável
-        run: echo "AUTH_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
-
-      - name: Build sem a flag de demonstração
-        run: |
-          if [ -n "${NEXT_PUBLIC_DEMO_DATA:-}" ] || [ -n "${NEXT_PUBLIC_REVIEW_MARKS:-}" ]; then
-            echo "::error::Este job confere o build sem a flag: NEXT_PUBLIC_DEMO_DATA e NEXT_PUBLIC_REVIEW_MARKS não podem estar definidas aqui."
-            exit 1
-          fi
-          npx next build
-
-      - name: Install Playwright Browsers
-        run: npx playwright install chromium --with-deps
-
-      # Sem a API, o front encerra a sessão e as telas reais não abrem.
-      - name: Wait for Backend Health
-        run: |
-          for i in $(seq 1 24); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/" || echo "000")
-            if [ "$STATUS" = "200" ] || [ "$STATUS" = "401" ]; then
-              echo "Backend homolog OK (HTTP $STATUS)"
-              break
-            fi
-            echo "Aguardando backend... (tentativa $i/24, HTTP $STATUS)"
-            sleep 5
-            if [ $i -eq 24 ]; then
-              echo "TIMEOUT: Backend de homolog não respondeu em 120s"
-              exit 1
-            fi
-          done
-
-      - name: Subir o build e rodar a suíte @fronteira
-        env:
-          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
-          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
-        run: |
-          npx next start -p 3000 > next-start.log 2>&1 &
-          for i in $(seq 1 30); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/login || echo "000")
-            if [ "$STATUS" = "200" ]; then break; fi
-            sleep 2
-          done
-          if [ "$STATUS" != "200" ]; then
-            echo "::error::O build não subiu em 60s (HTTP $STATUS)"
-            cat next-start.log
-            exit 1
-          fi
-          E2E_BASE_URL=http://localhost:3000 npx playwright test --reporter=github --grep @fronteira
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: fronteira-report
-          path: |
-            playwright-report/
-            test-results/
-            next-start.log
-          retention-days: 15
+    uses: ./.github/workflows/fronteira.yml
