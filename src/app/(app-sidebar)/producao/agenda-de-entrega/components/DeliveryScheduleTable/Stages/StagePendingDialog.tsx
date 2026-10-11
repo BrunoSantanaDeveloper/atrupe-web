@@ -27,7 +27,10 @@ import { useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Action
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
+
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -50,6 +53,7 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
   const { handleSubmit, reset } = form
 
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   useEffect(() => {
     if (rowData) reset({ pendingDescription: rowData.notes || '' })
@@ -58,11 +62,21 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
 
   const mutation = useMutation({
     mutationFn: (data: StagePendingType) =>
-      updateItem('productionStage', `${rowData?.id}`, {
-        status: rowData?.status === 'PENDING' ? rowData?.prevStatus : 'PENDING',
-        notes: rowData?.status === 'PENDING' ? '' : data.pendingDescription,
+      updateItemNew({
+        route: `/sale/production-stage/${rowData?.id}`,
+        data: {
+          status:
+            rowData?.status === 'PENDING' ? rowData?.prevStatus : 'PENDING',
+          notes: rowData?.status === 'PENDING' ? '' : data.pendingDescription,
+        },
       }),
-    onSuccess: () => {
+    onSuccess: (res) => {
+      if (!res.success) {
+        // Trocar o status da etapa é recurso de plano: o servidor recusa sem
+        // ele.
+        notifyActionError(res)
+        return
+      }
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
       toast.success('Status alterado!')
     },
@@ -72,7 +86,7 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
   })
 
   const onSubmit = async (data: StagePendingType) => {
-    await mutation.mutateAsync(data)
+    await mutation.mutateAsync(data).catch(() => notifyActionError(null))
   }
 
   const handleOpenChange = (openDialog: boolean) => {

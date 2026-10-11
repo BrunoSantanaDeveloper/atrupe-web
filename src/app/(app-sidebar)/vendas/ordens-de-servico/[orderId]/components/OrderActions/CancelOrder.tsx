@@ -49,6 +49,7 @@ import { useCancelReason } from '@/hooks/queries/useCancelReason'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props {
   data: OrderType
@@ -60,6 +61,7 @@ export function CancelOrder({ data }: Props) {
 
   const queryClient = useQueryClient()
   const { canRequestOrderCancellationReason } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const alertDialog = useAlertDialog()
 
@@ -90,7 +92,7 @@ export function CancelOrder({ data }: Props) {
       })
 
       if (!res?.success) {
-        toast.error(res?.message || 'Erro ao cancelar venda')
+        notifyActionError(res, 'Erro ao cancelar venda')
         return
       }
 
@@ -115,7 +117,8 @@ export function CancelOrder({ data }: Props) {
       data: { reasonId: reason },
     })
     if (!res.success) {
-      toast.error(res.message)
+      // Cancelar com motivo é recurso de plano: o servidor recusa sem ele.
+      notifyActionError(res)
       return
     }
 

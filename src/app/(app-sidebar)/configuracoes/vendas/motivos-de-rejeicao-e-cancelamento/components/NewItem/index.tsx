@@ -36,7 +36,10 @@ import type {
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { createItem, updateItem } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
+
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props extends SearchParamsType {
   type: ListCancelReasonType['type']
@@ -54,6 +57,7 @@ export function NewItemDialog({
   editMode,
 }: Props) {
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -70,13 +74,10 @@ export function NewItemDialog({
   const mutation = useMutation({
     mutationFn: (data: FormType) =>
       editMode
-        ? updateItem('cancelReasonRoute', rowData?.id || '', data)
-        : createItem({
-            route: 'cancelReasonRoute',
-            data,
-          }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
+        ? updateItemNew({ route: `/cancel-reason/${rowData?.id}`, data })
+        : createItemNew({ route: '/cancel-reason', data }),
+    onSuccess: (res) => {
+      if (res.success) queryClient.invalidateQueries()
     },
   })
 
@@ -90,15 +91,16 @@ export function NewItemDialog({
           type,
         }
 
-    await mutation
-      .mutateAsync(body)
-      .then(() => {
-        toast.success('Sucesso!')
-        handleOpenChange(false)
-      })
-      .catch((err) => {
-        toast.error(err.message)
-      })
+    const res = await mutation.mutateAsync(body).catch(() => null)
+
+    if (!res?.success) {
+      // Os motivos são recurso de plano: o servidor recusa sem ele.
+      notifyActionError(res)
+      return
+    }
+
+    toast.success('Sucesso!')
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (openDialog: boolean) => {

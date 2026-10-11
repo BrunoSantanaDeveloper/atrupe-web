@@ -24,7 +24,10 @@ import { IconCircleCheck, IconExclamationCircle } from '@tabler/icons-react'
 import type { QuotationStatusType } from '@/types/settings/quotationStatus'
 
 // Action
-import { deleteItem } from '@/actions/_cruds'
+import { deleteItemNew } from '@/actions/_cruds'
+
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props {
   open: boolean
@@ -35,24 +38,28 @@ export function DeleteAlertDialog(props: Props) {
   const { open, setOpen, rowData } = props
 
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const mutation = useMutation({
-    mutationFn: () => deleteItem('quotationStatusRoute', rowData?.id || ''),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
+    mutationFn: () => deleteItemNew({ route: `/sale/status/${rowData?.id}` }),
+    onSuccess: (res) => {
+      if (res.success) queryClient.invalidateQueries()
     },
   })
 
   const handleDeleteReason = async () => {
     if (!rowData) return
 
-    toast.promise(mutation.mutateAsync(), {
-      loading: 'Aguarde...',
-      success: () => {
-        return 'Sucesso!'
-      },
-      error: 'Ocorreu um erro',
-    })
+    const loadingToast = toast.loading('Aguarde...')
+    const res = await mutation.mutateAsync().catch(() => null)
+    toast.dismiss(loadingToast)
+
+    if (!res?.success) {
+      notifyActionError(res, 'Ocorreu um erro')
+      return
+    }
+
+    toast.success('Sucesso!')
   }
 
   const handleOpenChange = (openDialog: boolean) => {

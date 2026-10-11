@@ -20,7 +20,6 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { toast } from 'sonner'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -45,6 +44,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { sectorIcons } from '@/consts/sectors'
 
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
+
 interface Props extends SearchParamsType {}
 
 export function Main({ searchParams }: Props) {
@@ -67,6 +69,7 @@ export function Main({ searchParams }: Props) {
   const hasData = sectorsArray.length
 
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const handleSwitchChange = async (
     id: string,
@@ -83,7 +86,10 @@ export function Main({ searchParams }: Props) {
     })
 
     if (!res.success) {
-      toast.error(res.message)
+      // A chave volta a ficar livre: antes, ficava carregando para sempre.
+      setIsSwitching((prev) => prev.filter((switchingId) => switchingId !== id))
+      // Setores são recurso de plano: o servidor recusa sem ele.
+      notifyActionError(res)
       return
     }
 

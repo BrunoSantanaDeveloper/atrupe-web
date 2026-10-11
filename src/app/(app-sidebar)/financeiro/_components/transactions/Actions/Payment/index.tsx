@@ -55,6 +55,7 @@ import { updateItemNew } from '@/actions/_cruds'
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
 import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
@@ -91,6 +92,7 @@ export function PaymentDialog({
   const alertDialog = useAlertDialog()
 
   const { canCreatePaymentDifference, canCreateBankAccount } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const paymentConditionId = watch('paymentConditionId') || ''
   const bankId = watch('bankId') || ''
@@ -246,7 +248,8 @@ export function PaymentDialog({
       transactionDialogOpen?.(false)
       triggerLoading?.()
     } else {
-      toast.error(response.message)
+      // Lançar a diferença é recurso de plano: o servidor recusa sem ele.
+      notifyActionError(response)
     }
   }
 

@@ -43,6 +43,9 @@ import type {
 // Actions
 import { getData } from '@/actions/_cruds'
 
+// Hooks
+import { useNotifyPlanErrorOnce } from '@/hooks/usePlanErrorToast'
+
 // Libs
 import { formatToWeekDate } from '@/lib/formatDate'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -95,6 +98,9 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
     queryKey: ['financial-flow-list', searchParams],
     queryFn: () => getData({ route: '/financial/flow', filters }),
   })
+  // Filtrado por cliente ou fornecedor, o fluxo é a aba Financeiro do
+  // cadastro, recurso de plano: o servidor recusa sem ele.
+  useNotifyPlanErrorOnce(data)
 
   const transactionData: TransactionDataType[] = data?.data || []
   const hasData = transactionData.length

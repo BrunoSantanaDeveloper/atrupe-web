@@ -36,13 +36,14 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import { ListSectorDataType } from '@/types/settings/sector'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Consts
 import { sectorIcons } from '@/consts/sectors'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props extends SearchParamsType {
   open: boolean
@@ -66,6 +67,7 @@ const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
   const { canManageProductionStages } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const canConfigProductionStages = canManageProductionStages()
 
@@ -82,8 +84,14 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
   const mutation = useMutation({
     mutationFn: (data: FormType) =>
-      updateItem('sectorRoute', `${rowData?.id}`, data),
-    onSuccess: () => {
+      updateItemNew({ route: `/sector/${rowData?.id}`, data }),
+    onSuccess: (res) => {
+      if (!res.success) {
+        // Setores e etapas de produção são recursos de plano: o servidor
+        // recusa sem eles.
+        notifyActionError(res, 'Ocorreu um erro.')
+        return
+      }
       queryClient.invalidateQueries()
       toast.success('Setor atualizado!')
       handleOpenChange(false)

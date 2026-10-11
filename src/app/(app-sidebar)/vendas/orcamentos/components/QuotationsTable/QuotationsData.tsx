@@ -39,7 +39,7 @@ import type {
 } from '@/types/sales/quotation'
 
 // Actions
-import { getDataOld, deleteItemNew } from '@/actions/_cruds'
+import { getData, deleteItemNew } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -67,6 +67,7 @@ import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useNotifyPlanErrorOnce } from '@/hooks/usePlanErrorToast'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -97,8 +98,11 @@ export function QuotationsData({
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['quotation-list', searchParams],
-    queryFn: () => getDataOld({ route: 'quotationRoute', filters }),
+    queryFn: () => getData({ route: '/sale/quotation', filters }),
   })
+  // Filtrada pelo cliente, a lista é a aba Orçamentos do cadastro, recurso
+  // de plano: o servidor recusa sem ele.
+  useNotifyPlanErrorOnce(data)
 
   const { data: tagsList } = useQuotationTag()
 

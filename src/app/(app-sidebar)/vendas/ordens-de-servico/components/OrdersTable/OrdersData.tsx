@@ -34,7 +34,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld, getItem } from '@/actions/_cruds'
+import { getData, getItem } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -59,6 +59,7 @@ import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFil
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useNotifyPlanErrorOnce } from '@/hooks/usePlanErrorToast'
 import {
   FiscalEnvironmentBadge,
   resolveFiscalEnvironment,
@@ -137,8 +138,11 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['order-list', searchParams],
-    queryFn: () => getDataOld({ route: 'orderRoute', filters }),
+    queryFn: () => getData({ route: '/sale/order', filters }),
   })
+  // Filtrada pelo cliente, a lista é a aba Ordens de serviço do cadastro,
+  // recurso de plano: o servidor recusa sem ele.
+  useNotifyPlanErrorOnce(data)
 
   const orderArray: OrderListType[] = data?.data || []
   const hasData = orderArray.length

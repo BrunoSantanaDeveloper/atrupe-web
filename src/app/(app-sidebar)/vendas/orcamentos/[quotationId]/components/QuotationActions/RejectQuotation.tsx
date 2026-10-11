@@ -4,7 +4,6 @@
 import { useMemo, useState } from 'react'
 
 // UI
-import { toast } from 'sonner'
 import {
   Select,
   SelectItem,
@@ -47,6 +46,7 @@ import { useCancelReason } from '@/hooks/queries/useCancelReason'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 
 interface Props {
@@ -59,6 +59,7 @@ export function RejectQuotation({ data }: Props) {
 
   const queryClient = useQueryClient()
   const { canManageRejectionReasons } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const { data: reasonList } = useCancelReason('REJECTION')
 
@@ -78,7 +79,8 @@ export function RejectQuotation({ data }: Props) {
     const res = await createItemNew(requestObj)
 
     if (!res.success) {
-      toast.error(res.message)
+      // Rejeitar com motivo é recurso de plano: o servidor recusa sem ele.
+      notifyActionError(res)
     }
 
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })

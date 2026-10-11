@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 // Components
 import { toast } from 'sonner'
@@ -68,6 +69,7 @@ export function NewClientModal({
 }: Props) {
   const queryClient = useQueryClient()
   const { hasFinancialModule } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const [activeTab, setActiveTab] = useState('general')
   const [insertAnother, setInsertAnother] = useState(!editMode)
@@ -284,7 +286,9 @@ export function NewClientModal({
     }
 
     if (!res.success) {
-      toast.error(res.message)
+      // O limite de crédito e o responsável são recursos de plano: o
+      // servidor recusa sem eles.
+      notifyActionError(res)
       return
     }
 

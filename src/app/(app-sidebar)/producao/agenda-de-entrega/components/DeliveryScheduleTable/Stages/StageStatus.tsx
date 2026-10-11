@@ -27,8 +27,11 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { DeliveryScheduleType } from '@/types/production/deliverySchedule'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 import { stageStatusChange } from '@/consts/deliverySchedule'
+
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -47,13 +50,18 @@ export function StageStatusDropdown({
   const [open, setOpen] = useState(false)
 
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const router = useRouter()
 
   const mutation = useMutation({
     mutationFn: (status: string) =>
-      updateItem('productionStage', rowData.id, { status }),
-    onSuccess: () => {
+      updateItemNew({
+        route: `/sale/production-stage/${rowData.id}`,
+        data: { status },
+      }),
+    onSuccess: (res) => {
+      if (!res.success) return
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
       router.refresh()
     },
@@ -65,13 +73,18 @@ export function StageStatusDropdown({
       return
     }
 
-    toast.promise(mutation.mutateAsync(newStatus), {
-      loading: 'Aguarde...',
-      success: () => {
-        return 'Status alterado'
-      },
-      error: 'Ocorreu um erro',
-    })
+    const loadingToast = toast.loading('Aguarde...')
+    const res = await mutation.mutateAsync(newStatus).catch(() => null)
+    toast.dismiss(loadingToast)
+
+    if (!res?.success) {
+      // Trocar o status da etapa é recurso de plano: o servidor recusa sem
+      // ele.
+      notifyActionError(res, 'Ocorreu um erro')
+      return
+    }
+
+    toast.success('Status alterado')
   }
 
   return (

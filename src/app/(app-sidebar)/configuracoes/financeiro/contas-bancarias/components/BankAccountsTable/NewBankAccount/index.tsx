@@ -53,6 +53,7 @@ import type { BankAccountsType } from '@/types/financial/bank'
 // Hooks
 import { usePaymentConditions } from '@/hooks/queries/usePaymentConditions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 // Actions
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
@@ -81,6 +82,7 @@ export function NewBankAccountDialog({
 
   const queryClient = useQueryClient()
   const { canCreateBankAccount, hasFeature, canProvision } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
   // O switch "Controle de caixa" da conta é recurso de plano próprio.
   const canSwitchCashControl = hasFeature('bank_account_cash_control_switch')
 
@@ -143,7 +145,9 @@ export function NewBankAccountDialog({
       : await createItemNew({ route: '/bank/account', data })
 
     if (!res.success) {
-      toast.error(res.message)
+      // Criar conta, provisionar e o controle de caixa são recursos de
+      // plano: o servidor recusa sem eles.
+      notifyActionError(res)
       return
     }
 

@@ -55,6 +55,7 @@ import { useSession } from 'next-auth/react'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props {
   editMode?: boolean
@@ -75,6 +76,7 @@ export function NewCompany({
 
   const queryClient = useQueryClient()
   const { update } = useSession()
+  const { notifyActionError } = usePlanErrorToast()
 
   const form = useForm<CompanyFormType>({
     resolver: zodResolver(companySchema),
@@ -106,7 +108,10 @@ export function NewCompany({
       : await createItemNew({ route: '/company', data })
 
     if (!result.success) {
-      toast.error(result.message)
+      // O aviso de carregando ficava na tela para sempre.
+      toast.dismiss(loadingToast)
+      // Cadastrar outra empresa é recurso de plano: o servidor recusa sem ele.
+      notifyActionError(result)
       return
     }
 

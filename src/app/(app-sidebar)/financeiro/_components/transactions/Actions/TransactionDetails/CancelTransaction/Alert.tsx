@@ -41,6 +41,7 @@ import { FormType, schema, schemaWithReasons } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 const options = [
   { value: 'ERRO_INCLUSAO', label: 'Erro de inclusão' },
@@ -61,6 +62,7 @@ export function CancelAlertDialog(props: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { canManageCancelTransactionReasons } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const form = useForm<FormType>({
     resolver: zodResolver(
@@ -90,7 +92,9 @@ export function CancelAlertDialog(props: Props) {
     })
 
     if (!res.success) {
-      toast.error(res.message)
+      // Informar motivo ao cancelar é recurso de plano: o servidor recusa o
+      // motivo sem ele.
+      notifyActionError(res)
       return
     }
 

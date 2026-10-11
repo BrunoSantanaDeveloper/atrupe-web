@@ -45,6 +45,7 @@ import { useSession } from 'next-auth/react'
 import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { useNewClientStore } from '../store/useNewClientStore'
 import { useContactSources } from '@/hooks/queries/useContactSources'
 
@@ -75,6 +76,7 @@ export function NewQuotationModal({
   const { data: series } = useSerie(true)
   const { data: contactSources } = useContactSources()
   const { canManageMultipleCompanies } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
   const { setOnClientCreated } = useNewClientStore()
 
   const queryClient = useQueryClient()
@@ -194,7 +196,8 @@ export function NewQuotationModal({
       })
 
       if (!res.success) {
-        toast.error(res.message)
+        // A venda rápida é recurso de plano: o servidor recusa sem ele.
+        notifyActionError(res)
         return
       }
 
@@ -218,7 +221,7 @@ export function NewQuotationModal({
     })
 
     if (!res.success) {
-      toast.error(res.message || 'Erro ao criar orçamento, tente novamente')
+      notifyActionError(res, 'Erro ao criar orçamento, tente novamente')
       return
     }
 

@@ -19,7 +19,8 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { BankAccountsType } from '@/types/financial/bank'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteItem } from '@/actions/_cruds'
+import { deleteItemNew } from '@/actions/_cruds'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -29,10 +30,16 @@ interface Props extends SearchParamsType {
 
 export function DisableBankAccount({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const mutation = useMutation({
-    mutationFn: () => deleteItem('bankAccountRoute', rowData?.id || ''),
-    onSuccess: () => {
+    mutationFn: () => deleteItemNew({ route: `/bank/account/${rowData?.id}` }),
+    onSuccess: (res) => {
+      if (!res.success) {
+        // Excluir conta é recurso de plano: o servidor recusa sem ele.
+        notifyActionError(res, 'Ocorreu um erro.')
+        return
+      }
       queryClient.invalidateQueries()
       toast.success('Conta bancária excluída!')
     },

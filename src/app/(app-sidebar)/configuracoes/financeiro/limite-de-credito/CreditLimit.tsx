@@ -25,8 +25,9 @@ import { Accordion, AccordionTrigger } from '@/components/ui/accordion'
 import { AccordionContent, AccordionItem } from '@radix-ui/react-accordion'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { getDataOld, updateItem } from '@/actions/_cruds'
+import { getDataOld, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { extractConditions } from '@/app/(app-sidebar)/cadastros/clientes/components/NewClient/utils/ExtractConditions'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -67,6 +68,7 @@ export function CreditLimit() {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'person' | 'company'>('person')
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const { data: creditLimit } = useQuery<CreditLimitFormType>({
     staleTime: Infinity,
@@ -130,7 +132,19 @@ export function CreditLimit() {
       delete newData.person.paymentMethods
       delete newData.company.paymentMethods
 
-      await updateItem('creditLimitRoute', '', newData)
+      const res = await updateItemNew({
+        route: '/financial/credit-limit',
+        data: newData,
+      })
+
+      if (!res.success) {
+        // O limite de crédito é recurso de plano: o servidor recusa sem ele.
+        notifyActionError(
+          res,
+          'Erro ao atualizar limite de crédito, tente novamente',
+        )
+        return
+      }
 
       queryClient.invalidateQueries({
         queryKey: ['credit-limit'],

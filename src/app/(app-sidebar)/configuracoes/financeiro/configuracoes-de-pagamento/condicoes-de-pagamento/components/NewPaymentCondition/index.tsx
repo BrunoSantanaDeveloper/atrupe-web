@@ -37,6 +37,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 // Icons
 import {
@@ -63,6 +64,7 @@ export function NewPaymentCondition({
 
   const queryClient = useQueryClient()
   const { canManageBankTaxTransfer, hasFeature } = usePlanFeatures()
+  const { notifyActionError } = usePlanErrorToast()
 
   const canManageTaxInput = canManageBankTaxTransfer()
   const hasFiscalModule = hasFeature('nota_fiscal')
@@ -200,7 +202,8 @@ export function NewPaymentCondition({
       )
       handleOpenChange(false)
     } else {
-      toast.error(result.message)
+      // A taxa da operadora é recurso de plano: o servidor recusa sem ele.
+      notifyActionError(result)
     }
   }
 

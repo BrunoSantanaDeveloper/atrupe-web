@@ -34,8 +34,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { QuotationStatusType } from '@/types/settings/quotationStatus'
 
 // Actions
-import { createItem, updateItem } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { Badge } from '@/components/ui/badge'
+
+// Hooks
+import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 
 interface Props {
   editMode?: boolean
@@ -47,6 +50,7 @@ interface Props {
 export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false)
   const queryClient = useQueryClient()
+  const { notifyActionError } = usePlanErrorToast()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -64,23 +68,24 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
   const mutation = useMutation({
     mutationFn: (data: FormType) =>
       editMode
-        ? updateItem('quotationStatusRoute', rowData?.id || '', data)
-        : createItem({ route: 'quotationStatusRoute', data }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
+        ? updateItemNew({ route: `/sale/status/${rowData?.id}`, data })
+        : createItemNew({ route: '/sale/status', data }),
+    onSuccess: (res) => {
+      if (res.success) queryClient.invalidateQueries()
     },
   })
 
   const onSubmit = async (data: FormType) => {
-    await mutation
-      .mutateAsync(data)
-      .then(() => {
-        toast.success('Sucesso!')
-        handleOpenChange(false)
-      })
-      .catch((err) => {
-        toast.error(err.message)
-      })
+    const res = await mutation.mutateAsync(data).catch(() => null)
+
+    if (!res?.success) {
+      // Configurar status é recurso de plano: o servidor recusa sem ele.
+      notifyActionError(res)
+      return
+    }
+
+    toast.success('Sucesso!')
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (openDialog: boolean) => {
