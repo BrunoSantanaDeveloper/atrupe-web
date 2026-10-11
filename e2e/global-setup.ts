@@ -1,17 +1,19 @@
-import { chromium, type FullConfig } from '@playwright/test'
+import { chromium, type Browser, type FullConfig } from '@playwright/test'
 
-import { getTestCredentials } from './helpers/credentials'
+import {
+  TEST_PLANS,
+  getTestCredentials,
+  planStorageState,
+} from './helpers/credentials'
 
-async function globalSetup(config: FullConfig) {
-  // Pega a URL do projeto (que veio do E2E_BASE_URL no config) ou usa localhost
-  const baseURL = config.projects[0].use.baseURL ?? 'http://localhost:3000'
-
-  // Conta de smoke test — exigida via ambiente, sem fallback no repositório
-  const { email, password } = getTestCredentials()
-
-  console.log(`[E2E Setup] Autenticando em: ${baseURL} com ${email}`)
-
-  const browser = await chromium.launch()
+/** Entra pela tela de login e grava a sessão em `storagePath`. */
+async function login(
+  browser: Browser,
+  baseURL: string,
+  email: string,
+  password: string,
+  storagePath: string,
+) {
   const page = await browser.newPage()
 
   const response = await page.goto(`${baseURL}/login`)
@@ -51,8 +53,47 @@ async function globalSetup(config: FullConfig) {
   // Wait a bit for session to stabilize
   await page.waitForTimeout(2000)
 
-  await page.context().storageState({ path: './e2e/.auth/user.json' })
-  await browser.close()
+  await page.context().storageState({ path: storagePath })
+  await page.context().close()
+}
+
+async function globalSetup(config: FullConfig) {
+  // Pega a URL do projeto (que veio do E2E_BASE_URL no config) ou usa localhost
+  const baseURL = config.projects[0].use.baseURL ?? 'http://localhost:3000'
+
+  // Conta de smoke test — exigida via ambiente, sem fallback no repositório
+  const { email, password } = getTestCredentials()
+
+  console.log(`[E2E Setup] Autenticando em: ${baseURL} com ${email}`)
+
+  const browser = await chromium.launch()
+
+  try {
+    await login(browser, baseURL, email, password, './e2e/.auth/user.json')
+
+    // Uma sessão por plano com conta de teste (E2E_<PLANO>_EMAIL/PASSWORD),
+    // para os testes de parede e de portão por plano. Sem a credencial, o
+    // plano fica de fora e os testes dele são pulados.
+    for (const plan of TEST_PLANS) {
+      const credentials = getTestCredentials(plan)
+      if (!credentials) {
+        console.log(`[E2E Setup] Plano ${plan} sem credencial: pulado.`)
+        continue
+      }
+      console.log(
+        `[E2E Setup] Plano ${plan}: autenticando com ${credentials.email}`,
+      )
+      await login(
+        browser,
+        baseURL,
+        credentials.email,
+        credentials.password,
+        planStorageState(plan),
+      )
+    }
+  } finally {
+    await browser.close()
+  }
 }
 
 export default globalSetup
