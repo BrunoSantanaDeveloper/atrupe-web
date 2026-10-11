@@ -48,7 +48,6 @@ import { getData } from '@/actions/_cruds'
 // Libs
 import { formatToWeekDate } from '@/lib/formatDate'
 import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
-import { canceledInDay } from '@/lib/dayTotals'
 
 // Third-party
 import { toast } from 'sonner'
@@ -200,12 +199,10 @@ export function TransactionsData({ type, searchParams }: Props) {
                               <p>Previsto</p>
                             </div>
                             <p className="text-sm font-semibold ">
-                              {/* EC-12: desconta a movimentação cancelada
-                                  que a API ainda soma no total do dia */}
-                              {formatCurrencyToBrl(
-                                (group?.expectedRevenue || 0) -
-                                  canceledInDay(group, type, 'value'),
-                              )}
+                              {/* O expectedRevenue da API já deixa a
+                                  movimentação cancelada de fora: descontar
+                                  de novo dava o dobro (EC-12, CR-1) */}
+                              {formatCurrencyToBrl(group?.expectedRevenue)}
                             </p>
                           </div>
                         </div>

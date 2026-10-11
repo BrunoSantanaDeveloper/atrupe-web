@@ -10,7 +10,7 @@ Ordem sugerida: primeiro o que **corrige dinheiro errado**, depois o que **fecha
 
 | # | O que está errado | Onde |
 |---|---|---|
-| **EC-12** | **Totais do dia somam movimentação cancelada já recebida.** O resumo do topo mostra "Recebido R$ 0,00" e o total do dia continua somando a parcela cancelada. Os totais (`expectedRevenue`, `realizedRevenue`) vêm prontos de `/financial/flow`. **O front já contorna** descontando o cancelado que a listagem mostra — ao corrigir a API, **apagar `src/lib/dayTotals.ts`**, senão desconta duas vezes | Fluxo financeiro |
+| **EC-12** | **Totais do dia somam movimentação cancelada já recebida.** O resumo do topo mostra "Recebido R$ 0,00" e o total do dia continua somando a parcela cancelada. Os totais (`expectedRevenue`, `realizedRevenue`) vêm prontos de `/financial/flow`. **O front não contorna.** O desconto que o fork fez no "Previsto" de A receber e A pagar saiu na integração com o `app-web` (11/10/2026): o `expectedRevenue` daquela listagem já deixa o cancelado de fora, e o total saía descontado duas vezes (achado CR-1). O Fluxo financeiro é o do `app-web` e nunca descontou. Se algum total ainda somar o cancelado, a correção é na API | Fluxo financeiro |
 | **EC-18** | **Comissões e Resultado por setor contam a venda cancelada.** Mesma origem do EC-12, visto de outra tela | Relatórios |
 | **EC-19** | **"Relatório avançado" de vendas nunca funciona:** `GET /report/sales/pdf-data` responde 400 com `property periodBy should not exist`. **A listagem de vendas aceita o mesmo campo** — falta declará-lo no DTO do relatório | Relatório de vendas |
 
