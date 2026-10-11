@@ -3,7 +3,12 @@
 
 // Lib Imports
 import apiInstance from '@/lib/api'
-import { extractApiErrorMessage } from '@/lib/api-error-message'
+import {
+  FORBIDDEN_MESSAGE,
+  extractApiErrorMessage,
+  isGenericForbidden,
+  parsePlanError,
+} from '@/lib/api-error-message'
 import { defaultRoutes } from './routes'
 
 const defaultRoute = defaultRoutes()
@@ -110,13 +115,14 @@ export const getData = async ({
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
     const responseData = error?.response?.data
-    const responseMessage =
-      userMessage?.message ||
-      userMessage ||
-      responseData?.message ||
-      responseData?.data?.message ||
-      responseData?.data?.error ||
-      error?.message
+    const responseMessage = isGenericForbidden(responseData)
+      ? FORBIDDEN_MESSAGE
+      : userMessage?.message ||
+        userMessage ||
+        responseData?.message ||
+        responseData?.data?.message ||
+        responseData?.data?.error ||
+        error?.message
 
     return {
       success: false,
@@ -128,6 +134,7 @@ export const getData = async ({
       message: Array.isArray(responseMessage)
         ? responseMessage[0]
         : responseMessage || 'Erro desconhecido.',
+      planError: parsePlanError(responseData),
     }
   }
 }
@@ -179,12 +186,14 @@ export const getItem = async ({
     }
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    const userMessage = error?.response?.data?.userMessage
+    const payload = error?.response?.data
+    const userMessage = payload?.userMessage
 
     return {
       success: false,
       code: userMessage?.statusCode || 'unknown',
-      message: userMessage?.message || 'Erro desconhecido.',
+      message: extractApiErrorMessage(payload),
+      planError: parsePlanError(payload),
     }
   }
 }
@@ -210,12 +219,13 @@ export const createItem = async ({
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const rawData = error.response?.data
-    const extractedMsg =
-      rawData?.message ||
-      rawData?.data?.message ||
-      rawData?.userMessage?.message ||
-      error.message ||
-      'Erro ao processar requisição'
+    const extractedMsg = isGenericForbidden(rawData)
+      ? FORBIDDEN_MESSAGE
+      : rawData?.message ||
+        rawData?.data?.message ||
+        rawData?.userMessage?.message ||
+        error.message ||
+        'Erro ao processar requisição'
 
     const finalMsg = Array.isArray(extractedMsg)
       ? extractedMsg[0]
@@ -269,6 +279,7 @@ export const createItemNew = async ({
       status,
       code,
       message: extractApiErrorMessage(payload) || 'Erro desconhecido.',
+      planError: parsePlanError(payload),
     }
   }
 }
@@ -314,11 +325,16 @@ export const putItemNew = async ({
     }
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
+    const payload = error?.response?.data
 
     return {
       success: false,
-      message:
-        error?.response?.data?.message || 'Não foi possível salvar o item.',
+      // O corpo de erro não tem `message` na raiz: lendo só `data.message`,
+      // todo erro virava "Não foi possível salvar o item.".
+      message: payload
+        ? extractApiErrorMessage(payload)
+        : 'Não foi possível salvar o item.',
+      planError: parsePlanError(payload),
       data: null,
     }
   }
@@ -353,6 +369,7 @@ export const updateItemNew = async ({
       // O 400 do class-validator traz `message` como array; sem extrair, o
       // toast mostrava "Erro desconhecido." ou o array cru.
       message: extractApiErrorMessage(payload),
+      planError: parsePlanError(payload),
     }
   }
 }
@@ -390,12 +407,20 @@ export const deleteItemNew = async ({
     }
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    const userMessage = error?.response?.data?.userMessage
+    const payload = error?.response?.data
+    const userMessage = payload?.userMessage
 
     return {
       success: false,
-      code: userMessage?.statusCode || 500,
-      message: userMessage?.message || 'Erro desconhecido.',
+      // O 403 de plano não traz `statusCode` em `userMessage`: sem o status
+      // HTTP, voltava como 500.
+      code:
+        userMessage?.statusCode ||
+        payload?.statusCode ||
+        error?.response?.status ||
+        500,
+      message: extractApiErrorMessage(payload),
+      planError: parsePlanError(payload),
     }
   }
 }
@@ -420,12 +445,20 @@ export const deleteWithBody = async ({
     }
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    const userMessage = error?.response?.data?.userMessage
+    const payload = error?.response?.data
+    const userMessage = payload?.userMessage
 
     return {
       success: false,
-      code: userMessage?.statusCode || 500,
-      message: userMessage?.message || 'Erro desconhecido.',
+      // O 403 de plano não traz `statusCode` em `userMessage`: sem o status
+      // HTTP, voltava como 500.
+      code:
+        userMessage?.statusCode ||
+        payload?.statusCode ||
+        error?.response?.status ||
+        500,
+      message: extractApiErrorMessage(payload),
+      planError: parsePlanError(payload),
     }
   }
 }
