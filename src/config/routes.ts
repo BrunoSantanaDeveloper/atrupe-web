@@ -48,6 +48,46 @@ export const ALLOWED_WHEN_PARTIAL = [
 /** Rotas permitidas quando o trial expirou */
 export const ALLOWED_WHEN_TRIAL_EXPIRED = ['/logout', '/assinatura'] as const
 
+/**
+ * Rotas de demonstração: as telas novas que só existem sobre dados de exemplo
+ * (as actions PROVISÓRIO de src/actions). Sem a flag de demonstração
+ * (src/lib/demo.ts), o middleware responde "página não encontrada" para elas
+ * e para as subpáginas. Um segmento entre colchetes vale qualquer valor. A
+ * rota sai da lista quando a API dela estiver publicada.
+ */
+export const DEMO_ROUTES = [
+  '/base-de-custos',
+  '/precificacao',
+  '/estoque',
+  '/producao/gerenciador',
+  '/producao/projetos',
+  '/producao/produtividade',
+  '/configuracoes/producao',
+  '/configuracoes/empresa-e-sistema/patrimonios',
+  '/configuracoes/produtos/materiais',
+  '/configuracoes/produtos/processos',
+  '/configuracoes/produtos/[id]/composicao',
+  '/configuracoes/vendas/terceirizados',
+  '/configuracoes/vendas/venda-rapida',
+  '/vendas/orcamentos/[quotationId]/composicao',
+  '/vendas/orcamentos/[quotationId]/resultado',
+] as const
+
+/** O caminho é uma rota de demonstração ou uma subpágina dela */
+export const isDemoRoute = (pathname: string) => {
+  const path = pathname.split('/')
+
+  return DEMO_ROUTES.some((route) =>
+    route
+      .split('/')
+      .every((segment, index) =>
+        segment.startsWith('[')
+          ? !!path[index]
+          : segment === (path[index] ?? null),
+      ),
+  )
+}
+
 /** Páginas de destino */
 export const HOME_PAGE = '/dashboard'
 export const SYSTEM_HOME_PAGE = '/admin'

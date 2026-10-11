@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server'
 
 // Libs
 import { auth } from '@/lib/auth'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Config
 import {
@@ -14,6 +15,7 @@ import {
   SYSTEM_HOME_PAGE,
   SUBSCRIPTION_PAGE,
   BLOCKED_PAGE,
+  isDemoRoute,
 } from '@/config/routes'
 
 // Re-export para compatibilidade
@@ -38,6 +40,12 @@ export async function middleware(req: NextRequest) {
       : false
 
   const isFullBlocked = blockLevel === 'FULL'
+
+  // Tela de demonstração (dados de exemplo) sem a flag: responde "página não
+  // encontrada", com ou sem sessão, pelo mesmo caminho do /admin abaixo
+  if (!DEMO_DATA && isDemoRoute(pathname)) {
+    return NextResponse.rewrite(new URL('/pagina-nao-encontrada', req.url))
+  }
 
   // If the user is not logged in and is trying to access a private route, redirect to the login page
   const privateRoute = ![...GUEST_ROUTES, ...SHARED_ROUTES].some((route) =>
