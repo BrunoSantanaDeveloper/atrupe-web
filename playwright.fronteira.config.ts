@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test'
 // mentira e uma sessão de teste com todas as chaves de plano. Não depende de
 // homolog nem de conta de teste, por isso pode barrar o deploy de produção.
 //
-//   NEXT_PUBLIC_DEMO_DATA=off AUTH_SECRET=<qualquer> API_URL=http://localhost:9999 npx next build
+//   NEXT_PUBLIC_DEMO_DATA=off NEXT_PUBLIC_REVIEW_MARKS=off AUTH_SECRET=<qualquer> API_URL=http://localhost:9999 npx next build
 //   AUTH_SECRET=<o mesmo> npx playwright test -c playwright.fronteira.config.ts
 //
 // O build precisa já existir: a config sobe o `next start` dele.

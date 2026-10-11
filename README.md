@@ -97,7 +97,7 @@ Nos testes e2e, os specs de UI dessas telas levam `@mock` no título e só valem
 
 ```bash
 node scripts/check-demo-guards.mjs        # toda action de exemplo começa pela guarda da flag
-NEXT_PUBLIC_DEMO_DATA=off AUTH_SECRET=x API_URL=http://localhost:9999 npx next build
+NEXT_PUBLIC_DEMO_DATA=off NEXT_PUBLIC_REVIEW_MARKS=off AUTH_SECRET=x API_URL=http://localhost:9999 npx next build
 AUTH_SECRET=x npx playwright test -c playwright.fronteira.config.ts
 ```
 

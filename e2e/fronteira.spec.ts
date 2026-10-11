@@ -161,6 +161,12 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
       await page.goto(url)
       await page.waitForLoadState('networkidle')
 
+      // Controle positivo: a sessão de teste valeu e a tela real abriu. Sem
+      // ele, uma sessão recusada mandaria tudo para o login, e as asserções
+      // negativas abaixo passariam em vazio
+      expect(new URL(page.url()).pathname, `${url} abriu`).toBe(url)
+      await expect(page.locator('aside nav')).toBeVisible()
+
       const text = await page.locator('body').innerText()
       for (const name of [...EXAMPLE_NAMES, ...DEMO_TEXTS]) {
         expect(text, `"${name}" em ${url}`).not.toContain(name)
@@ -173,9 +179,12 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
 
   test('o menu não leva a tela de demonstração', async ({ page }) => {
     // Cada visita abre o grupo do menu da rota, onde os itens novos ficariam
-    const groups: { path: string; hidden: string[] }[] = [
+    // `shown` é o controle positivo: um item real do mesmo grupo, que tem
+    // de estar lá (sem ele, o menu vazio de uma sessão recusada passaria)
+    const groups: { path: string; shown: string; hidden: string[] }[] = [
       {
         path: '/producao/agenda-de-entrega',
+        shown: '/producao/agenda-de-entrega',
         hidden: [
           '/producao/gerenciador',
           '/producao/projetos',
@@ -184,6 +193,7 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
       },
       {
         path: '/cadastros/clientes',
+        shown: '/configuracoes/produtos',
         hidden: [
           '/configuracoes/produtos/materiais',
           '/configuracoes/produtos/processos',
@@ -191,6 +201,7 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
       },
       {
         path: '/configuracoes/empresa-e-sistema',
+        shown: '/configuracoes/empresa-e-sistema',
         hidden: ['/configuracoes/producao'],
       },
     ]
@@ -198,6 +209,9 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
     for (const group of groups) {
       await page.goto(group.path)
       await page.waitForLoadState('networkidle')
+      await expect(
+        page.locator(`aside nav a[href="${group.shown}"]`),
+      ).toHaveCount(1)
       for (const href of group.hidden) {
         await expect(page.locator(`aside nav a[href="${href}"]`)).toHaveCount(0)
       }
