@@ -181,87 +181,92 @@ export function FinishQuotation({ data, canFinish }: Props) {
     confirmFinish()
   }
 
-  if (!canFinish) return null
-
   return (
     <>
-      <CustomButton
-        icon={IconCircleCheck}
-        title="Concluir orçamento"
-        iconVariant="lightBlueBorderedLight"
-        onClick={handleFinish}
-      />
+      {/* Só em digitação. O diálogo de sucesso e a impressão ficam fora: o
+          refetch depois de concluir traz o status DONE, e eles não podem
+          sumir junto com o botão (CV-4) */}
+      {canFinish && (
+        <>
+          <CustomButton
+            icon={IconCircleCheck}
+            title="Concluir orçamento"
+            iconVariant="lightBlueBorderedLight"
+            onClick={handleFinish}
+          />
 
-      {/* O aviso do que falta, antes de concluir */}
-      <AlertDialog open={openWarning} onOpenChange={setOpenWarning}>
-        <AlertDialogContent className="max-w-md">
-          <AlertDialogHeader>
-            <FeaturedIcon
-              Icon={IconAlertTriangle}
-              rounded
-              size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
-            />
-            <AlertDialogTitle>Concluir mesmo assim?</AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2 text-left">
-                {missing.map((text) => (
-                  <p
-                    key={text}
-                    className="rounded-lg bg-warning-50 px-3 py-2 text-sm text-warning-700"
-                  >
-                    {text}
-                  </p>
-                ))}
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-wrap">
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={finish} RightIcon={IconCircleCheck}>
-              Concluir mesmo assim
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          {/* O aviso do que falta, antes de concluir */}
+          <AlertDialog open={openWarning} onOpenChange={setOpenWarning}>
+            <AlertDialogContent className="max-w-md">
+              <AlertDialogHeader>
+                <FeaturedIcon
+                  Icon={IconAlertTriangle}
+                  rounded
+                  size="lg"
+                  variant="warningBorderedLight"
+                  className="mx-auto mb-2"
+                />
+                <AlertDialogTitle>Concluir mesmo assim?</AlertDialogTitle>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2 text-left">
+                    {missing.map((text) => (
+                      <p
+                        key={text}
+                        className="rounded-lg bg-warning-50 px-3 py-2 text-sm text-warning-700"
+                      >
+                        {text}
+                      </p>
+                    ))}
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter className="flex-wrap">
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={finish} RightIcon={IconCircleCheck}>
+                  Concluir mesmo assim
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
-      {/* As condições de pagamento, quando faltam ou as parcelas não fecham;
-          ao salvar, segue para concluir */}
-      <PaymentConditionsDialog
-        quotationData={data}
-        open={openPayment}
-        onOpenChange={setOpenPayment}
-        hideTrigger
-        onFinish={confirmFinish}
-      />
+          {/* As condições de pagamento, quando faltam ou as parcelas não
+              fecham; ao salvar, segue para concluir */}
+          <PaymentConditionsDialog
+            quotationData={data}
+            open={openPayment}
+            onOpenChange={setOpenPayment}
+            hideTrigger
+            onFinish={confirmFinish}
+          />
 
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent className="max-w-96">
-          <AlertDialogHeader>
-            <FeaturedIcon
-              Icon={loading ? IconLoader2 : IconAlertTriangle}
-              rounded
-              size="lg"
-              variant={
-                loading ? 'neutralBorderedLight' : 'warningBorderedLight'
-              }
-              className={cn('mx-auto mb-2', loading && 'animate-spin')}
-            />
-            <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {alertDialog.description}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            {!loading && (
-              <AlertDialogCancel onClick={handleClose}>
-                Fechar
-              </AlertDialogCancel>
-            )}
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+          <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogContent className="max-w-96">
+              <AlertDialogHeader>
+                <FeaturedIcon
+                  Icon={loading ? IconLoader2 : IconAlertTriangle}
+                  rounded
+                  size="lg"
+                  variant={
+                    loading ? 'neutralBorderedLight' : 'warningBorderedLight'
+                  }
+                  className={cn('mx-auto mb-2', loading && 'animate-spin')}
+                />
+                <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {alertDialog.description}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                {!loading && (
+                  <AlertDialogCancel onClick={handleClose}>
+                    Fechar
+                  </AlertDialogCancel>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      )}
 
       <AlertDialog open={openSuccess} onOpenChange={setOpenSuccess}>
         <AlertDialogContent className="max-w-96">
