@@ -152,9 +152,7 @@ export function QuotationsData({
           }
           if (!hasError) {
             toast.success(
-              ids.length > 1
-                ? 'Orçamentos excluídos com sucesso'
-                : 'Orçamento excluído com sucesso',
+              ids.length > 1 ? 'Orçamentos excluídos' : 'Orçamento excluído',
             )
           }
           queryClient.invalidateQueries({ queryKey: ['quotation-list'] })

@@ -245,7 +245,7 @@ export function ImportQuotationModal() {
       // Sucesso! Importação completa
       const successMsg =
         processResult.data.successRows > 0
-          ? `${processResult.data.successRows} orçamento(s) importado(s) com sucesso!`
+          ? `${processResult.data.successRows} orçamento(s) importado(s)`
           : 'Nenhum orçamento foi importado'
 
       if (processResult.data.successRows > 0) {
