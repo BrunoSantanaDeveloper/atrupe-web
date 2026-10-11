@@ -68,7 +68,9 @@ export function QuotationDelivery({ quotationData }: Props) {
               <div className="flex gap-3">
                 <TooltipProvider>
                   <PermissionGate permissions={['sale:quotation:edit']}>
-                    <DeliveryDialog quotationData={quotationData} />
+                    <PermissionGate permissions={['sale:quotation:edit']}>
+                      <DeliveryDialog quotationData={quotationData} />
+                    </PermissionGate>
                   </PermissionGate>
                 </TooltipProvider>
                 <AccordionTrigger

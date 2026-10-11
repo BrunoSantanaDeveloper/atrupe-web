@@ -68,6 +68,11 @@ interface Props {
   actionIcon?: ComponentProps<typeof CustomButton>['icon']
   actionIconVariant?: ComponentProps<typeof CustomButton>['iconVariant']
   submitLabel?: string
+  // Controlado de fora (06/10/2026): concluir e aprovar abrem o diálogo
+  // depois de avisar o que falta, sem um botão próprio dele na tela
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  hideTrigger?: boolean
 }
 
 export function PaymentConditionsDialog({
@@ -77,11 +82,19 @@ export function PaymentConditionsDialog({
   actionIcon = IconCircleCheck,
   actionIconVariant = 'lightBlueBorderedLight',
   submitLabel,
+  open: controlledOpen,
+  onOpenChange,
+  hideTrigger,
 }: Props) {
   // EC-17: desconto acima do limite do vendedor não salva
   const [exceedsDiscountLimit, setExceedsDiscountLimit] = useState(false)
 
-  const [open, setOpen] = useState(false)
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen ?? internalOpen
+  const setOpen = (value: boolean) => {
+    setInternalOpen(value)
+    onOpenChange?.(value)
+  }
 
   // const isFetching = useIsFetching()
 
@@ -219,29 +232,31 @@ export function PaymentConditionsDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <TooltipProvider>
-        <DialogTrigger asChild>
-          {onFinish ? (
-            <CustomButton
-              icon={actionIcon}
-              title={actionTitle}
-              iconVariant={actionIconVariant}
-            />
-          ) : (
-            <ActionButton
-              Icon={IconPencil}
-              tooltip="Editar condições de pagamento"
-              className={cn(
-                buttonVariants({ variant: 'neutralLight', size: 'icon' }),
-              )}
-              disabled={actionDisabled(
-                'paymentConditions',
-                quotationData?.status,
-              )}
-            />
-          )}
-        </DialogTrigger>
-      </TooltipProvider>
+      {!hideTrigger && (
+        <TooltipProvider>
+          <DialogTrigger asChild>
+            {onFinish ? (
+              <CustomButton
+                icon={actionIcon}
+                title={actionTitle}
+                iconVariant={actionIconVariant}
+              />
+            ) : (
+              <ActionButton
+                Icon={IconPencil}
+                tooltip="Editar condições de pagamento"
+                className={cn(
+                  buttonVariants({ variant: 'neutralLight', size: 'icon' }),
+                )}
+                disabled={actionDisabled(
+                  'paymentConditions',
+                  quotationData?.status,
+                )}
+              />
+            )}
+          </DialogTrigger>
+        </TooltipProvider>
+      )}
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">

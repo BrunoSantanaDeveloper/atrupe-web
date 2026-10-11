@@ -1421,6 +1421,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         </Text>
                         {printOptions.showDimensions &&
                           printOptions.showItemsDetails &&
+                          printOptions.showDetailValues !== false &&
                           item.product.compositions.map((comp) => (
                             <Text key={comp.id} style={styles.textComposition}>
                               {formatCurrencyToBrl(
@@ -1451,8 +1452,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         <Text style={styles.textRight}>
                           {formatCurrencyToBrl(item.finalValue)}
                         </Text>
+                        {/* Detalhado sem valores: a parte aparece sem preço
+                            (IP-12) */}
                         {printOptions.showDimensions &&
                           printOptions.showItemsDetails &&
+                          printOptions.showDetailValues !== false &&
                           item.product.compositions.map((comp) => (
                             <Text key={comp.id} style={styles.textComposition}>
                               {formatCurrencyToBrl(comp?.totalValue || 0)}

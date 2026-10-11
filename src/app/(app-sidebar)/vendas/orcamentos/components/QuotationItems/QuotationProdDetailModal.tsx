@@ -23,6 +23,7 @@ import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitO
 // Icon Imports
 import { PermissionGate } from '@/components/common/PermissionGate'
 import {
+  IconArrowLeft,
   IconCircleCheck,
   IconHelpCircle,
   IconPackage,
@@ -63,7 +64,10 @@ import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotati
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { SaleCompositionFields } from './SaleCompositionFields'
-import { saveItemComposition } from '@/actions/quotation-composition'
+import {
+  saveItemComposition,
+  recalculateItemLines,
+} from '@/actions/quotation-composition'
 import { getPriceTiers, getProductVariations } from '@/actions/product-assembly'
 import type { ItemComposition } from '../../[quotationId]/composicao/types'
 
@@ -301,6 +305,15 @@ export function QuotationProdDetailModal({
   const tiers = tiersRes?.data || []
   const itemQuantity = Number(watch('items.0.quantity') || 1)
   const itemUnitKind = watch('items.0.unitKind')
+  // Quantidade e medida do item para o aproveitamento de folha (AP-5): o
+  // formulário guarda milímetros; a composição calcula em metros
+  const compositionMeasure = {
+    quantity:
+      itemQuantity *
+      ((watch('items') || []).length > 1 ? Number(watch('quantity') || 1) : 1),
+    width: Number(watch('items.0.width') || 0) / 1000,
+    height: Number(watch('items.0.height') || 0) / 1000,
+  }
   const activeTier =
     tiers.length && (watch('items') || []).length === 1
       ? [...tiers]
@@ -435,8 +448,30 @@ export function QuotationProdDetailModal({
           composition,
         })
       }
+      // Mudou a medida do item: as linhas acrescentadas que acompanham a
+      // base são recalculadas; as de medida própria ficam (05/10/2026)
+      if (data?.productId) {
+        const first = data.items?.[0]
+        const recalculated = await recalculateItemLines({
+          quotationId: String(quotationId),
+          itemId: String(data.productId),
+          measure: {
+            quantity: Number(data.quantity || 1),
+            width: first?.width ? Number(first.width) / 1000 : 1,
+            height: first?.height ? Number(first.height) / 1000 : 1,
+          },
+        })
+        if (recalculated.success && recalculated.data?.changed) {
+          toast.info(
+            recalculated.data.changed === 1
+              ? 'Uma linha acrescentada foi recalculada com a medida nova'
+              : `${recalculated.data.changed} linhas acrescentadas foram recalculadas com a medida nova`,
+          )
+          queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
+        }
+      }
       handleToggleModal(false)
-      toast.success('Produto editado')
+      toast.success('Item editado')
       queryClient.invalidateQueries({
         queryKey: ['quotation-item-compositions'],
       })
@@ -467,6 +502,7 @@ export function QuotationProdDetailModal({
     }
 
     handleToggleModal(false)
+    toast.success('Item adicionado')
     queryClient.invalidateQueries({
       queryKey: [QUOTATION_DATA_QUERY_KEY],
     })
@@ -688,6 +724,7 @@ export function QuotationProdDetailModal({
                         product?.id || data?.product?.originalProductId
                       }
                       initial={editMode ? savedComposition : undefined}
+                      measure={compositionMeasure}
                       onChange={setComposition}
                     />
                   </div>
@@ -725,6 +762,20 @@ export function QuotationProdDetailModal({
                 }}
               >
                 Teste
+              </Button>
+            )}
+            {/* Ao adicionar, volta à lista para escolher outro produto */}
+            {!editMode && (
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconArrowLeft}
+                onClick={() => {
+                  reset()
+                  openChangeModal(true, 'productsList')
+                }}
+              >
+                Voltar
               </Button>
             )}
             <Button

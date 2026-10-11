@@ -89,6 +89,7 @@ import {
   unitAmountLabel,
   productDimensionObj,
   formulaInputs,
+  sellsByEquipment,
   type FormulaInput,
   type UnitKind,
   type ComputedLine,
@@ -142,7 +143,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 // Hooks / Store / Consts
 import { useSector } from '@/hooks/queries/useSector'
 import { usePermissions } from '@/hooks/usePermissions'
-import { sectorIconByName } from '@/consts/sectors'
+import { SectorIcon } from '@/components/common/SectorIcon'
 import {
   assemblyStatusObj,
   assemblyOverrideObj,
@@ -157,6 +158,8 @@ import type { ResourceKind, DimensionRule } from '../../../processos/types'
 import { ResourceKindButtons } from './ResourceKindButtons'
 import { ProductFields } from './ProductFields'
 import { ProductFormulas } from './ProductFormulas'
+import { SimulationCard } from './SimulationCard'
+import { useCompanySectors } from '@/hooks/queries/useCompanySectors'
 
 // Third-party
 import { toast } from 'sonner'
@@ -396,6 +399,7 @@ function AssemblyEditorBody({
   const seed = useMemo(() => seedFromProduct(catalogProduct), [catalogProduct])
   // Para nomear a etapa única do produto simples pelo setor do cadastro
   const { data: companySectors } = useSector()
+  const { sectors: registerSectors } = useCompanySectors()
 
   const { data, isLoading } = useQuery({
     // Espera o cadastro chegar, para a primeira composição já nascer dele
@@ -453,8 +457,9 @@ function AssemblyEditorBody({
     await refresh()
   }
 
-  // A etapa é do setor: todos os setores da empresa podem começar o produto
-  const baseSectors = resources?.sectors || []
+  // A etapa é do setor: todos os setores da empresa podem começar o produto.
+  // A lista é a do cadastro de setores (05/10/2026), não uma lista fixa
+  const baseSectors = registerSectors
   // O setor do produto no cadastro: é a etapa única do produto simples. O
   // cadastro devolve só o id; o nome vem da lista de setores da empresa
   const ownSector: string =
@@ -855,7 +860,6 @@ function AssemblyEditorBody({
   }
 
   const stageDetail = (item: ComputedBlock) => {
-    const SectorIcon = sectorIconByName(item.sector)
     // Os campos do orçamento que as linhas desta etapa leem (IP-4)
     const blockFields = Array.from(
       new Set(
@@ -874,8 +878,9 @@ function AssemblyEditorBody({
       >
         <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
           <div className="flex min-w-0 items-start gap-3">
-            {/* O setor em destaque: é ele que diz onde a etapa é produzida */}
-            <FeaturedIcon variant="light" Icon={SectorIcon} />
+            {/* O setor em destaque, na cor dele: é ele que diz onde a etapa
+                é produzida (área 9 §4.14) */}
+            <SectorIcon name={item.sector} size="lg" />
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="neutralLight">{item.sector}</Badge>
@@ -924,7 +929,14 @@ function AssemblyEditorBody({
                 {item.processId && (
                   <Badge variant="neutralLight">Processo cadastrado</Badge>
                 )}
+                {/* Inativar não tira a etapa do produto (PAD-7): fica a marca */}
+                {item.processInactive && (
+                  <Badge variant="warningLight">Processo inativo</Badge>
+                )}
                 {item.part && <Badge variant="blueLight">Parte</Badge>}
+                {item.partInactive && (
+                  <Badge variant="warningLight">Produto inativo</Badge>
+                )}
                 {item.variationOnly && (
                   <Badge
                     variant={assemblyOverrideObj.VARIATION_CHANGED.variant}
@@ -1148,6 +1160,13 @@ function AssemblyEditorBody({
             <PermissionGate permissions={EDIT}>
               <div className="px-6 pb-4">
                 <ResourceKindButtons
+                  disabled={
+                    sellsByEquipment(resources?.sectorSales, item.sector)
+                      ? {
+                          LABOR: `${item.sector} vende por ${resources?.sectorSales[item.sector]}: quem trabalha nele já está dentro do custo do equipamento. Não há linha de mão de obra deste setor; o acabamento feito por outro setor entra pela mão de obra dele.`,
+                        }
+                      : {}
+                  }
                   onPick={(lineKind) =>
                     setDialog({ kind: 'newLine', block: item, lineKind })
                   }
@@ -1316,6 +1335,13 @@ function AssemblyEditorBody({
                                 desta opção
                               </p>
                             )}
+                            {/* Pessoas multiplicam o tempo (IP-13) */}
+                            {line.kind === 'LABOR' &&
+                              (line.people || 1) > 1 && (
+                                <p className="text-xs text-gray">
+                                  × {line.people} pessoas
+                                </p>
+                              )}
                           </>
                         )}
                       </TableCell>
@@ -1663,15 +1689,10 @@ function AssemblyEditorBody({
                 </div>
 
                 <div className="min-w-0 flex-1 space-y-4">
-                  <div
-                    className={cn(
-                      'grid grid-cols-2 gap-4',
-                      assembly.unitKind !== 'AREA' &&
-                        assembly.unitKind !== 'UNITY'
-                        ? 'lg:grid-cols-5'
-                        : 'lg:grid-cols-4',
-                    )}
-                  >
+                  {/* Quantidade, largura e altura saíram daqui: são a
+                      medida da Simulação, com "Salvar como padrão" lá
+                      (PAD-6, 05/10/2026) */}
+                  <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                     <SelectBasic
                       name="assembly-unit"
                       label="Unidade comercial"
@@ -1686,28 +1707,6 @@ function AssemblyEditorBody({
                         )
                       }
                     />
-                    <div className="flex flex-col">
-                      <Label htmlFor="measure-quantity" className="mb-2">
-                        Quantidade
-                      </Label>
-                      <Input
-                        id="measure-quantity"
-                        type="number"
-                        min={0}
-                        step="1"
-                        value={measure.quantity}
-                        onChange={(event) =>
-                          setMeasure((current) =>
-                            current
-                              ? {
-                                  ...current,
-                                  quantity: Number(event.target.value) || 0,
-                                }
-                              : current,
-                          )
-                        }
-                      />
-                    </div>
                     {assembly.unitKind !== 'AREA' &&
                       assembly.unitKind !== 'UNITY' && (
                         <div className="flex flex-col">
@@ -1742,56 +1741,6 @@ function AssemblyEditorBody({
                           />
                         </div>
                       )}
-                    <div className="flex flex-col">
-                      <Label htmlFor="measure-width" className="mb-2">
-                        Largura
-                      </Label>
-                      <Input
-                        id="measure-width"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        endAdornment={
-                          <span className="text-sm text-gray">m</span>
-                        }
-                        value={measure.width}
-                        onChange={(event) =>
-                          setMeasure((current) =>
-                            current
-                              ? {
-                                  ...current,
-                                  width: Number(event.target.value) || 0,
-                                }
-                              : current,
-                          )
-                        }
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <Label htmlFor="measure-height" className="mb-2">
-                        Altura
-                      </Label>
-                      <Input
-                        id="measure-height"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        endAdornment={
-                          <span className="text-sm text-gray">m</span>
-                        }
-                        value={measure.height}
-                        onChange={(event) =>
-                          setMeasure((current) =>
-                            current
-                              ? {
-                                  ...current,
-                                  height: Number(event.target.value) || 0,
-                                }
-                              : current,
-                          )
-                        }
-                      />
-                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
@@ -1911,12 +1860,14 @@ function AssemblyEditorBody({
                       </div>
                     </PermissionGate>
                   </div>
-                  {assembly.unitKind !== 'AREA' && (
-                    <p className="text-sm text-gray">
-                      Largura e altura não mudam o valor de venda: servem para
-                      calcular a composição.
-                    </p>
-                  )}
+                  <p className="text-sm text-gray">
+                    Padrão de medidas: {num(saved.quantity)} ×{' '}
+                    {num(saved.width)} × {num(saved.height)} m. Para mudar,
+                    simule outra medida e use &quot;Salvar como padrão&quot;.
+                    {assembly.unitKind !== 'AREA'
+                      ? ' Largura e altura não mudam o valor de venda: servem para calcular a composição.'
+                      : ''}
+                  </p>
                 </div>
               </div>
 
@@ -1965,107 +1916,103 @@ function AssemblyEditorBody({
               </div>
             </CardContent>
           )}
-          {measureChanged && (
-            <CardFooter className="flex-wrap justify-between gap-3">
-              <p className="text-sm text-gray">
-                Simulando {num(measure.quantity)} × {num(measure.width)} ×{' '}
-                {num(measure.height)} m. O padrão é {num(saved.quantity)} ×{' '}
-                {num(saved.width)} × {num(saved.height)} m.
-              </p>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="neutralOutline"
-                  onClick={() => setMeasure(saved)}
-                >
-                  Voltar ao padrão
-                </Button>
-                <PermissionGate permissions={EDIT}>
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    onClick={() =>
-                      run(
-                        updateAssembly({ productId, values: { measure } }),
-                        'Padrão de medidas salvo',
-                      )
-                    }
-                  >
-                    Salvar como padrão
-                  </Button>
-                </PermissionGate>
-              </div>
-            </CardFooter>
-          )}
         </Card>
       )}
 
-      {/* 2. O resultado: custo e preço nesta medida. Só aparece quando a
-          composição tem etapa com custo salvo (pedido de 03/10/2026): antes
-          disso não há o que comparar, e o estado vazio do fluxo já diz que o
-          produto segue vendido pelo preço cadastrado */}
-      {assembly.blocks.length > 0 && assembly.cost > 0 && (
-        <PermissionGate permissions={['values:values:view']}>
-          <Card>
-            <CardContent className="grid grid-cols-2 gap-4 px-6 py-5 md:grid-cols-4">
-              <div>
-                <p className="type-kpi-label">Custo nesta medida</p>
-                <p className="type-kpi-value">{money(assembly.cost)}</p>
-              </div>
-              <div>
-                <p className="type-kpi-label">Preço de venda nesta medida</p>
-                <p className="type-kpi-value">
-                  {money(assembly.priceForMeasure)}
-                </p>
-              </div>
-              <div>
-                <p className="type-kpi-label">
-                  Sugerido pela composição · por {unitSymbol[assembly.unitKind]}
-                </p>
-                <p className="type-kpi-value">
-                  {money(assembly.suggestedUnitPrice)}
-                </p>
-                <p className="text-xs text-gray">
-                  {money(assembly.suggestedPrice)} nesta medida · soma do preço
-                  de venda de cada recurso
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray">Margem</p>
-                <p
-                  className={cn(
-                    'text-2xl font-semibold',
+      {/* 2. Simulação (PAD-6, 05/10/2026): a medida simulada e, quando a
+          composição tem etapa com custo, custo, preço, sugerido e margem
+          nessa medida. O mesmo desenho da Simulação do processo. A medida
+          padrão do produto só muda pelo "Salvar como padrão" */}
+      <SimulationCard
+        className={cn(embedded && 'order-first')}
+        idPrefix="measure"
+        description="Confira custo, preço e margem numa medida. Não grava nada: o padrão do produto só muda com “Salvar como padrão”."
+        measure={measure}
+        onMeasureChange={setMeasure}
+        emptyText="Os valores aparecem quando houver etapa com custo."
+        results={
+          assembly.blocks.length > 0 && assembly.cost > 0
+            ? [
+                { label: 'Custo', value: money(assembly.cost) },
+                {
+                  label: 'Preço de venda',
+                  value: money(assembly.priceForMeasure),
+                },
+                {
+                  label: `Sugerido · por ${unitSymbol[assembly.unitKind]}`,
+                  value: money(assembly.suggestedUnitPrice),
+                  help: `${money(assembly.suggestedPrice)} nesta medida · soma do preço de venda de cada recurso`,
+                },
+                {
+                  label: 'Margem',
+                  value:
+                    assembly.margin === null
+                      ? '-'
+                      : `${num(assembly.margin, 1)}%`,
+                  tone:
                     assembly.margin !== null && assembly.margin < 0
-                      ? 'text-error-700'
-                      : 'text-gray-900',
-                  )}
-                >
-                  {assembly.margin === null
-                    ? '-'
-                    : `${num(assembly.margin, 1)}%`}
-                </p>
-              </div>
-            </CardContent>
-            <CardFooter className="flex-wrap justify-between gap-3">
+                      ? 'error'
+                      : 'default',
+                },
+              ]
+            : []
+        }
+        footer={
+          measureChanged ||
+          (assembly.blocks.length > 0 && assembly.cost > 0) ? (
+            <>
               <p className="text-sm text-gray">
-                {assembly.margin !== null && assembly.margin < 0
-                  ? 'Nesta medida, o produto está sendo vendido abaixo do custo.'
-                  : 'Ter custo não muda o valor de venda: adotar o sugerido é uma decisão sua.'}
+                {measureChanged
+                  ? `Simulando ${num(measure.quantity)} × ${num(measure.width)} × ${num(measure.height)} m. O padrão é ${num(saved.quantity)} × ${num(saved.width)} × ${num(saved.height)} m.`
+                  : assembly.margin !== null && assembly.margin < 0
+                    ? 'Nesta medida, o produto está sendo vendido abaixo do custo.'
+                    : 'Ter custo não muda o valor de venda: adotar o sugerido é uma decisão sua.'}
               </p>
-              <PermissionGate permissions={EDIT}>
-                <Button
-                  type="button"
-                  variant="neutralOutline"
-                  disabled={assembly.unitPrice === assembly.suggestedUnitPrice}
-                  onClick={adoptSuggested}
-                >
-                  Adotar preço sugerido
-                </Button>
-              </PermissionGate>
-            </CardFooter>
-          </Card>
-        </PermissionGate>
-      )}
+              <div className="flex flex-wrap gap-2">
+                {measureChanged && (
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    onClick={() => setMeasure(saved)}
+                  >
+                    Voltar ao padrão
+                  </Button>
+                )}
+                <PermissionGate permissions={EDIT}>
+                  {measureChanged && (
+                    <Button
+                      type="button"
+                      variant="neutralOutline"
+                      onClick={() =>
+                        run(
+                          updateAssembly({ productId, values: { measure } }),
+                          'Padrão de medidas salvo',
+                        )
+                      }
+                    >
+                      Salvar como padrão
+                    </Button>
+                  )}
+                  {assembly.blocks.length > 0 && assembly.cost > 0 && (
+                    <PermissionGate permissions={['values:values:view']}>
+                      <Button
+                        type="button"
+                        variant="neutralOutline"
+                        disabled={
+                          assembly.unitPrice === assembly.suggestedUnitPrice
+                        }
+                        onClick={adoptSuggested}
+                      >
+                        Adotar preço sugerido
+                      </Button>
+                    </PermissionGate>
+                  )}
+                </PermissionGate>
+              </div>
+            </>
+          ) : null
+        }
+      />
 
       {/* Segunda parte (decisão de 30/09 e 02/10/2026): faixa de quantidade e
           variações ficam fora da tela enquanto a composição é acertada. O
@@ -2440,6 +2387,11 @@ function AssemblyEditorBody({
                     </TableCell>
                     <TableCell numeric className="whitespace-nowrap text-sm">
                       {amount(resource.quantity, resource.unit)}
+                      {(resource.people || 1) > 1 && (
+                        <span className="block text-xs text-gray">
+                          até {resource.people} pessoas ao mesmo tempo
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell numeric className="whitespace-nowrap text-sm">
                       <PermissionGate

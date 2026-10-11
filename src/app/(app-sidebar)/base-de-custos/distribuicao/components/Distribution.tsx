@@ -17,6 +17,7 @@ import {
 
 // Components
 import { DistributionData } from './DistributionData'
+import { SectorAllocations } from './SectorAllocations'
 import { AdministrativeCostTable } from './AdministrativeCostTable'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -166,6 +167,18 @@ export function Distribution() {
                 sectors={administrative}
                 total={administrativeCost}
               />
+              {/* Rateio por item (BC-8): o que já foi para os setores como
+                  custo próprio não entra no total a distribuir */}
+              {totals?.data?.allocatedByItem ? (
+                <p className="-mt-5 text-sm text-gray">
+                  Já sem{' '}
+                  <span className="font-medium text-gray-900">
+                    {formatCurrencyToBrl(totals.data.allocatedByItem)}
+                  </span>{' '}
+                  rateados por item em Despesas administrativas, que entraram
+                  como custo próprio dos setores.
+                </p>
+              ) : null}
               <DistributionData
                 sectors={productive}
                 percentages={percentages}
@@ -205,6 +218,7 @@ export function Distribution() {
           </>
         )}
       </Card>
+      <SectorAllocations />
     </div>
   )
 }

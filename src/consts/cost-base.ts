@@ -46,7 +46,31 @@ export const sectorCostOriginObj: { [key in SectorCostOrigin]: string } = {
 export const sectorAllocationObj = {
   ACQUISITION_VALUE: 'valor de aquisição',
   ACTIVITY_TIME: 'tempo de atividade',
+  MANUAL: 'percentual manual',
 }
+
+// Os três critérios na ordem da tela, com a explicação de cada um (BC-3,
+// BC-3.1). O valor de aquisição é a regra base
+export const allocationCriteria = [
+  {
+    value: 'ACQUISITION_VALUE',
+    label: 'Valor de aquisição',
+    description:
+      'Regra base. O equipamento mais caro recebe mais. Todo bem tem valor de aquisição, então o rateio nunca fica sem critério.',
+  },
+  {
+    value: 'ACTIVITY_TIME',
+    label: 'Tempo de atividade',
+    description:
+      'Pelo tempo que cada equipamento ocupa o setor no mês: tempo por unidade × produtividade de cada configuração.',
+  },
+  {
+    value: 'MANUAL',
+    label: 'Manual',
+    description:
+      'A empresa informa o percentual de cada equipamento. Não se atualiza sozinho quando o setor muda: revise ao comprar, vender ou mudar a produtividade de um bem.',
+  },
+] as const
 
 // Situação do patrimônio (P-9 e P-26). Inconsistência é erro de cadastro que
 // impede o custo de ser confiável, por isso vermelho.

@@ -108,6 +108,11 @@ export function SectorCostsData({ title, sectors, isDistributing }: Props) {
                       <p className="text-sm text-gray">
                         Rateio interno por{' '}
                         {sectorAllocationObj[sector.allocationCriterion]}
+                        {/* O manual não se atualiza sozinho quando o setor muda,
+                          por isso fica marcado (BC-3.1) */}
+                        {sector.allocationCriterion === 'MANUAL'
+                          ? ' · não se atualiza sozinho'
+                          : ''}
                       </p>
                     </TableCell>
                     <TableCell numeric>{formatValue(sector.labor)}</TableCell>

@@ -105,7 +105,9 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
               </div>
               <div className="flex gap-3">
                 <PermissionGate permissions={['sale:quotation:edit']}>
-                  <PaymentConditionsDialog quotationData={quotationData} />
+                  <PermissionGate permissions={['sale:quotation:edit']}>
+                    <PaymentConditionsDialog quotationData={quotationData} />
+                  </PermissionGate>
                 </PermissionGate>
                 <AccordionTrigger
                   className={cn(

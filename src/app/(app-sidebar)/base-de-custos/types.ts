@@ -5,6 +5,13 @@ export type CostCriterion =
   | 'AVG_12'
   | 'MANUAL'
 
+export type ExpenseAllocationShare = {
+  sectorId: string
+  sectorName: string
+  percentage: number
+  value: number
+}
+
 // Valores em centavos. `null` = sem histórico suficiente para o cálculo.
 export type AdminExpenseAccount = {
   id: string
@@ -18,6 +25,26 @@ export type AdminExpenseAccount = {
   criterion: CostCriterion
   manualValue: number | null
   referenceValue: number | null
+  // Rateio por item (BC-8): a parte de cada setor produtivo, o total rateado
+  // e o que sobra no administrativo
+  allocations: ExpenseAllocationShare[]
+  allocatedValue: number
+  remainder: number | null
+}
+
+// O diálogo de ratear uma despesa entre os setores produtivos (BC-8, BC-9)
+export type ExpenseAllocation = {
+  accountId: string
+  accountName: string
+  referenceValue: number
+  sectors: {
+    id: string
+    name: string
+    // Custo próprio do setor hoje, já com o que ele recebe desta e das outras
+    // despesas rateadas
+    ownCost: number | null
+    percentage: number
+  }[]
 }
 
 export type AdminExpenseGroup = {
@@ -37,6 +64,10 @@ export type AdminExpensesTotals = {
   byAverage: number
   manual: number
   referenceValue: number
+  // Rateado por item entre os setores produtivos, e o que fica no
+  // administrativo (BC-8)
+  allocatedValue: number
+  remainingValue: number
 }
 
 // A natureza vem do cadastro do setor (regras-de-negocio/areas/05-base-de-custos.md, BC-7)
@@ -59,7 +90,9 @@ export type DistributionResponse = {
 }
 
 export type DistributionTotals = {
+  // Já sem o que foi rateado por item (BC-8)
   administrativeCost: number
+  allocatedByItem: number
   distributedCost: number
   notDistributedCost: number
   receivingSectors: number
@@ -68,6 +101,12 @@ export type DistributionTotals = {
 // --- Aba Por setor ------------------------------------------------------
 // A tela para no custo: produtividade e custo unitário são da Precificação
 // (regras-de-negocio/areas/05-base-de-custos.md §9).
+
+// Critério do rateio do setor entre os seus equipamentos (BC-3, BC-3.1)
+export type AllocationCriterion =
+  | 'ACQUISITION_VALUE'
+  | 'ACTIVITY_TIME'
+  | 'MANUAL'
 
 export type SectorCostOrigin = 'LABOR' | 'ASSETS' | 'DEPRECIATION' | 'OTHER'
 
@@ -92,7 +131,7 @@ export type SectorCost = {
   receivedCost: number | null
   totalCost: number | null
   // Critério do rateio interno do setor entre as máquinas (BC-4)
-  allocationCriterion: 'ACQUISITION_VALUE' | 'ACTIVITY_TIME'
+  allocationCriterion: AllocationCriterion
   items: SectorCostItem[]
 }
 
@@ -211,4 +250,42 @@ export type ComparisonResponse = {
     withEstimate: number
     withoutEstimate: number
   }
+}
+
+// --- Rateio do setor entre os equipamentos ------------------------------
+// O custo do setor que não é de um equipamento detalhado (bens simplificados,
+// lançamentos diretos, administrativo recebido) é repartido entre os
+// equipamentos detalhados do setor (P-15, P-16) pelo critério que o setor
+// escolhe (BC-3, BC-3.1, BC-4).
+
+export type AllocationEquipment = {
+  id: string
+  name: string
+  acquisitionValue: number
+  // Tempo de atividade por mês, em horas: tempo por unidade × produtividade
+  // de cada configuração produtiva (BC-2)
+  activityHours: number
+  // Custo do próprio bem no mês: depreciação e custos cadastrados nele
+  ownCost: number
+  // Percentual que cada critério daria, para comparar (BC-3.1)
+  shares: { [key in AllocationCriterion]: number | null }
+  // Percentual em uso, pelo critério do setor
+  share: number
+  // Custo do bem no mês já com a parte do setor, e o custo-hora dele
+  monthlyCost: number
+  hourCost: number | null
+}
+
+export type SectorAllocation = {
+  sectorId: string
+  sectorName: string
+  criterion: AllocationCriterion
+  // O critério automático em uso antes do manual: é de onde os percentuais
+  // manuais nasceram
+  previousCriterion: Exclude<AllocationCriterion, 'MANUAL'> | null
+  // O custo do setor a repartir entre os equipamentos
+  pool: number
+  equipment: AllocationEquipment[]
+  // Bem sem tempo informado não recebe nada pelo tempo de atividade (ORG-33)
+  missingTime: string[]
 }

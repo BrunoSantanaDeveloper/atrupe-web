@@ -33,6 +33,7 @@ import type { QuotationItem } from '../types'
 
 // Actions
 import { getSaleComposition } from '@/actions/product-assembly'
+import { sheetUsageText } from '../../../components/QuotationItems/SaleCompositionFields'
 
 // Hooks / Store / Consts
 import { resourceKindObj } from '@/consts/processes'
@@ -218,6 +219,19 @@ export function CompositionReport({ item, onOpenChange }: Props) {
                           ) : (
                             line.resource || '-'
                           )}
+                          {/* Aproveitamento de folha (AP-5) */}
+                          {line.sheetYield ? (
+                            <p className="text-xs text-gray">
+                              {sheetUsageText({
+                                blockId: block.id,
+                                blockName: block.name,
+                                lineName: line.name,
+                                resource: line.resource || '',
+                                unit: line.unit,
+                                sheetYield: line.sheetYield,
+                              })}
+                            </p>
+                          ) : null}
                         </TableCell>
                         <TableCell className="whitespace-nowrap text-right text-sm">
                           {line.entries

@@ -38,6 +38,7 @@ import { MeasurementInput } from '@/components/common/form/global-inputs/product
 import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
+import { InactivateProductDialog } from './InactivateProductDialog'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -74,7 +75,6 @@ import {
 
 // Hooks
 import { useSector } from '@/hooks/queries/useSector'
-import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
 import { cn } from '@/lib/utils'
@@ -145,8 +145,9 @@ function NewProductModal({
 
   const [insertAnother, setInsertAnother] = useState(false)
   const [activeTab, setActiveTab] = useState<ProductTab>(initialTab)
-
-  const alertDialog = useAlertDialog()
+  // Inativar com "onde é usado" (PAD-7, 05/10/2026): o diálogo lista os
+  // produtos em que este é parte e os orçamentos abertos que o têm
+  const [inactivateOpen, setInactivateOpen] = useState(false)
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
@@ -413,40 +414,6 @@ function NewProductModal({
 
   function handleRemoveCompositionProducts(index: number) {
     items.remove(index)
-  }
-
-  const handleToggleStatus = async () => {
-    if (!productId) return
-
-    const confirmed = await alertDialog.open({
-      title: `Deseja ${isActive ? 'inativar' : 'ativar'} este produto?`,
-      description: isActive
-        ? 'O produto ficará indisponível para novos orçamentos e vendas.'
-        : 'O produto ficará disponível novamente para orçamentos e vendas.',
-      confirmLabel: isActive ? 'Inativar' : 'Ativar',
-      confirmVariant: isActive ? 'error' : 'default',
-      onConfirm: async () => {
-        const result = await createItemNew({
-          route: `/product/${productId}/toggle-status`,
-          data: {
-            isActive: !isActive,
-          },
-        })
-
-        if (!result.success) {
-          throw new Error(result.message)
-        }
-      },
-      toastMsg: {
-        loading: 'Aguarde...',
-        success: `Produto ${isActive ? 'inativado' : 'ativado'} com sucesso!`,
-        error: `Erro ao ${isActive ? 'inativar' : 'ativar'} produto`,
-      },
-    })
-
-    if (confirmed) {
-      await queryClient.invalidateQueries()
-    }
   }
 
   return (
@@ -788,7 +755,7 @@ function NewProductModal({
                   <Button
                     type="button"
                     variant={isActive ? 'errorOutline' : 'successOutline'}
-                    onClick={handleToggleStatus}
+                    onClick={() => setInactivateOpen(true)}
                   >
                     {isActive ? 'Inativar' : 'Ativar'}
                   </Button>
@@ -828,6 +795,17 @@ function NewProductModal({
             </div>
           </DialogFooter>
         </DialogContent>
+        {editMode && productId && (
+          <InactivateProductDialog
+            product={{
+              id: productId,
+              name: product?.name || 'este produto',
+              active: !!isActive,
+            }}
+            open={inactivateOpen}
+            onOpenChange={setInactivateOpen}
+          />
+        )}
       </Dialog>
     </PermissionGate>
   )

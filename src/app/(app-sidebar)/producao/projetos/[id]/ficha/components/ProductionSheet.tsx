@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { SectorIcon } from '@/components/common/SectorIcon'
 import { duration } from '../../../../gerenciador/components/TaskDetailDialog'
 
 // Actions
@@ -94,11 +95,18 @@ export function ProductionSheet({ id }: { id: string }) {
                     task.baseTaskId && 'ml-6 border-l-2 border-gray-300 pl-3',
                   )}
                 >
-                  <p className="type-eyebrow">
+                  {/* O setor na cor dele, também no papel (área 9 §4.14) */}
+                  <p className="type-eyebrow flex items-center gap-2">
+                    <SectorIcon name={task.sector} size="sm" />
                     {task.sector} – {task.stageName}
                     <span className="ml-2 font-mono text-xs font-normal text-gray">
                       #{task.code}
                     </span>
+                    {task.completedBy && (
+                      <span className="ml-2 text-xs font-normal normal-case text-gray">
+                        concluída por {task.completedBy}
+                      </span>
+                    )}
                   </p>
                   <p className="text-gray-700">
                     {task.measureText}
@@ -125,7 +133,20 @@ export function ProductionSheet({ id }: { id: string }) {
                   </table>
                   {task.note && (
                     <p className="mt-1 font-medium text-gray-900">
-                      Observação: {task.note}
+                      Observação de produção: {task.note}
+                    </p>
+                  )}
+                  {task.attachments.length > 0 && (
+                    <p className="mt-1 text-xs text-gray">
+                      Anexos:{' '}
+                      {task.attachments
+                        .map((attachment) => {
+                          const current = attachment.versions.find(
+                            (version) => version.current,
+                          )
+                          return `${attachment.name}${current ? ` v${current.version}` : ''}`
+                        })
+                        .join(' · ')}
                     </p>
                   )}
                 </div>

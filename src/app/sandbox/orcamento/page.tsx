@@ -3,6 +3,16 @@
 // Vitrine da lista de itens do orçamento (05/10/2026): o bloco Itens com um
 // orçamento de mentira, para conferir o desenho sem depender da API. As ações
 // que gravam (editar, valores, duplicar) chamam a API e falham aqui.
+//
+// 06/10/2026: a Fachada nasce com três linhas acrescentadas (processo que
+// acompanha a base, item pronto com medida própria e terceirizado avulso),
+// a Placa tem valor agregado, e há um item de material de venda direta. O
+// painel "Acrescentar a este item" funciona inteiro com o mock (processos e
+// produtos de exemplo); o modal "Adicionar item" abre, mas a lista de
+// produtos vem da API.
+//
+// 08/10/2026: o cartão de visita mostra o aproveitamento de folha na linha
+// (AP-5) e em "Ver a composição completa".
 
 import { QuotationItems } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems'
 import { QuotationProvider } from '@/contexts/quotationContext'
@@ -72,6 +82,30 @@ const quotation = {
       },
     },
     {
+      id: 'item-placa',
+      description: 'Placa em PVC 3 mm',
+      notes: '',
+      discountType: 'VALUE',
+      discount: -1000,
+      unitValue: 3900,
+      totalValue: 3900,
+      originalValue: 3900,
+      // Valor agregado (ALT-25): o vendedor subiu o valor para arredondar
+      finalValue: 5000,
+      allowEditDescription: true,
+      allowEditValues: true,
+      image: { url: '', original: true },
+      technicalDescription: '',
+      product: {
+        originalProductId: 'placa-pvc',
+        name: 'Placa PVC 3 mm',
+        quantity: 1,
+        unitValue: 3900,
+        finalValue: 5000,
+        compositions: [part('c6', 'Placa PVC 3 mm', 'UNITY', {}, 3900)],
+      },
+    },
+    {
       id: 'item-fachada',
       description: 'Fachada em ACM com letra caixa',
       notes: '',
@@ -102,6 +136,37 @@ const quotation = {
           ),
           part('c4', 'Ilhós', 'UNITY', {}, 2440),
           part('c5', 'Letra caixa (terceirizada)', 'UNITY', {}, 44444),
+        ],
+      },
+    },
+    {
+      id: 'item-cartao',
+      description: 'Cartão de visita 9 × 5 cm',
+      notes: '',
+      discountType: 'VALUE',
+      discount: 0,
+      unitValue: 22,
+      totalValue: 22000,
+      originalValue: 22000,
+      finalValue: 22000,
+      allowEditDescription: true,
+      allowEditValues: true,
+      image: { url: '', original: true },
+      technicalDescription: '',
+      product: {
+        originalProductId: 'cartao',
+        name: 'Cartão de visita',
+        quantity: 1000,
+        unitValue: 22,
+        finalValue: 22000,
+        compositions: [
+          part(
+            'c7',
+            'Cartão de visita',
+            'UNITY',
+            { width: 90, height: 50 },
+            22000,
+          ),
         ],
       },
     },

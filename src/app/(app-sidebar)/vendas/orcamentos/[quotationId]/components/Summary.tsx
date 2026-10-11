@@ -1,5 +1,6 @@
 // React
 import { useEffect, useState } from 'react'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { useSession } from 'next-auth/react'
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -171,26 +172,32 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
               </div>
               <div className="flex gap-3">
                 <TooltipProvider>
-                  <DuplicateDialog quotationData={data} />
-                  <Button
-                    type="button"
-                    variant="neutralLight"
-                    size="icon"
-                    LeftIcon={IconPencil}
-                    title="Editar"
-                    onClick={() => {
-                      if (onEditClick) {
-                        onEditClick()
-                      } else {
-                        setOpenDialog('editQuotation')
+                  {/* Abrir o orçamento basta "Visualiza" (decisão de 07/10/2026);
+                      duplicar e editar continuam exigindo a permissão própria */}
+                  <PermissionGate permissions={['sale:quotation:create']}>
+                    <DuplicateDialog quotationData={data} />
+                  </PermissionGate>
+                  <PermissionGate permissions={['sale:quotation:edit']}>
+                    <Button
+                      type="button"
+                      variant="neutralLight"
+                      size="icon"
+                      LeftIcon={IconPencil}
+                      title="Editar"
+                      onClick={() => {
+                        if (onEditClick) {
+                          onEditClick()
+                        } else {
+                          setOpenDialog('editQuotation')
+                        }
+                      }}
+                      disabled={
+                        editDisabled !== undefined
+                          ? editDisabled
+                          : actionDisabled('editQuotation', data?.status)
                       }
-                    }}
-                    disabled={
-                      editDisabled !== undefined
-                        ? editDisabled
-                        : actionDisabled('editQuotation', data?.status)
-                    }
-                  />
+                    />
+                  </PermissionGate>
                 </TooltipProvider>
                 <AccordionTrigger
                   className={cn(

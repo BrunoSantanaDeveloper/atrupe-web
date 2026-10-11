@@ -26,6 +26,7 @@ import { ProcessDialog, NewProcessTriggerButton } from './NewProcess'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { SectorIcon } from '@/components/common/SectorIcon'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
@@ -135,7 +136,10 @@ export function Processes({ searchParams }: SearchParamsType) {
                       <Fragment key={sector}>
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
                           <TableCell colSpan={6}>
-                            <span className="font-medium">{sector}</span>
+                            <span className="flex items-center gap-2 font-medium">
+                              <SectorIcon name={sector} size="sm" />
+                              {sector}
+                            </span>
                           </TableCell>
                         </TableRow>
                         {processes

@@ -212,13 +212,15 @@ export function Orders({ searchParams }: SearchParamsType) {
     {
       value: 'IN_PRODUCTION',
       tab: 'producao',
-      label: 'Em produção / Entrega',
+      label: 'Produção / Entrega',
       count: totals?.producao,
     },
     {
       value: 'FINISHED',
       tab: 'finalizadas',
-      label: canManageDeliverySchedule() ? 'Finalizadas' : 'Aprovadas',
+      // O mesmo nome da fase na Agenda de entrega (ALT-10, D-prod-1): a
+      // ordem que saiu da produção está em Faturamento, não "finalizada"
+      label: canManageDeliverySchedule() ? 'Faturamento' : 'Aprovadas',
       count: totals?.finalizadas,
     },
     {

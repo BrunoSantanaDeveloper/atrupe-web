@@ -29,7 +29,7 @@ import {
 import type { BadgeType } from '@/types/coreTypes'
 
 // Hooks / Store / Consts
-import { sectorIconByName } from '@/consts/sectors'
+import { SectorIcon } from '@/components/common/SectorIcon'
 import { PAD, NODE_H, NODE_W, edgePath, layoutFlow } from './flow-layout'
 
 // Icons
@@ -180,7 +180,6 @@ export function FlowCanvas({
             {nodes.map((node) => {
               const position = layout.positions.get(node.id)
               if (!position) return null
-              const Icon = sectorIconByName(node.sector)
               const selected = selectedId === node.id
               const detached = layout.detached.has(node.id)
               const items = !readOnly && menu ? menu(node) : []
@@ -210,15 +209,14 @@ export function FlowCanvas({
                         : undefined
                     }
                   >
-                    <span
+                    <SectorIcon
+                      name={node.sector}
+                      size="lg"
                       className={cn(
-                        'flex size-9 shrink-0 items-center justify-center rounded-lg border border-gray-100 bg-gray-50 text-gray-600',
-                        selected &&
-                          'border-brand-100 bg-brand-25 text-brand-700',
+                        'size-9',
+                        selected && 'ring-2 ring-brand-100',
                       )}
-                    >
-                      <Icon className="size-5" aria-hidden="true" />
-                    </span>
+                    />
                     <button
                       type="button"
                       className="min-w-0 flex-1 text-left focus-visible:outline-none"

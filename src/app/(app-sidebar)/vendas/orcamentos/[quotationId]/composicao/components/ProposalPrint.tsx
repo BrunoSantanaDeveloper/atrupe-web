@@ -2,9 +2,11 @@
 
 // A proposta impressa, com o nível de detalhe que o cliente vê (IP-12):
 // sem detalhes (nome, descritivo e preço), detalhada sem valores (o que
-// compõe) e detalhada com valores (o valor de cada etapa). O nível fica na
-// URL (?detalhe=) e o com valores pede a permissão de ver valores, porque
-// expõe parte do método (SEG-6). Custo nunca aparece (ORC-7).
+// compõe) e detalhada com valores (o valor de cada etapa). O padrão é
+// detalhada com valores (decisão de 05/10/2026; sem valores é a ficha de
+// produção). O nível fica na URL (?detalhe=) e o com valores pede a
+// permissão de ver valores, porque expõe parte do método (SEG-6). Custo
+// nunca aparece (ORC-7). O detalhamento usa o nome de venda da etapa.
 
 // React / Next
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -83,8 +85,9 @@ export function ProposalPrint({ quotationId }: Props) {
   const params = useSearchParams()
   const canSeeValues = useCanSeeValues()
 
-  const requested = (params.get('detalhe') as Detail) || 'resumo'
-  // Sem a permissão de ver valores, o nível com valores não existe
+  // Padrão: detalhado com valores; sem a permissão de ver valores, o nível
+  // com valores não existe e vale o detalhado sem valores
+  const requested = (params.get('detalhe') as Detail) || 'valores'
   const detail: Detail =
     requested === 'valores' && !canSeeValues ? 'lista' : requested
 
@@ -148,7 +151,7 @@ export function ProposalPrint({ quotationId }: Props) {
               key={key}
               type="button"
               onClick={() =>
-                updateFilterParam('detalhe', key === 'resumo' ? 'all' : key, {
+                updateFilterParam('detalhe', key, {
                   router,
                   params,
                 })
