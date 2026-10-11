@@ -32,7 +32,7 @@ const toUrl = (route: string) =>
     .map((segment) => (segment.startsWith('[') ? FAKE_ID : segment))
     .join('/')
 
-/** Cada rota de demonstração, mais subpáginas e as vitrines do /sandbox. */
+/** Cada rota de demonstração, mais subpáginas: o middleware responde 404. */
 const NOT_FOUND_URLS = [
   ...DEMO_ROUTES.map(toUrl),
   '/base-de-custos/resumo',
@@ -41,6 +41,14 @@ const NOT_FOUND_URLS = [
   `/producao/projetos/${FAKE_ID}/ficha`,
   '/configuracoes/empresa-e-sistema/patrimonios/grupos',
   `/vendas/orcamentos/${FAKE_ID}/composicao/proposta`,
+]
+
+/**
+ * As vitrines do /sandbox caem no notFound() do layout delas. O loading.tsx
+ * da raiz já abriu a resposta quando o layout roda, então o status fica 200:
+ * o que vale é a página de não encontrada no lugar da vitrine.
+ */
+const SANDBOX_URLS = [
   '/sandbox/orcamento',
   '/sandbox/fluxo',
   '/sandbox/aproveitamento',
@@ -94,6 +102,14 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
   for (const url of NOT_FOUND_URLS) {
     test(`${url} responde não encontrada`, async ({ page }) => {
       await expectNotFound(page, url)
+    })
+  }
+
+  for (const url of SANDBOX_URLS) {
+    test(`${url} mostra a página de não encontrada`, async ({ page }) => {
+      await page.goto(url)
+      await expect(page.getByText('Página não encontrada')).toBeVisible()
+      await expect(page.locator('h1')).toHaveCount(0)
     })
   }
 
