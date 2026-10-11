@@ -40,7 +40,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           )}
           <input
             className={cn(
-              'flex h-full w-full ml-1 rounded-md bg-transparent px-2 text-sm text-gray-900 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
+              'flex h-full w-full ml-1 rounded-md bg-transparent px-2 text-base md:text-sm text-gray-900 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
             )}
             ref={ref}
             {...props}
@@ -57,10 +57,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
       )
 
+    // 16 px no celular e 14 px a partir do md: com menos de 16 px o Safari do
+    // iPhone amplia a página a cada foco no campo
     return (
       <input
         className={cn(
-          'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2.5 text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out',
+          'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2.5 text-base md:text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out',
           error &&
             'border-error-300 focus-visible:border-error-300 focus-visible:ring-error-100',
           className,
