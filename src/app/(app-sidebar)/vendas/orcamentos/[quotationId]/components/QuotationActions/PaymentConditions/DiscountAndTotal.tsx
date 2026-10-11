@@ -42,14 +42,13 @@ export function DiscountAndTotal({
   const mainAdditionalFee = watch('mainAdditionalFee') || 0
   const downPaymentAdditionalFee = watch('downPayment.additionalFee') || 0
 
-  // EC-2: a referência é o PREÇO BASE do cadastro, não o preço já editado.
-  // Sem isso, baixar o preço do item no orçamento escapava do limite de
-  // desconto do vendedor. Quando originalValue não vier preenchido, vale o
-  // totalValue — o comportamento antigo.
+  // Calcular o valor original sem nenhum desconto (soma dos totalValue dos produtos).
+  // A base no preço do cadastro (EC-2) volta quando a API devolver o preço base
+  // na escala do item (ALT-8): o originalValue de hoje é o preço do cadastro na
+  // medida padrão e acusava desconto que não existe (CV-1).
   const originalValue =
     quotationData?.quotationItems?.reduce(
-      (sum, item) =>
-        sum + Math.max(item?.originalValue || 0, item?.totalValue || 0),
+      (sum, item) => sum + (item?.totalValue || 0),
       0,
     ) || 0
 
@@ -60,18 +59,8 @@ export function DiscountAndTotal({
       return sum + Math.max(itemDiscount, 0)
     }, 0) || 0
 
-  // Redução do preço editado abaixo do preço base — também é desconto (EC-2).
-  // Aumentar o preço não gera desconto negativo.
-  const priceReduction =
-    quotationData?.quotationItems?.reduce(
-      (sum, item) =>
-        sum + Math.max((item?.originalValue || 0) - (item?.totalValue || 0), 0),
-      0,
-    ) || 0
-
-  // Desconto total combinado (itens + desconto geral + redução do preço)
-  const combinedDiscountTotal =
-    itemsDiscountTotal + discountTotal + priceReduction
+  // Desconto total combinado (itens + desconto geral)
+  const combinedDiscountTotal = itemsDiscountTotal + discountTotal
 
   // Calcular o percentual de desconto total.
   // Arredondado como no checkout do backend: sem isso, 10% de 1.163,73 vira

@@ -75,16 +75,14 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     return 0
   }, [discount, discountType, baseValue])
 
-  // EC-2: a referência do limite de desconto é o PREÇO BASE do cadastro, não
-  // o preço já editado pelo vendedor. Editar o item para menos passa a contar
-  // como desconto; editar para mais não gera desconto negativo. Quando o
-  // originalValue não vier preenchido, vale o totalValue — o comportamento
-  // antigo, para não quebrar orçamentos existentes.
+  // Calcular o valor original total sem nenhum desconto (soma dos totalValue dos produtos).
+  // A base no preço do cadastro (EC-2) volta quando a API devolver o preço base
+  // na escala do item (ALT-8): o originalValue de hoje é o preço do cadastro na
+  // medida padrão e acusava desconto que não existe (CV-1).
   const originalValue = useMemo(() => {
     return (
       quotationData?.quotationItems?.reduce(
-        (sum, item) =>
-          sum + Math.max(item?.originalValue || 0, item?.totalValue || 0),
+        (sum, item) => sum + (item?.totalValue || 0),
         0,
       ) || 0
     )
@@ -107,22 +105,9 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     return quotationData?.paymentConditions?.discount?.discountTotal || 0
   }, [quotationData?.paymentConditions?.discount?.discountTotal])
 
-  // Redução do preço editado abaixo do preço base, somada ao desconto (EC-2)
-  const priceReduction = useMemo(() => {
-    return (
-      quotationData?.quotationItems?.reduce(
-        (sum, item) =>
-          sum +
-          Math.max((item?.originalValue || 0) - (item?.totalValue || 0), 0),
-        0,
-      ) || 0
-    )
-  }, [quotationData?.quotationItems])
-
-  // Desconto total combinado (item atual + outros itens + desconto geral +
-  // a redução do preço editado)
+  // Desconto total combinado (item atual + outros itens + desconto geral)
   const combinedDiscountTotal =
-    currentItemDiscount + otherItemsDiscount + generalDiscount + priceReduction
+    currentItemDiscount + otherItemsDiscount + generalDiscount
 
   // Calcular o percentual de desconto total
   const totalDiscountPercentage =
