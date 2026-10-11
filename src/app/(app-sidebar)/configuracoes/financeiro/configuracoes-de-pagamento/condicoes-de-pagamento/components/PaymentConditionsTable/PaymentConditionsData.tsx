@@ -186,7 +186,14 @@ export function PaymentConditionsData({ searchParams }: Props) {
           <ListDataTotalEmpty
             title="Nenhuma condição de pagamento"
             description="Cadastre sua primeira condição de pagamento"
-            cta={<NewPaymentCondition />}
+            cta={
+              // O mesmo gate do botão do topo (EC-21): só com "Cria"
+              <PermissionGate
+                permissions={['financial_settings:payment_methods:create']}
+              >
+                <NewPaymentCondition />
+              </PermissionGate>
+            }
           />
         )}
       </CardContent>
