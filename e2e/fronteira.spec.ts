@@ -53,6 +53,7 @@ const SANDBOX_URLS = [
   '/sandbox/fluxo',
   '/sandbox/aproveitamento',
   '/sandbox/tema',
+  '/sandbox/estados-de-plano',
 ]
 
 /**
