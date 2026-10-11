@@ -80,6 +80,8 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       searchParams?.commissionType,
       searchParams?.startDate,
       searchParams?.endDate,
+      searchParams?.receivedStartDate,
+      searchParams?.receivedEndDate,
       searchParams?.period,
       searchParams?.sellerId,
       restrictedSellerId,
@@ -95,6 +97,8 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
             period: searchParams?.period as string,
             startDate: searchParams?.startDate as string,
             endDate: searchParams?.endDate as string,
+            receivedStartDate: searchParams?.receivedStartDate as string,
+            receivedEndDate: searchParams?.receivedEndDate as string,
             sellerId: searchParams?.sellerId as string,
           },
           restrictedSellerId,
@@ -303,7 +307,9 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
               </TableBody>
             </Table>
 
-            {data.pagination.totalPages > 1 && (
+            {/* Agrupado, a API devolve tudo de uma vez: o paginador só vale
+                sem agrupamento, como em produção (CR-10) */}
+            {!data.grouped && data.pagination.totalPages > 1 && (
               <div className="p-4">
                 <TablePagination
                   searchParams={searchParams as Record<string, string>}

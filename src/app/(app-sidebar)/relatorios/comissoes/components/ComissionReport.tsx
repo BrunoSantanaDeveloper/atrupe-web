@@ -8,6 +8,9 @@ import { SummaryCards } from './SummaryCards'
 import { CommissionTable } from './CommissionTable'
 import { CommissionReportPrintButton } from './print/CommissionReportPrintButton'
 
+// Libs
+import { DEMO_DATA } from '@/lib/demo'
+
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -16,8 +19,9 @@ export function ComissionReport({ searchParams }: SearchParamsType) {
     <div className="space-y-4">
       <Topbar title="Comissões" primaryCta={<CommissionReportPrintButton />} />
 
-      {/* Como a empresa paga a comissão: decide a data e a base (ALT-23) */}
-      <ModeSelector />
+      {/* Como a empresa paga a comissão: decide a data e a base (ALT-23).
+          Só com a flag: o modo recebido espera a API (CR-2) */}
+      {DEMO_DATA && <ModeSelector />}
 
       {/* Filters */}
       <FiltersBar searchParams={searchParams} />

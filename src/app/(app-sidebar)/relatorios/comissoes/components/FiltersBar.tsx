@@ -10,6 +10,7 @@ import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBa
 
 // Mode
 import { commissionModeOf, commissionModeCopy } from '../mode'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Utils
 import {
@@ -61,8 +62,15 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
     searchParams?.endDate as string,
   )
 
-  // Um período só: o modo decide se ele é a data da venda ou a do
-  // recebimento. Dois filtros de data juntos deixavam o resultado ambíguo
+  const defaultReceivedDateRange = getDateRangeFromParams(
+    searchParams?.receivedStartDate as string,
+    searchParams?.receivedEndDate as string,
+  )
+
+  // Com a flag (ALT-23), um período só: o modo decide se ele é a data da venda
+  // ou a do recebimento. Sem a flag, o modo recebido não existe (a API de
+  // produção não o atende) e ficam os dois intervalos de produção, para quem
+  // paga comissão pelo recebido continuar filtrando pela data do recebimento
   const mode = commissionModeOf(searchParams?.commissionType as string)
 
   return (
@@ -79,13 +87,37 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
             updatePeriodParams(value as PeriodType, updateOptions)
           }
         />
-        <DateRangePickerBasic
-          label={commissionModeCopy[mode].dateLabel}
-          placeholder="Selecione um período"
-          className="lg:w-[260px] w-full"
-          value={defaultSaleDateRange}
-          onChange={(range) => updateDateRangeParams(range, updateOptions)}
-        />
+        {DEMO_DATA ? (
+          <DateRangePickerBasic
+            label={commissionModeCopy[mode].dateLabel}
+            placeholder="Selecione um período"
+            className="lg:w-[260px] w-full"
+            value={defaultSaleDateRange}
+            onChange={(range) => updateDateRangeParams(range, updateOptions)}
+          />
+        ) : (
+          <>
+            <DateRangePickerBasic
+              label="Data de venda"
+              placeholder="Selecione um período"
+              className="lg:w-[260px] w-full"
+              value={defaultSaleDateRange}
+              onChange={(range) => updateDateRangeParams(range, updateOptions)}
+            />
+            <DateRangePickerBasic
+              label="Data de recebimento"
+              placeholder="Selecione um período"
+              className="lg:w-[260px] w-full"
+              value={defaultReceivedDateRange}
+              onChange={(range) =>
+                updateDateRangeParams(range, updateOptions, {
+                  startKey: 'receivedStartDate',
+                  endKey: 'receivedEndDate',
+                })
+              }
+            />
+          </>
+        )}
         {canSeeOtherSellers && (
           <SelectBasic
             name="sellerId"

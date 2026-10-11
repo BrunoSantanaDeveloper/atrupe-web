@@ -7,6 +7,10 @@ import { useState } from 'react'
 // do clique que gera o PDF
 import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+
+// Hooks
+import { usePermissions } from '@/hooks/usePermissions'
 
 // UI
 import {
@@ -35,16 +39,33 @@ export function CommissionReportPrintButton() {
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
 
+  // EC-25, como na tabela: sem a permissão de ver vendas de outros
+  // vendedores, a impressão vai presa ao vendedor da sessão (CR-3)
+  const { data: session } = useSession()
+  const { hasAnyPermission } = usePermissions()
+  const canSeeOtherSellers = hasAnyPermission([
+    'sale:other_quotation:view',
+    'sale:other_sellers:view',
+  ])
+  const restrictedSellerId = canSeeOtherSellers
+    ? undefined
+    : session?.user?.employeeId
+
   // As mesmas datas e o mesmo modo da tela, inclusive o vendedor filtrado:
   // antes a impressão saía com todos os vendedores
   const getFilters = () =>
-    commissionFilters({
-      commissionType: searchParams.get('commissionType'),
-      period: searchParams.get('period'),
-      startDate: searchParams.get('startDate'),
-      endDate: searchParams.get('endDate'),
-      sellerId: searchParams.get('sellerId'),
-    })
+    commissionFilters(
+      {
+        commissionType: searchParams.get('commissionType'),
+        period: searchParams.get('period'),
+        startDate: searchParams.get('startDate'),
+        endDate: searchParams.get('endDate'),
+        receivedStartDate: searchParams.get('receivedStartDate'),
+        receivedEndDate: searchParams.get('receivedEndDate'),
+        sellerId: searchParams.get('sellerId'),
+      },
+      restrictedSellerId,
+    )
 
   const mode = commissionModeOf(searchParams.get('commissionType'))
 
