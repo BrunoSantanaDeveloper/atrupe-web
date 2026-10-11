@@ -21,6 +21,18 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      # As telas em implantação rodam sobre dados de exemplo e só existem em
+      # homolog (ver "Telas em implantação" no README). O build de produção não
+      # pode sair com a flag de demonstração nem com as marcas de revisão: se
+      # alguma estiver ligada no ambiente Production da Vercel, o deploy para.
+      - name: Recusar a flag de demonstração em produção
+        run: |
+          if [ "${NEXT_PUBLIC_DEMO_DATA:-}" = "on" ] || [ "${NEXT_PUBLIC_REVIEW_MARKS:-}" = "on" ] ||
+            grep -Eqs '^NEXT_PUBLIC_(DEMO_DATA|REVIEW_MARKS)="?on"?[[:space:]]*$' .vercel/.env.production.local; then
+            echo "::error::NEXT_PUBLIC_DEMO_DATA e NEXT_PUBLIC_REVIEW_MARKS não podem estar ligadas em produção. Apague as duas do ambiente Production da Vercel."
+            exit 1
+          fi
+
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:

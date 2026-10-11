@@ -22,11 +22,17 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      # Telas em implantação (dados de exemplo) e marcas de revisão: só em
+      # homolog. São variáveis de build do Next, declaradas aqui para ficarem
+      # versionadas; o deploy.yml de produção recusa o build se encontrar
+      # alguma delas ligada. Ver "Telas em implantação" no README.
       - name: Build Project Artifacts
         run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_DEMO_DATA: 'on'
+          NEXT_PUBLIC_REVIEW_MARKS: 'on'
 
       # O deployment carrega o metadado de branch (dev), então a Vercel atribui
       # homolog.atrupe.com.br automaticamente por ser branch domain da dev.

@@ -9,6 +9,8 @@ import path from 'node:path'
 //
 //   UI_ROUTES=/vendas,/cadastros npx playwright test e2e/ui/capturas.spec.ts
 //
+// Leva @captura no título para ficar fora da CI (e2e.yml usa --grep-invert).
+//
 // UI_ROUTES filtra por prefixo; UI_SHOTS_DIR muda a pasta de saída.
 
 const OUT = process.env.UI_SHOTS_DIR ?? 'test-results/ui'
@@ -165,7 +167,7 @@ function record(entry: Entry) {
 
 // Sem modo serial: uma rota lenta não pode impedir as outras de rodar.
 
-test.describe('Capturas de UI', () => {
+test.describe('Capturas de UI @captura', () => {
   test.use({ viewport: { width: 1440, height: 900 } })
 
   test.beforeAll(() => fs.mkdirSync(OUT, { recursive: true }))

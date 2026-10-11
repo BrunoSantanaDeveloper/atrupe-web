@@ -16,7 +16,7 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      
+
       - name: Wait for Backend Health
         env:
           BACKEND_HOMOLOG_URL: ${{ secrets.BACKEND_HOMOLOG_URL }}
@@ -38,12 +38,39 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install chromium --with-deps
 
+      # Alvo: homolog, publicado COM a flag de demonstração (deploy-homolog.yml).
+      # - NEXT_PUBLIC_DEMO_DATA declara a flag do alvo: a suíte @fronteira, que
+      #   só vale num build sem a flag, é pulada aqui e roda no job abaixo.
+      # - @captura só grava imagens, sem asserção: fica fora da CI.
+      # - @mock são os specs das telas em implantação. Entram com a conta
+      #   padrão (E2E_USER_*), que precisa ter as chaves até o FULL. Enquanto
+      #   essa conta não existir, ficam de fora; para incluir, crie a variável
+      #   de repositório E2E_INCLUDE_MOCK=true.
+      # - E2E_<PLANO>_*: contas por plano das paredes e dos portões. São
+      #   opcionais: sem o segredo, os testes daquele plano são pulados.
       - name: Run Playwright tests
         env:
           E2E_HOMOLOG_URL: ${{ secrets.E2E_HOMOLOG_URL }}
           E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
           E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
-        run: E2E_BASE_URL=${E2E_HOMOLOG_URL:-https://app-web-atrupe-dev-admin-atrupes-projects.vercel.app} npx playwright test --reporter=github
+          E2E_TRIAL_EMAIL: ${{ secrets.E2E_TRIAL_EMAIL }}
+          E2E_TRIAL_PASSWORD: ${{ secrets.E2E_TRIAL_PASSWORD }}
+          E2E_START_EMAIL: ${{ secrets.E2E_START_EMAIL }}
+          E2E_START_PASSWORD: ${{ secrets.E2E_START_PASSWORD }}
+          E2E_LITE_EMAIL: ${{ secrets.E2E_LITE_EMAIL }}
+          E2E_LITE_PASSWORD: ${{ secrets.E2E_LITE_PASSWORD }}
+          E2E_PRO_EMAIL: ${{ secrets.E2E_PRO_EMAIL }}
+          E2E_PRO_PASSWORD: ${{ secrets.E2E_PRO_PASSWORD }}
+          E2E_ELITE_EMAIL: ${{ secrets.E2E_ELITE_EMAIL }}
+          E2E_ELITE_PASSWORD: ${{ secrets.E2E_ELITE_PASSWORD }}
+          E2E_FULL_EMAIL: ${{ secrets.E2E_FULL_EMAIL }}
+          E2E_FULL_PASSWORD: ${{ secrets.E2E_FULL_PASSWORD }}
+          NEXT_PUBLIC_DEMO_DATA: 'on'
+          E2E_INCLUDE_MOCK: ${{ vars.E2E_INCLUDE_MOCK }}
+        run: |
+          EXCLUIR='@mock|@captura'
+          if [ "$E2E_INCLUDE_MOCK" = "true" ]; then EXCLUIR='@captura'; fi
+          E2E_BASE_URL=${E2E_HOMOLOG_URL:-https://app-web-atrupe-dev-admin-atrupes-projects.vercel.app} npx playwright test --reporter=github --grep-invert "$EXCLUIR"
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -52,4 +79,84 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          retention-days: 15
+
+  # Fronteira do mock: num build SEM a flag de demonstração, como o de
+  # produção, nenhuma tela, dado ou ação de exemplo pode aparecer. O build sobe
+  # no próprio runner e fala com a API de homolog; a suíte confere as rotas de
+  # demonstração (não encontrada), o menu e as telas reais.
+  fronteira:
+    runs-on: ubuntu-latest
+    env:
+      API_URL: ${{ secrets.BACKEND_HOMOLOG_URL || 'https://dev.atrupe.com.br' }}
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      NEXT_PUBLIC_ENV: development
+      AUTH_TRUST_HOST: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - run: npm ci
+
+      # Só vale para este runner: o mesmo valor no build e no servidor.
+      - name: Segredo de sessão descartável
+        run: echo "AUTH_SECRET=$(openssl rand -hex 32)" >> "$GITHUB_ENV"
+
+      - name: Build sem a flag de demonstração
+        run: |
+          if [ -n "${NEXT_PUBLIC_DEMO_DATA:-}" ] || [ -n "${NEXT_PUBLIC_REVIEW_MARKS:-}" ]; then
+            echo "::error::Este job confere o build sem a flag: NEXT_PUBLIC_DEMO_DATA e NEXT_PUBLIC_REVIEW_MARKS não podem estar definidas aqui."
+            exit 1
+          fi
+          npx next build
+
+      - name: Install Playwright Browsers
+        run: npx playwright install chromium --with-deps
+
+      # Sem a API, o front encerra a sessão e as telas reais não abrem.
+      - name: Wait for Backend Health
+        run: |
+          for i in $(seq 1 24); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$API_URL/" || echo "000")
+            if [ "$STATUS" = "200" ] || [ "$STATUS" = "401" ]; then
+              echo "Backend homolog OK (HTTP $STATUS)"
+              break
+            fi
+            echo "Aguardando backend... (tentativa $i/24, HTTP $STATUS)"
+            sleep 5
+            if [ $i -eq 24 ]; then
+              echo "TIMEOUT: Backend de homolog não respondeu em 120s"
+              exit 1
+            fi
+          done
+
+      - name: Subir o build e rodar a suíte @fronteira
+        env:
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: |
+          npx next start -p 3000 > next-start.log 2>&1 &
+          for i in $(seq 1 30); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/login || echo "000")
+            if [ "$STATUS" = "200" ]; then break; fi
+            sleep 2
+          done
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::O build não subiu em 60s (HTTP $STATUS)"
+            cat next-start.log
+            exit 1
+          fi
+          E2E_BASE_URL=http://localhost:3000 npx playwright test --reporter=github --grep @fronteira
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fronteira-report
+          path: |
+            playwright-report/
+            test-results/
+            next-start.log
           retention-days: 15
