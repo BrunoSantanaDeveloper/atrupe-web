@@ -61,7 +61,7 @@ export function ClientActions({ params, data, entityType }: Props) {
       },
       toastMsg: {
         loading: 'Criando cadastro...',
-        success: `${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)} criado com sucesso!`,
+        success: `${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)} criado`,
         error: `Erro ao criar ${targetLabel}`,
       },
     })

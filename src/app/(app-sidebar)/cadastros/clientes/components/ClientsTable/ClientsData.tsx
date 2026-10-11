@@ -113,9 +113,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
           }
           if (!hasError) {
             toast.success(
-              ids.length > 1
-                ? 'Clientes excluídos com sucesso'
-                : 'Cliente excluído com sucesso',
+              ids.length > 1 ? 'Clientes excluídos' : 'Cliente excluído',
             )
           }
           queryClient.invalidateQueries({ queryKey: ['client-list'] })

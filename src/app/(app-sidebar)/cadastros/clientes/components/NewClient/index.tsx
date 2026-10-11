@@ -292,11 +292,7 @@ export function NewClientModal({
       return
     }
 
-    toast.success(
-      editMode
-        ? 'Cliente atualizado com sucesso!'
-        : 'Cliente cadastrado com sucesso!',
-    )
+    toast.success(editMode ? 'Cliente atualizado' : 'Cliente cadastrado')
 
     queryClient.invalidateQueries()
 
