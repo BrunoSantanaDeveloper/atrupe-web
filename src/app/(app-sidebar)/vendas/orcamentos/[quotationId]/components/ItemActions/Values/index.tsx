@@ -109,9 +109,16 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
   const combinedDiscountTotal =
     currentItemDiscount + otherItemsDiscount + generalDiscount
 
-  // Calcular o percentual de desconto total
+  // Calcular o percentual de desconto total. Arredondado como nas condições
+  // de pagamento e no checkout do backend: sem isso, R$ 7,00 de R$ 100,00 vira
+  // 7.000000000000001% e um desconto exatamente no limite de 7% trava o Salvar
   const totalDiscountPercentage =
-    originalValue > 0 ? (combinedDiscountTotal / originalValue) * 100 : 0
+    originalValue > 0
+      ? Math.round(
+          ((combinedDiscountTotal / originalValue) * 100 + Number.EPSILON) *
+            100,
+        ) / 100
+      : 0
 
   // Limite máximo de desconto do vendedor
   const maxDiscount = quotationData?.seller?.maxDiscount
