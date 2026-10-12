@@ -9,7 +9,6 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 
 // Hooks / Store / Consts
 import { FEATURES } from '@/consts/features'
-import { DEMO_DATA } from '@/lib/demo'
 import { updateFilterParam } from '@/lib/filter-utils'
 
 // Types
@@ -22,8 +21,8 @@ export function ProductsFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
   const params = useSearchParams()
 
-  // A composição ainda roda sobre dados de exemplo: o filtro só com a flag
-  if (!searchParams || !DEMO_DATA) return null
+  // O filtro da composição é da base de custos (o FeatureGate abaixo)
+  if (!searchParams) return null
 
   return (
     <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>

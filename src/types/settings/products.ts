@@ -14,6 +14,10 @@ export type ProductListType = {
   unitOfMeasureCode: string
   unitCost: number
   salePrice: number
+  // A composição (CP-17): etapas na composição padrão e a situação dela
+  hasComposition?: boolean
+  compositionStatus?: 'DRAFT' | 'RELEASED' | 'PART' | null
+  hasVariations?: boolean
   fiscalData?: {
     ncm?: string | null
     cest?: string | null

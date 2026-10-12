@@ -157,14 +157,15 @@ export function Products({ searchParams }: SearchParamsType) {
   const canConfigureProductFiscalData =
     hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
   // No PRO o produto recém-criado reabre na aba Composição (CP-16). A
-  // composição e a biblioteca ainda rodam sobre dados de exemplo: só com a
-  // flag de demonstração
-  const canCompose = DEMO_DATA && hasFeature(FEATURES.COSTS.COST_BASE)
+  // biblioteca (IP-7) ainda roda sobre dados de exemplo: só com a flag,
+  // até o PO definir as composições de referência
+  const canCompose = hasFeature(FEATURES.COSTS.COST_BASE)
+  const canUseLibrary = DEMO_DATA && canCompose
   const { data: libraryRes } = useQuery({
     staleTime: Infinity,
     queryKey: ['assembly-library'],
     queryFn: () => getLibrary(),
-    enabled: canCompose,
+    enabled: canUseLibrary,
   })
 
   const openAfterCreate = (product: { id: string; name: string }) => {
@@ -260,7 +261,7 @@ export function Products({ searchParams }: SearchParamsType) {
                 Icon={IconFolders}
                 link="/configuracoes/produtos/grupo-de-produtos"
               />
-              {canCompose && (
+              {canUseLibrary && (
                 <PermissionGate
                   permissions={['product_settings:products:create']}
                 >

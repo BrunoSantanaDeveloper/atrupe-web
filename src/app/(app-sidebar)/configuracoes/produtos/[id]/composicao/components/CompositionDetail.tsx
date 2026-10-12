@@ -9,7 +9,6 @@ import { AssemblyEditor } from './AssemblyEditor'
 import { FeatureGate } from '@/components/common/FeatureGate'
 
 // Actions
-import { getComposition } from '@/actions/compositions'
 import { getItemOld } from '@/actions/_cruds'
 
 // Types
@@ -29,31 +28,23 @@ interface Props {
 // área 8 §3.4.1), com as variações dentro dela, e os campos que o vendedor
 // preenche.
 export function CompositionDetail({ id }: Props) {
-  const { data, isLoading } = useQuery({
-    staleTime: Infinity,
-    queryKey: ['composition', id],
-    queryFn: () => getComposition({ id }),
-  })
-
-  const product = data?.data
-
   // O cabeçalho mostra o produto do cadastro (nome, código, unidade), como
   // o diálogo do produto; o mock só serve aos exemplos sem cadastro
   const isCatalogId = /^[0-9a-f-]{32,36}$/i.test(id)
-  const { data: catalogProduct } = useQuery({
+  const { data: catalogProduct, isLoading } = useQuery({
     staleTime: Infinity,
     enabled: isCatalogId,
     queryKey: ['product', id],
     queryFn: () => getItemOld({ route: 'productRoute', id }),
   })
   const unitKind: UnitKind | undefined = catalogProduct?.items?.[0]?.unitKind
-  const title = catalogProduct?.name || product?.name
-  const support = catalogProduct
-    ? [
-        catalogProduct.code,
-        unitKind ? `vendido por ${unitSymbol[unitKind]}` : null,
-      ]
-    : [product?.code, product ? `vendido por ${product.unit}` : null]
+  // A composição lê o cadastro na API: o produto é o do cadastro
+  const product = catalogProduct?.id ? catalogProduct : null
+  const title = catalogProduct?.name
+  const support = [
+    catalogProduct?.code,
+    unitKind ? `vendido por ${unitSymbol[unitKind]}` : null,
+  ]
 
   if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
 

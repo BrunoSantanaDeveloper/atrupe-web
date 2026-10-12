@@ -38,7 +38,7 @@ import type { ComputedAssembly, PriceTier } from '../assembly'
 import { unitSymbol } from '../assembly'
 
 // Actions
-import { setPriceTiers } from '@/actions/product-assembly'
+import { setPriceTiers } from '@/actions/product-variations'
 
 // Hooks / Store / Consts
 import { useMoney } from '@/hooks/useMoney'
@@ -74,6 +74,9 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
 
   const unit = unitSymbol[assembly.unitKind]
   const changed = JSON.stringify(tiers) !== JSON.stringify(source)
+  // A aba da variação com composição própria: "<produto>::v:<variação>"
+  const [hostId, hostVariation] = assembly.productId.split('::v:')
+  const host = { id: hostId, variationId: hostVariation }
   // Na variação sem tabela própria, editar é criar a dela
   const inherited = !!variation && !assembly.tiersFromVariation
 
@@ -85,9 +88,9 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
   const save = async () => {
     setSaving(true)
     const res = await setPriceTiers({
-      productId: assembly.productId,
+      productId: host.id,
       tiers,
-      variationId: variation?.id,
+      variationId: variation?.id ?? host.variationId,
     })
     setSaving(false)
     if (!res.success) return toast.error(res.message)
@@ -255,7 +258,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
                 variant="neutralOutline"
                 onClick={async () => {
                   const res = await setPriceTiers({
-                    productId: assembly.productId,
+                    productId: host.id,
                     tiers: [],
                     variationId: variation.id,
                     inherit: true,

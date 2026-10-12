@@ -11,12 +11,7 @@ import { useState } from 'react'
 import { ActionButton } from '@/components/common/ActionButton'
 
 // Actions
-import { getItemOld, createItemNew } from '@/actions/_cruds'
-import { copyCompositionFrom } from '@/actions/product-assembly'
-import { productBodyFrom } from './productBody'
-
-// Libs
-import { DEMO_DATA } from '@/lib/demo'
+import { duplicateProduct } from '@/actions/assembly'
 
 // Third-party
 import { toast } from 'sonner'
@@ -39,52 +34,23 @@ export function DuplicateProductButton({ productId, name, onDone }: Props) {
   const duplicate = async () => {
     setBusy(true)
     try {
-      const source = await getItemOld({ route: 'productRoute', id: productId })
-      if (!source?.id) throw new Error('Produto não encontrado')
-
-      // O mesmo corpo que o diálogo do produto envia ao criar, sem os ids
-      // dos itens, que são do produto de origem
-      const body = {
-        ...productBodyFrom(source, {
-          name: `${source.name} (cópia)`,
-          code: source.code ? `${source.code}-COPIA` : undefined,
-        }),
-        items: productBodyFrom(source).items.map(
-          ({ id: _id, ...item }: { id?: string }) => item,
-        ),
-      }
-
-      const created = await createItemNew({ route: '/product', data: body })
-      if (!created.success || !created.data?.id) {
+      // O servidor copia o cadastro e, com o plano, a composição (etapas,
+      // campos, fórmulas, variações e faixas) num passo só; a cópia nasce em
+      // edição (IP-14)
+      const created = await duplicateProduct({
+        productId,
+        name: `${name} (cópia)`,
+      })
+      if (!created.success || !created.data) {
         throw new Error(created.message || 'Não foi possível criar a cópia')
       }
-
-      // A composição vai junto, como cópia independente (etapas, campos e
-      // fórmulas). Falhar aqui não desfaz o produto: ele fica sem composição.
-      // Ela ainda roda sobre dados de exemplo: sem a flag, não há o que copiar
-      const composition = DEMO_DATA
-        ? await copyCompositionFrom({
-            productId: created.data.id,
-            sourceProductId: productId,
-          })
-        : null
-      if (
-        composition &&
-        !composition.success &&
-        !/não tem composição/.test(composition.message)
-      ) {
-        toast.warning(
-          `Produto duplicado, mas a composição não veio: ${composition.message}`,
-        )
-      } else {
-        toast.success(`${name} duplicado. Edite a cópia a partir daqui.`)
-      }
+      toast.success(`${name} duplicado. Edite a cópia a partir daqui.`)
 
       await queryClient.invalidateQueries({ queryKey: ['product-list'] })
       // O contador da aba Ativos
       await queryClient.invalidateQueries({ queryKey: ['product-totals'] })
       await queryClient.invalidateQueries({ queryKey: ['composed-products'] })
-      onDone?.(created.data.id)
+      onDone?.(created.data)
     } catch (error) {
       toast.error(
         `Erro ao duplicar: ${error instanceof Error ? error.message : 'erro desconhecido'}`,

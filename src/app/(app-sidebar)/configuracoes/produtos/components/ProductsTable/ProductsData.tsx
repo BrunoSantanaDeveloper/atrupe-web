@@ -53,11 +53,7 @@ import {
 // Third-party
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import {
-  getAssembly,
-  updateAssembly,
-  getComposedProductIds,
-} from '@/actions/product-assembly'
+import { getAssembly } from '@/actions/product-assembly'
 import { Badge } from '@/components/ui/badge'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -151,10 +147,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
         success: false,
         message: result.message || 'Erro ao gravar o preço',
       }
-    await updateAssembly({
-      productId: pricing.id,
-      values: { unitPrice: price },
-    })
     queryClient.invalidateQueries({ queryKey: ['product-list'] })
     queryClient.invalidateQueries({ queryKey: ['product', pricing.id] })
     queryClient.invalidateQueries({ queryKey: ['assembly', pricing.id] })
@@ -172,8 +164,8 @@ export function ProductsData({ searchParams, tabs }: Props) {
 
   // A composição é recurso do PRO e vive dentro do produto, sem cadastro
   // paralelo: o mesmo produto do START ganha custo e margem (CP-16, CP-17).
-  // Ainda roda sobre dados de exemplo: só com a flag de demonstração
-  const showComposition = DEMO_DATA && hasFeature(FEATURES.COSTS.COST_BASE)
+  // A composição lê a API: aparece para quem tem a base de custos
+  const showComposition = hasFeature(FEATURES.COSTS.COST_BASE)
 
   // EC-26: a permissão "Valores" também vale aqui — quem não pode ver preço
   // não vê a tabela de preços da empresa
@@ -185,9 +177,17 @@ export function ProductsData({ searchParams, tabs }: Props) {
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
-  // O filtro de composição ainda não vai à API: é aplicado aqui (CP-17)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { composicao, ...apiParams } = searchParams
+  // O filtro de composição vai à API (CP-17), valendo para todas as páginas
+  const { composicao, ...rest } = searchParams
+  const apiParams = {
+    ...rest,
+    ...(showComposition && composicao === 'com'
+      ? { hasComposition: 'true' }
+      : {}),
+    ...(showComposition && composicao === 'sem'
+      ? { hasComposition: 'false' }
+      : {}),
+  }
   const filters = { ...apiParams, status }
 
   const { data, isLoading } = useQuery({
@@ -196,27 +196,12 @@ export function ProductsData({ searchParams, tabs }: Props) {
     queryFn: () => getDataOld({ route: 'productRoute', filters }),
   })
 
-  const { data: composedRes } = useQuery({
-    queryKey: ['composed-products'],
-    queryFn: () => getComposedProductIds(),
-    enabled: showComposition,
-  })
-  const composed = useMemo(
-    () => new Set(composedRes?.data || []),
-    [composedRes],
-  )
-
   // useMemo para o array não trocar de identidade a cada render e invalidar
   // os memos de seleção abaixo.
   const products: ProductListType[] = useMemo(() => {
     const list: ProductListType[] = data?.data || []
-    if (!showComposition || !composicao) return list
-    return list.filter((product) =>
-      composicao === 'com'
-        ? composed.has(product.id)
-        : !composed.has(product.id),
-    )
-  }, [data, composicao, composed, showComposition])
+    return list
+  }, [data])
   const hasData = products.length
 
   // A seleção vale para a página visível: trocar de página, aba ou filtro
@@ -389,7 +374,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell>
                     <p className="font-medium">
                       {product?.name}
-                      {showComposition && composed.has(product?.id) && (
+                      {showComposition && product?.hasComposition && (
                         <Badge
                           variant="blueLight"
                           className="ml-2 align-middle"

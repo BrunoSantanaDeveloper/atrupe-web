@@ -1,50 +1,59 @@
 import { test, expect } from '@playwright/test'
 
-// Confere a composição contra a documentação funcional §9 e §10 e as decisões
-// DC-2, DC-14, DC-15, P-16, P-18 e MT-5.
+import { hasTestCredentials, planStorageState } from '../helpers/credentials'
+
+/**
+ * A composição do produto contra a API (/product/:id/assembly), com a conta
+ * do PRO (E2E_PRO_EMAIL/PASSWORD; sem ela, o arquivo é pulado). Confere que a
+ * composição é ação da linha do produto (CP-17), que o filtro "Composição" vai
+ * à API e que a página abre com a Simulação (PAD-6). Não grava nada: abrir a
+ * composição vazia de um produto não é feito aqui, porque a tela cria a
+ * etapa do setor do produto (pedido do time, 03/10/2026).
+ *
+ * Os processos têm o e2e deles em e2e/processes.
+ */
 
 const PRODUCTS = '/configuracoes/produtos'
-// A composição vive dentro do produto, sem cadastro paralelo (CP-17)
-const composition = (id: string) => `${PRODUCTS}/${id}/composicao`
 
-// Os processos já leem a API: o e2e deles está em e2e/processes
+test.describe('Composição do produto (PRO)', () => {
+  test.skip(
+    !hasTestCredentials('PRO'),
+    'Sem credencial do plano PRO (E2E_PRO_EMAIL/PASSWORD).',
+  )
+  test.use({ storageState: planStorageState('PRO') })
 
-test.describe('Composições — produto do START com custo (DC-2, DC-15) @mock', () => {
-  test('a lista de produtos abre a composição de cada produto', async ({
+  test('a composição é ação da linha, sem aba própria (CP-17)', async ({
     page,
   }) => {
     await page.goto(PRODUCTS)
+    await page.waitForLoadState('networkidle')
 
-    // Não existe mais aba "Composições": a composição é ação da linha (CP-17)
     await expect(page.getByRole('tab', { name: 'Composições' })).toHaveCount(0)
-    await expect(
-      page.getByRole('link', { name: /Composição de/ }).first(),
-    ).toBeVisible()
+    await expect(page.getByLabel('Composição')).toBeVisible()
   })
 
-  test('a página mostra as etapas e permite adotar o preço sugerido', async ({
-    page,
-  }) => {
-    await page.goto(composition('banner'))
+  test('o filtro "Com composição" lista só os compostos', async ({ page }) => {
+    await page.goto(`${PRODUCTS}?composicao=com`)
+    await page.waitForLoadState('networkidle')
 
-    await expect(page.getByText('Etapas de produção')).toBeVisible()
-    await expect(page.getByText('Impressão em lona')).toBeVisible()
-    await expect(page.getByText('Tempo total previsto: 20 min')).toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'Adotar preço sugerido' }),
-    ).toBeEnabled()
+    const rows = page.getByRole('row').filter({ has: page.getByRole('cell') })
+    const count = await rows.count()
+    test.skip(count === 0, 'A conta do PRO ainda não tem produto composto.')
+    for (let index = 0; index < count; index++) {
+      await expect(rows.nth(index)).toContainText('Com composição')
+    }
   })
 
-  test('produto sem composição explica que continua sendo vendido', async ({
-    page,
-  }) => {
-    await page.goto(composition('adesivo'))
+  test('a página da composição abre com a Simulação', async ({ page }) => {
+    await page.goto(`${PRODUCTS}?composicao=com`)
+    await page.waitForLoadState('networkidle')
+    const link = page.locator(`a[href$="/composicao"]`).first()
+    test.skip(
+      (await link.count()) === 0,
+      'A conta do PRO ainda não tem produto composto.',
+    )
 
-    await expect(
-      page.getByText(/continua sendo\s+vendido normalmente/),
-    ).toBeVisible()
-    await expect(
-      page.getByRole('button', { name: 'Adotar preço sugerido' }),
-    ).toBeDisabled()
+    await link.click()
+    await expect(page.getByText('Simulação').first()).toBeVisible()
   })
 })

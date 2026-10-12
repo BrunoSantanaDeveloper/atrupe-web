@@ -101,6 +101,7 @@ import {
 } from '../assembly'
 
 // Actions
+// A composição lê e grava na API (contrato, módulo 1, parte A)
 import {
   getAssembly,
   updateAssembly,
@@ -113,8 +114,6 @@ import {
   removeLineOption,
   addPartBlock,
   getPartCandidates,
-  addVariationBlock,
-  removeVariationBlock,
   addProductFormula,
   getProductVariants,
   createProductVariant,
@@ -129,6 +128,13 @@ import {
   setBlockLocalRules,
   updateAssemblyLine,
   removeAssemblyBlock,
+  adoptSuggestedPrice,
+} from '@/actions/assembly'
+// As exceções por linha da variação (PV-2) não foram para a API: o
+// trecho que as usa fica escondido (SHOW_SECOND_PART) e no exemplo
+import {
+  addVariationBlock,
+  removeVariationBlock,
   addVariation,
   removeVariation,
   setVariationLine,
@@ -602,10 +608,8 @@ function AssemblyEditorBody({
             variationId: assembly.activeVariation.id,
             unitPrice: assembly.suggestedUnitPrice,
           })
-        : updateAssembly({
-            productId,
-            values: { unitPrice: assembly.suggestedUnitPrice },
-          }),
+        : // O servidor calcula o sugerido na medida padrão (DC-14)
+          adoptSuggestedPrice({ productId }),
       'Preço sugerido adotado',
     )
 
