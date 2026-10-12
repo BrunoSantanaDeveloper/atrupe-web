@@ -6,6 +6,10 @@ export type ListSectorDataType = {
   isProductionStage: boolean
   kind: string
   companyId: string
+  // Nulo = padrão do ícone (src/consts/sectors.ts)
+  color?: string | null
+  saleUnit?: 'HOUR' | 'M2' | 'M' | 'UN' | 'KM'
+  nature?: 'PRODUCTIVE' | 'ADMINISTRATIVE'
 }
 
 export type ListSectorType = {

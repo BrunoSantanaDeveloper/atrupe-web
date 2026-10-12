@@ -43,22 +43,22 @@ import { ListSectorDataType } from '@/types/settings/sector'
 import { updateItemNew } from '@/actions/_cruds'
 
 // Consts
-import { sectorIcons, SECTOR_PALETTE } from '@/consts/sectors'
+import {
+  sectorIcons,
+  SECTOR_PALETTE,
+  sectorDefaultColor,
+} from '@/consts/sectors'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { useSectorColor, SECTOR_COLORS_QUERY_KEY } from '@/hooks/useSectorColor'
 
-// Actions (cor do setor, mock até a API ter o campo)
-import { setSectorColor } from '@/actions/sector-colors'
-
 // Components
 import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Lib
 import { cn } from '@/lib/utils'
-import { DEMO_DATA } from '@/lib/demo'
 
 interface Props extends SearchParamsType {
   open: boolean
@@ -97,34 +97,34 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
   const { handleSubmit, setValue, watch } = form
 
-  // A cor do setor (área 9 §4.14): a escolhida ou o padrão. Fica no mock por
-  // id e nome até a API do setor ganhar o campo
+  // A cor do setor (área 9 §4.14): a escolhida (campo `color` do setor) ou
+  // o padrão do ícone
   const colorOf = useSectorColor()
   const [color, setColor] = useState('')
+  const [initialColor, setInitialColor] = useState('')
   useEffect(() => {
     if (open && rowData) {
-      setColor(
-        colorOf({ id: rowData.id, name: rowData.name, icon: rowData.icon }),
-      )
+      const current =
+        rowData.color ||
+        colorOf({ id: rowData.id, name: rowData.name, icon: rowData.icon })
+      setColor(current)
+      setInitialColor(current)
     }
   }, [open, rowData, colorOf])
 
   const mutation = useMutation({
     mutationFn: async (data: FormType) => {
-      const res = await updateItemNew({
-        route: `/sector/${rowData?.id}`,
-        data,
-      })
-      // A cor só é gravada depois que o servidor aceitou o setor (e só com a
-      // flag de demonstração, enquanto a API do setor não tem o campo)
-      if (res.success && DEMO_DATA) {
-        await setSectorColor({
-          sectorId: String(rowData?.id),
-          name: data.name,
-          color: color || null,
-        })
+      // A cor só vai no corpo quando foi trocada. A que coincide com o padrão
+      // do ícone vai como nulo: o setor continua seguindo o padrão
+      const body: FormType & { color?: string | null } = { ...data }
+      if (color !== initialColor) {
+        const padrao = sectorDefaultColor({ name: data.name, icon: data.icon })
+        body.color = color && color !== padrao ? color : null
       }
-      return res
+      return updateItemNew({
+        route: `/sector/${rowData?.id}`,
+        data: body,
+      })
     },
     onSuccess: (res) => {
       if (!res.success) {
@@ -185,9 +185,8 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                 width="flex-[1_0_190px]"
               />
               {/* A cor acompanha o setor em todo lugar: gerenciador, ficha,
-                  agenda, composição e lista de processos. Ainda é gravada
-                  em dado de demonstração: o campo só aparece com a flag */}
-              <div className={cn('w-full space-y-1.5', !DEMO_DATA && 'hidden')}>
+                  agenda, composição e lista de processos */}
+              <div className="w-full space-y-1.5">
                 <Label>Cor</Label>
                 <div className="flex flex-wrap items-center gap-3">
                   <SectorIcon

@@ -1,55 +1,40 @@
 'use server'
 
-// PROVISÓRIO: a API do setor (`/sector`) devolve `icon`, mas não tem cor. A
-// cor escolhida no cadastro de setores fica aqui, por id do setor e pelo
-// nome (a composição e a produção só conhecem o nome), até a API ganhar o
-// campo `color` (backend-pendente.md). Sem escolha, vale o padrão do setor
-// (src/consts/sectors.ts).
+// A cor do setor vem do próprio setor (`GET /sector`, campo `color`). Esta
+// action devolve o mapa { id | nome normalizado → cor } que o hook
+// `useSectorColor` usa: a composição e a produção ainda só conhecem o nome do
+// setor. Setor sem cor escolhida não entra no mapa: vale o padrão do ícone
+// (src/consts/sectors.ts). A cor é gravada pelo cadastro de setores, no
+// próprio `PATCH /sector/:id`.
 
-import { auth } from '@/lib/auth'
+import { getItem } from '@/actions/_cruds'
+import { normalizeSectorName } from '@/lib/sector-color'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
-
-const normalize = (value: string) =>
-  value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-
-// Por empresa: { chave → cor }, onde a chave é o id do setor ou o nome
-// normalizado
-const byCompany = new Map<string, Record<string, string>>()
-
-const companyKey = async () => {
-  const session = await auth()
-  return session?.company?.id || 'sem-empresa'
+type SectorWithColor = {
+  id?: string | null
+  name?: string | null
+  color?: string | null
 }
 
 export const getSectorColors = async () => {
-  if (!DEMO_DATA) return { success: true, data: {}, message: '' }
-  const key = await companyKey()
-  return { success: true, data: byCompany.get(key) || {}, message: '' }
-}
-
-export const setSectorColor = async ({
-  sectorId,
-  name,
-  color,
-}: {
-  sectorId: string
-  name: string
-  // Vazio volta ao padrão
-  color: string | null
-}) => {
-  if (!DEMO_DATA) return demoOff()
-  if (color && !/^#[0-9a-fA-F]{6}$/.test(color)) {
-    return { success: false, data: null, message: 'Cor inválida' }
-  }
-  const key = await companyKey()
-  const map = { ...(byCompany.get(key) || {}) }
-  const keys = [sectorId, normalize(name)].filter(Boolean)
-  keys.forEach((entry) => {
-    if (color) map[entry] = color.toUpperCase()
-    else delete map[entry]
+  const res = await getItem({
+    route: '/sector',
+    params: { page: '1', limit: '100' },
   })
-  byCompany.set(key, map)
+  if (!res.success) {
+    return {
+      success: false,
+      data: {} as Record<string, string>,
+      message: res.message,
+    }
+  }
+
+  const map: Record<string, string> = {}
+  const sectors: SectorWithColor[] = res.data?.data ?? []
+  for (const sector of sectors) {
+    if (!sector?.color) continue
+    if (sector.id) map[sector.id] = sector.color
+    if (sector.name) map[normalizeSectorName(sector.name)] = sector.color
+  }
   return { success: true, data: map, message: '' }
 }
