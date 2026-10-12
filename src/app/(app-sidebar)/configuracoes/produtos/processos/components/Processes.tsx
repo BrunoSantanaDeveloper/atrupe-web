@@ -33,7 +33,7 @@ import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { getProcessList } from '@/actions/product-assembly'
+import { getProcessList } from '@/actions/processes'
 
 // Hooks / Store / Consts
 import { resourceKindObj } from '@/consts/processes'

@@ -40,7 +40,7 @@ import {
 import { InactivateProcessDialog } from './InactivateProcessDialog'
 
 // Actions
-import { createProcessDef, getProcessDetail } from '@/actions/product-assembly'
+import { createProcessDef, getProcessDetail } from '@/actions/processes'
 
 // Hooks / Store
 import { useCompanySectors } from '@/hooks/queries/useCompanySectors'

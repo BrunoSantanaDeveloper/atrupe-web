@@ -88,6 +88,13 @@ const GATED_ROUTES: GatedRoute[] = [
     title: /^Materiais$/,
     inMenu: true,
   },
+  {
+    path: '/configuracoes/produtos/processos',
+    feature: 'cost_base',
+    minPlan: 'PRO',
+    title: /^Processos$/,
+    inMenu: true,
+  },
 ]
 
 /** O texto da parede de plano, com o mapa de chaves ou sem ele. */

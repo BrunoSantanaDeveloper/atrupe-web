@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dialog'
 
 // Actions
-import { getProcessUsage, updateProcessMeta } from '@/actions/product-assembly'
+import { getProcessUsage, updateProcessMeta } from '@/actions/processes'
 
 // Third-party
 import { toast } from 'sonner'

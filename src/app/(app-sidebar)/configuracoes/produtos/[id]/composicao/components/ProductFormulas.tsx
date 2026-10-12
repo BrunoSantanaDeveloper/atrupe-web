@@ -24,6 +24,11 @@ import {
   removeProductFormula,
   updateProductFormula,
 } from '@/actions/product-assembly'
+import {
+  addProcessFormula,
+  removeProcessFormula,
+  updateProcessFormula,
+} from '@/actions/processes'
 
 // Third-party
 import { toast } from 'sonner'
@@ -63,6 +68,8 @@ export function ProductFormulas({
   onSaved,
 }: Props) {
   const queryClient = useQueryClient()
+  // O processo (`processo:<id>`) já grava na API; o produto, no exemplo
+  const isProcess = productId.startsWith('processo:')
   const [dialog, setDialog] = useState<
     { kind: 'new' } | { kind: 'edit'; formula: ProductFormula } | null
   >(null)
@@ -74,7 +81,9 @@ export function ProductFormulas({
 
   const { mutate: remove } = useMutation({
     mutationFn: (formulaId: string) =>
-      removeProductFormula({ productId, formulaId }),
+      isProcess
+        ? removeProcessFormula({ hostId: productId, formulaId })
+        : removeProductFormula({ productId, formulaId }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       toast.success('Fórmula removida')
@@ -86,12 +95,20 @@ export function ProductFormulas({
   const save = async (values: FormulaValues) => {
     const response =
       dialog?.kind === 'edit'
-        ? await updateProductFormula({
-            productId,
-            formulaId: dialog.formula.id,
-            ...values,
-          })
-        : await addProductFormula({ productId, ...values })
+        ? isProcess
+          ? await updateProcessFormula({
+              hostId: productId,
+              formulaId: dialog.formula.id,
+              ...values,
+            })
+          : await updateProductFormula({
+              productId,
+              formulaId: dialog.formula.id,
+              ...values,
+            })
+        : isProcess
+          ? await addProcessFormula({ hostId: productId, ...values })
+          : await addProductFormula({ productId, ...values })
     if (!response.success) {
       toast.error(response.message)
       return false

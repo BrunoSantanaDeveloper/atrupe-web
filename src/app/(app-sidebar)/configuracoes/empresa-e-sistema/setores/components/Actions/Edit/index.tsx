@@ -18,12 +18,13 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { IconComponent } from '@/components/common/Icon'
 import { FormInput } from '@/components/common/form/FormInput'
-import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormSelect, SelectBasic } from '@/components/common/form/FormSelect'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 
 // Icons
@@ -51,6 +52,8 @@ import {
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
+import { FEATURES } from '@/consts/features'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { useSectorColor, SECTOR_COLORS_QUERY_KEY } from '@/hooks/useSectorColor'
 
@@ -79,12 +82,46 @@ const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
   value: key,
 }))
 
+// Como o setor vende (AB-19): por hora, ou pela produção do equipamento.
+// O setor que vende pelo equipamento não tem linha de mão de obra
+const saleUnitOptions = [
+  { value: 'HOUR', label: 'Por hora' },
+  { value: 'M2', label: 'Por m² do equipamento' },
+  { value: 'M', label: 'Por metro do equipamento' },
+  { value: 'UN', label: 'Por unidade do equipamento' },
+  { value: 'KM', label: 'Por km' },
+]
+
+type SaleUnit = NonNullable<ListSectorDataType['saleUnit']>
+
+const moneyText = (cents?: number | null) =>
+  cents === null || cents === undefined ? '' : String(cents / 100)
+const centsOrNull = (value: string) => {
+  if (!value.trim()) return null
+  const number = Number(value.replace(',', '.'))
+  return Number.isFinite(number) ? Math.round(number * 100) : null
+}
+
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
-  const { canManageProductionStages } = usePlanFeatures()
+  const { canManageProductionStages, hasFeature } = usePlanFeatures()
+  const { hasAnyPermission } = usePermissions()
   const { notifyActionError } = usePlanErrorToast()
 
   const canConfigProductionStages = canManageProductionStages()
+  // A composição custeia a mão de obra e o preparo pela hora do setor
+  const composition = hasFeature(FEATURES.COSTS.COST_BASE)
+  const seesValues = hasAnyPermission(['values:values:view'])
+  const [saleUnit, setSaleUnit] = useState<SaleUnit>('HOUR')
+  const [hourCost, setHourCost] = useState('')
+  const [hourSale, setHourSale] = useState('')
+
+  useEffect(() => {
+    if (!open) return
+    setSaleUnit(rowData?.saleUnit || 'HOUR')
+    setHourCost(moneyText(rowData?.hourCost))
+    setHourSale(moneyText(rowData?.hourSale))
+  }, [open, rowData])
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -116,7 +153,25 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     mutationFn: async (data: FormType) => {
       // A cor só vai no corpo quando foi trocada. A que coincide com o padrão
       // do ícone vai como nulo: o setor continua seguindo o padrão
-      const body: FormType & { color?: string | null } = { ...data }
+      const body: FormType & {
+        color?: string | null
+        saleUnit?: SaleUnit
+        hourCost?: number | null
+        hourSale?: number | null
+      } = { ...data }
+      // Vai só o que mudou: gravar custo ou venda da hora pede a permissão
+      // de valores
+      if (composition) {
+        if (saleUnit !== (rowData?.saleUnit || 'HOUR')) {
+          body.saleUnit = saleUnit
+        }
+        if (seesValues) {
+          const cost = centsOrNull(hourCost)
+          const sale = centsOrNull(hourSale)
+          if (cost !== (rowData?.hourCost ?? null)) body.hourCost = cost
+          if (sale !== (rowData?.hourSale ?? null)) body.hourSale = sale
+        }
+      }
       if (color !== initialColor) {
         const padrao = sectorDefaultColor({ name: data.name, icon: data.icon })
         body.color = color && color !== padrao ? color : null
@@ -232,6 +287,65 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   entrega e na composição do produto.
                 </p>
               </div>
+              {composition && (
+                <div className="w-full space-y-3 rounded-lg border border-gray-200 p-3">
+                  <div>
+                    <p className="text-sm font-medium">Composição</p>
+                    <p className="text-xs text-gray">
+                      Como o setor vende e quanto vale a hora dele. Os processos
+                      e as composições custeiam a mão de obra e o preparo por
+                      estes valores, até a Base de custos calcular a hora.
+                    </p>
+                  </div>
+                  <SelectBasic
+                    name="sector-sale-unit"
+                    label="Como o setor vende"
+                    options={saleUnitOptions}
+                    value={saleUnit}
+                    onChange={(value) =>
+                      value && setSaleUnit(String(value) as SaleUnit)
+                    }
+                  />
+                  {seesValues && (
+                    <div className="flex flex-wrap gap-4">
+                      <div className="flex-[1_0_160px] space-y-1.5">
+                        <label
+                          htmlFor="sector-hour-cost"
+                          className="text-sm font-medium"
+                        >
+                          Custo da hora
+                        </label>
+                        <Input
+                          id="sector-hour-cost"
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          startAdornment={<span className="text-sm">R$</span>}
+                          value={hourCost}
+                          onChange={(event) => setHourCost(event.target.value)}
+                        />
+                      </div>
+                      <div className="flex-[1_0_160px] space-y-1.5">
+                        <label
+                          htmlFor="sector-hour-sale"
+                          className="text-sm font-medium"
+                        >
+                          Hora vendida
+                        </label>
+                        <Input
+                          id="sector-hour-sale"
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          startAdornment={<span className="text-sm">R$</span>}
+                          value={hourSale}
+                          onChange={(event) => setHourSale(event.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </form>
           </Form>
         </DialogBody>

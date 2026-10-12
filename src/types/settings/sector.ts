@@ -10,6 +10,10 @@ export type ListSectorDataType = {
   color?: string | null
   saleUnit?: 'HOUR' | 'M2' | 'M' | 'UN' | 'KM'
   nature?: 'PRODUCTIVE' | 'ADMINISTRATIVE'
+  // Custo e venda da hora, em centavos (composição). Só vêm para quem tem
+  // a permissão de valores
+  hourCost?: number | null
+  hourSale?: number | null
 }
 
 export type ListSectorType = {

@@ -85,17 +85,17 @@ import { ProductFormulas } from '@/app/(app-sidebar)/configuracoes/produtos/[id]
 import {
   getUsualNext,
   setUsualNext,
-  addLineOption,
-  addAssemblyLine,
+  addProcessLine,
+  setProcessStage,
   getProcessDetail,
-  removeLineOption,
+  updateProcessLine,
+  removeProcessLine,
   updateProcessMeta,
-  addProductFormula,
-  removeAssemblyLine,
-  setBlockLocalRules,
-  updateAssemblyLine,
-  getAssemblyResources,
-} from '@/actions/product-assembly'
+  addProcessFormula,
+  getProcessResources,
+  addProcessLineOption,
+  removeProcessLineOption,
+} from '@/actions/processes'
 
 // Hooks / Store / Consts
 import { useMoney } from '@/hooks/useMoney'
@@ -224,8 +224,8 @@ export function ProcessEditor({
   })
   const { data: resourcesRes } = useQuery({
     staleTime: Infinity,
-    queryKey: ['assembly-resources'],
-    queryFn: () => getAssemblyResources(),
+    queryKey: ['process-resources'],
+    queryFn: () => getProcessResources(),
   })
   // Os setores da empresa, do cadastro de setores (05/10/2026)
   const { sectors } = useCompanySectors()
@@ -374,7 +374,7 @@ export function ProcessEditor({
     name: string
     expression: string
   }) => {
-    const res = await addProductFormula({ productId: hostId, ...values })
+    const res = await addProcessFormula({ hostId, ...values })
     if (!res.success) {
       toast.error(res.message)
       return null
@@ -414,11 +414,7 @@ export function ProcessEditor({
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
-        const res = await removeAssemblyLine({
-          productId: hostId,
-          blockId: block.id,
-          lineId: line.id,
-        })
+        const res = await removeProcessLine({ hostId, lineId: line.id })
         if (!res.success) throw new Error(res.message)
         await refresh()
       },
@@ -436,11 +432,11 @@ export function ProcessEditor({
     message = 'Processo configurado',
   ) =>
     run(
-      setBlockLocalRules({
-        productId: hostId,
-        blockId: block.id,
+      setProcessStage({
+        hostId,
+        // Sobre as regras do processo, e não as da simulação depois da base
         rules: Object.keys(patch).length
-          ? { ...rules, ...patch }
+          ? { ...block.originalRules, ...patch }
           : block.originalRules,
         ...extra,
       }),
@@ -975,9 +971,8 @@ export function ProcessEditor({
                               onChange={(value) =>
                                 value &&
                                 run(
-                                  updateAssemblyLine({
-                                    productId: hostId,
-                                    blockId: block.id,
+                                  updateProcessLine({
+                                    hostId,
                                     lineId: line.id,
                                     values: { selectedId: String(value) },
                                   }),
@@ -1336,7 +1331,7 @@ export function ProcessEditor({
         onSave={(values) => {
           setDialog(null)
           run(
-            addAssemblyLine({ productId: hostId, blockId: block.id, values }),
+            addProcessLine({ hostId, values }),
             'Recurso acrescentado ao processo',
           )
         }}
@@ -1354,15 +1349,7 @@ export function ProcessEditor({
           if (dialog?.kind !== 'line') return
           const lineId = dialog.lineId
           setDialog(null)
-          run(
-            updateAssemblyLine({
-              productId: hostId,
-              blockId: block.id,
-              lineId,
-              values,
-            }),
-            'Recurso ajustado',
-          )
+          run(updateProcessLine({ hostId, lineId, values }), 'Recurso ajustado')
         }}
       />
       <OptionsDialog
@@ -1371,9 +1358,8 @@ export function ProcessEditor({
         onOpenChange={() => setDialog(null)}
         onAdd={async (values) => {
           if (dialog?.kind !== 'options') return false
-          const res = await addLineOption({
-            productId: hostId,
-            blockId: block.id,
+          const res = await addProcessLineOption({
+            hostId,
             lineId: dialog.lineId,
             ...values,
           })
@@ -1388,9 +1374,8 @@ export function ProcessEditor({
         onRemove={(optionId) => {
           if (dialog?.kind !== 'options') return
           run(
-            removeLineOption({
-              productId: hostId,
-              blockId: block.id,
+            removeProcessLineOption({
+              hostId,
               lineId: dialog.lineId,
               optionId,
             }),
