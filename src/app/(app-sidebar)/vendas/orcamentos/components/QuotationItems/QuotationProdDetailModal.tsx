@@ -66,10 +66,8 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { SaleCompositionFields } from './SaleCompositionFields'
-import {
-  saveItemComposition,
-  recalculateItemLines,
-} from '@/actions/quotation-composition'
+// As linhas acrescentadas no item ainda são do exemplo (fatia 4.2)
+import { recalculateItemLines } from '@/actions/quotation-composition'
 import {
   getPriceTiers,
   getProductVariations,
@@ -83,6 +81,16 @@ interface Props {
   // O que o vendedor já escolheu na composição deste item, ao editar
   composition?: ItemComposition
 }
+
+// O item guarda só as escolhas; o resumo, o servidor monta (ORC-10)
+const choicesOf = (composition: ItemComposition) => ({
+  extras: composition.extras,
+  times: composition.times,
+  choices: composition.choices,
+  optionals: composition.optionals,
+  lists: composition.lists,
+  notes: composition.notes ?? [],
+})
 
 // Função auxiliar para calcular medida básica baseada no unitKind (valores brutos)
 function calculateRawMeasurement(
@@ -355,6 +363,8 @@ export function QuotationProdDetailModal({
   useEffect(() => {
     if (open) setVariationId(null)
   }, [open, product?.id])
+  // Na edição, a variação é a do item: não muda depois de lançado
+  const itemVariationId = editMode ? (data?.variation?.id ?? null) : variationId
   const chooseVariation = (id: string) => {
     const variation = variations.find((item) => item.id === id)
     if (!variation) return
@@ -443,6 +453,10 @@ export function QuotationProdDetailModal({
           salePrice: item.salePrice,
         }),
       ),
+      // A variação escolhida e as escolhas da composição vão no item; o
+      // servidor calcula o retrato da venda (ORC-10)
+      variationId: !editMode && variationId ? variationId : undefined,
+      composition: composition ? choicesOf(composition) : undefined,
     })
 
     // console.info('SUBMIT:', newFormData)
@@ -458,14 +472,6 @@ export function QuotationProdDetailModal({
         return
       }
 
-      // Na edição, o productId do formulário é o id do item
-      if (composition && data?.productId) {
-        await saveItemComposition({
-          quotationId: String(quotationId),
-          key: String(data.productId),
-          composition,
-        })
-      }
       // Mudou a medida do item: as linhas acrescentadas que acompanham a
       // base são recalculadas; as de medida própria ficam (05/10/2026). As
       // linhas ainda ficam em dado de demonstração: só com a flag
@@ -491,9 +497,6 @@ export function QuotationProdDetailModal({
       }
       handleToggleModal(false)
       toast.success('Item editado')
-      queryClient.invalidateQueries({
-        queryKey: ['quotation-item-compositions'],
-      })
       await queryClient.invalidateQueries({
         queryKey: [QUOTATION_DATA_QUERY_KEY],
       })
@@ -511,22 +514,10 @@ export function QuotationProdDetailModal({
       return
     }
 
-    if (composition) {
-      const created = res.data as { id?: string } | undefined
-      await saveItemComposition({
-        quotationId: String(quotationId),
-        key: created?.id || String(data.productId),
-        composition,
-      })
-    }
-
     handleToggleModal(false)
     toast.success('Item adicionado')
     queryClient.invalidateQueries({
       queryKey: [QUOTATION_DATA_QUERY_KEY],
-    })
-    queryClient.invalidateQueries({
-      queryKey: ['quotation-item-compositions'],
     })
     reset()
   }
@@ -580,6 +571,12 @@ export function QuotationProdDetailModal({
                   placeholder="Digite aqui"
                   disabled={!canEditDescription}
                 />
+                {editMode && data?.variation && (
+                  <p className="w-full text-sm text-gray-700">
+                    <span className="font-medium">Variação:</span>{' '}
+                    {data.variation.name}
+                  </p>
+                )}
                 {variations.length > 0 && (
                   <div className="w-full space-y-2">
                     <p className="text-sm font-medium text-gray-700">
@@ -735,25 +732,26 @@ export function QuotationProdDetailModal({
                     </div>
                   )
                 })}
-                {/* O formulário de venda da composição ainda roda sobre dados
-                    de demonstração: só com a flag */}
-                {DEMO_DATA && (
-                  <FeatureGate
-                    features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}
-                  >
-                    <div className="w-full">
-                      <SaleCompositionFields
-                        key={data?.id || product?.id}
-                        productId={
-                          product?.id || data?.product?.originalProductId
-                        }
-                        initial={editMode ? savedComposition : undefined}
-                        measure={compositionMeasure}
-                        onChange={setComposition}
-                      />
-                    </div>
-                  </FeatureGate>
-                )}
+                {/* As escolhas da composição do produto (IP-36), lidas da
+                    API; a variação com composição própria troca o form */}
+                <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+                  <div className="w-full">
+                    <SaleCompositionFields
+                      key={`${data?.id || product?.id}:${itemVariationId || ''}`}
+                      productId={
+                        product?.id || data?.product?.originalProductId
+                      }
+                      variationId={itemVariationId}
+                      initial={
+                        editMode
+                          ? (data?.composition ?? savedComposition)
+                          : undefined
+                      }
+                      measure={compositionMeasure}
+                      onChange={setComposition}
+                    />
+                  </div>
+                </FeatureGate>
                 <FormTextarea<ProductsFormType>
                   name="technicalDescription"
                   label="Descritivo técnico"

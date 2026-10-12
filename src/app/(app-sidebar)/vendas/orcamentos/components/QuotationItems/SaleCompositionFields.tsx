@@ -22,7 +22,8 @@ import type { ItemComposition } from '../../[quotationId]/composicao/types'
 import type { SaleSheetUsage } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Actions
-import { getSaleForm, getSaleSheetUsage } from '@/actions/product-assembly'
+// A composição do produto vem da API (contrato, módulo 1, parte A)
+import { getSaleForm, getSaleSheetUsage } from '@/actions/assembly'
 import {
   hhmmToMinutes,
   minutesToHhmm,
@@ -33,6 +34,8 @@ import { useQuery } from '@tanstack/react-query'
 
 interface Props {
   productId?: string
+  // A variação com composição própria troca as escolhas (PV-6)
+  variationId?: string | null
   initial?: ItemComposition
   // Quantidade e medida do item na venda (em metros): é o que o aproveitamento
   // de folha lê para dizer quantas folhas a venda usa (AP-5)
@@ -62,15 +65,16 @@ const num = (value: number) =>
 
 export function SaleCompositionFields({
   productId,
+  variationId = null,
   initial,
   measure,
   onChange,
 }: Props) {
   const { data: saleFormRes } = useQuery({
     enabled: !!productId,
-    staleTime: Infinity,
-    queryKey: ['sale-form', productId],
-    queryFn: () => getSaleForm({ productId: productId! }),
+    staleTime: 60_000,
+    queryKey: ['sale-form', productId, variationId],
+    queryFn: () => getSaleForm({ productId: productId!, variationId }),
   })
   const saleForm = saleFormRes?.data || null
 
@@ -123,6 +127,7 @@ export function SaleCompositionFields({
     queryKey: [
       'sale-sheet-usage',
       productId,
+      variationId,
       measure?.quantity ?? 0,
       measure?.width ?? 0,
       measure?.height ?? 0,
@@ -131,7 +136,8 @@ export function SaleCompositionFields({
     queryFn: () =>
       getSaleSheetUsage({
         productId: productId!,
-        measure: measure || { quantity: 0, width: 0, height: 0 },
+        variationId,
+        measure: measure || { quantity: 1, width: 0, height: 0 },
         choices,
       }),
   })

@@ -1,4 +1,5 @@
 // import { PaymentConditionsType } from '../settings/paymentCondition'
+import type { ItemComposition } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/composicao/types'
 
 export type QuotationItemType = {
   id: string
@@ -6,6 +7,13 @@ export type QuotationItemType = {
   notes: string
   discountType: string
   discount: number
+  // Acréscimo em centavos, fora do desconto (ALT-25)
+  addition?: number
+  origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL'
+  variation?: { id: string; name: string } | null
+  // As escolhas da composição e o resumo; o retrato com custo fica no
+  // servidor (ORC-7)
+  composition?: ItemComposition | null
   unitValue: number
   totalValue: number
   originalValue: number
@@ -21,6 +29,9 @@ export type QuotationItemType = {
   product: {
     originalProductId: string
     name: string
+    // Produto inativado depois de lançado (PAD-7)
+    isActive?: boolean
+    hasComposition?: boolean
     quantity: number
     unitValue: number
     finalValue: number

@@ -94,7 +94,11 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
       quotationData?.quotationItems?.reduce((sum, item) => {
         // Pular o item atual
         if (item?.id === rowData?.id) return sum
-        const itemDiscount = (item?.totalValue || 0) - (item?.finalValue || 0)
+        // O acréscimo do item não desconta o desconto dele (ALT-25)
+        const itemDiscount =
+          (item?.totalValue || 0) +
+          (item?.addition || 0) -
+          (item?.finalValue || 0)
         return sum + Math.max(itemDiscount, 0)
       }, 0) || 0
     )
@@ -197,9 +201,8 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
   }, [discountType])
 
   // MS-16: o vendedor ajusta o valor do item para mais, para menos ou só para
-  // arredondar. Para mais, a diferença é valor agregado (vai como desconto
-  // negativo até a API ter o campo próprio); para menos, é desconto e vale o
-  // limite do perfil
+  // arredondar. Para mais, a diferença é valor agregado e vai no acréscimo do
+  // item (ALT-25); para menos, é desconto e vale o limite do perfil
   const surcharge = Math.max(finalValue - baseValue, 0)
   const surchargePercent = baseValue > 0 ? (surcharge / baseValue) * 100 : 0
 
@@ -234,8 +237,21 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     delete data.totalValue
     delete data.finalValue
 
+    // A diferença para mais vai como acréscimo, sem desconto; o desconto
+    // negativo antigo some ao salvar
+    const addition = Math.round(Math.max(finalValue - baseValue, 0))
+    const body: FormType =
+      addition > 0
+        ? { discountType: 'VALUE', discount: 0, addition }
+        : {
+            ...data,
+            discount:
+              data.discount !== null && data.discount < 0 ? 0 : data.discount,
+            addition: 0,
+          }
+
     try {
-      const result = await mutation.mutateAsync(data)
+      const result = await mutation.mutateAsync(body)
       if (result.success) {
         toast.success('Valores atualizados')
         setOpen('')

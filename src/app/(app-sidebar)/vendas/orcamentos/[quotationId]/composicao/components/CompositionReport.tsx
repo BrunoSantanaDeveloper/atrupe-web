@@ -32,7 +32,8 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import type { QuotationItem } from '../types'
 
 // Actions
-import { getSaleComposition } from '@/actions/product-assembly'
+import { getSaleComposition as getDemoSaleComposition } from '@/actions/product-assembly'
+import { getSaleComposition } from '@/actions/assembly'
 import { sheetUsageText } from '../../../components/QuotationItems/SaleCompositionFields'
 
 // Hooks / Store / Consts
@@ -71,7 +72,11 @@ export type ReportTarget = Pick<
   | 'height'
   | 'variation'
   | 'composition'
->
+> & {
+  // O item gravado na API lê o relatório de lá; o do exemplo, do exemplo
+  fromApi?: boolean
+  variationId?: string | null
+}
 
 interface Props {
   item: ReportTarget | null
@@ -91,22 +96,39 @@ export function CompositionReport({ item, onOpenChange }: Props) {
       item?.composition,
     ],
     queryFn: () =>
-      getSaleComposition({
-        productId: item!.productId!,
-        measure: {
-          quantity: item!.quantity,
-          // Produto vendido por unidade guarda a medida da composição
-          width: item!.width || 1,
-          height: item!.height || 1,
-        },
-        variationName: item!.variation,
-        extras: item!.composition?.extras,
-        times: item!.composition?.times,
-        notes: item!.composition?.notes,
-        choices: item!.composition?.choices,
-        optionals: item!.composition?.optionals,
-        lists: item!.composition?.lists,
-      }),
+      item!.fromApi
+        ? getSaleComposition({
+            productId: item!.productId!,
+            variationId: item!.variationId ?? null,
+            // Sem medida no item (vendido por unidade), vale a padrão
+            measure: {
+              quantity: item!.quantity,
+              width: item!.width || 0,
+              height: item!.height || 0,
+            },
+            extras: item!.composition?.extras,
+            times: item!.composition?.times,
+            notes: item!.composition?.notes,
+            choices: item!.composition?.choices,
+            optionals: item!.composition?.optionals,
+            lists: item!.composition?.lists,
+          })
+        : getDemoSaleComposition({
+            productId: item!.productId!,
+            measure: {
+              quantity: item!.quantity,
+              // Produto vendido por unidade guarda a medida da composição
+              width: item!.width || 1,
+              height: item!.height || 1,
+            },
+            variationName: item!.variation,
+            extras: item!.composition?.extras,
+            times: item!.composition?.times,
+            notes: item!.composition?.notes,
+            choices: item!.composition?.choices,
+            optionals: item!.composition?.optionals,
+            lists: item!.composition?.lists,
+          }),
   })
 
   const report = data?.data

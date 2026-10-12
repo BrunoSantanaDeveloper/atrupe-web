@@ -23,7 +23,16 @@ import type {
   PriceTier,
   ProductDimension,
   ResourceOption,
+  SaleChoice,
+  SaleCompositionReport,
+  SaleExtra,
+  SaleForm,
+  SaleListEntry,
+  SaleOptional,
   SaleRules,
+  SaleSheetUsage,
+  SaleTime,
+  SheetYield,
   UnitKind,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 import type { ResourceKind } from '@/app/(app-sidebar)/configuracoes/produtos/processos/types'
@@ -1251,4 +1260,120 @@ export const getProductUsage = async ({ productId }: { productId: string }) => {
   }
   if (!res.success) return fail(res, empty)
   return ok({ ...empty, ...(res.data as Partial<typeof empty>) })
+}
+
+/* --------------------------------------------------------------------------
+ * O produto na venda (IP-36): as escolhas do item do orçamento e o relatório
+ * da composição daquela venda, sem custo (ORC-7). A API mede em mm
+ * ------------------------------------------------------------------------ */
+
+type SaleChoices = {
+  extras?: SaleExtra[]
+  times?: SaleTime[]
+  choices?: SaleChoice[]
+  optionals?: SaleOptional[]
+  lists?: SaleListEntry[]
+  notes?: { blockId: string; text: string }[]
+}
+
+type ApiSaleReport = Omit<SaleCompositionReport, 'measure' | 'blocks'> & {
+  measure: { quantity: number; width: number; height: number }
+  blocks: (Omit<SaleCompositionReport['blocks'][number], 'measure' | 'sale'> & {
+    measure: { quantity: number; width: number; height: number }
+    sale?: number | null
+  })[]
+}
+
+// Sem composição o produto volta vazio, e o item segue sem as escolhas
+export const getSaleForm = async ({
+  productId,
+  variationId = null,
+}: {
+  productId: string
+  variationId?: string | null
+}) => {
+  const res: ApiResult = await getItem({
+    route: `/product/${productId}/sale-form`,
+    params: withVariation(variationId),
+  })
+  if (!res.success) return fail<SaleForm | null>(res, null)
+  return ok<SaleForm | null>((res.data as SaleForm | null) || null)
+}
+
+// O relatório da composição daquela venda; não grava nada
+export const getSaleComposition = async ({
+  productId,
+  variationId = null,
+  measure,
+  ...choices
+}: SaleChoices & {
+  productId: string
+  variationId?: string | null
+  measure?: AssemblyMeasure
+}) => {
+  const res: ApiResult = await createItemNew({
+    route: `/product/${productId}/sale-composition`,
+    data: {
+      ...choices,
+      ...withVariation(variationId),
+      ...(measure
+        ? {
+            measure: {
+              quantity: measure.quantity,
+              width: toMm(measure.width),
+              height: toMm(measure.height),
+            },
+          }
+        : {}),
+    },
+  })
+  if (!res.success) return fail<SaleCompositionReport | null>(res, null)
+  const api = res.data as ApiSaleReport
+  return ok<SaleCompositionReport | null>({
+    ...api,
+    measure: measureOf(api.measure),
+    blocks: api.blocks.map((block) => ({
+      ...block,
+      // Sem a permissão de valores, a venda da etapa chega vazia
+      sale: block.sale ?? 0,
+      measure: measureOf(block.measure),
+    })),
+  })
+}
+
+// O aproveitamento de folha da venda (AP-5), lido do relatório: só a linha
+// da própria folha ou chapa traz o aproveitamento
+export const getSaleSheetUsage = async ({
+  productId,
+  variationId = null,
+  measure,
+  choices = [],
+}: {
+  productId: string
+  variationId?: string | null
+  measure: AssemblyMeasure
+  choices?: SaleChoice[]
+}) => {
+  // A medida que faltar (vendido por unidade) vem do padrão do produto
+  const report = await getSaleComposition({
+    productId,
+    variationId,
+    measure,
+    choices,
+  })
+  if (!report.success || !report.data) return ok<SaleSheetUsage[]>([])
+  return ok<SaleSheetUsage[]>(
+    report.data.blocks.flatMap((block) =>
+      block.lines
+        .filter((line) => line.sheetYield)
+        .map((line) => ({
+          blockId: block.id,
+          blockName: block.name,
+          lineName: line.name,
+          resource: line.resource || line.sheetYield!.sheetName,
+          unit: line.unit,
+          sheetYield: line.sheetYield as SheetYield,
+        })),
+    ),
+  )
 }

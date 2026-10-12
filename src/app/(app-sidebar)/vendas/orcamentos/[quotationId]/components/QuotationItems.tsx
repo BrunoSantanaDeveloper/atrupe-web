@@ -121,9 +121,9 @@ export function QuotationItems({ data }: Props) {
 
   const queryClient = useQueryClient()
 
-  // A composição que o vendedor escolheu em cada item (IP-36). Fica no mock
-  // até a API guardar o campo no item (backend-pendente.md). O mock, aqui e
-  // nos itens montados e acrescentados abaixo, só com a flag de demonstração
+  // A composição que o vendedor escolheu em cada item (IP-36) vem no item
+  // da API; o exemplo em memória fica só com a flag de demonstração, para
+  // os itens lançados antes, como os montados e acrescentados abaixo
   const { data: compositionsRes } = useQuery({
     queryKey: ['quotation-item-compositions', data?.id],
     queryFn: () => getItemCompositions({ quotationId: String(data?.id) }),
@@ -132,6 +132,7 @@ export function QuotationItems({ data }: Props) {
   const [report, setReport] = useState<ReportTarget | null>(null)
 
   const compositionOf = (item: QuotationItemType) =>
+    item.composition ||
     compositionsRes?.data?.[item.id] ||
     compositionsRes?.data?.[item.product?.originalProductId]
 
@@ -210,8 +211,11 @@ export function QuotationItems({ data }: Props) {
       quantity: item.product?.quantity || 1,
       width: first?.width ? first.width / 1000 : 1,
       height: first?.height ? first.height / 1000 : 1,
-      variation: null,
+      variation: item.variation?.name ?? null,
+      variationId: item.variation?.id ?? null,
       composition: compositionOf(item),
+      // O item lançado lê o relatório da API
+      fromApi: !!item.composition,
     }
   }
 
@@ -303,14 +307,17 @@ export function QuotationItems({ data }: Props) {
                     (sum, line) => sum + line.price,
                     0,
                   )
+                  // O acréscimo tem campo próprio (ALT-25); o desconto
+                  // negativo antigo ainda aparece como acréscimo
+                  const addition = item?.addition || 0
                   const discount = Math.max(
                     0,
-                    item?.totalValue - item?.finalValue,
+                    item?.totalValue + addition - item?.finalValue,
                   )
-                  // A diferença para mais é valor agregado (ALT-25): fica
-                  // embutida no valor do item e só aparece na tela interna
+                  // O valor agregado fica embutido no valor do item e só
+                  // aparece na tela interna
                   const surcharge = Math.max(
-                    0,
+                    addition,
                     item?.finalValue - item?.totalValue,
                   )
                   const toggle = () =>
@@ -379,18 +386,20 @@ export function QuotationItems({ data }: Props) {
                             )}
                           </TableCell>
                           <TableCell className="py-4 text-warning-600 text-nowrap">
-                            {discount > 0 ? (
-                              `-${formatCurrencyToBrl(discount)}`
-                            ) : surcharge > 0 ? (
+                            {discount > 0 && (
+                              <span className="block">
+                                -{formatCurrencyToBrl(discount)}
+                              </span>
+                            )}
+                            {surcharge > 0 && (
                               <span
-                                className="text-success-700"
+                                className="block text-success-700"
                                 title="Valor agregado: diferença para mais sobre o preço base"
                               >
                                 +{formatCurrencyToBrl(surcharge)}
                               </span>
-                            ) : (
-                              '-'
                             )}
+                            {!discount && !surcharge && '-'}
                           </TableCell>
                           <TableCell className="py-4 text-sm text-gray">
                             {formatCurrencyToBrl(item?.finalValue)}
@@ -589,9 +598,9 @@ export function QuotationItems({ data }: Props) {
                                 />
                               )}
 
-                              {chosen?.summary?.length ? (
+                              {chosen ? (
                                 <div className="flex flex-wrap items-center gap-2">
-                                  {chosen.summary.map((entry) => (
+                                  {(chosen.summary || []).map((entry) => (
                                     <Badge key={entry} variant="neutralLight">
                                       {entry}
                                     </Badge>
