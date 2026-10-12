@@ -133,15 +133,21 @@ export function Main() {
                     <div className="flex gap-3">
                       <TooltipProvider>
                         {item?.isTraining && (
-                          <ActionButton
-                            variant="neutralLight"
-                            Icon={IconEraser}
-                            tooltip="Apagar todos os orçamentos, O.S e movimentações."
-                            onClick={() => {
-                              setOpenDialog('wipe')
-                              setRowData(item)
-                            }}
-                          />
+                          // A API exige editar séries para apagar os dados
+                          // de treinamento; o botão ficava para quem só via
+                          <PermissionGate
+                            permissions={['sales_settings:series:edit']}
+                          >
+                            <ActionButton
+                              variant="neutralLight"
+                              Icon={IconEraser}
+                              tooltip="Apagar todos os orçamentos, O.S e movimentações."
+                              onClick={() => {
+                                setOpenDialog('wipe')
+                                setRowData(item)
+                              }}
+                            />
+                          </PermissionGate>
                         )}
                         <PermissionGate
                           permissions={['sales_settings:series:edit']}
