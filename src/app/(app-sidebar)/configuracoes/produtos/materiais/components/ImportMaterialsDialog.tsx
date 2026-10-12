@@ -143,7 +143,7 @@ export function ImportMaterialsDialog({
 
   const conciliate = async () => {
     const res = await previewMaterialImport({ rows })
-    if (!res.success) return
+    if (!res.success) return toast.error(res.message)
     setPreview([...res.data])
     setLinks(
       Object.fromEntries(
@@ -161,10 +161,16 @@ export function ImportMaterialsDialog({
   }
 
   const valid = (preview || []).filter((row) => row.status !== 'INVALID')
+  // A linha nova sem setor não é cadastrada: precisa de vínculo com um
+  // material, ou do setor na planilha (o servidor a devolve com o aviso)
+  const blocked = (row: ImportPreviewRow) =>
+    row.status !== 'INVALID' && !links[row.line] && !!row.problem
   const counts = {
-    create: valid.filter((row) => !links[row.line]).length,
+    create: valid.filter((row) => !links[row.line] && !blocked(row)).length,
     update: valid.filter((row) => !!links[row.line]).length,
-    invalid: (preview || []).filter((row) => row.status === 'INVALID').length,
+    invalid: (preview || []).filter(
+      (row) => row.status === 'INVALID' || blocked(row),
+    ).length,
   }
 
   const save = async () => {
@@ -180,8 +186,11 @@ export function ImportMaterialsDialog({
     })
     setSaving(false)
     if (!res.success || !res.data) return toast.error(res.message)
+    const ignored = res.data.ignored
+      ? ` · ${res.data.ignored} ${res.data.ignored === 1 ? 'linha ignorada' : 'linhas ignoradas'}`
+      : ''
     toast.success(
-      `${res.data.created} ${res.data.created === 1 ? 'material cadastrado' : 'materiais cadastrados'} · ${res.data.updated} ${res.data.updated === 1 ? 'atualizado' : 'atualizados'}`,
+      `${res.data.created} ${res.data.created === 1 ? 'material cadastrado' : 'materiais cadastrados'} · ${res.data.updated} ${res.data.updated === 1 ? 'atualizado' : 'atualizados'}${ignored}`,
     )
     onDone()
     onOpenChange(false)
@@ -309,11 +318,12 @@ export function ImportMaterialsDialog({
                             {row.sector && (
                               <p className="text-xs text-gray">{row.sector}</p>
                             )}
-                            {row.problem && (
-                              <p className="text-xs text-error-600">
-                                {row.problem}
-                              </p>
-                            )}
+                            {row.problem &&
+                              (row.status === 'INVALID' || blocked(row)) && (
+                                <p className="text-xs text-error-600">
+                                  {row.problem}
+                                </p>
+                              )}
                           </TableCell>
                           <TableCell className="text-sm text-gray">
                             {row.unit || '—'}

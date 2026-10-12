@@ -56,9 +56,12 @@ interface Props {
   onOpenChange: () => void
   // Quem grava o preço, quando não é o mock da Precificação: o produto da
   // lista grava no cadastro (API). Devolve { success, message }
+  // No preço variável vai também o lucro informado, em décimos de ponto
+  // (300 = 30,0 %): o servidor refaz a conta com ele
   onSave?: (values: {
     rule: PriceRule
     price: number
+    desiredMargin?: number
   }) => Promise<{ success: boolean; message: string }>
   // No produto, a tabela por faixa de quantidade (FQ-1) fica aqui, junto do
   // preço (orientação do time, 03/10/2026)
@@ -116,8 +119,10 @@ export function EditPriceModal({
     setVolume('')
   }, [item, open, charges, parameters])
 
-  // Preço variável: preço = custo ÷ (1 − encargos − lucro), o método divisor
-  const profitFraction = toNumber(profit) / 100
+  // Preço variável: preço = custo ÷ (1 − encargos − lucro), o método divisor.
+  // O lucro vale com uma casa (décimos de ponto), que é como ele é guardado
+  const profitTenths = Math.round(toNumber(profit) * 10)
+  const profitFraction = profitTenths / 1000
   const variablePrice =
     cost !== null && 1 - charges - profitFraction > 0
       ? Math.round(cost / (1 - charges - profitFraction))
@@ -191,7 +196,11 @@ export function EditPriceModal({
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       onSave
-        ? onSave({ rule, price: effectivePrice || 0 })
+        ? onSave({
+            rule,
+            price: effectivePrice || 0,
+            ...(rule === 'VARIABLE' ? { desiredMargin: profitTenths } : {}),
+          })
         : updateItemPrice({
             group,
             id: item?.id || '',

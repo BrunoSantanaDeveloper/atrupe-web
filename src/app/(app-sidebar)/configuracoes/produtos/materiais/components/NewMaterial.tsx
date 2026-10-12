@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -44,6 +44,7 @@ import {
 
 // Hooks / Store / Consts
 import { assetUnitOptions } from '@/consts/assets'
+import { useSector } from '@/hooks/queries/useSector'
 
 // Third-party
 import { toast } from 'sonner'
@@ -57,15 +58,6 @@ const splitList = (value: string) =>
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean)
-
-const sectors = [
-  'Impressão',
-  'Marcenaria',
-  'Produção',
-  'Serralheria',
-  'Gráfica',
-  'Almoxarifado',
-].map((sector) => ({ value: sector, label: sector }))
 
 const subcategories = [
   'Lonas',
@@ -100,6 +92,13 @@ const weightUnitLabel: { [key: string]: string } = {
 
 const numberOrNull = (value: string) =>
   value.trim() === '' ? null : Number(value.replace(',', '.'))
+// Reais digitados para centavos; em branco fica sem valor (e não zero)
+const centsOrNull = (value: string) => {
+  const number = numberOrNull(value)
+  return number === null || !Number.isFinite(number)
+    ? null
+    : Math.round(number * 100)
+}
 const text = (value: number | null | undefined) =>
   value === null || value === undefined ? '' : String(value)
 
@@ -127,7 +126,20 @@ export function NewMaterialModal({ material }: Props) {
   const colorList = splitList(colors)
   const combinations = brandList.length * colorList.length
   const [name, setName] = useState(material?.name || '')
-  const [sector, setSector] = useState(material?.sector || sectors[0].value)
+  // O setor vem do cadastro de setores da empresa (os ativos; o do
+  // material continua na lista mesmo se foi inativado depois)
+  const { data: sectorList } = useSector()
+  const [sectorId, setSectorId] = useState(material?.sectorId || '')
+  const sectors = useMemo(
+    () =>
+      (sectorList || [])
+        .filter((item) => item.isActive || item.id === material?.sectorId)
+        .map((item) => ({ value: item.id, label: item.name })),
+    [sectorList, material?.sectorId],
+  )
+  useEffect(() => {
+    if (!sectorId && sectors.length) setSectorId(sectors[0].value)
+  }, [sectorId, sectors])
   const [subcategory, setSubcategory] = useState(
     material?.subcategory || subcategories[0].value,
   )
@@ -173,12 +185,12 @@ export function NewMaterialModal({ material }: Props) {
     mutationFn: () => {
       const values = {
         name,
-        sector,
+        sectorId,
         subcategory,
         unit,
         directSale,
         productionMaterial,
-        cost: Math.round(Number(cost || 0) * 100),
+        cost: centsOrNull(cost),
         advanced,
       }
 
@@ -213,7 +225,7 @@ export function NewMaterialModal({ material }: Props) {
         materialId: material?.id || '',
         brands: brandList,
         colors: colorList,
-        cost: Math.round(Number(variationCost || 0) * 100),
+        cost: centsOrNull(variationCost),
         // O preço vem depois, pelo modal de precificação (MT-3)
         price: null,
       }),
@@ -275,8 +287,8 @@ export function NewMaterialModal({ material }: Props) {
             <SelectBasic
               name="sector"
               label="Setor"
-              value={sector}
-              onChange={setSector}
+              value={sectorId}
+              onChange={setSectorId}
               options={sectors}
             />
             <SelectBasic
@@ -612,7 +624,7 @@ export function NewMaterialModal({ material }: Props) {
             </DialogClose>
             <Button
               isLoading={isPending}
-              disabled={!name}
+              disabled={!name || !sectorId}
               onClick={() => mutate()}
             >
               {isEdit ? 'Salvar' : 'Cadastrar material'}

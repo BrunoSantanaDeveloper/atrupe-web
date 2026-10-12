@@ -1,7 +1,9 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não tem os endpoints do cadastro de materiais
-// (recurso do PRO). Dados de exemplo em memória, no formato das actions reais.
+// Cadastro de materiais (recurso do PRO): as rotas /material da API
+// (docs/backend/contrato-api.md, módulo 1, parte B). Custo e preço em
+// centavos. Quem não tem a permissão de valores não recebe custo nem preço:
+// aqui eles viram nulo, e a tela mostra "-".
 
 // Types
 import type {
@@ -10,109 +12,138 @@ import type {
   MaterialAdvanced,
   MaterialVariation,
 } from '@/app/(app-sidebar)/configuracoes/produtos/materiais/types'
+import type {
+  PriceRule,
+  PricingItem,
+} from '@/app/(app-sidebar)/precificacao/types'
 
-// Os dados ficam num módulo comum: a composição lê os materiais daqui para
-// a lista de recursos e para as medidas do perfil nas fórmulas
-import { materials } from './materials-data'
+// Actions
+import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
+// A lista vem em páginas de até 100 (teto da API); a tela agrupa tudo por
+// setor, então a action junta as páginas. O limite é uma proteção: acima
+// dele a tela precisa de busca própria
+const PAGE_SIZE = 100
+const MAX_PAGES = 30
+
+type ApiVariation = {
+  id: string
+  brand: string
+  color: string
+  cost?: number | null
+  price?: number | null
+}
+
+type ApiMaterial = Omit<
+  Material,
+  'cost' | 'price' | 'variations' | 'advanced'
+> & {
+  cost?: number | null
+  price?: number | null
+  variations?: ApiVariation[]
+  advanced?: MaterialAdvanced | null
+}
+
+const toVariation = (variation: ApiVariation): MaterialVariation => ({
+  id: variation.id,
+  brand: variation.brand,
+  color: variation.color,
+  cost: variation.cost ?? null,
+  price: variation.price ?? null,
+})
+
+const toMaterial = (material: ApiMaterial): Material => ({
+  id: material.id,
+  code: material.code,
+  name: material.name,
+  sectorId: material.sectorId,
+  sector: material.sector,
+  subcategory: material.subcategory,
+  unit: material.unit,
+  directSale: material.directSale,
+  productionMaterial: material.productionMaterial,
+  priceRule: material.priceRule,
+  cost: material.cost ?? null,
+  price: material.price ?? null,
+  variations: (material.variations || []).map(toVariation),
+  active: material.active,
+  advanced: material.advanced || undefined,
+})
 
 export const getMaterials = async ({
   filters,
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
-  const search = filters?.search?.trim().toLowerCase()
-  const status = filters?.status || 'ativos'
+  const search = filters?.search?.trim()
+  const params = {
+    limit: String(PAGE_SIZE),
+    active: filters?.status === 'inativos' ? 'false' : 'true',
+    ...(search ? { search } : {}),
+    ...(filters?.sectorId ? { sectorId: filters.sectorId } : {}),
+  }
 
-  const data = materials
-    .filter((material) =>
-      status === 'inativos' ? !material.active : material.active,
-    )
-    .filter(
-      (material) => !filters?.sector || material.sector === filters.sector,
-    )
-    .filter(
-      (material) =>
-        !search ||
-        material.name.toLowerCase().includes(search) ||
-        material.code.toLowerCase().includes(search),
-    )
+  const data: Material[] = []
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res = await getItem({
+      route: '/material',
+      params: { ...params, page: String(page) },
+    })
+    if (!res.success) {
+      return {
+        success: false,
+        data: [] as Material[],
+        message: res.message,
+        planError: res.planError,
+      }
+    }
+    data.push(...((res.data?.data || []) as ApiMaterial[]).map(toMaterial))
+    if (page >= (res.data?.lastPage || 1)) break
+  }
 
   return { success: true, data, message: '' }
 }
 
-export const createMaterial = async ({
-  name,
-  sector,
-  subcategory,
-  unit,
-  cost,
-  directSale,
-  productionMaterial,
-  advanced,
-}: {
+type MaterialValues = {
   name: string
-  sector: string
+  sectorId: string
   subcategory: string
   unit: MaterialUnit
-  cost: number
+  // Nulo = sem custo informado
+  cost: number | null
   directSale: boolean
   productionMaterial: boolean
   advanced?: MaterialAdvanced
-}) => {
-  if (!DEMO_DATA) return demoOff()
-  if (!name?.trim()) {
-    return { success: false, data: null, message: 'Informe o nome do material' }
+}
+
+export const createMaterial = async (values: MaterialValues) => {
+  const res = await createItemNew({ route: '/material', data: values })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
   }
-
-  const material: Material = {
-    id: `material-${materials.length + 1}`,
-    code: `MAT-${String(materials.length + 1).padStart(2, '0')}`,
-    name,
-    sector,
-    subcategory,
-    unit,
-    directSale,
-    productionMaterial,
-    priceRule: 'FIXED',
-    cost,
-    price: null,
-    variations: [],
-    active: true,
-    advanced,
-  }
-
-  materials.push(material)
-
-  return { success: true, data: material, message: '' }
+  return { success: true, data: toMaterial(res.data), message: '' }
 }
 
 export const updateMaterial = async ({
   id,
+  advanced,
   ...values
-}: Partial<Material> & { id: string }) => {
-  if (!DEMO_DATA) return demoOff()
-  const material = materials.find((item) => item.id === id)
-
-  if (!material) {
-    return { success: false, data: null, message: 'Material não encontrado' }
+}: Partial<MaterialValues> & { id: string }) => {
+  const res = await updateItemNew({
+    route: `/material/${id}`,
+    // Sem o bloco avançado, o servidor apaga a configuração: é o que a tela
+    // pede quando a pessoa fecha "Configuração avançada"
+    data: { ...values, advanced: advanced ?? null },
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
   }
-
-  if (values.name !== undefined && !values.name.trim()) {
-    return { success: false, data: null, message: 'Informe o nome do material' }
-  }
-
-  Object.assign(material, values)
-
-  return { success: true, data: material, message: '' }
+  return { success: true, data: toMaterial(res.data), message: '' }
 }
 
-// Ao criar variações, o preço do material deixa de valer: a venda passa a exigir
-// a escolha da variação (MT-3). O valor nasce repetido e pode ser alterado
-// linha a linha (MT-4).
+// Ao criar variações, o preço do material deixa de valer: a venda passa a
+// exigir a escolha da variação (MT-3). O custo nasce repetido e pode ser
+// alterado linha a linha (MT-4). Devolve quantas combinações foram criadas
 export const createMaterialVariations = async ({
   materialId,
   brands,
@@ -123,41 +154,17 @@ export const createMaterialVariations = async ({
   materialId: string
   brands: string[]
   colors: string[]
-  cost: number
+  cost: number | null
   price: number | null
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const material = materials.find((item) => item.id === materialId)
-
-  if (!material) {
-    return { success: false, data: null, message: 'Material não encontrado' }
-  }
-
-  const combinations: MaterialVariation[] = []
-
-  brands.forEach((brand) => {
-    colors.forEach((color) => {
-      const exists = material.variations.some(
-        (variation) => variation.brand === brand && variation.color === color,
-      )
-
-      if (!exists) {
-        combinations.push({
-          id: `var-${brand}-${color}-${Date.now()}`,
-          brand,
-          color,
-          cost,
-          price,
-        })
-      }
-    })
+  const res = await createItemNew({
+    route: `/material/${materialId}/variation`,
+    data: { brands, colors, cost, price },
   })
-
-  material.variations.push(...combinations)
-  material.cost = null
-  material.price = null
-
-  return { success: true, data: combinations.length, message: '' }
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
+  }
+  return { success: true, data: Number(res.data?.created || 0), message: '' }
 }
 
 export const updateMaterialVariation = async ({
@@ -171,22 +178,74 @@ export const updateMaterialVariation = async ({
   cost: number | null
   price: number | null
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const material = materials.find((item) => item.id === materialId)
-  const variation = material?.variations.find((item) => item.id === variationId)
-
-  if (!variation) {
-    return { success: false, data: null, message: 'Variação não encontrada' }
+  const res = await updateItemNew({
+    route: `/material/${materialId}/variation/${variationId}`,
+    data: { cost, price },
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
   }
+  return { success: true, data: toVariation(res.data), message: '' }
+}
 
-  variation.cost = cost
-  variation.price = price
+// A regra e o preço do material, ou da variação quando houver (DC-6, PR-2).
+// No preço variável vai o lucro informado, em décimos de ponto: o servidor
+// refaz a conta e recusa o preço que não confere
+export const updateMaterialPrice = async ({
+  materialId,
+  variationId,
+  rule,
+  price,
+  desiredMargin,
+}: {
+  materialId: string
+  variationId?: string
+  rule: PriceRule
+  price: number
+  desiredMargin?: number
+}) => {
+  const res = await updateItemNew({
+    route: `/material/${materialId}/price`,
+    data: {
+      rule,
+      price,
+      ...(variationId ? { variationId } : {}),
+      ...(rule === 'VARIABLE' ? { desiredMargin } : {}),
+    },
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
+  }
+  return { success: true, data: res.data as PricingItem, message: '' }
+}
 
-  return { success: true, data: variation, message: '' }
+// "Onde é usado": os produtos e processos cuja composição usa o material
+export type MaterialUsage = {
+  kind: 'PRODUCT' | 'PROCESS'
+  id: string
+  name: string
+  stage: string
+}
+
+export const getMaterialUsage = async ({
+  materialId,
+}: {
+  materialId: string
+}) => {
+  const res = await getItem({ route: `/material/${materialId}/usage` })
+  if (!res.success) {
+    return { success: false, data: [] as MaterialUsage[], message: res.message }
+  }
+  return {
+    success: true,
+    data: (res.data?.data || []) as MaterialUsage[],
+    message: '',
+  }
 }
 
 // Material usado em composição ou venda tem histórico: é INATIVADO, não
-// excluído. Inativo, some das listas de escolha e continua nos registros
+// excluído. Ao inativar, o servidor o tira das composições na mesma
+// transação e devolve em `removedFrom` quantas linhas mudaram
 export const setMaterialActive = async ({
   id,
   active,
@@ -194,16 +253,21 @@ export const setMaterialActive = async ({
   id: string
   active: boolean
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const material = materials.find((item) => item.id === id)
-
-  if (!material) {
-    return { success: false, data: null, message: 'Material não encontrado' }
+  const res = await updateItemNew({
+    route: `/material/${id}/toggle-status`,
+    data: { active },
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
   }
-
-  material.active = active
-
-  return { success: true, data: material, message: '' }
+  return {
+    success: true,
+    data: {
+      ...toMaterial(res.data),
+      removedFrom: Number(res.data?.removedFrom || 0),
+    },
+    message: '',
+  }
 }
 
 /* ---------------------------------------------------------------------------
@@ -232,84 +296,8 @@ export type ImportPreviewRow = ImportRow & {
   materialId: string | null
   materialName: string | null
   unitKey: MaterialUnit | null
+  // O motivo da linha inválida, ou o aviso da linha nova sem setor
   problem?: string
-}
-
-// O de-para aprendido: nome como veio de fora → material interno
-const importLinks = new Map<string, string>()
-
-const normalize = (value: string) =>
-  value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-
-// A unidade como as planilhas escrevem, para a unidade do cadastro
-const unitAliases: { [key: string]: MaterialUnit } = {
-  m2: 'M2',
-  'm²': 'M2',
-  mq: 'M2',
-  'metro quadrado': 'M2',
-  m: 'M',
-  ml: 'M',
-  metro: 'M',
-  'metro linear': 'M',
-  un: 'UN',
-  und: 'UN',
-  unid: 'UN',
-  unidade: 'UN',
-  pc: 'UN',
-  pç: 'UN',
-  folha: 'UN',
-  chapa: 'UN',
-  kg: 'KG',
-  quilo: 'KG',
-  l: 'LT',
-  lt: 'LT',
-  litro: 'LT',
-  h: 'HR',
-  hr: 'HR',
-  hora: 'HR',
-  km: 'KM',
-}
-
-const unitOf = (value: string): MaterialUnit | null =>
-  unitAliases[normalize(value)] ?? null
-
-const classify = (row: ImportRow, line: number): ImportPreviewRow => {
-  const base = {
-    ...row,
-    line,
-    materialId: null,
-    materialName: null,
-    unitKey: unitOf(row.unit || ''),
-  }
-  if (!row.name?.trim()) {
-    return { ...base, status: 'INVALID', problem: 'Linha sem nome' }
-  }
-  if (!base.unitKey) {
-    return {
-      ...base,
-      status: 'INVALID',
-      problem: `Unidade "${row.unit || ''}" não reconhecida (use m², m, un, kg, l)`,
-    }
-  }
-  const key = normalize(row.name)
-  const linked = importLinks.get(key)
-  const match =
-    (linked && materials.find((item) => item.id === linked)) ||
-    materials.find((item) => normalize(item.name) === key)
-  if (match) {
-    return {
-      ...base,
-      status: linked ? 'LINKED' : 'MATCH',
-      materialId: match.id,
-      materialName: match.name,
-    }
-  }
-  return { ...base, status: 'NEW' }
 }
 
 export const previewMaterialImport = async ({
@@ -317,17 +305,22 @@ export const previewMaterialImport = async ({
 }: {
   rows: ImportRow[]
 }) => {
-  if (!DEMO_DATA)
+  const res = await createItemNew({
+    route: '/material/import/preview',
+    data: { rows },
+  })
+  if (!res.success) {
     return {
-      success: true,
+      success: false,
       data: [] as ImportPreviewRow[],
-      message: '',
-    } as const
+      message: res.message || 'Erro ao conciliar a lista',
+    }
+  }
   return {
     success: true,
-    data: rows.map((row, index) => classify(row, index + 1)),
+    data: (res.data?.data || []) as ImportPreviewRow[],
     message: '',
-  } as const
+  }
 }
 
 export const importMaterials = async ({
@@ -335,42 +328,19 @@ export const importMaterials = async ({
 }: {
   // A linha já conciliada: `materialId` é a decisão da pessoa (ou a do
   // sistema), e vazio cadastra material novo
-  rows: (ImportRow & { materialId: string | null; sector?: string })[]
+  rows: (ImportRow & { materialId: string | null })[]
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  let created = 0
-  let updated = 0
-  rows.forEach((row) => {
-    const unit = unitOf(row.unit || '')
-    if (!row.name?.trim() || !unit) return
-    const key = normalize(row.name)
-    const target = row.materialId
-      ? materials.find((item) => item.id === row.materialId)
-      : undefined
-    if (target) {
-      // A decisão fica guardada: da próxima vez o sistema já sabe (área 4)
-      if (normalize(target.name) !== key) importLinks.set(key, target.id)
-      // Custo atualizado só onde ele vive: sem variação, no material
-      if (row.cost !== null && !target.variations.length) target.cost = row.cost
-      updated += 1
-      return
-    }
-    materials.push({
-      id: `material-${materials.length + 1}-${Date.now()}`,
-      code: `MAT-${String(materials.length + 1).padStart(2, '0')}`,
-      name: row.name.trim(),
-      sector: row.sector?.trim() || 'Produção',
-      subcategory: 'Importados',
-      unit,
-      directSale: false,
-      productionMaterial: true,
-      priceRule: 'VARIABLE',
-      cost: row.cost,
-      price: null,
-      variations: [],
-      active: true,
-    })
-    created += 1
-  })
-  return { success: true, data: { created, updated }, message: '' }
+  const res = await createItemNew({ route: '/material/import', data: { rows } })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
+  }
+  return {
+    success: true,
+    data: {
+      created: Number(res.data?.created || 0),
+      updated: Number(res.data?.updated || 0),
+      ignored: Number(res.data?.ignored || 0),
+    },
+    message: '',
+  }
 }

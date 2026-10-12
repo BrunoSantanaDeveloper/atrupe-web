@@ -71,6 +71,10 @@ const GATED_GET_ROUTES: GatedApiRoute[] = [
     minPlan: 'LITE',
   },
   { path: '/asset', feature: 'cost_base', minPlan: 'PRO' },
+  // A lista do cadastro de materiais. A busca de venda direta
+  // (directSale=true) não entra aqui: ela responde lista vazia, não 403,
+  // a quem não tem a base de custos.
+  { path: '/material?page=1&limit=1', feature: 'cost_base', minPlan: 'PRO' },
 ]
 
 const planOrder = (planType: string) => PLAN_ORDER.indexOf(planType as TestPlan)

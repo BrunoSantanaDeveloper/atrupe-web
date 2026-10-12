@@ -194,10 +194,9 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
       {
         path: '/cadastros/clientes',
         shown: '/configuracoes/produtos',
-        hidden: [
-          '/configuracoes/produtos/materiais',
-          '/configuracoes/produtos/processos',
-        ],
+        // Materiais saiu daqui: já lê a API e aparece para quem tem a base
+        // de custos
+        hidden: ['/configuracoes/produtos/processos'],
       },
       {
         path: '/configuracoes/empresa-e-sistema',

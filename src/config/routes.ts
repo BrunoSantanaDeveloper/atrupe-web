@@ -66,7 +66,6 @@ export const DEMO_ROUTES = [
   '/producao/produtividade',
   '/configuracoes/producao',
   '/configuracoes/empresa-e-sistema/patrimonios',
-  '/configuracoes/produtos/materiais',
   '/configuracoes/produtos/processos',
   '/configuracoes/produtos/[id]/composicao',
   '/configuracoes/vendas/terceirizados',

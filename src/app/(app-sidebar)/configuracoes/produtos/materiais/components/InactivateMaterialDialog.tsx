@@ -25,11 +25,7 @@ import {
 import type { Material } from '../types'
 
 // Actions
-import { setMaterialActive } from '@/actions/materials'
-import {
-  getMaterialUsage,
-  removeMaterialFromCompositions,
-} from '@/actions/product-assembly'
+import { getMaterialUsage, setMaterialActive } from '@/actions/materials'
 
 // Third-party
 import { toast } from 'sonner'
@@ -64,16 +60,8 @@ export function InactivateMaterialDialog({
 
   const confirm = async () => {
     setSaving(true)
-    if (inactivating && usage.length) {
-      const removed = await removeMaterialFromCompositions({
-        materialId: material.id,
-      })
-      if (!removed.success) {
-        setSaving(false)
-        toast.error(removed.message)
-        return
-      }
-    }
+    // O servidor tira o material das composições na mesma transação em
+    // que o inativa
     const res = await setMaterialActive({
       id: material.id,
       active: !inactivating,

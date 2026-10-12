@@ -1,8 +1,10 @@
-// PROVISÓRIO: os materiais de exemplo em memória, compartilhados entre o
-// cadastro de materiais (actions/materials.ts) e a composição
+// PROVISÓRIO: os materiais de exemplo em memória da composição
 // (actions/product-assembly.ts), que lista os materiais como recursos e lê
-// as medidas do perfil nas fórmulas (MT-10.1). Não é 'use server' de
-// propósito: módulo 'use server' só exporta funções assíncronas.
+// as medidas do perfil nas fórmulas (MT-10.1), e da Precificação
+// (actions/pricing.ts). O cadastro de materiais já lê a API
+// (actions/materials.ts): estes exemplos saem quando a composição e a
+// Precificação também lerem. Não é 'use server' de propósito: módulo
+// 'use server' só exporta funções assíncronas.
 
 // Types
 import type {
@@ -10,7 +12,9 @@ import type {
   MaterialUnit,
 } from '@/app/(app-sidebar)/configuracoes/produtos/materiais/types'
 
-export const materials: Material[] = [
+// O exemplo não tem o id do setor: só o nome, que é o que a composição e
+// a Precificação de exemplo mostram
+export const materials: Omit<Material, 'sectorId'>[] = [
   {
     id: 'lona-440',
     code: 'MAT-01',

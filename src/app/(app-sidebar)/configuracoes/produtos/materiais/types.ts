@@ -43,6 +43,8 @@ export type Material = {
   id: string
   code: string
   name: string
+  // O setor do cadastro (/sector): o id e o nome, que a lista agrupa
+  sectorId: string
   sector: string
   subcategory: string
   unit: MaterialUnit

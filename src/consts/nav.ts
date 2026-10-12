@@ -311,7 +311,6 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'product_settings:products:view',
         requiredFeature: 'cost_base',
-        demo: true,
       },
       {
         icon: IconListCheck,

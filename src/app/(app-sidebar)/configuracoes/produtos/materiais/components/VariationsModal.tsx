@@ -31,7 +31,10 @@ import type { Material, MaterialVariation } from '../types'
 import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { updateMaterialVariation } from '@/actions/materials'
+import {
+  updateMaterialPrice,
+  updateMaterialVariation,
+} from '@/actions/materials'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
@@ -230,6 +233,15 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
         group="materials"
         item={pricing}
         open={!!pricing}
+        // O id do item é "mat:<material>:<variação>"
+        onSave={(values) => {
+          const [, materialId, variationId] = (pricing?.id || '').split(':')
+          return updateMaterialPrice({
+            materialId: materialId || '',
+            variationId,
+            ...values,
+          })
+        }}
         onOpenChange={() => {
           setPricing(undefined)
           queryClient.invalidateQueries({ queryKey: ['materials'] })

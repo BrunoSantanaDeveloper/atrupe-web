@@ -36,7 +36,7 @@ import type { Material } from '../types'
 import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { getMaterials } from '@/actions/materials'
+import { getMaterials, updateMaterialPrice } from '@/actions/materials'
 import { materialUnitSymbol } from '@/actions/materials-data'
 
 // Hooks / Store / Consts
@@ -379,6 +379,14 @@ export function Materials({ searchParams }: SearchParamsType) {
           group="materials"
           item={pricing}
           open={!!pricing}
+          // O preço do material é gravado no cadastro (DC-6): o id do
+          // item é "mat:<material>"
+          onSave={(values) =>
+            updateMaterialPrice({
+              materialId: (pricing?.id || '').split(':')[1] || '',
+              ...values,
+            })
+          }
           onOpenChange={() => {
             setPricing(undefined)
             queryClient.invalidateQueries({ queryKey: ['materials'] })
