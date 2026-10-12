@@ -23,7 +23,7 @@ import { unitSymbol } from '../[id]/composicao/assembly'
 import {
   getProductVariations,
   saveProductVariations,
-} from '@/actions/product-assembly'
+} from '@/actions/product-variations'
 
 // Third-party
 import { toast } from 'sonner'

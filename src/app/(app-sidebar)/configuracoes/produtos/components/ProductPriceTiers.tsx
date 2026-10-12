@@ -27,7 +27,7 @@ import type { PriceTier, UnitKind } from '../[id]/composicao/assembly'
 import { unitSymbol } from '../[id]/composicao/assembly'
 
 // Actions
-import { getPriceTiers, setPriceTiers } from '@/actions/product-assembly'
+import { getPriceTiers, setPriceTiers } from '@/actions/product-variations'
 
 // Third-party
 import { toast } from 'sonner'

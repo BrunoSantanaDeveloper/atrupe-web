@@ -158,7 +158,9 @@ function NewProductModal({
   // lugar da lista simples de etapas do LITE (ET-1). A composição e as
   // variações ainda rodam sobre dados de exemplo: só com a flag
   const showCompositionTab = DEMO_DATA && hasFeature(FEATURES.COSTS.COST_BASE)
-  const showVariations = DEMO_DATA && !showCompositionTab
+  // As variações simples já leem a API; com a composição (PRO, ainda com
+  // a flag), elas vivem na aba Composição
+  const showVariations = !showCompositionTab
 
   useEffect(() => {
     if (open) setActiveTab(initialTab)

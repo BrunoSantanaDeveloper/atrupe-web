@@ -64,12 +64,16 @@ import { QuotationItemType } from '@/types/sales/quotation'
 import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { SaleCompositionFields } from './SaleCompositionFields'
 import {
   saveItemComposition,
   recalculateItemLines,
 } from '@/actions/quotation-composition'
-import { getPriceTiers, getProductVariations } from '@/actions/product-assembly'
+import {
+  getPriceTiers,
+  getProductVariations,
+} from '@/actions/product-variations'
 import type { ItemComposition } from '../../[quotationId]/composicao/types'
 
 interface Props {
@@ -303,10 +307,14 @@ export function QuotationProdDetailModal({
   // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
   // e muda o valor por unidade do item simples conforme a quantidade
   const tierProductId = product?.id || data?.product?.originalProductId || null
-  // As faixas e as variações ainda ficam em dado de demonstração: só com a
-  // flag (src/lib/demo.ts)
+  const { hasFeature } = usePlanFeatures()
+  // As faixas são do recurso de plano da composição (LITE em diante); as
+  // variações valem já no START
   const { data: tiersRes } = useQuery({
-    enabled: !!tierProductId && open && DEMO_DATA,
+    enabled:
+      !!tierProductId &&
+      open &&
+      hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION),
     staleTime: 60_000,
     queryKey: ['price-tiers', tierProductId],
     queryFn: () => getPriceTiers({ productId: tierProductId as string }),
@@ -336,7 +344,7 @@ export function QuotationProdDetailModal({
   // preço e o nome do item seguem a escolha. Com variação escolhida, as faixas
   // do produto não se aplicam
   const { data: variationsRes } = useQuery({
-    enabled: !!product?.id && open && !editMode && DEMO_DATA,
+    enabled: !!product?.id && open && !editMode,
     staleTime: 60_000,
     queryKey: ['product-variations', product?.id],
     queryFn: () => getProductVariations({ productId: product?.id as string }),
