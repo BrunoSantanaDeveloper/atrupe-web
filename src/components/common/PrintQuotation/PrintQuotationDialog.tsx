@@ -254,8 +254,10 @@ export function PrintQuotationDialog({
     }
     try {
       setIsLoading(true)
+      // O servidor também confere o nível pela permissão e pelo plano
       const res = await getItem({
         route: `/sale/quotation/${quotationId}/pdf-data`,
+        params: { detailLevel: level },
       })
 
       if (!res.success) {

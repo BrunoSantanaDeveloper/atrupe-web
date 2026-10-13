@@ -422,6 +422,72 @@ type CompositionItemType = {
   volume: number
 }
 
+// O que a Fase 4 acrescentou ao item na proposta: a variação, as etapas da
+// composição (nos níveis lista e valores, pelo nome de venda) e as linhas
+// acrescentadas dentro do item. Os preços só chegam do servidor no nível de
+// valores e com a permissão de valores.
+type PdfItemExtras = {
+  variation?: { name: string } | null
+  stages?: {
+    name: string
+    sector: string
+    price?: number
+    items: { name: string; quantity: number | null; unit: string }[]
+  }[]
+  lines?: { name: string; sector: string; tags: string[]; price?: number }[]
+}
+
+const extraQuantity = (quantity: number | null, unit: string) =>
+  quantity === null
+    ? ''
+    : ` ${String(Math.round(quantity * 1000) / 1000).replace('.', ',')} ${unit}`
+
+function ItemExtras({
+  item,
+  marginLeft = 0,
+}: {
+  item: PdfItemExtras
+  marginLeft?: number
+}) {
+  const stages = item.stages ?? []
+  const lines = item.lines ?? []
+  if (!stages.length && !lines.length && !item.variation) return null
+
+  return (
+    <View style={{ marginTop: 4, marginLeft, gap: 1 }}>
+      {item.variation && (
+        <Text style={styles.itemTechnicalDescription}>
+          <Text style={styles.itemTechnicalLabel}>Variação: </Text>
+          {item.variation.name}
+        </Text>
+      )}
+      {stages.map((stage, index) => (
+        <Text key={`etapa-${index}`} style={styles.itemTechnicalDescription}>
+          <Text style={styles.itemTechnicalLabel}>{stage.name}: </Text>
+          {stage.items
+            .map(
+              (entry) =>
+                `${entry.name}${extraQuantity(entry.quantity, entry.unit)}`,
+            )
+            .join(' · ')}
+          {stage.price !== undefined
+            ? ` — ${formatCurrencyToBrl(stage.price)}`
+            : ''}
+        </Text>
+      ))}
+      {lines.map((line, index) => (
+        <Text key={`linha-${index}`} style={styles.itemTechnicalDescription}>
+          <Text style={styles.itemTechnicalLabel}>Acrescentado: </Text>
+          {[line.name, ...(line.tags ?? [])].join(' · ')}
+          {line.price !== undefined
+            ? ` — ${formatCurrencyToBrl(line.price)}`
+            : ''}
+        </Text>
+      ))}
+    </View>
+  )
+}
+
 // Função para adaptar composição do PDF para o formato esperado pelas funções utilitárias
 function hasPrintableValue(value?: string | number | null) {
   return String(value ?? '').trim().length > 0
@@ -1194,6 +1260,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             </Text>
                           </View>
                         )}
+                        <ItemExtras item={item as PdfItemExtras} />
                       </View>
                     </View>
 
@@ -1494,6 +1561,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         {item.technicalDescription}
                       </Text>
                     </View>
+                  )}
+                  {!isProduction && (
+                    <ItemExtras
+                      item={item as PdfItemExtras}
+                      marginLeft={showSmallImage ? 113 : 22}
+                    />
                   )}
 
                   {/* Imagem grande abaixo das informações quando não for original */}
