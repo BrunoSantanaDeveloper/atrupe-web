@@ -16,8 +16,11 @@ export type ExpenseAllocationShare = {
 export type AdminExpenseAccount = {
   id: string
   name: string
+  // O código da conta no plano de contas ("02.01.01.02")
   chartAccount: string
-  groupId: string
+  // A API não manda: a lista é plana (decisão de 22/09/2026). Só o exemplo em
+  // memória (actions/cost-base-data.ts), que a Precificação ainda lê, agrupa
+  groupId?: string
   lastMonth: number | null
   avg3: number | null
   avg6: number | null
@@ -47,15 +50,9 @@ export type ExpenseAllocation = {
   }[]
 }
 
-export type AdminExpenseGroup = {
-  id: string
-  name: string
-}
-
 export type AdminExpensesResponse = {
   // Último mês completo usado nas médias, no formato AAAA-MM
   referenceMonth: string
-  groups: AdminExpenseGroup[]
   accounts: AdminExpenseAccount[]
 }
 
@@ -73,20 +70,15 @@ export type AdminExpensesTotals = {
 // A natureza vem do cadastro do setor (regras-de-negocio/areas/05-base-de-custos.md, BC-7)
 export type SectorNature = 'ADMINISTRATIVE' | 'PRODUCTIVE'
 
-// Valores em centavos. `percentage` é inteiro de 0 a 100:
-// no setor administrativo é quanto do custo dele é distribuído;
-// no setor produtivo é quanto do total administrativo ele recebe (BC-5 e BC-6).
+// Valores em centavos. `percentage` vai de 0 a 100, com até duas casas: é
+// quanto do total administrativo o setor produtivo recebe (BC-5). No setor
+// administrativo vem sempre zero: o custo dele entra inteiro no total (BC-7).
 export type DistributionSector = {
   id: string
   name: string
   nature: SectorNature
   percentage: number
   directCost: number | null
-}
-
-export type DistributionResponse = {
-  referenceMonth: string
-  sectors: DistributionSector[]
 }
 
 export type DistributionTotals = {
@@ -96,6 +88,13 @@ export type DistributionTotals = {
   distributedCost: number
   notDistributedCost: number
   receivingSectors: number
+}
+
+// A API devolve os setores e os totais juntos, na leitura e ao salvar
+export type DistributionResponse = {
+  referenceMonth: string
+  sectors: DistributionSector[]
+  totals: DistributionTotals
 }
 
 // --- Aba Por setor ------------------------------------------------------
@@ -182,9 +181,15 @@ export type LaborSector = {
   collaborators: LaborCollaborator[]
 }
 
+export type LaborResponse = {
+  referenceMonth: string
+  sectors: LaborSector[]
+}
+
 // --- Aba Patrimônios ----------------------------------------------------
 // Relatório de depreciação, com as quatro situações da P-9 e a inconsistência
-// definida na P-26 (areas/01-patrimonios.md).
+// definida na P-26 (areas/01-patrimonios.md). A lista é a do cadastro de
+// patrimônios (actions/asset.ts, P-23); daqui saem só os totais do topo.
 
 export type AssetStatus =
   | 'DEPRECIATING'
@@ -194,21 +199,6 @@ export type AssetStatus =
   | 'INACTIVE'
 
 export type AssetGroup = 'MACHINES' | 'FURNITURE' | 'VEHICLES'
-
-export type DepreciationAsset = {
-  id: string
-  name: string
-  group: AssetGroup
-  sector: string
-  acquisitionValue: number
-  depreciableValue: number
-  monthlyDepreciation: number | null
-  depreciatedValue: number
-  remainingValue: number
-  usefulLifeMonths: number
-  elapsedMonths: number
-  status: AssetStatus
-}
 
 export type DepreciationTotals = {
   invested: number
@@ -241,15 +231,23 @@ export type ComparisonAccount = {
 }
 
 export type ComparisonResponse = {
+  referenceMonth: string
   period: string
+  // Os meses do período, do mais antigo ao de referência (AAAA-MM)
+  months: string[]
   accounts: ComparisonAccount[]
   // O comparativo cobre o plano de contas que sobra depois das despesas
-  // administrativas: a cobertura diz quanto desse resto já tem previsão
+  // administrativas: a cobertura diz quanto desse resto já tem previsão,
+  // sem o filtro de situação
   coverage: {
     total: number
     withEstimate: number
     withoutEstimate: number
   }
+  // A lista vem paginada (até 100 por página)
+  page: number
+  lastPage: number
+  total: number
 }
 
 // --- Rateio do setor entre os equipamentos ------------------------------
@@ -283,6 +281,11 @@ export type SectorAllocation = {
   // O critério automático em uso antes do manual: é de onde os percentuais
   // manuais nasceram
   previousCriterion: Exclude<AllocationCriterion, 'MANUAL'> | null
+  // No manual, entrou ou saiu um equipamento do setor depois do último
+  // salvar: o rateio não se atualiza sozinho, e o bem novo fica com 0% até a
+  // empresa salvar de novo (BC-3.1). O exemplo em memória
+  // (actions/sector-allocation-data.ts) não tem, por isso é opcional
+  allocationOutdated?: boolean
   // O custo do setor a repartir entre os equipamentos
   pool: number
   equipment: AllocationEquipment[]

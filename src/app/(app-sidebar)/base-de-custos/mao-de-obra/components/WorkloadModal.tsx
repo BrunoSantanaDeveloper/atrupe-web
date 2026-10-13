@@ -20,6 +20,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { EmptyState } from '@/components/ui/empty-state'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   RateInput,
   parseHours,
@@ -73,10 +74,15 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
         })),
       }),
     onSuccess: (response) => {
-      if (!response.success) return toast.error(response.message)
+      if (!response.success) {
+        return toast.error(response.message || 'Erro ao salvar a carga horária')
+      }
 
       toast.success('Carga horária salva')
+      // O custo-hora do setor é o custo da hora na Precificação
       queryClient.invalidateQueries({ queryKey: ['labor-sectors'] })
+      queryClient.invalidateQueries({ queryKey: ['pricing-items'] })
+      queryClient.invalidateQueries({ queryKey: ['pricing-summary'] })
       onOpenChange()
     },
     onError: () => toast.error('Erro ao salvar a carga horária'),
@@ -178,13 +184,17 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
               Cancelar
             </Button>
           </DialogClose>
-          <Button
-            isLoading={isPending}
-            disabled={!sector?.collaborators.length}
-            onClick={() => mutate()}
-          >
-            {isPending ? 'Salvando...' : 'Salvar carga'}
-          </Button>
+          {/* Sem cost:base:edit a API recusa: quem só vê simula a carga e o
+              custo-hora, sem o salvar */}
+          <PermissionGate permissions={['cost:base:edit']}>
+            <Button
+              isLoading={isPending}
+              disabled={!sector?.collaborators.length}
+              onClick={() => mutate()}
+            >
+              {isPending ? 'Salvando...' : 'Salvar carga'}
+            </Button>
+          </PermissionGate>
         </DialogFooter>
       </DialogContent>
     </Dialog>

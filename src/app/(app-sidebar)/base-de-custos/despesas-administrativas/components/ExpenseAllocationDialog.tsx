@@ -35,6 +35,7 @@ import {
   parseCentsInput,
   formatCentsInput,
 } from '@/components/common/RateInput'
+import { LoadError } from '../../components/LoadError'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 
@@ -128,10 +129,14 @@ export function ExpenseAllocationDialog({
       [id]: Math.min(Math.max(percentage || 0, 0), 100),
     }))
 
-  // O valor digitado vira o percentual exato, para o setor receber o que foi
-  // arredondado à mão (design.md §6.8)
+  // O valor digitado vira o percentual mais próximo com duas casas, que é o
+  // que a API guarda (BC-9): o setor recebe o valor a menos de 0,01% do
+  // custo de referência do que foi digitado
   const handleValue = (id: string, cents: number) =>
-    handleChange(id, reference ? (cents / reference) * 100 : 0)
+    handleChange(
+      id,
+      reference ? Math.round((cents / reference) * 10000) / 100 : 0,
+    )
 
   // O custo próprio do setor sem a parte desta despesa, para mostrar de onde
   // ele sai e aonde chega
@@ -148,7 +153,9 @@ export function ExpenseAllocationDialog({
         })),
       }),
     onSuccess: (response) => {
-      if (!response.success) return toast.error(response.message)
+      if (!response.success) {
+        return toast.error(response.message || 'Erro ao salvar o rateio')
+      }
 
       toast.success('Rateio salvo')
       // O custo do setor muda também na Distribuição, no Por setor, no Resumo
@@ -195,6 +202,8 @@ export function ExpenseAllocationDialog({
           </p>
           {isLoading ? (
             <TableSkeleton cols={4} rows={5} />
+          ) : data && !data.success ? (
+            <LoadError message={data.message} />
           ) : (
             <div className="overflow-x-auto">
               <Table className="min-w-[820px]">
@@ -298,7 +307,7 @@ export function ExpenseAllocationDialog({
             </DialogClose>
             <PermissionGate permissions={['cost:base:edit']}>
               <Button
-                disabled={exceeded || isLoading}
+                disabled={exceeded || isLoading || !allocation}
                 isLoading={isPending}
                 onClick={() => mutate()}
               >

@@ -1,215 +1,259 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não tem os endpoints da Base de custos (recurso do
-// PRO). Estas actions devolvem dados de exemplo em memória, no mesmo formato
-// `{ success, data, message }` das actions reais, para a interface ser
-// desenvolvida e revisada. Trocar por `getData`/`updateItemNew` quando os
-// endpoints existirem; as telas não precisam mudar.
+// Base de custos (recurso do PRO, módulo 4): as rotas /cost-base da API. Tudo
+// ali é valor: sem values:values:view a API recusa (403), e as páginas já
+// pedem a permissão. Dinheiro em centavos dos dois lados; percentual em % com
+// até duas casas (a API recusa mais). O rateio entre os equipamentos do setor
+// fica em sector-allocation.ts. Toda resposta traz o mês de referência
+// (AAAA-MM), o último mês completo.
+//
+// A Precificação e a composição ainda leem o exemplo em memória
+// (cost-base-data.ts e sector-allocation-data.ts) até serem ligadas à API.
 
 // Types
 import type {
   CostCriterion,
-  AdminExpenseGroup,
+  CostSummary,
+  SectorCost,
+  SectorNature,
+  SectorCostOrigin,
+  AllocationCriterion,
+  LaborSector,
+  LaborResponse,
   ExpenseAllocation,
+  AdminExpenseAccount,
   AdminExpensesResponse,
   AdminExpensesTotals,
   DistributionResponse,
   DistributionTotals,
-  SectorCostItem,
-  SectorCostOrigin,
   SectorCostsResponse,
-  CostSummary,
-  LaborSector,
-  LaborCollaborator,
-  AssetStatus,
-  DepreciationAsset,
   DepreciationTotals,
-  ComparisonSource,
+  ComparisonAccount,
   ComparisonResponse,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
-// Os setores e os custos de cada um, compartilhados com o rateio do setor
-// entre os equipamentos (BC-3)
-import {
-  accounts,
-  sectors,
-  directCostOf,
-  sectorItemsOf,
-  distributedCost,
-  administrativeCost,
-  withReference,
-  criterionValue,
-  allocatedTotal,
-  allocationOf,
-  adminExpensesTotal,
-  saveAllocation,
-} from './cost-base-data'
-import { configOf } from './sector-allocation-data'
+// Actions
+import { getItem, putItemNew, updateItemNew } from '@/actions/_cruds'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
+// As listas vêm em páginas de até 100 (teto da API). As despesas
+// administrativas cabem numa página (poucas dezenas de contas); o laço é só
+// para não cortar uma base maior
+const PAGE_SIZE = 100
+const MAX_PAGES = 20
 
-const REFERENCE_MONTH = '2026-08'
-
-const groups: AdminExpenseGroup[] = [
-  { id: 'ocupacao', name: 'Ocupação' },
-  { id: 'utilidades', name: 'Utilidades' },
-  { id: 'servicos', name: 'Serviços contratados' },
-  { id: 'financeiras', name: 'Despesas financeiras' },
-  { id: 'escritorio', name: 'Escritório' },
+const CRITERIA: CostCriterion[] = [
+  'LAST_MONTH',
+  'AVG_3',
+  'AVG_6',
+  'AVG_12',
+  'MANUAL',
 ]
+const PERIODS = ['1', '3', '6', '12']
+const COMPARISON_STATUSES = ['todas', 'com-previsao', 'sem-previsao']
 
+type Result<T> = { success: boolean; data: T; message: string }
+type ApiResult = {
+  success: boolean
+  // O corpo de cada rota é tipado onde é lido
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any
+  message?: string
+}
+
+const ok = <T>(data: T): Result<T> => ({ success: true, data, message: '' })
+const fail = <T>(res: ApiResult, data: T): Result<T> => ({
+  success: false,
+  data,
+  message: res.message || 'Não foi possível concluir.',
+})
+
+// O id entra no caminho da rota: nada de "/" ou "?" vindo da tela
+const seg = (id: string) => encodeURIComponent(id)
+
+// Sem cálculo o valor vem nulo, e a tela mostra `-`, nunca R$ 0,00
+const numOrNull = (value: unknown) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : null
+const num = (value: unknown) => numOrNull(value) ?? 0
+
+// Percentual com até duas casas: a API recusa mais (BC-9)
+const twoPlaces = (value: number) =>
+  Math.round((Number(value) || 0) * 100) / 100
+
+/* --------------------------------------------------------------------------
+ * Formato da API para o da tela: só os campos que a tela lê
+ * ------------------------------------------------------------------------ */
+
+type ApiRow = { [key: string]: unknown }
+const rowsOf = (value: unknown): ApiRow[] =>
+  Array.isArray(value) ? (value as ApiRow[]) : []
+
+const toAccount = (account: ApiRow): AdminExpenseAccount => ({
+  id: String(account.id ?? ''),
+  name: String(account.name ?? ''),
+  chartAccount: String(account.chartAccount ?? ''),
+  lastMonth: numOrNull(account.lastMonth),
+  avg3: numOrNull(account.avg3),
+  avg6: numOrNull(account.avg6),
+  avg12: numOrNull(account.avg12),
+  criterion: account.criterion as CostCriterion,
+  manualValue: numOrNull(account.manualValue),
+  referenceValue: numOrNull(account.referenceValue),
+  allocations: rowsOf(account.allocations).map((share) => ({
+    sectorId: String(share.sectorId ?? ''),
+    sectorName: String(share.sectorName ?? ''),
+    percentage: num(share.percentage),
+    value: num(share.value),
+  })),
+  allocatedValue: num(account.allocatedValue),
+  remainder: numOrNull(account.remainder),
+})
+
+const toExpenseAllocation = (allocation: ApiRow): ExpenseAllocation => ({
+  accountId: String(allocation.accountId ?? ''),
+  accountName: String(allocation.accountName ?? ''),
+  referenceValue: num(allocation.referenceValue),
+  sectors: rowsOf(allocation.sectors).map((sector) => ({
+    id: String(sector.id ?? ''),
+    name: String(sector.name ?? ''),
+    ownCost: numOrNull(sector.ownCost),
+    percentage: num(sector.percentage),
+  })),
+})
+
+const toDistribution = (body: ApiRow): DistributionResponse => {
+  const totals = (body.totals ?? {}) as ApiRow
+
+  return {
+    referenceMonth: String(body.referenceMonth ?? ''),
+    sectors: rowsOf(body.sectors).map((sector) => ({
+      id: String(sector.id ?? ''),
+      name: String(sector.name ?? ''),
+      nature: sector.nature as SectorNature,
+      percentage: num(sector.percentage),
+      directCost: numOrNull(sector.directCost),
+    })),
+    totals: {
+      administrativeCost: num(totals.administrativeCost),
+      allocatedByItem: num(totals.allocatedByItem),
+      distributedCost: num(totals.distributedCost),
+      notDistributedCost: num(totals.notDistributedCost),
+      receivingSectors: num(totals.receivingSectors),
+    },
+  }
+}
+
+const toSectorCost = (sector: ApiRow): SectorCost => ({
+  id: String(sector.id ?? ''),
+  name: String(sector.name ?? ''),
+  nature: sector.nature as SectorNature,
+  labor: numOrNull(sector.labor),
+  assets: numOrNull(sector.assets),
+  depreciation: numOrNull(sector.depreciation),
+  other: numOrNull(sector.other),
+  ownCost: numOrNull(sector.ownCost),
+  receivedCost: numOrNull(sector.receivedCost),
+  totalCost: numOrNull(sector.totalCost),
+  // Sem critério gravado vale o valor de aquisição, a regra base (BC-3)
+  allocationCriterion: (sector.allocationCriterion ??
+    'ACQUISITION_VALUE') as AllocationCriterion,
+  items: rowsOf(sector.items).map((item) => ({
+    id: String(item.id ?? ''),
+    name: String(item.name ?? ''),
+    origin: item.origin as SectorCostOrigin,
+    detail: String(item.detail ?? ''),
+    value: num(item.value),
+  })),
+})
+
+const toLaborSector = (sector: ApiRow): LaborSector => ({
+  id: String(sector.id ?? ''),
+  name: String(sector.name ?? ''),
+  distributedCost: numOrNull(sector.distributedCost),
+  hours: numOrNull(sector.hours),
+  costPerHour: numOrNull(sector.costPerHour),
+  salePrice: numOrNull(sector.salePrice),
+  margin: numOrNull(sector.margin),
+  collaborators: rowsOf(sector.collaborators).map((person) => ({
+    id: String(person.id ?? ''),
+    name: String(person.name ?? ''),
+    role: String(person.role ?? ''),
+    hours: num(person.hours),
+  })),
+})
+
+const toComparisonAccount = (account: ApiRow): ComparisonAccount => ({
+  id: String(account.id ?? ''),
+  chartAccount: String(account.chartAccount ?? ''),
+  name: String(account.name ?? ''),
+  estimated: numOrNull(account.estimated),
+  actual: numOrNull(account.actual),
+  difference: numOrNull(account.difference),
+  differencePercent: numOrNull(account.differencePercent),
+  sources: rowsOf(account.sources).map((source) => ({
+    id: String(source.id ?? ''),
+    name: String(source.name ?? ''),
+    detail: String(source.detail ?? ''),
+    value: num(source.value),
+  })),
+})
+
+/* --------------------------------------------------------------------------
+ * Despesas administrativas
+ * ------------------------------------------------------------------------ */
+
+// A lista é plana, sem grupo (decisão de 22/09/2026). Os filtros são os da
+// URL da tela; o que a API não conhece fica de fora
 export const getAdminExpenses = async ({
   filters,
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: { referenceMonth: '', groups: [], accounts: [] },
-      message: '',
-    }
-  const search = filters?.search?.trim().toLowerCase()
+  const empty: AdminExpensesResponse = { referenceMonth: '', accounts: [] }
+  const params: { [key: string]: string } = {}
+  const criterion = filters?.criterion as CostCriterion | undefined
+  if (criterion && CRITERIA.includes(criterion)) params.criterion = criterion
+  const search = filters?.search?.trim().slice(0, 120)
+  if (search) params.search = search
 
-  const data: AdminExpensesResponse = {
-    referenceMonth: REFERENCE_MONTH,
-    groups,
-    accounts: accounts
-      .filter(
-        (account) => !filters?.groupId || account.groupId === filters.groupId,
-      )
-      .filter(
-        (account) =>
-          !filters?.criterion || account.criterion === filters.criterion,
-      )
-      .filter(
-        (account) =>
-          !search ||
-          account.name.toLowerCase().includes(search) ||
-          account.chartAccount.toLowerCase().includes(search),
-      )
-      .map(withReference),
+  let referenceMonth = ''
+  const accounts: AdminExpenseAccount[] = []
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res: ApiResult = await getItem({
+      route: '/cost-base/admin-expense',
+      params: { ...params, page: String(page), limit: String(PAGE_SIZE) },
+    })
+    if (!res.success) return fail(res, empty)
+    referenceMonth = res.data?.referenceMonth ?? referenceMonth
+    accounts.push(...rowsOf(res.data?.data).map(toAccount))
+    if (page >= (res.data?.lastPage ?? 1)) break
   }
-
-  return { success: true, data, message: '' }
+  return ok<AdminExpensesResponse>({ referenceMonth, accounts })
 }
 
 export const getAdminExpensesTotals = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        total: 0,
-        byAverage: 0,
-        manual: 0,
-        referenceValue: 0,
-        allocatedValue: 0,
-        remainingValue: 0,
-      },
-      message: '',
-    }
-  const all = accounts.map(withReference)
-
-  const data: AdminExpensesTotals = {
-    total: all.length,
-    byAverage: all.filter((account) => account.criterion !== 'MANUAL').length,
-    manual: all.filter((account) => account.criterion === 'MANUAL').length,
-    referenceValue: all.reduce(
-      (sum, account) => sum + (account.referenceValue || 0),
-      0,
-    ),
-    allocatedValue: allocatedTotal(),
-    remainingValue: adminExpensesTotal() - allocatedTotal(),
+  const empty: AdminExpensesTotals = {
+    total: 0,
+    byAverage: 0,
+    manual: 0,
+    referenceValue: 0,
+    allocatedValue: 0,
+    remainingValue: 0,
   }
-
-  return { success: true, data, message: '' }
+  const res: ApiResult = await getItem({
+    route: '/cost-base/admin-expense/totals',
+  })
+  if (!res.success) return fail(res, empty)
+  return ok<AdminExpensesTotals>({
+    total: num(res.data?.total),
+    byAverage: num(res.data?.byAverage),
+    manual: num(res.data?.manual),
+    referenceValue: num(res.data?.referenceValue),
+    allocatedValue: num(res.data?.allocatedValue),
+    remainingValue: num(res.data?.remainingValue),
+  })
 }
 
-// --- Rateio por item (BC-8) ---------------------------------------------
-// Rotas esperadas: `GET /cost-base/admin-expense/:id/allocation` e
-// `PUT /cost-base/admin-expense/:id/allocation` (backend-pendente.md)
-
-export const getExpenseAllocation = async ({ id }: { id: string }) => {
-  if (!DEMO_DATA) return demoOff()
-  const account = accounts.find((item) => item.id === id)
-
-  if (!account) {
-    return { success: false, data: null, message: 'Conta não encontrada' }
-  }
-
-  const shares = allocationOf(id)
-  // Só setor produtivo recebe rateio por item: o custo do setor administrativo
-  // já está inteiro no total administrativo (BC-7)
-  const data: ExpenseAllocation = {
-    accountId: account.id,
-    accountName: account.name,
-    referenceValue: criterionValue(account) || 0,
-    sectors: sectors
-      .filter((sector) => sector.nature === 'PRODUCTIVE')
-      .map((sector) => ({
-        id: sector.id,
-        name: sector.name,
-        ownCost: directCostOf(sector.id),
-        percentage:
-          shares.find((share) => share.sectorId === sector.id)?.percentage || 0,
-      })),
-  }
-
-  return { success: true, data, message: '' }
-}
-
-export const updateExpenseAllocation = async ({
-  id,
-  percentages,
-}: {
-  id: string
-  percentages: { sectorId: string; percentage: number }[]
-}) => {
-  if (!DEMO_DATA) return demoOff()
-  const account = accounts.find((item) => item.id === id)
-
-  if (!account) {
-    return { success: false, data: null, message: 'Conta não encontrada' }
-  }
-
-  const productive = percentages.filter((item) =>
-    sectors.some(
-      (sector) => sector.id === item.sectorId && sector.nature === 'PRODUCTIVE',
-    ),
-  )
-  const reference = criterionValue(account) || 0
-  const total = productive.reduce((sum, item) => sum + item.percentage, 0)
-
-  // A soma pode ficar abaixo de 100% (a sobra volta ao administrativo), mas
-  // não passar. Conferido pelo valor, com tolerância de 1 centavo (BC-9)
-  const exceeded = reference
-    ? productive.reduce(
-        (sum, item) => sum + Math.round((reference * item.percentage) / 100),
-        0,
-      ) >
-      reference + 1
-    : total > 100
-
-  if (exceeded) {
-    return {
-      success: false,
-      data: null,
-      message: 'O rateio não pode passar de 100% do custo de referência.',
-    }
-  }
-
-  saveAllocation(
-    id,
-    productive.map((item) => ({
-      sectorId: item.sectorId,
-      percentage: Math.min(Math.max(item.percentage, 0), 100),
-    })),
-  )
-
-  return { success: true, data: withReference(account), message: '' }
-}
-
+// Grava na hora (DC-17). Fora do manual o valor não vai: a API grava nulo
 export const updateAdminExpenseCriterion = async ({
   id,
   criterion,
@@ -219,279 +263,158 @@ export const updateAdminExpenseCriterion = async ({
   criterion: CostCriterion
   manualValue?: number | null
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const account = accounts.find((item) => item.id === id)
-
-  if (!account) {
-    return { success: false, data: null, message: 'Conta não encontrada' }
-  }
-
-  if (
-    criterion !== 'MANUAL' &&
-    criterionValue({ ...account, criterion }) === null
-  ) {
-    return {
-      success: false,
-      data: null,
-      message: 'Esta conta ainda não tem histórico para este critério',
-    }
-  }
-
-  account.criterion = criterion
-  account.manualValue = criterion === 'MANUAL' ? (manualValue ?? null) : null
-
-  return { success: true, data: withReference(account), message: '' }
+  const res: ApiResult = await updateItemNew({
+    route: `/cost-base/admin-expense/${seg(id)}`,
+    data:
+      criterion === 'MANUAL'
+        ? {
+            criterion,
+            manualValue:
+              typeof manualValue === 'number' ? Math.round(manualValue) : null,
+          }
+        : { criterion },
+  })
+  if (!res.success) return fail<AdminExpenseAccount | null>(res, null)
+  return ok<AdminExpenseAccount | null>(toAccount(res.data ?? {}))
 }
 
-// --- Aba Distribuição ---------------------------------------------------
+// --- Rateio por item (BC-8): a conta entre os setores produtivos ---------
 
+export const getExpenseAllocation = async ({ id }: { id: string }) => {
+  const res: ApiResult = await getItem({
+    route: `/cost-base/admin-expense/${seg(id)}/allocation`,
+  })
+  if (!res.success) return fail<ExpenseAllocation | null>(res, null)
+  return ok<ExpenseAllocation | null>(toExpenseAllocation(res.data ?? {}))
+}
+
+// A soma pode ficar abaixo de 100% (a sobra volta ao administrativo), mas não
+// passar: a API confere pelo valor, com 1 centavo de tolerância (BC-9)
+export const updateExpenseAllocation = async ({
+  id,
+  percentages,
+}: {
+  id: string
+  percentages: { sectorId: string; percentage: number }[]
+}) => {
+  const res: ApiResult = await putItemNew({
+    route: `/cost-base/admin-expense/${seg(id)}/allocation`,
+    data: {
+      allocations: percentages.map(({ sectorId, percentage }) => ({
+        sectorId,
+        percentage: twoPlaces(percentage),
+      })),
+    },
+  })
+  if (!res.success) return fail<ExpenseAllocation | null>(res, null)
+  return ok<ExpenseAllocation | null>(toExpenseAllocation(res.data ?? {}))
+}
+
+/* --------------------------------------------------------------------------
+ * Distribuição do administrativo (BC-5, BC-7)
+ * ------------------------------------------------------------------------ */
+
+const emptyTotals: DistributionTotals = {
+  administrativeCost: 0,
+  allocatedByItem: 0,
+  distributedCost: 0,
+  notDistributedCost: 0,
+  receivingSectors: 0,
+}
+
+// Setores e totais vêm juntos: a tela lê os dois sempre ao mesmo tempo
 export const getDistribution = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: { referenceMonth: '', sectors: [] },
-      message: '',
-    }
-  const data: DistributionResponse = {
-    referenceMonth: REFERENCE_MONTH,
-    // O custo próprio vem dos itens do setor, já com o rateio por item (BC-8)
-    sectors: sectors.map((sector) => ({
-      ...sector,
-      directCost: directCostOf(sector.id),
-    })),
+  const res: ApiResult = await getItem({ route: '/cost-base/distribution' })
+  if (!res.success) {
+    return fail<DistributionResponse>(res, {
+      referenceMonth: '',
+      sectors: [],
+      totals: emptyTotals,
+    })
   }
-
-  return { success: true, data, message: '' }
+  return ok<DistributionResponse>(toDistribution(res.data ?? {}))
 }
 
-export const getDistributionTotals = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        administrativeCost: 0,
-        allocatedByItem: 0,
-        distributedCost: 0,
-        notDistributedCost: 0,
-        receivingSectors: 0,
-      },
-      message: '',
-    }
-  const data: DistributionTotals = {
-    administrativeCost: administrativeCost(),
-    allocatedByItem: allocatedTotal(),
-    distributedCost: distributedCost(),
-    notDistributedCost: administrativeCost() - distributedCost(),
-    receivingSectors: sectors.filter(
-      (sector) => sector.nature === 'PRODUCTIVE' && sector.percentage > 0,
-    ).length,
-  }
-
-  return { success: true, data, message: '' }
-}
-
+// Só os produtivos: administrativo recebe 400, e o produtivo que não vier
+// fica com zero. A resposta já vem recalculada
 export const updateDistribution = async ({
   percentages,
 }: {
   percentages: { id: string; percentage: number }[]
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const received = sectors.filter((sector) => sector.nature === 'PRODUCTIVE')
-  const productive = percentages.filter((item) =>
-    received.some((sector) => sector.id === item.id),
-  )
-  const total = productive.reduce((sum, item) => sum + item.percentage, 0)
-  const administrative = administrativeCost()
-
-  // Conferido pelo valor, com tolerância de 1 centavo: percentuais vindos de
-  // um valor arredondado à mão podem somar 100,01% (design.md §6.8)
-  const exceeded = administrative
-    ? productive.reduce(
-        (sum, item) =>
-          sum + Math.round((administrative * item.percentage) / 100),
-        0,
-      ) >
-      administrative + 1
-    : total > 100
-
-  if (exceeded) {
-    return {
-      success: false,
-      data: null,
-      message: 'A soma dos setores produtivos não pode passar de 100%.',
-    }
-  }
-
-  percentages.forEach(({ id, percentage }) => {
-    const sector = sectors.find((item) => item.id === id)
-
-    if (sector) sector.percentage = Math.min(Math.max(percentage, 0), 100)
+  const res: ApiResult = await putItemNew({
+    route: '/cost-base/distribution',
+    data: {
+      percentages: percentages.map(({ id, percentage }) => ({
+        id,
+        percentage: twoPlaces(percentage),
+      })),
+    },
   })
-
-  return { success: true, data: null, message: '' }
+  if (!res.success) return fail<DistributionResponse | null>(res, null)
+  return ok<DistributionResponse | null>(toDistribution(res.data ?? {}))
 }
 
-// --- Aba Por setor ------------------------------------------------------
-
-const sumOrigin = (items: SectorCostItem[], origin: SectorCostOrigin) => {
-  const total = items
-    .filter((item) => item.origin === origin)
-    .reduce((sum, item) => sum + item.value, 0)
-
-  // Sem lançamento na origem devolve null: a tela mostra `-` (design.md §7)
-  return total || null
-}
+/* --------------------------------------------------------------------------
+ * Por setor e Resumo: o mesmo cálculo, consolidado no Resumo
+ * ------------------------------------------------------------------------ */
 
 export const getSectorCosts = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: { referenceMonth: '', isDistributing: false, sectors: [] },
-      message: '',
-    }
-  const distributed = distributedCost()
-
-  const data: SectorCostsResponse = {
-    referenceMonth: REFERENCE_MONTH,
-    isDistributing: distributed > 0,
-    sectors: sectors.map((sector) => {
-      const items = sectorItemsOf(sector.id)
-      const ownCost = items.reduce((sum, item) => sum + item.value, 0) || null
-      const receivedCost =
-        sector.nature === 'PRODUCTIVE' && sector.percentage > 0
-          ? Math.round((administrativeCost() * sector.percentage) / 100)
-          : null
-
-      return {
-        id: sector.id,
-        name: sector.name,
-        nature: sector.nature,
-        labor: sumOrigin(items, 'LABOR'),
-        assets: sumOrigin(items, 'ASSETS'),
-        depreciation: sumOrigin(items, 'DEPRECIATION'),
-        other: sumOrigin(items, 'OTHER'),
-        ownCost,
-        receivedCost,
-        totalCost:
-          ownCost === null && receivedCost === null
-            ? null
-            : (ownCost || 0) + (receivedCost || 0),
-        allocationCriterion: configOf(sector.id).criterion,
-        items,
-      }
-    }),
+  const res: ApiResult = await getItem({ route: '/cost-base/sector' })
+  if (!res.success) {
+    return fail<SectorCostsResponse>(res, {
+      referenceMonth: '',
+      isDistributing: false,
+      sectors: [],
+    })
   }
-
-  return { success: true, data, message: '' }
+  return ok<SectorCostsResponse>({
+    referenceMonth: String(res.data?.referenceMonth ?? ''),
+    isDistributing: !!res.data?.isDistributing,
+    sectors: rowsOf(res.data?.sectors).map(toSectorCost),
+  })
 }
-
-// --- Aba Resumo ---------------------------------------------------------
 
 export const getCostSummary = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        referenceMonth: '',
-        total: 0,
-        byOrigin: { adminExpenses: 0, labor: 0, assets: 0, depreciation: 0 },
-        productiveCost: 0,
-        administrativeCost: 0,
-        distributedCost: 0,
-        bySector: [],
-      },
-      message: '',
-    }
-  const response = await getSectorCosts()
-  const all = response.data?.sectors || []
-
-  const sumOf = (key: 'labor' | 'assets' | 'depreciation' | 'other') =>
-    all.reduce((total, sector) => total + (sector[key] || 0), 0)
-
-  const productiveCost = all
-    .filter((sector) => sector.nature === 'PRODUCTIVE')
-    .reduce((total, sector) => total + (sector.ownCost || 0), 0)
-
-  const administrative = all
-    .filter((sector) => sector.nature === 'ADMINISTRATIVE')
-    .reduce((total, sector) => total + (sector.ownCost || 0), 0)
-
-  const data: CostSummary = {
-    referenceMonth: REFERENCE_MONTH,
-    total: productiveCost + administrative,
+  const res: ApiResult = await getItem({ route: '/cost-base/summary' })
+  if (!res.success) return fail<CostSummary | null>(res, null)
+  const byOrigin = (res.data?.byOrigin ?? {}) as ApiRow
+  return ok<CostSummary | null>({
+    referenceMonth: String(res.data?.referenceMonth ?? ''),
+    total: num(res.data?.total),
     byOrigin: {
-      adminExpenses: sumOf('other'),
-      labor: sumOf('labor'),
-      assets: sumOf('assets'),
-      depreciation: sumOf('depreciation'),
+      adminExpenses: num(byOrigin.adminExpenses),
+      labor: num(byOrigin.labor),
+      assets: num(byOrigin.assets),
+      depreciation: num(byOrigin.depreciation),
     },
-    productiveCost,
-    administrativeCost: administrative,
-    distributedCost: distributedCost(),
-    bySector: all
-      .filter((sector) => sector.ownCost)
-      .map((sector) => ({
-        id: sector.id,
-        name: sector.name,
-        value: sector.ownCost || 0,
-      }))
-      .sort((a, b) => b.value - a.value),
-  }
-
-  return { success: true, data, message: '' }
+    productiveCost: num(res.data?.productiveCost),
+    administrativeCost: num(res.data?.administrativeCost),
+    distributedCost: num(res.data?.distributedCost),
+    bySector: rowsOf(res.data?.bySector).map((sector) => ({
+      id: String(sector.id ?? ''),
+      name: String(sector.name ?? ''),
+      value: num(sector.value),
+    })),
+  })
 }
 
-// --- Aba Mão de obra ----------------------------------------------------
-
-const collaborators: { [key: string]: LaborCollaborator[] } = {
-  producao: [
-    { id: 'joao', name: 'João', role: 'Aplicação', hours: 100 },
-    { id: 'marcos', name: 'Marcos', role: 'Gerente de produção', hours: 146 },
-  ],
-  criacao: [{ id: 'allan', name: 'Allan', role: 'Designer', hours: 100 }],
-}
-
-const salePrices: { [key: string]: number } = {
-  producao: 6000,
-  criacao: 3000,
-  confeccao: 3000,
-  instalacao: 3000,
-  marcenaria: 3500,
-}
+/* --------------------------------------------------------------------------
+ * Mão de obra (F-11): custo do setor pela carga dos colaboradores
+ * ------------------------------------------------------------------------ */
 
 export const getLaborSectors = async () => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
-  const response = await getSectorCosts()
-
-  const data: LaborSector[] = (response.data?.sectors || [])
-    .filter((sector) => sector.nature === 'PRODUCTIVE')
-    .map((sector) => {
-      const team = collaborators[sector.id] || []
-      const hours = team.reduce((sum, person) => sum + person.hours, 0) || null
-      const distributedCost = sector.totalCost
-      const costPerHour =
-        hours && distributedCost ? Math.round(distributedCost / hours) : null
-      const salePrice = salePrices[sector.id] ?? null
-      const margin =
-        costPerHour && salePrice
-          ? Math.round(((salePrice - costPerHour) / salePrice) * 1000) / 10
-          : null
-
-      return {
-        id: sector.id,
-        name: sector.name,
-        distributedCost,
-        hours,
-        costPerHour,
-        salePrice,
-        margin,
-        collaborators: team,
-      }
-    })
-
-  return { success: true, data, message: '' }
+  const res: ApiResult = await getItem({ route: '/cost-base/labor' })
+  if (!res.success) {
+    return fail<LaborResponse>(res, { referenceMonth: '', sectors: [] })
+  }
+  return ok<LaborResponse>({
+    referenceMonth: String(res.data?.referenceMonth ?? ''),
+    sectors: rowsOf(res.data?.data).map(toLaborSector),
+  })
 }
 
+// A API arredonda ao minuto e recusa colaborador de outro setor
 export const updateLaborHours = async ({
   sectorId,
   hours,
@@ -499,381 +422,94 @@ export const updateLaborHours = async ({
   sectorId: string
   hours: { id: string; hours: number }[]
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const team = collaborators[sectorId]
-
-  if (!team) {
-    return { success: false, data: null, message: 'Setor sem colaboradores' }
-  }
-
-  hours.forEach(({ id, hours: value }) => {
-    const person = team.find((item) => item.id === id)
-
-    // Horas com minutos (design.md §6.8): guarda arredondado ao minuto
-    if (person) person.hours = Math.max(Math.round((value || 0) * 60) / 60, 0)
+  const res: ApiResult = await putItemNew({
+    route: `/cost-base/labor/${seg(sectorId)}/hours`,
+    // Só os campos do corpo: a API recusa campo a mais
+    data: {
+      hours: hours.map(({ id, hours: value }) => ({ id, hours: value })),
+    },
   })
-
-  return { success: true, data: null, message: '' }
+  if (!res.success) return fail<LaborSector | null>(res, null)
+  return ok<LaborSector | null>(toLaborSector(res.data ?? {}))
 }
 
-// --- Aba Patrimônios ----------------------------------------------------
-
-type AssetSeed = Omit<
-  DepreciationAsset,
-  'depreciableValue' | 'depreciatedValue' | 'remainingValue'
-> & { residualValue: number }
-
-const assetSeeds: AssetSeed[] = [
-  {
-    id: '1',
-    name: 'Impressora Solvente',
-    group: 'MACHINES',
-    sector: 'Impressão',
-    acquisitionValue: 7000000,
-    residualValue: 2100000,
-    monthlyDepreciation: 64167,
-    usefulLifeMonths: 76,
-    elapsedMonths: 19,
-    status: 'DEPRECIATING',
-  },
-  {
-    id: '2',
-    name: 'Impressora Sublimática',
-    group: 'MACHINES',
-    sector: 'Impressão',
-    acquisitionValue: 4000000,
-    residualValue: 1200000,
-    monthlyDepreciation: 23333,
-    usefulLifeMonths: 120,
-    elapsedMonths: 52,
-    status: 'DEPRECIATING',
-  },
-  {
-    id: '3',
-    name: 'Plotter de recorte',
-    group: 'MACHINES',
-    sector: 'Impressão',
-    acquisitionValue: 2000000,
-    residualValue: 600000,
-    monthlyDepreciation: 11667,
-    usefulLifeMonths: 120,
-    elapsedMonths: 96,
-    status: 'REVIEW_NEEDED',
-  },
-  {
-    id: '4',
-    name: 'Router',
-    group: 'MACHINES',
-    sector: 'CNC',
-    acquisitionValue: 8000000,
-    residualValue: 2400000,
-    monthlyDepreciation: 58333,
-    usefulLifeMonths: 96,
-    elapsedMonths: 96,
-    status: 'DEPRECIATED',
-  },
-  {
-    id: '5',
-    name: 'Ilhoseira',
-    group: 'MACHINES',
-    sector: 'Produção',
-    acquisitionValue: 600000,
-    residualValue: 600000,
-    monthlyDepreciation: null,
-    usefulLifeMonths: 60,
-    elapsedMonths: 4,
-    status: 'INCONSISTENT',
-  },
-  {
-    id: '6',
-    name: 'Móveis administrativo',
-    group: 'FURNITURE',
-    sector: 'Administração',
-    acquisitionValue: 1200000,
-    residualValue: 200000,
-    monthlyDepreciation: 16667,
-    usefulLifeMonths: 60,
-    elapsedMonths: 24,
-    status: 'DEPRECIATING',
-  },
-  {
-    id: '7',
-    name: 'Veículo de entrega',
-    group: 'VEHICLES',
-    sector: 'Frota',
-    acquisitionValue: 9000000,
-    residualValue: 3000000,
-    monthlyDepreciation: 20000,
-    usefulLifeMonths: 72,
-    elapsedMonths: 18,
-    status: 'DEPRECIATING',
-  },
-  {
-    id: '8',
-    name: 'Impressora antiga',
-    group: 'MACHINES',
-    sector: 'Impressão',
-    acquisitionValue: 3000000,
-    residualValue: 900000,
-    monthlyDepreciation: null,
-    usefulLifeMonths: 60,
-    elapsedMonths: 60,
-    status: 'INACTIVE',
-  },
-]
-
-const withDepreciation = (asset: AssetSeed): DepreciationAsset => {
-  const depreciableValue = asset.acquisitionValue - asset.residualValue
-  const depreciatedValue = Math.min(
-    (asset.monthlyDepreciation || 0) * asset.elapsedMonths,
-    depreciableValue,
-  )
-
-  return {
-    id: asset.id,
-    name: asset.name,
-    group: asset.group,
-    sector: asset.sector,
-    acquisitionValue: asset.acquisitionValue,
-    depreciableValue,
-    monthlyDepreciation: asset.monthlyDepreciation,
-    depreciatedValue,
-    remainingValue: depreciableValue - depreciatedValue,
-    usefulLifeMonths: asset.usefulLifeMonths,
-    elapsedMonths: asset.elapsedMonths,
-    status: asset.status,
-  }
-}
-
-const statusByTab: { [key: string]: AssetStatus[] } = {
-  ativos: ['DEPRECIATING', 'DEPRECIATED'],
-  'em-revisao': ['REVIEW_NEEDED'],
-  inconsistencias: ['INCONSISTENT'],
-  inativos: ['INACTIVE'],
-}
-
-export const getDepreciationAssets = async ({
-  filters,
-}: {
-  filters?: { [key: string]: string | undefined }
-}) => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
-  const tab = filters?.status || 'ativos'
-  const search = filters?.search?.trim().toLowerCase()
-
-  const data = assetSeeds
-    .map(withDepreciation)
-    .filter((asset) => statusByTab[tab]?.includes(asset.status))
-    .filter((asset) => !search || asset.name.toLowerCase().includes(search))
-
-  return { success: true, data, message: '' }
-}
+/* --------------------------------------------------------------------------
+ * Patrimônios: a lista e as contagens vêm do cadastro (actions/asset.ts);
+ * aqui ficam só os totais do topo
+ * ------------------------------------------------------------------------ */
 
 export const getDepreciationTotals = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        invested: 0,
-        depreciated: 0,
-        remaining: 0,
-        monthlyDepreciation: 0,
-        activeAssets: 0,
-      },
-      message: '',
-    }
-  const all = assetSeeds.map(withDepreciation)
-  const active = all.filter((asset) => asset.status !== 'INACTIVE')
-
-  const data: DepreciationTotals = {
-    invested: active.reduce((sum, asset) => sum + asset.acquisitionValue, 0),
-    depreciated: active.reduce((sum, asset) => sum + asset.depreciatedValue, 0),
-    remaining: active.reduce((sum, asset) => sum + asset.remainingValue, 0),
-    monthlyDepreciation: active.reduce(
-      (sum, asset) => sum + (asset.monthlyDepreciation || 0),
-      0,
-    ),
-    activeAssets: active.length,
+  const empty: DepreciationTotals = {
+    invested: 0,
+    depreciated: 0,
+    remaining: 0,
+    monthlyDepreciation: 0,
+    activeAssets: 0,
   }
-
-  return { success: true, data, message: '' }
+  const res: ApiResult = await getItem({ route: '/cost-base/depreciation' })
+  if (!res.success) return fail(res, empty)
+  return ok<DepreciationTotals>({
+    invested: num(res.data?.invested),
+    depreciated: num(res.data?.depreciated),
+    remaining: num(res.data?.remaining),
+    monthlyDepreciation: num(res.data?.monthlyDepreciation),
+    activeAssets: num(res.data?.activeAssets),
+  })
 }
 
-export const getDepreciationCounts = async () => {
-  if (!DEMO_DATA) return { success: true, data: {}, message: '' }
-  const all = assetSeeds.map(withDepreciation)
+/* --------------------------------------------------------------------------
+ * Comparativo: previsto × realizado no período (§10)
+ * ------------------------------------------------------------------------ */
 
-  const data = Object.fromEntries(
-    Object.entries(statusByTab).map(([tab, statuses]) => [
-      tab,
-      all.filter((asset) => statuses.includes(asset.status)).length,
-    ]),
-  )
-
-  return { success: true, data, message: '' }
-}
-
-// --- Aba Comparativo ----------------------------------------------------
-
-type ComparisonSeed = {
-  id: string
-  chartAccount: string
-  name: string
-  // Por mês; a tela multiplica pelo número de meses do período escolhido
-  monthlyEstimated: number | null
-  monthlyActual: number | null
-  sources: ComparisonSource[]
-}
-
-const comparisonSeeds: ComparisonSeed[] = [
-  {
-    id: '1',
-    chartAccount: '02.01.03.03',
-    name: 'Manutenção de máquina',
-    monthlyEstimated: 41831,
-    monthlyActual: 78000,
-    sources: [
-      {
-        id: '1-1',
-        name: 'Impressora Solvente',
-        detail: 'Manutenção — a cada 6 meses',
-        value: 41667,
-      },
-      {
-        id: '1-2',
-        name: 'Impressora Sublimática',
-        detail: 'Tinta — R$ 0,01 por m² × 164 m²',
-        value: 164,
-      },
-    ],
-  },
-  {
-    id: '2',
-    chartAccount: '02.01.04.01',
-    name: 'Combustível',
-    monthlyEstimated: 120000,
-    monthlyActual: 98500,
-    sources: [
-      {
-        id: '2-1',
-        name: 'Veículo de entrega',
-        detail: 'R$ 1,20 por km × 1.000 km',
-        value: 120000,
-      },
-    ],
-  },
-  {
-    id: '3',
-    chartAccount: '02.01.02.09',
-    name: 'Taxas bancárias',
-    monthlyEstimated: 56000,
-    monthlyActual: 61200,
-    sources: [
-      {
-        id: '3-1',
-        name: 'Custo financeiro de referência',
-        detail: '1,5% sobre o valor recebido',
-        value: 56000,
-      },
-    ],
-  },
-  {
-    id: '4',
-    chartAccount: '02.02.04.02',
-    name: 'Matéria-prima',
-    monthlyEstimated: 240000,
-    monthlyActual: 318000,
-    sources: [
-      {
-        id: '4-1',
-        name: 'Composições vendidas no período',
-        detail: 'Material estimado nas vendas',
-        value: 240000,
-      },
-    ],
-  },
-  {
-    id: '5',
-    chartAccount: '02.01.03.07',
-    name: 'Ferramentas e consumíveis',
-    monthlyEstimated: null,
-    monthlyActual: 43000,
-    sources: [],
-  },
-]
-
-const monthsByPeriod: { [key: string]: number } = {
-  '1': 1,
-  '3': 3,
-  '6': 6,
-  '12': 12,
-}
-
+// Uma página por vez: a tela pagina pela URL
 export const getCostComparison = async ({
   filters,
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        period: '',
-        accounts: [],
-        coverage: { total: 0, withEstimate: 0, withoutEstimate: 0 },
-      },
-      message: '',
-    }
-  const period = filters?.period || '12'
-  const months = monthsByPeriod[period] || 12
-  const status = filters?.status || 'todas'
+  const period = PERIODS.includes(filters?.period ?? '')
+    ? (filters?.period as string)
+    : '12'
+  const status = COMPARISON_STATUSES.includes(filters?.status ?? '')
+    ? (filters?.status as string)
+    : 'todas'
+  const page = Math.max(Math.floor(Number(filters?.page) || 1), 1)
 
-  // O comparativo trabalha o resto do plano de contas: o que é despesa
-  // administrativa já entrou na aba própria, com custo mensal de referência
-  const visible = comparisonSeeds.filter((seed) => {
-    if (status === 'com-previsao') return seed.monthlyEstimated !== null
-    if (status === 'sem-previsao') return seed.monthlyEstimated === null
-
-    return true
-  })
-
-  const data: ComparisonResponse = {
-    period,
-    coverage: {
-      total: comparisonSeeds.length,
-      withEstimate: comparisonSeeds.filter(
-        (seed) => seed.monthlyEstimated !== null,
-      ).length,
-      withoutEstimate: comparisonSeeds.filter(
-        (seed) => seed.monthlyEstimated === null,
-      ).length,
+  const res: ApiResult = await getItem({
+    route: '/cost-base/comparison',
+    params: {
+      period,
+      status,
+      page: String(page),
+      limit: String(PAGE_SIZE),
     },
-    accounts: visible.map((seed) => {
-      const estimated =
-        seed.monthlyEstimated === null ? null : seed.monthlyEstimated * months
-      const actual =
-        seed.monthlyActual === null ? null : seed.monthlyActual * months
-      const difference =
-        estimated === null || actual === null ? null : estimated - actual
-
-      return {
-        id: seed.id,
-        chartAccount: seed.chartAccount,
-        name: seed.name,
-        estimated,
-        actual,
-        difference,
-        differencePercent:
-          difference === null || !estimated
-            ? null
-            : Math.round((difference / estimated) * 1000) / 10,
-        sources: seed.sources.map((source) => ({
-          ...source,
-          value: source.value * months,
-        })),
-      }
-    }),
+  })
+  if (!res.success) {
+    return fail<ComparisonResponse>(res, {
+      referenceMonth: '',
+      period,
+      months: [],
+      accounts: [],
+      coverage: { total: 0, withEstimate: 0, withoutEstimate: 0 },
+      page: 1,
+      lastPage: 1,
+      total: 0,
+    })
   }
-
-  return { success: true, data, message: '' }
+  const coverage = (res.data?.coverage ?? {}) as ApiRow
+  return ok<ComparisonResponse>({
+    referenceMonth: String(res.data?.referenceMonth ?? ''),
+    period: String(res.data?.period ?? period),
+    months: Array.isArray(res.data?.months) ? res.data.months.map(String) : [],
+    // A lista sai em `data` na API
+    accounts: rowsOf(res.data?.data).map(toComparisonAccount),
+    coverage: {
+      total: num(coverage.total),
+      withEstimate: num(coverage.withEstimate),
+      withoutEstimate: num(coverage.withoutEstimate),
+    },
+    page: num(res.data?.page) || 1,
+    lastPage: num(res.data?.lastPage) || 1,
+    total: num(res.data?.total),
+  })
 }

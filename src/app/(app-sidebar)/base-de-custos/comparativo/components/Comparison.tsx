@@ -26,8 +26,10 @@ import {
 } from '@/components/ui/card'
 
 // Components
+import { LoadError } from '../../components/LoadError'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
@@ -38,6 +40,7 @@ import { getCostComparison } from '@/actions/cost-base'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { formatReferenceMonth } from '../../reference-month'
 import { comparisonPeriods, comparisonStatuses } from '@/consts/cost-base'
 
 // Third-party
@@ -59,6 +62,7 @@ export function Comparison({ searchParams }: SearchParamsType) {
   const period = (searchParams?.period as string) || '12'
   const status = (searchParams?.status as string) || 'todas'
 
+  // Trocar de período ou de situação volta à primeira página
   const link = (next: { period?: string; status?: string }) =>
     `/base-de-custos/comparativo?period=${next.period || period}&status=${
       next.status || status
@@ -72,6 +76,18 @@ export function Comparison({ searchParams }: SearchParamsType) {
 
   const accounts = data?.data?.accounts || []
   const coverage = data?.data?.coverage
+  const lastPage = data?.data?.lastPage ?? 1
+
+  // Os meses completos do período, do mais antigo ao de referência
+  const months = data?.data?.months || []
+  const firstMonth = formatReferenceMonth(months[0])
+  const lastMonth = formatReferenceMonth(months[months.length - 1])
+  const periodLabel =
+    firstMonth && lastMonth
+      ? firstMonth === lastMonth
+        ? `Período: ${lastMonth}. `
+        : `Período: de ${firstMonth} a ${lastMonth}. `
+      : ''
 
   const toggle = (id: string) =>
     setExpanded((current) =>
@@ -122,6 +138,8 @@ export function Comparison({ searchParams }: SearchParamsType) {
         </CardHeader>
         {isLoading ? (
           <TableSkeleton cols={5} rows={6} />
+        ) : data && !data.success ? (
+          <LoadError message={data.message} />
         ) : !accounts.length ? (
           <ListDataTotalEmpty
             icon={IconScale}
@@ -258,15 +276,26 @@ export function Comparison({ searchParams }: SearchParamsType) {
                 </TableBody>
               </Table>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col items-stretch gap-4">
+              {/* O previsto que a API calcula ainda não tem os outros volumes
+                  (km rodados, m² vendidos, custo financeiro, material das
+                  composições): por isso o aviso discreto no rodapé */}
               <p className="text-sm text-gray">
+                {periodLabel}
                 {coverage
                   ? `${coverage.withEstimate} de ${coverage.total} contas já têm previsão no sistema. `
                   : ''}
-                Períodos maiores são mais precisos: a compra não acontece no
-                mesmo mês do consumo. A depreciação não aparece aqui, porque não
-                tem lançamento financeiro correspondente.
+                Por enquanto, o previsto vem só dos custos cadastrados nos
+                patrimônios. Períodos maiores são mais precisos: a compra não
+                acontece no mesmo mês do consumo. A depreciação não aparece
+                aqui, porque não tem lançamento financeiro correspondente.
               </p>
+              {lastPage > 1 ? (
+                <TablePagination
+                  searchParams={searchParams}
+                  lastPage={lastPage}
+                />
+              ) : null}
             </CardFooter>
           </>
         )}

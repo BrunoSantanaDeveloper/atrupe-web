@@ -47,6 +47,20 @@ interface Props {
   onOpenChange: () => void
 }
 
+// O custo de referência da conta entra no total administrativo: além da
+// lista e dos totais, mudam o Resumo e o Por setor, e com eles a distribuição,
+// a mão de obra e os rateios, que leem o mesmo total
+const AFFECTED_QUERIES = [
+  'admin-expense-list',
+  'admin-expense-totals',
+  'cost-summary',
+  'sector-costs',
+  'cost-distribution',
+  'labor-sectors',
+  'sector-allocations',
+  'expense-allocation',
+]
+
 const averageFields: {
   criterion: CostCriterion
   key: keyof AdminExpenseAccount
@@ -109,8 +123,9 @@ export function EditCriterionModal({ account, open, onOpenChange }: Props) {
     }
 
     toast.success('Critério atualizado')
-    queryClient.invalidateQueries({ queryKey: ['admin-expense-list'] })
-    queryClient.invalidateQueries({ queryKey: ['admin-expense-totals'] })
+    AFFECTED_QUERIES.forEach((key) =>
+      queryClient.invalidateQueries({ queryKey: [key] }),
+    )
     onOpenChange()
   })
 

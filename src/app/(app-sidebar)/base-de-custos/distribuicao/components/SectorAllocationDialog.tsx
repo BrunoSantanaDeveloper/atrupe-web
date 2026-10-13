@@ -158,7 +158,11 @@ export function SectorAllocationDialog({
             : undefined,
       }),
     onSuccess: (response) => {
-      if (!response.success) return toast.error(response.message)
+      if (!response.success) {
+        return toast.error(
+          response.message || 'Erro ao salvar o rateio do setor',
+        )
+      }
 
       toast.success('Rateio do setor salvo')
       // O custo da máquina muda também na Precificação, na composição e no
@@ -173,6 +177,10 @@ export function SectorAllocationDialog({
     criterion === 'ACTIVITY_TIME' && allocation?.missingTime.length
       ? allocation.missingTime
       : []
+
+  // O manual não se atualiza sozinho (BC-3.1): depois que entra ou sai um
+  // equipamento, o novo fica com 0% e a API marca o setor até salvar de novo
+  const outdated = criterion === 'MANUAL' && !!allocation?.allocationOutdated
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -204,6 +212,12 @@ export function SectorAllocationDialog({
               groupClassName="flex-col gap-2"
             />
           </FormProvider>
+          {outdated ? (
+            <p className="rounded-lg border border-warning-200 bg-warning-50 p-3 text-sm text-warning-800">
+              A lista de equipamentos deste setor mudou depois do último rateio
+              manual. Confira o percentual de cada um e salve de novo.
+            </p>
+          ) : null}
           {missingTime.length ? (
             <p className="text-sm text-gray">
               Sem tempo de atividade informado:{' '}

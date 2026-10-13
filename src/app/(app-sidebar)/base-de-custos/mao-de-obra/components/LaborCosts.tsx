@@ -24,6 +24,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 // Components
 import { formatHoursLabel } from '@/components/common/RateInput'
 import { WorkloadModal } from './WorkloadModal'
+import { LoadError } from '../../components/LoadError'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
@@ -36,6 +37,7 @@ import { getLaborSectors } from '@/actions/cost-base'
 
 // Hooks / Store / Consts
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { formatReferenceMonth } from '../../reference-month'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -56,7 +58,8 @@ export function LaborCosts() {
     queryFn: () => getLaborSectors(),
   })
 
-  const sectors = data?.data || []
+  const sectors = data?.data?.sectors || []
+  const referenceMonth = formatReferenceMonth(data?.data?.referenceMonth)
 
   return (
     <TooltipProvider>
@@ -67,10 +70,13 @@ export function LaborCosts() {
             O custo hora sai do custo do setor dividido pela carga horária dos
             colaboradores. A margem mostra o resultado do preço praticado sobre
             esse custo.
+            {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
           </CardDescription>
         </CardHeader>
         {isLoading ? (
           <TableSkeleton cols={6} rows={6} />
+        ) : data && !data.success ? (
+          <LoadError message={data.message} />
         ) : !sectors.length ? (
           <ListDataTotalEmpty
             icon={IconUsers}
@@ -138,9 +144,15 @@ export function LaborCosts() {
                           tooltip={`Carga de produção — ${sector.name}`}
                           onClick={() => setWorkload(sector)}
                         />
+                        {/* O preço da hora se define na Precificação, que ainda
+                            não está ligada à API: o botão fica apagado, com a
+                            dica, até a próxima etapa. Não é `disabled` porque o
+                            botão desabilitado não mostra a dica */}
                         <ActionButton
                           Icon={IconCurrencyReal}
-                          tooltip={`Precificar a hora de ${sector.name}`}
+                          tooltip="Precificar a hora: chega na próxima etapa"
+                          aria-disabled
+                          className="cursor-not-allowed opacity-40"
                         />
                       </div>
                     </TableCell>

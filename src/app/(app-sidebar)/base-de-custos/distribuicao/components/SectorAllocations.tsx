@@ -26,6 +26,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
+import { LoadError } from '../../components/LoadError'
 import { SectorAllocationDialog } from './SectorAllocationDialog'
 
 // Types
@@ -69,6 +70,8 @@ export function SectorAllocations() {
       </CardHeader>
       {isLoading ? (
         <TableSkeleton cols={5} rows={3} />
+      ) : data && !data.success ? (
+        <LoadError message={data.message} />
       ) : !allocations.length ? (
         <ListDataTotalEmpty
           icon={IconArrowsSplit2}
@@ -91,7 +94,11 @@ export function SectorAllocations() {
             </TableHeader>
             <TableBody>
               {allocations.map((allocation) => {
-                const single = allocation.equipment.length === 1
+                // No manual o rateio não se atualiza sozinho (BC-3.1): quando
+                // entra ou sai um equipamento, o setor avisa até ser salvo de
+                // novo, mesmo que tenha sobrado um equipamento só
+                const outdated = !!allocation.allocationOutdated
+                const single = allocation.equipment.length === 1 && !outdated
 
                 return (
                   <TableRow key={allocation.sectorId}>
@@ -107,11 +114,18 @@ export function SectorAllocations() {
                           Um equipamento só: recebe todo o custo
                         </span>
                       ) : (
-                        <Badge variant="neutralLight">
-                          {allocation.criterion === 'MANUAL'
-                            ? 'Manual'
-                            : `Por ${sectorAllocationObj[allocation.criterion]}`}
-                        </Badge>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="neutralLight">
+                            {allocation.criterion === 'MANUAL'
+                              ? 'Manual'
+                              : `Por ${sectorAllocationObj[allocation.criterion]}`}
+                          </Badge>
+                          {outdated ? (
+                            <Badge variant="warningLight">
+                              A lista de equipamentos mudou: salve de novo
+                            </Badge>
+                          ) : null}
+                        </div>
                       )}
                     </TableCell>
                     <TableCell className="text-right">

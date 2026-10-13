@@ -16,27 +16,32 @@ import { Badge } from '@/components/ui/badge'
 import { CardContent } from '@/components/ui/card'
 
 // Types
-import type { AssetGroup, DepreciationAsset } from '../../types'
+import type {
+  AssetItem,
+  AssetKind,
+} from '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/types'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { assetGroupObj, assetStatusObj } from '@/consts/cost-base'
+import { assetKindObj, assetLifeStatusObj } from '@/consts/assets'
 
 interface Props {
-  assets: DepreciationAsset[]
+  // Os bens do cadastro de patrimônios, como a API de /asset devolve (P-23)
+  assets: AssetItem[]
 }
 
-// Sem depreciação calculada mostra `-`, nunca R$ 0,00 (design.md §7)
+// Sem depreciação calculada (vida útil ou residual faltando) mostra `-`,
+// nunca R$ 0,00 (design.md §7)
 const formatValue = (value: number | null) =>
   value === null ? '-' : formatCurrencyToBrl(value)
 
-const groupOrder: AssetGroup[] = ['MACHINES', 'FURNITURE', 'VEHICLES']
+const kindOrder: AssetKind[] = ['MACHINES', 'FURNITURE', 'VEHICLES']
 
 export function DepreciationData({ assets }: Props) {
-  const groups = groupOrder
-    .map((group) => ({
-      group,
-      assets: assets.filter((asset) => asset.group === group),
+  const groups = kindOrder
+    .map((kind) => ({
+      kind,
+      assets: assets.filter((asset) => asset.kind === kind),
     }))
     .filter((item) => item.assets.length)
 
@@ -65,64 +70,73 @@ export function DepreciationData({ assets }: Props) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {groups.map(({ group, assets: groupAssets }) => (
-            <Fragment key={group}>
+          {groups.map(({ kind, assets: kindAssets }) => (
+            <Fragment key={kind}>
               <TableRow className="bg-gray-50 hover:bg-gray-50">
                 <TableCell colSpan={9}>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{assetGroupObj[group]}</span>
-                    <Badge variant="neutralLight">{groupAssets.length}</Badge>
+                    <span className="font-medium">{assetKindObj[kind]}</span>
+                    <Badge variant="neutralLight">{kindAssets.length}</Badge>
                   </div>
                 </TableCell>
               </TableRow>
-              {groupAssets.map((asset) => {
-                const progress = Math.min(
-                  Math.round(
-                    (asset.elapsedMonths / asset.usefulLifeMonths) * 100,
-                  ),
-                  100,
-                )
+              {kindAssets.map((asset) => {
+                // Sem vida útil não há o que medir (bem inconsistente, P-26)
+                const progress = asset.usefulLifeMonths
+                  ? Math.min(
+                      Math.round(
+                        (asset.elapsedMonths / asset.usefulLifeMonths) * 100,
+                      ),
+                      100,
+                    )
+                  : null
 
                 return (
                   <TableRow key={asset.id}>
                     <TableCell className="font-medium">{asset.name}</TableCell>
-                    <TableCell>{asset.sector}</TableCell>
+                    <TableCell>{asset.sector || '-'}</TableCell>
                     <TableCell numeric>
                       {formatCurrencyToBrl(asset.acquisitionValue)}
                     </TableCell>
                     <TableCell numeric>
-                      {formatCurrencyToBrl(asset.depreciableValue)}
+                      {formatValue(asset.depreciableValue)}
                     </TableCell>
                     <TableCell numeric>
                       {formatValue(asset.monthlyDepreciation)}
                     </TableCell>
                     <TableCell numeric>
-                      {formatCurrencyToBrl(asset.depreciatedValue)}
+                      {formatValue(asset.depreciatedValue)}
                     </TableCell>
                     <TableCell numeric>
-                      {formatCurrencyToBrl(asset.remainingValue)}
+                      {formatValue(asset.remainingValue)}
                     </TableCell>
                     <TableCell>
-                      <p className="text-sm text-gray">
-                        {asset.usefulLifeMonths} meses · {progress}%
-                      </p>
-                      <div
-                        role="img"
-                        aria-label={`Vida útil de ${asset.name}: ${progress}%`}
-                        className="mt-1 h-1.5 w-full max-w-[120px] rounded-full bg-gray-100"
-                      >
-                        <div
-                          className="h-1.5 rounded-full bg-brand"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
+                      {progress === null ? (
+                        <p className="text-sm text-gray">Não calculada</p>
+                      ) : (
+                        <>
+                          <p className="text-sm text-gray">
+                            {asset.usefulLifeMonths} meses · {progress}%
+                          </p>
+                          <div
+                            role="img"
+                            aria-label={`Vida útil de ${asset.name}: ${progress}%`}
+                            className="mt-1 h-1.5 w-full max-w-[120px] rounded-full bg-gray-100"
+                          >
+                            <div
+                              className="h-1.5 rounded-full bg-brand"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge
                         status
-                        variant={assetStatusObj[asset.status].variant}
+                        variant={assetLifeStatusObj[asset.status].variant}
                       >
-                        {assetStatusObj[asset.status].text}
+                        {assetLifeStatusObj[asset.status].text}
                       </Badge>
                     </TableCell>
                   </TableRow>

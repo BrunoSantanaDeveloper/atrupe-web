@@ -11,11 +11,15 @@ import {
 
 // Components
 import { SectorCostsData } from './SectorCostsData'
+import { LoadError } from '../../components/LoadError'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Actions
 import { getSectorCosts } from '@/actions/cost-base'
+
+// Hooks / Store / Consts
+import { formatReferenceMonth } from '../../reference-month'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -32,6 +36,7 @@ export function SectorCosts() {
 
   const sectors = data?.data?.sectors || []
   const isDistributing = data?.data?.isDistributing ?? false
+  const referenceMonth = formatReferenceMonth(data?.data?.referenceMonth)
 
   const productive = sectors.filter((sector) => sector.nature === 'PRODUCTIVE')
   const administrative = sectors.filter(
@@ -46,10 +51,13 @@ export function SectorCosts() {
           Quanto custa cada setor por mês e de onde veio cada valor. Abra a
           linha para ver os colaboradores, os bens e os lançamentos que formam o
           número.
+          {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
         </CardDescription>
       </CardHeader>
       {isLoading ? (
         <TableSkeleton cols={8} rows={8} />
+      ) : data && !data.success ? (
+        <LoadError message={data.message} />
       ) : !sectors.length ? (
         <ListDataTotalEmpty
           icon={IconBuildingFactory}

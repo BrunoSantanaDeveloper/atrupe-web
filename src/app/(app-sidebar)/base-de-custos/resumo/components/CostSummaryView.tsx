@@ -16,6 +16,7 @@ import {
 
 // Components
 import { CostBySectorChart } from './CostBySectorChart'
+import { LoadError } from '../../components/LoadError'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Actions
@@ -23,6 +24,7 @@ import { getCostSummary } from '@/actions/cost-base'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { formatReferenceMonth } from '../../reference-month'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -36,17 +38,6 @@ import {
   IconBuildingFactory,
   IconBuildingWarehouse,
 } from '@tabler/icons-react'
-
-const formatReferenceMonth = (month?: string) => {
-  if (!month) return ''
-
-  const [year, monthNumber] = month.split('-').map(Number)
-
-  return new Date(year, monthNumber - 1, 1)
-    .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-    .replace('.', '')
-    .replace(' de ', '/')
-}
 
 export function CostSummaryView() {
   const { data, isLoading } = useQuery({
@@ -99,6 +90,14 @@ export function CostSummaryView() {
         </div>
         <Skeleton className="h-[320px] w-full rounded-xl" />
       </div>
+    )
+  }
+
+  if (data && !data.success) {
+    return (
+      <Card>
+        <LoadError message={data.message} />
+      </Card>
     )
   }
 

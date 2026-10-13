@@ -64,10 +64,16 @@ export function DistributionData({
     return sector.directCost + received
   }
 
-  // O valor digitado vira o percentual exato, para o setor receber o que foi
-  // arredondado à mão (design.md §6.8)
+  // O valor digitado vira o percentual mais próximo com duas casas, que é o
+  // que a API guarda (BC-9): o setor recebe o valor a menos de 0,01% do
+  // total administrativo do que foi digitado
   const handleValue = (id: string, cents: number) =>
-    onChange(id, administrativeCost ? (cents / administrativeCost) * 100 : 0)
+    onChange(
+      id,
+      administrativeCost
+        ? Math.round((cents / administrativeCost) * 10000) / 100
+        : 0,
+    )
 
   return (
     <Table className="min-w-[860px]">

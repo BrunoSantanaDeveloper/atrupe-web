@@ -13,6 +13,7 @@ import {
   ListDataTotalEmpty,
 } from '@/components/common/TableEmptyState'
 import { SummaryCards } from './SummaryCards'
+import { LoadError } from '../../components/LoadError'
 import { AdminExpensesData } from './AdminExpensesData'
 import { EditCriterionModal } from './EditCriterion'
 import { ExpenseAllocationDialog } from './ExpenseAllocationDialog'
@@ -27,22 +28,14 @@ import type { AdminExpenseAccount } from '../../types'
 // Actions
 import { getAdminExpenses, getAdminExpensesTotals } from '@/actions/cost-base'
 
+// Hooks / Store / Consts
+import { formatReferenceMonth } from '../../reference-month'
+
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconReceipt } from '@tabler/icons-react'
-
-const formatReferenceMonth = (month?: string) => {
-  if (!month) return ''
-
-  const [year, monthNumber] = month.split('-').map(Number)
-
-  return new Date(year, monthNumber - 1, 1)
-    .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-    .replace('.', '')
-    .replace(' de ', '/')
-}
 
 export function AdminExpenses({ searchParams }: SearchParamsType) {
   const [editing, setEditing] = useState<AdminExpenseAccount>()
@@ -62,6 +55,8 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
 
   const accounts = data?.data?.accounts || []
   const hasAnyAccount = (totals?.data?.total ?? 0) > 0
+  const failed = [totals, data].find((response) => response?.success === false)
+  const referenceMonth = formatReferenceMonth(data?.data?.referenceMonth)
 
   return (
     <TooltipProvider>
@@ -70,6 +65,8 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
         <Card>
           {isLoading || isLoadingTotals ? (
             <TableSkeleton cols={8} rows={8} />
+          ) : failed ? (
+            <LoadError message={failed.message} />
           ) : !hasAnyAccount ? (
             <ListDataTotalEmpty
               icon={IconReceipt}
@@ -80,10 +77,11 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
             <>
               <TableFiltersHeader searchParams={searchParams}>
                 <AdminExpensesFilter searchParams={searchParams} />
-                <p className="text-sm text-gray pb-3">
-                  Médias calculadas até{' '}
-                  {formatReferenceMonth(data?.data?.referenceMonth)}
-                </p>
+                {referenceMonth ? (
+                  <p className="text-sm text-gray pb-3">
+                    Médias calculadas até {referenceMonth}
+                  </p>
+                ) : null}
               </TableFiltersHeader>
               {accounts.length ? (
                 <AdminExpensesData
