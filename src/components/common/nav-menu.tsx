@@ -77,7 +77,7 @@ export function isNavGroup(e: NavEntry): e is NavGroupDef {
 function AlertBadge() {
   return (
     <div
-      className="flex items-center justify-center flex-shrink-0 p-1 rounded-2xl mix-blend-multiply"
+      className="flex items-center justify-center flex-shrink-0 p-1 rounded-2xl mix-blend-multiply dark:mix-blend-normal"
       style={{ background: COLOR.alertBg }}
     >
       <svg width={12} height={12} viewBox="0 0 12 12" fill="none">
@@ -96,7 +96,7 @@ function AlertBadge() {
 function CounterBadge({ label }: { label: string }) {
   return (
     <div
-      className="flex items-center justify-center flex-shrink-0 px-2 py-0.5 rounded-2xl mix-blend-multiply"
+      className="flex items-center justify-center flex-shrink-0 px-2 py-0.5 rounded-2xl mix-blend-multiply dark:mix-blend-normal"
       style={{ background: COLOR.badgeBg }}
     >
       <span className="text-xs font-medium" style={{ color: COLOR.badgeText }}>

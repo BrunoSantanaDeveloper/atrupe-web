@@ -45,6 +45,21 @@ si (página, cartão, área de destaque ao passar o mouse, linha selecionada).
 - **WHEN** um campo, cartão ou divisória aparece no tema escuro
 - **THEN** sua borda é visível contra o fundo
 
+### Requirement: Menos luz, mesma ordem de elevação
+O tema escuro MUST ser pensado como o mesmo ambiente com menos luz, e não como
+uma troca de cores: o que está acima recebe mais luz e é mais claro que o que
+está abaixo, como no tema claro (cartão branco sobre página cinza). No escuro,
+a página é o fundo mais escuro; cartões, barra lateral e campos são mais claros
+que a página; menus, modais e avisos são mais claros que os cartões.
+
+#### Scenario: Cartão sobre a página
+- **WHEN** um cartão ou a barra lateral aparece sobre a página no tema escuro
+- **THEN** ele é visivelmente mais claro que a página
+
+#### Scenario: Menu sobre o cartão
+- **WHEN** um menu suspenso, modal ou aviso abre no tema escuro
+- **THEN** ele é mais claro que o cartão ou a página sob ele
+
 ### Requirement: Cores de marca e de estado
 As cores de marca (verde Atrupe) e de estado (sucesso, alerta, erro,
 informação) MUST continuar reconhecíveis no tema escuro. Botões e marcações de
@@ -56,20 +71,26 @@ cor com texto claro da mesma cor.
 - **WHEN** um botão de erro ou de sucesso aparece no tema escuro
 - **THEN** ele mantém a cor do tema claro com texto branco
 
-### Requirement: Primária própria do tema escuro
+### Requirement: Primária iluminada no tema escuro
 A cor primária (verde Atrupe dos botões principais e marcações sólidas de
-marca) MUST ter no tema escuro uma variação própria do mesmo verde, com texto
-branco em contraste de pelo menos 4,5:1 e destaque de pelo menos 3:1 sobre o
-fundo da página, nos estados normal, ao passar o mouse e pressionado. No tema
-escuro, passar o mouse clareia o botão.
+marca) MUST seguir o mesmo modelo de luz: o botão principal é um elemento acima
+da superfície, por isso no escuro é mais claro que o cartão, com uma variação
+própria do mesmo verde (menos saturada) e tinta escura por cima. O texto e os
+ícones sobre a primária MUST ter contraste de pelo menos 4,5:1 e a primária
+MUST se destacar do cartão em pelo menos 3:1, nos estados normal, ao passar o
+mouse e pressionado. Passar o mouse acrescenta luz: o botão clareia.
 
 #### Scenario: Botão principal
 - **WHEN** um botão principal aparece no tema escuro
-- **THEN** ele usa a primária do tema escuro, com texto branco legível e sem contorno de outra cor
+- **THEN** ele é mais claro que o cartão, com texto e ícones escuros legíveis e sem contorno de outra cor
 
 #### Scenario: Passar o mouse no botão principal
 - **WHEN** o usuário passa o mouse sobre um botão principal no tema escuro
-- **THEN** o botão fica mais claro, mantendo o texto branco legível
+- **THEN** o botão fica mais claro, mantendo o texto escuro legível
+
+#### Scenario: Etiqueta de marca sólida
+- **WHEN** uma etiqueta ou marcação com fundo sólido da marca aparece no tema escuro
+- **THEN** ela usa a primária iluminada com texto escuro
 
 #### Scenario: Etiqueta de status
 - **WHEN** uma etiqueta de status "Aprovado" (verde claro com texto verde no tema claro) aparece no tema escuro

@@ -101,7 +101,7 @@ export function WeeklyRadarChart({ data, title }: WeeklyRadarChartProps) {
             iconType="circle"
             wrapperStyle={{
               fontSize: '12px',
-              color: '#667085',
+              color: 'var(--gray-500)',
               paddingTop: '16px',
             }}
           />

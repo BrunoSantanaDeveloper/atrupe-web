@@ -104,7 +104,7 @@ export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
 
               {/* OPTIONAL BADGE */}
               {badge && (
-                <div className="flex-shrink-0 px-2.5 py-0.5 rounded-2xl bg-success-50 mix-blend-multiply">
+                <div className="flex-shrink-0 px-2.5 py-0.5 rounded-2xl bg-success-50 mix-blend-multiply dark:mix-blend-normal">
                   <span className="text-sm font-medium text-success-700">
                     {badge}
                   </span>

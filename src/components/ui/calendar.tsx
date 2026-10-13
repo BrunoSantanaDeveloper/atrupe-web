@@ -43,8 +43,10 @@ function Calendar({
         ),
         day_range_end: 'day-range-end',
         day_selected:
-          'bg-brand-600 text-gray-50 hover:bg-brand-700 hover:text-gray-50 focus:bg-brand-600 focus:text-gray-50 dark:text-white dark:hover:text-white dark:focus:text-white',
-        day_today: 'bg-gray-200',
+          'bg-brand-600 text-gray-50 hover:bg-brand-700 hover:text-gray-50 focus:bg-brand-600 focus:text-gray-50 dark:text-on-primary dark:hover:text-on-primary dark:focus:text-on-primary',
+        // No escuro, hoje selecionado fica com a primária (o bg-gray-200 vem
+        // depois no CSS e cobriria o bg-brand-600 do dia selecionado)
+        day_today: 'bg-gray-200 dark:aria-selected:bg-brand-600',
         day_outside:
           'day-outside text-gray rounded-full opacity-50 aria-selected:bg-gray-100/50 aria-selected:text-gray aria-selected:opacity-30',
         day_disabled: 'text-gray opacity-50',

@@ -63,42 +63,68 @@ biblioteca instalada já faz, incluindo o script contra piscar.
 Um bloco `.dark { … }` em `globals.css` redefine os tokens. As classes não
 mudam; o valor da variável muda.
 
-**Neutros (`--gray-*`) — escala própria, invertida pelo papel:**
+**Modelo de iluminação (revisão do usuário).** O escuro é o mesmo ambiente com
+menos luz, não uma troca de cores. No claro, o que está acima é mais claro
+(cartão branco sobre página `gray-100`); a primeira versão invertia isso
+(cartões e barra lateral mais escuros que a página). A ordem de luminância dos
+fundos do claro se mantém no escuro:
+
+```
+página (gray-100) < gray-50 < gray-25 < cartão (white) < camada sobreposta (surface-raised)
+```
+
+- A página é o fundo mais escuro; cartão, barra lateral e campos são mais
+  claros; menus, modais e avisos (`--surface-raised`, via
+  `dark:bg-surface-raised` nos componentes sobrepostos de `ui/`) são mais
+  claros ainda.
+- `gray-50` como hover de linha fica um pouco mais escuro que o cartão, a mesma
+  relação do claro (sombra leve).
+- Bordas e divisórias (`gray-60/200/300`) são mais claras que o cartão: com
+  pouca luz a aresta é definida por luz, não por sombra.
+- `gray-200/300` **como fundo** (trilho de aba segmentada, base de controle,
+  divisória feita com `bg-`) ficam recuados: no claro estão abaixo do cartão e
+  da página, então no escuro ficam abaixo da página (`--gray-200-bg` `#080C15`,
+  `--gray-300-bg` `#05080F`, mapeados só em `backgroundColor`). A aba ativa
+  (`bg-white`) fica iluminada sobre o trilho, como no claro.
+
+**Neutros (`--gray-*`):**
 
 | Token | Papel típico no claro | Claro | Escuro |
 |---|---|---|---|
-| superfície (`bg-white`) | cartão, modal, campo | `#FFFFFF` | `#0C111D` |
-| `gray-25` | fundo sutil | `#FCFCFD` | `#111622` |
-| `gray-50` | fundo de página, hover | `#F9FAFB` | `#161B26` |
-| `gray-60` | divisórias da barra lateral | `#E9EBF0` | `#1B202B` |
-| `gray-100` | fundo terciário, divisória | `#F2F4F7` | `#1F242F` |
-| `gray-200` | borda secundária | `#EAECF0` | `#2A2F3B` |
-| `gray-300` | borda de campo | `#D0D5DD` | `#373B46` |
-| `gray-400` | ícone, texto de exemplo | `#98A2B3` | `#7A7E87` |
-| `gray-500` | texto de apoio | `#667085` | `#94969C` |
-| `gray-600` | texto terciário | `#475467` | `#A4A7AE` |
-| `gray-700` | texto secundário | `#344054` | `#CECFD2` |
-| `gray-800` | texto forte | `#1D2939` | `#E4E5E7` |
-| `gray-900` | texto principal | `#101828` | `#F5F5F6` |
+| `gray-100` | página, fundo terciário | `#F2F4F7` | `#0C111D` (mais escuro) |
+| `gray-50` | hover, área sutil | `#F9FAFB` | `#12171F` |
+| `gray-25` | fundo sutil | `#FCFCFD` | `#171C28` |
+| superfície (`bg-white`) | cartão, barra lateral, campo | `#FFFFFF` | `#1B202C` |
+| `surface-raised` (novo) | menu, modal, aviso | `#FFFFFF` | `#232937` |
+| `gray-60` | divisórias da barra lateral | `#E9EBF0` | `#262C38` |
+| `gray-200` | borda secundária | `#EAECF0` | `#2B3140` |
+| `gray-300` | borda de campo | `#D0D5DD` | `#3A4152` |
+| `gray-400` | ícone, texto de exemplo | `#98A2B3` | `#7D828C` |
+| `gray-500` | texto de apoio | `#667085` | `#949AA4` |
+| `gray-600` | texto terciário | `#475467` | `#A7ACB5` |
+| `gray-700` | texto secundário | `#344054` | `#CFD2D7` |
+| `gray-800` | texto forte | `#1D2939` | `#E4E6EA` |
+| `gray-900` | texto principal | `#101828` | `#F5F6F8` |
 
 `gray-950` **não** é criado: as classes do shadcn que o citam
 (`focus:ring-gray-950`, `text-gray-950`, `bg-gray-950`) nunca geraram CSS
 neste projeto; criar o token as ligaria também no tema claro.
 
-Contraste no escuro (spec *Legibilidade*): texto 900/700 ≥ 9,9:1 em qualquer
-superfície; 500 ≥ 5,2:1; 400 (texto de exemplo) ≥ 3,8:1.
+Contraste no escuro (spec *Legibilidade*): texto 900/700 ≥ 9,5:1 em qualquer
+superfície; 500 ≥ 5,1:1; 400 (texto de exemplo) ≥ 3,7:1. Cartão sobre página
+1,16:1 e camada sobreposta sobre cartão 1,12:1, diferença perceptível entre
+fundos escuros.
 
 **Cores (marca, estado e demais escalas) — mesma regra para todas:**
 
 | Faixa | Uso típico no claro | Escuro |
 |---|---|---|
-| 25, 50 | fundo claro colorido | 900 da escala misturado à superfície (50% / 75%) |
-| 100, 200 | fundo/borda clara | 900, 800 |
+| 25, 50, 100, 200 | fundo claro colorido, borda clara | luz colorida sobre o cartão: 8% / 15% / 25% / 40% do tom 500 misturado ao cartão (mais claras que ele, cada vez mais coloridas) |
 | 300, 400, 500 | borda de foco, ícone, ponto | iguais ao claro |
 | 600, 700, 800, 900 | texto colorido | 400, 300, 200, 100 |
 
-Contraste: texto 600 sobre superfície ≥ 6,6:1; texto 700 sobre fundo 50 da
-mesma cor ≥ 6,2:1.
+Contraste: texto 600 sobre o cartão ≥ 5,8:1; texto 700 sobre fundo 50 da mesma
+cor ≥ 6,8:1; fundo 50 sobre o cartão ≥ 1,16:1 (tinta perceptível).
 
 *Alternativa descartada:* classes `dark:` em cada tela (decisão do usuário:
 ~850 arquivos, e todo componente novo teria de repetir o par).
@@ -107,10 +133,14 @@ mesma cor ≥ 6,2:1.
 Duas classes usam a mesma cor com papéis opostos:
 
 - `bg-white` é superfície (escurece) e `text-white` é texto sobre cor sólida
-  (continua branco). Nova variável `--surface` (branco no claro, `#0C111D` no
+  (continua branco). Nova variável `--surface` (branco no claro, `#1B202C` no
   escuro) e `tailwind.config.ts` mapeia `white` para ela **só** em
   `backgroundColor`, `borderColor`, `ringColor`, `ringOffsetColor`, `divideColor`
   e `gradientColorStops`. `--white` continua branco nos dois temas.
+  `--surface-raised` (branco no claro, `#232937` no escuro) é a camada
+  sobreposta, aplicada com `dark:bg-surface-raised` em dialog, alert-dialog,
+  dropdown-menu, select, popover, sheet, drawer, hover-card, toast, sonner,
+  command e tooltip claro.
 - `bg-brand-600` é preenchimento sólido (botão, mantém a cor) e
   `text-brand-600` é texto (clareia). Em `backgroundColor`, os tons 600–900 de
   todas as escalas (inclusive cinza) apontam para
@@ -119,27 +149,37 @@ Duas classes usam a mesma cor com papéis opostos:
   hoje. Assim botões e marcações sólidas mantêm a cor (spec *Cores de marca e
   de estado*).
 
-### 3a. Primária própria do tema escuro
-Pedido do usuário durante a implementação: a primária ganha uma variação para
-o escuro em vez de repetir o verde do claro. Mesmo matiz do `brand-500` (158°),
-saturação 70%, luminância escolhida entre os limites de texto branco AA
-(≤ 0,183) e destaque sobre o fundo (≥ 0,117):
+### 3a. Primária iluminada no tema escuro
+Pedido do usuário: a primária segue o mesmo modelo de luz. O botão principal é
+um elemento acima da superfície, então no escuro é **mais claro que o cartão**,
+com uma variação própria do verde Atrupe (mesmo matiz do `brand-500`, 158°,
+saturação 60%, menos saturada: menos luz) e **tinta escura** por cima
+(`--on-primary` = cor da página, `#0C111D`). O mouse acrescenta luz: clareia.
 
-| Estado | Claro (`primary`) | Escuro | Branco | Sobre o fundo |
+| Estado | Claro (`primary`) | Escuro | Tinta escura | Sobre o cartão |
 |---|---|---|---|---|
-| normal | `brand-600` `#077550` | `--brand-primary` `#157955` | 5,4:1 | 3,5:1 |
-| mouse | `brand-700` `#085D40` (escurece) | `--brand-primary-hover` `#17825B` (clareia) | 4,8:1 | 4,0:1 |
-| pressionado | `brand-800` `#084C36` | `--brand-primary-active` `#14714F` | 6,0:1 | 3,1:1 |
+| normal | `brand-600` `#077550` | `--brand-primary` `#2AA87A` | 6,3:1 | 5,4:1 |
+| mouse | `brand-700` `#085D40` (escurece) | `--brand-primary-hover` `#2EB785` (clareia) | 7,4:1 | 6,4:1 |
+| pressionado | `brand-800` `#084C36` | `--brand-primary-active` `#279B70` | 5,4:1 | 4,7:1 |
 
-Entra pelas variáveis `-fill` (`--brand-500/600/700/800-fill`), então vale para
-`bg-brand` (botão `default`) e `bg-brand-600…800` (botão `primary`, dia
-selecionado do calendário). `bg-brand` e `bg-gray` (botão `neutral`) passam a
-usar `-fill` também. Os botões `default` e `primary` ganham
-`dark:border-transparent`: a borda `border-brand-600` viraria o verde claro de
-texto e desenharia um contorno.
+- Entra pelas variáveis `-fill` (`--brand-500/600/700/800-fill`), então vale
+  para `bg-brand` (botão `default`, etiqueta `default`) e `bg-brand-600…800`
+  (botão `primary`, etiqueta `primary`, dia selecionado do calendário).
+  `bg-brand` e `bg-gray` (botão `neutral`) usam `-fill` também.
+- A tinta escura entra por uma regra global em `globals.css`: sob `.dark`, um
+  elemento com `bg-brand`/`bg-brand-500…800` e `text-white`/`text-gray-50`, ou
+  um descendente com essas classes, recebe `color: var(--on-primary)`. Ícones
+  dentro do botão usam `currentColor` e acompanham. Onde o preenchimento vem de
+  variante (`data-[selected]:bg-brand-600` no calendário), a exceção é
+  explícita: `dark:data-[selected]:text-on-primary`.
+- Os botões `default` e `primary` ganham `dark:border-transparent`: a borda
+  `border-brand-600` viraria o verde claro de texto e desenharia um contorno.
+- As demais cores sólidas (sucesso, alerta, erro, cinza) mantêm o valor do claro
+  com texto branco; só a primária é repensada, como pedido.
 
-*Alternativa descartada:* verde claro (`brand-300`) com texto escuro, mais
-vibrante, mas trocaria a cor do texto de todos os botões principais.
+*Alternativa descartada (primeira versão):* verde escuro dessaturado (`#157955`)
+com texto branco. Mantinha a tinta branca, mas deixava o botão mais escuro que
+o cartão, contra o modelo de luz.
 
 ### 4. Classes `dark:` do shadcn saem
 Com o token já escuro, `dark:bg-gray-950`/`dark:text-gray-50` inverteriam de
@@ -149,7 +189,7 @@ removidas; o tema escuro deles vem dos tokens. Não afeta o claro.
 ### 5. Exceções usam `dark:` pontual
 Onde a regra geral erra (texto claro fixo sobre preenchimento sólido, como o dia
 selecionado do calendário com `bg-brand-600 text-gray-50`), entra `dark:` só
-naquele ponto (`dark:text-white`). O claro não muda. Cada exceção é encontrada
+naquele ponto (`dark:data-[selected]:text-on-primary`). O claro não muda. Cada exceção é encontrada
 pela vitrine e pela varredura de combinações sólido + texto claro.
 
 ### 6. Hexadecimal igual a token vira token; paletas padrão do Tailwind viram variáveis

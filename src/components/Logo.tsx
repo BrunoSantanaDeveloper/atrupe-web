@@ -1,6 +1,9 @@
 // Next
 import Image from 'next/image'
 
+// Lib
+import { cn } from '@/lib/utils'
+
 // Logos
 import logo from '@public/logo/logo.png'
 import logoText from '@public/logo/logo-text.png'
@@ -17,6 +20,31 @@ interface Props {
 
 export function Logo(props: Props) {
   const { text, light, width = 154, hidden, className } = props
+
+  // Sem `light` informado, o logo acompanha o tema: versão de letras escuras no
+  // claro e de letras claras no escuro
+  if (light === undefined) {
+    return (
+      <>
+        <Image
+          src={text ? logoText : logo}
+          alt="logo atrupe"
+          width={width}
+          hidden={hidden}
+          priority
+          className={cn(className, 'dark:hidden')}
+        />
+        <Image
+          src={text ? logoTextLight : logoLight}
+          alt="logo atrupe"
+          width={width}
+          hidden={hidden}
+          priority
+          className={cn(className, 'hidden dark:block')}
+        />
+      </>
+    )
+  }
 
   let selectedLogo = logoText
 

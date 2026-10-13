@@ -85,26 +85,29 @@ test.describe('Preferência de tema', () => {
     await page.goto(LOGIN)
     await page.evaluate((key) => localStorage.setItem(key, 'dark'), STORAGE_KEY)
 
-    // Registra a classe e o fundo no primeiro quadro: o callback do primeiro
-    // requestAnimationFrame roda logo antes de o navegador pintar a página
+    // Registra a classe e o fundo no primeiro quadro com conteúdo: o callback
+    // do requestAnimationFrame roda logo antes de o navegador pintar. Quadros
+    // sem <body> (HTML ainda chegando, comum no next dev frio) não pintam nada
+    // e vêm antes do script do next-themes, então são ignorados.
     await page.addInitScript(() => {
-      requestAnimationFrame(() => {
+      const sample = () => {
+        if (!document.body) return requestAnimationFrame(sample)
         ;(window as unknown as { __firstFrame: unknown }).__firstFrame = {
           dark: document.documentElement.classList.contains('dark'),
-          background: document.body
-            ? getComputedStyle(document.body).backgroundColor
-            : null,
+          background: getComputedStyle(document.body).backgroundColor,
         }
-      })
+      }
+      requestAnimationFrame(sample)
     })
     await page.reload()
 
     const first = (await page.evaluate(
       () => (window as unknown as { __firstFrame: unknown }).__firstFrame,
-    )) as { dark: boolean; background: string | null }
+    )) as { dark: boolean; background: string }
     expect(first.dark).toBe(true)
-    if (first.background !== null)
-      expect(first.background).toBe('rgb(12, 17, 29)')
+    // Fundo já escuro no primeiro quadro (cada canal abaixo de 64: nada claro)
+    const channels = (first.background.match(/\d+/g) ?? []).map(Number)
+    expect(Math.max(...channels.slice(0, 3))).toBeLessThan(64)
   })
 })
 
@@ -132,6 +135,11 @@ test.describe('Tema escuro: contraste dos tokens', () => {
     const tokens = await page.evaluate(() => {
       const names = [
         'surface',
+        'surface-raised',
+        'on-primary',
+        'gray-300-bg',
+        'gray-200-bg',
+        'gray-25',
         'gray-50',
         'gray-100',
         'gray-300',
@@ -160,8 +168,31 @@ test.describe('Tema escuro: contraste dos tokens', () => {
       return out
     })
     const t = (name: string) => tokens[name] as Rgb
-    const white: Rgb = [255, 255, 255]
-    const surfaces = ['surface', 'gray-50', 'gray-100']
+    const surfaces = ['surface', 'surface-raised', 'gray-50', 'gray-100']
+
+    // Menos luz, mesma ordem: trilho < página < hover < sutil < cartão < camada sobreposta
+    const levels = [
+      'gray-300-bg',
+      'gray-200-bg',
+      'gray-100',
+      'gray-50',
+      'gray-25',
+      'surface',
+      'surface-raised',
+    ]
+    for (let i = 1; i < levels.length; i++)
+      expect(
+        luminance(t(levels[i])),
+        `${levels[i]} mais claro que ${levels[i - 1]}`,
+      ).toBeGreaterThan(luminance(t(levels[i - 1])))
+    expect(
+      contrast(t('surface'), t('gray-100')),
+      'cartão vs página',
+    ).toBeGreaterThanOrEqual(1.1)
+    expect(
+      contrast(t('surface-raised'), t('surface')),
+      'camada vs cartão',
+    ).toBeGreaterThanOrEqual(1.1)
 
     // Texto principal e secundário ≥ 4,5:1; apoio e exemplo ≥ 3:1
     for (const bg of surfaces) {
@@ -181,21 +212,29 @@ test.describe('Tema escuro: contraste dos tokens', () => {
     for (const text of ['brand-600', 'error-600'])
       expect(contrast(t(text), t('surface')), text).toBeGreaterThanOrEqual(4.5)
 
-    // Primária do tema escuro: texto branco ≥ 4,5:1 e destaque ≥ 3:1
+    // Primária iluminada: mais clara que o cartão, tinta escura ≥ 4,5:1,
+    // destaque ≥ 3:1; o mouse acrescenta luz
     for (const state of [
       'brand-primary',
       'brand-primary-hover',
       'brand-primary-active',
     ]) {
       expect(
-        contrast(white, t(state)),
-        `branco sobre ${state}`,
+        contrast(t('on-primary'), t(state)),
+        `tinta sobre ${state}`,
       ).toBeGreaterThanOrEqual(4.5)
       expect(
         contrast(t(state), t('surface')),
-        `${state} sobre o fundo`,
+        `${state} sobre o cartão`,
       ).toBeGreaterThanOrEqual(3)
+      expect(
+        luminance(t(state)),
+        `${state} mais clara que o cartão`,
+      ).toBeGreaterThan(luminance(t('surface')))
     }
+    expect(luminance(t('brand-primary-hover'))).toBeGreaterThan(
+      luminance(t('brand-primary')),
+    )
 
     // Hierarquia: principal > secundário > apoio > exemplo
     const order = ['gray-900', 'gray-700', 'gray-500', 'gray-400']
