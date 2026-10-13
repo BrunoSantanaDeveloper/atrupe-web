@@ -53,7 +53,7 @@ export function SalesSettingsClient() {
           permission: 'sales_settings:series:view',
         },
         // O markup padrão do terceirizado avulso (MS-16, T-4), do LITE em
-        // diante, junto do "Acrescentar a este item"
+        // diante, junto do "Acrescentar a este item" (API desde a Fase 4.2)
         ...(hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
           ? [
               {
@@ -63,7 +63,6 @@ export function SalesSettingsClient() {
                   'Defina o markup padrão aplicado ao custo do terceirizado lançado na hora.',
                 link: `${defaultPath}/terceirizados`,
                 permission: 'sales_settings:series:view',
-                demo: true,
               },
             ]
           : []),
