@@ -35,10 +35,11 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { AssetKind } from '../types'
 
 // Actions
-import { getAssets, getAssetGroups } from '@/actions/assets'
+import { getAssets, getAssetGroups } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { useSector } from '@/hooks/queries/useSector'
 import {
   assetKindObj,
   assetUnitShort,
@@ -55,17 +56,6 @@ import {
   IconBuildingWarehouse,
 } from '@tabler/icons-react'
 
-const sectors = [
-  'Administração',
-  'Impressão',
-  'Produção',
-  'Criação',
-  'CNC',
-  'Frota',
-  'Gráfica',
-  'Marcenaria',
-].map((sector) => ({ value: sector, label: sector }))
-
 const kindOrder: AssetKind[] = ['MACHINES', 'FURNITURE', 'VEHICLES']
 
 // Sem depreciação calculada mostra `-`, nunca R$ 0,00 (design.md §7)
@@ -73,6 +63,13 @@ const formatValue = (value: number | null) =>
   value === null ? '-' : formatCurrencyToBrl(value)
 
 export function Assets({ searchParams }: SearchParamsType) {
+  // Os setores do cadastro da empresa (os ativos), e não uma lista fixa: o bem
+  // grava o setor pelo id
+  const { data: sectorsData } = useSector()
+  const sectors = (sectorsData || [])
+    .filter((sector) => sector.isActive)
+    .map((sector) => ({ value: sector.id, label: sector.name }))
+
   const { data: groupsData } = useQuery({
     staleTime: Infinity,
     queryKey: ['asset-groups'],
@@ -86,9 +83,12 @@ export function Assets({ searchParams }: SearchParamsType) {
   })
 
   const assets = data?.data || []
+  // O grupo leva unidade e setor: o bem só entra em grupo igual (P-5.2)
   const groups = (groupsData?.data || []).map((group) => ({
     value: group.id,
     label: group.name,
+    unit: group.unit,
+    sectorId: group.sectorId,
   }))
 
   const grouped = kindOrder
@@ -197,7 +197,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell>{asset.sector}</TableCell>
+                            <TableCell>{asset.sector || '-'}</TableCell>
                             <TableCell>
                               {asset.unit ? assetUnitShort[asset.unit] : '-'}
                             </TableCell>

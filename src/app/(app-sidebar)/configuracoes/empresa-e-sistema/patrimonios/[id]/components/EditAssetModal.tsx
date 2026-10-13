@@ -23,14 +23,19 @@ import {
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
+// Components
+import { CompositionsWarning } from '../../components/CompositionsWarning'
+
 // Types
-import type { Asset, AssetUnit } from '../../types'
+import type { AssetComposition, AssetRecord, AssetUnit } from '../../types'
 
 // Actions
-import { updateAsset } from '@/actions/assets'
+import { updateAsset } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { useUploadFile } from '@/hooks/use-upload-file'
+import { useImageCompression } from '@/hooks/use-image-compression'
 import { assetUnitShort, assetUnitOptions } from '@/consts/assets'
 
 // Third-party
@@ -41,7 +46,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
 
 interface Props {
-  asset: Asset
+  asset: AssetRecord
   open: boolean
   onOpenChange: () => void
 }
@@ -57,19 +62,35 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
   const [unit, setUnit] = useState<AssetUnit>(asset.unit || 'HR')
   const [productivity, setProductivity] = useState('')
   const [imageUrl, setImageUrl] = useState(asset.imageUrl || '')
+  // As composições que perdem o custo da máquina ao simplificar (P-16): a API
+  // recusa e a tela pede a confirmação
+  const [conflict, setConflict] = useState<AssetComposition[]>()
   const fileInput = useRef<HTMLInputElement>(null)
+  const { compressImage, isCompressing } = useImageCompression()
+  const { handleUpload, isUploading } = useUploadFile()
+  const uploading = isCompressing || isUploading
 
-  // Sem API de upload ainda: a imagem fica como data URL (ALT-16)
-  const pickImage = (file?: File | null) => {
+  // A foto sobe pelo upload de arquivos e entra pela URL: a API recusa data
+  // URL (ALT-16). Comprimida antes, pelo limite de 1 MB do upload
+  const pickImage = async (file?: File | null) => {
+    if (fileInput.current) fileInput.current.value = ''
     if (!file) return
 
-    const reader = new FileReader()
+    try {
+      const compressed = await compressImage(file, 'large')
+      const uploaded = await handleUpload([compressed])
+      const url = typeof uploaded === 'string' ? uploaded : uploaded?.url
 
-    reader.onload = () => setImageUrl(String(reader.result))
-    reader.readAsDataURL(file)
+      if (url) setImageUrl(url)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao enviar a foto',
+      )
+    }
   }
 
   useEffect(() => {
+    setConflict(undefined)
     setDetailed(asset.detailed)
     setName(asset.name)
     setUsefulLife(String(asset.usefulLifeMonths || ''))
@@ -95,13 +116,31 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
         detailed,
         imageUrl: imageUrl || null,
         unit: detailed ? unit : null,
-        monthlyProductivity: detailed ? Number(productivity) || null : null,
-        usefulLifeMonths: months || null,
-        residualPercent: Number(residualPercent || 0),
+        // Com configurações, a produtividade é a soma delas (P-31)
+        ...(detailed && asset.setups.length
+          ? {}
+          : {
+              monthlyProductivity: detailed
+                ? Number(productivity) || null
+                : null,
+            }),
+        // O simplificado não tem unidade, então sai do grupo (P-5.2)
+        ...(detailed ? {} : { groupId: null }),
+        // Vida útil e residual daqui contam como revistos (P-26); vazios, ficam
+        // como estão
+        ...(months > 0 ? { usefulLifeMonths: months } : {}),
+        ...(residualPercent !== ''
+          ? { residualPercent: Number(residualPercent) }
+          : {}),
+        confirmed: Boolean(conflict),
       }),
     onSuccess: (response) => {
+      if (response.compositions.length) {
+        return setConflict(response.compositions)
+      }
       if (!response.success) return toast.error(response.message)
 
+      setConflict(undefined)
       toast.success('Patrimônio atualizado')
       queryClient.invalidateQueries({ queryKey: ['asset', asset.id] })
       queryClient.invalidateQueries({ queryKey: ['assets'] })
@@ -111,7 +150,13 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
   })
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        setConflict(undefined)
+        onOpenChange()
+      }}
+    >
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
@@ -146,6 +191,7 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
                   size="sm"
                   type="button"
                   variant="outline"
+                  isLoading={uploading}
                   onClick={() => fileInput.current?.click()}
                 >
                   {imageUrl ? 'Trocar foto' : 'Adicionar foto'}
@@ -181,17 +227,25 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
             </div>
             <Switch
               checked={detailed}
-              onCheckedChange={setDetailed}
+              onCheckedChange={(value) => {
+                setDetailed(value)
+                setConflict(undefined)
+              }}
               aria-label="Detalhar custos deste bem"
             />
           </div>
 
-          {!detailed && asset.setups.length > 0 && (
-            <p className="text-sm text-warning-700 bg-warning-25 border border-warning-200 rounded-lg p-3">
-              Este bem tem {asset.setups.length} configuração(ões) produtiva(s).
-              Ao simplificar o cadastro, as composições que usam essas
-              configurações perdem o custo da máquina.
-            </p>
+          {conflict ? (
+            <CompositionsWarning compositions={conflict} />
+          ) : (
+            !detailed &&
+            asset.setups.length > 0 && (
+              <p className="text-sm text-warning-700 bg-warning-25 border border-warning-200 rounded-lg p-3">
+                Este bem tem {asset.setups.length} configuração(ões)
+                produtiva(s). Ao simplificar o cadastro, as composições que usam
+                essas configurações perdem o custo da máquina.
+              </p>
+            )
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -284,8 +338,16 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
               Cancelar
             </Button>
           </DialogClose>
-          <Button isLoading={isPending} onClick={() => mutate()}>
-            {isPending ? 'Salvando...' : 'Salvar'}
+          <Button
+            isLoading={isPending}
+            disabled={uploading}
+            onClick={() => mutate()}
+          >
+            {isPending
+              ? 'Salvando...'
+              : conflict
+                ? 'Confirmar e salvar'
+                : 'Salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

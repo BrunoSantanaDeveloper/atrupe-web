@@ -39,7 +39,7 @@ import {
   getAssetGroups,
   renameAssetGroup,
   deleteAssetGroup,
-} from '@/actions/assets'
+} from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -174,7 +174,9 @@ export function AssetGroups() {
                             <span className="font-medium">{group.name}</span>
                           )}
                         </TableCell>
-                        <TableCell>{group.sector}</TableCell>
+                        {/* Os de veículo nascem sem setor: o primeiro bem
+                            define (P-13) */}
+                        <TableCell>{group.sector || '-'}</TableCell>
                         <TableCell>{assetUnitShort[group.unit]}</TableCell>
                         <TableCell className="text-right">
                           {group.assetCount}

@@ -22,10 +22,10 @@ import {
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { Asset, CostNature } from '../../types'
+import type { AssetRecord, CostNature } from '../../types'
 
 // Actions
-import { createAssetCost } from '@/actions/assets'
+import { createAssetCost, getAssetAccounts } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -33,27 +33,14 @@ import { assetUnitShort, costNatureOptions } from '@/consts/assets'
 
 // Third-party
 import { toast } from 'sonner'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import { IconPlus } from '@tabler/icons-react'
 
 interface Props {
-  asset: Asset
+  asset: AssetRecord
 }
-
-const accounts = [
-  {
-    value: '02.01.03.03 — Manutenção de máquina',
-    label: '02.01.03.03 — Manutenção de máquina',
-  },
-  { value: '02.01.04.01 — Combustível', label: '02.01.04.01 — Combustível' },
-  { value: '02.01.04.06 — Seguro', label: '02.01.04.06 — Seguro' },
-  {
-    value: '02.01.03.07 — Ferramentas e consumíveis',
-    label: '02.01.03.07 — Ferramentas e consumíveis',
-  },
-]
 
 // As três naturezas de custo (P-6). A conta do plano de contas serve ao
 // Comparativo (P-17), e o custo mensal é calculado pela regra.
@@ -64,17 +51,40 @@ export function NewCostModal({ asset }: Props) {
   const [nature, setNature] = useState<CostNature>('FIXED')
   const [unitCost, setUnitCost] = useState('')
   const [yieldAmount, setYieldAmount] = useState('1')
-  const [chartAccount, setChartAccount] = useState(accounts[0].value)
+  const [accountId, setAccountId] = useState('none')
+  const [setupId, setSetupId] = useState('')
   const [lastOccurrence, setLastOccurrence] = useState('')
 
+  // A conta é uma subcategoria de despesa do plano de contas (P-17)
+  const { data: accountsData } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['asset-accounts', 'payable'],
+    queryFn: () => getAssetAccounts({ type: 'payable' }),
+    enabled: open,
+  })
+  const accounts = [
+    { value: 'none', label: 'Sem conta' },
+    ...(accountsData?.data || []).map((account) => ({
+      value: account.id,
+      label: account.label,
+    })),
+  ]
+
   const isFixed = nature === 'FIXED'
+  // O variável da configuração produtiva aponta para uma delas e usa a
+  // produtividade dela (P-19)
+  const isSetup = nature === 'SETUP_VARIABLE'
+  const setup = asset.setups.find((item) => item.id === setupId)
+  const productivity = isSetup
+    ? setup?.monthlyProductivity || 0
+    : asset.monthlyProductivity || 0
   const unit = asset.unit ? assetUnitShort[asset.unit] : 'unidade'
   const cost = Math.round(Number(unitCost || 0) * 100)
   const amount = Number(yieldAmount || 1)
 
   const monthlyCost = isFixed
     ? Math.round(cost / (amount || 1))
-    : Math.round((cost / (amount || 1)) * (asset.monthlyProductivity || 0))
+    : Math.round((cost / (amount || 1)) * productivity)
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
@@ -85,10 +95,9 @@ export function NewCostModal({ asset }: Props) {
           nature,
           unitCost: cost,
           yieldAmount: amount,
-          yieldUnit: isFixed ? 'MONTH' : 'UNIT',
-          chartAccount,
+          financialNatureId: accountId === 'none' ? null : accountId,
           lastOccurrence: lastOccurrence || null,
-          setupId: null,
+          setupId: isSetup ? setupId || null : null,
         },
       }),
     onSuccess: (response) => {
@@ -98,6 +107,7 @@ export function NewCostModal({ asset }: Props) {
       queryClient.invalidateQueries({ queryKey: ['asset', asset.id] })
       setName('')
       setUnitCost('')
+      setSetupId('')
       setOpen(false)
     },
     onError: () => toast.error('Erro ao lançar o custo'),
@@ -143,6 +153,20 @@ export function NewCostModal({ asset }: Props) {
             options={costNatureOptions}
           />
 
+          {isSetup && (
+            <SelectBasic
+              name="setup"
+              label="Configuração produtiva"
+              value={setupId}
+              onChange={setSetupId}
+              options={asset.setups.map((item) => ({
+                value: item.id,
+                label: item.name,
+              }))}
+              emptyMessage="Cadastre uma configuração produtiva antes"
+            />
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label htmlFor="cost-value" className="text-sm font-medium">
@@ -176,8 +200,8 @@ export function NewCostModal({ asset }: Props) {
           <SelectBasic
             name="account"
             label="Conta do plano de contas"
-            value={chartAccount}
-            onChange={setChartAccount}
+            value={accountId}
+            onChange={setAccountId}
             options={accounts}
           />
 
@@ -199,14 +223,14 @@ export function NewCostModal({ asset }: Props) {
           <div className="rounded-lg border border-gray-200 p-3">
             <p className="text-sm text-gray">Custo mensal estimado</p>
             <p className="text-lg font-semibold text-gray-900">
-              {asset.monthlyProductivity || isFixed
+              {productivity || isFixed
                 ? formatCurrencyToBrl(monthlyCost)
                 : 'Não calculado'}
             </p>
             <p className="text-sm text-gray">
               {isFixed
                 ? 'O valor é diluído pela periodicidade informada.'
-                : `Multiplicado pela produtividade de referência do bem (${asset.monthlyProductivity || 0} ${unit}/mês).`}
+                : `Multiplicado pela produtividade de referência ${isSetup ? 'da configuração' : 'do bem'} (${productivity} ${unit}/mês).`}
             </p>
           </div>
         </DialogBody>
@@ -218,7 +242,7 @@ export function NewCostModal({ asset }: Props) {
           </DialogClose>
           <Button
             isLoading={isPending}
-            disabled={!name || !unitCost}
+            disabled={!name || !unitCost || (isSetup && !setupId)}
             onClick={() => mutate()}
           >
             {isPending ? 'Lançando...' : 'Lançar custo'}

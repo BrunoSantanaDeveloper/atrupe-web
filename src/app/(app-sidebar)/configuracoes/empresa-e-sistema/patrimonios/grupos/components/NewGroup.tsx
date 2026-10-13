@@ -25,10 +25,11 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import type { AssetUnit } from '../../types'
 
 // Actions
-import { createAssetGroup } from '@/actions/assets'
+import { createAssetGroup } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { assetUnitOptions } from '@/consts/assets'
+import { useSector } from '@/hooks/queries/useSector'
 
 // Third-party
 import { toast } from 'sonner'
@@ -37,24 +38,21 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 // Icons
 import { IconPlus } from '@tabler/icons-react'
 
-const sectors = [
-  'Frota',
-  'Impressão',
-  'Produção',
-  'CNC',
-  'Marcenaria',
-  'Gráfica',
-].map((sector) => ({ value: sector, label: sector }))
-
 export function NewGroupModal() {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [unit, setUnit] = useState<AssetUnit>('KM')
-  const [sector, setSector] = useState(sectors[0].value)
+  const [sectorId, setSectorId] = useState('')
+
+  // Os setores do cadastro da empresa (os ativos), pelo id
+  const { data: sectorsData } = useSector()
+  const sectors = (sectorsData || [])
+    .filter((sector) => sector.isActive)
+    .map((sector) => ({ value: sector.id, label: sector.name }))
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => createAssetGroup({ name, unit, sector }),
+    mutationFn: () => createAssetGroup({ name, unit, sectorId }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
@@ -96,9 +94,10 @@ export function NewGroupModal() {
           <SelectBasic
             name="sector"
             label="Setor"
-            value={sector}
-            onChange={setSector}
+            value={sectorId}
+            onChange={setSectorId}
             options={sectors}
+            emptyMessage="Nenhum setor ativo"
           />
           <SelectBasic
             name="unit"
@@ -119,7 +118,7 @@ export function NewGroupModal() {
           </DialogClose>
           <Button
             isLoading={isPending}
-            disabled={!name}
+            disabled={!name || !sectorId}
             onClick={() => mutate()}
           >
             {isPending ? 'Cadastrando...' : 'Cadastrar grupo'}

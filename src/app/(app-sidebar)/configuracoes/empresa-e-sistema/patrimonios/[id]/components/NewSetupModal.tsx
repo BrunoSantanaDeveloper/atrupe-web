@@ -19,10 +19,10 @@ import {
 } from '@/components/ui/dialog'
 
 // Types
-import type { Asset } from '../../types'
+import type { AssetRecord } from '../../types'
 
 // Actions
-import { createAssetSetup } from '@/actions/assets'
+import { createAssetSetup } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { assetUnitShort } from '@/consts/assets'
@@ -35,7 +35,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { IconPlus } from '@tabler/icons-react'
 
 interface Props {
-  asset: Asset
+  asset: AssetRecord
 }
 
 // Configuração produtiva (P-2). A produtividade do bem é a soma das

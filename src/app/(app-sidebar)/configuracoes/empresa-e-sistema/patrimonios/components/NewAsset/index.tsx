@@ -24,12 +24,20 @@ import {
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { Asset, AssetKind, AssetUnit } from '../../types'
+import type {
+  AssetItem,
+  AssetKind,
+  AssetUnit,
+  AssetFormValues,
+  AssetComposition,
+} from '../../types'
 
 // Actions
-import { createAsset, updateAsset } from '@/actions/assets'
+import { createAsset, updateAsset } from '@/actions/asset'
 
 // Hooks / Store / Consts
+import { useUploadFile } from '@/hooks/use-upload-file'
+import { useImageCompression } from '@/hooks/use-image-compression'
 import {
   assetKindOptions,
   assetUnitShort,
@@ -42,15 +50,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
+import { CompositionsWarning } from '../CompositionsWarning'
 
 // Icons
 import { IconPlus, IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
 
 interface Props {
+  // Os setores ativos da empresa, pelo id
   sectors: { value: string; label: string }[]
-  groups: { value: string; label: string }[]
+  groups: {
+    value: string
+    label: string
+    unit: AssetUnit
+    sectorId: string | null
+  }[]
   // Com o bem informado, o mesmo formulário edita em vez de cadastrar (P-12)
-  asset?: Asset
+  asset?: AssetItem
 }
 
 // Cadastro rápido em duas etapas (P-12): aqui só o essencial; vida útil,
@@ -63,7 +78,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
   const [detailed, setDetailed] = useState(asset?.detailed ?? true)
   const [name, setName] = useState(asset?.name || '')
   const [kind, setKind] = useState<AssetKind>(asset?.kind || 'MACHINES')
-  const [sector, setSector] = useState(asset?.sector || '')
+  const [sectorId, setSectorId] = useState(asset?.sectorId || '')
   const [groupId, setGroupId] = useState(asset?.groupId || 'none')
   const [unit, setUnit] = useState<AssetUnit>(asset?.unit || 'HR')
   const [imageUrl, setImageUrl] = useState(asset?.imageUrl || '')
@@ -76,12 +91,34 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
   const [acquisitionValue, setAcquisitionValue] = useState(
     asset ? String(asset.acquisitionValue / 100) : '',
   )
+  // As composições que perdem o custo da máquina ao simplificar (P-16): a API
+  // recusa e a tela pede a confirmação
+  const [conflict, setConflict] = useState<AssetComposition[]>()
+  const { compressImage, isCompressing } = useImageCompression()
+  const { handleUpload, isUploading } = useUploadFile()
+  const uploading = isCompressing || isUploading
+
+  // O setor atual fica na lista mesmo inativo, para a edição não o perder
+  const sectorOptions =
+    asset?.sectorId && !sectors.some((item) => item.value === asset.sectorId)
+      ? [...sectors, { value: asset.sectorId, label: asset.sector || '-' }]
+      : sectors
+
+  // O grupo tem a mesma unidade e o mesmo setor do bem (P-5.2); os de
+  // veículo nascem sem setor e ficam com o do primeiro bem
+  const groupOptions = groups
+    .filter(
+      (group) =>
+        group.unit === unit && (!group.sectorId || group.sectorId === sectorId),
+    )
+    .map((group) => ({ value: group.value, label: group.label }))
 
   const reset = () => {
+    setConflict(undefined)
     if (isEdit) return
 
     setName('')
-    setSector('')
+    setSectorId('')
     setGroupId('none')
     setProductivity('')
     setAcquisitionDate('')
@@ -90,37 +127,60 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
     setDetailed(true)
   }
 
-  // Sem API de upload ainda: a imagem fica como data URL, e o endpoint real
-  // vai receber o arquivo (registrado em alteracoes-pendentes.md)
-  const pickImage = (file?: File | null) => {
+  // A foto sobe pelo upload de arquivos e entra pela URL: a API recusa data
+  // URL (ALT-16). Comprimida antes, pelo limite de 1 MB do upload
+  const pickImage = async (file?: File | null) => {
+    if (fileInput.current) fileInput.current.value = ''
     if (!file) return
 
-    const reader = new FileReader()
+    try {
+      const compressed = await compressImage(file, 'large')
+      const uploaded = await handleUpload([compressed])
+      const url = typeof uploaded === 'string' ? uploaded : uploaded?.url
 
-    reader.onload = () => setImageUrl(String(reader.result))
-    reader.readAsDataURL(file)
+      if (url) setImageUrl(url)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao enviar a foto',
+      )
+    }
   }
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => {
-      const values = {
+    mutationFn: async () => {
+      const values: AssetFormValues = {
         name,
         kind,
-        sector,
+        sectorId,
         detailed,
         imageUrl: imageUrl || null,
-        groupId: groupId === 'none' ? null : groupId,
+        // Só o detalhado tem grupo, e só um grupo que combine com ele
+        groupId:
+          detailed && groupOptions.some((group) => group.value === groupId)
+            ? groupId
+            : null,
         unit: detailed ? unit : null,
         monthlyProductivity: detailed ? Number(productivity) || null : null,
-        acquisitionDate,
+        acquisitionDate: acquisitionDate || null,
         acquisitionValue: Math.round(Number(acquisitionValue || 0) * 100),
       }
 
-      return asset
-        ? updateAsset({ id: asset.id, ...values })
-        : createAsset(values)
+      if (!asset) {
+        const created = await createAsset(values)
+
+        return { ...created, compositions: [] as AssetComposition[] }
+      }
+
+      return updateAsset({
+        id: asset.id,
+        ...values,
+        confirmed: Boolean(conflict),
+      })
     },
     onSuccess: (response) => {
+      if (response.compositions.length) {
+        return setConflict(response.compositions)
+      }
       if (!response.success) return toast.error(response.message)
 
       toast.success(isEdit ? 'Patrimônio atualizado' : 'Patrimônio cadastrado')
@@ -138,7 +198,13 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
   })
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        setOpen(value)
+        if (!value) setConflict(undefined)
+      }}
+    >
       {isEdit ? (
         <ActionButton
           Icon={IconPencil}
@@ -177,7 +243,10 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
             </div>
             <Switch
               checked={detailed}
-              onCheckedChange={setDetailed}
+              onCheckedChange={(value) => {
+                setDetailed(value)
+                setConflict(undefined)
+              }}
               aria-label="Detalhar custos deste bem"
             />
           </div>
@@ -208,6 +277,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
                   size="sm"
                   type="button"
                   variant="outline"
+                  isLoading={uploading}
                   onClick={() => fileInput.current?.click()}
                 >
                   {imageUrl ? 'Trocar foto' : 'Adicionar foto'}
@@ -256,9 +326,10 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
             <SelectBasic
               name="sector"
               label="Setor"
-              value={sector}
-              onChange={setSector}
-              options={sectors}
+              value={sectorId}
+              onChange={setSectorId}
+              options={sectorOptions}
+              emptyMessage="Nenhum setor ativo"
             />
             <div className="space-y-1.5">
               <label htmlFor="asset-date" className="text-sm font-medium">
@@ -316,7 +387,10 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
                   label="Grupo de bens equivalentes (opcional)"
                   value={groupId}
                   onChange={setGroupId}
-                  options={[{ value: 'none', label: 'Sem grupo' }, ...groups]}
+                  options={[
+                    { value: 'none', label: 'Sem grupo' },
+                    ...groupOptions,
+                  ]}
                 />
               </>
             )}
@@ -328,6 +402,8 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
               meses e 30%) e podem ser revisados na página do patrimônio.
             </p>
           )}
+
+          {conflict && <CompositionsWarning compositions={conflict} />}
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
@@ -337,10 +413,14 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
           </DialogClose>
           <Button
             isLoading={isPending}
-            disabled={!name || !sector || !acquisitionValue}
+            disabled={!name || !sectorId || !acquisitionValue || uploading}
             onClick={() => mutate()}
           >
-            {isEdit ? 'Salvar' : 'Cadastrar patrimônio'}
+            {conflict
+              ? 'Confirmar e salvar'
+              : isEdit
+                ? 'Salvar'
+                : 'Cadastrar patrimônio'}
           </Button>
         </DialogFooter>
       </DialogContent>

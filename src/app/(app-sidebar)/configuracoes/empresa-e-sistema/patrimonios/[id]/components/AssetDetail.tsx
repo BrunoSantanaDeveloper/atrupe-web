@@ -39,7 +39,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Actions
-import { getAsset, setAssetActive } from '@/actions/assets'
+import { getAsset, setAssetActive } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -107,6 +107,14 @@ export function AssetDetail({ id }: Props) {
         toast.success(
           isInactive ? 'Patrimônio reativado' : 'Patrimônio inativado',
         )
+        // Configuração em composição: a inativação vale, com o aviso (P-16)
+        response.warnings.forEach((warning) =>
+          toast.warning(warning.message, {
+            description: warning.compositions
+              .map((item) => item.name)
+              .join(', '),
+          }),
+        )
         queryClient.invalidateQueries({ queryKey: ['asset', id] })
         queryClient.invalidateQueries({ queryKey: ['assets'] })
       },
@@ -129,6 +137,10 @@ export function AssetDetail({ id }: Props) {
   if (!asset) {
     return <div className="p-4">Patrimônio não encontrado.</div>
   }
+
+  // Bem inativo (ou vendido) não recebe custo, configuração nem venda: a API
+  // recusa, e reativar vem antes
+  const isInactive = asset.status === 'INACTIVE'
 
   const summary = [
     { label: 'Data da aquisição', value: formatDate(asset.acquisitionDate) },
@@ -165,29 +177,32 @@ export function AssetDetail({ id }: Props) {
           title={asset.name}
           previousPage="/configuracoes/empresa-e-sistema/patrimonios"
           badge={assetLifeStatusObj[asset.status]}
-          supportText={`${asset.sector}${asset.detailed && asset.unit ? ` · ${assetUnitShort[asset.unit]}` : ' · cadastro simplificado'}`}
+          supportText={`${asset.sector || 'Sem setor'}${asset.detailed && asset.unit ? ` · ${assetUnitShort[asset.unit]}` : ' · cadastro simplificado'}`}
           primaryCta={
             <PermissionGate permissions={['cost:base:edit']}>
               <div className="flex gap-2">
-                <ActionButton
-                  Icon={IconCurrencyReal}
-                  tooltip="Vender patrimônio"
-                  onClick={() => setSelling(true)}
-                />
+                {!isInactive && (
+                  <ActionButton
+                    Icon={IconCurrencyReal}
+                    tooltip="Vender patrimônio"
+                    onClick={() => setSelling(true)}
+                  />
+                )}
                 <ActionButton
                   Icon={IconPencil}
                   tooltip="Editar patrimônio"
                   onClick={() => setEditing(true)}
                 />
-                <ActionButton
-                  Icon={asset.status === 'INACTIVE' ? IconRestore : IconBan}
-                  tooltip={
-                    asset.status === 'INACTIVE'
-                      ? 'Reativar patrimônio'
-                      : 'Inativar patrimônio'
-                  }
-                  onClick={() => toggleActive()}
-                />
+                {/* Vendido não volta: a API recusa reativar */}
+                {!asset.sale && (
+                  <ActionButton
+                    Icon={isInactive ? IconRestore : IconBan}
+                    tooltip={
+                      isInactive ? 'Reativar patrimônio' : 'Inativar patrimônio'
+                    }
+                    onClick={() => toggleActive()}
+                  />
+                )}
               </div>
             </PermissionGate>
           }
@@ -238,9 +253,11 @@ export function AssetDetail({ id }: Props) {
                     permite comparar o estimado com o realizado.
                   </CardDescription>
                 </div>
-                <PermissionGate permissions={['cost:base:edit']}>
-                  <NewCostModal asset={asset} />
-                </PermissionGate>
+                {!isInactive && (
+                  <PermissionGate permissions={['cost:base:edit']}>
+                    <NewCostModal asset={asset} />
+                  </PermissionGate>
+                )}
               </CardHeader>
               <CardContent className="space-y-6 px-6 pb-6">
                 {costsByNature.map(({ nature, costs }) => (
@@ -281,7 +298,7 @@ export function AssetDetail({ id }: Props) {
                                     : 'unidades'}
                               </TableCell>
                               <TableCell className="text-sm text-gray">
-                                {cost.chartAccount}
+                                {cost.chartAccount || '-'}
                               </TableCell>
                               <TableCell className="text-sm text-gray">
                                 {formatDate(cost.lastOccurrence)}
@@ -313,9 +330,11 @@ export function AssetDetail({ id }: Props) {
                     pelo tempo de atividade.
                   </CardDescription>
                 </div>
-                <PermissionGate permissions={['cost:base:edit']}>
-                  <NewSetupModal asset={asset} />
-                </PermissionGate>
+                {!isInactive && (
+                  <PermissionGate permissions={['cost:base:edit']}>
+                    <NewSetupModal asset={asset} />
+                  </PermissionGate>
+                )}
               </CardHeader>
               <CardContent>
                 {asset.setups.length ? (
@@ -359,11 +378,7 @@ export function AssetDetail({ id }: Props) {
                             {assetUnitShort[setup.unit]}/mês
                           </TableCell>
                           <TableCell className="text-right text-sm text-gray">
-                            {Math.round(
-                              (setup.timePerUnit * setup.monthlyProductivity) /
-                                60,
-                            )}{' '}
-                            h/mês
+                            {Math.round(setup.activityHours)} h/mês
                           </TableCell>
                           <TableCell numeric>
                             {formatValue(setup.unitCost)}
@@ -413,7 +428,11 @@ export function AssetDetail({ id }: Props) {
                         className="flex items-center justify-between text-sm"
                       >
                         <span className="font-medium">{process.name}</span>
-                        <Badge variant="neutralLight">{process.taskType}</Badge>
+                        {process.taskType && (
+                          <Badge variant="neutralLight">
+                            {process.taskType}
+                          </Badge>
+                        )}
                       </li>
                     ))}
                   </ul>
