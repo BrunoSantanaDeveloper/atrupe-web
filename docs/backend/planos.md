@@ -38,9 +38,9 @@ O sistema **não pergunta o nome do plano**: cada tela pergunta por uma **chave 
 4. **Trocar de plano sem recadastro:** subir de plano só acrescenta chaves; descer esconde telas, mas não apaga dados (regra do produto: migração de plano sem recadastro).
 5. **Contas de teste:** uma conta por plano no ambiente de desenvolvimento, com dados fictícios (SEG-5), para o dono do produto aprovar cada versão.
 
-## A confirmar antes de fechar a matriz (13/10/2026)
+## Gráfica rápida no LITE (13/10/2026)
 
-**A gráfica rápida é LITE.** Orçar na gráfica rápida exige materiais com custo informado, processos e composição, e hoje a matriz põe materiais e processos sob `cost_base` (PRO). Proposta em avaliação: `product_composition` no LITE passa a cobrir materiais, processos e composição com **custo informado** (R$ por folha, por passada, por unidade), com markup e preparo em reais; `cost_base` no PRO fica com a Base de custos, a Precificação e os rateios, que trocam o custo informado pelo calculado sem recadastro. Até a decisão, não fixar a chave de plano das rotas de materiais e processos.
+A gráfica rápida é LITE, e até o LITE o produto tem **preço, não custo**: o cliente cadastra os produtos e o preço que já vende. A matriz continua como está: materiais, processos com recursos e custo ficam no PRO (`cost_base`). O LITE precisa de estrutura de produto: variações com preço (o papel é uma variação), opções, faixas de preço por quantidade e composição por etapas sem recursos. As chaves das rotas de materiais e processos no contrato valem como estão.
 
 ## O que ainda falta decidir
 
