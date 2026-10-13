@@ -7,6 +7,9 @@ export type UserType = {
   email: string
 }
 
+/** Forma de contratação: decide quais encargos a folha gera (ALT-18). */
+export type EmploymentContract = 'CLT' | 'PRO_LABORE' | 'MEI_PJ'
+
 export type EmployeeType = {
   id: string
   createdAt: string
@@ -18,6 +21,13 @@ export type EmployeeType = {
   isOwner?: boolean
   signatureUrl: string
   sallary: number
+  /** Nula enquanto ninguém informou; sem ela, a folha não gera encargos. */
+  contract?: EmploymentContract | null
+  /**
+   * Salário base em centavos. Só vem para quem tem `values:values:view`
+   * (some da resposta sem a permissão).
+   */
+  baseSalary?: number | null
   companyId: string
   userId: string
   roleId: string

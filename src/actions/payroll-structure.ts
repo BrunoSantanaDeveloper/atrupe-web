@@ -1,193 +1,202 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não devolve acréscimo e desconto separados nem o
-// comportamento do item (ALT-18 e ALT-19). Dados de exemplo em memória, no
-// formato das actions reais, para a tela poder ser conferida contra o legado
-// e contra o Figma antes de o backend existir.
+// Estrutura da folha (ALT-18, ALT-19, F-14): as rotas /financial/payroll-setup
+// da API. Valores em centavos dos dois lados. As contas são do servidor (custo
+// final da linha, custo do colaborador, folha a pagar e totais): a tela só lê.
 //
-// O exemplo reproduz o colaborador NATIHELY do legado, registrado em
-// openspec/regras-de-negocio/legado-patrimonios-e-folha.md §6.
+// A página pede financial_settings:payroll:view e values:values:view; sem
+// valores, a API recusa (403).
 
 // Types
-import type {
-  PayrollBehavior,
-  PayrollStructureItem,
-  PayrollStructureEmployee,
+import {
+  PAYROLL_BEHAVIORS,
+  type PayrollBehavior,
+  type PayrollContract,
+  type PayrollItemUpdate,
+  type PayrollStructureItem,
+  type PayrollStructureEmployee,
 } from '@/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/types'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
+// Actions
+import { getItem, updateItemNew } from '@/actions/_cruds'
 
-type ItemOptions = {
-  derived?: boolean
-  fixedByLaw?: boolean
-  isSet?: boolean
+// A lista vem em páginas de até 100 (teto da API); a tela mostra um
+// colaborador por vez e filtra no navegador, então busca todas
+const PAGE_SIZE = 100
+const MAX_PAGES = 50
+
+// A carga horária de referência do mês quando a resposta não trouxer (F-11)
+const MONTHLY_HOURS = 220
+
+const CONTRACTS: PayrollContract[] = ['CLT', 'PRO_LABORE', 'MEI_PJ']
+
+type Result<T> = { success: boolean; data: T; message: string }
+type ApiResult = {
+  success: boolean
+  // O corpo de cada rota é tipado onde é lido
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any
+  message?: string
 }
 
-const item = (
-  id: string,
-  name: string,
-  behavior: PayrollBehavior,
-  increase: number,
-  discount = 0,
-  { derived = false, fixedByLaw = false, isSet = true }: ItemOptions = {},
-): PayrollStructureItem => ({
-  id,
-  name,
-  behavior,
-  increase,
-  discount,
-  isSet,
-  derivedFromSalary: derived,
-  fixedByLaw,
+const ok = <T>(data: T): Result<T> => ({ success: true, data, message: '' })
+const fail = <T>(res: ApiResult, data: T): Result<T> => ({
+  success: false,
+  data,
+  message: res.message || 'Não foi possível concluir.',
 })
 
-// Itens que a empresa cadastrou e ainda não usa neste colaborador: aparecem
-// na lista vazios, com o botão de acrescentar
-const naoUsado = (id: string, name: string, behavior: PayrollBehavior) =>
-  item(id, name, behavior, 0, 0, { isSet: false })
+// O id entra no caminho da rota: nada de "/" ou "?" vindo da tela
+const seg = (id: string) => encodeURIComponent(id)
 
-const employees: PayrollStructureEmployee[] = [
-  {
-    id: 'e1',
-    code: '10',
-    name: 'Natihely Ribeiro',
-    roleName: 'Designer',
-    sectorName: 'Criação',
-    contract: 'CLT',
-    baseSalary: 500000,
-    monthlyHours: 220,
-    items: [
-      item('i1', 'Salário base', 'ONLY_INCREASE', 500000),
-      item('i2', 'INSS', 'INCREASE_AND_DISCOUNT', 40000, 40000, {
-        derived: true,
-      }),
-      item('i3', 'FGTS', 'PROVISION', 40000, 0, { derived: true }),
-      item('i4', '13º salário + FGTS + INSS', 'PROVISION', 48333, 0, {
-        derived: true,
-        fixedByLaw: true,
-      }),
-      item('i5', 'Férias + FGTS + INSS', 'PROVISION', 15000, 0, {
-        derived: true,
-        fixedByLaw: true,
-      }),
-      item('i6', 'Insalubridade', 'ONLY_INCREASE', 100000),
-      item('i7', 'Ajuda de custo', 'INCREASE_AND_DISCOUNT', 15000, 1500),
-      item('i8', 'Vale transporte', 'INCREASE_AND_DISCOUNT', 10000, 25000),
-      naoUsado('i9', 'Hora extra 100%', 'ONLY_INCREASE'),
-      naoUsado('i10', 'Hora extra 50%', 'ONLY_INCREASE'),
-      naoUsado('i11', 'Hora falta', 'ONLY_DISCOUNT'),
-    ],
-  },
-  {
-    id: 'e2',
-    code: '11',
-    name: 'Marcos Andrade',
-    roleName: 'Impressor',
-    sectorName: 'Impressão',
-    contract: 'CLT',
-    baseSalary: 320000,
-    monthlyHours: 220,
-    items: [
-      item('i1', 'Salário base', 'ONLY_INCREASE', 320000),
-      item('i2', 'INSS', 'INCREASE_AND_DISCOUNT', 25600, 25600, {
-        derived: true,
-      }),
-      item('i3', 'FGTS', 'PROVISION', 25600, 0, { derived: true }),
-      item('i4', '13º salário + FGTS + INSS', 'PROVISION', 30933, 0, {
-        derived: true,
-        fixedByLaw: true,
-      }),
-      item('i5', 'Férias + FGTS + INSS', 'PROVISION', 9600, 0, {
-        derived: true,
-        fixedByLaw: true,
-      }),
-      item('i8', 'Vale transporte', 'INCREASE_AND_DISCOUNT', 10000, 19200),
-      naoUsado('i9', 'Hora extra 100%', 'ONLY_INCREASE'),
-      naoUsado('i11', 'Hora falta', 'ONLY_DISCOUNT'),
-    ],
-  },
-  {
-    id: 'e3',
-    code: '01',
-    name: 'Paula Meireles',
-    roleName: 'Sócia',
-    sectorName: 'Administrativo',
-    contract: 'PRO_LABORE',
-    baseSalary: 700000,
-    monthlyHours: 220,
-    // Sócio com pró-labore não tem os encargos da CLT: o custo é o combinado
-    items: [item('i1', 'Pró-labore', 'ONLY_INCREASE', 700000)],
-  },
-]
+/* --------------------------------------------------------------------------
+ * Formato da API
+ * ------------------------------------------------------------------------ */
+
+type ApiLine = Partial<
+  Omit<PayrollStructureItem, 'behavior'> & { behavior: string }
+>
+
+type ApiEmployee = Partial<
+  Omit<PayrollStructureEmployee, 'code' | 'contract' | 'items'> & {
+    code: string | number | null
+    contract: string | null
+    items: ApiLine[]
+  }
+>
+
+/* --------------------------------------------------------------------------
+ * Para o formato da tela
+ * ------------------------------------------------------------------------ */
+
+const cents = (value: unknown) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : 0
+
+// O servidor sempre manda um dos cinco; o que vier fora disso cai no
+// acréscimo, que é o que a folha de antes fazia com o tipo
+const behaviorOf = (value: unknown): PayrollBehavior =>
+  PAYROLL_BEHAVIORS.includes(value as PayrollBehavior)
+    ? (value as PayrollBehavior)
+    : 'ONLY_INCREASE'
+
+const toItem = (line: ApiLine): PayrollStructureItem => ({
+  id: String(line.id ?? ''),
+  templateId: String(line.templateId ?? ''),
+  name: line.name ?? '',
+  behavior: behaviorOf(line.behavior),
+  increase: cents(line.increase),
+  discount: cents(line.discount),
+  finalCost: cents(line.finalCost),
+  isSet: !!line.isSet,
+  derivedFromSalary: !!line.derivedFromSalary,
+  fixedByLaw: !!line.fixedByLaw,
+  isBase: !!line.isBase,
+  manualOverride: !!line.manualOverride,
+})
+
+const toEmployee = (employee: ApiEmployee): PayrollStructureEmployee => ({
+  id: String(employee.id ?? ''),
+  name: employee.name ?? '',
+  // O código é o do legado: quem nasceu no sistema novo vem sem
+  code:
+    employee.code === null ||
+    employee.code === undefined ||
+    employee.code === ''
+      ? null
+      : String(employee.code),
+  roleName: employee.roleName ?? '',
+  sectorName: employee.sectorName ?? '',
+  avatarUrl: employee.avatarUrl || undefined,
+  contract: CONTRACTS.includes(employee.contract as PayrollContract)
+    ? (employee.contract as PayrollContract)
+    : null,
+  baseSalary:
+    typeof employee.baseSalary === 'number' ? employee.baseSalary : null,
+  monthlyHours: employee.monthlyHours || MONTHLY_HOURS,
+  employeeCost: cents(employee.employeeCost),
+  employeePayroll: cents(employee.employeePayroll),
+  totalIncrease: cents(employee.totalIncrease),
+  totalDiscount: cents(employee.totalDiscount),
+  employeeProvision: cents(employee.employeeProvision),
+  items: (Array.isArray(employee.items) ? employee.items : []).map(toItem),
+})
+
+// A linha editada volta com os totais novos do colaborador
+const toUpdate = (
+  line: ApiLine & { employeeCost?: number; employeePayroll?: number },
+): PayrollItemUpdate => ({
+  ...toItem(line),
+  employeeCost: cents(line.employeeCost),
+  employeePayroll: cents(line.employeePayroll),
+})
+
+/* --------------------------------------------------------------------------
+ * Actions
+ * ------------------------------------------------------------------------ */
 
 export const getPayrollStructure = async () => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
-  return {
-    success: true,
-    data: employees,
-    message: '',
+  const employees: ApiEmployee[] = []
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res: ApiResult = await getItem({
+      route: '/financial/payroll-setup',
+      params: { page: String(page), limit: String(PAGE_SIZE) },
+    })
+    if (!res.success) return fail(res, [] as PayrollStructureEmployee[])
+    const rows = res.data?.data
+    employees.push(...(Array.isArray(rows) ? rows : []))
+    if (page >= (res.data?.lastPage ?? 1)) break
   }
+  return ok(employees.map(toEmployee))
 }
 
-const find = (employeeId: string, itemId: string) =>
-  employees
-    .find((employee) => employee.id === employeeId)
-    ?.items.find((current) => current.id === itemId)
-
+// Edita a linha do colaborador. Vai só o que a tela mandou: o servidor marca
+// INSS e FGTS como valor à mão ao receber qualquer um dos três, e o salário
+// base refaz os encargos
 export const updatePayrollItem = async (
-  employeeId: string,
+  _employeeId: string,
   itemId: string,
   values: Partial<
     Pick<PayrollStructureItem, 'behavior' | 'increase' | 'discount'>
   >,
 ) => {
-  if (!DEMO_DATA) return demoOff()
-  const current = find(employeeId, itemId)
-
-  if (!current) {
-    return { success: false, data: null, message: 'Item não encontrado' }
-  }
-
-  // Férias e 13º são definidos em lei: o valor vem do cálculo, não da digitação
-  if (current.fixedByLaw) {
-    return {
-      success: false,
-      data: null,
-      message: 'Férias e 13º são calculados por lei e não podem ser editados',
-    }
-  }
-
-  Object.assign(current, values)
-
-  // O comportamento manda no que pode ter valor: quem só acrescenta não
-  // desconta, e quem só desconta não acrescenta
-  if (current.behavior === 'ONLY_INCREASE') current.discount = 0
-  if (current.behavior === 'ONLY_DISCOUNT') current.increase = 0
-
-  return { success: true, data: current, message: '' }
+  const res: ApiResult = await updateItemNew({
+    route: `/financial/payroll-setup/${seg(itemId)}`,
+    data: {
+      ...(values.behavior !== undefined && { behavior: values.behavior }),
+      ...(values.increase !== undefined && {
+        increase: Math.round(values.increase),
+      }),
+      ...(values.discount !== undefined && {
+        discount: Math.round(values.discount),
+      }),
+    },
+  })
+  if (!res.success) return fail<PayrollItemUpdate | null>(res, null)
+  return ok<PayrollItemUpdate | null>(toUpdate(res.data ?? {}))
 }
 
 // Acrescentar ou tirar o item do colaborador. Tirar não apaga o item da
 // empresa: ele volta para a lista como disponível, com os valores zerados
 export const setPayrollItem = async (
-  employeeId: string,
+  _employeeId: string,
   itemId: string,
   isSet: boolean,
 ) => {
-  if (!DEMO_DATA) return demoOff()
-  const current = find(employeeId, itemId)
+  const res: ApiResult = await updateItemNew({
+    route: `/financial/payroll-setup/${seg(itemId)}`,
+    data: { isSet },
+  })
+  if (!res.success) return fail<PayrollItemUpdate | null>(res, null)
+  return ok<PayrollItemUpdate | null>(toUpdate(res.data ?? {}))
+}
 
-  if (!current) {
-    return { success: false, data: null, message: 'Item não encontrado' }
-  }
-
-  current.isSet = isSet
-
-  if (!isSet) {
-    current.increase = 0
-    current.discount = 0
-  }
-
-  return { success: true, data: current, message: '' }
+// INSS ou FGTS com valor à mão voltam a acompanhar o salário: o servidor
+// tira a marca e refaz os encargos (F-4). Outra linha recebe 400
+export const resetPayrollOverride = async (itemId: string) => {
+  const res: ApiResult = await updateItemNew({
+    route: `/financial/payroll-setup/${seg(itemId)}`,
+    data: { manualOverride: false },
+  })
+  if (!res.success) return fail<PayrollItemUpdate | null>(res, null)
+  return ok<PayrollItemUpdate | null>(toUpdate(res.data ?? {}))
 }

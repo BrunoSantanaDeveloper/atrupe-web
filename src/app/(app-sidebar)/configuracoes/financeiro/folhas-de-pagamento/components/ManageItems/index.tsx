@@ -44,12 +44,45 @@ import { deleteItemNew, getData } from '@/actions/_cruds'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Types
-import type { PayrollTemplateType } from '@/types/settings/payroll'
+import {
+  hasRate,
+  isSystemItem,
+  payrollBehaviorLabel,
+  type PayrollBehavior,
+  type PayrollTemplate,
+} from '../../types'
+import type { BadgeProps } from '@/components/ui/badge'
+
+// Utils
+import { floatToBrl } from '@/lib/utils'
+
+const behaviorBadge: Record<PayrollBehavior, BadgeProps['variant']> = {
+  ONLY_INCREASE: 'successLight',
+  ONLY_DISCOUNT: 'errorLight',
+  INCREASE_AND_DISCOUNT: 'blueLight',
+  PROVISION: 'neutralLight',
+  ADVANCE: 'warningLight',
+}
+
+// O salário base, com a marca do sistema ou reconhecido pelo nome
+const isBaseItem = (item: PayrollTemplate) =>
+  item.isBase || item.systemKey === 'BASE_SALARY'
+
+// Por que o item não sai: a base e os encargos são do sistema, e o item em
+// uso precisa sair dos colaboradores antes
+const deleteTooltip = (item: PayrollTemplate) =>
+  isBaseItem(item)
+    ? 'Item base da folha, não pode ser excluído'
+    : isSystemItem(item)
+      ? 'Este item faz parte da folha CLT'
+      : item.linkedEmployees
+        ? 'Remova o item de todos os colaboradores para excluir'
+        : 'Excluir'
 
 export function ManageItemsDialog() {
   const [open, setOpen] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
-  const [rowData, setRowData] = useState<PayrollTemplateType>()
+  const [rowData, setRowData] = useState<PayrollTemplate>()
 
   const alertDialog = useAlertDialog()
   const queryClient = useQueryClient()
@@ -61,9 +94,11 @@ export function ManageItemsDialog() {
     queryFn: () => getData({ route: '/financial/payroll-templates' }),
   })
 
-  const templates: PayrollTemplateType[] = data?.data || []
+  const templates: PayrollTemplate[] = Array.isArray(data?.data)
+    ? data.data
+    : []
 
-  const handleDelete = async (item: PayrollTemplateType) => {
+  const handleDelete = async (item: PayrollTemplate) => {
     await alertDialog.open({
       title: 'Excluir item de custo',
       description: `O item "${item.name}" deixará de existir na folha de todos os colaboradores. Essa ação não pode ser desfeita.`,
@@ -77,7 +112,7 @@ export function ManageItemsDialog() {
       },
       onConfirm: async () => {
         const result = await deleteItemNew({
-          route: `/financial/payroll-templates/${item.id}`,
+          route: `/financial/payroll-templates/${encodeURIComponent(item.id)}`,
         })
 
         if (!result.success) throw new Error(result.message)
@@ -98,8 +133,9 @@ export function ManageItemsDialog() {
         <DialogHeader>
           <DialogTitle>Gerenciar itens de custo</DialogTitle>
           <DialogDescription>
-            Renomeie ou exclua os itens de custo da folha. Um item só pode ser
-            excluído quando não estiver lançado em nenhum colaborador.
+            Renomeie, troque o comportamento ou exclua os itens de custo da
+            folha. Um item só pode ser excluído quando não estiver lançado em
+            nenhum colaborador.
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
@@ -114,7 +150,7 @@ export function ManageItemsDialog() {
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead className="w-full">Referência</TableHead>
-                  <TableHead>Operação</TableHead>
+                  <TableHead>Comportamento</TableHead>
                   <TableHead className="whitespace-nowrap">Em uso</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -125,20 +161,29 @@ export function ManageItemsDialog() {
                     <TableCell className="text-gray-600">
                       <div className="flex items-center gap-2">
                         {item.name}
-                        {item.isBase ? (
+                        {isBaseItem(item) ? (
                           <Badge variant="neutralLight">Base</Badge>
+                        ) : isSystemItem(item) ? (
+                          <Badge variant="neutralLight">CLT</Badge>
                         ) : null}
                       </div>
+                      {/* O INSS e o FGTS saem do salário por esta alíquota */}
+                      {hasRate(item) && typeof item.rate === 'number' ? (
+                        <p className="text-xs text-gray">
+                          Alíquota de {floatToBrl(item.rate)}%
+                        </p>
+                      ) : item.fixedByLaw ? (
+                        <p className="text-xs text-gray">
+                          Percentual definido em lei
+                        </p>
+                      ) : null}
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={
-                          item.type === 'DISCOUNT'
-                            ? 'errorLight'
-                            : 'successLight'
-                        }
+                        variant={behaviorBadge[item.behavior] || 'neutralLight'}
+                        className="whitespace-nowrap"
                       >
-                        {item.type === 'DISCOUNT' ? 'Desconto' : 'Acréscimo'}
+                        {payrollBehaviorLabel[item.behavior] || item.behavior}
                       </Badge>
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-gray-600">
@@ -164,13 +209,7 @@ export function ManageItemsDialog() {
                             permissions={['financial_settings:payroll:delete']}
                           >
                             <ActionButton
-                              tooltip={
-                                item.isBase
-                                  ? 'Item base da folha, não pode ser excluído'
-                                  : item.linkedEmployees
-                                    ? 'Remova o item de todos os colaboradores para excluir'
-                                    : 'Excluir'
-                              }
+                              tooltip={deleteTooltip(item)}
                               variant="errorGhost"
                               Icon={IconTrash}
                               disabled={!item.canDelete}

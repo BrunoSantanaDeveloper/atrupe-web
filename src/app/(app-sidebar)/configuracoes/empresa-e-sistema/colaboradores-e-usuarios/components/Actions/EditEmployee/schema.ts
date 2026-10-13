@@ -10,6 +10,15 @@ export const schema = z.object({
   mobile: z.string(),
   avatarUrl: z.string(),
   signatureUrl: z.string(),
+  // Forma de contratação e salário base (ALT-18): geram os encargos da folha.
+  // Vazio é "não informada"; o salário em centavos, nulo enquanto ninguém
+  // informou
+  contract: z.enum(['CLT', 'PRO_LABORE', 'MEI_PJ']).or(z.literal('')),
+  baseSalary: z
+    .number()
+    .int()
+    .min(0, 'O salário base não pode ser negativo')
+    .nullable(),
   address: z.object({
     zipcode: z.string().min(8, 'CEP inválido'),
     state: z.string(),

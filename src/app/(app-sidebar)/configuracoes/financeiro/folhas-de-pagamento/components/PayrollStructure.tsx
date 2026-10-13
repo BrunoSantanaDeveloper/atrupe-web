@@ -1,11 +1,13 @@
 'use client'
 
-// PROVISÓRIO nos valores: a API ainda devolve um tipo só por item (acréscimo
-// OU desconto) e não devolve o comportamento. A tela mostra a estrutura
-// decidida em ALT-18 e ALT-19, no layout do Figma "Atrupe Pro, ELite e Full"
-// (nó 23825-34010), lendo o mock `src/actions/payroll-structure.ts`. Os
-// diálogos de item de custo continuam falando com a API, porque tratam do
-// cadastro do item, não do valor por colaborador.
+// A estrutura da folha decidida em ALT-18 e ALT-19, no layout do Figma
+// "Atrupe Pro, ELite e Full" (nó 23825-34010), sobre /financial/payroll-setup
+// (src/actions/payroll-structure.ts). O custo final de cada linha, o custo do
+// colaborador, a folha a pagar e os totais vêm do servidor; a tela só mostra
+// e filtra.
+
+// Next
+import Link from 'next/link'
 
 // React
 import { Fragment, useEffect, useMemo, useState } from 'react'
@@ -26,8 +28,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 // Components
-import { NewItemDialog } from '../NewItem'
-import { ManageItemsDialog } from '../ManageItems'
+import { NewItemDialog } from './NewItem'
+import { ManageItemsDialog } from './ManageItems'
 import { EditPayrollItem } from './EditPayrollItem'
 import { Topbar } from '@/components/common/Topbar'
 import { Avatar } from '@/components/AvatarComponent'
@@ -42,12 +44,14 @@ import {
   totalDiscount,
   totalIncrease,
   employeePayroll,
+  isEditableCharge,
+  employeeProvision,
+  PAYROLL_BEHAVIORS,
   payrollBehaviorLabel,
   payrollContractLabel,
-  type PayrollBehavior,
   type PayrollStructureItem,
   type PayrollStructureEmployee,
-} from '../../types'
+} from '../types'
 
 // Actions
 import {
@@ -79,14 +83,15 @@ const TODOS = 'todos'
 
 const tiposDeCusto: { value: string; label: string }[] = [
   { value: TODOS, label: 'Todos' },
-  { value: 'ONLY_INCREASE', label: payrollBehaviorLabel.ONLY_INCREASE },
-  { value: 'ONLY_DISCOUNT', label: payrollBehaviorLabel.ONLY_DISCOUNT },
-  {
-    value: 'INCREASE_AND_DISCOUNT',
-    label: payrollBehaviorLabel.INCREASE_AND_DISCOUNT,
-  },
-  { value: 'PROVISION', label: payrollBehaviorLabel.PROVISION },
+  ...PAYROLL_BEHAVIORS.map((value) => ({
+    value,
+    label: payrollBehaviorLabel[value],
+  })),
 ]
+
+// Onde ficam a forma de contratação e o salário base do colaborador
+const EMPLOYEES_PATH =
+  '/configuracoes/empresa-e-sistema/colaboradores-e-usuarios'
 
 // Valor vazio aparece como traço, não como R$ 0,00: o traço diz "não se
 // aplica", o zero diria "calculado e deu zero", que é outra coisa
@@ -97,9 +102,31 @@ const value = (amount: number, className?: string) =>
     <span className="text-gray">—</span>
   )
 
+// O subtítulo da linha: o comportamento e o que muda a leitura do valor
+const itemHint = (item: PayrollStructureItem) =>
+  [
+    payrollBehaviorLabel[item.behavior],
+    item.fixedByLaw && 'percentual definido em lei',
+    isEditableCharge(item) && item.manualOverride && 'valor informado à mão',
+    item.behavior === 'ADVANCE' && 'fora do custo e da folha a pagar',
+  ]
+    .filter(Boolean)
+    .join(' · ')
+
+// O salário base é a linha marcada como base; na folha que veio sem a marca,
+// o primeiro acréscimo lançado faz o papel
+const salaryOf = (items: PayrollStructureItem[]) =>
+  items.find((item) => item.isBase) ||
+  items.find(
+    (item) =>
+      item.isSet &&
+      !item.derivedFromSalary &&
+      item.behavior === 'ONLY_INCREASE',
+  )
+
 // A folha mostra um colaborador por vez (decisão do time, 24/09/2026), com
 // filtro de setor e de colaborador acima.
-export function Main() {
+export function PayrollStructure() {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['payroll-structure'],
@@ -127,12 +154,13 @@ export function Main() {
   const addItem = async (item: PayrollStructureItem) => {
     const res = await setPayrollItem(employeeId, item.id, true)
 
-    if (!res.success) return toast.error(res.message)
+    if (!res.success || !res.data) return toast.error(res.message)
 
     await refresh()
     // Acrescentar sem informar valor deixaria a linha zerada: o diálogo abre
-    // em seguida para a pessoa terminar o que começou
-    setEditing({ ...item, isSet: true })
+    // em seguida, com a linha como o servidor gravou, para a pessoa terminar
+    // o que começou
+    if (!res.data.fixedByLaw) setEditing(res.data)
   }
 
   // Tirar o item não apaga o item da empresa — ele volta para a lista como
@@ -184,6 +212,7 @@ export function Main() {
   }, [visible, employeeId])
 
   const employee = visible.find((item) => item.id === employeeId)
+  const isClt = employee?.contract === 'CLT'
 
   const matches = (item: PayrollStructureItem) => {
     const byType = costType === TODOS || item.behavior === costType
@@ -192,16 +221,73 @@ export function Main() {
     return byType && byName
   }
 
-  const items = (employee?.items || []).filter(matches)
-  const salary = items.find((item) => !item.derivedFromSalary && item.isSet)
-  const derived = items.filter((item) => item.derivedFromSalary)
-  const others = items.filter(
-    (item) => !item.derivedFromSalary && item.id !== salary?.id,
+  // O salário base sai da lista inteira, não da filtrada: os encargos que
+  // passam no filtro continuam sabendo de onde vêm
+  const allItems = employee?.items || []
+  const salary = salaryOf(allItems)
+  const showSalary = !!salary && matches(salary)
+  const derived = allItems.filter(
+    (item) => item.derivedFromSalary && item.id !== salary?.id && matches(item),
+  )
+  const others = allItems.filter(
+    (item) =>
+      !item.derivedFromSalary && item.id !== salary?.id && matches(item),
   )
 
   const cost = employee ? employeeCost(employee) : 0
   const payroll = employee ? employeePayroll(employee) : 0
-  const provision = cost - payroll
+  // O que custa no mês e é pago depois, como o servidor somou
+  const provision = employee ? employeeProvision(employee) : 0
+
+  // Os encargos da CLT entram pelo cadastro do colaborador (forma de
+  // contratação e salário base). Acrescentar à mão 13º e férias, ou um
+  // encargo em quem não é CLT, deixaria uma linha zerada que o servidor
+  // desfaz no próximo cálculo
+  const lockedCharge = (item: PayrollStructureItem) =>
+    item.derivedFromSalary && (item.fixedByLaw || !isClt)
+
+  const itemActions = (item: PayrollStructureItem) =>
+    item.isSet ? (
+      <>
+        <ActionButton
+          Icon={IconPencil}
+          variant="neutralGhost"
+          tooltip={
+            item.fixedByLaw
+              ? 'Férias e 13º não têm percentual editável'
+              : `Editar ${item.name}`
+          }
+          disabled={item.fixedByLaw}
+          onClick={() => setEditing(item)}
+        />
+        {/* O salário base e os itens da lei não saem da folha CLT */}
+        {!item.isBase && (
+          <ActionButton
+            Icon={IconTrash}
+            variant="errorGhost"
+            tooltip={
+              isClt && item.fixedByLaw
+                ? 'Este item faz parte da folha CLT'
+                : `Tirar ${item.name} deste colaborador`
+            }
+            disabled={isClt && item.fixedByLaw}
+            onClick={() => removeItem(item)}
+          />
+        )}
+      </>
+    ) : (
+      <ActionButton
+        Icon={IconPlus}
+        variant="neutralGhost"
+        tooltip={
+          lockedCharge(item)
+            ? 'Os encargos da CLT saem do cadastro do colaborador'
+            : `Acrescentar ${item.name}`
+        }
+        disabled={lockedCharge(item)}
+        onClick={() => addItem(item)}
+      />
+    )
 
   const itemRow = (item: PayrollStructureItem, child = false) => (
     <TableRow key={item.id} className={cn(!item.isSet && 'text-gray')}>
@@ -217,10 +303,7 @@ export function Main() {
             <p className={cn(item.isSet ? 'text-gray-700' : 'text-gray')}>
               {item.name}
             </p>
-            <p className="text-xs text-gray">
-              {payrollBehaviorLabel[item.behavior]}
-              {item.fixedByLaw ? ' · percentual definido em lei' : ''}
-            </p>
+            <p className="text-xs text-gray">{itemHint(item)}</p>
           </div>
         </div>
       </TableCell>
@@ -236,43 +319,22 @@ export function Main() {
       <TableCell>
         <div className="flex justify-end gap-1">
           <PermissionGate permissions={['financial_settings:payroll:edit']}>
-            {item.isSet ? (
-              <>
-                <ActionButton
-                  Icon={IconPencil}
-                  variant="neutralGhost"
-                  tooltip={
-                    item.fixedByLaw
-                      ? 'Férias e 13º não têm percentual editável'
-                      : `Editar ${item.name}`
-                  }
-                  disabled={item.fixedByLaw}
-                  onClick={() => setEditing(item)}
-                />
-                <ActionButton
-                  Icon={IconTrash}
-                  variant="errorGhost"
-                  tooltip={`Tirar ${item.name} deste colaborador`}
-                  onClick={() => removeItem(item)}
-                />
-              </>
-            ) : (
-              <ActionButton
-                Icon={IconPlus}
-                variant="neutralGhost"
-                tooltip={`Acrescentar ${item.name}`}
-                onClick={() => addItem(item)}
-              />
-            )}
+            {itemActions(item)}
           </PermissionGate>
         </div>
       </TableCell>
     </TableRow>
   )
 
+  const subtitle = employee
+    ? [employee.code, employee.roleName, employee.sectorName]
+        .filter(Boolean)
+        .join(' · ')
+    : 'Troque o setor para ver outra pessoa'
+
   return (
     <TooltipProvider>
-      <div className="space-y-5" data-demo="true">
+      <div className="space-y-5">
         <Topbar
           review="new"
           title="Folha de pagamento"
@@ -291,6 +353,12 @@ export function Main() {
 
         {isLoading ? (
           <Skeleton className="h-[calc(100vh-150px)]" />
+        ) : data && !data.success ? (
+          <Card>
+            <CardContent className="px-6 py-10 text-center text-sm text-gray">
+              {data.message}
+            </CardContent>
+          </Card>
         ) : (
           <Card>
             {/* Cabeçalho: quem é a pessoa, à esquerda, e como chegar até ela,
@@ -307,14 +375,18 @@ export function Main() {
                     {employee?.name || 'Nenhum colaborador neste setor'}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm text-gray">
-                      {employee
-                        ? `${employee.code} · ${employee.roleName} · ${employee.sectorName}`
-                        : 'Troque o setor para ver outra pessoa'}
-                    </p>
+                    {subtitle && (
+                      <p className="text-sm text-gray">{subtitle}</p>
+                    )}
                     {employee && (
-                      <Badge variant="neutralLight">
-                        {payrollContractLabel[employee.contract]}
+                      <Badge
+                        variant={
+                          employee.contract ? 'neutralLight' : 'warningLight'
+                        }
+                      >
+                        {employee.contract
+                          ? payrollContractLabel[employee.contract]
+                          : 'Contratação não informada'}
                       </Badge>
                     )}
                   </div>
@@ -367,6 +439,22 @@ export function Main() {
               </div>
             </CardContent>
 
+            {/* Sem a forma de contratação, o servidor não gera INSS, FGTS,
+                13º nem férias: o caminho para resolver fica à vista */}
+            {employee && !employee.contract && (
+              <CardContent className="px-6 pb-4 text-sm text-gray">
+                Os encargos da CLT saem da forma de contratação e do salário
+                base, no{' '}
+                <Link
+                  href={EMPLOYEES_PATH}
+                  className="font-medium text-brand-700 hover:underline"
+                >
+                  cadastro do colaborador
+                </Link>
+                .
+              </CardContent>
+            )}
+
             {!employee ? (
               <CardContent className="px-6 pb-10 text-center text-sm text-gray">
                 Escolha um setor que tenha colaboradores para ver a folha.
@@ -384,12 +472,12 @@ export function Main() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {salary && (
+                    {salary && showSalary ? (
                       <Fragment key={salary.id}>
                         {/* O salário base é o pai dos encargos: eles são
                             calculados a partir dele (ALT-18), e vê-los
                             aninhados mostra de onde saem */}
-                        <TableRow>
+                        <TableRow className={cn(!salary.isSet && 'text-gray')}>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <ActionButton
@@ -418,13 +506,19 @@ export function Main() {
                             </div>
                           </TableCell>
                           <TableCell numeric>
-                            {value(salary.increase, 'text-success-600')}
+                            {salary.isSet
+                              ? value(salary.increase, 'text-success-600')
+                              : '—'}
                           </TableCell>
                           <TableCell numeric>
-                            {value(salary.discount, 'text-error-600')}
+                            {salary.isSet
+                              ? value(salary.discount, 'text-error-600')
+                              : '—'}
                           </TableCell>
                           <TableCell numeric className="font-medium">
-                            {value(itemFinalCost(salary), 'text-gray-900')}
+                            {salary.isSet
+                              ? value(itemFinalCost(salary), 'text-gray-900')
+                              : '—'}
                           </TableCell>
                           <TableCell>
                             <div className="flex justify-end gap-1">
@@ -433,12 +527,7 @@ export function Main() {
                                   'financial_settings:payroll:edit',
                                 ]}
                               >
-                                <ActionButton
-                                  Icon={IconPencil}
-                                  variant="neutralGhost"
-                                  tooltip="Editar o salário base"
-                                  onClick={() => setEditing(salary)}
-                                />
+                                {itemActions(salary)}
                               </PermissionGate>
                             </div>
                           </TableCell>
@@ -446,13 +535,18 @@ export function Main() {
                         {!collapsed &&
                           derived.map((item) => itemRow(item, true))}
                       </Fragment>
+                    ) : (
+                      // O filtro tirou o salário base: os encargos que
+                      // passaram aparecem soltos, em vez de sumirem com ele
+                      derived.map((item) => itemRow(item))
                     )}
 
                     {others.map((item) => itemRow(item))}
                   </TableBody>
                 </Table>
 
-                {/* Total das colunas, como no Figma */}
+                {/* Total das colunas, como no Figma. O adiantamento fica de
+                    fora: não é custo nem entra na folha a pagar */}
                 <div className="border-t border-gray-200 bg-gray-50">
                   <Table>
                     <TableBody>
@@ -517,5 +611,3 @@ export function Main() {
     </TooltipProvider>
   )
 }
-
-export type { PayrollBehavior }

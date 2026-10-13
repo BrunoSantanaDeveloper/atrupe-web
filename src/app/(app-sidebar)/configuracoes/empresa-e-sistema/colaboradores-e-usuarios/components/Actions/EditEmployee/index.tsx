@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 
 // Components
@@ -38,7 +40,11 @@ import { updateItem } from '@/actions/_cruds'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import type { EmployeeType } from '@/types/settings/employee'
+import type {
+  EmployeeType,
+  EmploymentContract,
+} from '@/types/settings/employee'
+import { payrollContractLabel } from '@/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/types'
 
 // Icons
 import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
@@ -48,6 +54,15 @@ import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
 
 // Hooks
 import { useSession } from 'next-auth/react'
+import { usePermissions } from '@/hooks/usePermissions'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
+// Consts
+import { FEATURES } from '@/consts/features'
+
+const contractOptions = (
+  Object.keys(payrollContractLabel) as EmploymentContract[]
+).map((value) => ({ value, label: payrollContractLabel[value] }))
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -62,6 +77,14 @@ export function EditEmployeeDialog({
   searchParams,
 }: Props) {
   const { data: session, update: updateSession } = useSession()
+  // A forma de contratação e o salário base são da folha: só para quem vê
+  // valores (sem a permissão, o salário nem vem da API)
+  const { hasAnyPermission } = usePermissions()
+  const seesValues = hasAnyPermission(['values:values:view'])
+  // Os encargos da CLT só nascem com a base de custos no plano; sem ela, o
+  // salário base ainda vira a linha do salário na folha
+  const { hasFeature } = usePlanFeatures()
+  const generatesCharges = hasFeature(FEATURES.COSTS.COST_BASE)
 
   const queryClient = useQueryClient()
 
@@ -77,6 +100,8 @@ export function EditEmployeeDialog({
       mobile: rowData?.mobile || '',
       avatarUrl: rowData?.avatarUrl || '',
       signatureUrl: rowData?.signatureUrl || '',
+      contract: rowData?.contract || '',
+      baseSalary: rowData?.baseSalary ?? null,
       address: {
         zipcode: rowData?.address[0]?.zipcode || '',
         state: rowData?.address[0]?.state || '',
@@ -92,8 +117,24 @@ export function EditEmployeeDialog({
   const { handleSubmit, setValue, watch, reset } = form
 
   const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItem('employeeRoute', `${rowData?.id}`, data),
+    mutationFn: ({ contract, baseSalary, ...data }: FormType) => {
+      // Contratação e salário base vão só quando mudaram: cada envio refaz
+      // os encargos da folha no servidor. Sem a permissão de valores, não vão
+      const body: Omit<FormType, 'contract' | 'baseSalary'> & {
+        contract?: EmploymentContract
+        baseSalary?: number
+      } = { ...data }
+      if (seesValues) {
+        if (contract && contract !== (rowData?.contract || '')) {
+          body.contract = contract
+        }
+        const salaryBefore = rowData?.baseSalary ?? null
+        if (baseSalary !== null && baseSalary !== salaryBefore) {
+          body.baseSalary = baseSalary
+        }
+      }
+      return updateItem('employeeRoute', `${rowData?.id}`, body)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries()
       handleOpenChange(false)
@@ -214,6 +255,41 @@ export function EditEmployeeDialog({
                     }}
                     maxLength={15}
                   />
+
+                  <PermissionGate permissions={['values:values:view']}>
+                    <Separator />
+
+                    <div className="w-full">
+                      <p className="font-semibold">Folha de pagamento</p>
+                      <p className="text-sm text-gray">
+                        {generatesCharges
+                          ? 'Com a contratação CLT e o salário base, a folha calcula INSS, FGTS, 13º e férias do colaborador.'
+                          : 'O salário base entra como o salário na folha de pagamento do colaborador.'}
+                      </p>
+                    </div>
+
+                    <FormSelect<FormType>
+                      name="contract"
+                      label="Forma de contratação"
+                      placeholder="Não informada"
+                      options={contractOptions}
+                      width="flex-[1_0_190px]"
+                    />
+
+                    <div className="flex flex-[1_0_190px] flex-col gap-1">
+                      <FormBrlInput<FormType>
+                        name="baseSalary"
+                        label="Salário base"
+                        startAdornment={<>R$</>}
+                        width="w-full"
+                      />
+                      {/* O campo mostra 0,00 também quando o salário nunca
+                          foi informado: o aviso desfaz a dúvida */}
+                      {watch('baseSalary') === null && (
+                        <p className="text-sm text-gray">Ainda não informado</p>
+                      )}
+                    </div>
+                  </PermissionGate>
 
                   <Separator />
 

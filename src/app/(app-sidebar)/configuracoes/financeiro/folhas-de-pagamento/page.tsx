@@ -1,13 +1,6 @@
 // Components
-import { Main } from './components/Main'
-import { Main as DemoMain } from './components/demo/Main'
+import { PayrollStructure } from './components/PayrollStructure'
 import { PermissionGate } from '@/components/common/PermissionGate'
-
-// Libs
-import { DEMO_DATA } from '@/lib/demo'
-
-// Types
-import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
@@ -15,7 +8,7 @@ export function metadata() {
   }
 }
 
-export default function Page({ searchParams }: SearchParamsType) {
+export default function Page() {
   return (
     <PermissionGate
       requireAll
@@ -27,9 +20,9 @@ export default function Page({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      {/* A estrutura nova da folha (ALT-18 e ALT-19) ainda roda sobre dados
-          de exemplo: só com a flag de demonstração. Sem ela, a tela real */}
-      {DEMO_DATA ? <DemoMain /> : <Main searchParams={searchParams} />}
+      {/* A estrutura da folha (ALT-18 e ALT-19) na API: acréscimo, desconto
+          e comportamento por item, e os encargos da CLT gerados do salário */}
+      <PayrollStructure />
     </PermissionGate>
   )
 }

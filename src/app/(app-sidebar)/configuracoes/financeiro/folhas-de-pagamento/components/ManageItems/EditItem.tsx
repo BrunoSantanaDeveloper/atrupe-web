@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 
 // Icons
 import { IconCircleCheck } from '@tabler/icons-react'
@@ -34,12 +35,18 @@ import { useQueryClient } from '@tanstack/react-query'
 import { updateItemNew } from '@/actions/_cruds'
 
 // Types
-import type { PayrollTemplateType } from '@/types/settings/payroll'
+import {
+  hasRate as templateHasRate,
+  isSystemItem,
+  behaviorFields,
+  behaviorOptions,
+  type PayrollTemplate,
+} from '../../types'
 
 interface Props {
   open: boolean
   setOpen: (value: boolean) => void
-  rowData?: PayrollTemplateType
+  rowData?: PayrollTemplate
 }
 
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
@@ -50,18 +57,62 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     defaultValues,
   })
 
-  const { reset, handleSubmit, formState } = form
+  const { reset, handleSubmit, formState, watch, setError } = form
 
   useEffect(() => {
     if (open && rowData) {
-      reset({ name: rowData.name, type: rowData.type })
+      reset({
+        name: rowData.name,
+        behavior: rowData.behavior,
+        defaultIncrease: rowData.defaultIncrease ?? 0,
+        defaultDiscount: rowData.defaultDiscount ?? 0,
+        rate: rowData.rate ?? null,
+      })
     }
   }, [open, rowData, reset])
 
+  // 13º e férias são da lei (F-14): só a referência muda
+  const lawItem = !!rowData?.fixedByLaw
+  // O salário base e os encargos da CLT (systemKey) têm o comportamento do
+  // sistema, e os valores deles vêm do cadastro do colaborador e da
+  // alíquota, não do padrão
+  const system = !!rowData && isSystemItem(rowData)
+  // Só INSS e FGTS têm alíquota
+  const hasRate = !!rowData && templateHasRate(rowData)
+  const { showIncrease, showDiscount } = behaviorFields(watch('behavior'))
+
   const onSubmit = async (data: FormType) => {
+    if (!rowData) return
+
+    if (hasRate && data.rate === null) {
+      setError('rate', { message: 'Informe a alíquota' })
+      return
+    }
+
+    // Vai só o que mudou: a alíquota nova refaz os encargos de todos os CLT,
+    // e o comportamento novo vale para a linha de todos os colaboradores
+    const fields = behaviorFields(data.behavior)
+    const increase = fields.showIncrease ? data.defaultIncrease : 0
+    const discount = fields.showDiscount ? data.defaultDiscount : 0
+    const rate =
+      hasRate && data.rate !== null ? Math.round(data.rate * 100) / 100 : null
+
     const result = await updateItemNew({
-      route: `/financial/payroll-templates/${rowData?.id}`,
-      data,
+      route: `/financial/payroll-templates/${encodeURIComponent(rowData.id)}`,
+      data: {
+        name: data.name,
+        ...(!system &&
+          data.behavior !== rowData.behavior && { behavior: data.behavior }),
+        ...(!system &&
+          increase !== rowData.defaultIncrease && {
+            defaultIncrease: increase,
+          }),
+        ...(!system &&
+          discount !== rowData.defaultDiscount && {
+            defaultDiscount: discount,
+          }),
+        ...(rate !== null && rate !== rowData.rate && { rate }),
+      },
     })
 
     if (!result.success) {
@@ -81,11 +132,13 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[400px]">
+      <DialogContent className="sm:max-w-[440px]">
         <DialogHeader>
           <DialogTitle>Editar item de custo</DialogTitle>
           <DialogDescription>
-            A alteração vale para a folha de todos os colaboradores.
+            {lawItem
+              ? 'Férias e 13º são calculados por lei: só a referência muda.'
+              : 'A alteração vale para a folha de todos os colaboradores.'}
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
@@ -96,21 +149,72 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
               id="payroll-template-form"
             >
               <div className="grid gap-4 py-4">
-                <FormInput
+                <FormInput<FormType>
                   name="name"
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"
                 />
-                <FormSelect
-                  name="type"
-                  label="Operação em folha"
-                  options={[
-                    { value: 'INCREASE', label: 'Lançar acréscimo' },
-                    { value: 'DISCOUNT', label: 'Lançar desconto' },
-                  ]}
+                <FormSelect<FormType>
+                  name="behavior"
+                  label="Comportamento na folha"
+                  options={behaviorOptions(rowData?.behavior)}
+                  disabled={system}
                   width="flex-[1_0_300px]"
                 />
+                {system && !lawItem && (
+                  <p className="-mt-2 text-sm text-gray">
+                    {rowData?.isBase || rowData?.systemKey === 'BASE_SALARY'
+                      ? 'O salário base é sempre acréscimo e vem do cadastro de cada colaborador.'
+                      : 'Encargo da CLT: o comportamento é o da lei, e o valor sai do salário base pela alíquota.'}
+                  </p>
+                )}
+
+                {hasRate && (
+                  <>
+                    <FormInput<FormType>
+                      name="rate"
+                      label="Alíquota"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step="0.01"
+                      inputMode="decimal"
+                      endAdornment={<span className="text-sm">%</span>}
+                      width="flex-[1_0_160px]"
+                    />
+                    <p className="-mt-2 text-sm text-gray">
+                      Mudar a alíquota refaz o {rowData?.name} de todos os
+                      colaboradores CLT, menos os que têm o valor informado à
+                      mão.
+                    </p>
+                  </>
+                )}
+
+                {!system && (
+                  <div className="flex flex-wrap gap-4">
+                    {showIncrease && (
+                      <FormBrlInput<FormType>
+                        name="defaultIncrease"
+                        label="Acréscimo padrão"
+                        startAdornment={<>R$</>}
+                        width="flex-[1_0_160px]"
+                      />
+                    )}
+                    {showDiscount && (
+                      <FormBrlInput<FormType>
+                        name="defaultDiscount"
+                        label="Desconto padrão"
+                        startAdornment={<>R$</>}
+                        width="flex-[1_0_160px]"
+                      />
+                    )}
+                    <p className="w-full text-sm text-gray">
+                      O valor padrão entra na folha de quem recebe o item daqui
+                      em diante; o de quem já tem continua como está.
+                    </p>
+                  </div>
+                )}
               </div>
             </form>
           </Form>
