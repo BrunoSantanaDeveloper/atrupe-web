@@ -1,285 +1,161 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não tem os endpoints da Precificação (recurso do
-// PRO). Estas actions devolvem dados de exemplo em memória, no mesmo formato
-// `{ success, data, message }` das actions reais.
+// Precificação (recurso do PRO, módulo 4): as rotas /pricing da API. Tudo ali
+// é valor: sem values:values:view a API recusa (403), e as páginas já pedem a
+// permissão. Dinheiro em centavos; parâmetros e lucro em décimos de ponto
+// (60 = 6,0%); margem em % com uma casa.
+//
+// O custo nunca é gravado aqui (DC-6): vem da origem (base de custos,
+// patrimônio, material, composição). Daqui sai o preço de mão de obra e de
+// máquinas; o do material é gravado no cadastro (materials.ts ›
+// updateMaterialPrice) e o do produto, no cadastro do produto.
 
 // Types
 import type {
   PriceRule,
   PricingItem,
   PricingGroup,
+  PricingStatus,
   PricingSummary,
+  PricingItemsPage,
   PricingParameters,
+  PricingGroupSummary,
 } from '@/app/(app-sidebar)/precificacao/types'
 
-// Os materiais vêm do cadastro (DC-6: a Precificação é a segunda porta para
-// o mesmo dado). Com variação, a linha é a variação (MT-3)
-import { materials, materialUnitSymbol } from './materials-data'
-// O custo da máquina acompanha o rateio manual do setor (BC-3.1)
-import { SETUP_BY_RESOURCE, allocatedUnitCost } from './sector-allocation-data'
+// Actions
+import { getItem, putItemNew, updateItemNew } from '@/actions/_cruds'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
+const GROUPS: PricingGroup[] = ['labor', 'machines', 'materials', 'products']
+const STATUSES = ['todos', 'PRICED', 'PENDING', 'BELOW_COST', 'NO_COST']
 
-const REFERENCE_MONTH = '2026-08'
+// A lista de cada aba vem uma página por vez: a tela pagina pela URL
+const PAGE_SIZE = 50
+// A procura de um item só usa o teto da API, para andar menos páginas
+const MAX_PAGE_SIZE = 100
+const MAX_PAGES = 20
 
-// Percentuais em décimos de ponto: 60 = 6,0%
-const parameters: PricingParameters = {
-  taxation: 60,
-  commission: 30,
-  financialCost: 15,
-  desiredMargin: 300,
-  markup: 0,
+type Result<T> = { success: boolean; data: T; message: string }
+type ApiResult = {
+  success: boolean
+  // O corpo de cada rota é tipado onde é lido
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any
+  message?: string
 }
 
-const withMarkup = (params: PricingParameters): PricingParameters => {
-  const charges =
-    (params.taxation +
-      params.commission +
-      params.financialCost +
-      params.desiredMargin) /
-    1000
+const ok = <T>(data: T): Result<T> => ({ success: true, data, message: '' })
+const fail = <T>(res: ApiResult, data: T): Result<T> => ({
+  success: false,
+  data,
+  message: res.message || 'Não foi possível concluir.',
+})
+const refuse = <T>(message: string, data: T) =>
+  fail({ success: false, message }, data)
 
-  return {
-    ...params,
-    // Método divisor (D3 §7.2): 1 ÷ (1 − encargos)
-    markup: charges >= 1 ? 0 : Math.round((1 / (1 - charges)) * 100) / 100,
-  }
-}
+// O id entra no caminho da rota e tem ":" (setup:<id>, group:<id>): nada de
+// "/" ou "?" vindo da tela
+const seg = (id: string) => encodeURIComponent(id)
 
-const items: { [key in PricingGroup]: PricingItem[] } = {
-  labor: [
-    {
-      id: 'producao',
-      name: 'Produção',
-      code: 'MO-01',
-      sector: 'Produção',
-      unit: 'HR – Hora',
-      cost: 1649,
-      costUpdatedAt: '2026-08-31',
-      rule: 'FIXED',
-      price: 6000,
-      margin: 72.5,
-      status: 'PRICED',
-    },
-    {
-      id: 'criacao',
-      name: 'Criação',
-      code: 'MO-02',
-      sector: 'Criação',
-      unit: 'HR – Hora',
-      cost: 3623,
-      costUpdatedAt: '2026-08-31',
-      rule: 'FIXED',
-      price: 3000,
-      margin: -20.8,
-      status: 'BELOW_COST',
-    },
-    {
-      id: 'marcenaria',
-      name: 'Marcenaria',
-      code: 'MO-03',
-      sector: 'Marcenaria',
-      unit: 'HR – Hora',
-      cost: null,
-      costUpdatedAt: null,
-      rule: 'FIXED',
-      price: 3500,
-      margin: null,
-      status: 'NO_COST',
-    },
-  ],
-  machines: [
-    {
-      id: 'sublimatica-standart',
-      name: 'Impressora Sublimática · Standart',
-      code: 'MAQ-01',
-      sector: 'Impressão',
-      unit: 'M² – Metro quadrado',
-      cost: 152,
-      costUpdatedAt: '2026-08-31',
-      rule: 'VARIABLE',
-      price: 447,
-      margin: 66.0,
-      status: 'PRICED',
-    },
-    {
-      id: 'solvente-4passes',
-      name: 'Impressora Solvente · 4 passes',
-      code: 'MAQ-02',
-      sector: 'Impressão',
-      unit: 'M² – Metro quadrado',
-      cost: 289,
-      costUpdatedAt: '2026-08-31',
-      rule: 'VARIABLE',
-      price: null,
-      margin: null,
-      status: 'PENDING',
-    },
-    {
-      id: 'frota-motos',
-      name: 'Motos (grupo)',
-      code: 'MAQ-03',
-      sector: 'Frota',
-      unit: 'KM – Quilometragem',
-      cost: 120,
-      costUpdatedAt: '2026-07-31',
-      rule: 'FIXED',
-      price: 350,
-      margin: 65.7,
-      status: 'PRICED',
-    },
-  ],
-  // Materiais: ver materialPricingItems()
-  materials: [],
-  products: [
-    {
-      id: 'banner',
-      name: 'Banner 440 com bastão',
-      code: 'PRD-01',
-      sector: 'Impressão',
-      unit: 'M² – Metro quadrado',
-      cost: 1890,
-      costUpdatedAt: '2026-09-10',
-      rule: 'FIXED',
-      price: 4500,
-      margin: 58.0,
-      status: 'PRICED',
-    },
-    {
-      id: 'adesivo',
-      name: 'Adesivo recortado',
-      code: 'PRD-02',
-      sector: 'Impressão',
-      unit: 'M² – Metro quadrado',
-      cost: null,
-      costUpdatedAt: null,
-      rule: 'FIXED',
-      price: 3500,
-      margin: null,
-      status: 'NO_COST',
-    },
-    {
-      id: 'placa-pvc',
-      name: 'Placa PVC 3 mm',
-      code: 'PRD-03',
-      sector: 'Marcenaria',
-      unit: 'UN – Unidade',
-      cost: 4200,
-      costUpdatedAt: '2026-08-15',
-      rule: 'FIXED',
-      price: 3900,
-      margin: -7.7,
-      status: 'BELOW_COST',
-    },
-  ],
-}
+// Sem custo ou sem preço o valor vem nulo, e a tela mostra `-`, nunca R$ 0,00
+const numOrNull = (value: unknown) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : null
+const num = (value: unknown) => numOrNull(value) ?? 0
+const textOrNull = (value: unknown) =>
+  typeof value === 'string' && value ? value : null
+
+// Centavos e décimos de ponto vão inteiros: a API recusa fração
+const int = (value: unknown) => Math.round(Number(value))
+
+/* --------------------------------------------------------------------------
+ * Formato da API para o da tela: só os campos que a tela lê
+ * ------------------------------------------------------------------------ */
+
+type ApiRow = { [key: string]: unknown }
+const rowsOf = (value: unknown): ApiRow[] =>
+  Array.isArray(value) ? (value as ApiRow[]) : []
+
+const toParameters = (body: ApiRow): PricingParameters => ({
+  taxation: num(body.taxation),
+  commission: num(body.commission),
+  financialCost: num(body.financialCost),
+  desiredMargin: num(body.desiredMargin),
+  // Nulo quando encargos e lucro somam 100% ou mais: a tela avisa
+  markup: numOrNull(body.markup),
+})
+
+const toGroupSummary = (group: ApiRow): PricingGroupSummary => ({
+  group: group.group as PricingGroup,
+  total: num(group.total),
+  priced: num(group.priced),
+  pending: num(group.pending),
+  belowCost: num(group.belowCost),
+})
+
+const toItem = (item: ApiRow): PricingItem => ({
+  id: String(item.id ?? ''),
+  name: String(item.name ?? ''),
+  code: textOrNull(item.code),
+  sector: textOrNull(item.sector),
+  unit: String(item.unit ?? ''),
+  cost: numOrNull(item.cost),
+  costUpdatedAt: textOrNull(item.costUpdatedAt),
+  rule: item.rule === 'VARIABLE' ? 'VARIABLE' : 'FIXED',
+  price: numOrNull(item.price),
+  profit: numOrNull(item.profit),
+  margin: numOrNull(item.margin),
+  status: item.status as PricingStatus,
+})
+
+/* --------------------------------------------------------------------------
+ * Resumo e parâmetros (PR-4)
+ * ------------------------------------------------------------------------ */
 
 export const getPricingSummary = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        referenceMonth: '',
-        parameters: {
-          taxation: 0,
-          commission: 0,
-          financialCost: 0,
-          desiredMargin: 0,
-          markup: 0,
-        },
-        groups: [],
-      },
-      message: '',
-    }
-  const data: PricingSummary = {
-    referenceMonth: REFERENCE_MONTH,
-    parameters: withMarkup(parameters),
-    groups: (Object.keys(items) as PricingGroup[]).map((group) => {
-      const list = group === 'machines' ? machinePricingItems() : items[group]
-
-      return {
-        group,
-        total: list.length,
-        priced: list.filter((item) => item.price !== null).length,
-        pending: list.filter((item) => item.price === null).length,
-        belowCost: list.filter((item) => item.status === 'BELOW_COST').length,
-      }
-    }),
-  }
-
-  return { success: true, data, message: '' }
-}
-
-const marginOf = (cost: number | null, price: number | null) =>
-  cost !== null && price
-    ? Math.round(((price - cost) / price) * 1000) / 10
-    : null
-
-const statusOf = (cost: number | null, price: number | null) => {
-  if (cost === null) return 'NO_COST' as const
-  if (!price) return 'PENDING' as const
-  return price < cost ? ('BELOW_COST' as const) : ('PRICED' as const)
-}
-
-// A máquina que é configuração produtiva de um patrimônio tem o custo pelo
-// rateio do setor; com o critério manual, o custo e a margem mudam juntos
-const machinePricingItems = (): PricingItem[] =>
-  items.machines.map((item) => {
-    const setupId = SETUP_BY_RESOURCE[item.id]
-    if (!setupId || item.cost === null) return item
-
-    const cost = allocatedUnitCost(setupId, item.cost)
-    if (cost === item.cost) return item
-
-    return {
-      ...item,
-      cost,
-      margin: marginOf(cost, item.price),
-      status: statusOf(cost, item.price),
-    }
+  const res: ApiResult = await getItem({ route: '/pricing/summary' })
+  if (!res.success) return fail<PricingSummary | null>(res, null)
+  return ok<PricingSummary | null>({
+    referenceMonth: String(res.data?.referenceMonth ?? ''),
+    parameters: toParameters((res.data?.parameters ?? {}) as ApiRow),
+    groups: rowsOf(res.data?.groups)
+      .filter((group) => GROUPS.includes(group.group as PricingGroup))
+      .map(toGroupSummary),
   })
+}
 
-// Um item por variação (ou por material sem variação), com o mesmo id que a
-// composição usa para o recurso: "mat:<material>[:<variação>]"
-const materialPricingItems = (): PricingItem[] =>
-  materials
-    .filter((material) => material.active)
-    .flatMap((material) => {
-      const unit = materialUnitSymbol(material.unit)
-      if (material.variations.length) {
-        return material.variations.map((variation) => ({
-          id: `mat:${material.id}:${variation.id}`,
-          name: `${material.name} · ${variation.brand} ${variation.color}`.trim(),
-          code: material.code,
-          sector: material.sector,
-          unit,
-          cost: variation.cost,
-          costUpdatedAt: null,
-          rule: material.priceRule,
-          price: variation.price,
-          margin: marginOf(variation.cost, variation.price),
-          status: statusOf(variation.cost, variation.price),
-        }))
-      }
-      return [
-        {
-          id: `mat:${material.id}`,
-          name: material.name,
-          code: material.code,
-          sector: material.sector,
-          unit,
-          cost: material.cost,
-          costUpdatedAt: null,
-          rule: material.priceRule,
-          price: material.price,
-          margin: marginOf(material.cost, material.price),
-          status: statusOf(material.cost, material.price),
-        },
-      ]
-    })
+// Só os parâmetros, que é o que o modal de preço usa na simulação. A rota
+// também aceita quem edita produto: o modal abre do cadastro de produtos e do
+// de materiais, onde o Resumo (cost:pricing:view) seria recusado
+export const getPricingParameters = async () => {
+  const res: ApiResult = await getItem({ route: '/pricing/parameters' })
+  if (!res.success) return fail<PricingParameters | null>(res, null)
+  return ok<PricingParameters | null>(toParameters(res.data ?? {}))
+}
 
+// A soma dos quatro precisa ficar abaixo de 100%: a API recusa. Gravar refaz
+// o preço de todo item de regra variável, preservando o lucro de cada um
+export const updatePricingParameters = async (
+  values: Omit<PricingParameters, 'markup'>,
+) => {
+  const res: ApiResult = await putItemNew({
+    route: '/pricing/parameters',
+    // Só os quatro campos do corpo: o markup é calculado pela API
+    data: {
+      taxation: int(values?.taxation),
+      commission: int(values?.commission),
+      financialCost: int(values?.financialCost),
+      desiredMargin: int(values?.desiredMargin),
+    },
+  })
+  if (!res.success) return fail<PricingParameters | null>(res, null)
+  return ok<PricingParameters | null>(toParameters(res.data ?? {}))
+}
+
+/* --------------------------------------------------------------------------
+ * Itens de um grupo: custo, regra, preço, margem e situação
+ * ------------------------------------------------------------------------ */
+
+// Uma página por vez. Os filtros são os da URL da tela; o que a API não
+// conhece fica de fora
 export const getPricingItems = async ({
   group,
   filters,
@@ -287,89 +163,111 @@ export const getPricingItems = async ({
   group: PricingGroup
   filters?: { [key: string]: string | undefined }
 }) => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
-  const status = filters?.status
-  const search = filters?.search?.trim().toLowerCase()
+  const empty: PricingItemsPage = {
+    referenceMonth: '',
+    items: [],
+    page: 1,
+    lastPage: 1,
+    total: 0,
+  }
+  if (!GROUPS.includes(group)) return refuse('Grupo inválido', empty)
 
-  const source =
-    group === 'materials'
-      ? materialPricingItems()
-      : group === 'machines'
-        ? machinePricingItems()
-        : items[group]
-  const data = source
-    .filter((item) => !status || status === 'todos' || item.status === status)
-    .filter((item) => !search || item.name.toLowerCase().includes(search))
+  const status = STATUSES.includes(filters?.status ?? '')
+    ? (filters?.status as string)
+    : 'todos'
+  const search = filters?.search?.trim().slice(0, 120)
+  const page = Math.max(Math.floor(Number(filters?.page) || 1), 1)
 
-  return { success: true, data, message: '' }
+  const res: ApiResult = await getItem({
+    route: '/pricing/item',
+    params: {
+      group,
+      status,
+      ...(search ? { search } : {}),
+      page: String(page),
+      limit: String(PAGE_SIZE),
+    },
+  })
+  if (!res.success) return fail(res, empty)
+  return ok<PricingItemsPage>({
+    referenceMonth: String(res.data?.referenceMonth ?? ''),
+    items: rowsOf(res.data?.data).map(toItem),
+    page: num(res.data?.page) || 1,
+    lastPage: num(res.data?.lastPage) || 1,
+    total: num(res.data?.total),
+  })
 }
 
-export const updatePricingParameters = async (
-  values: Omit<PricingParameters, 'markup'>,
-) => {
-  if (!DEMO_DATA) return demoOff()
-  Object.assign(parameters, values)
+// Um item só, para abrir o modal de preço fora da lista (a aba Mão de obra
+// da base de custos). A API não tem a leitura por id: a busca pelo nome
+// encurta a lista, e o id decide
+export const getPricingItem = async ({
+  group,
+  id,
+  name,
+}: {
+  group: PricingGroup
+  id: string
+  name?: string
+}) => {
+  if (!GROUPS.includes(group)) {
+    return refuse<PricingItem | null>('Grupo inválido', null)
+  }
+  const search = name?.trim().slice(0, 120)
 
-  return { success: true, data: withMarkup(parameters), message: '' }
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res: ApiResult = await getItem({
+      route: '/pricing/item',
+      params: {
+        group,
+        ...(search ? { search } : {}),
+        page: String(page),
+        limit: String(MAX_PAGE_SIZE),
+      },
+    })
+    if (!res.success) return fail<PricingItem | null>(res, null)
+    const found = rowsOf(res.data?.data).find((item) => item.id === id)
+    if (found) return ok<PricingItem | null>(toItem(found))
+    if (page >= (res.data?.lastPage ?? 1)) break
+  }
+  return refuse<PricingItem | null>('Item não encontrado', null)
 }
 
+// Grava a regra e o preço de mão de obra e de máquinas. No fixo vai o preço;
+// no variável vai o lucro, e o preço enviado só confere: quem calcula é a
+// API, que recusa a diferença de mais de 1 centavo ("O preço mudou; abra o
+// item de novo"). Material e produto são recusados aqui: cada um tem o seu
+// cadastro
 export const updateItemPrice = async ({
   group,
   id,
   rule,
   price,
+  profit,
 }: {
   group: PricingGroup
   id: string
   rule: PriceRule
   price: number
+  // Só no variável, em décimos de ponto (300 = 30,0%)
+  profit?: number
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  // Material: grava no cadastro, na variação quando houver (MT-3, DC-6)
-  if (group === 'materials') {
-    const [, materialId, variationId] = id.split(':')
-    const material = materials.find((current) => current.id === materialId)
-    const variation = variationId
-      ? material?.variations.find((current) => current.id === variationId)
-      : null
-    if (!material || (variationId && !variation)) {
-      return { success: false, data: null, message: 'Item não encontrado' }
-    }
-    const target = variation || material
-    if (target.cost === null) {
-      return {
-        success: false,
-        data: null,
-        message: 'Este item ainda não tem custo.',
-      }
-    }
-    target.price = price
-    material.priceRule = rule
-    const item = materialPricingItems().find((current) => current.id === id)
-    return { success: true, data: item || null, message: '' }
-  }
+  if (!id) return refuse<PricingItem | null>('Item não encontrado', null)
 
-  const item = items[group].find((current) => current.id === id)
-
-  if (!item) {
-    return { success: false, data: null, message: 'Item não encontrado' }
-  }
-
-  if (item.cost === null) {
-    return {
-      success: false,
-      data: null,
-      message: 'Este item ainda não tem custo calculado.',
-    }
-  }
-
-  item.rule = rule
-  item.price = price
-  item.margin = price
-    ? Math.round(((price - item.cost) / price) * 1000) / 10
-    : null
-  item.status =
-    item.margin !== null && item.margin < 0 ? 'BELOW_COST' : 'PRICED'
-
-  return { success: true, data: item, message: '' }
+  const priceField = Number.isFinite(price) ? { price: int(price) } : {}
+  const res: ApiResult = await updateItemNew({
+    route: `/pricing/item/${seg(id)}`,
+    // Só os campos de cada regra: o lucro não vai no preço fixo
+    data:
+      rule === 'VARIABLE'
+        ? {
+            group,
+            rule,
+            ...(typeof profit === 'number' ? { profit: int(profit) } : {}),
+            ...priceField,
+          }
+        : { group, rule, ...priceField },
+  })
+  if (!res.success) return fail<PricingItem | null>(res, null)
+  return ok<PricingItem | null>(toItem(res.data ?? {}))
 }

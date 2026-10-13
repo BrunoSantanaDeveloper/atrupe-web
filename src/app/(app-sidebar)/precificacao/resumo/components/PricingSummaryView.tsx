@@ -2,9 +2,11 @@
 
 // React / Next
 import Link from 'next/link'
+import { useState } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Card,
@@ -14,33 +16,34 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 
+// Components
+import { EditParametersModal } from './EditParametersModal'
+import { PermissionGate } from '@/components/common/PermissionGate'
+import { LoadError } from '@/app/(app-sidebar)/base-de-custos/components/LoadError'
+
 // Actions
 import { getPricingSummary } from '@/actions/pricing'
 
 // Hooks / Store / Consts
 import { pricingGroupObj, pricingGroupPath } from '@/consts/pricing'
+import { formatReferenceMonth } from '@/app/(app-sidebar)/base-de-custos/reference-month'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconAlertTriangle, IconChevronRight } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconChevronRight,
+  IconAlertTriangle,
+} from '@tabler/icons-react'
 
 const formatPercent = (value: number) =>
   `${(value / 10).toFixed(1).replace('.', ',')}%`
 
-const formatReferenceMonth = (month?: string) => {
-  if (!month) return ''
-
-  const [year, monthNumber] = month.split('-').map(Number)
-
-  return new Date(year, monthNumber - 1, 1)
-    .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-    .replace('.', '')
-    .replace(' de ', '/')
-}
-
 export function PricingSummaryView() {
+  const [editing, setEditing] = useState(false)
+
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['pricing-summary'],
@@ -50,7 +53,7 @@ export function PricingSummaryView() {
   const summary = data?.data
   const parameters = summary?.parameters
 
-  if (isLoading || !summary || !parameters) {
+  if (isLoading) {
     return (
       <div className="space-y-5">
         <Skeleton className="h-[260px] w-full rounded-xl" />
@@ -59,12 +62,24 @@ export function PricingSummaryView() {
     )
   }
 
+  if (!summary || !parameters) {
+    return (
+      <Card>
+        <LoadError message={data?.message} />
+      </Card>
+    )
+  }
+
   const charges =
     parameters.taxation +
     parameters.commission +
     parameters.financialCost +
     parameters.desiredMargin
-  const costShare = 1000 - charges
+  // Com encargos e lucro em 100% ou mais não sobra custo: a barra não passa
+  // do próprio tamanho
+  const costShare = Math.max(1000 - charges, 0)
+  const barTotal = Math.max(charges, 1000)
+  const referenceMonth = formatReferenceMonth(summary.referenceMonth)
 
   const bands = [
     { label: 'Custo', value: costShare, className: 'bg-gray-400' },
@@ -113,11 +128,29 @@ export function PricingSummaryView() {
     (total, group) => total + group.pending,
     0,
   )
+  // Os avisos levam ao primeiro grupo que tem o problema
+  const belowCostGroup = summary.groups.find((group) => group.belowCost > 0)
+  const pendingGroup = summary.groups.find((group) => group.pending > 0)
 
   return (
     <div className="space-y-5">
-      {belowCost > 0 && (
-        <Link href="/precificacao/produtos?status=BELOW_COST">
+      {parameters.markup === null && (
+        <Card className="p-4 flex items-center gap-3 border-warning-200 bg-warning-50">
+          <IconAlertTriangle className="size-5 text-warning-600 shrink-0" />
+          <p className="text-sm text-gray-900">
+            <span className="font-medium">
+              Encargos e lucro somam 100% ou mais.
+            </span>{' '}
+            Não há markup que os pague: ajuste os parâmetros para o preço
+            sugerido voltar a ser calculado.
+          </p>
+        </Card>
+      )}
+
+      {belowCostGroup && (
+        <Link
+          href={`${pricingGroupPath[belowCostGroup.group]}?status=BELOW_COST`}
+        >
           <Card className="p-4 flex items-center gap-3 border-error-200 bg-error-25">
             <IconAlertTriangle className="size-5 text-error-600 shrink-0" />
             <p className="text-sm text-gray-900">
@@ -132,13 +165,27 @@ export function PricingSummaryView() {
       )}
 
       <Card>
-        <CardHeader>
-          <CardTitle>Parâmetros de referência</CardTitle>
-          <CardDescription>
-            Usados para calcular o preço sugerido. O preço praticado pode ser
-            ajustado conforme o mercado. Custo apurado até{' '}
-            {formatReferenceMonth(summary.referenceMonth)}.
-          </CardDescription>
+        <CardHeader className="gap-4 space-y-0 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-1.5">
+            <CardTitle>Parâmetros de referência</CardTitle>
+            <CardDescription>
+              Usados para calcular o preço sugerido. O preço praticado pode ser
+              ajustado conforme o mercado.
+              {referenceMonth ? ` Custo apurado até ${referenceMonth}.` : ''}
+            </CardDescription>
+          </div>
+          <PermissionGate permissions={['cost:pricing:edit']}>
+            <Button
+              type="button"
+              variant="neutralOutline"
+              className="shrink-0 self-start"
+              LeftIcon={IconPencil}
+              leftIconSize={20}
+              onClick={() => setEditing(true)}
+            >
+              Editar parâmetros
+            </Button>
+          </PermissionGate>
         </CardHeader>
         <CardContent className="space-y-6 px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -154,7 +201,9 @@ export function PricingSummaryView() {
             <Card className="p-4 rounded-xl bg-success-25 border-success-200">
               <p className="text-xs text-gray">Markup de referência</p>
               <p className="text-display-xs font-semibold text-gray-900">
-                {parameters.markup.toFixed(2).replace('.', ',')}
+                {parameters.markup === null
+                  ? '-'
+                  : parameters.markup.toFixed(2).replace('.', ',')}
               </p>
               <p className="text-xs text-gray mt-1">
                 Inclui a margem desejada. É o valor usado para o preço sugerido
@@ -180,7 +229,7 @@ export function PricingSummaryView() {
                   role="img"
                   aria-label={`${band.label}: ${formatPercent(band.value)}`}
                   className={band.className}
-                  style={{ width: `${band.value / 10}%` }}
+                  style={{ width: `${(band.value / barTotal) * 100}%` }}
                 />
               ))}
             </div>
@@ -208,9 +257,9 @@ export function PricingSummaryView() {
               pendentes.
             </CardDescription>
           </div>
-          {pending > 0 && (
+          {pendingGroup && (
             <Link
-              href="/precificacao/materiais?status=PENDING"
+              href={`${pricingGroupPath[pendingGroup.group]}?status=PENDING`}
               className="text-sm text-brand hover:underline"
             >
               {pending} {pending === 1 ? 'item pendente' : 'itens pendentes'}
@@ -232,7 +281,12 @@ export function PricingSummaryView() {
                     <div
                       className="h-1.5 rounded-full bg-brand"
                       style={{
-                        width: `${Math.round((group.priced / group.total) * 100)}%`,
+                        // Grupo sem item nenhum fica com a barra vazia
+                        width: `${
+                          group.total
+                            ? Math.round((group.priced / group.total) * 100)
+                            : 0
+                        }%`,
                       }}
                     />
                   </div>
@@ -260,6 +314,12 @@ export function PricingSummaryView() {
           </div>
         </CardContent>
       </Card>
+
+      <EditParametersModal
+        parameters={parameters}
+        open={editing}
+        onOpenChange={() => setEditing(false)}
+      />
     </div>
   )
 }

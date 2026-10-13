@@ -6,14 +6,19 @@
 // em custo, tributação, custo financeiro, comissão e lucro, em % e em R$; a
 // estimativa do mês multiplica custo e preço pela média de venda. Não mostra
 // "markup" (DC-13). Alinhado ao design.md em 03/10/2026.
+//
+// A conta daqui é só simulação: quem calcula e grava é a API. Mão de obra e
+// máquinas gravam em /pricing/item; material e produto gravam no próprio
+// cadastro, por `onSave`.
 
 // React / Next
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
@@ -30,7 +35,7 @@ import {
 import type { PriceRule, PricingGroup, PricingItem } from '../types'
 
 // Actions
-import { updateItemPrice, getPricingSummary } from '@/actions/pricing'
+import { updateItemPrice, getPricingParameters } from '@/actions/pricing'
 
 // Hooks / Store / Consts
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -54,10 +59,10 @@ interface Props {
   item?: PricingItem
   open: boolean
   onOpenChange: () => void
-  // Quem grava o preço, quando não é o mock da Precificação: o produto da
-  // lista grava no cadastro (API). Devolve { success, message }
-  // No preço variável vai também o lucro informado, em décimos de ponto
-  // (300 = 30,0 %): o servidor refaz a conta com ele
+  // Quem grava o preço, quando não é a rota da Precificação (mão de obra e
+  // máquinas): o material e o produto gravam no cadastro. Devolve
+  // { success, message }. No preço variável vai também o lucro informado, em
+  // décimos de ponto (300 = 30,0 %): o servidor refaz a conta com ele
   onSave?: (values: {
     rule: PriceRule
     price: number
@@ -87,46 +92,67 @@ export function EditPriceModal({
   const [profit, setProfit] = useState('')
   const [volume, setVolume] = useState('')
 
-  const { data: summary } = useQuery({
+  // Só os parâmetros (a rota aceita também quem edita produto), e só com o
+  // modal aberto: fechado, ele continua montado nas listas
+  const { data: parametersData, isLoading: isLoadingParameters } = useQuery({
     staleTime: Infinity,
-    queryKey: ['pricing-summary'],
-    queryFn: () => getPricingSummary(),
+    enabled: open,
+    queryKey: ['pricing-parameters'],
+    queryFn: () => getPricingParameters(),
   })
-  const parameters = summary?.data?.parameters
+  const parameters = parametersData?.data || undefined
+  const parametersError =
+    parametersData && !parametersData.success ? parametersData.message : ''
+
+  // A leitura que falhou não fica guardada: quando este modal fecha, ela sai
+  // do cache, e a próxima abertura tenta de novo. Só no fechamento do
+  // próprio modal: a tela de materiais monta dois, e o que está fechado não
+  // pode apagar a leitura do que está aberto
+  const wasOpen = useRef(false)
+  useEffect(() => {
+    if (wasOpen.current && !open && parametersError) {
+      queryClient.resetQueries({ queryKey: ['pricing-parameters'] })
+    }
+    wasOpen.current = open
+  }, [open, parametersError, queryClient])
 
   const cost = item?.cost ?? null
-  // Encargos em fração: tributação + custo financeiro + comissão (PR-4)
-  const charges = parameters
-    ? (parameters.taxation + parameters.financialCost + parameters.commission) /
-      1000
+  // Encargos em décimos de ponto: tributação + custo financeiro + comissão
+  // (PR-4)
+  const chargesTenths = parameters
+    ? parameters.taxation + parameters.financialCost + parameters.commission
     : 0
 
-  // Ao abrir: a regra e o preço do item; o lucro vem do preço praticado,
-  // ou da margem desejada da empresa quando ainda não há preço
+  // Ao abrir: a regra e o preço do item; o lucro é o gravado no preço
+  // variável, senão o que o preço praticado deixa, ou a margem desejada da
+  // empresa quando ainda não há preço
   useEffect(() => {
-    if (!item || !open) return
+    // Espera os parâmetros: sem eles o lucro sairia errado e seria trocado
+    // depois, por cima do que a pessoa já tivesse digitado
+    if (!item || !open || isLoadingParameters) return
     // Sem preço ainda, abre no variável: já mostra o preço sugerido pela
     // margem da empresa, em vez de um formulário vazio
     setRule(item.price ? item.rule : 'VARIABLE')
     setPrice(item.price ? (item.price / 100).toFixed(2) : '')
     const currentProfit =
-      item.price && item.cost !== null
-        ? (1 - item.cost / item.price - charges) * 100
-        : parameters
-          ? parameters.desiredMargin / 10
-          : 0
+      item.rule === 'VARIABLE' && typeof item.profit === 'number'
+        ? item.profit / 10
+        : item.price && item.cost !== null
+          ? (1 - item.cost / item.price - chargesTenths / 1000) * 100
+          : parameters
+            ? parameters.desiredMargin / 10
+            : 0
     setProfit(currentProfit.toFixed(1))
     setVolume('')
-  }, [item, open, charges, parameters])
+  }, [item, open, chargesTenths, parameters, isLoadingParameters])
 
-  // Preço variável: preço = custo ÷ (1 − encargos − lucro), o método divisor.
-  // O lucro vale com uma casa (décimos de ponto), que é como ele é guardado
+  // Preço variável: preço = custo ÷ (1 − encargos − lucro), o método divisor,
+  // na mesma ordem de contas da API (ela confere o preço com 1 centavo de
+  // folga). O lucro vale com uma casa (décimos de ponto), como é guardado
   const profitTenths = Math.round(toNumber(profit) * 10)
-  const profitFraction = profitTenths / 1000
+  const divisor = 1 - (chargesTenths + profitTenths) / 1000
   const variablePrice =
-    cost !== null && 1 - charges - profitFraction > 0
-      ? Math.round(cost / (1 - charges - profitFraction))
-      : null
+    cost !== null && divisor > 0 ? Math.round(cost / divisor) : null
   const fixedPrice = Math.round(toNumber(price) * 100) || null
   const effectivePrice = rule === 'VARIABLE' ? variablePrice : fixedPrice
 
@@ -193,6 +219,22 @@ export function EditPriceModal({
   const monthlySale =
     effectivePrice && monthly ? effectivePrice * monthly : null
 
+  // A rota da Precificação só grava com custo ("Este item ainda não tem
+  // custo calculado."); no cadastro quem decide é o `onSave`
+  const needsCost = !onSave && cost === null
+  // O que impede o preço variável, na frase da API quando ela tem uma
+  const variableProblem =
+    rule !== 'VARIABLE' || cost === null
+      ? ''
+      : profitTenths < 0
+        ? 'Informe um lucro maior ou igual a zero.'
+        : variablePrice === null
+          ? 'O lucro e os encargos passam de 100% do preço.'
+          : ''
+
+  const invalidate = (...keys: string[]) =>
+    keys.forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }))
+
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       onSave
@@ -206,12 +248,22 @@ export function EditPriceModal({
             id: item?.id || '',
             rule,
             price: effectivePrice || 0,
+            // No variável quem manda é o lucro; o preço vai para conferência
+            ...(rule === 'VARIABLE' ? { profit: profitTenths } : {}),
           }),
     onSuccess: (response) => {
-      if (!response.success) return toast.error(response.message)
+      if (!response.success) {
+        // "O preço mudou; abra o item de novo": o custo ou os parâmetros
+        // desta tela ficaram velhos. Relê os dois para a próxima abertura
+        invalidate('pricing-parameters', 'pricing-items', 'pricing-summary')
+        return toast.error(response.message || 'Erro ao salvar o preço')
+      }
       toast.success('Preço salvo')
-      queryClient.invalidateQueries({ queryKey: ['pricing-items'] })
-      queryClient.invalidateQueries({ queryKey: ['pricing-summary'] })
+      invalidate('pricing-items', 'pricing-summary')
+      // O preço é gravado no cadastro (DC-6): a hora do setor aparece na mão
+      // de obra da base de custos, e o da configuração, no detalhe do bem
+      if (group === 'labor') invalidate('labor-sectors')
+      if (group === 'machines') invalidate('asset', 'asset-groups')
       onOpenChange()
     },
     onError: () => toast.error('Erro ao salvar o preço'),
@@ -244,7 +296,24 @@ export function EditPriceModal({
           </div>
         </DialogHeader>
         <DialogBody>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
+          {/* Sem os parâmetros a simulação segue sem encargos, como era antes
+              de eles existirem: quem confere o preço é o servidor, ao salvar */}
+          {parametersError && (
+            <p className="mb-5 rounded-lg border border-warning-200 bg-warning-50 p-3 text-sm text-warning-800">
+              Não foi possível ler os parâmetros da precificação (
+              {parametersError}). A simulação abaixo está sem os encargos; o
+              preço é conferido ao salvar.
+            </p>
+          )}
+          {isLoadingParameters && (
+            <Skeleton className="h-[320px] w-full rounded-lg" />
+          )}
+          <div
+            className={cn(
+              'grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]',
+              isLoadingParameters && 'hidden',
+            )}
+          >
             <div className="space-y-5">
               {/* A regra: variável calcula o preço pelo lucro, fixo calcula o
                   lucro pelo preço (PR-2) */}
@@ -297,7 +366,7 @@ export function EditPriceModal({
                 </Label>
                 <Input
                   id="pricing-sector"
-                  value={item?.sector || ''}
+                  value={item?.sector || '-'}
                   disabled
                 />
               </div>
@@ -379,10 +448,15 @@ export function EditPriceModal({
 
               {cost === null && (
                 <p className="text-sm text-gray">
-                  {rule === 'VARIABLE'
-                    ? 'Sem custo não há como calcular o preço pelo lucro. Use o preço fixo, ou monte a composição para o custo aparecer.'
-                    : 'Sem custo, o resumo não mostra a margem. O preço fixo pode ser gravado mesmo assim.'}
+                  {needsCost
+                    ? 'Este item ainda não tem custo calculado. O preço pode ser definido quando o custo aparecer.'
+                    : rule === 'VARIABLE'
+                      ? 'Sem custo não há como calcular o preço pelo lucro. Use o preço fixo, ou monte a composição para o custo aparecer.'
+                      : 'Sem custo, o resumo não mostra a margem. O preço fixo pode ser gravado mesmo assim.'}
                 </p>
+              )}
+              {variableProblem && (
+                <p className="text-sm text-error-700">{variableProblem}</p>
               )}
             </div>
 
@@ -467,7 +541,13 @@ export function EditPriceModal({
             type="button"
             RightIcon={IconCircleCheck}
             isLoading={isPending}
-            disabled={!effectivePrice || (rule === 'VARIABLE' && cost === null)}
+            disabled={
+              isLoadingParameters ||
+              !effectivePrice ||
+              needsCost ||
+              !!variableProblem ||
+              (rule === 'VARIABLE' && cost === null)
+            }
             onClick={() => mutate()}
           >
             Salvar

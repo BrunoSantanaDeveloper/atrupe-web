@@ -30,17 +30,21 @@ import { EditPriceModal } from './EditPriceModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TablePagination } from '@/components/common/TablePagination'
+import { TableFiltersHeader } from '@/components/common/TableHeader'
 import {
   FilteredDataEmpty,
   ListDataTotalEmpty,
 } from '@/components/common/TableEmptyState'
+import { LoadError } from '@/app/(app-sidebar)/base-de-custos/components/LoadError'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import type { PricingGroup, PricingItem } from '../types'
+import type { PriceRule, PricingGroup, PricingItem } from '../types'
 
 // Actions
 import { getPricingItems } from '@/actions/pricing'
+import { updateMaterialPrice } from '@/actions/materials'
 
 // Hooks / Store / Consts
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -49,12 +53,13 @@ import {
   pricingStatusObj,
   pricingGroupObj,
 } from '@/consts/pricing'
+import { formatReferenceMonth } from '@/app/(app-sidebar)/base-de-custos/reference-month'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconCurrencyReal, IconExternalLink } from '@tabler/icons-react'
+import { IconCurrencyReal } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   group: PricingGroup
@@ -78,6 +83,10 @@ const formatValue = (value: number | null) =>
 const formatDate = (date: string | null) =>
   date ? new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR') : '-'
 
+// Margem em % com uma casa, como a API manda
+const formatMargin = (margin: number | null) =>
+  margin === null ? '-' : `${margin.toFixed(1).replace('.', ',')}%`
+
 export function PricingList({
   group,
   itemLabel,
@@ -85,8 +94,10 @@ export function PricingList({
   originLabel,
   searchParams,
 }: Props) {
+  const queryClient = useQueryClient()
   const [editing, setEditing] = useState<PricingItem>()
   const status = (searchParams?.status as string) || 'todos'
+  const search = searchParams?.search || ''
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -94,35 +105,78 @@ export function PricingList({
     queryFn: () => getPricingItems({ group, filters: searchParams }),
   })
 
-  const items = data?.data || []
+  const items = data?.data?.items || []
+  const lastPage = data?.data?.lastPage ?? 1
+  // O custo de mão de obra e de máquinas é o do mês de referência da base de
+  // custos; o de material e o de produto têm a data de cada um
+  const referenceMonth =
+    group === 'labor' || group === 'machines'
+      ? formatReferenceMonth(data?.data?.referenceMonth)
+      : ''
+
+  // Trocar de situação mantém a busca e volta à primeira página
+  const statusLink = (next: string) => {
+    const params = new URLSearchParams({ status: next })
+    if (search) params.set('search', search)
+
+    return `?${params.toString()}`
+  }
+
+  // O preço do material é gravado no cadastro (DC-6), no material ou na
+  // variação: o id do item é "mat:<material>[:<variação>]"
+  const saveMaterialPrice = async (values: {
+    rule: PriceRule
+    price: number
+    desiredMargin?: number
+  }) => {
+    const [, materialId, variationId] = (editing?.id || '').split(':')
+    const response = await updateMaterialPrice({
+      materialId: materialId || '',
+      ...(variationId ? { variationId } : {}),
+      ...values,
+    })
+    // O cadastro de materiais mostra o mesmo preço
+    if (response.success) {
+      queryClient.invalidateQueries({ queryKey: ['materials'] })
+    }
+
+    return response
+  }
 
   return (
     <TooltipProvider>
       <Card>
         <CardHeader>
           <CardTitle>{pricingGroupObj[group]}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-          <Tabs value={status} className="overflow-x-auto pt-4">
+          <CardDescription>
+            {description}
+            {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
+          </CardDescription>
+        </CardHeader>
+        <TableFiltersHeader searchParams={searchParams}>
+          <Tabs value={status} className="overflow-x-auto">
             <TabsList>
               {statusTabs.map((tab) => (
                 <TabsTrigger key={tab.tab} value={tab.tab} asChild>
-                  <Link href={`?status=${tab.tab}`}>{tab.label}</Link>
+                  <Link href={statusLink(tab.tab)}>{tab.label}</Link>
                 </TabsTrigger>
               ))}
             </TabsList>
           </Tabs>
-        </CardHeader>
+        </TableFiltersHeader>
         {isLoading ? (
           <TableSkeleton cols={8} rows={6} />
+        ) : data && !data.success ? (
+          <LoadError message={data.message} />
         ) : !items.length ? (
-          status === 'todos' ? (
+          status === 'todos' && !search ? (
             <ListDataTotalEmpty
               icon={IconCurrencyReal}
               title={`Nenhum ${itemLabel} para precificar`}
-              description={`O custo vem de ${originLabel}.`}
+              description={`O custo vem ${originLabel}.`}
             />
           ) : (
-            <FilteredDataEmpty description="Nenhum item nesta situação." />
+            <FilteredDataEmpty description="Nenhum item atende à situação e à busca escolhidas." />
           )
         ) : (
           <>
@@ -156,11 +210,17 @@ export function PricingList({
                     <TableRow key={item.id}>
                       <TableCell>
                         <p className="font-medium">{item.name}</p>
+                        {/* Código e setor podem vir nulos (o grupo de bens
+                            não tem código) */}
                         <p className="text-sm text-gray">
-                          {item.code} · {item.sector}
+                          {[item.code, item.sector]
+                            .filter(Boolean)
+                            .join(' · ') || '-'}
                         </p>
                       </TableCell>
-                      <TableCell className="text-sm">{item.unit}</TableCell>
+                      <TableCell className="text-sm">
+                        {item.unit || '-'}
+                      </TableCell>
                       <TableCell numeric>{formatValue(item.cost)}</TableCell>
                       <TableCell className="text-sm text-gray">
                         {formatDate(item.costUpdatedAt)}
@@ -179,30 +239,35 @@ export function PricingList({
                             'text-error-700',
                         )}
                       >
-                        {item.margin === null
-                          ? '-'
-                          : `${item.margin.toString().replace('.', ',')}%`}
+                        {formatMargin(item.margin)}
                       </TableCell>
                       <TableCell>
                         <Badge
                           status
-                          variant={pricingStatusObj[item.status].variant}
+                          variant={pricingStatusObj[item.status]?.variant}
                         >
-                          {pricingStatusObj[item.status].text}
+                          {pricingStatusObj[item.status]?.text || '-'}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-end gap-1">
-                          <ActionButton
-                            Icon={IconExternalLink}
-                            tooltip={`Ver origem do custo — ${item.name}`}
-                          />
                           <PermissionGate permissions={['cost:pricing:edit']}>
-                            <ActionButton
-                              Icon={IconCurrencyReal}
-                              tooltip={`Precificar ${item.name}`}
-                              onClick={() => setEditing(item)}
-                            />
+                            {group === 'products' ? (
+                              // Só leitura nesta etapa. Não é `disabled`
+                              // porque o botão desabilitado não mostra a dica
+                              <ActionButton
+                                Icon={IconCurrencyReal}
+                                tooltip="O preço do produto é definido no cadastro do produto"
+                                aria-disabled
+                                className="cursor-not-allowed opacity-40"
+                              />
+                            ) : (
+                              <ActionButton
+                                Icon={IconCurrencyReal}
+                                tooltip={`Precificar ${item.name}`}
+                                onClick={() => setEditing(item)}
+                              />
+                            )}
                           </PermissionGate>
                         </div>
                       </TableCell>
@@ -211,11 +276,19 @@ export function PricingList({
                 </TableBody>
               </Table>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex-col items-stretch gap-4">
               <p className="text-sm text-gray">
-                O custo vem de {originLabel} e não é editado aqui. Preço
-                praticado é livre: a margem mostra o resultado.
+                O custo vem {originLabel} e não é editado aqui.{' '}
+                {group === 'products'
+                  ? 'O preço é o do cadastro do produto: a margem mostra o resultado.'
+                  : 'Preço praticado é livre: a margem mostra o resultado.'}
               </p>
+              {lastPage > 1 ? (
+                <TablePagination
+                  searchParams={searchParams}
+                  lastPage={lastPage}
+                />
+              ) : null}
             </CardFooter>
           </>
         )}
@@ -224,6 +297,7 @@ export function PricingList({
         group={group}
         item={editing}
         open={!!editing}
+        onSave={group === 'materials' ? saveMaterialPrice : undefined}
         onOpenChange={() => setEditing(undefined)}
       />
     </TooltipProvider>

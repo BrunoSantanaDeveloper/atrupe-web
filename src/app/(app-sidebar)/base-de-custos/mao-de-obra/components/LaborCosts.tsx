@@ -25,22 +25,29 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { formatHoursLabel } from '@/components/common/RateInput'
 import { WorkloadModal } from './WorkloadModal'
 import { LoadError } from '../../components/LoadError'
+import { FeatureGate } from '@/components/common/FeatureGate'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
+import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
 
 // Types
 import type { LaborSector } from '../../types'
+import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
+import { getPricingItem } from '@/actions/pricing'
 import { getLaborSectors } from '@/actions/cost-base'
 
 // Hooks / Store / Consts
+import { FEATURES } from '@/consts/features'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { formatReferenceMonth } from '../../reference-month'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconClock, IconUsers, IconCurrencyReal } from '@tabler/icons-react'
@@ -60,6 +67,26 @@ export function LaborCosts() {
 
   const sectors = data?.data?.sectors || []
   const referenceMonth = formatReferenceMonth(data?.data?.referenceMonth)
+
+  // O preço da hora é o item do setor na Precificação (DC-6). A regra e o
+  // lucro gravados não vêm na lista da mão de obra: o item é lido ao abrir
+  const [pricing, setPricing] = useState<PricingItem>()
+  const {
+    mutate: openPricing,
+    isPending: isOpeningPricing,
+    variables: openingSector,
+  } = useMutation({
+    mutationFn: (sector: LaborSector) =>
+      getPricingItem({ group: 'labor', id: sector.id, name: sector.name }),
+    onSuccess: (response) => {
+      if (!response.success || !response.data) {
+        return toast.error(response.message || 'Erro ao abrir a precificação')
+      }
+
+      setPricing(response.data)
+    },
+    onError: () => toast.error('Erro ao abrir a precificação'),
+  })
 
   return (
     <TooltipProvider>
@@ -144,16 +171,23 @@ export function LaborCosts() {
                           tooltip={`Carga de produção — ${sector.name}`}
                           onClick={() => setWorkload(sector)}
                         />
-                        {/* O preço da hora se define na Precificação, que ainda
-                            não está ligada à API: o botão fica apagado, com a
-                            dica, até a próxima etapa. Não é `disabled` porque o
-                            botão desabilitado não mostra a dica */}
-                        <ActionButton
-                          Icon={IconCurrencyReal}
-                          tooltip="Precificar a hora: chega na próxima etapa"
-                          aria-disabled
-                          className="cursor-not-allowed opacity-40"
-                        />
+                        {/* O mesmo modal da Precificação, para o setor. Só
+                            aparece com a Precificação no plano e para quem
+                            pode gravar preço: sem isso a API recusa */}
+                        <FeatureGate features={[FEATURES.COSTS.PRICING_CENTER]}>
+                          <PermissionGate permissions={['cost:pricing:edit']}>
+                            <ActionButton
+                              Icon={IconCurrencyReal}
+                              tooltip={`Precificar a hora de ${sector.name}`}
+                              isLoading={
+                                isOpeningPricing &&
+                                openingSector?.id === sector.id
+                              }
+                              disabled={isOpeningPricing}
+                              onClick={() => openPricing(sector)}
+                            />
+                          </PermissionGate>
+                        </FeatureGate>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -167,6 +201,14 @@ export function LaborCosts() {
         sector={workload}
         open={!!workload}
         onOpenChange={() => setWorkload(undefined)}
+      />
+      {/* Ao salvar, o modal invalida a mão de obra: o preço e a margem da
+          linha voltam da API */}
+      <EditPriceModal
+        group="labor"
+        item={pricing}
+        open={!!pricing}
+        onOpenChange={() => setPricing(undefined)}
       />
     </TooltipProvider>
   )
