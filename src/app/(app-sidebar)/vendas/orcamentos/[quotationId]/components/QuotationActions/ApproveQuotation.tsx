@@ -1,11 +1,11 @@
 'use client'
 
 // Aprovar o orçamento (vira ordem de serviço). Duas travas, com mensagem
-// clara (decisões de 05/10/2026):
-// - a condição de pagamento é obrigatória para aprovar (e, enquanto o /finish
-//   recusar orçamento sem parcelas, também para concluir: FinishQuotation);
-// - um item cujo produto foi inativado (PAD-7) trava a aprovação até ser
-//   trocado ou retirado.
+// clara (decisões de 05/10/2026), conferidas também pelo /approve:
+// - a condição de pagamento é obrigatória para aprovar (concluir, não);
+// - um item cujo produto foi inativado (PAD-7), ou com uma parte inativa
+//   acrescentada, trava a aprovação até ser trocado ou retirado. A parte
+//   da linha só o servidor confere: os itens vêm na recusa.
 
 // React
 import { useState } from 'react'
@@ -66,6 +66,10 @@ export function ApproveQuotation({ data }: Props) {
   const [openBlocked, setOpenBlocked] = useState<'payment' | 'inactive' | null>(
     null,
   )
+  // Os itens que o servidor recusou (produto ou parte inativa)
+  const [refused, setRefused] = useState<{ id: string; description: string }[]>(
+    [],
+  )
   const [approvedAt, setApprovedAt] = useState('')
 
   const queryClient = useQueryClient()
@@ -82,7 +86,15 @@ export function ApproveQuotation({ data }: Props) {
 
   const { inactiveItems } = useInactiveQuotationItems(data)
 
+  const blockedItems = refused.length
+    ? refused
+    : inactiveItems.map((item) => ({
+        id: item.id,
+        description: item.description,
+      }))
+
   const handleTriggerClick = () => {
+    setRefused([])
     if (inactiveItems.length) {
       setOpenBlocked('inactive')
       return
@@ -110,6 +122,16 @@ export function ApproveQuotation({ data }: Props) {
       data: body,
     })
     if (!res.success) {
+      // Produto ou parte inativa (PAD-7): a lista do servidor, no diálogo
+      const items = 'items' in res ? res.items : undefined
+      if (items?.length) {
+        setOpen(false)
+        setRefused(
+          items.map((item) => ({ id: item.itemId, description: item.name })),
+        )
+        setOpenBlocked('inactive')
+        return
+      }
       toast.error(res.message)
       return
     }
@@ -171,12 +193,12 @@ export function ApproveQuotation({ data }: Props) {
                 {openBlocked === 'inactive' ? (
                   <>
                     <p>
-                      {inactiveItems.length === 1
-                        ? 'O produto deste item foi inativado:'
-                        : 'Os produtos destes itens foram inativados:'}
+                      {blockedItems.length === 1
+                        ? 'Este item tem produto inativado:'
+                        : 'Estes itens têm produto inativado:'}
                     </p>
                     <ul className="list-disc space-y-1 pl-5 text-sm text-gray-700">
-                      {inactiveItems.map((item) => (
+                      {blockedItems.map((item) => (
                         <li key={item.id}>{item.description}</li>
                       ))}
                     </ul>

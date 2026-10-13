@@ -1,11 +1,11 @@
 'use client'
 
-// Concluir o orçamento (checkout). A decisão de 05/10/2026 (concluir SEM
-// condição de pagamento, com um aviso) espera o /finish aceitar orçamento sem
-// parcelas, o que a API ainda recusa: até lá, sem a condição o Concluir abre
-// as condições de pagamento, como antes (CV-3). O legado concluía direto, sem
-// aviso, até com item em R$ 0,00; aqui o aviso do que o /finish aceita
-// aparece antes e o vendedor decide.
+// Concluir o orçamento (checkout). Decisão de 05/10/2026: concluir SEM
+// condição de pagamento pode, com um aviso (o /finish aceita desde a Fase
+// 4.3); a aprovação é que exige. Parcelas que não fecham com o total
+// continuam abrindo as condições de pagamento. O legado concluía direto,
+// sem aviso, até com item em R$ 0,00; aqui o aviso do que falta aparece
+// antes e o vendedor decide.
 
 // React
 import { useState } from 'react'
@@ -115,6 +115,11 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   // O que falta, dito antes de concluir
   const missing: string[] = []
+  if (paymentMissing) {
+    missing.push(
+      'Sem condição de pagamento. O orçamento conclui, mas a aprovação vai pedir as parcelas.',
+    )
+  }
   if (composedAttention) {
     missing.push(
       'Há um item sem etapas (exige atenção). O orçamento segue, mas monte a composição depois para o custo e a produção.',
@@ -172,9 +177,9 @@ export function FinishQuotation({ data, canFinish }: Props) {
   }
 
   const handleFinish = () => {
-    // Sem condição de pagamento, ou com parcelas que não fecham com o total:
-    // isso precisa ser acertado nas condições de pagamento antes de concluir
-    if (hasValueDivergence || paymentMissing) {
+    // Parcelas que não fecham com o total: isso precisa ser acertado nas
+    // condições de pagamento antes de concluir. Sem condição, só o aviso
+    if (hasValueDivergence) {
       setOpenPayment(true)
       return
     }

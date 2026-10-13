@@ -280,6 +280,10 @@ export const createItemNew = async ({
       code,
       message: extractApiErrorMessage(payload) || 'Erro desconhecido.',
       planError: parsePlanError(payload),
+      // A recusa que aponta os itens (aprovar com produto inativo, PAD-7)
+      items: Array.isArray(userMessage?.items)
+        ? (userMessage.items as { itemId: string; name: string }[])
+        : undefined,
     }
   }
 }
