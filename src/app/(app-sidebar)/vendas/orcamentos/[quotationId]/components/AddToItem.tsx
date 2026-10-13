@@ -15,6 +15,9 @@
 // - terceirizado avulso (T-4, MS-16): o vendedor informa o custo e vê o
 //   preço de venda pelo markup padrão configurado em Configurações › Vendas,
 //   podendo alterar. O custo nunca aparece na tela depois (ORC-7).
+//
+// O preço de cada caminho vem da prévia do servidor (POST …/line/preview,
+// contrato do módulo 2): a tela não calcula preço nem recebe custo.
 
 import { useEffect, useMemo, useState } from 'react'
 
@@ -30,16 +33,13 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Actions
-import {
-  getSaleForm,
-  getProcessList,
-  getProcessDetail,
-} from '@/actions/product-assembly'
+import { getActiveProcesses } from '@/actions/processes'
 import {
   addItemLine,
-  getQuotationProducts,
-} from '@/actions/quotation-composition'
-import { getSalesSettings } from '@/actions/sales-settings'
+  previewItemLine,
+  type ItemLineInput,
+} from '@/actions/quotation-lines'
+import { getQuotationProducts } from '@/actions/quotation-composition'
 
 // Hooks
 import { useCanSeeValues } from '@/hooks/useMoney'
@@ -48,11 +48,15 @@ import { useSectorWithProducts } from '@/hooks/queries/useSectorWithProducts'
 
 // Libs
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-import { outsourcedPriceFromCost } from '@/lib/quotation'
+import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 
 // Third-party
 import { toast } from 'sonner'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 // Icons
 import { IconX, IconSearch, IconArrowLeft } from '@tabler/icons-react'
@@ -86,17 +90,6 @@ const normalize = (value: string) =>
 const unitLabel = (kind: CatalogProduct['unitKind']) =>
   kind === 'AREA' ? 'm²' : kind === 'LENGTH' ? 'm' : 'un'
 
-// Quanto da medida entra no preço: área, comprimento ou só a quantidade
-const measureFactor = (
-  kind: CatalogProduct['unitKind'],
-  measure: { width: number; height: number },
-) =>
-  kind === 'AREA'
-    ? measure.width * measure.height
-    : kind === 'LENGTH'
-      ? measure.width
-      : 1
-
 export function AddToItem({
   quotationId,
   itemId,
@@ -110,9 +103,11 @@ export function AddToItem({
   const [mode, setMode] = useState<Mode>('process')
   const [search, setSearch] = useState('')
   const [sector, setSector] = useState('todos')
-  const [picked, setPicked] = useState<{ id: string; name: string } | null>(
-    null,
-  )
+  const [picked, setPicked] = useState<{
+    id: string
+    name: string
+    sector: string
+  } | null>(null)
   const [pickedProduct, setPickedProduct] = useState<CatalogProduct | null>(
     null,
   )
@@ -132,8 +127,8 @@ export function AddToItem({
   /* ----------------------------- processos ----------------------------- */
 
   const { data: listRes } = useQuery({
-    queryKey: ['process-list'],
-    queryFn: () => getProcessList(),
+    queryKey: ['process-list', 'ativos'],
+    queryFn: () => getActiveProcesses(),
   })
   const processes = useMemo(
     () =>
@@ -201,6 +196,7 @@ export function AddToItem({
           id: item.id,
           name: item.name,
           sector: item.sector,
+          afterBase: item.afterBase,
           kind: 'process' as const,
         }))
   const sectors = Array.from(new Set(options.map((item) => item.sector)))
@@ -210,15 +206,6 @@ export function AddToItem({
       (sector === 'todos' || option.sector === sector) &&
       (!term || normalize(option.name).includes(term)),
   )
-
-  // As instruções ao vendedor do produto escolhido (CP-13): as mesmas do
-  // modal principal, pelo formulário de venda da composição
-  const { data: saleFormRes } = useQuery({
-    queryKey: ['sale-form', pickedProduct?.id],
-    queryFn: () => getSaleForm({ productId: pickedProduct?.id as string }),
-    enabled: !!pickedProduct,
-  })
-  const productInstructions = saleFormRes?.data?.instructions || []
 
   /* ------------------------------ medida ------------------------------- */
 
@@ -230,43 +217,53 @@ export function AddToItem({
         height: toNumber(height) || 1,
       }
 
-  // O preço do processo com a medida informada, recalculado a cada mudança
-  const { data: detailRes, isFetching } = useQuery({
-    queryKey: ['add-to-item-price', picked?.id, chosenMeasure],
-    queryFn: () =>
-      getProcessDetail({
-        processId: picked?.id as string,
-        measure: chosenMeasure,
-      }),
-    enabled: !!picked,
+  const costCents = Math.round(toNumber(cost) * 100)
+  const measuredPart = !!pickedProduct && pickedProduct.unitKind !== 'UNITY'
+
+  // O que vai para a API: a medida própria só quando não acompanha a base
+  const lineInput: ItemLineInput | null = picked
+    ? {
+        kind: 'PROCESS',
+        processId: picked.id,
+        followsBase,
+        measure: followsBase ? undefined : chosenMeasure,
+      }
+    : pickedProduct
+      ? {
+          kind: 'PART',
+          productId: pickedProduct.id,
+          followsBase: measuredPart ? followsBase : undefined,
+          measure: measuredPart
+            ? followsBase
+              ? undefined
+              : chosenMeasure
+            : { quantity: toNumber(quantity) || 1, width: 0, height: 0 },
+        }
+      : mode === 'loose' && costCents > 0
+        ? {
+            kind: 'LOOSE',
+            description: description.trim() || 'Terceirizado',
+            supplier: supplier.trim() || undefined,
+            cost: costCents,
+          }
+        : null
+
+  // O preço da linha pelo servidor, refeito a cada mudança de medida ou de
+  // custo; sem custo na resposta (ORC-7)
+  const { data: previewRes, isFetching } = useQuery({
+    queryKey: ['line-preview', quotationId, itemId, lineInput],
+    queryFn: () => previewItemLine({ quotationId, itemId, line: lineInput! }),
+    enabled: !!lineInput,
+    placeholderData: keepPreviousData,
   })
-  const detail = detailRes?.success ? detailRes.data : null
-
-  // A preferência do processo decide como ele nasce: herda a medida da base
-  // ou pede medida própria (decisão de 03/10/2026)
-  useEffect(() => {
-    if (detail?.meta.afterBase)
-      setFollowsBase(detail.meta.afterBase === 'INHERIT')
-  }, [detail?.meta.afterBase])
-
-  const partPrice = pickedProduct
-    ? Math.round(
-        pickedProduct.unitPrice *
-          measureFactor(pickedProduct.unitKind, chosenMeasure) *
-          chosenMeasure.quantity,
-      )
-    : 0
+  const preview = previewRes?.success ? previewRes.data : null
+  const previewError =
+    previewRes && !previewRes.success ? previewRes.message : null
 
   /* --------------------------- terceirizado ---------------------------- */
 
-  const { data: settingsRes } = useQuery({
-    queryKey: ['sales-settings'],
-    queryFn: () => getSalesSettings(),
-    enabled: mode === 'loose',
-  })
-  const markup = settingsRes?.data?.outsourcedMarkup ?? 45
-  const costCents = Math.round(toNumber(cost) * 100)
-  const suggestedPrice = outsourcedPriceFromCost(costCents, markup)
+  const markup = preview?.markup ?? null
+  const suggestedPrice = preview?.suggestedPrice ?? 0
 
   // O preço acompanha o custo até o vendedor mexer nele
   useEffect(() => {
@@ -284,93 +281,50 @@ export function AddToItem({
 
   const done = (message: string) => {
     toast.success(message)
-    queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
+    // O valor do item e o total do orçamento já vêm refeitos (ORC-5)
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     onClose()
   }
 
-  const measureTags = () => [
-    `${num(chosenMeasure.quantity)} un`,
-    `${num(chosenMeasure.width)} × ${num(chosenMeasure.height)} m`,
-  ]
+  const save = async (line: ItemLineInput, message: string) => {
+    setSaving(true)
+    const res = await addItemLine({ quotationId, itemId, line })
+    setSaving(false)
+    if (!res.success) {
+      toast.error(res.message)
+      return false
+    }
+    done(message)
+    return true
+  }
 
   const addProcess = async () => {
-    if (!picked || !detail) return
-    setSaving(true)
-    const res = await addItemLine({
-      quotationId,
-      itemId,
-      line: {
-        kind: 'PROCESS',
-        name: picked.name,
-        sector: detail.block?.sector || '',
-        tags: measureTags(),
-        cost: detail.cost ?? 0,
-        price: detail.sale ?? 0,
-        resolvedAt: new Date().toISOString(),
-        resolved: [],
-        processId: picked.id,
-        measure: chosenMeasure,
-        followsBase,
-      },
-    })
-    setSaving(false)
-    if (!res.success) return toast.error(res.message)
-    done(`${picked.name} acrescentado a ${itemName}`)
+    if (!picked || !lineInput) return
+    await save(lineInput, `${picked.name} acrescentado a ${itemName}`)
   }
 
   const addPart = async () => {
-    if (!pickedProduct) return
-    setSaving(true)
-    const measured = pickedProduct.unitKind !== 'UNITY'
-    const res = await addItemLine({
-      quotationId,
-      itemId,
-      line: {
-        kind: 'PART',
-        name: pickedProduct.name,
-        sector: pickedProduct.sector,
-        tags: measured
-          ? measureTags()
-          : [`${num(chosenMeasure.quantity)} ${unitLabel('UNITY')}`],
-        // O custo da parte vem da composição do produto, que a API ainda não
-        // devolve ao orçamento (backend-pendente.md)
-        cost: 0,
-        price: partPrice,
-        resolvedAt: new Date().toISOString(),
-        resolved: [],
-        productId: pickedProduct.id,
-        measure: chosenMeasure,
-        followsBase: measured ? followsBase : undefined,
-      },
-    })
-    setSaving(false)
-    if (!res.success) return toast.error(res.message)
-    done(`${pickedProduct.name} acrescentado a ${itemName}`)
+    if (!pickedProduct || !lineInput) return
+    await save(lineInput, `${pickedProduct.name} acrescentado a ${itemName}`)
   }
 
   const addLoose = async () => {
-    setSaving(true)
-    const res = await addItemLine({
-      quotationId,
-      itemId,
-      line: {
+    const saved = await save(
+      {
         kind: 'LOOSE',
-        name: description,
-        sector: supplier ? `Terceirizado · ${supplier}` : 'Terceirizado',
-        tags: ['terceirizado'],
+        description: description.trim(),
+        supplier: supplier.trim() || undefined,
         cost: costCents,
-        price: priceCents,
-        resolvedAt: new Date().toISOString(),
-        resolved: [],
+        // O preço digitado só vale de quem vê valores; o servidor confere
+        price: canSeeValues ? priceCents : undefined,
       },
-    })
-    setSaving(false)
-    if (!res.success) return toast.error(res.message)
+      `Terceirizado acrescentado a ${itemName}`,
+    )
+    if (!saved) return
     // O custo digitado some em seguida (ORC-7)
     setCost('')
     setPrice('')
     setPriceEdited(false)
-    done(`Terceirizado acrescentado a ${itemName}`)
   }
 
   const resetPick = () => {
@@ -388,6 +342,47 @@ export function AddToItem({
     setSector('todos')
     resetPick()
   }
+
+  // A preferência do processo decide como ele nasce: herda a medida da base
+  // ou pede medida própria (decisão de 03/10/2026)
+  const pickProcess = (option: {
+    id: string
+    name: string
+    sector: string
+    afterBase?: string
+  }) => {
+    setPicked({ id: option.id, name: option.name, sector: option.sector })
+    setFollowsBase(option.afterBase !== 'OWN')
+  }
+
+  const priceText =
+    preview?.price !== undefined
+      ? formatCurrencyToBrl(preview.price)
+      : previewError
+        ? '—'
+        : 'calculando…'
+
+  // Instruções ao vendedor do processo ou dos processos do produto (CP-13):
+  // texto de apoio, só leitura. E o motivo, quando a linha não pode entrar
+  const instructionsBox = (
+    <>
+      {!!preview?.instructions?.length && (
+        <div className="space-y-1 rounded-lg border border-gray-200 bg-white px-3 py-2">
+          <p className="type-eyebrow">Instruções para o vendedor</p>
+          {preview.instructions.map((instruction) => (
+            <p
+              key={`${instruction.stage}-${instruction.text}`}
+              className="text-sm text-gray-700"
+            >
+              <span className="font-medium">{instruction.stage}:</span>{' '}
+              {instruction.text}
+            </p>
+          ))}
+        </div>
+      )}
+      {previewError && <p className="text-sm text-error-700">{previewError}</p>}
+    </>
+  )
 
   /* ---------------------------- a medida ------------------------------- */
 
@@ -491,37 +486,24 @@ export function AddToItem({
               Voltar
             </Button>
             <p className="font-medium text-gray-900">{picked.name}</p>
-            {detail?.block?.sector && (
-              <Badge variant="blueLight">{detail.block.sector}</Badge>
+            {picked.sector && (
+              <Badge variant="blueLight">{picked.sector}</Badge>
             )}
           </div>
-          {/* Instruções ao vendedor do processo escolhido (CP-13): texto de
-              apoio, só leitura */}
-          {detail?.meta.sellerInstructions?.trim() && (
-            <div className="rounded-lg border border-gray-200 bg-white px-3 py-2">
-              <p className="type-eyebrow">Instruções para o vendedor</p>
-              <p className="text-sm text-gray-700">
-                {detail.meta.sellerInstructions}
-              </p>
-            </div>
-          )}
+          {instructionsBox}
           {measureFields}
           <div className="flex flex-wrap items-center justify-between gap-3">
             <PermissionGate permissions={['values:values:view']}>
               <p className="text-sm text-gray-700">
                 Preço de venda:{' '}
-                <span className="font-semibold text-gray-900">
-                  {isFetching || !detail
-                    ? 'calculando…'
-                    : formatCurrencyToBrl(detail.sale ?? 0)}
-                </span>
+                <span className="font-semibold text-gray-900">{priceText}</span>
               </p>
             </PermissionGate>
             <Button
               size="sm"
               type="button"
               isLoading={saving}
-              disabled={!detail || isFetching}
+              disabled={!preview || isFetching}
               onClick={addProcess}
             >
               Acrescentar ao item
@@ -546,18 +528,7 @@ export function AddToItem({
               {pickedProduct.sector} · por {unitLabel(pickedProduct.unitKind)}
             </span>
           </div>
-          {/* Instruções ao vendedor dos processos deste produto (CP-13) */}
-          {productInstructions.length > 0 && (
-            <div className="space-y-1 rounded-lg border border-gray-200 bg-white px-3 py-2">
-              <p className="type-eyebrow">Instruções para o vendedor</p>
-              {productInstructions.map((instruction) => (
-                <p key={instruction.blockId} className="text-sm text-gray-700">
-                  <span className="font-medium">{instruction.stage}:</span>{' '}
-                  {instruction.text}
-                </p>
-              ))}
-            </div>
-          )}
+          {instructionsBox}
           {pickedProduct.unitKind === 'UNITY' ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div className="space-y-1.5">
@@ -582,9 +553,7 @@ export function AddToItem({
             <PermissionGate permissions={['values:values:view']}>
               <p className="text-sm text-gray-700">
                 Preço de venda:{' '}
-                <span className="font-semibold text-gray-900">
-                  {formatCurrencyToBrl(partPrice)}
-                </span>
+                <span className="font-semibold text-gray-900">{priceText}</span>
                 <span className="text-gray">
                   {' '}
                   · {formatCurrencyToBrl(pickedProduct.unitPrice)} por{' '}
@@ -596,6 +565,7 @@ export function AddToItem({
               size="sm"
               type="button"
               isLoading={saving}
+              disabled={!preview || isFetching}
               onClick={addPart}
             >
               Acrescentar ao item
@@ -660,9 +630,9 @@ export function AddToItem({
                   }}
                 />
                 <p className="text-xs text-gray">
-                  Markup padrão de {num(markup)} %: custo ÷ (1 − {num(markup)}{' '}
-                  %)
-                  {costCents > 0 && ` = ${formatCurrencyToBrl(suggestedPrice)}`}
+                  {markup === null
+                    ? 'Informe o custo para ver o preço sugerido pelo markup da empresa.'
+                    : `Markup padrão de ${num(markup)} %: custo ÷ (1 − ${num(markup)} %) = ${formatCurrencyToBrl(suggestedPrice)}`}
                   {priceEdited && costCents > 0 && (
                     <Button
                       type="button"
@@ -683,12 +653,15 @@ export function AddToItem({
               size="sm"
               type="button"
               isLoading={saving}
-              disabled={!description.trim() || !priceCents}
+              disabled={!description.trim() || !costCents}
               onClick={addLoose}
             >
               Acrescentar ao item
             </Button>
           </div>
+          {previewError && (
+            <p className="text-sm text-error-700">{previewError}</p>
+          )}
         </div>
       ) : (
         <>
@@ -729,7 +702,7 @@ export function AddToItem({
                 onClick={() =>
                   option.kind === 'product'
                     ? setPickedProduct(option)
-                    : setPicked({ id: option.id, name: option.name })
+                    : pickProcess(option)
                 }
                 className={cn(
                   'rounded-lg border border-gray-200 bg-white p-3 text-left',

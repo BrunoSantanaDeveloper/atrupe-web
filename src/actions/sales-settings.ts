@@ -1,52 +1,40 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não guarda as configurações de venda da
-// composição. Dados em memória, por empresa, no formato das actions reais.
+// Configurações de venda (MS-16, T-4): o markup do terceirizado avulso, nas
+// rotas GET/PUT /sales-settings da API (contrato, módulo 2). O preço de venda
+// do terceirizado é custo ÷ (1 − markup). O legado aplicava 45 % sem
+// mostrar; aqui o percentual é configurável e aparece no painel
 
-import { auth } from '@/lib/auth'
+// Actions
+import { getItem, putItemNew } from '@/actions/_cruds'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
-
-// Markup padrão do terceirizado avulso (MS-16, T-4, decisão de 05/10/2026):
-// o preço de venda do terceirizado é custo ÷ (1 − markup). O legado aplicava
-// 45 % sem mostrar; aqui o percentual é configurável e aparece no painel
 export type SalesSettings = {
-  // Percentual, de 0 a 99
+  // Percentual, de 0 a 99, com até duas casas
   outsourcedMarkup: number
 }
 
 const DEFAULTS: SalesSettings = { outsourcedMarkup: 45 }
 
-const byCompany = new Map<string, SalesSettings>()
-
-const companyKey = async () => {
-  const session = await auth()
-  return session?.company?.id || 'sem-empresa'
-}
-
 export const getSalesSettings = async () => {
-  if (!DEMO_DATA)
-    return { success: true, data: { outsourcedMarkup: 0 }, message: '' }
-  const key = await companyKey()
-  const settings = byCompany.get(key) || DEFAULTS
-  return { success: true, data: settings, message: '' }
+  const res = await getItem({ route: '/sales-settings' })
+  if (!res.success) {
+    return { success: false, data: DEFAULTS, message: res.message || '' }
+  }
+  return { success: true, data: res.data as SalesSettings, message: '' }
 }
 
 export const updateSalesSettings = async (values: Partial<SalesSettings>) => {
-  if (!DEMO_DATA) return demoOff()
-  if (values.outsourcedMarkup !== undefined) {
-    const markup = Number(values.outsourcedMarkup)
-    if (!Number.isFinite(markup) || markup < 0 || markup >= 100) {
-      return {
-        success: false,
-        data: null,
-        message: 'O markup precisa ser um percentual entre 0 % e 99 %',
-      }
+  const res = await putItemNew({
+    route: '/sales-settings',
+    data: { outsourcedMarkup: Number(values.outsourcedMarkup) },
+  })
+  if (!res.success) {
+    return {
+      success: false,
+      data: null,
+      message:
+        res.message || 'O markup precisa ser um percentual entre 0 % e 99 %',
     }
   }
-  const key = await companyKey()
-  const settings = { ...(byCompany.get(key) || DEFAULTS), ...values }
-  byCompany.set(key, settings)
-  return { success: true, data: settings, message: '' }
+  return { success: true, data: res.data as SalesSettings, message: '' }
 }

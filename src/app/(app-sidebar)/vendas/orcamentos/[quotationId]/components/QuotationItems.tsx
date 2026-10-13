@@ -73,12 +73,11 @@ import {
 // Actions
 import { createItem } from '@/actions/_cruds'
 import {
-  getItemLines,
-  removeItemLine,
   getComposedItems,
   getItemCompositions,
   removeComposedItem,
 } from '@/actions/quotation-composition'
+import { removeItemLine } from '@/actions/quotation-lines'
 import { AddToItem } from './AddToItem'
 import {
   CompositionReport,
@@ -154,14 +153,9 @@ export function QuotationItems({ data }: Props) {
   })
   const composed = composedRes?.data || []
 
-  // O que foi acrescentado dentro de cada item (ORC-5). Provisório, no mock,
-  // até a API guardar as linhas no item (backend-pendente.md)
-  const { data: linesRes } = useQuery({
-    queryKey: ['quotation-item-lines', data?.id],
-    queryFn: () => getItemLines({ quotationId: String(data?.id) }),
-    enabled: !!data?.id && DEMO_DATA,
-  })
-  const linesOf = (item: QuotationItemType) => linesRes?.data?.[item.id] || []
+  // O que foi acrescentado dentro de cada item (ORC-5): vem no item, do
+  // detalhe do orçamento, sem custo (ORC-7)
+  const linesOf = (item: QuotationItemType) => item.lines ?? []
   const [addingTo, setAddingTo] = useState<string | null>(null)
   const removeLine = (item: QuotationItemType, lineId: string, name: string) =>
     alertDialog.open({
@@ -177,7 +171,8 @@ export function QuotationItems({ data }: Props) {
           lineId,
         })
         if (!res.success) throw new Error(res.message)
-        queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
+        // O valor do item e o total do orçamento voltam refeitos
+        queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       },
       toastMsg: { success: 'Retirado do item', error: 'Erro ao retirar' },
     })
@@ -303,22 +298,22 @@ export function QuotationItems({ data }: Props) {
                   const single = parts.length === 1 ? parts[0] : null
                   const chosen = compositionOf(item)
                   const added = linesOf(item)
-                  const addedTotal = added.reduce(
-                    (sum, line) => sum + line.price,
-                    0,
-                  )
+                  // As linhas somam no valor do item, por fora do desconto
+                  const addedTotal =
+                    item.linesTotal ??
+                    added.reduce((sum, line) => sum + (line.price ?? 0), 0)
                   // O acréscimo tem campo próprio (ALT-25); o desconto
                   // negativo antigo ainda aparece como acréscimo
                   const addition = item?.addition || 0
                   const discount = Math.max(
                     0,
-                    item?.totalValue + addition - item?.finalValue,
+                    item?.totalValue + addition + addedTotal - item?.finalValue,
                   )
                   // O valor agregado fica embutido no valor do item e só
                   // aparece na tela interna
                   const surcharge = Math.max(
                     addition,
-                    item?.finalValue - item?.totalValue,
+                    item?.finalValue - item?.totalValue - addedTotal,
                   )
                   const toggle = () =>
                     setAccordionValue((current = []) =>
@@ -405,7 +400,8 @@ export function QuotationItems({ data }: Props) {
                             {formatCurrencyToBrl(item?.finalValue)}
                             {addedTotal > 0 && (
                               <span className="block text-xs text-brand-700">
-                                + {formatCurrencyToBrl(addedTotal)} acrescentado
+                                inclui {formatCurrencyToBrl(addedTotal)}{' '}
+                                acrescentado
                               </span>
                             )}
                           </TableCell>
@@ -529,25 +525,26 @@ export function QuotationItems({ data }: Props) {
                                         ou tem medida própria (05/10/2026):
                                         decide o que é recalculado ao mudar
                                         o item */}
-                                    {line.followsBase !== undefined && (
-                                      <span
-                                        className="text-xs text-gray"
-                                        title={
-                                          line.followsBase
-                                            ? 'Recalculada quando a medida do item muda'
-                                            : 'Fica como está quando a medida do item muda'
-                                        }
-                                      >
-                                        {line.followsBase
-                                          ? 'acompanha a base'
-                                          : 'medida própria'}
-                                      </span>
-                                    )}
+                                    {line.followsBase !== undefined &&
+                                      line.followsBase !== null && (
+                                        <span
+                                          className="text-xs text-gray"
+                                          title={
+                                            line.followsBase
+                                              ? 'Recalculada quando a medida do item muda'
+                                              : 'Fica como está quando a medida do item muda'
+                                          }
+                                        >
+                                          {line.followsBase
+                                            ? 'acompanha a base'
+                                            : 'medida própria'}
+                                        </span>
+                                      )}
                                     <PermissionGate
                                       permissions={['values:values:view']}
                                     >
                                       <span className="ml-auto font-medium text-gray-800">
-                                        {formatCurrencyToBrl(line.price)}
+                                        {formatCurrencyToBrl(line.price ?? 0)}
                                       </span>
                                     </PermissionGate>
                                     <PermissionGate
@@ -572,13 +569,6 @@ export function QuotationItems({ data }: Props) {
                                   </li>
                                 ))}
                               </ul>
-
-                              {addedTotal > 0 && (
-                                <p className="text-xs text-gray">
-                                  O que foi acrescentado ainda não soma no total
-                                  do orçamento nem nas condições de pagamento.
-                                </p>
-                              )}
 
                               {addingTo === item.id && (
                                 <AddToItem
@@ -635,9 +625,9 @@ export function QuotationItems({ data }: Props) {
                               ) : null}
 
                               <div className="flex flex-wrap gap-2">
-                                {/* As linhas acrescentadas ainda ficam em
-                                    dado de demonstração: só com a flag */}
-                                {DEMO_DATA && addingTo !== item.id && (
+                                {/* Acrescentar processo, item pronto ou
+                                    terceirizado dentro do item (ORC-5) */}
+                                {addingTo !== item.id && (
                                   <FeatureGate
                                     features={[
                                       FEATURES.PRODUCTS.PRODUCT_COMPOSITION,

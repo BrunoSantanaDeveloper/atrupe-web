@@ -59,6 +59,9 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
   const { watch, reset, setValue, handleSubmit } = form
 
   const baseValue = rowData?.totalValue || 0
+  // As linhas acrescentadas (ORC-5) já estão no valor final do item, por
+  // fora do desconto: a janela mexe só no valor do produto
+  const linesTotal = rowData?.linesTotal || 0
   const discount = watch('discount') || 0
   const finalValue = watch('finalValue') || 0
   const discountType = watch('discountType') || 'VALUE'
@@ -94,10 +97,12 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
       quotationData?.quotationItems?.reduce((sum, item) => {
         // Pular o item atual
         if (item?.id === rowData?.id) return sum
-        // O acréscimo do item não desconta o desconto dele (ALT-25)
+        // O acréscimo e as linhas do item não descontam o desconto dele
+        // (ALT-25, ORC-5)
         const itemDiscount =
           (item?.totalValue || 0) +
-          (item?.addition || 0) -
+          (item?.addition || 0) +
+          (item?.linesTotal || 0) -
           (item?.finalValue || 0)
         return sum + Math.max(itemDiscount, 0)
       }, 0) || 0
@@ -141,7 +146,7 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
       totalValue: rowData?.totalValue || 0,
       discountType: rowData?.discountType || 'VALUE',
       discount: rowData?.discount || null,
-      finalValue: rowData?.finalValue || 0,
+      finalValue: Math.max((rowData?.finalValue || 0) - linesTotal, 0),
     })
 
     isFirstRender.current = true
@@ -386,8 +391,12 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            <p className="text-lg font-semibold">{`R$ ${parseCurrencyToBrl(finalValue)}`}</p>
-            <p className="text-sm font-medium text-gray-700">Valor final</p>
+            <p className="text-lg font-semibold">{`R$ ${parseCurrencyToBrl(finalValue + linesTotal)}`}</p>
+            <p className="text-sm font-medium text-gray-700">
+              Valor final
+              {linesTotal > 0 &&
+                ` (inclui R$ ${parseCurrencyToBrl(linesTotal)} acrescentado ao item)`}
+            </p>
           </div>
           <div className="space-x-4">
             <Button

@@ -377,6 +377,26 @@ export const getProcessList = async () => {
   return ok(items.map(listItem))
 }
 
+// Só os ativos, para o painel do orçamento ("Acrescentar a este item"): o
+// vendedor sem acesso ao cadastro recebe só os ativos em qualquer filtro
+export const getActiveProcesses = async () => {
+  const items: ApiListItem[] = []
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const res: ApiResult = await getItem({
+      route: '/process',
+      params: {
+        status: 'ativos',
+        page: String(page),
+        limit: String(PAGE_SIZE),
+      },
+    })
+    if (!res.success) return fail(res, [] as ReturnType<typeof listItem>[])
+    items.push(...(res.data?.data ?? []))
+    if (page >= (res.data?.lastPage ?? 1)) break
+  }
+  return ok(items.map(listItem))
+}
+
 export const getProcessDetail = async ({
   processId,
   measure,

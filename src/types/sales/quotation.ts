@@ -1,6 +1,21 @@
 // import { PaymentConditionsType } from '../settings/paymentCondition'
 import type { ItemComposition } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/composicao/types'
 
+// A linha acrescentada como o detalhe do orçamento devolve: medida em mm,
+// sem custo nem retrato (ORC-7)
+export type QuotationItemLineView = {
+  id: string
+  kind: 'PROCESS' | 'PART' | 'LOOSE'
+  name: string
+  sector: string
+  tags: string[]
+  price?: number
+  followsBase: boolean | null
+  measure: { quantity: number; width: number; height: number } | null
+  processId: string | null
+  productId: string | null
+}
+
 export type QuotationItemType = {
   id: string
   description: string
@@ -14,6 +29,10 @@ export type QuotationItemType = {
   // As escolhas da composição e o resumo; o retrato com custo fica no
   // servidor (ORC-7)
   composition?: ItemComposition | null
+  // As linhas acrescentadas dentro do item (ORC-5) e a soma delas, que já
+  // está no valor final; o preço só vem com a permissão de valores
+  linesTotal?: number
+  lines?: QuotationItemLineView[]
   unitValue: number
   totalValue: number
   originalValue: number

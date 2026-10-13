@@ -56,7 +56,6 @@ import {
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import { parseCurrencyToBrl, cn } from '@/lib/utils'
-import { DEMO_DATA } from '@/lib/demo'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
@@ -66,8 +65,7 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { SaleCompositionFields } from './SaleCompositionFields'
-// As linhas acrescentadas no item ainda são do exemplo (fatia 4.2)
-import { recalculateItemLines } from '@/actions/quotation-composition'
+
 import {
   getPriceTiers,
   getProductVariations,
@@ -472,28 +470,17 @@ export function QuotationProdDetailModal({
         return
       }
 
-      // Mudou a medida do item: as linhas acrescentadas que acompanham a
-      // base são recalculadas; as de medida própria ficam (05/10/2026). As
-      // linhas ainda ficam em dado de demonstração: só com a flag
-      if (DEMO_DATA && data?.productId) {
-        const first = data.items?.[0]
-        const recalculated = await recalculateItemLines({
-          quotationId: String(quotationId),
-          itemId: String(data.productId),
-          measure: {
-            quantity: Number(data.quantity || 1),
-            width: first?.width ? Number(first.width) / 1000 : 1,
-            height: first?.height ? Number(first.height) / 1000 : 1,
-          },
-        })
-        if (recalculated.success && recalculated.data?.changed) {
-          toast.info(
-            recalculated.data.changed === 1
-              ? 'Uma linha acrescentada foi recalculada com a medida nova'
-              : `${recalculated.data.changed} linhas acrescentadas foram recalculadas com a medida nova`,
-          )
-          queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
-        }
+      // Mudou a medida do item: o servidor refaz as linhas acrescentadas
+      // que acompanham a base; as de medida própria ficam (05/10/2026)
+      const changed =
+        (res.data as { linesRecalculated?: number } | undefined)
+          ?.linesRecalculated ?? 0
+      if (changed) {
+        toast.info(
+          changed === 1
+            ? 'Uma linha acrescentada foi recalculada com a medida nova'
+            : `${changed} linhas acrescentadas foram recalculadas com a medida nova`,
+        )
       }
       handleToggleModal(false)
       toast.success('Item editado')
