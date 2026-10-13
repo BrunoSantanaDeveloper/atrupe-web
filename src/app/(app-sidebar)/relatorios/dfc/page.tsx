@@ -18,7 +18,7 @@ export default function DfcReportPage({ searchParams }: SearchParamsType) {
       permissions={['reports:dfc:view', 'values:values:view']}
       fallback={
         <div className="p-4 text-center">
-          <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>
+          <h3 className="type-card-title mb-2">Acesso restrito</h3>
           <p className="text-gray-600">
             Você não tem permissão para visualizar o relatório DFC.
           </p>

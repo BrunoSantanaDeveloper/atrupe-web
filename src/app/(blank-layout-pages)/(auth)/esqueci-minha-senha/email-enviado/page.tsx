@@ -31,7 +31,7 @@ export default function SignupPage() {
           className="mx-auto mb-2"
           rounded
         />
-        <CardTitle className="text-xl">E-mail enviado com sucesso</CardTitle>
+        <CardTitle>E-mail enviado com sucesso</CardTitle>
       </CardHeader>
       <CardContent className="mb-8 text-center text-sm text-gray">
         <p className="mb-3">

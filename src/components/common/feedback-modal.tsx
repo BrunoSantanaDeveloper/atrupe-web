@@ -247,13 +247,13 @@ export function FeedbackModal({
               }`}
             >
               <h2
-                className={`text-lg font-semibold text-gray-900 leading-tight ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
+                className={`type-dialog-title ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
               >
                 {title}
               </h2>
               {description && (
                 <div
-                  className={`text-sm text-gray-500 leading-normal ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
+                  className={`type-secondary ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
                 >
                   {description}
                 </div>

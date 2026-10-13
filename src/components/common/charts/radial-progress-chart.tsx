@@ -75,9 +75,7 @@ export function RadialProgressChart({
     <div className="flex flex-col items-center justify-center p-6 rounded-md bg-white border border-dashed border-[#7b61ff] overflow-hidden">
       {(title || subtitle) && (
         <div className="w-full mb-2 text-center">
-          {title && (
-            <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-          )}
+          {title && <h3 className="type-body-strong">{title}</h3>}
           {subtitle && (
             <p className="text-xs font-medium text-gray-500">{subtitle}</p>
           )}
@@ -106,7 +104,7 @@ export function RadialProgressChart({
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + (centerSubLabel ? -4 : 4)}
-                          className="fill-gray-900 text-2xl font-bold"
+                          className="fill-gray-900 type-kpi-value"
                         >
                           {centerLabel}
                         </tspan>

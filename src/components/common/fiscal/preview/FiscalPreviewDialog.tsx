@@ -126,9 +126,7 @@ export function FiscalPreviewDialog({
                           : undefined
                       }
                     >
-                      <p className="text-[11px] uppercase tracking-wide text-gray-500">
-                        {campo.rotulo}
-                      </p>
+                      <p className="type-eyebrow">{campo.rotulo}</p>
                       <p className="text-sm font-medium text-gray-800">
                         {campo.valor}
                       </p>

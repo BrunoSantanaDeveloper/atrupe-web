@@ -186,7 +186,7 @@ function LeadingIcon({
         {member.avatarSrc && (
           <AvatarImage src={member.avatarSrc} alt={member.name} />
         )}
-        <AvatarFallback className="text-[10px] font-semibold text-gray-600 bg-gray-100">
+        <AvatarFallback className="text-xs font-semibold text-gray-600 bg-gray-100">
           {MEMBER_AVATAR_FALLBACK(member.name)}
         </AvatarFallback>
       </Avatar>

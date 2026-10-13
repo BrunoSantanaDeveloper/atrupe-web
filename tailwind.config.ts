@@ -1,5 +1,7 @@
 import type { Config } from 'tailwindcss'
 
+import { typographyRoles } from './tailwind/typography-roles'
+
 // Tema escuro — design/openspec/changes/tema-claro-escuro (Decisões 3 e 6)
 
 // Paletas padrão do Tailwind em uso viram variáveis: no claro valem os valores
@@ -321,80 +323,6 @@ const config = {
         'rose-800': 'var(--ros-800)',
         'rose-900': 'var(--ros-900)',
       },
-      fontFamily: {
-        'display-2xl-bold': 'var(--display-2xl-bold-font-family)',
-        'display-2xl-medium': 'var(--display-2xl-medium-font-family)',
-        'display-2xl-regular': 'var(--display-2xl-regular-font-family)',
-        'display-2xl-semibold': 'var(--display-2xl-semibold-font-family)',
-        'display-lg-bold': 'var(--display-lg-bold-font-family)',
-        'display-lg-medium': 'var(--display-lg-medium-font-family)',
-        'display-lg-regular': 'var(--display-lg-regular-font-family)',
-        'display-lg-semibold': 'var(--display-lg-semibold-font-family)',
-        'display-md-bold': 'var(--display-md-bold-font-family)',
-        'display-md-medium': 'var(--display-md-medium-font-family)',
-        'display-md-regular': 'var(--display-md-regular-font-family)',
-        'display-md-semibold': 'var(--display-md-semibold-font-family)',
-        'display-sm-bold': 'var(--display-sm-bold-font-family)',
-        'display-sm-medium': 'var(--display-sm-medium-font-family)',
-        'display-sm-medium-italic':
-          'var(--display-sm-medium-italic-font-family)',
-        'display-sm-regular': 'var(--display-sm-regular-font-family)',
-        'display-sm-semibold': 'var(--display-sm-semibold-font-family)',
-        'display-xl-bold': 'var(--display-xl-bold-font-family)',
-        'display-xl-medium': 'var(--display-xl-medium-font-family)',
-        'display-xl-regular': 'var(--display-xl-regular-font-family)',
-        'display-xl-semibold': 'var(--display-xl-semibold-font-family)',
-        'display-xs-bold': 'var(--display-xs-bold-font-family)',
-        'display-xs-medium': 'var(--display-xs-medium-font-family)',
-        'display-xs-medium-italic':
-          'var(--display-xs-medium-italic-font-family)',
-        'display-xs-regular': 'var(--display-xs-regular-font-family)',
-        'display-xs-semibold': 'var(--display-xs-semibold-font-family)',
-        'display-xs-semibold-underlined':
-          'var(--display-xs-semibold-underlined-font-family)',
-        'text-lg-bold': 'var(--text-lg-bold-font-family)',
-        'text-lg-bold-italic': 'var(--text-lg-bold-italic-font-family)',
-        'text-lg-medium': 'var(--text-lg-medium-font-family)',
-        'text-lg-medium-italic': 'var(--text-lg-medium-italic-font-family)',
-        'text-lg-medium-underlined':
-          'var(--text-lg-medium-underlined-font-family)',
-        'text-lg-regular': 'var(--text-lg-regular-font-family)',
-        'text-lg-regular-italic': 'var(--text-lg-regular-italic-font-family)',
-        'text-lg-regular-underlined':
-          'var(--text-lg-regular-underlined-font-family)',
-        'text-lg-semibold': 'var(--text-lg-semibold-font-family)',
-        'text-lg-semibold-italic': 'var(--text-lg-semibold-italic-font-family)',
-        'text-md-bold': 'var(--text-md-bold-font-family)',
-        'text-md-bold-italic': 'var(--text-md-bold-italic-font-family)',
-        'text-md-medium': 'var(--text-md-medium-font-family)',
-        'text-md-medium-italic': 'var(--text-md-medium-italic-font-family)',
-        'text-md-regular': 'var(--text-md-regular-font-family)',
-        'text-md-regular-italic': 'var(--text-md-regular-italic-font-family)',
-        'text-md-regular-underlined':
-          'var(--text-md-regular-underlined-font-family)',
-        'text-md-semibold': 'var(--text-md-semibold-font-family)',
-        'text-md-semibold-italic': 'var(--text-md-semibold-italic-font-family)',
-        'text-sm-bold': 'var(--text-sm-bold-font-family)',
-        'text-sm-medium': 'var(--text-sm-medium-font-family)',
-        'text-sm-regular': 'var(--text-sm-regular-font-family)',
-        'text-sm-semibold': 'var(--text-sm-semibold-font-family)',
-        'text-xl-bold': 'var(--text-xl-bold-font-family)',
-        'text-xl-bold-italic': 'var(--text-xl-bold-italic-font-family)',
-        'text-xl-medium': 'var(--text-xl-medium-font-family)',
-        'text-xl-medium-italic': 'var(--text-xl-medium-italic-font-family)',
-        'text-xl-medium-underlined':
-          'var(--text-xl-medium-underlined-font-family)',
-        'text-xl-regular': 'var(--text-xl-regular-font-family)',
-        'text-xl-regular-italic': 'var(--text-xl-regular-italic-font-family)',
-        'text-xl-regular-underlined':
-          'var(--text-xl-regular-underlined-font-family)',
-        'text-xl-semibold': 'var(--text-xl-semibold-font-family)',
-        'text-xl-semibold-italic': 'var(--text-xl-semibold-italic-font-family)',
-        'text-xs-bold': 'var(--text-xs-bold-font-family)',
-        'text-xs-medium': 'var(--text-xs-medium-font-family)',
-        'text-xs-regular': 'var(--text-xs-regular-font-family)',
-        'text-xs-semibold': 'var(--text-xs-semibold-font-family)',
-      },
       boxShadow: {
         // Escala do Figma (design.md §2.5): substitui as sombras padrão do Tailwind
         // para que `shadow-sm`, `shadow-lg` etc. usem os valores do design system.
@@ -497,7 +425,7 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), typographyRoles],
 } satisfies Config
 
 export default config

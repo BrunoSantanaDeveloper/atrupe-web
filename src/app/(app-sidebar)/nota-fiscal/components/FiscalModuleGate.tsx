@@ -40,7 +40,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
         <FeaturedIcon variant="neutralOutline" Icon={IconLock} />
-        <h2 className="text-lg font-semibold mt-6 mb-2 text-center">
+        <h2 className="type-section-title mt-6 mb-2 text-center">
           Módulo Nota Fiscal não contratado
         </h2>
         <p className="text-sm text-gray text-center max-w-md mb-6">
@@ -64,7 +64,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
       <>
         <div className="flex flex-col items-center justify-center py-20 px-4">
           <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
-          <h2 className="text-lg font-semibold mt-6 mb-2 text-center">
+          <h2 className="type-section-title mt-6 mb-2 text-center">
             Configure seu módulo fiscal
           </h2>
           <p className="text-sm text-gray text-center max-w-md mb-6">
@@ -87,7 +87,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
         <FeaturedIcon variant="neutralOutline" Icon={IconLoader2} />
-        <h2 className="text-lg font-semibold mt-6 mb-2 text-center">
+        <h2 className="type-section-title mt-6 mb-2 text-center">
           Módulo em ativação
         </h2>
         <p className="text-sm text-gray text-center max-w-md mb-6">

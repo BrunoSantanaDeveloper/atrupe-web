@@ -324,7 +324,7 @@ export function PDV() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Venda</TableHead>
                       <TableHead>Vendedor</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
+                      <TableHead numeric>Total</TableHead>
                       <TableHead className="text-right">Já pago</TableHead>
                       <TableHead className="text-right">Falta</TableHead>
                       <TableHead />
@@ -357,9 +357,7 @@ export function PDV() {
                         <TableCell className="text-sm text-gray">
                           {sale.seller}
                         </TableCell>
-                        <TableCell className="text-right">
-                          {money(sale.total)}
-                        </TableCell>
+                        <TableCell numeric>{money(sale.total)}</TableCell>
                         <TableCell className="text-right text-success-600">
                           {sale.paid ? money(sale.paid) : '—'}
                         </TableCell>
@@ -452,9 +450,7 @@ export function PDV() {
                             <TableCell className="text-sm">
                               {sale.seller}
                             </TableCell>
-                            <TableCell className="text-right">
-                              {money(sale.total)}
-                            </TableCell>
+                            <TableCell numeric>{money(sale.total)}</TableCell>
                             <TableCell colSpan={2} className="text-right">
                               <Badge variant="neutralLight">
                                 {sale.billing || 'Faturamento mensal'}
@@ -485,7 +481,7 @@ export function PDV() {
                       <TableHead>Hora</TableHead>
                       <TableHead className="w-full">Movimento</TableHead>
                       <TableHead>Forma</TableHead>
-                      <TableHead className="text-right">Valor</TableHead>
+                      <TableHead numeric>Valor</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

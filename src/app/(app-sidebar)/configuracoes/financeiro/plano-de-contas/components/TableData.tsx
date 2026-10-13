@@ -14,7 +14,13 @@ import { EditSubcategoryDialog } from './Actions/EditSubcategoryDialog'
 // UI
 import { CardContent } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { Table, TableRow, TableBody, TableCell } from '@/components/ui/table'
+import {
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableGroupRow,
+} from '@/components/ui/table'
 
 // Types
 import type {
@@ -33,7 +39,6 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconPlus } from '@tabler/icons-react'
-import { cn } from '@/lib/utils'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -83,19 +88,7 @@ export function TableData({ tabs, searchParams }: Props) {
                 {accountsPlanArray.map((accountPlan, index) => (
                   <Fragment key={accountPlan.code + index}>
                     {/* Header da categoria principal */}
-                    <TableRow
-                      className={cn(
-                        accountPlan.name === 'Receitas'
-                          ? 'bg-success-100 hover:bg-success-50'
-                          : accountPlan.name === 'Despesas'
-                            ? 'bg-error-100 hover:bg-error-50'
-                            : 'bg-gray-100',
-                      )}
-                    >
-                      <TableCell colSpan={3} className="font-medium text-xs">
-                        {accountPlan.name}
-                      </TableCell>
-                    </TableRow>
+                    <TableGroupRow>{accountPlan.name}</TableGroupRow>
 
                     {/* Renderiza os níveis 2 */}
                     {accountPlan.level2 && accountPlan.level2.length > 0 ? (
@@ -104,11 +97,8 @@ export function TableData({ tabs, searchParams }: Props) {
                           key={`level2-${level2Item.code}-${level2Index}`}
                         >
                           {/* Header do nível 2 */}
-                          <TableRow className="bg-gray-100">
-                            <TableCell
-                              colSpan={3}
-                              className="font-medium text-xs text-gray"
-                            >
+                          <TableRow className="hover:bg-transparent">
+                            <TableCell colSpan={3} className="type-body-strong">
                               {`${level2Item.code} - ${level2Item.name}`}
                             </TableCell>
                           </TableRow>
@@ -124,10 +114,10 @@ export function TableData({ tabs, searchParams }: Props) {
                                   key={`nature-${nature.id}-${natureIndex}`}
                                 >
                                   {/* Header da natureza */}
-                                  <TableRow className="bg-gray-50">
+                                  <TableRow>
                                     <TableCell
                                       colSpan={2}
-                                      className="text-xs text-gray"
+                                      className="type-body-strong pl-10"
                                     >
                                       {`${combinedCode} - ${nature.description || 'Sem descrição'}`}
                                     </TableCell>
@@ -177,12 +167,12 @@ export function TableData({ tabs, searchParams }: Props) {
                                       <TableRow
                                         key={`subcat-${nature.code}-${subCategory.id}`}
                                       >
-                                        <TableCell className="w-[140px] text-sm font-medium">
+                                        <TableCell className="w-[140px] pl-14">
                                           <div className="flex items-center gap-2">
                                             {`${nature.level1}.${nature.level2}.${nature.code}.${subCategory.code}`}
                                           </div>
                                         </TableCell>
-                                        <TableCell className="text-sm font-medium">
+                                        <TableCell>
                                           {subCategory.description ||
                                             'Sem descrição'}
                                         </TableCell>

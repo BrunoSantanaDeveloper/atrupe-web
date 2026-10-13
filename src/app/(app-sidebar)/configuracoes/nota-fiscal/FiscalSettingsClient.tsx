@@ -14,10 +14,10 @@ const defaultPath = 'nota-fiscal'
 export function FiscalSettingsClient() {
   const settings: CompanySettingsType[] = [
     {
-      category: 'Configurações Fiscais',
+      category: 'Configurações fiscais',
       items: [
         {
-          title: 'Dados do Emissor',
+          title: 'Dados do emissor',
           icon: IconBuilding,
           description:
             'Configure emitente, séries, numeração e padrões para emissão de notas fiscais',

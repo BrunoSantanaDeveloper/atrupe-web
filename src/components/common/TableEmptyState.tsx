@@ -36,8 +36,8 @@ export function FilteredDataEmpty({
             variant="borderedLight"
             rounded
           />
-          <p className="font-semibold text-base mt-4 mb-1">{title}</p>
-          <p className="text-sm text-gray">{description}</p>
+          <p className="type-card-title mt-4 mb-1">{title}</p>
+          <p className="type-secondary">{description}</p>
         </div>
         <div className="flex gap-3 justify-center">
           <Button
@@ -72,8 +72,8 @@ export function ListDataTotalEmpty({
       <div className="max-w-[352px] text-center space-y-6">
         <div>
           <FeaturedIcon Icon={icon} size="xl" variant="borderedLight" rounded />
-          <p className="font-semibold text-base mt-4 mb-1">{title}</p>
-          <p className="text-sm text-gray">{description}</p>
+          <p className="type-card-title mt-4 mb-1">{title}</p>
+          <p className="type-secondary">{description}</p>
         </div>
         {cta || null}
       </div>
@@ -95,7 +95,7 @@ export function ListDataStatusEmpty({
       <div className="max-w-[352px] text-center space-y-6">
         <div>
           <FeaturedIcon Icon={icon} size="xl" variant="borderedLight" rounded />
-          <p className="font-semibold text-base mt-4 mb-1">{title}</p>
+          <p className="type-card-title mt-4 mb-1">{title}</p>
         </div>
       </div>
     </div>

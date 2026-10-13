@@ -10,7 +10,7 @@ import { formatToLocaleDateTime } from '@/lib/formatDate'
 import { ClientInfoType } from '@/types/cadastros/client'
 
 import { DetailCardRowItem } from '../../components/DetailCardRowItem'
-import { DetailCard } from '../../components/DetailCard'
+import { DetailCard } from '@/components/common/DetailCard'
 import {
   IconFileInvoice,
   IconMapPin,
@@ -73,7 +73,7 @@ export function ClientData({ data }: Props) {
             {canManageClientResponsible() && (
               <TextSupportingText
                 supporting="Responsável"
-                text={data.general.responsible?.name || 'Sem Responsável'}
+                text={data.general.responsible?.name || 'Sem responsável'}
               />
             )}
           </DetailCardRowItem>

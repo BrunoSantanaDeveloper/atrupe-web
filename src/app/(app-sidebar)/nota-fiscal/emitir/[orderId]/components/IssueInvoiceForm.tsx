@@ -770,9 +770,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
                     <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
-                    <CardTitle className="text-gray-700 font-semibold text-base">
-                      Informações complementares
-                    </CardTitle>
+                    <CardTitle>Informações complementares</CardTitle>
                   </div>
                   <AccordionTrigger
                     className={cn(

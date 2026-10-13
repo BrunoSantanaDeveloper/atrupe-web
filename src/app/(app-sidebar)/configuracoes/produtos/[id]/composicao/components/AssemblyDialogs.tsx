@@ -335,17 +335,13 @@ export function FormulaDialog({
             />
           </div>
           <div className="space-y-2">
-            <p className="text-xs font-medium uppercase tracking-wide text-gray">
-              Medidas do item
-            </p>
+            <p className="type-eyebrow">Medidas do item</p>
             <div className="flex flex-wrap gap-1.5">
               {MEASURE_NAMES.map((name) => chip(name))}
             </div>
             {fields.length > 0 && (
               <>
-                <p className="pt-1 text-xs font-medium uppercase tracking-wide text-gray">
-                  Campos do orçamento
-                </p>
+                <p className="type-eyebrow pt-1">Campos do orçamento</p>
                 <div className="flex flex-wrap gap-1.5">
                   {fields.map((field) => chip(field.name))}
                 </div>
@@ -353,9 +349,7 @@ export function FormulaDialog({
             )}
             {lineRefs.length > 0 && (
               <>
-                <p className="pt-1 text-xs font-medium uppercase tracking-wide text-gray">
-                  Material das outras linhas
-                </p>
+                <p className="type-eyebrow pt-1">Material das outras linhas</p>
                 <div className="flex flex-wrap gap-1.5">
                   {lineRefs.map((ref) => chip(ref))}
                 </div>
@@ -366,9 +360,7 @@ export function FormulaDialog({
                 </p>
               </>
             )}
-            <p className="pt-1 text-xs font-medium uppercase tracking-wide text-gray">
-              Operações
-            </p>
+            <p className="type-eyebrow pt-1">Operações</p>
             <div className="flex flex-wrap gap-1.5">
               {chip('+')}
               {chip('−', '-')}

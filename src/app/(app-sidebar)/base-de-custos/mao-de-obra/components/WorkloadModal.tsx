@@ -101,20 +101,20 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
         <DialogBody>
           <div className="grid grid-cols-3 gap-4 pb-5">
             <div>
-              <p className="text-xs text-gray">Custo distribuído</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="type-kpi-label">Custo distribuído</p>
+              <p className="type-kpi-value">
                 {cost ? formatCurrencyToBrl(cost) : '-'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray">Carga horária estimada</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="type-kpi-label">Carga horária estimada</p>
+              <p className="type-kpi-value">
                 {totalHours ? formatHoursLabel(totalHours) : '-'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray">Custo hora estimado</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="type-kpi-label">Custo hora estimado</p>
+              <p className="type-kpi-value">
                 {costPerHour ? formatCurrencyToBrl(costPerHour) : '-'}
               </p>
             </div>

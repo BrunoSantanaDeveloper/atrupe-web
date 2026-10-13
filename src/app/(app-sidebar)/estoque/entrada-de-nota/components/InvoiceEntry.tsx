@@ -128,10 +128,10 @@ export function InvoiceEntry() {
                         Item na nota
                       </TableHead>
                       <TableHead className="w-[12%]">Unidade</TableHead>
-                      <TableHead className="w-[10%] text-right">
+                      <TableHead numeric className="w-[10%]">
                         Quantidade
                       </TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Valor unitário
                       </TableHead>
                       <TableHead className="w-[28%]">
@@ -151,12 +151,8 @@ export function InvoiceEntry() {
                           </p>
                         </TableCell>
                         <TableCell>{item.supplierUnit}</TableCell>
-                        <TableCell className="text-right">
-                          {item.quantity}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {money(item.unitValue)}
-                        </TableCell>
+                        <TableCell numeric>{item.quantity}</TableCell>
+                        <TableCell numeric>{money(item.unitValue)}</TableCell>
                         <TableCell>
                           {item.materialId ? (
                             <>

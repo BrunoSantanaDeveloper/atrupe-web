@@ -127,18 +127,18 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
               : 'ainda não recebida'}
         </span>
       </TableCell>
-      <TableCell className="text-right text-gray">
+      <TableCell numeric className="text-gray">
         {formatCurrencyToBrl(
           mode === 'received_value' ? record.saleValue : record.receivedValue,
         )}
       </TableCell>
-      <TableCell className="text-right font-medium text-gray-900">
+      <TableCell numeric className="font-medium text-gray-900">
         {formatCurrencyToBrl(commissionBase(record, mode))}
       </TableCell>
-      <TableCell className="text-right text-gray-600">
+      <TableCell numeric className="text-gray-600">
         {record.percentage}%
       </TableCell>
-      <TableCell className="text-right font-semibold text-success-700">
+      <TableCell numeric className="font-semibold text-success-700">
         {formatCurrencyToBrl(commissionOf(record, mode))}
       </TableCell>
     </TableRow>
@@ -149,11 +149,13 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       <TableHead>
         {mode === 'received_value' ? 'Recebido em' : 'Vendido em'}
       </TableHead>
-      <TableHead className="text-right">
+      <TableHead numeric>
         {mode === 'received_value' ? 'Valor da venda' : 'Já recebido'}
       </TableHead>
       <TableHead className="text-right">{copy.baseLabel}</TableHead>
-      <TableHead className="text-right w-16">%</TableHead>
+      <TableHead numeric className="w-16">
+        %
+      </TableHead>
       <TableHead className="text-right">Comissão</TableHead>
     </>
   )
@@ -259,14 +261,20 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                               </Badge>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right text-gray font-medium text-xs py-3">
+                          <TableCell
+                            numeric
+                            className="text-gray font-medium text-xs py-3"
+                          >
                             {formatCurrencyToBrl(
                               mode === 'received_value'
                                 ? group.saleTotal
                                 : group.receivedTotal,
                             )}
                           </TableCell>
-                          <TableCell className="text-right text-gray-900 font-medium text-xs py-3">
+                          <TableCell
+                            numeric
+                            className="text-gray-900 font-medium text-xs py-3"
+                          >
                             {formatCurrencyToBrl(
                               mode === 'received_value'
                                 ? group.receivedTotal
@@ -274,7 +282,10 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                             )}
                           </TableCell>
                           <TableCell />
-                          <TableCell className="text-right text-success-700 font-semibold text-xs py-3">
+                          <TableCell
+                            numeric
+                            className="text-success-700 font-semibold text-xs py-3"
+                          >
                             {formatCurrencyToBrl(
                               group.records.reduce(
                                 (sum, r) => sum + commissionOf(r, mode),

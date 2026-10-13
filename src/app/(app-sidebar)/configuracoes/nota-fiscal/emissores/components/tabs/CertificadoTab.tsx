@@ -113,7 +113,7 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between pb-2 border-b border-gray-100">
-        <h3 className="font-semibold text-gray-900">Certificado Digital</h3>
+        <h3 className="type-card-title">Certificado Digital</h3>
         {hasCertificate && !certBase64 && (
           <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
             <IconCircleCheckFilled className="h-3.5 w-3.5" />

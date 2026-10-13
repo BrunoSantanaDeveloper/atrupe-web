@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: 'Atrupe',
-      template: '%s | Atrupe',
+      template: '%s · Atrupe',
     },
     description: 'Sistema de gestão para comunicação visual',
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || ''),

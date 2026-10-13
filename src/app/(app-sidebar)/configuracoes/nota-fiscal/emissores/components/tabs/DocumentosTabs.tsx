@@ -142,7 +142,7 @@ function NumeracaoPorAmbiente({
 export function NfeTab({ emissor }: { emissor?: EmissorData | null }) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
+      <h3 className="type-card-title pb-2 border-b border-gray-100">
         Nota Fiscal Eletrônica (NF-e)
       </h3>
       <div className="grid grid-cols-2 gap-4">
@@ -189,7 +189,7 @@ export function NfeTab({ emissor }: { emissor?: EmissorData | null }) {
 export function NfceTab({ emissor }: { emissor?: EmissorData | null }) {
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
+      <h3 className="type-card-title pb-2 border-b border-gray-100">
         Nota Fiscal de Consumidor (NFC-e)
       </h3>
 
@@ -260,7 +260,7 @@ export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
+      <h3 className="type-card-title pb-2 border-b border-gray-100">
         Nota Fiscal de Serviços (NFS-e)
       </h3>
 
@@ -327,7 +327,7 @@ export function PadroesTab() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
+        <h3 className="type-card-title pb-2 border-b border-gray-100">
           Padrões de Operação
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

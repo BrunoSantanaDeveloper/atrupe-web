@@ -79,7 +79,7 @@ export function ProductVariations({ productId, unitKind }: Props) {
       <div className="w-full space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h4 className="text-md font-semibold text-gray-700">Variações</h4>
+            <h4 className="type-card-title">Variações</h4>
             <p className="text-sm text-gray">
               O mesmo produto em tamanhos ou cores, como P, M e G ou 4x0, 4x1 e
               4x4, cada um com o seu preço. Na venda, o vendedor escolhe a

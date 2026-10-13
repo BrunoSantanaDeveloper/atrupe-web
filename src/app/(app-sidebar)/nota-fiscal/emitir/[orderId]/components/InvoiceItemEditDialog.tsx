@@ -460,7 +460,7 @@ export function InvoiceItemEditDialog({
 
                 <CurrencyInput
                   id="edit-total-value"
-                  label="Valor Total (calculado)"
+                  label="Valor total (calculado)"
                   value={formData.totalValue}
                   onChange={() => {}}
                   disabled

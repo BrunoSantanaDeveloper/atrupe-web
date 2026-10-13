@@ -559,7 +559,7 @@ export function QuotationComposeModal({
                     <TableHeader>
                       <TableRow className="bg-gray-50">
                         <TableHead className="w-[50%]">Recurso</TableHead>
-                        <TableHead className="w-[25%] text-right">
+                        <TableHead numeric className="w-[25%]">
                           Quantidade
                         </TableHead>
                         <TableHead className="w-[25%] text-right">
@@ -584,7 +584,10 @@ export function QuotationComposeModal({
                               />
                             </p>
                           </TableCell>
-                          <TableCell className="whitespace-nowrap text-right text-sm">
+                          <TableCell
+                            numeric
+                            className="whitespace-nowrap text-sm"
+                          >
                             {line.quantity === null
                               ? 'Informado na venda'
                               : amount(line.quantity, line.unit)}

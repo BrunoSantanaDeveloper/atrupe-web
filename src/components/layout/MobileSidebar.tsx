@@ -299,7 +299,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                           variant={
                             isFiscalPending ? 'warningLight' : 'neutralLight'
                           }
-                          className="text-[10px] px-1.5 py-0.5"
+                          className="text-xs px-1.5 py-0.5"
                         >
                           {isFiscalPending ? 'Pendente' : 'Configurar'}
                         </Badge>
@@ -323,7 +323,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                   value={`${item?.path}`}
                   className="border-gray-60 py-2"
                 >
-                  <AccordionTrigger className="h-11 rounded-lg px-2 py-0 hover:no-underline data-[state=open]:bg-brand-25 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600">
+                  <AccordionTrigger
+                    asHeading={false}
+                    className="h-11 rounded-lg px-2 py-0 hover:no-underline data-[state=open]:bg-brand-25 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600"
+                  >
                     <div className="flex items-center gap-3">
                       <IconComponent
                         icon={item?.icon}
@@ -374,7 +377,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                                 />
                                 <span
                                   className={cn(
-                                    'text-xs font-medium',
+                                    'text-sm font-medium',
                                     navChild?.action &&
                                       'font-semibold text-gray-600',
                                     reviewTextClass(navChild?.review),

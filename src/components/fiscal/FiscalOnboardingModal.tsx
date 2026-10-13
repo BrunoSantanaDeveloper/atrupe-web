@@ -270,7 +270,7 @@ export function FiscalOnboardingModal({
           {status === 'submitting' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
               <IconLoader2 className="h-14 w-14 animate-spin text-brand mb-6" />
-              <h2 className="text-lg font-semibold mb-2">
+              <h2 className="type-section-title mb-2">
                 Configurando módulo fiscal...
               </h2>
               <p className="text-sm text-gray text-center">
@@ -285,7 +285,7 @@ export function FiscalOnboardingModal({
               <div className="h-14 w-14 rounded-full bg-success-100 flex items-center justify-center mb-6">
                 <IconCheck className="h-7 w-7 text-success-600" />
               </div>
-              <h2 className="text-lg font-semibold mb-2">
+              <h2 className="type-section-title mb-2">
                 Módulo fiscal ativado!
               </h2>
               <p className="text-sm text-gray text-center mb-2">
@@ -300,7 +300,7 @@ export function FiscalOnboardingModal({
               <div className="h-14 w-14 rounded-full bg-warning-100 flex items-center justify-center mb-6">
                 <IconAlertTriangle className="h-7 w-7 text-warning-600" />
               </div>
-              <h2 className="text-lg font-semibold mb-2">Dados recebidos!</h2>
+              <h2 className="type-section-title mb-2">Dados recebidos!</h2>
               <p className="text-sm text-gray text-center mb-6">
                 {resultMessage}
               </p>
@@ -336,7 +336,7 @@ export function FiscalOnboardingModal({
               {/* Dados da Empresa */}
               <div className="space-y-4">
                 <div className="space-y-2 pb-2 border-b border-gray-100">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="type-card-title flex items-center gap-2">
                     Dados da Empresa
                   </h3>
                 </div>
@@ -427,7 +427,7 @@ export function FiscalOnboardingModal({
               {/* Endereço */}
               <div className="space-y-4">
                 <div className="space-y-2 pb-2 border-b border-gray-100">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="type-card-title flex items-center gap-2">
                     Endereço
                   </h3>
                 </div>
@@ -495,7 +495,7 @@ export function FiscalOnboardingModal({
               {/* Certificado Digital */}
               <div className="space-y-4">
                 <div className="space-y-2 pb-2 border-b border-gray-100">
-                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <h3 className="type-card-title flex items-center gap-2">
                     Certificado Digital (opcional)
                   </h3>
                 </div>

@@ -193,9 +193,7 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
   return (
     <Card className="flex flex-col">
       <CardHeader className="flex-row items-center justify-between">
-        <CardTitle className="text-base font-semibold text-gray-700">
-          {title}
-        </CardTitle>
+        <CardTitle>{title}</CardTitle>
         <div className="flex items-center gap-1">
           <RankingPrintButton
             title={title}

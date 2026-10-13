@@ -392,7 +392,7 @@ export function UploadedFilesCard({
             </p>
             <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 relative gap-3">
               {sizeText && (
-                <p className="flex-grow-0 flex-shrink-0 text-[15px] text-left text-[#888]">
+                <p className="flex-grow-0 flex-shrink-0 text-sm text-left text-[#888]">
                   {sizeText}
                 </p>
               )}

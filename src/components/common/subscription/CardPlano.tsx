@@ -57,7 +57,7 @@ export function CardPlano({ plan, isSelected, onSelect }: CardPlanoProps) {
           )}
         </div>
         <span
-          className={`text-xl font-bold ${
+          className={`type-kpi-value ${
             isAvailable ? 'text-emerald-900' : 'text-gray-400'
           }`}
         >
@@ -88,7 +88,7 @@ export function CardPlano({ plan, isSelected, onSelect }: CardPlanoProps) {
                 )}
             {plan.concept.objective && (
               <>
-                <h3 className="font-semibold mb-1 mt-2">Objetivo</h3>
+                <h3 className="type-card-title mb-1 mt-2">Objetivo</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {plan.concept.objective}
                 </p>
@@ -96,7 +96,7 @@ export function CardPlano({ plan, isSelected, onSelect }: CardPlanoProps) {
             )}
             {plan.concept.mainActions.length > 0 && (
               <>
-                <h3 className="font-semibold mb-1">Principais Ações</h3>
+                <h3 className="type-card-title mb-1">Principais Ações</h3>
                 <ul className="list-disc list-inside text-sm text-muted-foreground mb-4">
                   {plan.concept.mainActions.map((action, idx) => (
                     <li key={idx}>{action}</li>
@@ -106,7 +106,7 @@ export function CardPlano({ plan, isSelected, onSelect }: CardPlanoProps) {
             )}
             {plan.concept.expectedResults && (
               <>
-                <h3 className="font-semibold mb-1">Resultados Esperados</h3>
+                <h3 className="type-card-title mb-1">Resultados Esperados</h3>
                 <p className="text-sm text-muted-foreground">
                   {plan.concept.expectedResults}
                 </p>

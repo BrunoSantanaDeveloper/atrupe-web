@@ -37,7 +37,7 @@ const avatarLabelNameVariants = cva('font-semibold text-gray-700', {
 const avatarLabelSubtitleVariants = cva('text-gray-500', {
   variants: {
     size: {
-      xs: 'text-[10px]',
+      xs: 'text-xs',
       sm: 'text-xs',
       md: 'text-xs',
       lg: 'text-sm',

@@ -22,9 +22,7 @@ export default function VerifyEmailPage() {
   return (
     <>
       <CardHeader className="p-0 mb-8 text-center">
-        <CardTitle className="text-xl font-bold">
-          Verificação de e-mail
-        </CardTitle>
+        <CardTitle>Verificação de e-mail</CardTitle>
         <CardDescription>
           Enviamos um código de verificação para o e-mail <StoredEmail />
         </CardDescription>

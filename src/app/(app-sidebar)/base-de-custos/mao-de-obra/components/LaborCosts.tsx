@@ -83,19 +83,19 @@ export function LaborCosts() {
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead className="w-[24%] min-w-[160px]">Setor</TableHead>
-                  <TableHead className="w-[16%] text-right">
+                  <TableHead numeric className="w-[16%]">
                     Custo distribuído
                   </TableHead>
-                  <TableHead className="w-[14%] text-right">
+                  <TableHead numeric className="w-[14%]">
                     Carga horária
                   </TableHead>
-                  <TableHead className="w-[14%] text-right">
+                  <TableHead numeric className="w-[14%]">
                     Custo hora
                   </TableHead>
-                  <TableHead className="w-[14%] text-right">
+                  <TableHead numeric className="w-[14%]">
                     Preço hora
                   </TableHead>
-                  <TableHead className="w-[12%] text-right">
+                  <TableHead numeric className="w-[12%]">
                     Margem atual
                   </TableHead>
                   <TableHead className="w-[6%]" />
@@ -105,7 +105,7 @@ export function LaborCosts() {
                 {sectors.map((sector) => (
                   <TableRow key={sector.id}>
                     <TableCell className="font-medium">{sector.name}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatValue(sector.distributedCost)}
                     </TableCell>
                     <TableCell className="text-right">
@@ -113,10 +113,10 @@ export function LaborCosts() {
                         ? '-'
                         : formatHoursLabel(sector.hours)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatValue(sector.costPerHour)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatValue(sector.salePrice)}
                     </TableCell>
                     <TableCell
