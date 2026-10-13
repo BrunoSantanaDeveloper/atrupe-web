@@ -49,6 +49,12 @@ export const permissionsData = [
         key: 'order',
         exportable: true,
       },
+      // Custo e margem da venda (ORC-8): fora do perfil de vendedor
+      {
+        name: 'Resultado previsto da venda',
+        key: 'quotation_result',
+        exportable: true,
+      },
     ],
   },
   {

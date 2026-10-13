@@ -141,6 +141,7 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'register.credit_limit': ['credit_limit_configuration'],
   'financial_settings.credit_limits': ['credit_limit_configuration'],
   'production.delivery_schedule': ['delivery_production_tabs'],
+  'sale.quotation_result': ['cost_base'],
   'company_settings.sectors': ['sectors_configuration'],
   'sales_settings.rejection_reasons': ['quotation_rejection_reasons'],
   'sales_settings.quotation_status': ['quotation_status_configuration'],

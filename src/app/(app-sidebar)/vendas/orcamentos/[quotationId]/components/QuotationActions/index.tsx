@@ -12,12 +12,15 @@ import { FinishQuotation } from './FinishQuotation'
 import { ApproveQuotation } from './ApproveQuotation'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { useRouter } from 'next/navigation'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 
 // Type
 import { QuotationType } from '@/types/sales/quotation'
 
 // Icons
-import { IconPrinter } from '@tabler/icons-react'
+import { IconChartPie, IconPrinter } from '@tabler/icons-react'
 
 interface Props {
   data: QuotationType
@@ -28,6 +31,8 @@ interface Props {
 
 export function QuotationActions({ data, primaryAction }: Props) {
   const [openPrint, setOpenPrint] = useState(false)
+  const router = useRouter()
+  const { hasFeature } = usePlanFeatures()
 
   const status = {
     open: data?.status === 'OPEN',
@@ -53,6 +58,22 @@ export function QuotationActions({ data, primaryAction }: Props) {
               onClick={() => setOpenPrint(true)}
             />
           </PermissionGate>
+          {/* Custo e margem da venda (ORC-8): permissão própria, valores e
+              a base de custos */}
+          {hasFeature(FEATURES.COSTS.COST_BASE) && (
+            <PermissionGate
+              requireAll
+              permissions={['sale:quotation_result:view', 'values:values:view']}
+            >
+              <CustomButton
+                icon={IconChartPie}
+                title="Resultado previsto"
+                onClick={() =>
+                  router.push(`/vendas/orcamentos/${data.id}/resultado`)
+                }
+              />
+            </PermissionGate>
+          )}
           {canSetClient ? (
             <PermissionGate permissions={['sale:quotation:edit']}>
               <SetClient quotationId={data.id} />

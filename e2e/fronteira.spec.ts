@@ -58,7 +58,6 @@ const NOT_FOUND_URLS = [
  */
 const DOTTED_URLS = [
   '/vendas/orcamentos/a.b/composicao',
-  '/vendas/orcamentos/a.b/resultado',
   '/producao/projetos/a.b',
 ]
 

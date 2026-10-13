@@ -68,7 +68,6 @@ export const DEMO_ROUTES = [
   '/configuracoes/empresa-e-sistema/patrimonios',
   '/configuracoes/vendas/venda-rapida',
   '/vendas/orcamentos/[quotationId]/composicao',
-  '/vendas/orcamentos/[quotationId]/resultado',
   '/sandbox',
 ] as const
 
