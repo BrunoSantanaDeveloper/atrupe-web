@@ -637,38 +637,26 @@ export const deleteAssetGroup = async ({ id }: { id: string }) => {
 
 // O custo do bem e a venda apontam para uma subcategoria do plano de contas:
 // de despesa (payable, nível 02) no custo e de receita (receivable, nível
-// 01) na venda. As listas são as de apoio dos formulários de contas a pagar
-// e a receber, que não pedem a permissão do plano de contas: as naturezas do
-// nível e as subcategorias de cada uma
+// 01) na venda. A lista é a do próprio patrimônio, que pede só a permissão
+// da base de custos (PO, 14/10/2026): o código vem completo e ordenado
 export const getAssetAccounts = async ({
   type,
 }: {
   type: 'receivable' | 'payable'
 }) => {
   const res: ApiResult = await getItem({
-    route: `/financial/nature/natures/${type}`,
+    route: `/asset/accounts?type=${type}`,
   })
   if (!res.success) return fail(res, [] as AssetAccount[])
-  const natures: { id: string }[] = Array.isArray(res.data)
-    ? res.data
-    : (res.data?.data ?? [])
-
-  const lists: ApiResult[] = await Promise.all(
-    natures.map((nature) =>
-      getItem({ route: `/financial/nature/sub-category/${seg(nature.id)}` }),
-    ),
-  )
-  const failed = lists.find((list) => !list.success)
-  if (failed) return fail(failed, [] as AssetAccount[])
-
-  const accounts: AssetAccount[] = lists
-    .flatMap((list) => (Array.isArray(list.data) ? list.data : []))
-    .map((account: { id: string; code?: string; description?: string }) => ({
+  const rows: AssetAccount[] = Array.isArray(res.data) ? res.data : []
+  return ok(
+    rows.map((account) => ({
       id: account.id,
       code: account.code ?? '',
       description: account.description ?? '',
-      label: [account.code, account.description].filter(Boolean).join(' — '),
-    }))
-    .sort((a, b) => a.code.localeCompare(b.code, 'pt-BR', { numeric: true }))
-  return ok(accounts)
+      label:
+        account.label ??
+        [account.code, account.description].filter(Boolean).join(' — '),
+    })),
+  )
 }

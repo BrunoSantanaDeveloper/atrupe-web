@@ -242,10 +242,12 @@ export function NewPaymentCondition({
               className="flex flex-wrap gap-5"
               noValidate
             >
+              {/* A lista de formas é a mesma para todas as empresas e só
+                  o superadmin cria; a condição já usada não troca de
+                  forma, só de parcelas (PO, 14/10/2026) */}
               <SelectPaymentMethodField
                 name="paymentMethodId"
                 width="w-full"
-                allowCreate
                 additionalOnChange={(_, label) => {
                   setValue('name', label)
                 }}

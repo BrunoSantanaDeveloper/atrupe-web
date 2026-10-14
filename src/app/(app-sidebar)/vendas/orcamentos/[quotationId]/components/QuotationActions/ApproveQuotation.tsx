@@ -6,6 +6,9 @@
 // - um item cujo produto foi inativado (PAD-7), ou com uma parte inativa
 //   acrescentada, trava a aprovação até ser trocado ou retirado. A parte
 //   da linha só o servidor confere: os itens vêm na recusa.
+// E a do crédito do cliente (PO, 13 e 14/10/2026): cliente bloqueado,
+// condição fora das permitidas ou acima do limite. Só o servidor confere;
+// a recusa vem com o motivo (sem valores).
 
 // React
 import { useState } from 'react'
@@ -63,9 +66,11 @@ function dateInputToSaoPauloIso(date: string) {
 export function ApproveQuotation({ data }: Props) {
   const [open, setOpen] = useState(false)
   const [openPayment, setOpenPayment] = useState(false)
-  const [openBlocked, setOpenBlocked] = useState<'payment' | 'inactive' | null>(
-    null,
-  )
+  const [openBlocked, setOpenBlocked] = useState<
+    'payment' | 'inactive' | 'credit' | null
+  >(null)
+  // O motivo da recusa pelo crédito, como o servidor manda
+  const [creditMessage, setCreditMessage] = useState('')
   // Os itens que o servidor recusou (produto ou parte inativa)
   const [refused, setRefused] = useState<{ id: string; description: string }[]>(
     [],
@@ -132,6 +137,13 @@ export function ApproveQuotation({ data }: Props) {
         setOpenBlocked('inactive')
         return
       }
+      if ('errorCode' in res && res.errorCode === 'CREDIT_CHECK') {
+        setOpen(false)
+        setCreditMessage(res.message)
+        setOpenBlocked('credit')
+        queryClient.invalidateQueries({ queryKey: ['quotation-credit'] })
+        return
+      }
       toast.error(res.message)
       return
     }
@@ -173,24 +185,28 @@ export function ApproveQuotation({ data }: Props) {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <FeaturedIcon
-              Icon={openBlocked === 'inactive' ? IconBan : IconAlertTriangle}
+              Icon={openBlocked === 'payment' ? IconAlertTriangle : IconBan}
               rounded
               size="lg"
               variant={
-                openBlocked === 'inactive'
+                openBlocked !== 'payment'
                   ? 'errorBorderedLight'
                   : 'warningBorderedLight'
               }
               className="mx-auto mb-2"
             />
             <AlertDialogTitle>
-              {openBlocked === 'inactive'
-                ? 'Este orçamento não pode ser aprovado'
-                : 'Informe a condição de pagamento para aprovar'}
+              {openBlocked === 'credit'
+                ? 'Aprovação bloqueada pelo crédito do cliente'
+                : openBlocked === 'inactive'
+                  ? 'Este orçamento não pode ser aprovado'
+                  : 'Informe a condição de pagamento para aprovar'}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-2 text-left">
-                {openBlocked === 'inactive' ? (
+                {openBlocked === 'credit' ? (
+                  <p>{creditMessage}</p>
+                ) : openBlocked === 'inactive' ? (
                   <>
                     <p>
                       {blockedItems.length === 1
@@ -219,7 +235,7 @@ export function ApproveQuotation({ data }: Props) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>
-              {openBlocked === 'inactive' ? 'Fechar' : 'Cancelar'}
+              {openBlocked === 'payment' ? 'Cancelar' : 'Fechar'}
             </AlertDialogCancel>
             {openBlocked === 'payment' && (
               <Button

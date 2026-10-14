@@ -12,25 +12,25 @@ interface Props {
 
 export default function ClientFinancialPage({ params }: Props) {
   return (
-    <FeatureGate
-      features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
-      wall={{
-        title: 'Abas adicionais de cliente',
-        description:
-          'A aba Financeiro reúne no cadastro o saldo, as contas e as movimentações do cliente.',
-      }}
+    <PermissionGate
+      requireAll
+      permissions={['financial:flow:view', 'values:values:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar o financeiro do cliente.
+        </div>
+      }
     >
-      <PermissionGate
-        requireAll
-        permissions={['financial:flow:view', 'values:values:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar o financeiro do cliente.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
+        wall={{
+          title: 'Abas adicionais de cliente',
+          description:
+            'A aba Financeiro reúne no cadastro o saldo, as contas e as movimentações do cliente.',
+        }}
       >
         <EntityFinancialSummary entityId={params.id} entityType="client" />
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

@@ -21,27 +21,27 @@ export function metadata() {
 
 export default function PDVsPage({ searchParams }: SearchParamsType) {
   return (
-    <FeatureGate
-      features={[FEATURES.FINANCIAL.PDV_SCREEN]}
-      wall={{
-        title: 'Frente de caixa',
-        description: 'Registre as vendas diretas no caixa (PDV).',
-        pageTitle: true,
-      }}
+    <PermissionGate
+      permissions={['financial:pdv:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar a frente de caixa.
+        </div>
+      }
     >
-      <PermissionGate
-        permissions={['financial:pdv:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar a frente de caixa.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.FINANCIAL.PDV_SCREEN]}
+        wall={{
+          title: 'Frente de caixa',
+          description: 'Registre as vendas diretas no caixa (PDV).',
+          pageTitle: true,
+        }}
       >
         {/* A frente de caixa nova (FC-1 a FC-20) ainda roda sobre dados de
             exemplo: só com a flag de demonstração. Sem ela, a tela real,
             com os caixas em /financeiro/frente-de-caixa/[pdvId] */}
         {DEMO_DATA ? <DemoPDV /> : <PDV searchParams={searchParams} />}
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

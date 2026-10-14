@@ -204,7 +204,10 @@ function buildSignatureRows(signature?: ExportSignature) {
 
   return [
     [],
-    [`Exportado de ${signature.company} por ${signature.user} em ${quando}`],
+    // O superadmin exporta sem empresa: sai a marca (PO, 14/10/2026)
+    [
+      `Exportado de ${signature.company?.trim() || 'Atrupe'} por ${signature.user} em ${quando}`,
+    ],
   ]
 }
 

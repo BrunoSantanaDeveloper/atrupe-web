@@ -17,26 +17,26 @@ export function metadata() {
 
 export default function PayablePage({ searchParams }: SearchParamsType) {
   return (
-    <FeatureGate
-      features={[FEATURES.FINANCIAL.ACCOUNTS_PAYABLE]}
-      wall={{
-        title: 'Movimentações a pagar',
-        description:
-          'Gerencie as contas a pagar e as obrigações financeiras da empresa.',
-        pageTitle: true,
-      }}
+    <PermissionGate
+      requireAll
+      permissions={['financial:flow:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar contas a pagar.
+        </div>
+      }
     >
-      <PermissionGate
-        requireAll
-        permissions={['financial:flow:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar contas a pagar.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.FINANCIAL.ACCOUNTS_PAYABLE]}
+        wall={{
+          title: 'Movimentações a pagar',
+          description:
+            'Gerencie as contas a pagar e as obrigações financeiras da empresa.',
+          pageTitle: true,
+        }}
       >
         <Transactions searchParams={searchParams} type="payable" />
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

@@ -110,6 +110,9 @@ export type PayrollItemUpdate = PayrollStructureItem & {
 export type PayrollSystemKey =
   | 'BASE_SALARY'
   | 'INSS'
+  // O INSS da empresa (20 % fora do Simples; 0 no Simples e no MEI), item
+  // próprio desde 14/10/2026
+  | 'INSS_EMPLOYER'
   | 'FGTS'
   | 'THIRTEENTH'
   | 'VACATION'
@@ -124,7 +127,8 @@ export type PayrollTemplate = {
   defaultDiscount: number
   derivedFromSalary: boolean
   fixedByLaw: boolean
-  // Só INSS e FGTS: percentual com duas casas
+  // Só os INSS (do colaborador e da empresa) e o FGTS: percentual com duas
+  // casas
   rate: number | null
   isBase: boolean
   // Nulo nos itens que a empresa cadastrou
@@ -149,9 +153,11 @@ export const isSystemItem = (item: {
   systemKey: PayrollSystemKey | null
 }) => !!item.systemKey || item.isBase
 
-// Só INSS e FGTS têm alíquota, a mesma regra do servidor
+// Só os INSS e o FGTS têm alíquota, a mesma regra do servidor
 export const hasRate = (item: { systemKey: PayrollSystemKey | null }) =>
-  item.systemKey === 'INSS' || item.systemKey === 'FGTS'
+  item.systemKey === 'INSS' ||
+  item.systemKey === 'INSS_EMPLOYER' ||
+  item.systemKey === 'FGTS'
 
 // As contas são do servidor (contrato da folha): o custo final da linha, o
 // custo do colaborador (alimenta o custo do setor na Base de custos, ALT-19),

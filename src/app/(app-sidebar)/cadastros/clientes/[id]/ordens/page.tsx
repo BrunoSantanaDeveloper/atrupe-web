@@ -14,21 +14,21 @@ interface Props {
 
 export default function ClientOrdersPage({ params }: Props) {
   return (
-    <FeatureGate
-      features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
-      wall={{
-        title: 'Abas adicionais de cliente',
-        description:
-          'A aba Ordens de serviço reúne no cadastro as ordens de serviço do cliente.',
-      }}
+    <PermissionGate
+      permissions={['sale:order:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar ordens de serviço.
+        </div>
+      }
     >
-      <PermissionGate
-        permissions={['sale:order:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar ordens de serviço.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
+        wall={{
+          title: 'Abas adicionais de cliente',
+          description:
+            'A aba Ordens de serviço reúne no cadastro as ordens de serviço do cliente.',
+        }}
       >
         <div className="rounded-lg my-6 bg-white overflow-hidden">
           <Suspense
@@ -40,7 +40,7 @@ export default function ClientOrdersPage({ params }: Props) {
             />
           </Suspense>
         </div>
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

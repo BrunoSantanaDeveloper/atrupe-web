@@ -16,6 +16,7 @@ import { QuotationDelivery } from './Delivery'
 import { QuotationItems } from './QuotationItems'
 import { Topbar } from '@/components/common/Topbar'
 import { QuotationActions } from './QuotationActions'
+import { CreditBanner } from './CreditBanner'
 import { QuickSaleQuotation } from './QuickSaleQuotation'
 import { QuotationPaymentConditions } from './PaymentConditions'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
@@ -231,6 +232,7 @@ export function Quotation({ id }: Props) {
           label={data?.quickSale ? 'Venda rápida' : ''}
         />
         <div className="space-y-3">
+          <CreditBanner data={data} />
           <QuotationActions data={data} />
           <QuotationSummary data={data} />
           <QuotationProvider>

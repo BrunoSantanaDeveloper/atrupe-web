@@ -20,10 +20,16 @@ import type {
   PricingItemsPage,
   PricingParameters,
   PricingGroupSummary,
+  SuggestedPriceItem,
 } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { getItem, putItemNew, updateItemNew } from '@/actions/_cruds'
+import {
+  getItem,
+  putItemNew,
+  createItemNew,
+  updateItemNew,
+} from '@/actions/_cruds'
 
 const GROUPS: PricingGroup[] = ['labor', 'machines', 'materials', 'products']
 const STATUSES = ['todos', 'PRICED', 'PENDING', 'BELOW_COST', 'NO_COST']
@@ -270,4 +276,47 @@ export const updateItemPrice = async ({
   })
   if (!res.success) return fail<PricingItem | null>(res, null)
   return ok<PricingItem | null>(toItem(res.data ?? {}))
+}
+
+// Aplicar o preço sugerido a vários itens (CP-7, PO 14/10/2026): sem
+// `confirmed`, a API só devolve a prévia; com ele, grava. Produto pelo preço
+// da composição; mão de obra e máquina por custo × markup, como preço
+// variável pelo lucro desejado. Material fica no cadastro dele
+export const applySuggestedPrices = async ({
+  group,
+  ids,
+  confirmed,
+}: {
+  group: PricingGroup
+  ids: string[]
+  confirmed: boolean
+}) => {
+  type Applied = { items: SuggestedPriceItem[]; applied: number }
+  const empty: Applied = { items: [], applied: 0 }
+  if (group === 'materials') {
+    return refuse(
+      'O preço do material é gravado no cadastro do material',
+      empty,
+    )
+  }
+  const res: ApiResult = await createItemNew({
+    route: '/pricing/item/apply-suggested',
+    data: { group, ids, confirmed },
+  })
+  if (!res.success) return fail(res, empty)
+  return ok<Applied>({
+    items: rowsOf(res.data?.items).map((item) => ({
+      id: String(item.id ?? ''),
+      name: textOrNull(item.name),
+      cost: numOrNull(item.cost),
+      price: numOrNull(item.price),
+      suggestedPrice: numOrNull(item.suggestedPrice),
+      marginBefore: numOrNull(item.marginBefore),
+      marginAfter: numOrNull(item.marginAfter),
+      ...(textOrNull(item.skipped)
+        ? { skipped: textOrNull(item.skipped) as string }
+        : {}),
+    })),
+    applied: num(res.data?.applied),
+  })
 }

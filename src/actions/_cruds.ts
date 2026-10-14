@@ -284,6 +284,10 @@ export const createItemNew = async ({
       items: Array.isArray(userMessage?.items)
         ? (userMessage.items as { itemId: string; name: string }[])
         : undefined,
+      // O código da recusa de negócio, quando a API manda (CREDIT_CHECK na
+      // aprovação pelo crédito do cliente)
+      errorCode:
+        typeof userMessage?.code === 'string' ? userMessage.code : undefined,
     }
   }
 }

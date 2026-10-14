@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 // do clique que gera o PDF
 import { CancelOrder } from './CancelOrder'
 import { EmitNfe } from './EmitNfe'
+import { ReprocessApproval } from './ReprocessApproval'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
@@ -125,6 +126,13 @@ export function OrderActions({ data }: Props) {
           )}
         </div>
         <div className="flex flex-wrap gap-4">
+          {canCancel && data?.quotation?.id ? (
+            <PermissionGate
+              permissions={['sale:order:create', 'sale:quotation:edit']}
+            >
+              <ReprocessApproval quotationId={data.quotation.id} />
+            </PermissionGate>
+          ) : null}
           {canCancel ? (
             <PermissionGate permissions={['sale:order:edit']}>
               <CancelOrder data={data} />

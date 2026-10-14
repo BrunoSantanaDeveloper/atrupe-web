@@ -14,21 +14,21 @@ interface Props {
 
 export default function ClientQuotationsPage({ params }: Props) {
   return (
-    <FeatureGate
-      features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
-      wall={{
-        title: 'Abas adicionais de cliente',
-        description:
-          'A aba Orçamentos reúne no cadastro os orçamentos do cliente.',
-      }}
+    <PermissionGate
+      permissions={['sale:quotation:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar orçamentos.
+        </div>
+      }
     >
-      <PermissionGate
-        permissions={['sale:quotation:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar orçamentos.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
+        wall={{
+          title: 'Abas adicionais de cliente',
+          description:
+            'A aba Orçamentos reúne no cadastro os orçamentos do cliente.',
+        }}
       >
         <div className="rounded-lg my-6 bg-white overflow-hidden">
           <Suspense
@@ -40,7 +40,7 @@ export default function ClientQuotationsPage({ params }: Props) {
             />
           </Suspense>
         </div>
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

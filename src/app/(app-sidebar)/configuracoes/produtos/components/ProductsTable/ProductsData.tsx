@@ -436,23 +436,22 @@ export function ProductsData({ searchParams, tabs }: Props) {
                           )}
                           {/* Duplicar: outro produto com os mesmos dados e a
                               mesma composição, aberto para edição. Cria um
-                              produto, então pede também "Cria" (CC-9). Só
-                              com a flag até o dono decidir os dados fiscais,
-                              a confirmação e o código da cópia (CC-3) */}
-                          {DEMO_DATA && (
-                            <PermissionGate
-                              permissions={['product_settings:products:create']}
-                            >
-                              <DuplicateProductButton
-                                productId={product?.id}
-                                name={product?.name}
-                                onDone={(newId) => {
-                                  setSelectedProductId(newId)
-                                  setOpenDialog('edit-product')
-                                }}
-                              />
-                            </PermissionGate>
-                          )}
+                              produto, então pede também "Cria" (CC-9). O
+                              servidor copia fiscal, ST, variações e, com o
+                              plano, composição e faixas; o código ganha "-C"
+                              (liberado pelo PO em 14/10/2026) */}
+                          <PermissionGate
+                            permissions={['product_settings:products:create']}
+                          >
+                            <DuplicateProductButton
+                              productId={product?.id}
+                              name={product?.name}
+                              onDone={(newId) => {
+                                setSelectedProductId(newId)
+                                setOpenDialog('edit-product')
+                              }}
+                            />
+                          </PermissionGate>
                           <NewProductTriggerButton
                             editMode
                             onOpenChange={() => {

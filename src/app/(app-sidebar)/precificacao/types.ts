@@ -33,6 +33,19 @@ export type PriceRule = 'FIXED' | 'VARIABLE'
 
 export type PricingStatus = 'PRICED' | 'PENDING' | 'BELOW_COST' | 'NO_COST'
 
+// Uma linha da prévia do "aplicar preço sugerido" (CP-7): a margem antes e
+// depois, e o motivo de o item ficar de fora
+export type SuggestedPriceItem = {
+  id: string
+  name: string | null
+  cost: number | null
+  price: number | null
+  suggestedPrice: number | null
+  marginBefore: number | null
+  marginAfter: number | null
+  skipped?: string
+}
+
 export type PricingItem = {
   // Mão de obra: o id do setor. Máquinas: "setup:<configuração>" ou
   // "group:<grupo de bens>". Materiais: "mat:<material>[:<variação>]".

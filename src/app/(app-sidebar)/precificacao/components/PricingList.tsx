@@ -27,6 +27,9 @@ import {
 
 // Components
 import { EditPriceModal } from './EditPriceModal'
+import { ApplySuggestedDialog } from './ApplySuggestedDialog'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -59,7 +62,7 @@ import { formatReferenceMonth } from '@/app/(app-sidebar)/base-de-custos/referen
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconCurrencyReal } from '@tabler/icons-react'
+import { IconCurrencyReal, IconWand } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   group: PricingGroup
@@ -96,6 +99,11 @@ export function PricingList({
 }: Props) {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState<PricingItem>()
+  // Os itens marcados para o preço sugerido em lote (fora os materiais,
+  // cujo preço é gravado no cadastro)
+  const [selected, setSelected] = useState<string[]>([])
+  const [applying, setApplying] = useState(false)
+  const canApply = group !== 'materials'
   const status = (searchParams?.status as string) || 'todos'
   const search = searchParams?.search || ''
 
@@ -143,15 +151,46 @@ export function PricingList({
     return response
   }
 
+  const pageIds = items.map((item) => item.id)
+  const allSelected =
+    pageIds.length > 0 && pageIds.every((id) => selected.includes(id))
+  const toggle = (id: string) =>
+    setSelected((current) =>
+      current.includes(id)
+        ? current.filter((value) => value !== id)
+        : [...current, id],
+    )
+  const togglePage = () =>
+    setSelected((current) =>
+      allSelected
+        ? current.filter((id) => !pageIds.includes(id))
+        : [...current, ...pageIds.filter((id) => !current.includes(id))],
+    )
+
   return (
     <TooltipProvider>
       <Card>
-        <CardHeader>
-          <CardTitle>{pricingGroupObj[group]}</CardTitle>
-          <CardDescription>
-            {description}
-            {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
-          </CardDescription>
+        <CardHeader className="flex-row flex-wrap items-start justify-between gap-4">
+          <div className="space-y-1.5">
+            <CardTitle>{pricingGroupObj[group]}</CardTitle>
+            <CardDescription>
+              {description}
+              {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
+            </CardDescription>
+          </div>
+          {canApply ? (
+            <PermissionGate permissions={['cost:pricing:edit']}>
+              <Button
+                variant="neutralOutline"
+                LeftIcon={IconWand}
+                disabled={!selected.length}
+                onClick={() => setApplying(true)}
+              >
+                Aplicar preço sugerido
+                {selected.length ? ` (${selected.length})` : ''}
+              </Button>
+            </PermissionGate>
+          ) : null}
         </CardHeader>
         <TableFiltersHeader searchParams={searchParams}>
           <Tabs value={status} className="overflow-x-auto">
@@ -184,6 +223,15 @@ export function PricingList({
               <Table className="min-w-[1000px]">
                 <TableHeader>
                   <TableRow className="bg-gray-50">
+                    {canApply ? (
+                      <TableHead className="w-[40px]">
+                        <Checkbox
+                          aria-label="Marcar os itens da página"
+                          checked={allSelected}
+                          onCheckedChange={togglePage}
+                        />
+                      </TableHead>
+                    ) : null}
                     <TableHead className="w-[24%] min-w-[200px]">
                       {itemLabel === 'setor' ? 'Setor' : 'Item'}
                     </TableHead>
@@ -208,6 +256,15 @@ export function PricingList({
                 <TableBody>
                   {items.map((item) => (
                     <TableRow key={item.id}>
+                      {canApply ? (
+                        <TableCell>
+                          <Checkbox
+                            aria-label={`Marcar ${item.name}`}
+                            checked={selected.includes(item.id)}
+                            onCheckedChange={() => toggle(item.id)}
+                          />
+                        </TableCell>
+                      ) : null}
                       <TableCell>
                         <p className="font-medium">{item.name}</p>
                         {/* Código e setor podem vir nulos (o grupo de bens
@@ -293,6 +350,18 @@ export function PricingList({
           </>
         )}
       </Card>
+      {canApply ? (
+        <ApplySuggestedDialog
+          group={group}
+          ids={selected}
+          open={applying}
+          onOpenChange={setApplying}
+          onApplied={() => {
+            setSelected([])
+            queryClient.invalidateQueries({ queryKey: ['pricing-items'] })
+          }}
+        />
+      ) : null}
       <EditPriceModal
         group={group}
         item={editing}

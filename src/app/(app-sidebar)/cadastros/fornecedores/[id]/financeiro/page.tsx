@@ -12,25 +12,25 @@ interface Props {
 
 export default function SupplierFinancialPage({ params }: Props) {
   return (
-    <FeatureGate
-      features={[FEATURES.CONTACTS.SUPPLIER_ADDITIONAL_TABS]}
-      wall={{
-        title: 'Abas adicionais de fornecedor',
-        description:
-          'A aba Financeiro reúne no cadastro o saldo, as contas e as movimentações do fornecedor.',
-      }}
+    <PermissionGate
+      requireAll
+      permissions={['financial:flow:view', 'values:values:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar o financeiro do fornecedor.
+        </div>
+      }
     >
-      <PermissionGate
-        requireAll
-        permissions={['financial:flow:view', 'values:values:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar o financeiro do fornecedor.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.CONTACTS.SUPPLIER_ADDITIONAL_TABS]}
+        wall={{
+          title: 'Abas adicionais de fornecedor',
+          description:
+            'A aba Financeiro reúne no cadastro o saldo, as contas e as movimentações do fornecedor.',
+        }}
       >
         <EntityFinancialSummary entityId={params.id} entityType="supplier" />
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

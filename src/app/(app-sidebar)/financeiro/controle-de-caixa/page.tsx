@@ -21,33 +21,33 @@ export function metadata() {
 
 export default function CashControlPage({ searchParams }: SearchParamsType) {
   return (
-    <FeatureGate
-      features={[FEATURES.FINANCIAL.CASH_CONTROL]}
-      wall={{
-        title: 'Controle de caixa',
-        description: 'Controle as entradas e as saídas de caixa da empresa.',
-        pageTitle: true,
-      }}
+    <PermissionGate
+      requireAll
+      permissions={
+        DEMO_DATA
+          ? ['financial:cash_control:view', 'values:values:view']
+          : ['financial:cash_control:view']
+      }
+      fallback={<div>Você não tem permissão para acessar esta página.</div>}
     >
       {/* O caixa do dia (CX-0 a CX-5) ainda roda sobre dados de exemplo: só
           com a flag de demonstração, e com a permissão de valores, como a
           tela nova pede (o saldo é informação financeira). Sem a flag, a
           tela real */}
-      <PermissionGate
-        requireAll
-        permissions={
-          DEMO_DATA
-            ? ['financial:cash_control:view', 'values:values:view']
-            : ['financial:cash_control:view']
-        }
-        fallback={<div>Você não tem permissão para acessar esta página.</div>}
+      <FeatureGate
+        features={[FEATURES.FINANCIAL.CASH_CONTROL]}
+        wall={{
+          title: 'Controle de caixa',
+          description: 'Controle as entradas e as saídas de caixa da empresa.',
+          pageTitle: true,
+        }}
       >
         {DEMO_DATA ? (
           <DemoCashControl searchParams={searchParams} />
         ) : (
           <CashControl searchParams={searchParams} />
         )}
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }

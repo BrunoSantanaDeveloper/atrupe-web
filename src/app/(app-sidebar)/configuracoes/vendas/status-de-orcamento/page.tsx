@@ -12,24 +12,24 @@ export function metadata() {
 
 export default function QuotationStatusPage() {
   return (
-    <FeatureGate
-      features={[FEATURES.SALES.QUOTATION_STATUS_CONFIGURATION]}
-      wall={{
-        title: 'Status de orçamento',
-        description: 'Personalize os status dos seus orçamentos.',
-        pageTitle: true,
-      }}
+    <PermissionGate
+      permissions={['sales_settings:quotation_status:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar os status de orçamento.
+        </div>
+      }
     >
-      <PermissionGate
-        permissions={['sales_settings:quotation_status:view']}
-        fallback={
-          <div className="p-4">
-            Você não tem permissão para visualizar os status de orçamento.
-          </div>
-        }
+      <FeatureGate
+        features={[FEATURES.SALES.QUOTATION_STATUS_CONFIGURATION]}
+        wall={{
+          title: 'Status de orçamento',
+          description: 'Personalize os status dos seus orçamentos.',
+          pageTitle: true,
+        }}
       >
         <Main />
-      </PermissionGate>
-    </FeatureGate>
+      </FeatureGate>
+    </PermissionGate>
   )
 }
