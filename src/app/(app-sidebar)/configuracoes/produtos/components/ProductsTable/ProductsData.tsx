@@ -383,7 +383,9 @@ export function ProductsData({ searchParams, tabs }: Props) {
                         </Badge>
                       )}
                     </p>
-                    <p className="text-gray">{product?.code}</p>
+                    {/* O produto salvo do item montado nasce sem código: ele sai
+                        ao liberar a composição para venda (ORC-11) */}
+                    <p className="text-gray">{product?.code || 'Sem código'}</p>
                   </TableCell>
                   <TableCell className="text-gray-600">
                     <Badge variant="neutralLight">{product?.sectorName}</Badge>
