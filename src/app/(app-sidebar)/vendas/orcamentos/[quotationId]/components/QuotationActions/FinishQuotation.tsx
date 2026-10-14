@@ -88,7 +88,12 @@ export function FinishQuotation({ data, canFinish }: Props) {
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
     enabled: !!data?.id && DEMO_DATA,
   })
-  const composedAttention = !!composedRes?.data?.some((item) => item.attention)
+  // O item montado da API sem etapa também trava (MS-12; o servidor confere)
+  const composedAttention =
+    !!composedRes?.data?.some((item) => item.attention) ||
+    !!data?.quotationItems?.some(
+      (item) => item.origin === 'COMPOSED' && item.attention,
+    )
 
   // Produto inativado depois de lançado (PAD-7): concluir pode, aprovar não
   const { inactiveItems } = useInactiveQuotationItems(data)

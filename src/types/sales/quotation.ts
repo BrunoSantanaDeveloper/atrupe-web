@@ -25,6 +25,15 @@ export type QuotationItemType = {
   // Acréscimo em centavos, fora do desconto (ALT-25)
   addition?: number
   origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL'
+  // O item montado na hora (ORC-11): o rascunho, a medida em mm e as
+  // etapas; sem etapa, "Exige atenção" (MS-12)
+  draft?: {
+    id: string
+    width: number | null
+    height: number | null
+    stages: number
+  } | null
+  attention?: boolean
   // O material de venda direta (ORG-1); nulo nos outros itens. O preço por
   // unidade só vem com a permissão de valores
   material?: {

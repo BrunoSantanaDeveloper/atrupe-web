@@ -44,6 +44,7 @@ import {
   deleteItemNew,
   updateItemNew,
 } from '@/actions/_cruds'
+import { DRAFT_HOST_PREFIX } from '@/lib/composed-draft'
 import { getProcessResources } from '@/actions/processes'
 
 const VARIANT_SEP = '::v:'
@@ -62,10 +63,23 @@ const fail = <T>(res: ApiResult, data: T): Result<T> => ({
   message: res.message || 'Não foi possível concluir.',
 })
 
+// O rascunho do item montado no orçamento (ORC-11, Fase 4.5) usa o mesmo
+// editor: o id é "qdraft:<orçamento>:<rascunho>" e as rotas são as do
+// orçamento, com o rascunho como dono da composição
+const DRAFT_HOST = DRAFT_HOST_PREFIX
+
 // A aba da variação é "<produto>::v:<variação>"
 const hostOf = (productId: string) => {
+  if (productId.startsWith(DRAFT_HOST)) {
+    const [, quotationId, draftId] = productId.split(':')
+    return {
+      id: draftId,
+      variationId: null,
+      base: `/sale/quotation/${quotationId}/composed-draft/${draftId}`,
+    }
+  }
   const [id, variationId] = productId.split(VARIANT_SEP)
-  return { id, variationId: variationId || null }
+  return { id, variationId: variationId || null, base: `/product/${id}` }
 }
 const withVariation = (
   variationId: string | null,
@@ -414,7 +428,7 @@ export const getAssembly = async ({
     params.height = String(toMm(measure.height))
   }
   const res: ApiResult = await getItem({
-    route: `/product/${host.id}/assembly`,
+    route: `${host.base}/assembly`,
     params,
   })
   if (!res.success) return fail(res, null)
@@ -432,7 +446,7 @@ export const getNextStepCandidates = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await getItem({
-    route: `/product/${host.id}/assembly/next-step`,
+    route: `${host.base}/assembly/next-step`,
     params: {
       ...withVariation(host.variationId),
       ...(blockId ? { blockId } : {}),
@@ -472,7 +486,7 @@ export const getPartCandidates = async ({
   }[] = []
   for (let page = 1; page <= MAX_PAGES; page++) {
     const res: ApiResult = await getItem({
-      route: `/product/${host.id}/assembly/part-candidate`,
+      route: `${host.base}/assembly/part-candidate`,
       params: { page: String(page), limit: String(PAGE_SIZE) },
     })
     if (!res.success) return fail(res, data)
@@ -553,7 +567,7 @@ export const updateAssembly = async ({
   }
   if (Object.keys(header).length) {
     const res: ApiResult = await updateItemNew({
-      route: `/product/${host.id}/assembly`,
+      route: `${host.base}/assembly`,
       data: { ...withVariation(host.variationId), ...header },
     })
     if (!res.success) return fail(res, null)
@@ -657,7 +671,7 @@ const addBlock = async (
 ) => {
   const host = hostOf(productId)
   const res: ApiResult = await createItemNew({
-    route: `/product/${host.id}/assembly/block`,
+    route: `${host.base}/assembly/block`,
     data: { ...withVariation(host.variationId), ...body },
   })
   return res.success ? ok(res.data?.id as string) : fail(res, null)
@@ -722,7 +736,7 @@ const patchBlock = async (
 ) => {
   const host = hostOf(productId)
   const res: ApiResult = await updateItemNew({
-    route: `/product/${host.id}/assembly/block/${blockId}`,
+    route: `${host.base}/assembly/block/${blockId}`,
     data: { ...withVariation(host.variationId), ...body },
   })
   return res.success ? ok(null) : fail(res, null)
@@ -737,7 +751,7 @@ export const removeAssemblyBlock = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await deleteItemNew({
-    route: `/product/${host.id}/assembly/block/${blockId}`,
+    route: `${host.base}/assembly/block/${blockId}`,
     params: withVariation(host.variationId),
   })
   return res.success ? ok(null) : fail(res, null)
@@ -841,7 +855,7 @@ export const restoreProcessLines = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await createItemNew({
-    route: `/product/${host.id}/assembly/block/${blockId}/restore-process-lines`,
+    route: `${host.base}/assembly/block/${blockId}/restore-process-lines`,
     data: withVariation(host.variationId),
   })
   return res.success ? ok(null) : fail(res, null)
@@ -1030,7 +1044,7 @@ export const addProductField = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await createItemNew({
-    route: `/product/${host.id}/assembly/field`,
+    route: `${host.base}/assembly/field`,
     data: {
       ...withVariation(host.variationId),
       name,
@@ -1056,7 +1070,7 @@ export const updateProductField = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await updateItemNew({
-    route: `/product/${host.id}/assembly/field/${fieldId}`,
+    route: `${host.base}/assembly/field/${fieldId}`,
     data: {
       ...withVariation(host.variationId),
       name,
@@ -1076,7 +1090,7 @@ export const removeProductField = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await deleteItemNew({
-    route: `/product/${host.id}/assembly/field/${fieldId}`,
+    route: `${host.base}/assembly/field/${fieldId}`,
     params: withVariation(host.variationId),
   })
   return res.success ? ok(null) : fail(res, null)
@@ -1093,7 +1107,7 @@ export const addProductFormula = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await createItemNew({
-    route: `/product/${host.id}/assembly/formula`,
+    route: `${host.base}/assembly/formula`,
     data: { ...withVariation(host.variationId), name, expression },
   })
   return res.success ? ok(res.data?.id as string) : fail(res, null)
@@ -1112,7 +1126,7 @@ export const updateProductFormula = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await updateItemNew({
-    route: `/product/${host.id}/assembly/formula/${formulaId}`,
+    route: `${host.base}/assembly/formula/${formulaId}`,
     data: { ...withVariation(host.variationId), name, expression },
   })
   return res.success ? ok(null) : fail(res, null)
@@ -1127,7 +1141,7 @@ export const removeProductFormula = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await deleteItemNew({
-    route: `/product/${host.id}/assembly/formula/${formulaId}`,
+    route: `${host.base}/assembly/formula/${formulaId}`,
     params: withVariation(host.variationId),
   })
   return res.success ? ok(null) : fail(res, null)
@@ -1215,7 +1229,7 @@ export const adoptSuggestedPrice = async ({
 }) => {
   const host = hostOf(productId)
   const res: ApiResult = await createItemNew({
-    route: `/product/${host.id}/assembly/adopt-suggested-price`,
+    route: `${host.base}/assembly/adopt-suggested-price`,
     data: withVariation(host.variationId),
   })
   return res.success ? ok(res.data?.unitPrice as number) : fail(res, null)

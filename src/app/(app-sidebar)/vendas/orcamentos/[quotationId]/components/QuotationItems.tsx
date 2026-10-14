@@ -84,6 +84,7 @@ import {
   type ReportTarget,
 } from '../composicao/components/CompositionReport'
 import type { ComposedItemSummary } from '../composicao/types'
+import { draftHostOf } from '@/lib/composed-draft'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -187,7 +188,30 @@ export function QuotationItems({ data }: Props) {
       attention: false,
       fromApi: true,
     }))
-  const composed = [...materialRows, ...(composedRes?.data || [])]
+  // O item montado na hora vem da API (Fase 4.5): o editor abre o rascunho
+  // dele; a medida vem em mm e a tela mostra em metros
+  const composedRows: ComposedItemSummary[] = (data?.quotationItems ?? [])
+    .filter((item) => item.origin === 'COMPOSED')
+    .map((item) => ({
+      id: item.id,
+      origin: 'COMPOSED',
+      draftId: item.draft ? draftHostOf(String(data?.id), item.draft.id) : '',
+      name: item.description,
+      description: item.technicalDescription || '',
+      quantity: item.product?.quantity || 1,
+      width: (item.draft?.width ?? 1000) / 1000,
+      height: (item.draft?.height ?? 1000) / 1000,
+      stages: item.draft?.stages ?? 0,
+      sectors: [],
+      price: item.finalValue,
+      attention: !!item.attention,
+      fromApi: true,
+    }))
+  const composed = [
+    ...materialRows,
+    ...composedRows,
+    ...(composedRes?.data || []),
+  ]
 
   // O que foi acrescentado dentro de cada item (ORC-5): vem no item, do
   // detalhe do orçamento, sem custo (ORC-7)
@@ -276,9 +300,9 @@ export function QuotationItems({ data }: Props) {
     }
   }
 
-  // O material vai com os itens montados, abaixo
+  // O material e o item montado vão com os itens montados, abaixo
   const items = data?.quotationItems?.filter(
-    (item) => item.origin !== 'MATERIAL',
+    (item) => item.origin !== 'MATERIAL' && item.origin !== 'COMPOSED',
   )
 
   return (

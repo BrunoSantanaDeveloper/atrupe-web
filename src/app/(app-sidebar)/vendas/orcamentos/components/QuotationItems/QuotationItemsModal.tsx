@@ -60,7 +60,6 @@ import { getDirectSaleMaterials } from '@/actions/material-item'
 
 // Utils
 import { cn, parseCurrencyToBrl } from '@/lib/utils'
-import { DEMO_DATA } from '@/lib/demo'
 
 // Helper para converter unitKind para símbolo da unidade
 export function getUnitSymbol(unitKind: string | null | undefined): string {
@@ -136,12 +135,12 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
     isLoading: loadingProducts,
     refetch,
   } = useProducts()
-  // Os materiais de venda direta, do cadastro de materiais (mock): só com a
-  // flag de demonstração, para a busca não listar material de exemplo
+  // Os materiais de venda direta, do cadastro de materiais (Fase 4.4): sem
+  // a base de custos no plano, a API devolve a lista vazia
   const { data: materialsRes } = useQuery({
     queryKey: ['direct-sale-materials'],
     queryFn: () => getDirectSaleMaterials(),
-    enabled: open && DEMO_DATA,
+    enabled: open,
   })
 
   const [search, setSearch] = useState('')
@@ -452,25 +451,23 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
         <DialogFooter className="sm:justify-between">
           {/* Composição é o último botão, e é a exceção (ORC-1, ORC-11): para
               quando o produto não existe pronto. Tracejado, para não
-              disputar atenção com a busca. O item montado ainda fica em dado
-              de demonstração: o botão só aparece com a flag */}
+              disputar atenção com a busca. O item montado vai para a API
+              desde a Fase 4.5 */}
           <div>
-            {DEMO_DATA && (
-              <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
-                <Button
-                  type="button"
-                  variant="neutralOutline"
-                  LeftIcon={IconPuzzle}
-                  className={cn(
-                    'border-dashed border-gray-300 bg-gray-50 text-gray-600 shadow-none',
-                  )}
-                  title="Montar um item que não existe pronto"
-                  onClick={() => openChangeModal(true, 'composeItem')}
-                >
-                  Composição
-                </Button>
-              </FeatureGate>
-            )}
+            <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconPuzzle}
+                className={cn(
+                  'border-dashed border-gray-300 bg-gray-50 text-gray-600 shadow-none',
+                )}
+                title="Montar um item que não existe pronto"
+                onClick={() => openChangeModal(true, 'composeItem')}
+              >
+                Composição
+              </Button>
+            </FeatureGate>
           </div>
           <Button
             type="button"

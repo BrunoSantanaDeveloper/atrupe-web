@@ -61,6 +61,8 @@ import type {
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Actions
+// As etapas usam o editor da composição do produto, com o id do rascunho
+// (Fase 4.5): as rotas vão para o orçamento
 import {
   linkBlock,
   unlinkBlock,
@@ -70,17 +72,18 @@ import {
   getPartCandidates,
   removeAssemblyBlock,
   replaceBlockProcess,
+  getAssemblyResources,
+  getNextStepCandidates,
+} from '@/actions/assembly'
+import {
+  addComposedItem,
+  updateComposedItem,
   saveDraftAsProduct,
   createDraftAssembly,
   updateDraftAssembly,
   getComposedItemView,
-  getAssemblyResources,
-  getNextStepCandidates,
-} from '@/actions/product-assembly'
-import {
-  addComposedItem,
-  updateComposedItem,
-} from '@/actions/quotation-composition'
+} from '@/actions/composed-item'
+import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
 
 // Hooks / Store / Consts
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -190,10 +193,10 @@ export function QuotationComposeModal({
     setWidth('1')
     setHeight('1')
     setDraftId(null)
-    createDraftAssembly({}).then((res) => {
+    createDraftAssembly({ quotationId }).then((res) => {
       if (res.success && res.data) setDraftId(res.data)
     })
-  }, [open, editing])
+  }, [open, editing, quotationId])
 
   const { data: viewRes } = useQuery({
     enabled: open && !!draftId,
@@ -356,7 +359,8 @@ export function QuotationComposeModal({
         : await addComposedItem({ ...payload, draftId })
       if (!res.success) return toast.error(res.message)
       toast.success(editing ? 'Item atualizado' : 'Item acrescentado')
-      queryClient.invalidateQueries({ queryKey: ['composed-items'] })
+      // O item e o total do orçamento voltam do servidor
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       close()
     } finally {
       setSaving(false)
