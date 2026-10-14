@@ -19,6 +19,7 @@ import { NewProduct, NewProductTriggerButton } from './NewProduct'
 import { ProductFiscalDataDialog } from './ProductFiscalData'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { FiscalPendenciasAlert } from './FiscalPendenciasAlert'
@@ -32,6 +33,10 @@ import type { ProductListType } from '@/types/settings/products'
 
 // Actions
 import { getData, getDataOld } from '@/actions/_cruds'
+import { toast } from 'sonner'
+import { getLibrary, importFromLibrary } from '@/actions/product-assembly'
+import { LibraryDialog } from '../[id]/composicao/components/AssemblyDialogs'
+import type { LibraryEntry } from '../[id]/composicao/assembly'
 
 // Libs
 import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
@@ -40,7 +45,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconPackageOff, IconFolders } from '@tabler/icons-react'
+import { IconPackageOff, IconFolders, IconBooks } from '@tabler/icons-react'
 
 function getProductUnitKind(product: ProductListType) {
   return product.items?.[0]?.unitKind || 'UNITY'
@@ -121,11 +126,11 @@ const PRODUCT_FISCAL_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
     getValue: (product) => product.fiscalData?.cofinsCst,
   },
   {
-    header: 'Codigo servico',
+    header: 'Código do serviço',
     getValue: (product) => product.fiscalData?.codigoServico,
   },
   {
-    header: 'Aliquota ISS',
+    header: 'Alíquota ISS',
     type: 'percent',
     getValue: (product) => product.fiscalData?.aliquotaIss,
   },
@@ -137,13 +142,32 @@ const PRODUCT_FISCAL_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
 
 export function Products({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState<string>('')
+  // A biblioteca de produtos (IP-7) vive aqui, na lista (03/10/2026): a
+  // pessoa escolhe um produto de referência, cadastra o seu a partir dele e
+  // a composição entra para ser revisada, um por vez
+  const [libraryPick, setLibraryPick] = useState<LibraryEntry | null>(null)
+  const { data: libraryRes } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['assembly-library'],
+    queryFn: () => getLibrary(),
+  })
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [selectedProductName, setSelectedProductName] = useState<string>('')
   const { hasAllPermissions } = usePermissions()
-  const { hasFiscalModule } = usePlanFeatures()
+  const { hasFiscalModule, hasFeature } = usePlanFeatures()
 
   const canConfigureProductFiscalData =
     hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
+  // No PRO o produto recém-criado reabre na aba Composição (CP-16)
+  const canCompose = hasFeature(FEATURES.COSTS.COST_BASE)
+
+  const openAfterCreate = (product: { id: string; name: string }) => {
+    setTimeout(() => {
+      setSelectedProductId(product.id)
+      setSelectedProductName(product.name)
+      setOpenDialog(canCompose ? 'compose-product' : 'fiscal-data')
+    }, 500)
+  }
 
   // EC-26: sem a permissão "Valores", a planilha sai sem as colunas de preço
   const canSeeValues = hasAllPermissions(['values:values:view'])
@@ -230,6 +254,19 @@ export function Products({ searchParams }: SearchParamsType) {
                 Icon={IconFolders}
                 link="/configuracoes/produtos/grupo-de-produtos"
               />
+              {canCompose && (
+                <PermissionGate
+                  permissions={['product_settings:products:create']}
+                >
+                  <ActionButton
+                    tooltip="Biblioteca de produtos"
+                    size="iconMd"
+                    variant="neutralOutline"
+                    Icon={IconBooks}
+                    onClick={() => setOpenDialog('library')}
+                  />
+                </PermissionGate>
+              )}
               <PermissionGate
                 permissions={['product_settings:products:create']}
               >
@@ -242,6 +279,52 @@ export function Products({ searchParams }: SearchParamsType) {
             </TooltipProvider>
           }
         />
+        <LibraryDialog
+          open={openDialog === 'library'}
+          entries={libraryRes?.data || []}
+          hasStages={false}
+          onOpenChange={() => setOpenDialog('')}
+          onImport={(libraryId) => {
+            const entry = (libraryRes?.data || []).find(
+              (item) => item.id === libraryId,
+            )
+            if (!entry) return
+            setLibraryPick(entry)
+            setOpenDialog('library-product')
+          }}
+        />
+        {/* O produto nasce do item da biblioteca: nome e descritivo vêm
+            preenchidos; ao salvar, a composição de referência entra e o
+            produto abre na aba Composição para ser revisado */}
+        <NewProduct
+          open={openDialog === 'library-product'}
+          initialValues={
+            libraryPick
+              ? {
+                  name: libraryPick.name,
+                  technicalDescription: libraryPick.description,
+                }
+              : undefined
+          }
+          onOpenChange={() => {
+            setOpenDialog('')
+            setLibraryPick(null)
+          }}
+          onSuccess={async (product) => {
+            if (!libraryPick || !product?.id) return
+            const res = await importFromLibrary({
+              productId: product.id,
+              libraryId: libraryPick.id,
+            })
+            if (!res.success) toast.error(res.message)
+            else
+              toast.success(
+                'Composição de referência importada. Revise materiais, tempos e valores antes de liberar para venda.',
+              )
+            setLibraryPick(null)
+            openAfterCreate(product)
+          }}
+        />
         <FiscalPendenciasAlert />
 
         <div>
@@ -251,7 +334,7 @@ export function Products({ searchParams }: SearchParamsType) {
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Sem produtos para o status: ${statusLabel}`}
+                  title={`Nenhum produto para o status: ${statusLabel}`}
                   icon={IconPackageOff}
                 />
               ) : (
@@ -265,19 +348,15 @@ export function Products({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconPackageOff}
-                title="Sem produtos cadastrados"
+                title="Nenhum produto cadastrado"
                 description="Cadastre seu primeiro produto"
                 cta={
                   <NewProduct
                     open={openDialog === 'new-product'}
                     onOpenChange={() => setOpenDialog('')}
                     onSuccess={(product) => {
-                      if (canConfigureProductFiscalData) {
-                        setTimeout(() => {
-                          setSelectedProductId(product.id)
-                          setSelectedProductName(product.name)
-                          setOpenDialog('fiscal-data')
-                        }, 500)
+                      if (canCompose || canConfigureProductFiscalData) {
+                        openAfterCreate(product)
                       }
                     }}
                   />
@@ -290,12 +369,21 @@ export function Products({ searchParams }: SearchParamsType) {
           open={openDialog === 'new-product'}
           onOpenChange={() => setOpenDialog('')}
           onSuccess={(product) => {
-            if (canConfigureProductFiscalData) {
-              setTimeout(() => {
-                setSelectedProductId(product.id)
-                setSelectedProductName(product.name)
-                setOpenDialog('fiscal-data')
-              }, 500)
+            if (canCompose || canConfigureProductFiscalData) {
+              openAfterCreate(product)
+            }
+          }}
+        />
+        <NewProduct
+          open={openDialog === 'compose-product'}
+          editMode
+          productId={selectedProductId}
+          initialTab="composition"
+          onOpenChange={(open) => {
+            if (!open) {
+              setOpenDialog('')
+              setSelectedProductId('')
+              setSelectedProductName('')
             }
           }}
         />

@@ -11,12 +11,16 @@
 // Types
 import type {
   SaleRules,
+  AfterBase,
   AssemblyLine,
+  QuoteField,
+  ProductFormula,
   AssemblyBlock,
   AssemblyMeasure,
   ComputedLine,
   ComputedBlock,
   ProductAssembly,
+  AssemblySeed,
   ComputedAssembly,
   ProductVariation,
   ProcessCatalogItem,
@@ -34,7 +38,17 @@ import type {
   PriceTier,
   SheetYield,
   ResourceOption,
+  FlowStage,
+  UsualNeighbor,
+  ComposedItemView,
+  NextStepCandidates,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
+import {
+  evaluateFormula,
+  formulaUsesName,
+  type FormulaVars,
+} from '@/lib/formula'
+import { materialResources } from './materials-data'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
@@ -88,12 +102,21 @@ const finishingRules: SaleRules = {
   descriptionEditable: false,
 }
 
+// O processo não sabe se é base ou acabamento: isso é a posição dele no
+// produto (FL-2, 03/10/2026). Ele só diz o que prefere quando entra depois
+// de outra etapa: herdar a medida da base ou pedir a própria
 type Template = Omit<
   AssemblyBlock,
-  'id' | 'baseBlockId' | 'localRules' | 'lines' | 'processId'
+  | 'id'
+  | 'dependsOn'
+  | 'baseBlockId'
+  | 'localRules'
+  | 'lines'
+  | 'processId'
+  | 'role'
 > & {
   processId: string
-  finishingOf: string | null
+  afterBase: AfterBase
   lines: Omit<AssemblyLine, 'id' | 'overridden'>[]
 }
 
@@ -148,8 +171,7 @@ const catalog: Template[] = [
     processId: 'impressao-digital',
     name: 'Impressão digital',
     sector: 'Gráfica',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 10,
     sectorHourCost: HOUR['Gráfica'],
     taskType: 'Impressão',
@@ -207,12 +229,15 @@ const catalog: Template[] = [
     processId: 'corte-guilhotina',
     name: 'Corte na guilhotina',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Gráfica',
+    afterBase: 'INHERIT',
     setupMinutes: 5,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: { ...finishingRules, followsBase: false },
+    originalRules: {
+      ...baseRules,
+      followsBase: false,
+      descriptionEditable: false,
+    },
     lines: [
       {
         name: 'Tempo de corte',
@@ -231,8 +256,7 @@ const catalog: Template[] = [
     processId: 'impressao-solvente',
     name: 'Impressão solvente',
     sector: 'Impressão',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 10,
     sectorHourCost: HOUR['Impressão'],
     taskType: 'Impressão',
@@ -283,12 +307,11 @@ const catalog: Template[] = [
     processId: 'acabamento-banner',
     name: 'Acabamento de banner',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 10,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: finishingRules,
+    originalRules: { ...baseRules, descriptionEditable: false },
     lines: [
       {
         name: 'Tempo por banner',
@@ -352,12 +375,11 @@ const catalog: Template[] = [
     processId: 'bainha',
     name: 'Bainha',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 10,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: finishingRules,
+    originalRules: { ...baseRules, descriptionEditable: false },
     lines: [
       {
         name: 'Tempo por metro de bainha',
@@ -389,14 +411,14 @@ const catalog: Template[] = [
     processId: 'ilhos',
     name: 'Ilhós',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 5,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
     // O campo extra do ilhós é o espaçamento, com casas decimais (IP-19)
     originalRules: {
-      ...finishingRules,
+      ...baseRules,
+      descriptionEditable: false,
       extraField: 'DECIMAL',
       extraFieldName: 'Distância entre ilhoses (m)',
       extraFieldDefault: 0.5,
@@ -410,6 +432,7 @@ const catalog: Template[] = [
         selectedId: 'mo-Produção',
         perUnit: 1,
         formula: 'PER_PERIMETER_DIV_EXTRA',
+        fieldName: 'Distância entre ilhoses (m)',
         lossPercent: 0,
         minimum: null,
       },
@@ -423,6 +446,7 @@ const catalog: Template[] = [
         selectedId: 'ilhos',
         perUnit: 1,
         formula: 'PER_PERIMETER_DIV_EXTRA',
+        fieldName: 'Distância entre ilhoses (m)',
         lossPercent: 0,
         minimum: null,
       },
@@ -432,12 +456,11 @@ const catalog: Template[] = [
     processId: 'laminacao',
     name: 'Laminação',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 5,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: finishingRules,
+    originalRules: { ...baseRules, descriptionEditable: false },
     lines: [
       {
         name: 'Filme',
@@ -469,8 +492,7 @@ const catalog: Template[] = [
     processId: 'arte',
     name: 'Criação da arte',
     sector: 'Criação',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 0,
     sectorHourCost: HOUR['Criação'],
     taskType: 'Criação',
@@ -502,8 +524,7 @@ const catalog: Template[] = [
     processId: 'instalacao',
     name: 'Instalação',
     sector: 'Instalação',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 0,
     sectorHourCost: HOUR['Instalação'],
     taskType: 'Instalação',
@@ -549,20 +570,47 @@ const catalog: Template[] = [
   },
 ]
 
+// A regra de medida nasce da posição da etapa no produto (decidido em
+// 03/10/2026). Depois de outra etapa, o processo que prefere herdar passa a
+// usar a medida da base e a quantidade dela; o que prefere a própria entra
+// como está. Começando um caminho, pede medida e quantidade próprias
+const rulesByPosition = (
+  rules: SaleRules,
+  afterBase: AfterBase,
+  dependsOn: string[],
+): SaleRules => {
+  if (dependsOn.length && afterBase === 'INHERIT') {
+    return { ...rules, dimension: 'SAME_AS_PARENT', quantityMode: 'HIDDEN_ONE' }
+  }
+  if (rules.dimension !== 'SAME_AS_PARENT') return { ...rules }
+  return {
+    ...rules,
+    dimension: 'FREE_SIZE',
+    quantityMode:
+      rules.quantityMode === 'HIDDEN_ONE' ? 'FREE' : rules.quantityMode,
+  }
+}
+
 const fromTemplate = (
   template: Template,
-  baseBlockId: string | null,
+  // As etapas de que esta depende (FL-1). A primeira é a referência de
+  // medida (MS-5)
+  dependsOn: string[],
 ): AssemblyBlock => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { finishingOf, lines, ...rest } = template
+  const { afterBase, lines, ...rest } = template
   return {
     ...rest,
     id: `b${uid()}`,
-    baseBlockId,
+    role: dependsOn.length ? 'FINISHING' : 'BASE',
+    dependsOn: [...dependsOn],
+    baseBlockId: dependsOn[0] ?? null,
+    originalRules: rulesByPosition(rest.originalRules, afterBase, dependsOn),
     localRules: null,
     lines: lines.map((line) => ({
-      ...line,
+      ...structuredClone(line),
       id: `l${uid()}`,
+      // O molde vem do processo (templateOf), que já tem o id de cada linha
+      sourceLineId: (line as Partial<AssemblyLine>).id,
       overridden: false,
     })),
   }
@@ -572,11 +620,11 @@ const fromTemplate = (
  * Processos (MS-11): o processo é guardado no mesmo formato da etapa da
  * composição — linhas de escolha e lista, opções com consumo próprio, regras
  * de venda, tempo e tipo de tarefa. A tela de Processos edita esse formato,
- * e o produto copia o processo ao incluí-lo
+ * e o produto que inclui o processo acompanha a montagem dele (CP-21)
  * ------------------------------------------------------------------------- */
 
 type ProcessMeta = {
-  finishingOf: string | null
+  afterBase: AfterBase
   sellerInstructions: string
   active: boolean
 }
@@ -588,12 +636,14 @@ const processStore = new Map<
 >()
 
 catalog.forEach((template) => {
-  const { finishingOf, lines, processId, ...rest } = template
+  const { afterBase, lines, processId, ...rest } = template
   processStore.set(processId, {
     block: {
       ...rest,
       id: `p-${processId}`,
+      role: 'BASE',
       processId: null,
+      dependsOn: [],
       baseBlockId: null,
       localRules: null,
       lines: lines.map((line) => ({
@@ -602,9 +652,29 @@ catalog.forEach((template) => {
         overridden: false,
       })),
     },
-    meta: { finishingOf, sellerInstructions: '', active: true },
+    meta: { afterBase, sellerInstructions: '', active: true },
   })
 })
+
+// As etapas seguintes usuais (FL-7): um par (processo → processo seguinte),
+// guardado uma vez e editável dos dois lados. "+ etapa seguinte" mostra
+// primeiro os marcados; "ver todos" abre o resto. Nada é bloqueado
+const pairKey = (fromProcessId: string, toProcessId: string) =>
+  `${fromProcessId}→${toProcessId}`
+const usualNext = new Set<string>(
+  [
+    ['impressao-solvente', 'acabamento-banner'],
+    ['impressao-solvente', 'bainha'],
+    ['impressao-solvente', 'ilhos'],
+    ['impressao-solvente', 'laminacao'],
+    ['bainha', 'ilhos'],
+    ['impressao-digital', 'corte-guilhotina'],
+    ['arte', 'impressao-solvente'],
+    ['arte', 'impressao-digital'],
+    ['acabamento-banner', 'instalacao'],
+    ['laminacao', 'instalacao'],
+  ].map(([from, to]) => pairKey(from, to)),
+)
 
 const templateOf = (processId: string): Template | undefined => {
   const entry = processStore.get(processId)
@@ -612,7 +682,7 @@ const templateOf = (processId: string): Template | undefined => {
   return {
     ...entry.block,
     processId,
-    finishingOf: entry.meta.finishingOf,
+    afterBase: entry.meta.afterBase,
     lines: entry.block.lines,
   } as Template
 }
@@ -623,7 +693,7 @@ const processTemplates = (onlyActive = true) =>
     .map((id) => templateOf(id)!)
 
 // O Banner do legado (ITP1): impressão solvente + acabamento de banner
-const bannerBase = fromTemplate(templateOf('impressao-solvente')!, null)
+const bannerBase = fromTemplate(templateOf('impressao-solvente')!, [])
 const assemblies: ProductAssembly[] = [
   {
     productId: 'banner',
@@ -642,7 +712,7 @@ const assemblies: ProductAssembly[] = [
       'Lona 440 g impressa em solvente, com bastão de madeira, ponteiras e cordão.',
     blocks: [
       bannerBase,
-      fromTemplate(templateOf('acabamento-banner')!, bannerBase.id),
+      fromTemplate(templateOf('acabamento-banner')!, [bannerBase.id]),
     ],
     variations: [
       {
@@ -678,7 +748,7 @@ const assemblies: ProductAssembly[] = [
 // O cartão de visita da regra AP-1: 5 × 9 cm, mil unidades. Na A3 cabem
 // 24 na melhor posição (20 na outra) e são 42 folhas; o 4x4 passa cada
 // folha duas vezes (PV-7). A tabela por faixa é a da gráfica (FQ-1)
-const cartaoBase = fromTemplate(templateOf('impressao-digital')!, null)
+const cartaoBase = fromTemplate(templateOf('impressao-digital')!, [])
 assemblies.push({
   productId: 'cartao',
   name: 'Cartão de visita',
@@ -700,7 +770,7 @@ assemblies.push({
   technicalDescription: 'Cartão 5 × 9 cm em couchê 300 g, impressão colorida.',
   blocks: [
     cartaoBase,
-    fromTemplate(templateOf('corte-guilhotina')!, cartaoBase.id),
+    fromTemplate(templateOf('corte-guilhotina')!, [cartaoBase.id]),
   ],
   variations: [
     {
@@ -716,12 +786,20 @@ assemblies.push({
 
 // O quadro de metalon é uma parte (IP-9): produto que não se vende sozinho e
 // entra na composição de outros — a placa em lona com quadro de ferro
-const metalon = (id: string, name: string, unitCost: number) => ({
+const metalon = (
+  id: string,
+  name: string,
+  unitCost: number,
+  x: number,
+  y: number,
+) => ({
   id,
   name,
   unit: 'm',
   unitCost,
   unitSale: unitCost * 2,
+  // Lados do perfil (MT-10.1), para a fórmula descontar o certo
+  profile: { x, y, barLength: 6000 },
 })
 
 assemblies.push({
@@ -745,6 +823,7 @@ assemblies.push({
       name: 'Estrutura soldada',
       sector: 'Produção',
       role: 'BASE',
+      dependsOn: [],
       baseBlockId: null,
       setupMinutes: 20,
       sectorHourCost: HOUR['Produção'],
@@ -758,8 +837,8 @@ assemblies.push({
           kind: 'MATERIAL',
           mode: 'CHOOSE',
           options: [
-            metalon('metalon20', 'Metalon 20 × 20', 1000),
-            metalon('metalon30', 'Metalon 30 × 30', 1600),
+            metalon('metalon20', 'Metalon 20 × 20', 1000, 20, 20),
+            metalon('metalon30', 'Metalon 30 × 30', 1600, 30, 30),
           ],
           selectedId: 'metalon20',
           perUnit: 1,
@@ -787,15 +866,22 @@ assemblies.push({
   variations: [],
 })
 
-// A placa: a parte (o quadro) + a impressão da lona, com cantoneira
-// opcional nas laterais — o exemplo do time para o IP-28
-const placaFrame = {
+// A placa é o exemplo do time para o fluxo (FL-4): dois caminhos que correm
+// em paralelo — criação → impressão da lona, e a estrutura → pintura, com a
+// cantoneira opcional (IP-28) — e se encontram na instalação, que depende
+// dos dois. O quadro entra como parte (IP-9)
+const placaArte = fromTemplate(templateOf('arte')!, [])
+const placaPrint = fromTemplate(templateOf('impressao-solvente')!, [
+  placaArte.id,
+])
+const placaFrame: AssemblyBlock = {
   id: `b${uid()}`,
   processId: null,
   partProductId: 'quadro-metalon',
   name: 'Quadro de metalon',
   sector: 'Produção',
-  role: 'BASE' as const,
+  role: 'BASE',
+  dependsOn: [],
   baseBlockId: null,
   setupMinutes: 0,
   sectorHourCost: HOUR['Produção'],
@@ -804,7 +890,100 @@ const placaFrame = {
   localRules: null,
   lines: [],
 }
-const placaPrint = fromTemplate(templateOf('impressao-solvente')!, null)
+const placaPaint: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  name: 'Pintura da estrutura',
+  sector: 'Produção',
+  role: 'FINISHING',
+  dependsOn: [placaFrame.id],
+  baseBlockId: placaFrame.id,
+  setupMinutes: 10,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...finishingRules },
+  localRules: null,
+  lines: [
+    {
+      id: `l${uid()}`,
+      name: 'Tinta',
+      kind: 'MATERIAL',
+      mode: 'SINGLE',
+      options: [
+        {
+          id: 'tinta-esmalte',
+          name: 'Esmalte sintético preto',
+          unit: 'l',
+          unitCost: 3200,
+          unitSale: 5500,
+        },
+      ],
+      selectedId: 'tinta-esmalte',
+      perUnit: 0.05,
+      formula: 'PER_PERIMETER',
+      lossPercent: 10,
+      minimum: 0.1,
+      overridden: false,
+    },
+    {
+      id: `l${uid()}`,
+      name: 'Pintura',
+      kind: 'LABOR',
+      mode: 'SINGLE',
+      options: [labor('Produção')],
+      selectedId: 'mo-Produção',
+      perUnit: 4,
+      formula: 'PER_PERIMETER',
+      lossPercent: 0,
+      minimum: null,
+      overridden: false,
+    },
+  ],
+}
+const placaEdge: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  name: 'Acabamento lateral',
+  sector: 'Produção',
+  role: 'FINISHING',
+  dependsOn: [placaPaint.id],
+  baseBlockId: placaFrame.id,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...finishingRules },
+  localRules: null,
+  lines: [
+    {
+      id: `l${uid()}`,
+      name: 'Cantoneira',
+      kind: 'MATERIAL',
+      mode: 'SINGLE',
+      options: [
+        {
+          id: 'cantoneira',
+          name: 'Cantoneira de alumínio',
+          unit: 'm',
+          unitCost: 1000,
+          unitSale: 2000,
+        },
+      ],
+      selectedId: 'cantoneira',
+      perUnit: 1.1,
+      formula: 'PER_PERIMETER',
+      lossPercent: 0,
+      minimum: null,
+      overridden: false,
+      optional: true,
+      optionalDefault: false,
+    },
+  ],
+}
+// O ponto de encontro (FL-4): a instalação espera a lona e a estrutura
+const placaInstall = fromTemplate(templateOf('instalacao')!, [
+  placaPrint.id,
+  placaEdge.id,
+])
 assemblies.push({
   productId: 'placa-quadro',
   name: 'Placa em lona com quadro de ferro',
@@ -820,16 +999,59 @@ assemblies.push({
   priceTiers: [],
   technicalDescription: 'Lona impressa esticada em quadro de metalon.',
   blocks: [
-    placaFrame,
+    placaArte,
     placaPrint,
+    placaFrame,
+    placaPaint,
+    placaEdge,
+    placaInstall,
+  ],
+  variations: [],
+})
+
+// O painel de ACM é uma parte que tem outra parte por dentro (IP-9, três
+// níveis): o quadro de metalon, com a chapa aplicada em cima
+const acmFrame: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  partProductId: 'quadro-metalon',
+  name: 'Quadro de metalon',
+  sector: 'Produção',
+  role: 'BASE',
+  dependsOn: [],
+  baseBlockId: null,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...baseRules },
+  localRules: null,
+  lines: [],
+}
+assemblies.push({
+  productId: 'painel-acm',
+  name: 'Painel de ACM',
+  code: 'PRT-02',
+  status: 'PART',
+  dimension: 'SALE',
+  unitKind: 'AREA',
+  unitPrice: null,
+  measure: { quantity: 1, width: 3, height: 1 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription: 'Chapa de ACM aplicada sobre quadro de metalon.',
+  blocks: [
+    acmFrame,
     {
       id: `b${uid()}`,
       processId: null,
-      name: 'Acabamento lateral',
+      name: 'Aplicação do ACM',
       sector: 'Produção',
       role: 'FINISHING',
-      baseBlockId: placaFrame.id,
-      setupMinutes: 0,
+      dependsOn: [acmFrame.id],
+      baseBlockId: acmFrame.id,
+      setupMinutes: 15,
       sectorHourCost: HOUR['Produção'],
       taskType: 'Produção',
       originalRules: { ...finishingRules },
@@ -837,29 +1059,126 @@ assemblies.push({
       lines: [
         {
           id: `l${uid()}`,
-          name: 'Cantoneira',
+          name: 'Chapa',
           kind: 'MATERIAL',
-          mode: 'SINGLE',
+          mode: 'CHOOSE',
           options: [
             {
-              id: 'cantoneira',
-              name: 'Cantoneira de alumínio',
-              unit: 'm',
-              unitCost: 1000,
-              unitSale: 2000,
+              id: 'acm-branco',
+              name: 'ACM 3 mm branco',
+              unit: 'm²',
+              unitCost: 9800,
+              unitSale: 16000,
+            },
+            {
+              id: 'acm-preto',
+              name: 'ACM 3 mm preto',
+              unit: 'm²',
+              unitCost: 10400,
+              unitSale: 17000,
             },
           ],
-          selectedId: 'cantoneira',
-          perUnit: 1.1,
-          formula: 'PER_PERIMETER',
+          selectedId: 'acm-branco',
+          perUnit: 1,
+          formula: 'PER_AREA',
+          lossPercent: 15,
+          minimum: null,
+          overridden: false,
+        },
+        {
+          id: `l${uid()}`,
+          name: 'Montagem',
+          kind: 'LABOR',
+          mode: 'SINGLE',
+          options: [labor('Produção')],
+          selectedId: 'mo-Produção',
+          perUnit: 30,
+          formula: 'PER_AREA',
           lossPercent: 0,
           minimum: null,
           overridden: false,
-          optional: true,
-          optionalDefault: false,
         },
       ],
     },
+  ],
+  variations: [],
+})
+
+// A fachada (IP-9.1): a criação abre o trabalho; as partes correm em
+// paralelo, cada uma com a composição dela; a montagem junta tudo e a
+// instalação fecha. É o segundo produto que o time pediu para validar o
+// fluxo (FL-5)
+const fachadaArte = fromTemplate(templateOf('arte')!, [])
+const fachadaPanel: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  partProductId: 'painel-acm',
+  name: 'Painel de ACM',
+  sector: 'Produção',
+  role: 'BASE',
+  dependsOn: [fachadaArte.id],
+  baseBlockId: fachadaArte.id,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...baseRules },
+  localRules: null,
+  lines: [],
+}
+const fachadaLetters = fromTemplate(templateOf('impressao-solvente')!, [
+  fachadaArte.id,
+])
+fachadaLetters.localName = 'Adesivo das letras'
+const fachadaAssembly: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  name: 'Montagem da fachada',
+  sector: 'Produção',
+  role: 'FINISHING',
+  dependsOn: [fachadaPanel.id, fachadaLetters.id],
+  baseBlockId: fachadaPanel.id,
+  setupMinutes: 30,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...finishingRules },
+  localRules: null,
+  lines: [
+    {
+      id: `l${uid()}`,
+      name: 'Montagem',
+      kind: 'LABOR',
+      mode: 'SINGLE',
+      options: [labor('Produção')],
+      selectedId: 'mo-Produção',
+      perUnit: 40,
+      formula: 'PER_AREA',
+      lossPercent: 0,
+      minimum: null,
+      overridden: false,
+    },
+  ],
+}
+assemblies.push({
+  productId: 'fachada-acm',
+  name: 'Fachada em ACM com letras',
+  code: 'PRD-04',
+  status: 'RELEASED',
+  dimension: 'SALE',
+  unitKind: 'AREA',
+  unitPrice: 65000,
+  measure: { quantity: 1, width: 6, height: 1.2 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription:
+    'Painel de ACM sobre estrutura metálica, com letras em adesivo e instalação.',
+  blocks: [
+    fachadaArte,
+    fachadaPanel,
+    fachadaLetters,
+    fachadaAssembly,
+    fromTemplate(templateOf('instalacao')!, [fachadaAssembly.id]),
   ],
   variations: [],
 })
@@ -890,7 +1209,383 @@ processStore.forEach((entry, processId) =>
 const isProcessHost = (productId: string) =>
   productId.startsWith(PROCESS_PREFIX)
 
-const findOrCreate = (productId: string) => {
+// O item montado no orçamento (ORC-11) vive aqui como um produto técnico,
+// para usar as mesmas ações da composição. Não é cadastro: não aparece como
+// parte, não conta como produto composto e não entra em "Usado em"
+const DRAFT_PREFIX = 'orcamento:'
+const isDraft = (productId: string) => productId.startsWith(DRAFT_PREFIX)
+// Variação do produto (03/10/2026): outra composição, cópia independente,
+// com id "<produto>::v:<id>". Não é cadastro: não aparece nas listas
+const VARIANT_SEP = '::v:'
+const isVariant = (productId: string) => productId.includes(VARIANT_SEP)
+const baseOf = (productId: string) => productId.split(VARIANT_SEP)[0]
+const isHidden = (productId: string) =>
+  isProcessHost(productId) || isDraft(productId) || isVariant(productId)
+
+/* ---------------------------------------------------------------------------
+ * O fluxo (FL-1): cada etapa depende de nenhuma, uma ou várias anteriores
+ * ------------------------------------------------------------------------- */
+
+// As etapas na ordem do fluxo: toda etapa vem depois das que ela depende e,
+// entre as que já podem entrar, vale a ordem em que foram criadas
+const orderBlocks = (blocks: AssemblyBlock[]) => {
+  const ids = new Set(blocks.map((block) => block.id))
+  const done = new Set<string>()
+  const result: AssemblyBlock[] = []
+  let pending = [...blocks]
+  while (pending.length) {
+    const ready = pending.filter((block) =>
+      block.dependsOn.every((id) => !ids.has(id) || done.has(id)),
+    )
+    // Um laço não deveria existir; se existir, segue a ordem gravada
+    const batch = ready.length ? ready : [pending[0]]
+    batch.forEach((block) => {
+      done.add(block.id)
+      result.push(block)
+    })
+    pending = pending.filter((block) => !done.has(block.id))
+  }
+  return result
+}
+
+// `from` chega em `target` seguindo as dependências? Serve para impedir que
+// "ligar a…" feche um laço
+const dependsTransitively = (
+  blocks: AssemblyBlock[],
+  from: string,
+  target: string,
+  seen = new Set<string>(),
+): boolean => {
+  if (from === target) return true
+  if (seen.has(from)) return false
+  seen.add(from)
+  const block = blocks.find((item) => item.id === from)
+  return !!block?.dependsOn.some((id) =>
+    dependsTransitively(blocks, id, target, seen),
+  )
+}
+
+// Inserir no meio da ligação (FL-5): a etapa nova passa a depender de `after`
+// e `before`, que dependia de `after`, passa a depender da nova
+const wireBetween = (
+  blocks: AssemblyBlock[],
+  block: AssemblyBlock,
+  before: string | undefined,
+) => {
+  if (!before) return
+  const next = blocks.find((item) => item.id === before)
+  if (!next) return
+  const replaced = block.dependsOn.filter((id) => next.dependsOn.includes(id))
+  if (!replaced.length) return
+  next.dependsOn = Array.from(
+    new Set(
+      next.dependsOn.map((id) => (replaced.includes(id) ? block.id : id)),
+    ),
+  )
+  if (next.baseBlockId && replaced.includes(next.baseBlockId)) {
+    next.baseBlockId = block.id
+  }
+}
+
+// Tirar uma etapa do meio: quem dependia dela passa a depender do que ela
+// dependia, para o fluxo não se partir
+const unwire = (blocks: AssemblyBlock[], removedId: string) => {
+  const removed = blocks.find((item) => item.id === removedId)
+  if (!removed) return blocks
+  return blocks
+    .filter((item) => item.id !== removedId)
+    .map((item) => {
+      if (!item.dependsOn.includes(removedId)) return item
+      const dependsOn = Array.from(
+        new Set([
+          ...item.dependsOn.filter((id) => id !== removedId),
+          ...removed.dependsOn,
+        ]),
+      )
+      return {
+        ...item,
+        dependsOn,
+        baseBlockId:
+          item.baseBlockId === removedId
+            ? (removed.baseBlockId ?? removed.dependsOn[0] ?? null)
+            : item.baseBlockId,
+      }
+    })
+}
+
+// O fluxo como a tela desenha (FL-5), com o que a parte tem por dentro até
+// três níveis (IP-9)
+const flowOf = (assembly: ProductAssembly, depth = 0): FlowStage[] =>
+  orderBlocks(assembly.blocks).map((block) => {
+    const partSource = block.partProductId
+      ? assemblies.find((item) => item.productId === block.partProductId)
+      : null
+    return {
+      id: block.id,
+      name: block.localName || block.name,
+      sector: block.sector,
+      dependsOn: block.dependsOn,
+      processId: block.processId,
+      partProductId: block.partProductId ?? null,
+      partFlow: partSource && depth < 2 ? flowOf(partSource, depth + 1) : null,
+    }
+  })
+
+/* ---------------------------------------------------------------------------
+ * Vínculo com o processo (CP-21): a etapa incluída de um processo acompanha a
+ * montagem dele. Mudar o processo muda os produtos que o usam; o que o produto
+ * ajustou só para ele (linha ajustada, linha só dele, linha tirada, nome,
+ * regras e tipo de tarefa) continua sendo do produto. O custo nunca dependeu
+ * disso: ele vem do recurso
+ * ------------------------------------------------------------------------- */
+
+const syncBlock = (block: AssemblyBlock) => {
+  if (!block.processId || block.partProductId) return
+  const source = processStore.get(block.processId)?.block
+  if (!source) return
+
+  block.name = source.name
+  block.sector = source.sector
+  block.sectorHourCost = source.sectorHourCost
+  block.setupMinutes = source.setupMinutes
+  block.taskType = block.localTaskType ?? source.taskType
+  block.originalRules = source.originalRules
+
+  const removed = new Set(block.removedSourceLineIds || [])
+  const sourceById = new Map(source.lines.map((line) => [line.id, line]))
+  const lines: AssemblyLine[] = []
+
+  block.lines.forEach((line) => {
+    if (!line.sourceLineId) {
+      lines.push(line)
+      return
+    }
+    const origin = sourceById.get(line.sourceLineId)
+    if (!origin) {
+      // O processo tirou a linha: a que foi ajustada aqui fica como deste produto
+      if (line.overridden) {
+        lines.push({
+          ...line,
+          sourceLineId: undefined,
+          overridden: false,
+          addedHere: true,
+        })
+      }
+      return
+    }
+    if (line.overridden) {
+      lines.push(line)
+      return
+    }
+    const next = structuredClone(origin)
+    lines.push({
+      ...next,
+      id: line.id,
+      sourceLineId: origin.id,
+      overridden: false,
+      addedHere: undefined,
+      // A opção escolhida é o uso normal da linha neste produto
+      selectedId: next.options.some((option) => option.id === line.selectedId)
+        ? line.selectedId
+        : next.selectedId,
+    })
+  })
+
+  // Linha nova no processo entra na mesma posição que tem lá
+  source.lines.forEach((origin, index) => {
+    if (removed.has(origin.id)) return
+    if (lines.some((line) => line.sourceLineId === origin.id)) return
+    const before = new Set(source.lines.slice(0, index).map((line) => line.id))
+    let at = 0
+    lines.forEach((line, position) => {
+      if (line.sourceLineId && before.has(line.sourceLineId)) at = position + 1
+    })
+    lines.splice(at, 0, {
+      ...structuredClone(origin),
+      id: `l${uid()}`,
+      sourceLineId: origin.id,
+      overridden: false,
+      addedHere: undefined,
+    })
+  })
+
+  block.lines = lines
+  // A linha que o processo também tirou não precisa mais do registro
+  block.removedSourceLineIds = Array.from(removed).filter((id) =>
+    sourceById.has(id),
+  )
+}
+
+const syncLinks = () =>
+  assemblies.forEach((assembly) => {
+    if (isProcessHost(assembly.productId)) return
+    assembly.blocks.forEach(syncBlock)
+    assembly.variations.forEach((variation) =>
+      variation.extraBlocks?.forEach(syncBlock),
+    )
+  })
+
+// A composição nasce com o que o cadastro do produto já tem (CP-16). Só a
+// primeira vez: depois que alguém mexeu (etapa, valor, nome), a semente não
+// sobrescreve mais
+/* ---------------------------------------------------------------------------
+ * Campos do orçamento (IP-4): do produto, lidos pelas linhas pelo nome
+ * ------------------------------------------------------------------------- */
+
+const fieldKey = (name: string) => name.trim().toLowerCase()
+
+const findField = (assembly: ProductAssembly, name: string) =>
+  (assembly.fields || []).find(
+    (field) => fieldKey(field.name) === fieldKey(name),
+  )
+
+// Garante o campo que a linha lê e devolve ele
+const ensureField = (
+  assembly: ProductAssembly,
+  name: string,
+  defaultValue = 0,
+) => {
+  assembly.fields = assembly.fields || []
+  const found = findField(assembly, name)
+  if (found) return found
+  const field: QuoteField = { id: `f${uid()}`, name: name.trim(), defaultValue }
+  assembly.fields.push(field)
+  return field
+}
+
+// Toda linha que lê um campo garante que ele exista no produto: vale para o
+// processo incluído, a biblioteca importada e os exemplos. O padrão vem do
+// campo extra legado da etapa, quando houver
+const ensureFields = (assembly: ProductAssembly) => {
+  assembly.blocks.forEach((block) => {
+    const rules = block.localRules ?? block.originalRules
+    block.lines.forEach((line) => {
+      if (!line.fieldName) return
+      ensureField(
+        assembly,
+        line.fieldName,
+        rules.extraField === 'NONE' ? 0 : rules.extraFieldDefault,
+      )
+    })
+  })
+}
+
+// Em que etapas cada campo é lido: pela linha que aponta para ele ou pela
+// fórmula do produto que o cita
+const fieldUsage = (assembly: ProductAssembly) =>
+  (assembly.fields || []).map((field) => ({
+    ...field,
+    usedBy: assembly.blocks
+      .filter((block) =>
+        block.lines.some((line) => {
+          if (
+            line.fieldName &&
+            fieldKey(line.fieldName) === fieldKey(field.name)
+          )
+            return true
+          if (line.formula !== 'CUSTOM' || !line.formulaId) return false
+          const formula = (assembly.formulas || []).find(
+            (item) => item.id === line.formulaId,
+          )
+          return !!formula && formulaUsesName(formula.expression, field.name)
+        }),
+      )
+      .map((block) => block.localName || block.name),
+  }))
+
+/* ---------------------------------------------------------------------------
+ * Fórmulas do produto (IP-2): a conta escrita, só deste produto
+ * ------------------------------------------------------------------------- */
+
+// O que a fórmula pode ler nesta etapa: as medidas, o tempo e os campos
+// As referências do material escolhido em cada linha (MT-10.1, CP-18):
+// "montante · X" e "montante · Y" em metros, para a travessa descontar o
+// lado do perfil que estiver na linha, seja ele qual for
+const lineRefVars = (blocks: AssemblyBlock[]): FormulaVars => {
+  const vars: FormulaVars = {}
+  blocks.forEach((block) =>
+    block.lines.forEach((line) => {
+      const selected =
+        line.options.find((option) => option.id === line.selectedId) ||
+        line.options[0]
+      if (!selected) return
+      if (selected.profile) {
+        vars[`${line.name} · X`] = selected.profile.x / 1000
+        vars[`${line.name} · Y`] = selected.profile.y / 1000
+      }
+      if (selected.sheet) {
+        vars[`${line.name} · largura`] = selected.sheet.width
+        vars[`${line.name} · altura`] = selected.sheet.height
+      }
+      if (selected.weight) vars[`${line.name} · peso`] = selected.weight
+    }),
+  )
+  return vars
+}
+
+const formulaVars = (
+  assembly: ProductAssembly,
+  measure: AssemblyMeasure,
+  time: number | null,
+  // A etapa que está calculando; sem ela, as linhas de todas as etapas
+  block?: AssemblyBlock,
+): FormulaVars => ({
+  largura: measure.width,
+  altura: measure.height,
+  área: measure.width * measure.height,
+  perímetro: 2 * (measure.width + measure.height),
+  quantidade: measure.quantity,
+  tempo: time ?? 0,
+  ...Object.fromEntries(
+    (assembly.fields || []).map((field) => [field.name, field.defaultValue]),
+  ),
+  ...lineRefVars(block ? [block] : assembly.blocks),
+})
+
+// Onde cada fórmula é usada, e se ela calcula na medida padrão do produto
+const formulaUsage = (assembly: ProductAssembly) =>
+  (assembly.formulas || []).map((formula) => ({
+    ...formula,
+    usedBy: assembly.blocks
+      .filter((block) =>
+        block.lines.some(
+          (line) => line.formula === 'CUSTOM' && line.formulaId === formula.id,
+        ),
+      )
+      .map((block) => block.localName || block.name),
+    error: evaluateFormula(
+      formula.expression,
+      formulaVars(assembly, assembly.measure, 0),
+    ).error,
+  }))
+
+// A etapa tem linha cujo tipo de cálculo é o tempo informado pelo vendedor
+const TIME_FORMULAS = ['PER_TIME', 'EQUAL_TIME', 'TIME_TIMES_EXTRA']
+const blockHasTimeLine = (block: AssemblyBlock) =>
+  block.lines.some((line) => TIME_FORMULAS.includes(line.formula))
+
+const untouched = (assembly: ProductAssembly) =>
+  assembly.name === 'Produto' &&
+  assembly.unitPrice === null &&
+  assembly.blocks.length === 0
+
+const applySeed = (assembly: ProductAssembly, seed: AssemblySeed) => {
+  assembly.name = seed.name || assembly.name
+  assembly.code = seed.code || assembly.code
+  assembly.unitKind = seed.unitKind || assembly.unitKind
+  assembly.unitPrice = seed.unitPrice
+  assembly.measure = {
+    quantity: 1,
+    width: seed.width && seed.width > 0 ? seed.width : 1,
+    height: seed.height && seed.height > 0 ? seed.height : 1,
+  }
+  assembly.technicalDescription = seed.technicalDescription || ''
+  assembly.allowEditValues = seed.allowEditValues ?? true
+  assembly.allowEditDescription = seed.allowEditDescription ?? true
+}
+
+const findOrCreate = (productId: string, seed?: AssemblySeed) => {
+  syncLinks()
   let found = assemblies.find((item) => item.productId === productId)
   if (!found) {
     found = {
@@ -909,9 +1604,12 @@ const findOrCreate = (productId: string) => {
       technicalDescription: '',
       blocks: [],
       variations: [],
+      fields: [],
+      formulas: [],
     }
     assemblies.push(found)
   }
+  if (seed && untouched(found)) applySeed(found, seed)
   return found
 }
 
@@ -1085,6 +1783,7 @@ const compute = (
   // Parte dentro de parte tem limite: evita laço se alguém se incluir
   depth = 0,
 ): ComputedAssembly => {
+  ensureFields(source)
   const assembly = applyVariation(source, variation)
   // Sem preço próprio, a variação vale o preço do produto (PV-4); com
   // tabela por faixa, vale a faixa da quantidade (FQ-1)
@@ -1104,7 +1803,8 @@ const compute = (
   // O consumo das partes entra no resumo do produto
   const partSummaries: ResourceSummary[][] = []
 
-  for (const block of assembly.blocks) {
+  // Na ordem do fluxo: a etapa que usa a medida de outra vem depois dela
+  for (const block of orderBlocks(assembly.blocks)) {
     const rules = block.localRules ?? block.originalRules
     const base = blocks.find((item) => item.id === block.baseBlockId)
     const reference = base?.measure ?? measure
@@ -1132,7 +1832,12 @@ const compute = (
 
     const blockMeasure = { quantity, ...size }
     const extra = rules.extraField === 'NONE' ? 0 : rules.extraFieldDefault
-    const time = rules.timeField ? rules.timeFieldDefault || 0 : null
+    // O tempo é das linhas de mão de obra com tipo "tempo informado": sem
+    // valor informado na venda, vale o consumo da linha (tempo padrão)
+    const time =
+      (rules.timeField || blockHasTimeLine(block)) && rules.timeFieldDefault
+        ? rules.timeFieldDefault
+        : null
 
     const lines: ComputedLine[] = block.lines.map((line) => {
       const selected =
@@ -1177,7 +1882,10 @@ const compute = (
             {
               marginMm: sheetLine?.sheetMargin,
               gapMm: sheetLine?.sheetGap,
-              wholeSheets: sheetLine?.chargeWholeSheets,
+              // A linha manda; sem escolha na linha, vale o material (AP-4)
+              wholeSheets:
+                sheetLine?.chargeWholeSheets ??
+                referenceSheet.sheet?.wholeSheets,
             },
           )
         : null
@@ -1199,14 +1907,36 @@ const compute = (
 
       // A lista é preenchida pelo vendedor: aqui não tem quantidade (IP-8).
       // A opcional desmarcada fica fora da conta (IP-28)
+      // O campo do orçamento que esta linha lê (IP-4); sem ele, vale o campo
+      // extra legado da etapa
+      const lineExtra = line.fieldName
+        ? (findField(assembly, line.fieldName)?.defaultValue ?? extra)
+        : extra
+      // A fórmula do produto (IP-2): consumo × o resultado dela nesta etapa
+      const custom =
+        line.formula === 'CUSTOM'
+          ? (assembly.formulas || []).find(
+              (item) => item.id === line.formulaId,
+            ) || null
+          : null
+      const customValue = custom
+        ? evaluateFormula(
+            custom.expression,
+            formulaVars(assembly, blockMeasure, time, block),
+          ).value
+        : null
       const raw =
         line.mode === 'LIST' || (line.optional && !line.optionalDefault)
           ? null
-          : line.formula === 'SHEET_YIELD'
-            ? sheetYield
-              ? sheetYield.charged * calcLine.perUnit
-              : null
-            : lineQuantity(calcLine, blockMeasure, extra, time)
+          : line.formula === 'CUSTOM'
+            ? customValue === null
+              ? null
+              : customValue * calcLine.perUnit
+            : line.formula === 'SHEET_YIELD'
+              ? sheetYield
+                ? sheetYield.charged * calcLine.perUnit
+                : null
+              : lineQuantity(calcLine, blockMeasure, lineExtra, time)
 
       let qty =
         raw === null ? null : raw * (1 + (calcLine.lossPercent || 0) / 100)
@@ -1223,6 +1953,9 @@ const compute = (
         variationOverride: !!variation?.overrides.some(
           (item) => item.blockId === block.id && item.lineId === line.id,
         ),
+        extraValue:
+          line.fieldName || rules.extraField !== 'NONE' ? lineExtra : null,
+        formulaName: custom?.name ?? null,
         selected,
         quantity: qty,
         minimumApplied,
@@ -1269,6 +2002,7 @@ const compute = (
             stages: part.blocks.length,
           }
         : null,
+      partFlow: partSource && depth < 2 ? flowOf(partSource, depth + 1) : null,
       partLines: part
         ? part.blocks.flatMap((item) => [...item.partLines, ...item.lines])
         : [],
@@ -1358,6 +2092,8 @@ const compute = (
   return {
     ...assembly,
     area,
+    fields: fieldUsage(assembly),
+    formulas: formulaUsage(assembly),
     blocks,
     resourceSummary,
     cost,
@@ -1398,12 +2134,15 @@ export const getAssembly = async ({
   productId,
   measure,
   variationId,
+  seed,
 }: {
   productId: string
   measure?: AssemblyMeasure
   variationId?: string | null
+  // O cadastro do produto, para a composição nascer com ele (CP-16)
+  seed?: AssemblySeed
 }) => {
-  const assembly = findOrCreate(productId)
+  const assembly = findOrCreate(productId, seed)
   const base = measure ? { ...assembly, measure } : assembly
   const variation =
     assembly.variations.find((item) => item.id === variationId) || null
@@ -1453,8 +2192,7 @@ export const getProcessCatalog = async () =>
         id: item.processId,
         name: item.name,
         sector: item.sector,
-        role: item.role,
-        finishingOf: item.finishingOf,
+        afterBase: item.afterBase,
       }),
     ),
   )
@@ -1475,6 +2213,7 @@ export const updateAssembly = async ({
       | 'unitAmount'
       | 'allowEditValues'
       | 'allowEditDescription'
+      | 'allowRenameStages'
       | 'technicalDescription'
     >
   >
@@ -1499,20 +2238,29 @@ export const updateAssembly = async ({
   return ok(null)
 }
 
-// O acabamento entra logo depois da base e dos acabamentos que ela já tem
-const insertBlock = (assembly: ProductAssembly, block: AssemblyBlock) => {
-  if (block.baseBlockId) {
-    let index = assembly.blocks.findIndex(
-      (item) => item.id === block.baseBlockId,
-    )
-    while (assembly.blocks[index + 1]?.baseBlockId === block.baseBlockId) {
-      index++
-    }
-    assembly.blocks.splice(index + 1, 0, block)
-  } else {
-    assembly.blocks.push(block)
-  }
+// A posição na lista não importa mais: o fluxo é desenhado pela dependência
+// (FL-5). A etapa entra logo depois da última de que ela depende, para a
+// leitura em lista continuar fazendo sentido
+const insertBlock = (
+  assembly: ProductAssembly,
+  block: AssemblyBlock,
+  insertBefore?: string,
+) => {
+  const last = Math.max(
+    -1,
+    ...block.dependsOn.map((id) =>
+      assembly.blocks.findIndex((item) => item.id === id),
+    ),
+  )
+  assembly.blocks.splice(last + 1, 0, block)
+  wireBetween(assembly.blocks, block, insertBefore)
 }
+
+// A etapa nova que depende de outra começa com as regras de acabamento (FL-2,
+// MS-5): mesma medida da base, acompanhando a quantidade dela. Quem monta
+// ajusta depois, se precisar
+const rulesFor = (dependsOn: string[]) =>
+  dependsOn.length ? { ...finishingRules } : { ...baseRules }
 
 // Mão de obra de todos os setores e os recursos que os processos já usam
 const resourceMap = () => {
@@ -1528,6 +2276,11 @@ const resourceMap = () => {
       }),
     ),
   )
+  // Os materiais do cadastro, com as medidas do perfil e da chapa
+  materialResources().forEach((resource) => {
+    if (!map.has(resource.id))
+      map.set(resource.id, { ...resource, kind: 'MATERIAL' })
+  })
   return map
 }
 
@@ -1543,12 +2296,16 @@ export const addOwnBlock = async ({
   productId,
   name,
   sector,
-  baseBlockId,
+  dependsOn = [],
+  insertBefore,
 }: {
   productId: string
   name: string
   sector: string
-  baseBlockId: string | null
+  // As etapas de que a nova depende (FL-1); vazio é um caminho novo
+  dependsOn?: string[]
+  // Inserir no meio da ligação: a etapa que passa a depender da nova
+  insertBefore?: string
 }) => {
   if (!name.trim()) return fail('Informe o nome da etapa')
   const assembly = findOrCreate(productId)
@@ -1557,16 +2314,17 @@ export const addOwnBlock = async ({
     processId: null,
     name: name.trim(),
     sector,
-    role: baseBlockId ? 'FINISHING' : 'BASE',
-    baseBlockId,
+    role: dependsOn.length ? 'FINISHING' : 'BASE',
+    dependsOn: [...dependsOn],
+    baseBlockId: dependsOn[0] ?? null,
     setupMinutes: 0,
     sectorHourCost: HOUR[sector] || 1800,
     taskType: sector,
-    originalRules: baseBlockId ? { ...finishingRules } : { ...baseRules },
+    originalRules: rulesFor(dependsOn),
     localRules: null,
     lines: [],
   }
-  insertBlock(assembly, block)
+  insertBlock(assembly, block, insertBefore)
   return ok(block.id)
 }
 
@@ -1579,11 +2337,18 @@ export const addAssemblyLine = async ({
   blockId: string
   values: NewLineValues
 }) => {
-  const block = findOrCreate(productId).blocks.find(
-    (item) => item.id === blockId,
-  )
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
   if (!block) return fail('Etapa não encontrada')
   if (!values.name.trim()) return fail('Informe o nome da linha')
+  const fieldName = values.fieldName?.trim() || undefined
+  if (fieldName) ensureField(assembly, fieldName, values.fieldDefault ?? 0)
+  if (
+    values.formula === 'CUSTOM' &&
+    !(assembly.formulas || []).some((item) => item.id === values.formulaId)
+  ) {
+    return fail('Escolha a fórmula do produto')
+  }
 
   const map = resourceMap()
   const options = values.optionIds
@@ -1617,10 +2382,320 @@ export const addAssemblyLine = async ({
     minimum: list ? null : values.minimum,
     optional: values.optional,
     optionalDefault: values.optional ? values.optionalDefault : undefined,
+    fieldName,
+    formulaId: values.formula === 'CUSTOM' ? values.formulaId : undefined,
     overridden: false,
     // Numa etapa vinda de processo, a linha a mais é só deste produto
     addedHere: block.processId !== null,
   })
+  return ok(null)
+}
+
+// Os campos do orçamento são do PRODUTO (IP-4, IP-6): um nome, um valor,
+// um lugar para preencher. A linha aponta para o campo pelo nome
+export const addProductField = async ({
+  productId,
+  name,
+  defaultValue,
+}: {
+  productId: string
+  name: string
+  defaultValue: number
+}) => {
+  if (!name?.trim()) return fail('Informe o nome do campo')
+  const assembly = findOrCreate(productId)
+  if (findField(assembly, name)) {
+    return fail('Já existe um campo com esse nome neste produto')
+  }
+  ensureField(assembly, name, defaultValue)
+  return ok(null)
+}
+
+export const updateProductField = async ({
+  productId,
+  fieldId,
+  name,
+  defaultValue,
+}: {
+  productId: string
+  fieldId: string
+  name?: string
+  defaultValue?: number
+}) => {
+  const assembly = findOrCreate(productId)
+  const field = (assembly.fields || []).find((item) => item.id === fieldId)
+  if (!field) return fail('Campo não encontrado')
+  if (name !== undefined) {
+    if (!name.trim()) return fail('Informe o nome do campo')
+    const other = findField(assembly, name)
+    if (other && other.id !== field.id) {
+      return fail('Já existe um campo com esse nome neste produto')
+    }
+    // As linhas que leem o campo acompanham o nome novo
+    assembly.blocks.forEach((block) =>
+      block.lines.forEach((line) => {
+        if (
+          line.fieldName &&
+          fieldKey(line.fieldName) === fieldKey(field.name)
+        ) {
+          line.fieldName = name.trim()
+        }
+      }),
+    )
+    field.name = name.trim()
+  }
+  if (defaultValue !== undefined) field.defaultValue = defaultValue
+  return ok(null)
+}
+
+export const removeProductField = async ({
+  productId,
+  fieldId,
+}: {
+  productId: string
+  fieldId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const field = (assembly.fields || []).find((item) => item.id === fieldId)
+  if (!field) return fail('Campo não encontrado')
+  const usedBy =
+    fieldUsage(assembly).find((item) => item.id === fieldId)?.usedBy || []
+  if (usedBy.length) {
+    return fail(
+      `Este campo é lido em ${usedBy.join(', ')}. Troque o campo nessas linhas antes de removê-lo`,
+    )
+  }
+  assembly.fields = (assembly.fields || []).filter(
+    (item) => item.id !== fieldId,
+  )
+  return ok(null)
+}
+
+// As fórmulas são do PRODUTO (IP-2, 03/10/2026): a conta depende dos campos
+// dele, então não vira cadastro da empresa. Para reaproveitar, copia-se a
+// composição de outro produto
+export const addProductFormula = async ({
+  productId,
+  name,
+  expression,
+}: {
+  productId: string
+  name: string
+  expression: string
+}) => {
+  if (!name?.trim()) return fail('Dê um nome à fórmula')
+  const assembly = findOrCreate(productId)
+  const check = evaluateFormula(
+    expression,
+    formulaVars(assembly, assembly.measure, 0),
+  )
+  if (check.error) return fail(check.error)
+  if (
+    (assembly.formulas || []).some(
+      (item) => item.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    )
+  ) {
+    return fail('Já existe uma fórmula com esse nome neste produto')
+  }
+  const formula: ProductFormula = {
+    id: `fx${uid()}`,
+    name: name.trim(),
+    expression: expression.trim(),
+  }
+  assembly.formulas = [...(assembly.formulas || []), formula]
+  return ok(formula.id)
+}
+
+export const updateProductFormula = async ({
+  productId,
+  formulaId,
+  name,
+  expression,
+}: {
+  productId: string
+  formulaId: string
+  name?: string
+  expression?: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const formula = (assembly.formulas || []).find(
+    (item) => item.id === formulaId,
+  )
+  if (!formula) return fail('Fórmula não encontrada')
+  if (name !== undefined && !name.trim()) return fail('Dê um nome à fórmula')
+  if (expression !== undefined) {
+    const check = evaluateFormula(
+      expression,
+      formulaVars(assembly, assembly.measure, 0),
+    )
+    if (check.error) return fail(check.error)
+    formula.expression = expression.trim()
+  }
+  if (name !== undefined) formula.name = name.trim()
+  return ok(null)
+}
+
+export const removeProductFormula = async ({
+  productId,
+  formulaId,
+}: {
+  productId: string
+  formulaId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const usedBy =
+    formulaUsage(assembly).find((item) => item.id === formulaId)?.usedBy || []
+  if (usedBy.length) {
+    return fail(
+      `Esta fórmula é usada em ${usedBy.join(', ')}. Troque o tipo de cálculo nessas linhas antes de removê-la`,
+    )
+  }
+  assembly.formulas = (assembly.formulas || []).filter(
+    (item) => item.id !== formulaId,
+  )
+  return ok(null)
+}
+
+// Duplicar produto (03/10/2026): a composição do produto de origem vai para
+// o produto novo — etapas, campos e fórmulas, com ids novos, como cópia
+// independente. Chamado pelo botão Duplicar da lista de produtos
+export const copyCompositionFrom = async ({
+  productId,
+  sourceProductId,
+}: {
+  productId: string
+  sourceProductId: string
+}) => {
+  if (productId === sourceProductId) return fail('Escolha outro produto')
+  syncLinks()
+  const source = assemblies.find((item) => item.productId === sourceProductId)
+  if (!source || !source.blocks.length) {
+    return fail('Esse produto não tem composição para copiar')
+  }
+  const target = findOrCreate(productId)
+  ensureFields(source)
+  ;(source.fields || []).forEach((field) =>
+    ensureField(target, field.name, field.defaultValue),
+  )
+  const formulaIds = new Map<string, string>()
+  ;(source.formulas || []).forEach((formula) => {
+    const existing = (target.formulas || []).find(
+      (item) =>
+        item.name.trim().toLowerCase() === formula.name.trim().toLowerCase(),
+    )
+    if (existing && existing.expression === formula.expression) {
+      formulaIds.set(formula.id, existing.id)
+      return
+    }
+    const copy: ProductFormula = {
+      id: `fx${uid()}`,
+      name: existing ? `${formula.name} (cópia)` : formula.name,
+      expression: formula.expression,
+    }
+    target.formulas = [...(target.formulas || []), copy]
+    formulaIds.set(formula.id, copy.id)
+  })
+  const blockIds = new Map(
+    source.blocks.map((block) => [block.id, `b${uid()}`]),
+  )
+  const copied: AssemblyBlock[] = source.blocks.map((block) => ({
+    ...structuredClone(block),
+    id: blockIds.get(block.id) as string,
+    dependsOn: block.dependsOn.map((id) => blockIds.get(id) || id),
+    baseBlockId: block.baseBlockId
+      ? blockIds.get(block.baseBlockId) || null
+      : null,
+    lines: block.lines.map((line) => ({
+      ...structuredClone(line),
+      id: `l${uid()}`,
+      formulaId: line.formulaId
+        ? formulaIds.get(line.formulaId) || line.formulaId
+        : undefined,
+    })),
+  }))
+  target.blocks.push(...copied)
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Variações como cópias independentes (03/10/2026). A variação nasce igual
+ * à composição de onde foi criada e, daí em diante, as duas não se falam
+ * ------------------------------------------------------------------------- */
+
+export const getProductVariants = async ({
+  productId,
+}: {
+  productId: string
+}) =>
+  ok({
+    baseProductId: baseOf(productId),
+    variants: findOrCreate(baseOf(productId)).variants || [],
+  })
+
+export const createProductVariant = async ({
+  productId,
+  name,
+}: {
+  // O produto (ou a variação) que está na tela: a cópia parte dele
+  productId: string
+  name: string
+}) => {
+  if (!name.trim()) return fail('Dê um nome à variação (P, M, G…)')
+  syncLinks()
+  const base = findOrCreate(baseOf(productId))
+  const source = findOrCreate(productId)
+  base.variants = base.variants || []
+  if (
+    base.variants.some(
+      (item) => item.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    )
+  ) {
+    return fail('Já existe uma variação com esse nome')
+  }
+  const id = `v${uid()}`
+  const variantProductId = `${base.productId}${VARIANT_SEP}${id}`
+  // Cópia inteira: etapas, linhas, campos, fórmulas, faixas e valor de venda
+  const copy: ProductAssembly = {
+    ...structuredClone(source),
+    productId: variantProductId,
+    variants: undefined,
+    variations: [],
+  }
+  assemblies.push(copy)
+  base.variants.push({ id, name: name.trim() })
+  return ok(variantProductId)
+}
+
+export const renameProductVariant = async ({
+  productId,
+  variantId,
+  name,
+}: {
+  productId: string
+  variantId: string
+  name: string
+}) => {
+  if (!name.trim()) return fail('Dê um nome à variação')
+  const base = findOrCreate(baseOf(productId))
+  const variant = (base.variants || []).find((item) => item.id === variantId)
+  if (!variant) return fail('Variação não encontrada')
+  variant.name = name.trim()
+  return ok(null)
+}
+
+export const removeProductVariant = async ({
+  productId,
+  variantId,
+}: {
+  productId: string
+  variantId: string
+}) => {
+  const base = findOrCreate(baseOf(productId))
+  const index = assemblies.findIndex(
+    (item) => item.productId === `${base.productId}${VARIANT_SEP}${variantId}`,
+  )
+  if (index >= 0) assemblies.splice(index, 1)
+  base.variants = (base.variants || []).filter((item) => item.id !== variantId)
   return ok(null)
 }
 
@@ -1637,28 +2712,57 @@ export const removeAssemblyLine = async ({
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
-  block.lines = block.lines.filter((line) => line.id !== lineId)
+  const line = block.lines.find((item) => item.id === lineId)
+  // Tirada só deste produto: não volta quando o processo muda (CP-21)
+  if (block.processId && line?.sourceLineId) {
+    block.removedSourceLineIds = [
+      ...(block.removedSourceLineIds || []),
+      line.sourceLineId,
+    ]
+  }
+  block.lines = block.lines.filter((item) => item.id !== lineId)
+  return ok(null)
+}
+
+// Traz de volta as linhas do processo tiradas deste produto (CP-21)
+export const restoreProcessLines = async ({
+  productId,
+  blockId,
+}: {
+  productId: string
+  blockId: string
+}) => {
+  const block = findOrCreate(productId).blocks.find(
+    (item) => item.id === blockId,
+  )
+  if (!block?.processId) return fail('Etapa não encontrada')
+  block.removedSourceLineIds = []
+  syncBlock(block)
   return ok(null)
 }
 
 export const addAssemblyBlock = async ({
   productId,
   processId,
-  baseBlockId,
+  dependsOn = [],
+  insertBefore,
 }: {
   productId: string
   processId: string
-  baseBlockId: string | null
+  dependsOn?: string[]
+  insertBefore?: string
 }) => {
   const assembly = findOrCreate(productId)
   const template = templateOf(processId)
   if (!template) return fail('Processo não encontrado')
 
-  const block = fromTemplate(template, baseBlockId)
-  insertBlock(assembly, block)
+  const block = fromTemplate(template, dependsOn)
+  insertBlock(assembly, block, insertBefore)
   return ok(block.id)
 }
 
+// Tirar a etapa do fluxo: quem dependia dela passa a depender do que ela
+// dependia. O fluxo continua ligado (FL-12)
 export const removeAssemblyBlock = async ({
   productId,
   blockId,
@@ -1667,11 +2771,125 @@ export const removeAssemblyBlock = async ({
   blockId: string
 }) => {
   const assembly = findOrCreate(productId)
-  // A base sai com os acabamentos dela: acabamento sem base não existe
-  assembly.blocks = assembly.blocks.filter(
-    (block) => block.id !== blockId && block.baseBlockId !== blockId,
-  )
+  assembly.blocks = unwire(assembly.blocks, blockId)
+  assembly.variations.forEach((variation) => {
+    if (!variation.extraBlocks) return
+    variation.extraBlocks = variation.extraBlocks.map((block) =>
+      block.dependsOn.includes(blockId)
+        ? {
+            ...block,
+            dependsOn: block.dependsOn.filter((id) => id !== blockId),
+            baseBlockId:
+              block.baseBlockId === blockId ? null : block.baseBlockId,
+          }
+        : block,
+    )
+  })
   return ok(null)
+}
+
+// "Ligar a…" (FL-5): a etapa passa a depender também de outra — é o ponto
+// de encontro, a instalação que espera os dois caminhos (FL-4)
+export const linkBlock = async ({
+  productId,
+  blockId,
+  toId,
+}: {
+  productId: string
+  blockId: string
+  toId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
+  const target = assembly.blocks.find((item) => item.id === toId)
+  if (!block || !target) return fail('Etapa não encontrada')
+  if (blockId === toId) return fail('A etapa não pode depender dela mesma')
+  if (block.dependsOn.includes(toId)) return ok(null)
+  if (dependsTransitively(assembly.blocks, toId, blockId)) {
+    return fail(
+      `${target.localName || target.name} já vem depois de ${block.localName || block.name}: ligar as duas fecharia um laço`,
+    )
+  }
+  block.dependsOn = [...block.dependsOn, toId]
+  if (!block.baseBlockId) block.baseBlockId = toId
+  return ok(null)
+}
+
+export const unlinkBlock = async ({
+  productId,
+  blockId,
+  fromId,
+}: {
+  productId: string
+  blockId: string
+  fromId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
+  if (!block) return fail('Etapa não encontrada')
+  block.dependsOn = block.dependsOn.filter((id) => id !== fromId)
+  if (block.baseBlockId === fromId) {
+    block.baseBlockId = block.dependsOn[0] ?? null
+  }
+  return ok(null)
+}
+
+// Trocar o processo que preenche a etapa (FL-6): a caixa continua no mesmo
+// lugar do fluxo, com as mesmas ligações; o que muda é a montagem
+export const replaceBlockProcess = async ({
+  productId,
+  blockId,
+  processId,
+}: {
+  productId: string
+  blockId: string
+  processId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const index = assembly.blocks.findIndex((item) => item.id === blockId)
+  if (index < 0) return fail('Etapa não encontrada')
+  const template = templateOf(processId)
+  if (!template) return fail('Processo não encontrado')
+  const current = assembly.blocks[index]
+  const next = fromTemplate(template, current.dependsOn)
+  next.id = current.id
+  next.baseBlockId = current.baseBlockId
+  assembly.blocks[index] = next
+  return ok(null)
+}
+
+// O que "+ etapa seguinte" oferece depois desta etapa (FL-7)
+export const getNextStepCandidates = async ({
+  productId,
+  blockId,
+}: {
+  productId: string
+  blockId: string | null
+}) => {
+  const assembly = findOrCreate(productId)
+  const block = blockId
+    ? assembly.blocks.find((item) => item.id === blockId)
+    : null
+  const toItem = (item: Template): ProcessCatalogItem => ({
+    id: item.processId,
+    name: item.name,
+    sector: item.sector,
+    afterBase: item.afterBase,
+  })
+  const all = processTemplates()
+    .map(toItem)
+    .sort(
+      (a, b) =>
+        a.sector.localeCompare(b.sector) || a.name.localeCompare(b.name),
+    )
+  if (!block) return ok<NextStepCandidates>({ usual: [], all })
+
+  // Só as marcações valem (FL-7, 03/10/2026). Sem marcação, a lista inteira,
+  // agrupada por setor; o "acabamento do setor" do legado saiu
+  const marked = block.processId
+    ? all.filter((item) => usualNext.has(pairKey(block.processId!, item.id)))
+    : []
+  return ok<NextStepCandidates>({ usual: marked, all })
 }
 
 export const moveAssemblyBlock = async ({
@@ -1717,8 +2935,12 @@ export const updateAssemblyLine = async ({
       | 'sheetMargin'
       | 'sheetGap'
       | 'chargeWholeSheets'
+      | 'fieldName'
+      | 'formulaId'
     >
   > & {
+    // Padrão do campo do orçamento, se ele ainda não existir no produto
+    fieldDefault?: number
     // Consumo, perda e mínimo por opção (IP-26); vazio volta ao da linha
     optionValues?: {
       id: string
@@ -1728,16 +2950,20 @@ export const updateAssemblyLine = async ({
     }[]
   }
 }) => {
-  const block = findOrCreate(productId).blocks.find(
-    (item) => item.id === blockId,
-  )
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
   const line = block?.lines.find((item) => item.id === lineId)
   if (!line) return fail('Linha não encontrada')
 
   // Trocar a opção escolhida não é ajuste: é o uso normal da linha
   const onlyChoice = Object.keys(values).every((key) => key === 'selectedId')
-  const { optionValues, ...lineValues } = values
+  const { optionValues, fieldDefault, ...lineValues } = values
   Object.assign(line, lineValues)
+  if ('fieldName' in lineValues) {
+    line.fieldName = lineValues.fieldName?.trim() || undefined
+    if (line.fieldName) ensureField(assembly, line.fieldName, fieldDefault ?? 0)
+  }
+  if (line.formula !== 'CUSTOM') line.formulaId = undefined
   // Lista nova: a mesma lista de opções pode ser de outros produtos
   if (optionValues) {
     line.options = line.options.map((option) => {
@@ -1758,7 +2984,7 @@ export const updateAssemblyLine = async ({
   return ok(null)
 }
 
-// Volta a linha ao que o processo define
+// Volta a linha a acompanhar o processo
 export const resetAssemblyLine = async ({
   productId,
   blockId,
@@ -1771,17 +2997,18 @@ export const resetAssemblyLine = async ({
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
-  const index = block?.lines.findIndex((item) => item.id === lineId) ?? -1
-  const template = block?.processId ? templateOf(block.processId) : null
-  if (!block || index < 0 || !template) return fail('Linha não encontrada')
+  const line = block?.lines.find((item) => item.id === lineId)
+  const origin =
+    block?.processId && line?.sourceLineId
+      ? processStore
+          .get(block.processId)
+          ?.block.lines.find((item) => item.id === line.sourceLineId)
+      : undefined
+  if (!block || !line || !origin) return fail('Linha não encontrada')
 
-  const original = template.lines[index]
-  block.lines[index] = {
-    ...original,
-    id: block.lines[index].id,
-    selectedId: block.lines[index].selectedId || original.selectedId,
-    overridden: false,
-  }
+  // Volta a acompanhar o processo (CP-21)
+  line.overridden = false
+  syncBlock(block)
   return ok(null)
 }
 
@@ -1805,7 +3032,16 @@ export const setBlockLocalRules = async ({
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
-  if (taskType) block.taskType = taskType
+  if (taskType) {
+    block.taskType = taskType
+    // Na etapa vinda de processo, o tipo diferente do processo é deste produto
+    if (block.processId) {
+      block.localTaskType =
+        taskType === processStore.get(block.processId)?.block.taskType
+          ? undefined
+          : taskType
+    }
+  }
   if (name !== undefined) {
     if (!name.trim()) return fail('Informe o nome da etapa')
     if (block.processId === null) block.name = name.trim()
@@ -1824,6 +3060,122 @@ export const setBlockLocalRules = async ({
 /* ---------------------------------------------------------------------------
  * Variações (PV-1 a PV-7)
  * ------------------------------------------------------------------------- */
+
+// Onde um material é usado (05/10/2026): inativar o material o tira das
+// composições, então a tela mostra a lista antes de confirmar
+const usesMaterial = (optionId: string, materialId: string) =>
+  optionId === `mat:${materialId}` || optionId.startsWith(`mat:${materialId}:`)
+
+const blocksOf = (assembly: ProductAssembly) => [
+  ...assembly.blocks,
+  ...assembly.variations.flatMap((variation) => variation.extraBlocks || []),
+]
+
+export const getMaterialUsage = async ({
+  materialId,
+}: {
+  materialId: string
+}) => {
+  const usage: { kind: 'PRODUCT' | 'PROCESS'; name: string; stage: string }[] =
+    []
+  processStore.forEach(({ block }) => {
+    if (
+      block.lines.some((line) =>
+        line.options.some((option) => usesMaterial(option.id, materialId)),
+      )
+    )
+      usage.push({ kind: 'PROCESS', name: block.name, stage: block.sector })
+  })
+  assemblies
+    .filter((assembly) => !assembly.productId.includes(VARIANT_SEP))
+    .forEach((assembly) => {
+      blocksOf(assembly).forEach((block) => {
+        if (
+          block.lines.some((line) =>
+            line.options.some((option) => usesMaterial(option.id, materialId)),
+          )
+        )
+          usage.push({
+            kind: 'PRODUCT',
+            name: assembly.name,
+            stage: block.localName || block.name,
+          })
+      })
+    })
+  return ok(usage)
+}
+
+// Tira o material das linhas: sai das opções; se era o escolhido, a linha
+// passa para a próxima opção; linha sem opção nenhuma sai da etapa
+export const removeMaterialFromCompositions = async ({
+  materialId,
+}: {
+  materialId: string
+}) => {
+  const strip = (block: AssemblyBlock) => {
+    block.lines = block.lines
+      .map((line) => {
+        const options = line.options.filter(
+          (option) => !usesMaterial(option.id, materialId),
+        )
+        if (options.length === line.options.length) return line
+        return {
+          ...line,
+          options,
+          selectedId: options.some((option) => option.id === line.selectedId)
+            ? line.selectedId
+            : options[0]?.id || '',
+        }
+      })
+      .filter((line) => line.options.length > 0)
+  }
+  processStore.forEach(({ block }) => strip(block))
+  assemblies.forEach((assembly) => blocksOf(assembly).forEach(strip))
+  return ok(null)
+}
+
+// Variações simples do produto, já no START (PV-6, decidido em 05/10/2026):
+// nome e preço por unidade de venda, para não cadastrar o mesmo produto várias
+// vezes (P, M, G; 4x0, 4x1, 4x4). São as mesmas `variations` que a composição
+// do PRO aprofunda, então quem sobe de plano encontra o que já cadastrou
+export const getProductVariations = async ({
+  productId,
+}: {
+  productId: string
+}) =>
+  ok(
+    findOrCreate(productId).variations.map(({ id, name, unitPrice }) => ({
+      id,
+      name,
+      unitPrice,
+    })),
+  )
+
+export const saveProductVariations = async ({
+  productId,
+  variations,
+}: {
+  productId: string
+  variations: { id?: string; name: string; unitPrice: number | null }[]
+}) => {
+  const names = variations.map((item) => item.name.trim())
+  if (names.some((name) => !name)) return fail('Dê um nome para cada variação')
+  if (new Set(names.map((name) => name.toLowerCase())).size !== names.length)
+    return fail('Duas variações com o mesmo nome')
+  const assembly = findOrCreate(productId)
+  assembly.variations = variations.map((item) => {
+    const existing = item.id
+      ? assembly.variations.find((current) => current.id === item.id)
+      : undefined
+    return {
+      ...(existing || { overrides: [] }),
+      id: existing?.id || `v${uid()}`,
+      name: item.name.trim(),
+      unitPrice: item.unitPrice,
+    }
+  })
+  return ok(null)
+}
 
 export const addVariation = async ({
   productId,
@@ -1925,6 +3277,10 @@ export const clearVariationLine = async ({
 }
 
 // Tabela de preço por faixa (FQ-1). Vazia, vale o valor de venda do produto
+// A tabela por faixa do produto, para o cadastro (LITE) e para a venda
+export const getPriceTiers = async ({ productId }: { productId: string }) =>
+  ok<PriceTier[]>(findOrCreate(productId).priceTiers)
+
 export const setPriceTiers = async ({
   productId,
   tiers,
@@ -1968,6 +3324,7 @@ export const setPriceTiers = async ({
 
 // Só o que o vendedor pode mudar: campos extras, escolhas e listas
 export const getSaleForm = async ({ productId }: { productId: string }) => {
+  syncLinks()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
 
@@ -1983,18 +3340,38 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
     optionals: [],
     lists: [],
   }
+  // Os campos do produto, uma vez só, na ordem em que foram declarados (IP-6)
+  ensureFields(assembly)
+  fieldUsage(assembly)
+    .filter((field) => field.usedBy.length)
+    .forEach((field) =>
+      form.extras.push({
+        fieldId: field.id,
+        name: field.name,
+        kind: 'DECIMAL',
+        defaultValue: field.defaultValue,
+      }),
+    )
   assembly.blocks.forEach((block) => {
     const rules = block.localRules ?? block.originalRules
-    if (rules.timeField) {
+    if (rules.timeField || blockHasTimeLine(block)) {
+      const timeLine = block.lines.find((line) =>
+        TIME_FORMULAS.includes(line.formula),
+      )
       form.times.push({
         blockId: block.id,
         name: `Tempo · ${block.localName || block.name}`,
-        defaultMinutes: rules.timeFieldDefault || 0,
+        defaultMinutes: rules.timeFieldDefault || timeLine?.perUnit || 0,
       })
     }
-    if (rules.extraField !== 'NONE') {
+    // Legado: etapa com campo extra próprio e nenhuma linha lendo um campo
+    // do produto. Some quando as linhas passarem a apontar para o campo
+    if (
+      rules.extraField !== 'NONE' &&
+      !block.lines.some((line) => line.fieldName)
+    ) {
       form.extras.push({
-        blockId: block.id,
+        fieldId: `block:${block.id}`,
         name: rules.extraFieldName || block.name,
         kind: rules.extraField,
         defaultValue: rules.extraFieldDefault,
@@ -2063,6 +3440,7 @@ export const getSaleComposition = async ({
   optionals?: SaleOptional[]
   lists?: SaleListEntry[]
 }) => {
+  syncLinks()
   const original = assemblies.find((item) => item.productId === productId)
   if (!original || !original.blocks.length) {
     return fail('Este produto não tem composição')
@@ -2070,8 +3448,14 @@ export const getSaleComposition = async ({
 
   // Cópia: o que o vendedor escolheu vale só para esta venda
   const source: ProductAssembly = structuredClone({ ...original, measure })
+  // O que o vendedor informou nos campos do produto vale nesta venda
+  ensureFields(source)
+  extras.forEach((item) => {
+    const field = (source.fields || []).find((f) => f.id === item.fieldId)
+    if (field) field.defaultValue = item.value
+  })
   source.blocks.forEach((block) => {
-    const extra = extras.find((item) => item.blockId === block.id)
+    const extra = extras.find((item) => item.fieldId === `block:${block.id}`)
     if (extra) {
       block.localRules = {
         ...(block.localRules ?? block.originalRules),
@@ -2129,9 +3513,19 @@ export const getSaleComposition = async ({
           block.rules.timeField
             ? `tempo ${minutesText(block.rules.timeFieldDefault || 0)}`
             : null,
-          block.rules.extraField === 'NONE'
+          block.rules.extraField === 'NONE' ||
+          block.lines.some((line) => line.fieldName)
             ? null
             : `${block.rules.extraFieldName}: ${block.rules.extraFieldDefault}`,
+          ...Array.from(
+            new Set(
+              block.lines
+                .filter((line) => line.fieldName)
+                .map((line) => line.fieldName as string),
+            ),
+          ).map(
+            (name) => `${name}: ${findField(source, name)?.defaultValue ?? 0}`,
+          ),
         ]
           .filter(Boolean)
           .join(' · ') || null,
@@ -2277,7 +3671,7 @@ export const getPartCandidates = async ({ productId }: { productId: string }) =>
       .filter(
         (item) =>
           item.productId !== productId &&
-          !isProcessHost(item.productId) &&
+          !isHidden(item.productId) &&
           item.blocks.length,
       )
       .map((item) => ({
@@ -2297,6 +3691,7 @@ const containsProduct = (
   depth = 0,
 ): boolean => {
   if (depth > 5) return true
+  syncLinks()
   const assembly = assemblies.find((item) => item.productId === productId)
   return !!assembly?.blocks.some(
     (block) =>
@@ -2309,11 +3704,13 @@ const containsProduct = (
 export const addPartBlock = async ({
   productId,
   partProductId,
-  baseBlockId,
+  dependsOn = [],
+  insertBefore,
 }: {
   productId: string
   partProductId: string
-  baseBlockId: string | null
+  dependsOn?: string[]
+  insertBefore?: string
 }) => {
   const assembly = findOrCreate(productId)
   const part = assemblies.find((item) => item.productId === partProductId)
@@ -2325,24 +3722,26 @@ export const addPartBlock = async ({
     return fail('Um produto não pode ser parte dele mesmo')
   }
 
-  const first = part.blocks[0]
-  insertBlock(assembly, {
+  const first = orderBlocks(part.blocks)[0]
+  const block: AssemblyBlock = {
     id: `b${uid()}`,
     processId: null,
     partProductId,
     name: part.name,
     sector: first.sector,
-    role: baseBlockId ? 'FINISHING' : 'BASE',
-    baseBlockId,
+    role: dependsOn.length ? 'FINISHING' : 'BASE',
+    dependsOn: [...dependsOn],
+    baseBlockId: dependsOn[0] ?? null,
     setupMinutes: 0,
     sectorHourCost: first.sectorHourCost,
     taskType: first.taskType,
     // A parte acompanha a medida e a quantidade do produto por padrão
-    originalRules: baseBlockId ? { ...finishingRules } : { ...baseRules },
+    originalRules: rulesFor(dependsOn),
     localRules: null,
     lines: [],
-  })
-  return ok(null)
+  }
+  insertBlock(assembly, block, insertBefore)
+  return ok(block.id)
 }
 
 // Os produtos que já têm composição (CP-17): alimenta o filtro "com / sem
@@ -2350,7 +3749,7 @@ export const addPartBlock = async ({
 export const getComposedProductIds = async () =>
   ok(
     assemblies
-      .filter((item) => !isProcessHost(item.productId) && item.blocks.length)
+      .filter((item) => !isHidden(item.productId) && item.blocks.length)
       .map((item) => item.productId),
   )
 
@@ -2414,10 +3813,10 @@ export const getLibrary = async () =>
         .filter((item): item is Template => !!item)
       return {
         ...entry,
-        stages: templates.map((item) => ({
+        stages: templates.map((item, index) => ({
           name: item.name,
           sector: item.sector,
-          role: item.role,
+          role: index ? 'FINISHING' : 'BASE',
         })),
         resources: templates.reduce((sum, item) => sum + item.lines.length, 0),
       }
@@ -2437,15 +3836,15 @@ export const importFromLibrary = async ({
   if (!entry) return fail('Composição não encontrada na biblioteca')
   const assembly = findOrCreate(productId)
 
-  let base: AssemblyBlock | null = null
+  // A biblioteca é uma sequência (FL-1): cada processo vem depois do
+  // anterior, e o fluxo nasce ligado
+  let previous: AssemblyBlock | null = null
   entry.processes.forEach((processId) => {
     const template = templateOf(processId)
     if (!template) return
-    const finishing = template.role === 'FINISHING'
-    const block = fromTemplate(template, finishing ? base?.id || null : null)
-    if (finishing && !base) block.role = 'BASE'
+    const block = fromTemplate(template, previous ? [previous.id] : [])
     insertBlock(assembly, block)
-    if (!finishing) base = block
+    previous = block
   })
   return ok(null)
 }
@@ -2459,12 +3858,12 @@ export const addVariationBlock = async ({
   productId,
   variationId,
   processId,
-  baseBlockId,
+  dependsOn = [],
 }: {
   productId: string
   variationId: string
   processId: string
-  baseBlockId: string | null
+  dependsOn?: string[]
 }) => {
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
@@ -2474,7 +3873,7 @@ export const addVariationBlock = async ({
   if (!template) return fail('Processo não encontrado')
   variation.extraBlocks = [
     ...(variation.extraBlocks || []),
-    fromTemplate(template, baseBlockId),
+    fromTemplate(template, dependsOn),
   ]
   return ok(null)
 }
@@ -2492,9 +3891,7 @@ export const removeVariationBlock = async ({
     (item) => item.id === variationId,
   )
   if (!variation) return fail('Variação não encontrada')
-  variation.extraBlocks = (variation.extraBlocks || []).filter(
-    (block) => block.id !== blockId && block.baseBlockId !== blockId,
-  )
+  variation.extraBlocks = unwire(variation.extraBlocks || [], blockId)
   return ok(null)
 }
 
@@ -2502,20 +3899,24 @@ export const removeVariationBlock = async ({
  * Tela de Processos (MS-11)
  * ------------------------------------------------------------------------- */
 
-// Acabamento, serviço de máquina ou primário: sai do que o processo tem, não
-// é campo a digitar (MS-7)
-const processCategory = (block: AssemblyBlock, meta: ProcessMeta) =>
-  meta.finishingOf
-    ? `Acabamento de ${meta.finishingOf.toLowerCase()}`
-    : block.lines.some((line) => line.kind === 'MACHINE')
-      ? 'Serviço de máquina'
-      : 'Primário'
+// A categoria sai do que o processo tem, não é campo a digitar (MS-7). Desde
+// 03/10/2026 "acabamento de" é lido das ligações "costuma vir depois de"
+// (FL-7); sem ligação, serviço de máquina ou primário
+const processCategory = (processId: string, block: AssemblyBlock) => {
+  const before = Array.from(processStore.entries())
+    .filter(([id]) => usualNext.has(pairKey(id, processId)))
+    .map(([, entry]) => entry.block.name)
+  if (before.length) return `Depois de ${before.join(', ')}`
+  return block.lines.some((line) => line.kind === 'MACHINE')
+    ? 'Serviço de máquina'
+    : 'Primário'
+}
 
 const usedIn = (processId: string) =>
   assemblies
     .filter(
       (item) =>
-        !isProcessHost(item.productId) &&
+        !isHidden(item.productId) &&
         (item.blocks.some((block) => block.processId === processId) ||
           item.variations.some((variation) =>
             variation.extraBlocks?.some(
@@ -2531,8 +3932,8 @@ export const getProcessList = async () =>
       id,
       name: block.name,
       sector: block.sector,
-      category: processCategory(block, meta),
-      finishingOf: meta.finishingOf,
+      category: processCategory(id, block),
+      afterBase: meta.afterBase,
       taskType: block.taskType,
       setupMinutes: block.setupMinutes,
       rules: block.originalRules,
@@ -2561,8 +3962,10 @@ export const getProcessDetail = async ({
     id: processId,
     hostId: host.productId,
     meta: entry.meta,
-    category: processCategory(entry.block, entry.meta),
+    category: processCategory(processId, entry.block),
     block: computed.blocks[0],
+    // Os campos que as linhas do processo leem (IP-4)
+    fields: computed.fields,
     cost: computed.cost,
     sale: computed.suggestedPrice,
     resourceSummary: computed.resourceSummary,
@@ -2574,11 +3977,11 @@ export const getProcessDetail = async ({
 export const createProcessDef = async ({
   name,
   sector,
-  finishingOf,
+  afterBase = 'INHERIT',
 }: {
   name: string
   sector: string
-  finishingOf: string | null
+  afterBase?: AfterBase
 }) => {
   if (!name.trim()) return fail('Informe o nome do processo')
   const processId = `proc-${uid()}`
@@ -2587,18 +3990,19 @@ export const createProcessDef = async ({
     processId: null,
     name: name.trim(),
     sector,
-    role: finishingOf ? 'FINISHING' : 'BASE',
+    role: 'BASE',
+    dependsOn: [],
     baseBlockId: null,
     setupMinutes: 0,
     sectorHourCost: HOUR[sector] || 1800,
     taskType: sector,
-    originalRules: finishingOf ? { ...finishingRules } : { ...baseRules },
+    originalRules: { ...baseRules },
     localRules: null,
     lines: [],
   }
   processStore.set(processId, {
     block,
-    meta: { finishingOf, sellerInstructions: '', active: true },
+    meta: { afterBase, sellerInstructions: '', active: true },
   })
   assemblies.push(processWrapper(processId, block))
   return ok(processId)
@@ -2611,7 +4015,7 @@ export const updateProcessMeta = async ({
   processId: string
   values: {
     sector?: string
-    finishingOf?: string | null
+    afterBase?: AfterBase
     setupMinutes?: number
     sellerInstructions?: string
     active?: boolean
@@ -2624,18 +4028,232 @@ export const updateProcessMeta = async ({
     block.sector = values.sector
     block.sectorHourCost = HOUR[values.sector] || block.sectorHourCost
   }
-  if (values.finishingOf !== undefined) {
-    meta.finishingOf = values.finishingOf
-    block.role = values.finishingOf ? 'FINISHING' : 'BASE'
-  }
+  if (values.afterBase) meta.afterBase = values.afterBase
   if (values.setupMinutes !== undefined) {
     block.setupMinutes = Math.max(0, values.setupMinutes)
   }
   if (values.sellerInstructions !== undefined) {
     meta.sellerInstructions = values.sellerInstructions
   }
-  // Processo usado em produto é inativado, não excluído: os produtos que já
-  // o copiaram continuam como estão
+  // Processo usado em produto é inativado, não excluído: os produtos que o
+  // usam continuam acompanhando a montagem dele; ele só deixa de ser oferecido
   if (values.active !== undefined) meta.active = values.active
   return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Etapas seguintes usuais (FL-7): o par é editável dos dois lados
+ * ------------------------------------------------------------------------- */
+
+const neighborsOf = (processId: string, direction: 'before' | 'after') =>
+  processTemplates(false)
+    .filter((item) => item.processId !== processId)
+    .map(
+      (item): UsualNeighbor => ({
+        id: item.processId,
+        name: item.name,
+        sector: item.sector,
+        afterBase: item.afterBase,
+        usual: usualNext.has(
+          direction === 'after'
+            ? pairKey(processId, item.processId)
+            : pairKey(item.processId, processId),
+        ),
+      }),
+    )
+    .sort(
+      (a, b) =>
+        Number(b.usual) - Number(a.usual) ||
+        a.sector.localeCompare(b.sector) ||
+        a.name.localeCompare(b.name),
+    )
+
+// Visto do processo: de quem ele "costuma vir depois", e quais são as
+// "etapas seguintes usuais" dele
+export const getUsualNext = async ({ processId }: { processId: string }) => {
+  if (!processStore.has(processId)) return fail('Processo não encontrado')
+  return ok({
+    before: neighborsOf(processId, 'before'),
+    after: neighborsOf(processId, 'after'),
+  })
+}
+
+export const setUsualNext = async ({
+  fromProcessId,
+  toProcessId,
+  usual,
+}: {
+  fromProcessId: string
+  toProcessId: string
+  usual: boolean
+}) => {
+  if (!processStore.has(fromProcessId) || !processStore.has(toProcessId)) {
+    return fail('Processo não encontrado')
+  }
+  if (fromProcessId === toProcessId) {
+    return fail('Um processo não vem depois dele mesmo')
+  }
+  const key = pairKey(fromProcessId, toProcessId)
+  if (usual) usualNext.add(key)
+  else usualNext.delete(key)
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * O item montado no orçamento (ORC-11): o mesmo editor de fluxo do produto,
+ * só naquele item. Não vira cadastro, a não ser que o vendedor peça
+ * ------------------------------------------------------------------------- */
+
+export const createDraftAssembly = async ({
+  name,
+  measure,
+}: {
+  name?: string
+  measure?: AssemblyMeasure
+}) => {
+  const productId = `${DRAFT_PREFIX}${uid()}`
+  assemblies.push({
+    productId,
+    name: name?.trim() || 'Item composto',
+    code: '',
+    status: 'DRAFT',
+    dimension: 'SALE',
+    unitKind: 'UNITY',
+    unitPrice: null,
+    measure: measure ?? { quantity: 1, width: 1, height: 1 },
+    unitAmount: 1,
+    allowEditValues: true,
+    allowEditDescription: true,
+    priceTiers: [],
+    technicalDescription: '',
+    blocks: [],
+    variations: [],
+  })
+  return ok(productId)
+}
+
+// O que o vendedor vê ao montar: as etapas e o preço de venda de cada
+// recurso, como no legado ("Lona 440 g – R$ 25,00"). O custo não sai daqui
+// (ORC-7): ele existe no cálculo e vai para o retrato da venda (ORC-10)
+export const getComposedItemView = async ({
+  productId,
+  measure,
+}: {
+  productId: string
+  measure?: AssemblyMeasure
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return fail('Item não encontrado')
+  const computed = compute(measure ? { ...assembly, measure } : assembly)
+  const view: ComposedItemView = {
+    productId,
+    name: assembly.name,
+    measure: computed.measure,
+    stages: computed.blocks.map((block) => ({
+      id: block.id,
+      name: block.name,
+      sector: block.sector,
+      dependsOn: block.dependsOn,
+      processId: block.processId,
+      partProductId: block.partProductId ?? null,
+      partFlow: block.partFlow,
+      sale: block.sale,
+      setupMinutes: block.setupMinutes + block.partSetupMinutes,
+      lines: [...block.partLines, ...block.lines].map((line) => ({
+        id: line.id,
+        name: line.name,
+        kind: line.kind,
+        resource: line.mode === 'LIST' ? null : line.selected?.name || null,
+        quantity: line.quantity,
+        unit: line.selected?.unit || line.options[0]?.unit || '',
+        sale: line.sale,
+      })),
+    })),
+    total: computed.suggestedPrice,
+  }
+  return ok(view)
+}
+
+// O retrato da venda do item montado (ORC-10): custo e preço de cada etapa,
+// gravados na linha do orçamento. É leitura de servidor para servidor; a tela
+// do orçamento não chama isto (ORC-7)
+export const resolveComposedItem = async ({
+  productId,
+  measure,
+}: {
+  productId: string
+  measure: AssemblyMeasure
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return fail('Item não encontrado')
+  const computed = compute({ ...assembly, measure })
+  return ok(
+    computed.blocks.map((block) => ({
+      id: block.id,
+      name: block.name,
+      sector: block.sector,
+      kind: block.partProductId ? ('PART' as const) : ('PROCESS' as const),
+      cost: block.cost,
+      sale: block.sale,
+      measure: block.measure,
+      resolved: [...block.partLines, ...block.lines]
+        .filter((line) => line.selected && line.quantity !== null)
+        .map((line) => ({
+          id: line.id,
+          kind: line.kind,
+          name: line.selected!.name,
+          unit: line.selected!.unit,
+          quantity: line.quantity!,
+          unitCost: line.selected!.unitCost,
+          cost: line.cost || 0,
+        })),
+    })),
+  )
+}
+
+export const updateDraftAssembly = async ({
+  productId,
+  values,
+}: {
+  productId: string
+  values: { name?: string; measure?: AssemblyMeasure }
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly || !isDraft(productId)) return fail('Item não encontrado')
+  if (values.name !== undefined)
+    assembly.name = values.name.trim() || assembly.name
+  if (values.measure) assembly.measure = values.measure
+  return ok(null)
+}
+
+// "Salvar como produto" (ORC-11): o produto nasce "Em edição" (IP-14), para
+// ser revisado antes de liberado para venda. O item do orçamento continua
+// sendo o que foi montado nele
+export const saveDraftAsProduct = async ({
+  productId,
+  name,
+}: {
+  productId: string
+  name: string
+}) => {
+  const draft = assemblies.find((item) => item.productId === productId)
+  if (!draft) return fail('Item não encontrado')
+  if (!draft.blocks.length) return fail('Monte ao menos uma etapa antes')
+  const newId = `prd-${uid()}`
+  assemblies.push({
+    ...structuredClone(draft),
+    productId: newId,
+    name: name.trim() || draft.name,
+    code: '',
+    status: 'DRAFT',
+  })
+  return ok(newId)
+}
+
+// O fluxo de um produto, para a parte que abre (IP-9) e para quem só precisa
+// desenhar
+export const getFlow = async ({ productId }: { productId: string }) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return fail('Produto não encontrado')
+  return ok<FlowStage[]>(flowOf(assembly))
 }

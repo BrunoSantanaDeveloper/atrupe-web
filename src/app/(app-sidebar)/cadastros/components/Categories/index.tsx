@@ -80,7 +80,7 @@ export function Categories({ context }: Props) {
     await alertDialog.open({
       title: `Deseja excluir o grupo?`,
       description: '',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       confirmLabel: 'Excluir',
       onConfirm: async () => {

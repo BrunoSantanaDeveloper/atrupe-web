@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardFooter } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -29,26 +29,29 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import {
   OpenCashDialog,
-  CashMovementDialog,
   CloseCashDialog,
+  CashMovementDialog,
+  DiscardPickupDialog,
 } from './CashDialogs'
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
 import { BillingDialog } from './BillingDialog'
 
 // Types
 import {
-  cashOnHand,
-  totalByMethod,
+  daysWaiting,
   saleRemaining,
   cashMovementLabel,
   paymentMethodLabel,
-  paymentMethodDestination,
   type PendingSale,
-  type PaymentMethod,
 } from '../types'
 
 // Actions
-import { claimSale, getCashFront, reverseSale } from '@/actions/cash-front'
+import {
+  claimSale,
+  reverseSale,
+  getCashFront,
+  markSaleReady,
+} from '@/actions/cash-front'
 
 // Third-party
 import { toast } from 'sonner'
@@ -57,12 +60,20 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Icons
+// Mesmos ícones do Fluxo financeiro: o polegar é o recebimento (para baixo,
+// previsto; para cima, com parte recebida), o ciclo é mudar as parcelas
 import {
-  IconCashBanknote,
-  IconPackageExport,
-  IconReceiptRefund,
+  IconTrash,
+  IconThumbUp,
   IconUserCheck,
-  IconFileInvoice,
+  IconThumbDown,
+  IconRefreshDot,
+  IconTrendingUp,
+  IconPackage,
+  IconTrendingDown,
+  IconPackageExport,
+  IconSortAscending,
+  IconSortDescending,
   IconDeviceImacCancel,
 } from '@tabler/icons-react'
 
@@ -82,8 +93,6 @@ const hora = (iso: string) =>
     minute: '2-digit',
   })
 
-const methods: PaymentMethod[] = ['CASH', 'PIX', 'CARD']
-
 type Aba = 'caixa' | 'receber' | 'retirada'
 
 export function PDV() {
@@ -97,10 +106,9 @@ export function PDV() {
   const aba: Aba = abas.includes(params.get('aba') as Aba)
     ? (params.get('aba') as Aba)
     : 'receber'
-  const setAba = (value: Aba) =>
-    updateFilterParam('aba', value, { router, params })
   const [receiving, setReceiving] = useState<PendingSale>()
   const [billingSale, setBillingSale] = useState<PendingSale>()
+  const [discarding, setDiscarding] = useState<PendingSale>()
   const { data: authSession } = useSession()
   // Reverter para faturamento é restrito (FC-15); por enquanto, o
   // administrador
@@ -115,7 +123,18 @@ export function PDV() {
 
   const session = data?.data?.session
   const sales = data?.data?.sales || []
-  const pickups = data?.data?.pickups || []
+  // Trabalho pronto e não entregue sai da fila e vai para a retirada (FC-19)
+  const pickups = sales.filter((sale) => sale.ready && !sale.delivered)
+  // Com um caixa só não há o que reservar: a marca de quem atende e o
+  // "Puxar para mim" só aparecem com mais de uma frente de caixa aberta (FC-5)
+  const multiCash = (data?.data?.openCashFronts ?? 1) > 1
+
+  // Ordem da fila, como no Fluxo financeiro: da mais antiga para a mais nova
+  // (padrão) ou o contrário. Fica na URL
+  const sort = params.get('sort') === 'desc' ? 'desc' : 'asc'
+  const byApproval = (a: PendingSale, b: PendingSale) =>
+    (sort === 'asc' ? 1 : -1) *
+    (new Date(a.approvedAt).getTime() - new Date(b.approvedAt).getTime())
 
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: ['cash-front'] })
@@ -125,8 +144,19 @@ export function PDV() {
   // As vendas que foram para o fluxo financeiro entram no relatório do dia,
   // mas não no saldo do caixa. Ficam separadas de propósito: se entrassem na
   // mesma soma, a conferência do fechamento nunca bateria (FC-12.1)
-  const noCaixa = sales.filter((sale) => sale.goesToCash)
-  const noFluxo = sales.filter((sale) => !sale.goesToCash)
+  const noCaixa = sales
+    .filter((sale) => sale.goesToCash && !sale.ready)
+    .sort(byApproval)
+  const noFluxo = sales
+    .filter((sale) => !sale.goesToCash && !sale.ready)
+    .sort(byApproval)
+
+  const markReady = async (sale: PendingSale) => {
+    const res = await markSaleReady(sale.id)
+    if (!res.success) return toast.error(res.message)
+    toast.success(`${sale.reference} aguardando retirada`)
+    await refresh()
+  }
 
   const me = session ? `${session.name} · ${session.operator}` : ''
   const claimOf = (sale: PendingSale) =>
@@ -172,8 +202,35 @@ export function PDV() {
           title="Frente de caixa"
           supportText={
             session
-              ? `${session.name} · ${session.operator} · aberto às ${hora(session.openedAt)}`
+              ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
               : 'Nenhum caixa aberto'
+          }
+          // As abas ficam na URL (design.md §5.1), com a contagem de cada uma
+          paramName="aba"
+          activeTab={session ? aba : undefined}
+          tabs={
+            session
+              ? [
+                  {
+                    value: 'receber',
+                    tab: 'receber',
+                    label: 'A receber',
+                    count: noCaixa.length,
+                  },
+                  {
+                    value: 'caixa',
+                    tab: 'caixa',
+                    label: 'Movimento do caixa',
+                    count: session.movements.length,
+                  },
+                  {
+                    value: 'retirada',
+                    tab: 'retirada',
+                    label: 'Aguardando retirada',
+                    count: pickups.length,
+                  },
+                ]
+              : undefined
           }
           primaryCta={
             isOpen ? (
@@ -195,25 +252,55 @@ export function PDV() {
             )
           }
           secondaryCta={
-            isOpen ? (
-              <PermissionGate permissions={['financial:pdv:edit']}>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
+            session ? (
+              <div className="flex items-center gap-2">
+                {/* Ordem da fila, com o mesmo botão do Fluxo financeiro */}
+                {aba === 'receber' && (
+                  <ActionButton
+                    size="iconMd"
                     variant="neutralOutline"
-                    onClick={() => setDialog('suprimento')}
-                  >
-                    Suprimento
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    onClick={() => setDialog('sangria')}
-                  >
-                    Sangria
-                  </Button>
-                </div>
-              </PermissionGate>
+                    tooltip={
+                      sort === 'asc'
+                        ? 'Ordenação decrescente'
+                        : 'Ordenação crescente'
+                    }
+                    Icon={
+                      sort === 'asc' ? IconSortDescending : IconSortAscending
+                    }
+                    onClick={() =>
+                      updateFilterParam(
+                        'sort',
+                        sort === 'asc' ? 'desc' : 'asc',
+                        { router, params },
+                      )
+                    }
+                  />
+                )}
+                {/* O mesmo desenho de "Nova despesa" e "Nova receita" do
+                    Fluxo financeiro: o que sai em vermelho, o que entra em
+                    verde. Mas não é receita nem despesa: é dinheiro mudando
+                    de lugar, com origem e destino */}
+                {isOpen && (
+                  <PermissionGate permissions={['financial:pdv:edit']}>
+                    <Button
+                      type="button"
+                      variant="errorOutline"
+                      LeftIcon={IconTrendingDown}
+                      onClick={() => setDialog('sangria')}
+                    >
+                      Sangria
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="successOutline"
+                      LeftIcon={IconTrendingUp}
+                      onClick={() => setDialog('suprimento')}
+                    >
+                      Suprimento
+                    </Button>
+                  </PermissionGate>
+                )}
+              </div>
             ) : undefined
           }
         />
@@ -228,62 +315,8 @@ export function PDV() {
           </Card>
         ) : (
           <>
-            {/* O que o caixa tem agora, separado por forma de pagamento,
-                porque é assim que o dinheiro sai no fechamento (FC-3) */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <Card>
-                <CardContent className="px-6 py-5">
-                  <p className="text-sm text-gray">Dinheiro em caixa</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {money(cashOnHand(session))}
-                  </p>
-                  <p className="mt-1 text-sm text-gray">
-                    Abertura {money(session.openingBalance)} · é o que se conta
-                    no fechamento
-                  </p>
-                </CardContent>
-              </Card>
-              {methods.map((method) => (
-                <Card key={method}>
-                  <CardContent className="px-6 py-5">
-                    <p className="text-sm text-gray">
-                      {paymentMethodLabel[method]} recebido
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-900">
-                      {money(totalByMethod(session, method))}
-                    </p>
-                    <p className="mt-1 text-sm text-gray">
-                      {paymentMethodDestination[method]}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            <Card>
-              <CardContent className="flex flex-wrap gap-2 px-6 py-4">
-                {(
-                  [
-                    ['receber', `A receber (${noCaixa.length})`],
-                    [
-                      'caixa',
-                      `Movimento do caixa (${session.movements.length})`,
-                    ],
-                    ['retirada', `Aguardando retirada (${pickups.length})`],
-                  ] as const
-                ).map(([value, label]) => (
-                  <Button
-                    key={value}
-                    type="button"
-                    variant={aba === value ? 'default' : 'neutralOutline'}
-                    onClick={() => setAba(value)}
-                  >
-                    {label}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
-
+            {/* Os valores do caixa não ficam na tela principal, à vista de
+                quem passa pelo balcão: aparecem só no fechamento */}
             {aba === 'receber' && (
               <Card>
                 <Table>
@@ -291,7 +324,7 @@ export function PDV() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Venda</TableHead>
                       <TableHead>Vendedor</TableHead>
-                      <TableHead className="text-right">Total</TableHead>
+                      <TableHead numeric>Total</TableHead>
                       <TableHead className="text-right">Já pago</TableHead>
                       <TableHead className="text-right">Falta</TableHead>
                       <TableHead />
@@ -310,21 +343,21 @@ export function PDV() {
                               ? ' · sinal pago, aguarda retirada'
                               : ''}
                           </p>
-                          <Badge
-                            className="mt-1"
-                            variant={cashFrontClaimObj[claimOf(sale)].variant}
-                          >
-                            {claimOf(sale) === 'OTHER'
-                              ? sale.claimedBy
-                              : cashFrontClaimObj[claimOf(sale)].text}
-                          </Badge>
+                          {multiCash && (
+                            <Badge
+                              className="mt-1"
+                              variant={cashFrontClaimObj[claimOf(sale)].variant}
+                            >
+                              {claimOf(sale) === 'OTHER'
+                                ? sale.claimedBy
+                                : cashFrontClaimObj[claimOf(sale)].text}
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell className="text-sm text-gray">
                           {sale.seller}
                         </TableCell>
-                        <TableCell className="text-right">
-                          {money(sale.total)}
-                        </TableCell>
+                        <TableCell numeric>{money(sale.total)}</TableCell>
                         <TableCell className="text-right text-success-600">
                           {sale.paid ? money(sale.paid) : '—'}
                         </TableCell>
@@ -336,7 +369,7 @@ export function PDV() {
                             <PermissionGate
                               permissions={['financial:pdv:edit']}
                             >
-                              {claimOf(sale) === 'FREE' && (
+                              {multiCash && claimOf(sale) === 'FREE' && (
                                 <ActionButton
                                   Icon={IconUserCheck}
                                   variant="neutralGhost"
@@ -346,30 +379,47 @@ export function PDV() {
                                 />
                               )}
                               <ActionButton
-                                Icon={IconCashBanknote}
-                                variant="neutralGhost"
+                                Icon={
+                                  sale.paid > 0 ? IconThumbUp : IconThumbDown
+                                }
+                                variant={
+                                  sale.paid > 0
+                                    ? 'warningGhost'
+                                    : 'neutralGhost'
+                                }
                                 tooltip={
                                   !isOpen
                                     ? 'Abra o caixa para receber'
                                     : claimOf(sale) === 'OTHER'
                                       ? `Sendo atendida no ${sale.claimedBy}`
-                                      : 'Receber'
+                                      : sale.paid > 0
+                                        ? 'Receber o restante'
+                                        : 'Receber'
                                 }
                                 disabled={!isOpen || claimOf(sale) === 'OTHER'}
                                 onClick={() => setReceiving(sale)}
+                              />
+                              {/* Sem o gerenciador de produção, o caixa
+                                  marca o trabalho pronto: a venda sai da
+                                  fila e vai para a retirada (FC-19) */}
+                              <ActionButton
+                                Icon={IconPackage}
+                                variant="neutralGhost"
+                                tooltip="Pronto, aguardando retirada"
+                                onClick={() => markReady(sale)}
                               />
                               {canBill &&
                                 sale.kind === 'QUICK' &&
                                 sale.paid === 0 && (
                                   <ActionButton
-                                    Icon={IconFileInvoice}
+                                    Icon={IconRefreshDot}
                                     variant="neutralGhost"
                                     tooltip="Faturar para o cliente"
                                     onClick={() => setBillingSale(sale)}
                                   />
                                 )}
                               <ActionButton
-                                Icon={IconReceiptRefund}
+                                Icon={IconTrash}
                                 variant="errorGhost"
                                 tooltip="Cancelar a venda"
                                 onClick={() => cancelSale(sale)}
@@ -384,10 +434,11 @@ export function PDV() {
                       <>
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
                           <TableCell colSpan={6} className="text-sm text-gray">
-                            <strong>Foram para o fluxo financeiro</strong> —
-                            cliente com forma de pagamento definida. Aparecem
-                            aqui como registro do dia e{' '}
-                            <strong>não entram no saldo do caixa</strong>.
+                            <strong>Faturadas pelo caixa para o cliente</strong>{' '}
+                            — chegaram como venda rápida e o caixa definiu o
+                            cliente e a forma. Já estão no fluxo financeiro e{' '}
+                            <strong>não entram no saldo do caixa</strong>; saem
+                            daqui no fechamento.
                           </TableCell>
                         </TableRow>
                         {noFluxo.map((sale) => (
@@ -399,9 +450,7 @@ export function PDV() {
                             <TableCell className="text-sm">
                               {sale.seller}
                             </TableCell>
-                            <TableCell className="text-right">
-                              {money(sale.total)}
-                            </TableCell>
+                            <TableCell numeric>{money(sale.total)}</TableCell>
                             <TableCell colSpan={2} className="text-right">
                               <Badge variant="neutralLight">
                                 {sale.billing || 'Faturamento mensal'}
@@ -432,7 +481,7 @@ export function PDV() {
                       <TableHead>Hora</TableHead>
                       <TableHead className="w-full">Movimento</TableHead>
                       <TableHead>Forma</TableHead>
-                      <TableHead className="text-right">Valor</TableHead>
+                      <TableHead numeric>Valor</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -461,6 +510,9 @@ export function PDV() {
                             {movement.reason ? ` · ${movement.reason}` : ''}
                             {movement.responsible
                               ? ` · ${movement.responsible}`
+                              : ''}
+                            {movement.discount
+                              ? ` · arredondamento de ${money(movement.discount)} como desconto`
                               : ''}
                           </p>
                         </TableCell>
@@ -493,17 +545,11 @@ export function PDV() {
                     ))}
                   </TableBody>
                 </Table>
-                <CardFooter className="flex-wrap justify-between gap-3">
+                <CardFooter>
                   <p className="max-w-xl text-sm text-gray">
-                    O cartão entra pelo <strong>valor cheio</strong>. A taxa
-                    aparece na previsão do caixa principal, com o líquido entre
-                    parênteses, e é confirmada na baixa.
-                  </p>
-                  <p className="text-sm">
-                    Dinheiro em caixa:{' '}
-                    <span className="text-lg font-semibold text-gray-900">
-                      {money(cashOnHand(session))}
-                    </span>
+                    O cartão entra pelo <strong>valor cheio</strong>; no
+                    fechamento vai para a operadora, e a taxa só aparece na
+                    liquidação. Os totais do caixa aparecem no fechamento.
                   </p>
                 </CardFooter>
               </Card>
@@ -516,55 +562,97 @@ export function PDV() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Trabalho</TableHead>
                       <TableHead>Contato</TableHead>
-                      <TableHead>Pronto desde</TableHead>
+                      <TableHead>Pronto há</TableHead>
+                      <TableHead className="text-right">Já pago</TableHead>
                       <TableHead className="text-right">
                         Falta receber
                       </TableHead>
+                      <TableHead />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pickups.map((pickup) => {
-                      const vencido = pickup.daysWaiting > pickup.deadlineDays
-
+                    {pickups.map((sale) => {
+                      const days = daysWaiting(sale)
                       return (
-                        <TableRow key={pickup.id}>
+                        <TableRow key={sale.id}>
                           <TableCell>
                             <p className="font-medium text-gray-800">
-                              {pickup.reference}
+                              {sale.reference}
                             </p>
-                            <p className="text-sm text-gray">{pickup.client}</p>
+                            <p className="text-sm text-gray">{sale.client}</p>
                           </TableCell>
-                          <TableCell className="text-sm text-gray">
-                            {pickup.phone}
+                          <TableCell className="whitespace-nowrap text-sm text-gray">
+                            {sale.phone || '-'}
                           </TableCell>
-                          <TableCell>
-                            <p className="text-sm text-gray-700">
-                              {pickup.daysWaiting} dias
-                            </p>
-                            <p
-                              className={cn(
-                                'text-sm',
-                                vencido ? 'text-error-600' : 'text-gray',
-                              )}
-                            >
-                              {vencido
-                                ? `Prazo de ${pickup.deadlineDays} dias vencido`
-                                : `Prazo de ${pickup.deadlineDays} dias`}
-                            </p>
+                          <TableCell className="whitespace-nowrap text-sm text-gray-700">
+                            {days === 1 ? '1 dia' : `${days} dias`}
+                          </TableCell>
+                          <TableCell className="text-right text-success-600">
+                            {sale.paid ? money(sale.paid) : '—'}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {money(pickup.remaining)}
+                            {money(saleRemaining(sale))}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <PermissionGate
+                                permissions={['financial:pdv:edit']}
+                              >
+                                {/* O cliente veio buscar: recebe o restante
+                                    e entrega, no mesmo diálogo (FC-12) */}
+                                <ActionButton
+                                  Icon={
+                                    sale.paid > 0 ? IconThumbUp : IconThumbDown
+                                  }
+                                  variant={
+                                    sale.paid > 0
+                                      ? 'warningGhost'
+                                      : 'neutralGhost'
+                                  }
+                                  tooltip={
+                                    !isOpen
+                                      ? 'Abra o caixa para receber'
+                                      : saleRemaining(sale) > 0
+                                        ? 'Receber o restante e entregar'
+                                        : 'Entregar'
+                                  }
+                                  disabled={!isOpen}
+                                  onClick={() => setReceiving(sale)}
+                                />
+                              </PermissionGate>
+                              {/* A baixa é "Descartar", quando a empresa
+                                  decidir (FC-19): restrita, com justificativa */}
+                              <PermissionGate
+                                permissions={['financial:pdv:delete']}
+                              >
+                                <ActionButton
+                                  Icon={IconTrash}
+                                  variant="errorGhost"
+                                  tooltip="Descartar e lançar perda"
+                                  onClick={() => setDiscarding(sale)}
+                                />
+                              </PermissionGate>
+                            </div>
                           </TableCell>
                         </TableRow>
                       )
                     })}
                   </TableBody>
                 </Table>
+                {pickups.length === 0 && (
+                  <ListDataTotalEmpty
+                    icon={IconPackageExport}
+                    title="Nada aguardando retirada"
+                    description="O trabalho pronto e não entregue aparece aqui, com há quantos dias espera"
+                  />
+                )}
                 <CardFooter>
                   <p className="text-sm text-gray">
-                    Esta lista responde <strong>para quem ligar</strong>. Ao fim
-                    do prazo, a empresa decide descartar o material e o que não
-                    foi pago é lançado como perda.
+                    Esta lista responde <strong>para quem ligar</strong>. A
+                    venda chega aqui quando o trabalho fica pronto sem ser
+                    entregue; sai quando o cliente busca e paga o restante, ou
+                    quando a empresa descarta e lança a perda, com o sinal
+                    abatendo. Não há prazo no sistema.
                   </p>
                 </CardFooter>
               </Card>
@@ -574,8 +662,14 @@ export function PDV() {
 
         <ReceiveSaleDialog
           sale={receiving}
+          roundingLimit={session?.roundingLimit}
           onDone={refresh}
           onOpenChange={(open) => !open && setReceiving(undefined)}
+        />
+        <DiscardPickupDialog
+          pickup={discarding}
+          onDone={refresh}
+          onOpenChange={(open) => !open && setDiscarding(undefined)}
         />
         <BillingDialog
           sale={billingSale}
@@ -596,6 +690,7 @@ export function PDV() {
         {session && (
           <CloseCashDialog
             session={session}
+            billed={noFluxo}
             open={dialog === 'fechar'}
             onDone={() => {
               refresh()

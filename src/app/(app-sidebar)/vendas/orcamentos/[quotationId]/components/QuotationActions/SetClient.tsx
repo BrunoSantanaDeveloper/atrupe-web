@@ -29,7 +29,7 @@ export function SetClient() {
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
-          <CustomButton icon={IconUserPlus} title="Informar Cliente" />
+          <CustomButton icon={IconUserPlus} title="Informar cliente" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -40,11 +40,11 @@ export function SetClient() {
               variant="warningBorderedLight"
               className="mx-auto mb-2"
             />
-            <AlertDialogTitle>Informar Cliente</AlertDialogTitle>
+            <AlertDialogTitle>Informar cliente</AlertDialogTitle>
             <AlertDialogDescription className="sr-only"></AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

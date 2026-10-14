@@ -271,6 +271,7 @@ export function ClientSelect({
         <PopoverTrigger asChild>
           <Button
             variant="input"
+            size="md"
             role="combobox"
             aria-expanded={open}
             className={cn(

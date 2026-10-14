@@ -433,7 +433,7 @@ export function InvoiceRecipientEditDialog({
         await queryClient.invalidateQueries({
           queryKey: ['client-addresses', _clientId],
         })
-        toast.success('Cadastro do cliente atualizado com sucesso!')
+        toast.success('Cadastro do cliente atualizado')
       }
 
       onSave(buildDestinatario(data), { updateClient: false })
@@ -495,7 +495,7 @@ export function InvoiceRecipientEditDialog({
       await queryClient.invalidateQueries({
         queryKey: ['client-addresses', _clientId],
       })
-      toast.success('Novo endereço cadastrado no cliente!')
+      toast.success('Novo endereço cadastrado no cliente')
 
       onSave(buildDestinatario(data), { updateClient: false })
       onOpenChange(false)

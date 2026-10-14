@@ -35,7 +35,7 @@ export function UnpayInstallment({
     const confirmed = await alertDialog.open({
       title: `Deseja desfazer o ${typeText}?`,
       description: '',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       confirmLabel: `Desfazer ${typeText}`,
       toastMsg: undefined,
@@ -55,7 +55,7 @@ export function UnpayInstallment({
 
     triggerLoading?.()
 
-    toast.success(`${typeText} desfeito!`)
+    toast.success(`${typeText} desfeito`)
     queryClient.invalidateQueries()
 
     queryClient.invalidateQueries()

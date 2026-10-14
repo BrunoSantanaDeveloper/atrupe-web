@@ -12,7 +12,7 @@ import { FEATURES } from '@/consts/features'
 
 export function metadata() {
   return {
-    title: 'Movimentações a Pagar',
+    title: 'Movimentações a pagar',
   }
 }
 

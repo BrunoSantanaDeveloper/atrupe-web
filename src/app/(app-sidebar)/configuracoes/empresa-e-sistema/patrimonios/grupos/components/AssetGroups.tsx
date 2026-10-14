@@ -140,7 +140,7 @@ export function AssetGroups() {
                       <TableHead className="w-[14%]">Setor</TableHead>
                       <TableHead className="w-[12%]">Unidade</TableHead>
                       <TableHead className="w-[12%] text-right">Bens</TableHead>
-                      <TableHead className="w-[16%] text-right">
+                      <TableHead numeric className="w-[16%]">
                         Custo médio
                       </TableHead>
                       <TableHead className="w-[16%] text-right">
@@ -179,12 +179,12 @@ export function AssetGroups() {
                         <TableCell className="text-right">
                           {group.assetCount}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell numeric>
                           {group.averageCost === null
                             ? '-'
                             : formatCurrencyToBrl(group.averageCost)}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell numeric>
                           {group.totalProductivity
                             ? `${group.totalProductivity} ${assetUnitShort[group.unit]}/mês`
                             : '-'}

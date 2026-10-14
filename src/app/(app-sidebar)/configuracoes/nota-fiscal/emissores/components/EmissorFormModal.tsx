@@ -393,7 +393,7 @@ export function EmissorFormModal({
       <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
         <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
           <DialogTitle>
-            {isEditing ? 'Editar Emissor' : 'Novo Emissor'}
+            {isEditing ? 'Editar Emissor' : 'Novo emissor'}
             {editType !== 'GLOBAL' && (
               <span className="ml-2 px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 text-xs font-normal">
                 {editType === 'NFE'
@@ -490,7 +490,7 @@ export function EmissorFormModal({
             {isSubmitting && (
               <IconDeviceFloppy className="w-4 h-4 mr-2 animate-spin" />
             )}
-            Salvar Configuração
+            Salvar
           </Button>
         </DialogFooter>
       </DialogContent>

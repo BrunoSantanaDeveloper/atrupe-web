@@ -47,7 +47,7 @@ import { useMoney } from '@/hooks/useMoney'
 import { toast } from 'sonner'
 
 // Icons
-import { IconTrash, IconCirclePlus } from '@tabler/icons-react'
+import { IconTrash, IconPlus } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -120,12 +120,14 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
               <TableRow className="bg-gray-50">
                 <TableHead className="w-[22%]">A partir de</TableHead>
                 <TableHead className="w-[24%]">
-                  Valor de venda por {unit}
+                  Preço de venda por {unit}
                 </TableHead>
-                <TableHead className="w-[20%] text-right">
+                <TableHead numeric className="w-[20%]">
                   Custo por {unit} nessa quantidade
                 </TableHead>
-                <TableHead className="w-[14%] text-right">Margem</TableHead>
+                <TableHead numeric className="w-[14%]">
+                  Margem
+                </TableHead>
                 <TableHead className="w-[20%]" />
               </TableRow>
             </TableHeader>
@@ -160,7 +162,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
                           type="number"
                           min={0}
                           step="0.01"
-                          aria-label="Valor de venda"
+                          aria-label="Preço de venda"
                           startAdornment={<span className="text-sm">R$</span>}
                           value={tier.unitPrice / 100}
                           onChange={(event) =>
@@ -173,7 +175,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
                         />
                       </PermissionGate>
                     </TableCell>
-                    <TableCell className="text-right text-sm">
+                    <TableCell numeric className="text-sm">
                       {summary && !changed ? money(summary.unitCost) : '-'}
                     </TableCell>
                     <TableCell
@@ -230,7 +232,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
           <Button
             type="button"
             variant="neutralOutline"
-            LeftIcon={IconCirclePlus}
+            LeftIcon={IconPlus}
             onClick={() =>
               setTiers((current) => [
                 ...current,

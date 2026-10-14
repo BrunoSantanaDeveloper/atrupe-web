@@ -84,7 +84,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       }
       // Some APIs return the object directly on success, check structure if needed.
       // Assuming standard wrapper or direct object.
-      toast.success('Natureza criada com sucesso!')
+      toast.success('Natureza criada')
       queryClient.invalidateQueries({ queryKey: ['natures'] })
     },
     onError: (error) => {
@@ -101,7 +101,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       })
     },
     onSuccess: (result) => {
-      toast.success('Natureza atualizada com sucesso!')
+      toast.success('Natureza atualizada')
       queryClient.invalidateQueries({ queryKey: ['natures'] })
     },
     onError: (error) => {
@@ -117,7 +117,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       })
     },
     onSuccess: (result) => {
-      toast.success('Natureza excluída com sucesso!')
+      toast.success('Natureza excluída')
       queryClient.invalidateQueries({ queryKey: ['natures'] })
     },
     onError: (error) => {
@@ -193,7 +193,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
         <div className="flex items-center gap-4">
           <FeaturedIcon variant="outline" Icon={IconCategory} />
           <div>
-            <h2 className="text-lg font-semibold">Histórico de Natureza</h2>
+            <h2 className="type-section-title">Histórico de Natureza</h2>
             <p className="text-sm text-gray-500">
               Crie pré-definições para emitir suas notas fiscais com mais
               agilidade
@@ -201,7 +201,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
           </div>
         </div>
         <Button onClick={handleNew} LeftIcon={IconPlus}>
-          Nova Natureza
+          Nova natureza
         </Button>
       </div>
 
@@ -214,14 +214,12 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       ) : natures.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
           <IconCategory className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-700 mb-2">
-            Nenhuma Natureza cadastrada
-          </h3>
+          <h3 className="type-card-title mb-2">Nenhuma Natureza cadastrada</h3>
           <p className="text-gray-500 mb-4">
             Cadastre naturezas de operação para facilitar a emissão de notas
           </p>
           <Button onClick={handleNew} LeftIcon={IconPlus}>
-            Nova Natureza
+            Nova natureza
           </Button>
         </div>
       ) : (
@@ -230,18 +228,16 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 <th className="px-4 py-3 text-left w-12"></th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="type-eyebrow px-4 py-3 text-left">
                   Descrição da Natureza de Operação
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="type-eyebrow px-4 py-3 text-left">
                   CFOP dentro do estado
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <th className="type-eyebrow px-4 py-3 text-left">
                   CFOP fora do estado
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">
-                  Ações
-                </th>
+                <th className="type-eyebrow px-4 py-3 text-left w-16">Ações</th>
               </tr>
             </thead>
             <tbody>

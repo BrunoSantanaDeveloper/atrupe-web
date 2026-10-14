@@ -61,9 +61,7 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            Projeção de caixa
-          </CardTitle>
+          <CardTitle>Projeção de caixa</CardTitle>
         </CardHeader>
         <CardContent className="min-h-[320px]">
           <Skeleton className="h-[304px] w-full" />
@@ -76,9 +74,7 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            Projeção de caixa
-          </CardTitle>
+          <CardTitle>Projeção de caixa</CardTitle>
         </CardHeader>
         <CardContent className="min-h-[320px] flex items-center justify-center">
           <p className="text-gray-500">
@@ -92,9 +88,7 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Projeção de caixa
-        </CardTitle>
+        <CardTitle>Projeção de caixa</CardTitle>
       </CardHeader>
       <CardContent className="min-h-[320px]">
         <ChartContainer
@@ -153,13 +147,13 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
               strokeWidth={2}
               dot={{
                 fill: 'var(--color-balance)',
-                stroke: '#fff',
+                stroke: 'var(--surface)',
                 strokeWidth: 2,
                 r: 4,
               }}
               activeDot={{
                 r: 6,
-                stroke: '#fff',
+                stroke: 'var(--surface)',
                 strokeWidth: 2,
               }}
             />

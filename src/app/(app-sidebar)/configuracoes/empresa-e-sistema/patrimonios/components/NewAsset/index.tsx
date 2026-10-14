@@ -331,7 +331,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="neutralOutline">
               Cancelar
             </Button>
           </DialogClose>
@@ -340,7 +340,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
             disabled={!name || !sector || !acquisitionValue}
             onClick={() => mutate()}
           >
-            {isEdit ? 'Salvar alterações' : 'Cadastrar patrimônio'}
+            {isEdit ? 'Salvar' : 'Cadastrar patrimônio'}
           </Button>
         </DialogFooter>
       </DialogContent>

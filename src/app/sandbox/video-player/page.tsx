@@ -24,7 +24,7 @@ export default function VideoPlayerSandboxPage() {
   ]
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#fcfcfd] p-8 lg:p-12">
+    <div className="flex flex-col min-h-screen bg-gray-25 p-8 lg:p-12">
       <div className="max-w-[1600px] mx-auto space-y-16">
         <div className="flex flex-col gap-4">
           <h2 className="text-3xl font-medium text-[#252e3b]">Video Player</h2>

@@ -70,7 +70,7 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
         {record.value >= 0 ? '' : '-'}
         {formatCurrencyToBrl(Math.abs(record.value))}
       </TableCell>
-      <TableCell className="text-right text-gray-600">
+      <TableCell numeric className="text-gray-600">
         {record.percentage}%
       </TableCell>
     </TableRow>
@@ -158,7 +158,7 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
                   </div>
                 </TableHead>
                 <TableHead>Valor</TableHead>
-                <TableHead className="text-right">100%</TableHead>
+                <TableHead numeric>100%</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

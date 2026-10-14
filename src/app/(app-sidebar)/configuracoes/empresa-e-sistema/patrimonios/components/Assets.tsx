@@ -153,7 +153,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                       <TableHead className="w-[14%] text-right">
                         Depreciação mensal
                       </TableHead>
-                      <TableHead className="w-[14%]">Situação</TableHead>
+                      <TableHead className="w-[14%]">Status</TableHead>
                       <TableHead className="w-[6%]" />
                     </TableRow>
                   </TableHeader>
@@ -206,7 +206,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                                 ? '-'
                                 : `${asset.monthlyProductivity} ${assetUnitShort[asset.unit]}/mês`}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell numeric>
                               {formatValue(asset.monthlyDepreciation)}
                             </TableCell>
                             <TableCell>

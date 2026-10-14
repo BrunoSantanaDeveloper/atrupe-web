@@ -7,111 +7,13 @@
 import type {
   Material,
   MaterialUnit,
+  MaterialAdvanced,
   MaterialVariation,
 } from '@/app/(app-sidebar)/configuracoes/produtos/materiais/types'
 
-const materials: Material[] = [
-  {
-    id: 'lona-440',
-    code: 'MAT-01',
-    name: 'Lona 440',
-    sector: 'Impressão',
-    subcategory: 'Lonas',
-    unit: 'M2',
-    directSale: false,
-    productionMaterial: true,
-    priceRule: 'VARIABLE',
-    cost: null,
-    price: null,
-    variations: [
-      {
-        id: 'v1',
-        brand: 'Marca X',
-        color: 'Branca',
-        cost: 1250,
-        price: 2800,
-      },
-      {
-        id: 'v2',
-        brand: 'Marca X',
-        color: 'Preta',
-        cost: 1250,
-        price: 2800,
-      },
-      {
-        id: 'v3',
-        brand: 'Marca Y',
-        color: 'Branca',
-        cost: 1420,
-        price: 3100,
-      },
-    ],
-    active: true,
-  },
-  {
-    id: 'mdf-10',
-    code: 'MAT-02',
-    name: 'MDF 10 mm',
-    sector: 'Marcenaria',
-    subcategory: 'Chapas',
-    unit: 'UN',
-    directSale: true,
-    productionMaterial: true,
-    priceRule: 'FIXED',
-    cost: null,
-    price: null,
-    variations: [
-      { id: 'v4', brand: 'Marca Y', color: 'Branco', cost: 8900, price: 9500 },
-      { id: 'v5', brand: 'Marca Y', color: 'Cru', cost: 8200, price: 9000 },
-    ],
-    active: true,
-  },
-  {
-    id: 'mdf-15',
-    code: 'MAT-03',
-    name: 'MDF 15 mm',
-    sector: 'Marcenaria',
-    subcategory: 'Chapas',
-    unit: 'UN',
-    directSale: true,
-    productionMaterial: true,
-    priceRule: 'FIXED',
-    cost: 11200,
-    price: 12500,
-    variations: [],
-    active: true,
-  },
-  {
-    id: 'ilhos',
-    code: 'MAT-04',
-    name: 'Ilhós',
-    sector: 'Produção',
-    subcategory: 'Acabamentos',
-    unit: 'UN',
-    directSale: false,
-    productionMaterial: true,
-    priceRule: 'FIXED',
-    cost: 12,
-    price: null,
-    variations: [],
-    active: true,
-  },
-  {
-    id: 'tinta-sublimatica',
-    code: 'MAT-05',
-    name: 'Tinta sublimática',
-    sector: 'Impressão',
-    subcategory: 'Tintas',
-    unit: 'LT',
-    directSale: false,
-    productionMaterial: true,
-    priceRule: 'VARIABLE',
-    cost: 28000,
-    price: null,
-    variations: [],
-    active: true,
-  },
-]
+// Os dados ficam num módulo comum: a composição lê os materiais daqui para
+// a lista de recursos e para as medidas do perfil nas fórmulas
+import { materials } from './materials-data'
 
 export const getMaterials = async ({
   filters,
@@ -146,6 +48,7 @@ export const createMaterial = async ({
   cost,
   directSale,
   productionMaterial,
+  advanced,
 }: {
   name: string
   sector: string
@@ -154,6 +57,7 @@ export const createMaterial = async ({
   cost: number
   directSale: boolean
   productionMaterial: boolean
+  advanced?: MaterialAdvanced
 }) => {
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do material' }
@@ -173,6 +77,7 @@ export const createMaterial = async ({
     price: null,
     variations: [],
     active: true,
+    advanced,
   }
 
   materials.push(material)
@@ -290,4 +195,161 @@ export const setMaterialActive = async ({
   material.active = active
 
   return { success: true, data: material, message: '' }
+}
+
+/* ---------------------------------------------------------------------------
+ * Importar lista de materiais com conciliação (IMP-1, área 4). A planilha
+ * que vem do SketchUp, da marcenaria ou do fornecedor entra aqui, e cada
+ * linha é conciliada com o material cadastrado: o nome que já bate entra
+ * como atualização; o que a pessoa vinculou à mão fica guardado como de-para
+ * e, da segunda vez, o sistema já sabe. O que não existe é cadastrado na
+ * hora.
+ * ------------------------------------------------------------------------- */
+
+export type ImportRow = {
+  name: string
+  unit: string
+  sector?: string
+  cost: number | null
+}
+
+export type ImportStatus = 'NEW' | 'MATCH' | 'LINKED' | 'INVALID'
+
+export type ImportPreviewRow = ImportRow & {
+  line: number
+  status: ImportStatus
+  // O material com que a linha foi conciliada (MATCH pelo nome, LINKED pelo
+  // de-para aprendido)
+  materialId: string | null
+  materialName: string | null
+  unitKey: MaterialUnit | null
+  problem?: string
+}
+
+// O de-para aprendido: nome como veio de fora → material interno
+const importLinks = new Map<string, string>()
+
+const normalize = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+// A unidade como as planilhas escrevem, para a unidade do cadastro
+const unitAliases: { [key: string]: MaterialUnit } = {
+  m2: 'M2',
+  'm²': 'M2',
+  mq: 'M2',
+  'metro quadrado': 'M2',
+  m: 'M',
+  ml: 'M',
+  metro: 'M',
+  'metro linear': 'M',
+  un: 'UN',
+  und: 'UN',
+  unid: 'UN',
+  unidade: 'UN',
+  pc: 'UN',
+  pç: 'UN',
+  folha: 'UN',
+  chapa: 'UN',
+  kg: 'KG',
+  quilo: 'KG',
+  l: 'LT',
+  lt: 'LT',
+  litro: 'LT',
+  h: 'HR',
+  hr: 'HR',
+  hora: 'HR',
+  km: 'KM',
+}
+
+const unitOf = (value: string): MaterialUnit | null =>
+  unitAliases[normalize(value)] ?? null
+
+const classify = (row: ImportRow, line: number): ImportPreviewRow => {
+  const base = {
+    ...row,
+    line,
+    materialId: null,
+    materialName: null,
+    unitKey: unitOf(row.unit || ''),
+  }
+  if (!row.name?.trim()) {
+    return { ...base, status: 'INVALID', problem: 'Linha sem nome' }
+  }
+  if (!base.unitKey) {
+    return {
+      ...base,
+      status: 'INVALID',
+      problem: `Unidade "${row.unit || ''}" não reconhecida (use m², m, un, kg, l)`,
+    }
+  }
+  const key = normalize(row.name)
+  const linked = importLinks.get(key)
+  const match =
+    (linked && materials.find((item) => item.id === linked)) ||
+    materials.find((item) => normalize(item.name) === key)
+  if (match) {
+    return {
+      ...base,
+      status: linked ? 'LINKED' : 'MATCH',
+      materialId: match.id,
+      materialName: match.name,
+    }
+  }
+  return { ...base, status: 'NEW' }
+}
+
+export const previewMaterialImport = async ({ rows }: { rows: ImportRow[] }) =>
+  ({
+    success: true,
+    data: rows.map((row, index) => classify(row, index + 1)),
+    message: '',
+  }) as const
+
+export const importMaterials = async ({
+  rows,
+}: {
+  // A linha já conciliada: `materialId` é a decisão da pessoa (ou a do
+  // sistema), e vazio cadastra material novo
+  rows: (ImportRow & { materialId: string | null; sector?: string })[]
+}) => {
+  let created = 0
+  let updated = 0
+  rows.forEach((row) => {
+    const unit = unitOf(row.unit || '')
+    if (!row.name?.trim() || !unit) return
+    const key = normalize(row.name)
+    const target = row.materialId
+      ? materials.find((item) => item.id === row.materialId)
+      : undefined
+    if (target) {
+      // A decisão fica guardada: da próxima vez o sistema já sabe (área 4)
+      if (normalize(target.name) !== key) importLinks.set(key, target.id)
+      // Custo atualizado só onde ele vive: sem variação, no material
+      if (row.cost !== null && !target.variations.length) target.cost = row.cost
+      updated += 1
+      return
+    }
+    materials.push({
+      id: `material-${materials.length + 1}-${Date.now()}`,
+      code: `MAT-${String(materials.length + 1).padStart(2, '0')}`,
+      name: row.name.trim(),
+      sector: row.sector?.trim() || 'Produção',
+      subcategory: 'Importados',
+      unit,
+      directSale: false,
+      productionMaterial: true,
+      priceRule: 'VARIABLE',
+      cost: row.cost,
+      price: null,
+      variations: [],
+      active: true,
+    })
+    created += 1
+  })
+  return { success: true, data: { created, updated }, message: '' }
 }

@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 // Types
 import {
   cashDayTotals,
+  countDifference,
   movementKindLabel,
   accountKindLabel,
   type CashDay,
@@ -27,13 +28,14 @@ import {
 } from '../types'
 
 // Icons
-import { IconPrinter } from '@tabler/icons-react'
+import { IconPrinter, IconSearch } from '@tabler/icons-react'
 
 // Consts
 import { cashControlStatusObj } from '@/consts/cashControl'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const money = (value: number) => formatCurrencyToBrl(value)
 const brDate = (iso: string) => iso.split('-').reverse().join('/')
@@ -50,11 +52,15 @@ function Section({
   hint,
   items,
   showDate,
+  onApprove,
 }: {
   title: string
   hint?: string
   items: Movement[]
   showDate?: boolean
+  // O dinheiro da frente de caixa chega pendente; quem é do caixa principal
+  // confere e aprova (4.2)
+  onApprove?: (movement: Movement) => void
 }) {
   return (
     <section className="space-y-2">
@@ -76,16 +82,34 @@ function Section({
                   {showDate ? ` · de ${brDate(item.operationDate)}` : ''}
                   {item.category ? ` · ${item.category}` : ''}
                   {item.reason ? ` · ${item.reason}` : ''} · {item.responsible}
+                  {item.approvedBy ? ` · aprovado por ${item.approvedBy}` : ''}
                 </span>
-              </span>
-              <span
-                className={cn(
-                  'shrink-0 font-medium',
-                  item.amount < 0 ? 'text-error-600' : 'text-success-700',
+                {item.awaitingApproval && (
+                  <Badge className="mt-1" variant="warningLight">
+                    Aguardando aprovação
+                  </Badge>
                 )}
-              >
-                {item.amount < 0 ? '− ' : ''}
-                {money(Math.abs(item.amount))}
+              </span>
+              <span className="flex shrink-0 items-center gap-3">
+                <span
+                  className={cn(
+                    'font-medium',
+                    item.amount < 0 ? 'text-error-600' : 'text-success-700',
+                  )}
+                >
+                  {item.amount < 0 ? '− ' : ''}
+                  {money(Math.abs(item.amount))}
+                </span>
+                {item.awaitingApproval && onApprove && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="neutralOutline"
+                    onClick={() => onApprove(item)}
+                  >
+                    Aprovar
+                  </Button>
+                )}
               </span>
             </li>
           ))}
@@ -101,10 +125,12 @@ export function CashDayDetail({
   day,
   account,
   onOpenChange,
+  onApprove,
 }: {
   day?: CashDay
   account?: BankAccount
   onOpenChange: (open: boolean) => void
+  onApprove?: (movement: Movement) => void
 }) {
   if (!day || !account) return null
 
@@ -112,12 +138,9 @@ export function CashDayDetail({
   const settled = day.movements.filter((item) => item.settled)
   const current = settled.filter((item) => !item.retroactive)
   const isClosed = day.status === 'CLOSED'
-  const difference =
-    isClosed && day.informed !== undefined
-      ? day.movements
-          .filter((item) => item.kind === 'SHORTAGE' || item.kind === 'OVERAGE')
-          .reduce((sum, item) => sum + item.amount, 0)
-      : 0
+  // Esperado, contado e diferença, mesmo quando a quebra não foi lançada por
+  // estar dentro da tolerância (4.1)
+  const count = isClosed ? countDifference(day) : null
 
   const summary = [
     ['Abertura', day.opening],
@@ -131,12 +154,15 @@ export function CashDayDetail({
     <Dialog open={!!day} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[760px]">
         <DialogHeader>
-          <DialogTitle className="flex flex-wrap items-center gap-2">
-            {account.name} · {brDate(day.date)}
-            <Badge variant={cashControlStatusObj[day.status].variant}>
-              {cashControlStatusObj[day.status].text}
-            </Badge>
-          </DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
+            <DialogTitle className="flex flex-wrap items-center gap-2">
+              {account.name} · {brDate(day.date)}
+              <Badge variant={cashControlStatusObj[day.status].variant}>
+                {cashControlStatusObj[day.status].text}
+              </Badge>
+            </DialogTitle>
+          </div>
           <DialogDescription>
             Caixa nº {day.number} · {accountKindLabel[account.kind]} · aberto
             por {day.openedBy} às {hora(day.openedAt)}
@@ -168,16 +194,48 @@ export function CashDayDetail({
             ))}
           </div>
 
-          {isClosed && day.informed !== undefined && (
+          {count && day.informed !== undefined && (
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm">
-              <p className="font-medium text-gray-800">
-                {account.kind === 'CASH'
-                  ? `Contagem: ${money(day.informed)}`
-                  : `Extrato: ${money(day.informed)}`}
-                {difference === 0
-                  ? ' · bateu'
-                  : ` · ${difference < 0 ? 'falta' : 'sobra'} de ${money(Math.abs(difference))}`}
-              </p>
+              <div className="grid grid-cols-3 gap-3">
+                <p>
+                  <span className="block text-xs text-gray">Esperado</span>
+                  <span className="font-medium text-gray-800">
+                    {money(count.expected)}
+                  </span>
+                </p>
+                <p>
+                  <span className="block text-xs text-gray">
+                    {account.kind === 'CASH' ? 'Contado' : 'Extrato'}
+                  </span>
+                  <span className="font-medium text-gray-800">
+                    {money(day.informed)}
+                  </span>
+                </p>
+                <p>
+                  <span className="block text-xs text-gray">Diferença</span>
+                  <span
+                    className={cn(
+                      'font-medium',
+                      count.difference === 0
+                        ? 'text-success-700'
+                        : count.difference < 0
+                          ? 'text-error-600'
+                          : 'text-warning-700',
+                    )}
+                  >
+                    {count.difference === 0
+                      ? 'bateu'
+                      : `${count.difference < 0 ? 'falta' : 'sobra'} de ${money(Math.abs(count.difference))}`}
+                  </span>
+                </p>
+              </div>
+              {count.difference !== 0 && account.kind === 'CASH' && (
+                <p className="mt-2 text-gray">
+                  {count.posted
+                    ? 'Lançada como quebra de caixa, no nome de quem operou.'
+                    : 'Dentro da tolerância: registrada, não lançada como quebra.'}
+                </p>
+              )}
               {day.note && <p className="mt-1 text-gray">{day.note}</p>}
             </div>
           )}
@@ -192,8 +250,9 @@ export function CashDayDetail({
           />
           <Section
             title="Previstas"
-            hint="provisionadas: ainda não caíram na conta, não entram no saldo"
+            hint="provisionadas ou aguardando aprovação: não entram no saldo"
             items={day.movements.filter((item) => !item.settled)}
+            onApprove={day.status === 'OPEN' ? onApprove : undefined}
           />
           <Section
             title="Retroativos"

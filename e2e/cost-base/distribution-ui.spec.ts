@@ -24,9 +24,20 @@ const adminRow = (page: Page, name: string) =>
   page.getByRole('table').first().getByRole('row').filter({ hasText: name })
 
 const percentInput = (page: Page, sector: string) =>
-  page.getByRole('spinbutton', {
+  page.getByRole('textbox', {
     name: `Quanto recebe em porcentagem — ${sector}`,
   })
+
+const valueInput = (page: Page, sector: string) =>
+  page.getByRole('textbox', {
+    name: `Quanto recebe em reais — ${sector}`,
+  })
+
+// O campo grava ao sair ou no Enter (design.md §6.8)
+async function type(input: ReturnType<Page['getByRole']>, text: string) {
+  await input.fill(text)
+  await input.press('Enter')
+}
 
 test.describe('Distribuição — estrutura (BC-6, BC-7)', () => {
   test('a aba abre pela rota e fica ativa', async ({ page }) => {
@@ -75,7 +86,7 @@ test.describe('Distribuição — estrutura (BC-6, BC-7)', () => {
       page.getByRole('columnheader', { name: 'Quanto distribuir' }),
     ).toHaveCount(0)
     await expect(
-      page.getByRole('spinbutton', { name: /Administração/ }),
+      page.getByRole('textbox', { name: /Administração/ }),
     ).toHaveCount(0)
   })
 })
@@ -98,7 +109,7 @@ test.describe('Distribuição — regras de cálculo (BC-5)', () => {
     await openDistribution(page)
 
     // Impressão recebe metade do total administrativo (R$ 20.990,99)
-    await percentInput(page, 'Impressão').fill('50')
+    await type(percentInput(page, 'Impressão'), '50')
 
     await expect(productiveRow(page, 'Impressão')).toContainText('R$ 10.495,50')
     // custo direto R$ 1.834,17 + recebido R$ 10.495,50
@@ -108,23 +119,51 @@ test.describe('Distribuição — regras de cálculo (BC-5)', () => {
   test('o rodapé acompanha o total distribuído', async ({ page }) => {
     await openDistribution(page)
 
-    await percentInput(page, 'Impressão').fill('60')
+    await type(percentInput(page, 'Impressão'), '60')
     await expect(page.getByText('Faltam 40%')).toBeVisible()
 
-    await percentInput(page, 'Produção').fill('40')
+    await type(percentInput(page, 'Produção'), '40')
     await expect(page.getByText('100% distribuído')).toBeVisible()
   })
 
   test('passar de 100% bloqueia o salvamento', async ({ page }) => {
     await openDistribution(page)
 
-    await percentInput(page, 'Impressão').fill('70')
-    await percentInput(page, 'Produção').fill('50')
+    await type(percentInput(page, 'Impressão'), '70')
+    await type(percentInput(page, 'Produção'), '50')
 
-    await expect(page.getByText('Excede em 20%')).toBeVisible()
+    await expect(page.getByText('Passou 20% · R$ 4.198,20')).toBeVisible()
     await expect(
       page.getByRole('button', { name: 'Salvar distribuição' }),
     ).toBeDisabled()
+  })
+
+  test('o valor arredondado à mão vale, e o fechamento é pelo valor', async ({
+    page,
+  }) => {
+    await openDistribution(page)
+
+    // R$ 10.000,00 de R$ 20.990,99 = 47,64%
+    await type(valueInput(page, 'Impressão'), '10.000')
+    await expect(percentInput(page, 'Impressão')).toHaveValue('47,64')
+    await expect(valueInput(page, 'Impressão')).toHaveValue('10.000,00')
+    await expect(page.getByText('Faltam 52,36% · R$ 10.990,99')).toBeVisible()
+
+    // o restante fecha em 100%, mesmo com os percentuais quebrados
+    await type(valueInput(page, 'Produção'), '10.990,99')
+    await expect(page.getByText('100% distribuído')).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: 'Salvar distribuição' }),
+    ).toBeEnabled()
+  })
+
+  test('a barra anda em inteiros, o campo aceita duas casas', async ({
+    page,
+  }) => {
+    await openDistribution(page)
+
+    await type(percentInput(page, 'Impressão'), '33,333')
+    await expect(percentInput(page, 'Impressão')).toHaveValue('33,33')
   })
 
   test('setor sem custo mostra "-", nunca R$ 0,00', async ({ page }) => {
@@ -144,7 +183,7 @@ test.describe('Distribuição — padrões da interface (design.md)', () => {
     const save = page.getByRole('button', { name: 'Salvar distribuição' })
     await expect(save).toHaveCSS('background-color', BRAND_500)
 
-    await percentInput(page, 'Impressão').fill('100')
+    await type(percentInput(page, 'Impressão'), '100')
     await save.click()
 
     await expect(page.getByText('Distribuição salva')).toBeVisible()

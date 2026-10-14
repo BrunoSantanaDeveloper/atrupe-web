@@ -36,7 +36,7 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 import {
   IconTrash,
   IconPencil,
-  IconCirclePlus,
+  IconPlus,
   IconRefreshDot,
   IconCircleCheck,
   IconCornerRightDown,
@@ -179,10 +179,10 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
 
     if (result.success) {
       queryClient.invalidateQueries()
-      toast.success('Parcelas salvas!')
+      toast.success('Parcelas salvas')
       handleOpenChange(false)
     } else {
-      toast.error('Ocorreu um erro!')
+      toast.error('Ocorreu um erro')
     }
   }
 
@@ -266,7 +266,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                               <p
                                 className={cn(
                                   'text-sm font-medium text-gray-700 leading-[44px] mt-5',
-                                  isCurrent && 'font-bold',
+                                  isCurrent && 'font-semibold',
                                 )}
                               >
                                 {`${currentInstallment?.installmentNumber || index + 1}/${fields.length}`}
@@ -381,11 +381,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                           })
                         }}
                       >
-                        <FeaturedIcon
-                          variant="light"
-                          Icon={IconCirclePlus}
-                          rounded
-                        />
+                        <FeaturedIcon variant="light" Icon={IconPlus} rounded />
                         <p className="text-sm text-gray-600 font-medium">
                           Adicionar parcela
                         </p>

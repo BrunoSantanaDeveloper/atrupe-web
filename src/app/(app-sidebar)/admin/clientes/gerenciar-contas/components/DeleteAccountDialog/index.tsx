@@ -73,9 +73,12 @@ export function DeleteAccountDialog({ open, setOpen, rowData }: Props) {
       data: { password: data.password },
     })
 
-    if (!res.success) {
+    if (!res?.success) {
       setConfirmed(false)
-      toast.error(res.message)
+      toast.error(
+        res?.message ||
+          'Senha gerencial incorreta ou sessão encerrada. Entre de novo e tente outra vez.',
+      )
       return
     }
 

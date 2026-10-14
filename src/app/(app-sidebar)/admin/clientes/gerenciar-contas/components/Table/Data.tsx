@@ -13,6 +13,7 @@ import { ChangeStatusDialog } from '../ChangeStatusDialog'
 import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ModulesDialog } from '../ModulesDialog'
 import { ChangePlanDialog } from '../ChangePlanDialog'
+import { ManualPlanDialog } from '../ManualPlanDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
 import { SyncAsaasDialog } from '../SyncAsaasDialog'
 import { SyncAddressDialog } from '../SyncAddressDialog'
@@ -57,6 +58,7 @@ import {
   IconKey,
   IconMapPin,
   IconArrowsExchange,
+  IconGift,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -102,6 +104,7 @@ export function Data({ searchParams, searchDescription }: Props) {
     useState(false)
   const [isModulesDialogOpen, setIsModulesDialogOpen] = useState(false)
   const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false)
+  const [isManualPlanDialogOpen, setIsManualPlanDialogOpen] = useState(false)
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false)
@@ -249,6 +252,14 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       }}
                                     />
                                     <ActionButton
+                                      Icon={IconGift}
+                                      tooltip="Plano manual, sem cobrança"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsManualPlanDialogOpen(true)
+                                      }}
+                                    />
+                                    <ActionButton
                                       Icon={IconRefresh}
                                       tooltip="Verificar Asaas"
                                       onClick={() => {
@@ -344,6 +355,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <ChangePlanDialog
         open={isChangePlanDialogOpen}
         setOpen={setIsChangePlanDialogOpen}
+        rowData={rowData}
+      />
+
+      <ManualPlanDialog
+        open={isManualPlanDialogOpen}
+        setOpen={setIsManualPlanDialogOpen}
         rowData={rowData}
       />
 

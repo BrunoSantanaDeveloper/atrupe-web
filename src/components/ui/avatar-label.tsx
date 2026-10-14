@@ -18,7 +18,7 @@ const avatarLabelVariants = cva('flex items-center justify-start', {
   },
 })
 
-const avatarLabelNameVariants = cva('font-semibold text-[#344054]', {
+const avatarLabelNameVariants = cva('font-semibold text-gray-700', {
   variants: {
     size: {
       xs: 'text-xs',
@@ -34,10 +34,10 @@ const avatarLabelNameVariants = cva('font-semibold text-[#344054]', {
   },
 })
 
-const avatarLabelSubtitleVariants = cva('text-[#667085]', {
+const avatarLabelSubtitleVariants = cva('text-gray-500', {
   variants: {
     size: {
-      xs: 'text-[10px]',
+      xs: 'text-xs',
       sm: 'text-xs',
       md: 'text-xs',
       lg: 'text-sm',

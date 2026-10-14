@@ -148,9 +148,7 @@ export function AsaasForm({
 
             <div className="flex flex-wrap gap-5">
               <div className="w-full">
-                <h3 className="font-semibold text-lg text-muted-foreground">
-                  Credenciais de Sandbox
-                </h3>
+                <h3 className="type-card-title">Credenciais de Sandbox</h3>
               </div>
 
               <FormInput
@@ -173,9 +171,7 @@ export function AsaasForm({
 
             <div className="flex flex-wrap gap-5">
               <div className="w-full">
-                <h3 className="font-semibold text-lg text-muted-foreground">
-                  Credenciais de Produção
-                </h3>
+                <h3 className="type-card-title">Credenciais de Produção</h3>
               </div>
 
               <FormInput

@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconCirclePlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck, IconPencil } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -32,6 +32,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Actions
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface CategoryType {
   id: string
@@ -89,7 +90,7 @@ export function NewItemDialog({
     await mutation
       .mutateAsync(data)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Categoria salva')
         handleOpenChange(false)
       })
       .catch((err) => {
@@ -109,16 +110,22 @@ export function NewItemDialog({
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       {!editMode && (
         <DialogTrigger asChild>
-          <Button type="button" LeftIcon={IconCirclePlus}>
+          <Button type="button" LeftIcon={IconPlus}>
             Novo grupo
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>
-            {editMode ? 'Editar' : 'Novo'} grupo de {categoryLabel}
-          </DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={editMode ? IconPencil : IconPlus}
+            />
+            <DialogTitle>
+              {editMode ? 'Editar' : 'Novo'} grupo de {categoryLabel}
+            </DialogTitle>
+          </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>

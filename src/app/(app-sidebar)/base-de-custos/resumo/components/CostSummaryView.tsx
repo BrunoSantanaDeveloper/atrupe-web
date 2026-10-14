@@ -137,10 +137,8 @@ export function CostSummaryView() {
                 Icon={origin.icon}
               />
               <div className="flex flex-col min-w-0">
-                <span className="text-xs text-gray truncate">
-                  {origin.label}
-                </span>
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="type-kpi-label truncate">{origin.label}</span>
+                <span className="type-kpi-value">
                   {origin.value ? formatCurrencyToBrl(origin.value) : '-'}
                 </span>
               </div>
@@ -168,8 +166,8 @@ export function CostSummaryView() {
                 Icon={IconBuildingFactory}
               />
               <div>
-                <p className="text-xs text-gray">Estrutura produtiva</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="type-kpi-label">Estrutura produtiva</p>
+                <p className="type-kpi-value">
                   {formatCurrencyToBrl(summary.productiveCost)}
                 </p>
               </div>
@@ -181,8 +179,8 @@ export function CostSummaryView() {
                 Icon={IconBuilding}
               />
               <div>
-                <p className="text-xs text-gray">Estrutura administrativa</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="type-kpi-label">Estrutura administrativa</p>
+                <p className="type-kpi-value">
                   {formatCurrencyToBrl(summary.administrativeCost)}
                 </p>
               </div>

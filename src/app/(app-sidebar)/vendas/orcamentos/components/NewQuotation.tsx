@@ -31,11 +31,7 @@ import { ClientContactSelect } from '@/components/common/form/global-inputs/Clie
 import { SelectContactSourceField } from '@/components/common/form/global-inputs/ContactSourcesSelectField'
 
 // Icons
-import {
-  IconCirclePlus,
-  IconArrowRight,
-  IconReportMoney,
-} from '@tabler/icons-react'
+import { IconPlus, IconArrowRight, IconReportMoney } from '@tabler/icons-react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Hooks
@@ -43,6 +39,7 @@ import { useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
+import { useCompany } from '@/hooks/queries/useCompany'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useNewClientStore } from '../store/useNewClientStore'
 import { useContactSources } from '@/hooks/queries/useContactSources'
@@ -72,6 +69,7 @@ export function NewQuotationModal({
   const { data: sellers } = useSeller()
   const { data: series } = useSerie(true)
   const { data: contactSources } = useContactSources()
+  const { data: companies } = useCompany()
   const { canManageMultipleCompanies } = usePlanFeatures()
   const { setOnClientCreated } = useNewClientStore()
 
@@ -205,7 +203,7 @@ export function NewQuotationModal({
     }
 
     handleToggleModal(false)
-    toast.success('Orçamento criado com sucesso!')
+    toast.success('Orçamento criado')
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
@@ -214,6 +212,11 @@ export function NewQuotationModal({
 
   // @ts-expect-error any
   const clientId = form.watch('clientId')?.value
+
+  // O campo Empresa só faz sentido com mais de um CNPJ ativo; com um só,
+  // o orçamento já nasce na empresa da sessão (companyId do defaultValues)
+  const hasMultipleCompanies =
+    canManageMultipleCompanies() && (companies?.length ?? 0) > 1
 
   return (
     <PermissionGate
@@ -277,7 +280,7 @@ export function NewQuotationModal({
                   clientId={clientId}
                   disabled={!clientId}
                 />
-                {canManageMultipleCompanies() && (
+                {hasMultipleCompanies && (
                   <SelectCompanyField<QuotationFormType>
                     name="companyId"
                     label="Empresa"
@@ -322,7 +325,7 @@ export function NewQuotationModal({
                 isLoading={form.formState.isSubmitting}
                 RightIcon={IconArrowRight}
               >
-                {!editMode ? 'Criar orçamento' : 'Salvar edição'}
+                {!editMode ? 'Cadastrar orçamento' : 'Salvar'}
               </Button>
             </div>
           </DialogFooter>
@@ -341,7 +344,7 @@ export function NewQuotationTriggerButton({
     <PermissionGate permissions={['sale:quotation:create']}>
       <Button
         type="button"
-        LeftIcon={IconCirclePlus}
+        LeftIcon={IconPlus}
         onClick={() => onOpenChange(true)}
       >
         Novo<span className="hidden sm:inline"> orçamento</span>

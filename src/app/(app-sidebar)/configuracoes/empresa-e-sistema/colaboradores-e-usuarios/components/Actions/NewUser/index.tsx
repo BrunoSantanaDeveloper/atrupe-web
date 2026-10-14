@@ -43,7 +43,7 @@ import { cn, getFirstAndLastName } from '@/lib/utils'
 // Icons
 import {
   IconUserPlus,
-  IconUserEdit,
+  IconPencil,
   IconCircleCheck,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
@@ -153,7 +153,7 @@ export function NewUserDialog({
             <div className="flex items-center gap-4">
               <FeaturedIcon
                 variant="neutralOutline"
-                Icon={editMode ? IconUserEdit : IconUserPlus}
+                Icon={editMode ? IconPencil : IconUserPlus}
               />
               <span>{editMode ? 'Editar usuário' : 'Novo usuário'}</span>
             </div>
@@ -170,7 +170,7 @@ export function NewUserDialog({
             >
               <FormInput name="name" label="Usuário" width="w-full" />
 
-              <FormInput name="email" label="Email" width="w-full" />
+              <FormInput name="email" label="E-mail" width="w-full" />
 
               <div className="flex flex-wrap gap-5 w-full">
                 <div className="flex-[1_0_200px] space-y-2">

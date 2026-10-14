@@ -51,7 +51,7 @@ export function Transactions({ type, searchParams }: Props) {
           ) : emptyData ? (
             <ListDataTotalEmpty
               icon={IconTrendingUp}
-              title={`Sem ${typePt}s cadastradas`}
+              title={`Nenhuma ${typePt} cadastrada`}
               description={`Cadastre sua primeira ${typePt}`}
               cta={
                 <PermissionGate

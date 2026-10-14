@@ -96,7 +96,7 @@ export function ItemForm({
         <Button
           size="sm"
           type="button"
-          variant="outline"
+          variant="neutralOutline"
           LeftIcon={IconX}
           onClick={onCancel}
         >
@@ -237,7 +237,7 @@ export function ItemForm({
             })
           }
         >
-          {isEdit ? 'Salvar alterações' : 'Acrescentar ao orçamento'}
+          {isEdit ? 'Salvar' : 'Acrescentar ao orçamento'}
         </Button>
         <p className="text-sm text-gray">
           Só estes campos aparecem para quem vende: a composição fica por

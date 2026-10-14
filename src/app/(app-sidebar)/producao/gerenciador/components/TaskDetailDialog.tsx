@@ -51,6 +51,7 @@ import {
 // Hooks / Store / Consts
 import { taskStatusObj } from '@/consts/productionManager'
 import { resourceKindObj } from '@/consts/processes'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
 // Third-party
 import { toast } from 'sonner'
@@ -193,7 +194,7 @@ export function TaskDetailDialog({
                 <TableRow className="bg-gray-50">
                   <TableHead className="w-[20%]">Tipo</TableHead>
                   <TableHead className="w-[55%]">Recurso</TableHead>
-                  <TableHead className="w-[25%] text-right">
+                  <TableHead numeric className="w-[25%]">
                     Quantidade
                   </TableHead>
                 </TableRow>
@@ -202,14 +203,23 @@ export function TaskDetailDialog({
                 {task.consumption.map((line, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm text-gray">
-                      {resourceKindObj[
-                        line.kind as keyof typeof resourceKindObj
-                      ] || line.kind}
+                      {line.kind in resourceKindObj ? (
+                        <ResourceKindLabel
+                          kind={line.kind as keyof typeof resourceKindObj}
+                          label={
+                            resourceKindObj[
+                              line.kind as keyof typeof resourceKindObj
+                            ]
+                          }
+                        />
+                      ) : (
+                        line.kind
+                      )}
                     </TableCell>
                     <TableCell className="text-sm text-gray-800">
                       {line.resource}
                     </TableCell>
-                    <TableCell className="text-right text-sm">
+                    <TableCell numeric className="text-sm">
                       {line.quantity === null
                         ? '-'
                         : line.unit === 'min'
@@ -401,7 +411,7 @@ export function TaskDetailDialog({
               />
               <SelectBasic
                 name="task-status"
-                label="Situação"
+                label="Status"
                 className="w-[220px]"
                 options={(Object.keys(taskStatusObj) as TaskStatus[]).map(
                   (key) => ({
@@ -421,7 +431,7 @@ export function TaskDetailDialog({
                 onClick={() =>
                   run(
                     setTaskStatus({ id: task.id, status, stepIndex }),
-                    'Situação alterada',
+                    'Status alterado',
                   )
                 }
               >

@@ -280,12 +280,12 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="neutralOutline">
               Cancelar
             </Button>
           </DialogClose>
           <Button isLoading={isPending} onClick={() => mutate()}>
-            {isPending ? 'Salvando...' : 'Salvar edição'}
+            {isPending ? 'Salvando...' : 'Salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

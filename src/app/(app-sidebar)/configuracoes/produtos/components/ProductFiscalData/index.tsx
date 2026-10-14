@@ -135,7 +135,7 @@ export function ProductFiscalDataDialog({
         return
       }
 
-      toast.success('Dados fiscais salvos com sucesso!')
+      toast.success('Dados fiscais salvos')
 
       await Promise.all([
         queryClient.invalidateQueries({

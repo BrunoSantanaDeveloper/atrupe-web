@@ -11,19 +11,20 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TableGroupRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
-// Hooks / Store
-import { useAlertDialog } from '@/store/useAlertDialog'
-
 // Components
-import { Topbar } from '@/components/common/Topbar'
+import { Topbar, type TabNavType } from '@/components/common/Topbar'
 import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { NewMaterialModal } from './NewMaterial'
 import { VariationsModal } from './VariationsModal'
+import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
+import { ImportMaterialsDialog } from './ImportMaterialsDialog'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -32,9 +33,11 @@ import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { Material } from '../types'
+import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { getMaterials, setMaterialActive } from '@/actions/materials'
+import { getMaterials } from '@/actions/materials'
+import { materialUnitSymbol } from '@/actions/materials-data'
 
 // Hooks / Store / Consts
 
@@ -44,18 +47,23 @@ import { assetUnitShort } from '@/consts/assets'
 import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
-import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconBan,
+  IconUpload,
   IconBoxSeam,
-  IconPalette,
-  IconPlayerPlay,
+  IconCurrencyReal,
   IconChevronDown,
   IconChevronRight,
 } from '@tabler/icons-react'
+
+// Ativo e inativo são abas, como em Produtos (design.md da raiz, listagem).
+// Inativar e reativar ficam no modal de edição (decisão de 05/10/2026)
+const tabs: TabNavType[] = [
+  { value: 'ativos', tab: 'ativos', label: 'Ativos' },
+  { value: 'inativos', tab: 'inativos', label: 'Inativos' },
+]
 
 // Sem custo ou preço mostra `-`, nunca R$ 0,00 (design.md §7)
 export function Materials({ searchParams }: SearchParamsType) {
@@ -63,9 +71,38 @@ export function Materials({ searchParams }: SearchParamsType) {
   const money = useMoney()
   const formatValue = (value: number | null) => money(value)
   const queryClient = useQueryClient()
-  const alertDialog = useAlertDialog()
+  const status = searchParams?.status || 'ativos'
   const [expanded, setExpanded] = useState<string[]>([])
   const [variations, setVariations] = useState<Material>()
+  const [importing, setImporting] = useState(false)
+  // Material sem variação é precificado aqui mesmo, no modal da Precificação
+  // (DC-6, MT-3); com variação, o preço vive em cada combinação
+  const [pricing, setPricing] = useState<PricingItem | undefined>()
+  const pricingItemOf = (material: Material): PricingItem => ({
+    id: `mat:${material.id}`,
+    name: material.name,
+    code: material.code,
+    sector: material.sector,
+    unit: materialUnitSymbol(material.unit),
+    cost: material.cost,
+    costUpdatedAt: null,
+    rule: material.priceRule,
+    price: material.price,
+    margin:
+      material.cost !== null && material.price
+        ? Math.round(
+            ((material.price - material.cost) / material.price) * 1000,
+          ) / 10
+        : null,
+    status:
+      material.cost === null
+        ? 'NO_COST'
+        : !material.price
+          ? 'PENDING'
+          : material.price < material.cost
+            ? 'BELOW_COST'
+            : 'PRICED',
+  })
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -74,36 +111,6 @@ export function Materials({ searchParams }: SearchParamsType) {
   })
 
   const materials = data?.data || []
-
-  // Material com histórico é inativado, não excluído: continua nas
-  // composições e vendas antigas, só some das listas de escolha
-  const toggleActive = (material: Material) =>
-    alertDialog.open({
-      title: material.active
-        ? `Inativar ${material.name}?`
-        : `Reativar ${material.name}?`,
-      description: material.active
-        ? 'Ele deixa de aparecer para escolher em composições e vendas. O que já o usa continua como está.'
-        : 'Ele volta a aparecer nas listas de escolha.',
-      confirmLabel: material.active ? 'Inativar' : 'Reativar',
-      onConfirm: async () => {
-        const response = await setMaterialActive({
-          id: material.id,
-          active: !material.active,
-        })
-
-        if (!response.success) {
-          toast.error(response.message)
-
-          return
-        }
-
-        toast.success(
-          material.active ? 'Material inativado' : 'Material reativado',
-        )
-        queryClient.invalidateQueries({ queryKey: ['materials'] })
-      },
-    })
 
   const sectors = Array.from(
     new Set(materials.map((material) => material.sector)),
@@ -123,21 +130,44 @@ export function Materials({ searchParams }: SearchParamsType) {
           review="new"
           title="Materiais"
           supportText="Insumos usados na composição dos produtos e na revenda"
+          tabs={tabs}
+          activeTab={status}
+          paramName="status"
           primaryCta={
             <PermissionGate permissions={['product_settings:products:edit']}>
               <NewMaterialModal />
             </PermissionGate>
           }
+          secondaryCta={
+            <PermissionGate permissions={['product_settings:products:edit']}>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconUpload}
+                onClick={() => setImporting(true)}
+              >
+                Importar lista
+              </Button>
+            </PermissionGate>
+          }
         />
         <Card>
           {isLoading ? (
-            <TableSkeleton cols={7} rows={8} />
+            <TableSkeleton cols={6} rows={8} />
           ) : !materials.length ? (
-            <ListDataTotalEmpty
-              icon={IconBoxSeam}
-              title="Nenhum material criado"
-              description="Cadastre seu primeiro material"
-            />
+            status === 'inativos' ? (
+              <ListDataTotalEmpty
+                icon={IconBoxSeam}
+                title="Nenhum material inativo"
+                description="Para inativar um material, desligue a chave Ativo na edição dele"
+              />
+            ) : (
+              <ListDataTotalEmpty
+                icon={IconBoxSeam}
+                title="Nenhum material cadastrado"
+                description="Cadastre seu primeiro material"
+              />
+            )
           ) : (
             <>
               <CardContent>
@@ -145,16 +175,15 @@ export function Materials({ searchParams }: SearchParamsType) {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-[4%]" />
-                      <TableHead className="w-[26%] min-w-[200px]">
+                      <TableHead className="w-[40%] min-w-[200px]">
                         Material
                       </TableHead>
-                      <TableHead className="w-[14%]">Subcategoria</TableHead>
                       <TableHead className="w-[10%]">Unidade</TableHead>
                       <TableHead className="w-[14%]">Uso</TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Custo
                       </TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Preço de venda
                       </TableHead>
                       <TableHead className="w-[8%]" />
@@ -163,19 +192,38 @@ export function Materials({ searchParams }: SearchParamsType) {
                   <TableBody>
                     {sectors.map((sector) => (
                       <Fragment key={sector}>
-                        <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableCell colSpan={8}>
-                            <span className="font-medium">{sector}</span>
-                          </TableCell>
-                        </TableRow>
+                        <TableGroupRow>{sector}</TableGroupRow>
+                        {/* Setor › subcategoria (05/10/2026): dentro do
+                            setor, os materiais vêm agrupados pela
+                            subcategoria */}
                         {materials
                           .filter((material) => material.sector === sector)
-                          .map((material) => {
+                          .sort((a, b) =>
+                            (a.subcategory || '').localeCompare(
+                              b.subcategory || '',
+                            ),
+                          )
+                          .map((material, index, list) => {
+                            const subcategoryStarts =
+                              index === 0 ||
+                              list[index - 1].subcategory !==
+                                material.subcategory
                             const isExpanded = expanded.includes(material.id)
                             const hasVariations = material.variations.length > 0
 
                             return (
                               <Fragment key={material.id}>
+                                {subcategoryStarts && material.subcategory && (
+                                  <TableRow className="hover:bg-transparent">
+                                    <TableCell />
+                                    <TableCell
+                                      colSpan={6}
+                                      className="type-body-strong py-2"
+                                    >
+                                      {material.subcategory}
+                                    </TableCell>
+                                  </TableRow>
+                                )}
                                 <TableRow>
                                   <TableCell>
                                     {hasVariations && (
@@ -204,7 +252,6 @@ export function Materials({ searchParams }: SearchParamsType) {
                                         ` · ${material.variations.length} variações`}
                                     </p>
                                   </TableCell>
-                                  <TableCell>{material.subcategory}</TableCell>
                                   <TableCell>
                                     {assetUnitShort[material.unit]}
                                   </TableCell>
@@ -247,25 +294,27 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           'product_settings:products:edit',
                                         ]}
                                       >
+                                        {/* Duas ações por linha (05/10/2026):
+                                            editar (cadastro, variações e
+                                            ativo) e R$. Sem variação o R$ abre
+                                            o modal de preço; com variação, o
+                                            custo e o preço vivem em cada
+                                            combinação, então abre a tabela
+                                            delas (MT-3) */}
                                         <NewMaterialModal material={material} />
                                         <ActionButton
-                                          Icon={
-                                            material.active
-                                              ? IconBan
-                                              : IconPlayerPlay
-                                          }
+                                          Icon={IconCurrencyReal}
                                           tooltip={
-                                            material.active
-                                              ? `Inativar ${material.name}`
-                                              : `Reativar ${material.name}`
+                                            material.variations.length
+                                              ? `Custo e preço das variações de ${material.name}`
+                                              : `Precificar ${material.name}`
                                           }
-                                          onClick={() => toggleActive(material)}
-                                        />
-                                        <ActionButton
-                                          Icon={IconPalette}
-                                          tooltip={`Variações de ${material.name}`}
                                           onClick={() =>
-                                            setVariations(material)
+                                            material.variations.length
+                                              ? setVariations(material)
+                                              : setPricing(
+                                                  pricingItemOf(material),
+                                                )
                                           }
                                         />
                                       </PermissionGate>
@@ -279,15 +328,15 @@ export function Materials({ searchParams }: SearchParamsType) {
                                       className="bg-gray-50"
                                     >
                                       <TableCell />
-                                      <TableCell colSpan={4}>
+                                      <TableCell colSpan={3}>
                                         <span className="text-sm font-medium">
                                           {variation.brand} · {variation.color}
                                         </span>
                                       </TableCell>
-                                      <TableCell className="text-right text-sm">
+                                      <TableCell numeric className="text-sm">
                                         {formatValue(variation.cost)}
                                       </TableCell>
-                                      <TableCell className="text-right text-sm">
+                                      <TableCell numeric className="text-sm">
                                         {formatValue(variation.price)}
                                       </TableCell>
                                       <TableCell />
@@ -311,21 +360,37 @@ export function Materials({ searchParams }: SearchParamsType) {
           )}
         </Card>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <ReviewTodo rule="IMP-1" title="Importar lista de materiais">
-            A planilha que vem do SketchUp ou da marcenaria entra aqui, e cada
-            linha é conciliada com o material cadastrado. O de-para fica salvo:
-            da segunda vez o sistema já sabe.
-          </ReviewTodo>
           <ReviewTodo rule="ALT-20" title="Entrada automática de notas">
             A nota do fornecedor chega pela Migrate e vira entrada de material,
             fornecedor e conta a pagar, sem digitação.
           </ReviewTodo>
         </div>
 
+        {/* O diálogo lê o material da lista atual, para ver o custo e o
+            preço recém-gravados sem fechar */}
         <VariationsModal
-          material={variations}
+          material={
+            materials.find((item) => item.id === variations?.id) || variations
+          }
           open={!!variations}
           onOpenChange={() => setVariations(undefined)}
+        />
+        <EditPriceModal
+          group="materials"
+          item={pricing}
+          open={!!pricing}
+          onOpenChange={() => {
+            setPricing(undefined)
+            queryClient.invalidateQueries({ queryKey: ['materials'] })
+          }}
+        />
+        <ImportMaterialsDialog
+          open={importing}
+          materials={materials}
+          onOpenChange={setImporting}
+          onDone={() =>
+            queryClient.invalidateQueries({ queryKey: ['materials'] })
+          }
         />
       </div>
     </TooltipProvider>

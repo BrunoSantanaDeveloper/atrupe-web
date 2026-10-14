@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { IconAlertTriangle, IconEdit } from '@tabler/icons-react'
+import { IconAlertTriangle, IconPencil } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -66,7 +66,7 @@ export function RejectionReasonAction({
               asChild
               variant="warningLight"
               size="sm"
-              LeftIcon={IconEdit}
+              LeftIcon={IconPencil}
               leftIconSize={16}
             >
               <Link href={reissueHref}>Corrigir e reemitir</Link>

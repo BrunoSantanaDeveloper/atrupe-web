@@ -72,7 +72,7 @@ export function RemoveModuleDialog({
         })
       }
 
-      toast.success(`Módulo ${moduleName} removido com sucesso.`)
+      toast.success(`Módulo ${moduleName} removido.`)
       queryClient.invalidateQueries({ queryKey: ['subscription-active'] })
       handleClose()
     } catch {

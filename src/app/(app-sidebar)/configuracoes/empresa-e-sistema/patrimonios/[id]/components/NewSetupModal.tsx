@@ -170,7 +170,7 @@ export function NewSetupModal({ asset }: Props) {
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="neutralOutline">
               Cancelar
             </Button>
           </DialogClose>
@@ -179,7 +179,7 @@ export function NewSetupModal({ asset }: Props) {
             disabled={!name || !productivity}
             onClick={() => mutate()}
           >
-            {isPending ? 'Criando...' : 'Criar configuração'}
+            {isPending ? 'Cadastrando...' : 'Cadastrar configuração'}
           </Button>
         </DialogFooter>
       </DialogContent>

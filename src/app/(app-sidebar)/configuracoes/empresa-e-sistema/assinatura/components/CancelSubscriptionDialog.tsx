@@ -88,7 +88,7 @@ export function CancelSubscriptionDialog({
         return
       }
 
-      toast.success('Assinatura cancelada com sucesso.')
+      toast.success('Assinatura cancelada.')
       queryClient.invalidateQueries({ queryKey: ['subscription-active'] })
       handleClose()
     } catch {
@@ -212,6 +212,7 @@ export function CancelSubscriptionDialog({
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="CANCELAR"
+                  // eslint-disable-next-line no-restricted-syntax -- confirmação digitada em maiúsculas
                   className="uppercase"
                 />
               </div>

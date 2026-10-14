@@ -63,7 +63,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconPlus,
-  IconMinus,
+  IconTrash,
   IconPencil,
   IconChevronDown,
   IconChevronRight,
@@ -143,7 +143,7 @@ export function Main() {
       description:
         'O item continua cadastrado na empresa e pode ser acrescentado de novo. O valor informado aqui é perdido.',
       confirmLabel: 'Tirar',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
         const res = await setPayrollItem(employeeId, item.id, false)
@@ -224,13 +224,13 @@ export function Main() {
           </div>
         </div>
       </TableCell>
-      <TableCell className="text-right">
+      <TableCell numeric>
         {item.isSet ? value(item.increase, 'text-success-600') : '—'}
       </TableCell>
-      <TableCell className="text-right">
+      <TableCell numeric>
         {item.isSet ? value(item.discount, 'text-error-600') : '—'}
       </TableCell>
-      <TableCell className="text-right font-medium">
+      <TableCell numeric className="font-medium">
         {item.isSet ? value(itemFinalCost(item), 'text-gray-900') : '—'}
       </TableCell>
       <TableCell>
@@ -250,8 +250,8 @@ export function Main() {
                   onClick={() => setEditing(item)}
                 />
                 <ActionButton
-                  Icon={IconMinus}
-                  variant="neutralGhost"
+                  Icon={IconTrash}
+                  variant="errorGhost"
                   tooltip={`Tirar ${item.name} deste colaborador`}
                   onClick={() => removeItem(item)}
                 />
@@ -303,7 +303,7 @@ export function Main() {
                   name={employee ? getFirstAndLastName(employee.name) : ''}
                 />
                 <div>
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="type-section-title">
                     {employee?.name || 'Nenhum colaborador neste setor'}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
@@ -378,8 +378,8 @@ export function Main() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Referência</TableHead>
                       <TableHead className="text-right">Acréscimo</TableHead>
-                      <TableHead className="text-right">Desconto</TableHead>
-                      <TableHead className="text-right">Custo final</TableHead>
+                      <TableHead numeric>Desconto</TableHead>
+                      <TableHead numeric>Custo final</TableHead>
                       <TableHead />
                     </TableRow>
                   </TableHeader>
@@ -417,13 +417,13 @@ export function Main() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {value(salary.increase, 'text-success-600')}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {value(salary.discount, 'text-error-600')}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
+                          <TableCell numeric className="font-medium">
                             {value(itemFinalCost(salary), 'text-gray-900')}
                           </TableCell>
                           <TableCell>
@@ -460,13 +460,19 @@ export function Main() {
                         <TableCell className="w-full font-semibold text-gray-800">
                           Total
                         </TableCell>
-                        <TableCell className="text-right font-semibold text-success-600">
+                        <TableCell
+                          numeric
+                          className="font-semibold text-success-600"
+                        >
                           {money(totalIncrease(employee))}
                         </TableCell>
-                        <TableCell className="text-right font-semibold text-error-600">
+                        <TableCell
+                          numeric
+                          className="font-semibold text-error-600"
+                        >
                           {money(totalDiscount(employee))}
                         </TableCell>
-                        <TableCell className="text-right text-lg font-semibold text-gray-900">
+                        <TableCell numeric className="type-body-strong">
                           {money(cost)}
                         </TableCell>
                         <TableCell className="w-20" />

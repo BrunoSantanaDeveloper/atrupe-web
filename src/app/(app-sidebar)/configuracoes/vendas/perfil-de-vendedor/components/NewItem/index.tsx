@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconCirclePlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -30,6 +30,7 @@ import { createItem } from '@/actions/_cruds'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // interface Props extends SearchParamsType {}
 
@@ -67,7 +68,7 @@ export function NewItemDialog() {
     await mutation
       .mutateAsync(data)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Perfil salvo')
         handleOpenChange(false)
       })
       .catch((err) => {
@@ -78,7 +79,7 @@ export function NewItemDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" LeftIcon={IconCirclePlus}>
+        <Button type="button" LeftIcon={IconPlus}>
           Novo perfil
         </Button>
       </DialogTrigger>
@@ -86,7 +87,10 @@ export function NewItemDialog() {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <DialogHeader>
-              <DialogTitle>Novo perfil</DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
+                <DialogTitle>Novo perfil</DialogTitle>
+              </div>
               <DialogDescription hidden></DialogDescription>
             </DialogHeader>
             <DialogBody>

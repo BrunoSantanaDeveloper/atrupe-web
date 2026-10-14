@@ -100,7 +100,7 @@ export function CorrectionHistorySection({
                       </div>
 
                       <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-                        <span className="font-medium text-xs uppercase tracking-wider text-muted-foreground block mb-1">
+                        <span className="type-eyebrow block mb-1">
                           Texto da Correção
                         </span>
                         {event.correcao}

@@ -75,7 +75,7 @@ export function DeleteItemDialog({ open, setOpen, rowData }: Props) {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Voltar</AlertDialogCancel>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleRemove}
             className={buttonVariants({ variant: 'error' })}

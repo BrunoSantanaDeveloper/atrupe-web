@@ -63,7 +63,7 @@ export function QuickSaleQuotation({ data, previousUrl }: Props) {
           variant: 'neutralLight',
         }
       }
-      label="Venda Rápida"
+      label="Venda rápida"
       primaryCta={
         data?.orderId ? (
           <Button type="button" variant="neutralOutline" asChild>

@@ -10,20 +10,30 @@ import type {
   PaymentPart,
   PendingSale,
   CashMovement,
-  AwaitingPickup,
   QuickSaleCheckout,
 } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/types'
 
 const hoje = (hora: string) =>
   `${new Date().toISOString().slice(0, 10)}T${hora}`
 
+// O cadastro da frente de caixa (3.1): modo de conferência, tolerância da
+// quebra e limite do arredondamento. Padrões do documento: conferência
+// simples, sem tolerância, R$ 1,00 de arredondamento
+const register = {
+  blindCount: false,
+  shortageTolerance: null as number | null,
+  roundingLimit: 100,
+}
+
 let session: CashSession | null = {
   id: 'c1',
+  number: 13,
   name: 'Caixa 1',
   operator: 'Renata Alves',
   openedAt: hoje('08:12:00'),
   openingBalance: 20000,
   status: 'OPEN',
+  ...register,
   movements: [
     {
       id: 'm1',
@@ -45,6 +55,7 @@ let session: CashSession | null = {
       description: 'Troco para o dia',
       reason: 'Reforço de troco, notas pequenas',
       responsible: 'Renata Alves',
+      account: 'Caixa Empresa',
       createdAt: hoje('10:05:00'),
       parts: [{ method: 'CASH', amount: 10000 }],
     },
@@ -64,6 +75,7 @@ let session: CashSession | null = {
       description: 'Sangria',
       reason: 'Acima do limite de dinheiro em gaveta',
       responsible: 'Renata Alves',
+      account: 'Caixa Empresa',
       createdAt: hoje('14:00:00'),
       parts: [{ method: 'CASH', amount: 15000 }],
     },
@@ -99,61 +111,83 @@ let sales: PendingSale[] = [
     claimedBy: 'Caixa 2 · Paulo Mendes',
   },
   {
+    // Chegou como venda rápida e o caixa faturou para o cliente (FC-4): saiu
+    // da fila e foi para o fluxo financeiro. Fica como registro do que o
+    // caixa fez, até o fechamento. O orçamento que já nasce faturado
+    // (faturamento mensal, boleto) não passa pela frente de caixa e não
+    // aparece aqui (decidido em 01/10/2026)
     id: 's3',
-    reference: 'ORC-2026-0184',
+    reference: 'VR-2026-0316',
     client: 'Supermercado Bom Preço',
     seller: 'Ana Prado',
-    kind: 'QUOTATION',
-    total: 320000,
+    kind: 'QUICK',
+    total: 32000,
     paid: 0,
     delivered: false,
     approvedAt: hoje('16:10:00'),
-    // Cliente com faturamento mensal: foi para o fluxo financeiro e aqui
-    // aparece só como registro do dia (FC-12.1)
     goesToCash: false,
+    billing: 'Faturamento mensal',
   },
 ]
 
-const pickups: AwaitingPickup[] = [
+// Trabalhos prontos e não retirados (FC-19): a mesma venda, marcada como
+// pronta. Saem da fila "A receber" e entram em "Aguardando retirada"
+sales.push(
   {
     id: 'p1',
     reference: 'VR-2026-0244',
     client: 'Juliana Prado',
     phone: '(48) 99911-4420',
-    finishedAt: '2026-09-02',
-    remaining: 12000,
-    deadlineDays: 30,
-    daysWaiting: 22,
+    seller: 'Tiago Nunes',
+    kind: 'QUICK',
+    total: 24000,
+    paid: 12000,
+    delivered: false,
+    approvedAt: '2026-09-01T10:20:00',
+    goesToCash: true,
+    ready: true,
+    readyAt: '2026-09-09T16:00:00',
   },
   {
     id: 'p2',
     reference: 'VR-2026-0198',
     client: 'Oficina do Léo',
     phone: '(48) 98812-7701',
-    finishedAt: '2026-08-14',
-    remaining: 45000,
-    deadlineDays: 30,
-    daysWaiting: 41,
+    seller: 'Ana Prado',
+    kind: 'QUICK',
+    total: 90000,
+    paid: 45000,
+    delivered: false,
+    approvedAt: '2026-08-12T09:00:00',
+    goesToCash: true,
+    ready: true,
+    readyAt: '2026-08-21T11:30:00',
   },
-]
+)
 
 // A venda rápida do ponto de vista do orçamento, por id do orçamento
 const checkouts: Record<string, QuickSaleCheckout> = {}
 
+// Quantas frentes de caixa estão abertas agora. Com uma só, não há o que
+// reservar: "Atender esta venda" e a marca de quem atende nem aparecem (FC-5)
+const openCashFronts = 2
+
 export const getCashFront = async () => ({
   success: true,
-  data: { session, sales, pickups },
+  data: { session, sales, openCashFronts },
   message: '',
 })
 
 export const openCashSession = async (openingBalance: number) => {
   session = {
     id: `c${Date.now()}`,
+    number: (session?.number ?? 12) + 1,
     name: 'Caixa 1',
     operator: 'Renata Alves',
     openedAt: new Date().toISOString(),
     openingBalance,
     status: 'OPEN',
+    ...register,
     movements: [],
   }
 
@@ -176,6 +210,9 @@ export const addCashMovement = async (
   kind: 'WITHDRAWAL' | 'SUPPLY',
   amount: number,
   reason: string,
+  // De onde o suprimento vem, ou para onde a sangria vai (uma conta da
+  // empresa). Não é receita nem despesa: é dinheiro mudando de lugar
+  account = 'Caixa Empresa',
 ) => {
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
@@ -189,12 +226,19 @@ export const addCashMovement = async (
         'Informe o motivo: sangria e suprimento registram motivo e responsável',
     }
   }
+  if (amount <= 0) {
+    return { success: false, data: null, message: 'Informe o valor' }
+  }
 
   push({
     kind,
-    description: kind === 'WITHDRAWAL' ? 'Sangria' : 'Suprimento',
+    description:
+      kind === 'WITHDRAWAL'
+        ? `Sangria → ${account}`
+        : `Suprimento ← ${account}`,
     reason,
     responsible: session.operator,
+    account,
     parts: [{ method: 'CASH', amount }],
   })
 
@@ -207,6 +251,9 @@ export const receiveSale = async (
   saleId: string,
   parts: PaymentPart[],
   deliver: boolean,
+  // Arredondamento no balcão (FC-18): até o limite do cadastro, a diferença
+  // vira desconto na venda, registrado na hora, e não quebra de caixa
+  discount = 0,
 ) => {
   const sale = sales.find((item) => item.id === saleId)
 
@@ -235,9 +282,21 @@ export const receiveSale = async (
 
   const amount = parts.reduce((total, part) => total + part.amount, 0)
 
+  if (discount > 0) {
+    if (discount > session.roundingLimit) {
+      return {
+        success: false,
+        data: null,
+        message: `O arredondamento no balcão vai até ${(session.roundingLimit / 100).toFixed(2).replace('.', ',')}. Acima disso, vale o limite de desconto do perfil do vendedor`,
+      }
+    }
+    sale.total -= discount
+  }
+
   push({
     kind: 'SALE',
     description: `${sale.reference} · ${sale.client}`,
+    discount: discount || undefined,
     parts,
   })
 
@@ -291,16 +350,150 @@ export const reverseSale = async (saleId: string, reason: string) => {
   return { success: true, data: null, message: '' }
 }
 
-// Fechamento com conferência às cegas (FC-7): o operador informa o que contou
-// e só então vê o esperado, e a diferença fica registrada
-export const closeCashSession = async (countedCash: number) => {
+// Fechamento (FC-7, 4.2): a diferença entre o esperado e o contado vai para
+// "Quebra de caixa" no nome de quem operava, salvo dentro da tolerância, se
+// houver. O dinheiro contado, menos o que fica na gaveta para amanhã, vai
+// para a conta Caixa pendente de aprovação; PIX para o banco; cartão para a
+// operadora, pelo valor cheio — um movimento por forma, não por venda
+export const closeCashSession = async (
+  countedCash: number,
+  keep = 0,
+  note = '',
+) => {
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
   }
+  if (keep < 0 || keep > countedCash) {
+    return {
+      success: false,
+      data: null,
+      message: 'O valor que fica na gaveta não pode passar do contado',
+    }
+  }
+
+  const movements = session.movements
+  const expected = movements.reduce(
+    (total, movement) =>
+      total +
+      movement.parts
+        .filter((part) => part.method === 'CASH')
+        .reduce((sum, part) => sum + part.amount, 0) *
+        (movement.kind === 'WITHDRAWAL' || movement.kind === 'REVERSAL'
+          ? -1
+          : 1),
+    session.openingBalance,
+  )
+  const difference = countedCash - expected
+  const tolerance = session.shortageTolerance
+  const posted =
+    difference !== 0 && (tolerance === null || Math.abs(difference) > tolerance)
+
+  const byMethod = (method: 'PIX' | 'CARD') =>
+    movements
+      .filter((movement) => movement.kind !== 'WITHDRAWAL')
+      .reduce(
+        (total, movement) =>
+          total +
+          movement.parts
+            .filter((part) => part.method === method)
+            .reduce((sum, part) => sum + part.amount, 0) *
+            (movement.kind === 'REVERSAL' ? -1 : 1),
+        0,
+      )
+
+  const transfers = [
+    {
+      method: 'CASH' as const,
+      amount: countedCash - keep,
+      destination: 'Caixa Empresa',
+      pending: true,
+    },
+    {
+      method: 'PIX' as const,
+      amount: byMethod('PIX'),
+      destination: 'Bradesco',
+    },
+    {
+      method: 'CARD' as const,
+      amount: byMethod('CARD'),
+      destination: 'Rede (cartões)',
+    },
+  ].filter((transfer) => transfer.amount > 0)
+
+  // As vendas do dia que foram para o fluxo financeiro são registro deste
+  // caixa: saem com o fechamento e ficam no relatório do dia, separadas do
+  // que passou pelo caixa (3.2). Amanhã a frente de caixa abre limpa
+  const billed = sales.filter((sale) => !sale.goesToCash)
+  sales = sales.filter((sale) => sale.goesToCash)
 
   session.status = 'CLOSED'
+  // A explicação da diferença fica no fechamento, como no controle de caixa
+  session.closingNote = note.trim() || undefined
 
-  return { success: true, data: { countedCash }, message: '' }
+  return {
+    success: true,
+    data: {
+      note: session.closingNote,
+      countedCash,
+      expected,
+      difference,
+      posted,
+      keep,
+      transfers,
+      billed: billed.map((sale) => ({
+        reference: sale.reference,
+        client: sale.client,
+        total: sale.total,
+        billing: sale.billing || 'Faturamento mensal',
+      })),
+    },
+    message: '',
+  }
+}
+
+// Trabalho pronto, cliente não buscou (FC-19): a venda sai de "A receber" e
+// passa para "Aguardando retirada". Com o gerenciador de produção, é a
+// conclusão da ordem que marca; sem ele, o caixa ou o vendedor marca aqui
+export const markSaleReady = async (saleId: string) => {
+  const sale = sales.find((item) => item.id === saleId)
+  if (!sale) {
+    return { success: false, data: null, message: 'Venda não encontrada' }
+  }
+  if (sale.delivered) {
+    return { success: false, data: null, message: 'A venda já foi entregue' }
+  }
+  sale.ready = true
+  sale.readyAt = new Date().toISOString()
+  return { success: true, data: sale, message: '' }
+}
+
+// Dar baixa no trabalho não retirado (FC-19): "Descartar" encerra a venda e
+// lança como perda o que não foi pago, com o sinal recebido abatendo. Pede
+// justificativa e fica registrado (quem e quando)
+export const discardPickup = async (saleId: string, reason: string) => {
+  const sale = sales.find((item) => item.id === saleId && item.ready)
+  if (!sale) {
+    return { success: false, data: null, message: 'Trabalho não encontrado' }
+  }
+  if (!reason.trim()) {
+    return {
+      success: false,
+      data: null,
+      message: 'Descartar exige justificativa',
+    }
+  }
+  sales = sales.filter((item) => item.id !== saleId)
+  const checkout = sale.quotationId && checkouts[sale.quotationId]
+  if (checkout) checkout.cancelled = true
+  return {
+    success: true,
+    data: {
+      loss: Math.max(0, sale.total - sale.paid),
+      discardedBy: session?.operator || 'Operador',
+      discardedAt: new Date().toISOString(),
+    },
+    message: '',
+  }
 }
 
 export const getQuickSaleCheckout = async (quotationId: string) => ({
@@ -364,10 +557,20 @@ export const sendQuickSaleToCash = async (origin: QuickSaleOrigin) => {
 export const chargeQuickSaleNow = async (
   origin: QuickSaleOrigin,
   parts: PaymentPart[],
+  // Arredondamento no balcão (FC-18), como desconto na venda
+  discount = 0,
 ) => {
   const paid = parts.reduce((total, part) => total + part.amount, 0)
 
-  if (paid < origin.total) {
+  if (discount > register.roundingLimit) {
+    return {
+      success: false,
+      data: null,
+      message: 'Arredondamento acima do limite do balcão',
+    }
+  }
+
+  if (paid + discount < origin.total) {
     return {
       success: false,
       data: null,
@@ -380,7 +583,7 @@ export const chargeQuickSaleNow = async (
     quotationId: origin.quotationId,
     path: 'CASH_ONLY',
     sentAt: new Date().toISOString(),
-    total: origin.total,
+    total: origin.total - discount,
     paid,
     delivered: true,
     cancelled: false,
@@ -421,15 +624,27 @@ export const releaseSale = async (saleId: string) => {
 // nome do cliente e com a forma de pagamento dele
 export const reverseToBilling = async (
   saleId: string,
-  client: { id: string; name: string },
-  billing: string,
+  values: {
+    client: { id: string; name: string }
+    paymentConditionId: string
+    installmentQty: number
+    dueDate: string
+    notes?: string
+  },
 ) => {
   const sale = sales.find((item) => item.id === saleId)
   if (!sale) {
     return { success: false, data: null, message: 'Venda não encontrada' }
   }
-  if (!client.id) {
+  if (!values.client.id) {
     return { success: false, data: null, message: 'Escolha o cliente' }
+  }
+  if (!values.paymentConditionId || !values.dueDate) {
+    return {
+      success: false,
+      data: null,
+      message: 'Informe a forma de pagamento e o vencimento',
+    }
   }
   if (sale.paid > 0) {
     return {
@@ -439,9 +654,15 @@ export const reverseToBilling = async (
         'A venda já tem sinal recebido. Estorne o sinal antes de faturar para o cliente',
     }
   }
+  // Na API: só cliente com cadastro aprovado e liberado para a forma
+  // escolhida (boleto, faturamento) pode ser faturado (FC-4)
 
-  sale.client = client.name
-  sale.billing = billing
+  const dueDate = new Date(values.dueDate).toLocaleDateString('pt-BR')
+  sale.client = values.client.name
+  sale.billing =
+    values.installmentQty > 1
+      ? `${values.installmentQty}x · 1º vencimento ${dueDate}`
+      : `Vencimento ${dueDate}`
   sale.goesToCash = false
   sale.claimedBy = null
   return { success: true, data: sale, message: '' }

@@ -67,11 +67,11 @@ export function DropdownMenuHeader({
 
       {/* Name + email */}
       <div className="flex flex-col min-w-0">
-        <span className="text-sm font-semibold text-[#344054] leading-tight truncate">
+        <span className="text-sm font-semibold text-gray-700 leading-tight truncate">
           {name}
         </span>
         {email && (
-          <span className="text-sm text-[#667085] leading-tight truncate">
+          <span className="text-sm text-gray-500 leading-tight truncate">
             {email}
           </span>
         )}
@@ -79,7 +79,7 @@ export function DropdownMenuHeader({
 
       {/* Optional section title */}
       {sectionTitle && (
-        <span className="ml-auto flex-shrink-0 text-sm font-semibold text-[#344054]">
+        <span className="ml-auto flex-shrink-0 text-sm font-semibold text-gray-700">
           {sectionTitle}
         </span>
       )}

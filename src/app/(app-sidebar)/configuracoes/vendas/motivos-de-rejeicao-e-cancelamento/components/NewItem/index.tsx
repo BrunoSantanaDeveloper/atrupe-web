@@ -20,7 +20,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck, IconPencil, IconPlus } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -37,6 +37,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
 import { createItem, updateItem } from '@/actions/_cruds'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props extends SearchParamsType {
   type: ListCancelReasonType['type']
@@ -93,7 +94,7 @@ export function NewItemDialog({
     await mutation
       .mutateAsync(body)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Motivo salvo')
         handleOpenChange(false)
       })
       .catch((err) => {
@@ -119,12 +120,16 @@ export function NewItemDialog({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
-            <DialogTitle>
-              <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
+              <FeaturedIcon
+                variant="neutralOutline"
+                Icon={editMode ? IconPencil : IconPlus}
+              />
+              <DialogTitle>
                 {editMode ? 'Editar' : 'Novo'} motivo de
                 {type === 'REJECTION' ? ' rejeição' : ' cancelamento'}
-              </div>
-            </DialogTitle>
+              </DialogTitle>
+            </div>
             <DialogDescription hidden></DialogDescription>
           </DialogHeader>
           <DialogBody>

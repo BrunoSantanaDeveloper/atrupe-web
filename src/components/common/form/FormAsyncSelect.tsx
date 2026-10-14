@@ -91,7 +91,7 @@ async function fetchEntities<T extends EntityBase>(
 const classNames = {
   control: ({ isFocused }: { isFocused: boolean }) =>
     cn(
-      'flex h-11 items-center w-full text-left rounded-lg border border-gray-300 bg-white shadow-sm px-3.5 py-2 text-sm pl-10',
+      'flex h-10 items-center w-full text-left rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2 text-sm pl-10',
       'focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
       isFocused ? 'ring-1 ring-brand border-brand' : '',
     ),

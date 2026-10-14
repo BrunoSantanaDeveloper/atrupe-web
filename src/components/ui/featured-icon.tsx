@@ -79,9 +79,9 @@ const featuredIconVariants = cva(
       size: {
         xs: 'h-6 min-w-6 rounded [&_svg]:size-4 ring-[2px]',
         sm: 'h-8 min-w-8 rounded-md [&_svg]:size-4 ring-[4px]',
-        default: 'h-10 min-w-10 rounded-[10px] [&_svg]:size-5 ring-[6px]',
-        md: 'h-11 min-w-11 rounded-[10px] [&_svg]:size-6 ring-[6px]',
-        lg: 'h-14 min-w-14 rounded-[10px] ring-[8px]',
+        default: 'h-10 min-w-10 rounded-10 [&_svg]:size-5 ring-[6px]',
+        md: 'h-11 min-w-11 rounded-10 [&_svg]:size-6 ring-[6px]',
+        lg: 'h-14 min-w-14 rounded-10 ring-[8px]',
         xl: 'h-16 min-w-16 rounded-xl [&_svg]:size-7 ring-[10px]',
         xxl: 'h-20 min-w-20 rounded-2xl [&_svg]:size-10 ring-[12px]',
       },

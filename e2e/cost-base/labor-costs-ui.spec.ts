@@ -75,13 +75,33 @@ test.describe('Mão de obra — carga por colaborador (F-11)', () => {
       .getByRole('button', { name: 'Carga de produção — Produção' })
       .click()
 
-    await page
-      .getByRole('spinbutton', { name: 'Carga horária em horas — João' })
-      .fill('54')
+    const hours = page.getByRole('textbox', {
+      name: 'Carga horária em horas e minutos — João',
+    })
+    await hours.fill('54')
+    await hours.press('Enter')
 
     // 54 + 146 = 200 h
     await expect(page.getByText('200 h')).toBeVisible()
     await expect(page.getByRole('dialog')).toContainText('R$ 20,29')
+  })
+
+  test('as horas aceitam minutos (design.md §6.8)', async ({ page }) => {
+    await openLabor(page)
+
+    await page
+      .getByRole('button', { name: 'Carga de produção — Produção' })
+      .click()
+
+    const hours = page.getByRole('textbox', {
+      name: 'Carga horária em horas e minutos — João',
+    })
+    await hours.fill('54:30')
+    await hours.press('Enter')
+
+    // 54h30 + 146 h = 200h30
+    await expect(hours).toHaveValue('54:30')
+    await expect(page.getByRole('dialog')).toContainText('200h30')
   })
 
   test('setor sem colaborador explica o que falta', async ({ page }) => {

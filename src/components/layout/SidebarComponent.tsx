@@ -30,6 +30,7 @@ import { UserDropdown } from './UserDropdown'
 // Assets
 import favicon from '@public/logo/logo.png'
 import logo from '@public/logo/logo-text.png'
+import logoLight from '@public/logo/logo-text-light.png'
 
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
@@ -169,7 +170,9 @@ export function SidebarComponent(props: Props) {
     }
 
     // Controle de Agenda de entrega
-    if (item.path?.includes('/producao')) {
+    // Só a Agenda de entrega depende das abas de entrega: o grupo Produção e
+    // Configurações › Produção têm o Gerenciador, que tem gate próprio
+    if (item.path?.includes('/producao/agenda-de-entrega')) {
       return canManageDeliverySchedule()
     }
 
@@ -226,8 +229,23 @@ export function SidebarComponent(props: Props) {
                   className={cn(
                     'min-w-[145px] max-h-28 h-full transition-all ease-in-out duration-500 object-contain',
                     collapsed ? '-ml-44 opacity-0' : 'ml-0',
+                    // Sem logo da empresa, o da Atrupe troca para a versão de
+                    // letras claras no tema escuro
+                    !companyLogo && 'dark:hidden',
                   )}
                 />
+                {!companyLogo && (
+                  <Image
+                    src={logoLight}
+                    alt="logo empresa"
+                    width={145}
+                    height={35}
+                    className={cn(
+                      'hidden dark:block min-w-[145px] max-h-28 h-full transition-all ease-in-out duration-500 object-contain',
+                      collapsed ? '-ml-44 opacity-0' : 'ml-0',
+                    )}
+                  />
+                )}
                 <Image
                   src={companyFavicon || favicon}
                   alt="logo empresa"
@@ -316,19 +334,16 @@ export function SidebarComponent(props: Props) {
 
                   if (!hasChildren) {
                     return (
-                      <div
-                        key={index}
-                        className="border-b border-gray-200 mt-3 pb-2"
-                      >
+                      <div key={index} className="border-b border-gray-60 py-2">
                         <Tooltip delayDuration={300}>
                           <TooltipTrigger asChild>
                             <Link
                               href={`${item?.path}${item?.query || ''}` || '#'}
                               className={cn(
-                                'flex flex-1 mr-2 items-center justify-between pt-2 pb-3 font-medium transition-all hover:no-underline rounded-lg',
+                                'flex flex-1 mr-2 h-11 items-center justify-between font-medium transition-all hover:no-underline rounded-lg',
                                 pathname.includes(`${item?.path}`)
-                                  ? 'text-brand-600 font-semibold'
-                                  : 'text-gray-600 hover:text-gray-700',
+                                  ? 'bg-brand-25 text-brand-600 font-semibold'
+                                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-700',
                               )}
                             >
                               <div
@@ -366,7 +381,7 @@ export function SidebarComponent(props: Props) {
                                       : 'neutralLight'
                                   }
                                   className={cn(
-                                    'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500 mr-2',
+                                    'text-xs px-1.5 py-0.5 transition-all ease-in-out duration-500 mr-2',
                                     collapsed && 'opacity-0',
                                   )}
                                 >
@@ -407,8 +422,16 @@ export function SidebarComponent(props: Props) {
 
                   return (
                     <Tooltip key={index} delayDuration={300}>
-                      <AccordionItem value={`${item?.path}`}>
-                        <AccordionTrigger>
+                      <AccordionItem
+                        value={`${item?.path}`}
+                        className="border-gray-60 py-2"
+                      >
+                        {/* Grupo aberto vira pílula Brand/25 (Figma §3.12,
+                            05/10/2026), para separar o módulo dos subitens */}
+                        <AccordionTrigger
+                          asHeading={false}
+                          className="h-11 rounded-lg py-0 pr-3 hover:bg-gray-50 data-[state=open]:bg-brand-25 data-[state=open]:text-brand-600 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600"
+                        >
                           <TooltipTrigger asChild>
                             <div
                               className={cn(
@@ -439,12 +462,22 @@ export function SidebarComponent(props: Props) {
                         >
                           <p>{item?.title}</p>
                         </TooltipContent>
-                        <AccordionContent>
-                          <ul>
+                        <AccordionContent className="pt-2">
+                          {/* Subitens recuados, com linha-guia à esquerda e
+                              respiro entre eles, para o módulo e os subitens
+                              não parecerem a mesma coisa (05/10/2026) */}
+                          <ul
+                            className={cn(
+                              'space-y-1 transition-all ease-in-out duration-500',
+                              collapsed
+                                ? ''
+                                : 'ml-5 border-l border-gray-200 pl-3',
+                            )}
+                          >
                             {item?.children?.map((navChild, childIndex) => (
                               <li
                                 key={childIndex}
-                                className="flex items-center mb-1"
+                                className="flex items-center"
                               >
                                 <Tooltip delayDuration={300}>
                                   <TooltipTrigger asChild>
@@ -457,7 +490,7 @@ export function SidebarComponent(props: Props) {
                                         collapsed ? 'px-5' : 'px-2',
                                         pathname.includes(`${navChild?.path}`)
                                           ? 'text-brand-600 bg-brand-25 hover:bg-brand-50 font-semibold'
-                                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-700',
+                                          : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700',
                                       )}
                                     >
                                       <Link
@@ -470,13 +503,13 @@ export function SidebarComponent(props: Props) {
                                           <IconComponent
                                             icon={navChild?.icon}
                                             className={cn(
-                                              'size-6',
+                                              'size-5',
                                               pathname.includes(
                                                 `${navChild?.path}`,
                                               )
                                                 ? 'text-brand'
                                                 : navChild?.iconColor ||
-                                                    'text-gray-400',
+                                                    'text-gray-500',
                                               navChild?.action
                                                 ? 'text-brand'
                                                 : '',
@@ -484,7 +517,7 @@ export function SidebarComponent(props: Props) {
                                           />
                                           <span
                                             className={cn(
-                                              'text-xs font-medium transition-all ease-in-out duration-500',
+                                              'text-sm font-medium transition-all ease-in-out duration-500',
                                               collapsed
                                                 ? 'ml-4 opacity-0'
                                                 : 'mr-0',
@@ -507,7 +540,7 @@ export function SidebarComponent(props: Props) {
                                                 : 'neutralLight'
                                             }
                                             className={cn(
-                                              'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500',
+                                              'text-xs px-1.5 py-0.5 transition-all ease-in-out duration-500',
                                               collapsed && 'opacity-0',
                                             )}
                                           >

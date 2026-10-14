@@ -13,6 +13,10 @@ import type {
   PricingParameters,
 } from '@/app/(app-sidebar)/precificacao/types'
 
+// Os materiais vêm do cadastro (DC-6: a Precificação é a segunda porta para
+// o mesmo dado). Com variação, a linha é a variação (MT-3)
+import { materials, materialUnitSymbol } from './materials-data'
+
 const REFERENCE_MONTH = '2026-08'
 
 // Percentuais em décimos de ponto: 60 = 6,0%
@@ -122,47 +126,8 @@ const items: { [key in PricingGroup]: PricingItem[] } = {
       status: 'PRICED',
     },
   ],
-  materials: [
-    {
-      id: 'lona-branca-x',
-      name: 'Lona 440 · Marca X · Branca',
-      code: 'MAT-01',
-      sector: 'Impressão',
-      unit: 'M² – Metro quadrado',
-      cost: 1250,
-      costUpdatedAt: '2026-09-10',
-      rule: 'VARIABLE',
-      price: 2800,
-      margin: 55.4,
-      status: 'PRICED',
-    },
-    {
-      id: 'mdf-10',
-      name: 'MDF 10 mm · Marca Y · Branco',
-      code: 'MAT-02',
-      sector: 'Marcenaria',
-      unit: 'UN – Unidade',
-      cost: 8900,
-      costUpdatedAt: '2026-06-02',
-      rule: 'FIXED',
-      price: 9500,
-      margin: 6.3,
-      status: 'PRICED',
-    },
-    {
-      id: 'ilhos',
-      name: 'Ilhós',
-      code: 'MAT-03',
-      sector: 'Produção',
-      unit: 'UN – Unidade',
-      cost: 12,
-      costUpdatedAt: '2026-09-10',
-      rule: 'FIXED',
-      price: null,
-      margin: null,
-      status: 'PENDING',
-    },
-  ],
+  // Materiais: ver materialPricingItems()
+  materials: [],
   products: [
     {
       id: 'banner',
@@ -226,6 +191,56 @@ export const getPricingSummary = async () => {
   return { success: true, data, message: '' }
 }
 
+const marginOf = (cost: number | null, price: number | null) =>
+  cost !== null && price
+    ? Math.round(((price - cost) / price) * 1000) / 10
+    : null
+
+const statusOf = (cost: number | null, price: number | null) => {
+  if (cost === null) return 'NO_COST' as const
+  if (!price) return 'PENDING' as const
+  return price < cost ? ('BELOW_COST' as const) : ('PRICED' as const)
+}
+
+// Um item por variação (ou por material sem variação), com o mesmo id que a
+// composição usa para o recurso: "mat:<material>[:<variação>]"
+const materialPricingItems = (): PricingItem[] =>
+  materials
+    .filter((material) => material.active)
+    .flatMap((material) => {
+      const unit = materialUnitSymbol(material.unit)
+      if (material.variations.length) {
+        return material.variations.map((variation) => ({
+          id: `mat:${material.id}:${variation.id}`,
+          name: `${material.name} · ${variation.brand} ${variation.color}`.trim(),
+          code: material.code,
+          sector: material.sector,
+          unit,
+          cost: variation.cost,
+          costUpdatedAt: null,
+          rule: material.priceRule,
+          price: variation.price,
+          margin: marginOf(variation.cost, variation.price),
+          status: statusOf(variation.cost, variation.price),
+        }))
+      }
+      return [
+        {
+          id: `mat:${material.id}`,
+          name: material.name,
+          code: material.code,
+          sector: material.sector,
+          unit,
+          cost: material.cost,
+          costUpdatedAt: null,
+          rule: material.priceRule,
+          price: material.price,
+          margin: marginOf(material.cost, material.price),
+          status: statusOf(material.cost, material.price),
+        },
+      ]
+    })
+
 export const getPricingItems = async ({
   group,
   filters,
@@ -236,7 +251,8 @@ export const getPricingItems = async ({
   const status = filters?.status
   const search = filters?.search?.trim().toLowerCase()
 
-  const data = items[group]
+  const source = group === 'materials' ? materialPricingItems() : items[group]
+  const data = source
     .filter((item) => !status || status === 'todos' || item.status === status)
     .filter((item) => !search || item.name.toLowerCase().includes(search))
 
@@ -262,6 +278,30 @@ export const updateItemPrice = async ({
   rule: PriceRule
   price: number
 }) => {
+  // Material: grava no cadastro, na variação quando houver (MT-3, DC-6)
+  if (group === 'materials') {
+    const [, materialId, variationId] = id.split(':')
+    const material = materials.find((current) => current.id === materialId)
+    const variation = variationId
+      ? material?.variations.find((current) => current.id === variationId)
+      : null
+    if (!material || (variationId && !variation)) {
+      return { success: false, data: null, message: 'Item não encontrado' }
+    }
+    const target = variation || material
+    if (target.cost === null) {
+      return {
+        success: false,
+        data: null,
+        message: 'Este item ainda não tem custo.',
+      }
+    }
+    target.price = price
+    material.priceRule = rule
+    const item = materialPricingItems().find((current) => current.id === id)
+    return { success: true, data: item || null, message: '' }
+  }
+
   const item = items[group].find((current) => current.id === id)
 
   if (!item) {

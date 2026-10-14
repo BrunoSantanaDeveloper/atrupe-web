@@ -5,6 +5,8 @@ export type ModalType =
   | 'productsList'
   | 'productDetail'
   | 'productDetailEdit'
+  // O item montado na hora, quando não existe produto pronto (ORC-11)
+  | 'composeItem'
   | null
 
 interface QuotationData {

@@ -145,10 +145,8 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
             Icon={card.icon}
           />
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray truncate">{card.label}</span>
-            <span className="text-lg font-semibold text-gray-900">
-              {card.value}
-            </span>
+            <span className="type-kpi-label truncate">{card.label}</span>
+            <span className="type-kpi-value">{card.value}</span>
             <span className="text-xs text-gray truncate">{card.support}</span>
           </div>
         </Card>

@@ -95,7 +95,7 @@ export function CancelAlertDialog(props: Props) {
     }
 
     queryClient.invalidateQueries()
-    toast.success('Movimentação cancelada!')
+    toast.success('Movimentação cancelada')
     router.refresh()
     onTransactionCancel?.()
   }
@@ -156,7 +156,7 @@ export function CancelAlertDialog(props: Props) {
           </Form>
         )}
         <AlertDialogFooter>
-          <AlertDialogCancel>Voltar</AlertDialogCancel>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
           {canCancel && (
             <Button
               type="submit"

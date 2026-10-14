@@ -82,9 +82,7 @@ export function ApprovedRejectedChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Aprovadas x Não aprovadas
-        </CardTitle>
+        <CardTitle>Aprovadas x Não aprovadas</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (

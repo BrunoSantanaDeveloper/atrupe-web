@@ -141,8 +141,8 @@ export function EmptyState({
 
             {/* Text Content */}
             <div className="flex flex-col justify-start items-center gap-1 w-full text-center">
-              <p className="text-base font-semibold text-[#101828]">{title}</p>
-              <div className="text-sm text-[#667085]">{description}</div>
+              <p className="type-card-title">{title}</p>
+              <div className="type-secondary">{description}</div>
             </div>
           </div>
 

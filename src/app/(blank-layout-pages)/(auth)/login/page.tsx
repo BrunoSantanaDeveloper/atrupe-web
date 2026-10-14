@@ -16,7 +16,7 @@ export default function LoginPage() {
   return (
     <>
       <CardHeader className="p-0 mb-8 text-center">
-        <CardTitle className="text-xl font-bold">Login</CardTitle>
+        <CardTitle>Login</CardTitle>
       </CardHeader>
       <CardContent>
         <LoginForm />

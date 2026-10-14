@@ -103,8 +103,11 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
         route: `/subscriptions/active-clients/${rowData.id}/check-asaas`,
       })
 
-      if (!res.success) {
-        toast.error(res.message)
+      if (!res?.success) {
+        toast.error(
+          res?.message ||
+            'Senha gerencial incorreta ou sessão encerrada. Entre de novo e tente outra vez.',
+        )
         return
       }
 
@@ -130,8 +133,11 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
         data: {},
       })
 
-      if (!res.success) {
-        toast.error(res.message)
+      if (!res?.success) {
+        toast.error(
+          res?.message ||
+            'Senha gerencial incorreta ou sessão encerrada. Entre de novo e tente outra vez.',
+        )
         return
       }
 

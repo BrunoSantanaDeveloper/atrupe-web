@@ -151,7 +151,7 @@ export function EditCriterionModal({ account, open, onOpenChange }: Props) {
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="neutralOutline">
               Cancelar
             </Button>
           </DialogClose>

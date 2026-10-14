@@ -125,3 +125,22 @@ const sectors: {
 export const sectorIcons = Object.fromEntries(
   Object.entries(sectors).sort(([, a], [, b]) => a.text.localeCompare(b.text)),
 )
+
+// O ícone do setor pelo nome, para as caixas do fluxo da composição (FL-5):
+// a mesma figura que o modal "Qual item deseja adicionar?" usa. Setores que o
+// legado nomeia de outro jeito (Gráfica, Produção) caem no mais próximo
+export const sectorIconByName = (name: string) => {
+  const lower = name.trim().toLowerCase()
+  const entries = Object.values(sectors)
+  const exact = entries.find((item) => item.text.toLowerCase() === lower)
+  if (exact) return exact.icon
+  const starts = entries.find((item) =>
+    lower.startsWith(item.text.toLowerCase()),
+  )
+  if (starts) return starts.icon
+  if (lower.includes('gráfica') || lower.includes('grafica')) {
+    return IconFastPrinting
+  }
+  if (lower.includes('acabamento')) return IconFinishing
+  return IconProduction
+}

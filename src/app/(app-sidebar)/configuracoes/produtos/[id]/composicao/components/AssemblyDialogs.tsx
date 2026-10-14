@@ -4,7 +4,7 @@
 // venda do processo dentro do produto.
 
 // React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // Next
 import Link from 'next/link'
@@ -23,8 +23,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { Textarea } from '@/components/ui/textarea'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { DurationInput } from '@/components/common/DurationInput'
 
 // Types
 import {
@@ -33,7 +35,8 @@ import {
   hhmmToMinutes,
   minutesToHhmm,
   quantityModeObj,
-  extraFieldKindObj,
+  type QuoteField,
+  type ProductFormula,
   type LineMode,
   type NewLineValues,
   type AssemblyResource,
@@ -42,7 +45,6 @@ import {
   type QuantityMode,
   type ComputedLine,
   type ComputedBlock,
-  type ExtraFieldKind,
   type ProcessCatalogItem,
 } from '../assembly'
 import type {
@@ -53,8 +55,12 @@ import type {
 
 // Hooks / Store / Consts
 import {
-  formulaObj,
-  formulaOptions,
+  resourceKindObj,
+  formulaHelp,
+  formulaUsesField,
+  formulaOptionsFor,
+  formulaChoiceValue,
+  parseFormulaChoice,
   resourceKindOptions,
   dimensionRuleOptions,
 } from '@/consts/processes'
@@ -73,6 +79,7 @@ import {
 
 // Utils
 import { cn } from '@/lib/utils'
+import { evaluateFormula, MEASURE_NAMES } from '@/lib/formula'
 
 const toOptions = <K extends string>(obj: { [key in K]: string }) =>
   (Object.keys(obj) as K[]).map((value) => ({ value, label: obj[value] }))
@@ -202,6 +209,211 @@ export function AddBlockDialog({
  * para o vendedor preencher (IP-21)
  * ------------------------------------------------------------------------- */
 
+const NEW_FORMULA = '__new_formula__'
+
+/* ---------------------------------------------------------------------------
+ * Fórmula do produto (IP-2, 03/10/2026): a conta escrita por quem monta,
+ * lendo medidas, tempo e os campos do orçamento deste produto. Só vale
+ * neste produto; para reaproveitar, copia-se a composição
+ * ------------------------------------------------------------------------- */
+
+export type FormulaValues = { name: string; expression: string }
+
+export function FormulaDialog({
+  open,
+  initial,
+  fields,
+  lineRefs = [],
+  testVars,
+  onOpenChange,
+  onSave,
+}: {
+  open: boolean
+  initial?: FormulaValues
+  fields: QuoteField[]
+  // As referências do material das outras linhas ("montante · X"), quando
+  // o material tem perfil ou chapa (MT-10.1)
+  lineRefs?: string[]
+  // Os valores da medida padrão e dos campos, para o teste ao vivo
+  testVars: { [name: string]: number }
+  onOpenChange: (open: boolean) => void
+  onSave: (values: FormulaValues) => Promise<boolean> | boolean
+}) {
+  const [values, setValues] = useState<FormulaValues>({
+    name: '',
+    expression: '',
+  })
+  const [saving, setSaving] = useState(false)
+  const areaRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    if (open) setValues(initial || { name: '', expression: '' })
+  }, [open, initial])
+
+  const test = evaluateFormula(values.expression, testVars)
+
+  // Insere no lugar do cursor, com espaços em volta
+  const insert = (text: string) => {
+    const area = areaRef.current
+    const current = values.expression
+    const start = area?.selectionStart ?? current.length
+    const end = area?.selectionEnd ?? current.length
+    const piece = `${start > 0 && !/\s$/.test(current.slice(0, start)) ? ' ' : ''}${text}${/^\s/.test(current.slice(end)) ? '' : ' '}`
+    const next = current.slice(0, start) + piece + current.slice(end)
+    setValues((state) => ({ ...state, expression: next }))
+    requestAnimationFrame(() => {
+      area?.focus()
+      const position = start + piece.length
+      area?.setSelectionRange(position, position)
+    })
+  }
+
+  const chip = (label: string, text = label) => (
+    <Button
+      key={text}
+      type="button"
+      size="sm"
+      variant="neutralOutline"
+      onClick={() => insert(text)}
+    >
+      {label}
+    </Button>
+  )
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[640px]">
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
+            <div>
+              <DialogTitle>
+                {initial ? 'Ajustar fórmula' : 'Nova fórmula do produto'}
+              </DialogTitle>
+              <DialogDescription>
+                A conta que dá a quantidade do recurso. Vale só neste produto e
+                entra na lista de tipos de cálculo das linhas dele. O resultado
+                é multiplicado pelo consumo da linha.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        <DialogBody className="space-y-4">
+          <div className="flex flex-col">
+            <Label htmlFor="formula-name" className="mb-2">
+              Nome
+            </Label>
+            <Input
+              id="formula-name"
+              autoComplete="off"
+              placeholder="Ex.: Travessa descontando os montantes"
+              value={values.name}
+              onChange={(event) =>
+                setValues((state) => ({ ...state, name: event.target.value }))
+              }
+            />
+          </div>
+          <div className="flex flex-col">
+            <Label htmlFor="formula-expression" className="mb-2">
+              Fórmula
+            </Label>
+            <Textarea
+              id="formula-expression"
+              ref={areaRef}
+              autoComplete="off"
+              spellCheck={false}
+              rows={3}
+              className="font-mono"
+              placeholder="Ex.: (largura − 0,05) × nr de travessas × quantidade"
+              value={values.expression}
+              onChange={(event) =>
+                setValues((state) => ({
+                  ...state,
+                  expression: event.target.value,
+                }))
+              }
+            />
+          </div>
+          <div className="space-y-2">
+            <p className="type-eyebrow">Medidas do item</p>
+            <div className="flex flex-wrap gap-1.5">
+              {MEASURE_NAMES.map((name) => chip(name))}
+            </div>
+            {fields.length > 0 && (
+              <>
+                <p className="type-eyebrow pt-1">Campos do orçamento</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {fields.map((field) => chip(field.name))}
+                </div>
+              </>
+            )}
+            {lineRefs.length > 0 && (
+              <>
+                <p className="type-eyebrow pt-1">Material das outras linhas</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {lineRefs.map((ref) => chip(ref))}
+                </div>
+                <p className="text-xs text-gray">
+                  X e Y são os lados do perfil escolhido na linha, em metros; o
+                  peso é por unidade de venda do material. Se o vendedor trocar
+                  o material, a fórmula acompanha.
+                </p>
+              </>
+            )}
+            <p className="type-eyebrow pt-1">Operações</p>
+            <div className="flex flex-wrap gap-1.5">
+              {chip('+')}
+              {chip('−', '-')}
+              {chip('×', '×')}
+              {chip('÷', '÷')}
+              {chip('( )', '(')}
+              {chip('arredondar para cima', 'cima(')}
+              {chip('arredondar para baixo', 'baixo(')}
+            </div>
+          </div>
+          <div
+            className={cn(
+              'rounded-lg border px-4 py-3 text-sm',
+              test.error
+                ? 'border-error-200 bg-error-25 text-error-700'
+                : 'border-success-200 bg-success-25 text-success-800',
+            )}
+          >
+            {test.error
+              ? test.error
+              : `Com a medida padrão deste produto, a fórmula dá ${test.value?.toLocaleString('pt-BR', { maximumFractionDigits: 3 })}.`}
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            disabled={!values.name.trim() || !!test.error || saving}
+            isLoading={saving}
+            onClick={async () => {
+              setSaving(true)
+              const done = await onSave({
+                name: values.name.trim(),
+                expression: values.expression.trim(),
+              })
+              setSaving(false)
+              if (done) onOpenChange(false)
+            }}
+          >
+            {initial ? 'Salvar fórmula' : 'Criar fórmula'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 const emptyLine = (kind: ResourceKind): NewLineValues => ({
   name: '',
   kind,
@@ -213,6 +425,8 @@ const emptyLine = (kind: ResourceKind): NewLineValues => ({
   minimum: null,
   optional: false,
   optionalDefault: true,
+  fieldName: '',
+  fieldDefault: 0,
 })
 
 // Opcional é escolha do vendedor (a cantoneira do quadro com lona); linha sem
@@ -228,40 +442,46 @@ function OptionalFields({
 }) {
   return (
     <div className="space-y-3 rounded-lg border border-gray-200 p-4">
-      <label className="flex items-start justify-between gap-6">
-        <span>
-          <span className="block text-sm font-medium text-gray-800">
-            Opcional
-          </span>
-          <span className="block text-sm text-gray">
-            O vendedor decide no orçamento se esta linha entra.
-          </span>
-        </span>
+      {/* O interruptor vem antes do texto (pedido do time, 03/10/2026) */}
+      <label className="flex items-start gap-3">
         <Switch
+          className="mt-0.5"
           checked={optional}
           onCheckedChange={(checked) =>
             onChange({ optional: checked, optionalDefault })
           }
-          aria-label="Opcional"
+          aria-label="Marcar como item opcional"
         />
+        <span>
+          <span className="block text-sm font-medium text-gray-800">
+            Marcar como item opcional
+          </span>
+          <span className="block text-sm text-gray">
+            O produto pode sair com ou sem este item. No orçamento, o vendedor
+            marca se o trabalho leva. Sem esta marcação, o item sempre entra.
+          </span>
+        </span>
       </label>
       {optional && (
-        <label className="flex items-start justify-between gap-6">
-          <span>
-            <span className="block text-sm font-medium text-gray-800">
-              Já vem marcada no orçamento
-            </span>
-            <span className="block text-sm text-gray">
-              É também o que o custo e o sugerido da composição consideram.
-            </span>
-          </span>
+        <label className="flex items-start gap-3">
           <Switch
+            className="mt-0.5"
             checked={optionalDefault}
             onCheckedChange={(checked) =>
               onChange({ optional, optionalDefault: checked })
             }
-            aria-label="Já vem marcada no orçamento"
+            aria-label="Normalmente vai com"
           />
+          <span>
+            <span className="block text-sm font-medium text-gray-800">
+              Normalmente vai com
+            </span>
+            <span className="block text-sm text-gray">
+              Ligado, o item já vem marcado no orçamento e entra no custo e no
+              preço sugerido mostrados aqui. Desligado, começa desmarcado e só
+              entra se o vendedor marcar.
+            </span>
+          </span>
         </label>
       )}
     </div>
@@ -271,19 +491,44 @@ function OptionalFields({
 export function NewLineDialog({
   block,
   resources,
+  fields = [],
+  formulas = [],
+  lineRefs = [],
+  testVars = {},
+  onCreateFormula,
+  initialKind = 'LABOR',
   onOpenChange,
   onSave,
 }: {
   block?: ComputedBlock
   resources: AssemblyResource[]
+  // Os campos do orçamento do produto, para a fórmula que lê um campo
+  fields?: QuoteField[]
+  // As fórmulas escritas no produto (IP-2) e como criar uma nova daqui
+  formulas?: ProductFormula[]
+  lineRefs?: string[]
+  testVars?: { [name: string]: number }
+  onCreateFormula?: (values: FormulaValues) => Promise<string | null>
+  // O botão que abriu o diálogo já diz o tipo: Máquina, Material, Mão de
+  // obra ou Terceirizado, como no item pronto do legado
+  initialKind?: ResourceKind
   onOpenChange: (open: boolean) => void
   onSave: (values: NewLineValues) => void
 }) {
-  const [values, setValues] = useState<NewLineValues>(emptyLine('LABOR'))
+  const [search, setSearch] = useState('')
+  const [unitFilter, setUnitFilter] = useState('')
+  const [formulaOpen, setFormulaOpen] = useState(false)
+  const [values, setValues] = useState<NewLineValues>(emptyLine(initialKind))
 
   useEffect(() => {
-    if (block) setValues(emptyLine('LABOR'))
-  }, [block])
+    if (block) {
+      setValues(emptyLine(initialKind))
+      // Busca e filtro são de uma abertura só: o "m" escolhido no material
+      // não pode esconder a mão de obra na próxima
+      setSearch('')
+      setUnitFilter('')
+    }
+  }, [block, initialKind])
 
   const set = <K extends keyof NewLineValues>(
     key: K,
@@ -302,25 +547,62 @@ export function NewLineDialog({
     )
   const chosen = available.filter((item) => values.optionIds.includes(item.id))
   const unit = chosen[0]?.unit || ''
+  // A lista de materiais é grande (03/10/2026): busca por nome e filtro por
+  // unidade (un, m², m, kg). O que já foi escolhido continua escolhido mesmo
+  // fora do filtro
+  const units = Array.from(new Set(available.map((item) => item.unit))).filter(
+    Boolean,
+  )
+  // Filtro só vale se a unidade existe nesta lista
+  const activeUnit = units.includes(unitFilter) ? unitFilter : ''
+  const visible = available.filter(
+    (item) =>
+      (!activeUnit || item.unit === activeUnit) &&
+      item.name.toLowerCase().includes(search.trim().toLowerCase()),
+  )
+  // Mão de obra é tempo: o consumo e o mínimo entram em h:mm, com o relógio,
+  // e não há perda (03/10/2026)
+  const isTime = values.kind === 'LABOR' || unit === 'min'
   const list = values.mode === 'LIST'
   const mixedUnits =
     values.mode === 'CHOOSE' && new Set(chosen.map((i) => i.unit)).size > 1
 
-  const toggle = (id: string) =>
+  // No recurso único o nome já vem preenchido com o do recurso escolhido
+  // (a lona, a impressora) e a pessoa edita se quiser. Se ela já escreveu
+  // um nome seu, a escolha não o apaga
+  const toggle = (id: string) => {
+    if (values.mode === 'SINGLE') {
+      const picked = available.find((item) => item.id === id)
+      const previous = chosen[0]?.name || ''
+      const keepsOwnName =
+        values.name.trim() !== '' && values.name.trim() !== previous
+      setValues((current) => ({
+        ...current,
+        optionIds: [id],
+        name: keepsOwnName ? current.name : picked?.name || current.name,
+      }))
+      return
+    }
     set(
       'optionIds',
-      values.mode === 'SINGLE'
-        ? [id]
-        : values.optionIds.includes(id)
-          ? values.optionIds.filter((item) => item !== id)
-          : [...values.optionIds, id],
+      values.optionIds.includes(id)
+        ? values.optionIds.filter((item) => item !== id)
+        : [...values.optionIds, id],
     )
+  }
 
+  // No recurso único o nome é o do próprio recurso (a impressora laser); só
+  // o grupo de escolha e a lista precisam de um nome seu ("Papel")
+  const singleName = values.mode === 'SINGLE' ? chosen[0]?.name || '' : ''
+  const finalName = values.name.trim() || singleName
+  // A fórmula que lê um campo precisa saber qual
+  const usesField = !list && formulaUsesField(values.formula)
   const valid =
-    values.name.trim() &&
+    finalName &&
     values.optionIds.length > 0 &&
     !mixedUnits &&
-    (values.mode !== 'CHOOSE' || values.optionIds.length > 1)
+    (values.mode !== 'CHOOSE' || values.optionIds.length > 1) &&
+    (!usesField || !!values.fieldName?.trim())
 
   return (
     <Dialog open={!!block} onOpenChange={onOpenChange}>
@@ -329,21 +611,37 @@ export function NewLineDialog({
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
-              <DialogTitle>Nova linha · {block?.name}</DialogTitle>
+              <DialogTitle>
+                Acrescentar {resourceKindObj[values.kind].toLowerCase()} ·{' '}
+                {block?.name}
+              </DialogTitle>
               <DialogDescription>
-                O que o setor de {block?.sector.toLowerCase()} usa nesta etapa:
-                tempo, máquina ou material.
+                O que o setor de {block?.sector.toLowerCase()} usa nesta etapa,
+                e como a quantidade é calculada a partir da medida vendida.
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="new-line-name">Nome da linha</Label>
+          <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2">
+            <div className="flex flex-col">
+              <Label htmlFor="new-line-title" className="mb-2">
+                {values.mode === 'SINGLE'
+                  ? 'Nome'
+                  : values.mode === 'CHOOSE'
+                    ? 'Nome do grupo'
+                    : 'Nome da lista'}
+              </Label>
               <Input
-                id="new-line-name"
-                placeholder="Ex.: Tempo por metro, Material"
+                id="new-line-title"
+                autoComplete="off"
+                placeholder={
+                  values.mode === 'SINGLE'
+                    ? 'Escolha o recurso: o nome vem dele'
+                    : values.mode === 'CHOOSE'
+                      ? 'Ex.: Papel, Lona, Acabamento'
+                      : 'Ex.: Materiais da estrutura'
+                }
                 value={values.name}
                 onChange={(event) => set('name', event.target.value)}
               />
@@ -353,19 +651,21 @@ export function NewLineDialog({
               label="Tipo de recurso"
               options={resourceKindOptions}
               value={values.kind}
-              onChange={(value) =>
+              onChange={(value) => {
                 setValues((current) => ({
                   ...current,
                   kind: value as ResourceKind,
                   optionIds: [],
                 }))
-              }
+                setSearch('')
+                setUnitFilter('')
+              }}
             />
           </div>
 
           <SelectBasic
             name="new-line-mode"
-            label="Como a linha funciona"
+            label="Como funciona"
             options={toOptions(lineModeObj)}
             value={values.mode}
             onChange={(value) =>
@@ -381,17 +681,45 @@ export function NewLineDialog({
           />
           <p className="-mt-2 text-sm text-gray">
             {values.mode === 'SINGLE'
-              ? 'Um recurso, sempre o mesmo.'
+              ? 'Um recurso, sempre o mesmo: a impressora, a lona, a hora do setor.'
               : values.mode === 'CHOOSE'
-                ? 'Várias opções de mesma unidade; entra no custo só a escolhida (a lona do banner).'
+                ? 'Um grupo com várias opções de mesma unidade, e o vendedor escolhe uma no orçamento: o grupo "Papel" com couché 150 g, couché 300 g e offset 90 g. Entra no custo só a escolhida.'
                 : 'O vendedor informa no orçamento quanto usou de cada item (o metalon de uma base de ACM).'}
           </p>
 
           <div className="space-y-2">
             <Label>{values.mode === 'SINGLE' ? 'Recurso' : 'Recursos'}</Label>
-            <div className="max-h-[220px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
-              {available.length ? (
-                available.map((item) => (
+            <div className="flex flex-wrap items-center gap-2">
+              <Input
+                aria-label="Buscar recurso"
+                autoComplete="off"
+                placeholder="Buscar pelo nome"
+                className="min-w-[200px] flex-1"
+                startAdornment={<IconSearch size={16} aria-hidden="true" />}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
+              {units.length > 1 && (
+                <div className="flex flex-wrap gap-1">
+                  {['', ...units].map((item) => (
+                    <Button
+                      key={item || 'all'}
+                      type="button"
+                      size="sm"
+                      variant={
+                        activeUnit === item ? 'default' : 'neutralOutline'
+                      }
+                      onClick={() => setUnitFilter(item)}
+                    >
+                      {item || 'Todas'}
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="max-h-[240px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
+              {visible.length ? (
+                visible.map((item) => (
                   <label
                     key={item.id}
                     className="flex cursor-pointer items-center justify-between gap-3 rounded-md px-3 py-2 hover:bg-gray-50"
@@ -411,10 +739,20 @@ export function NewLineDialog({
                 ))
               ) : (
                 <p className="p-2 text-sm text-gray">
-                  Nenhum recurso deste tipo na Base de custos.
+                  {available.length
+                    ? 'Nenhum recurso com essa busca. Limpe a busca ou o filtro de unidade.'
+                    : 'Nenhum recurso deste tipo na Base de custos.'}
                 </p>
               )}
             </div>
+            {chosen.length > 0 && visible.length < available.length && (
+              <p className="text-xs text-gray">
+                {chosen.length === 1
+                  ? `Escolhido: ${chosen[0].name}`
+                  : `${chosen.length} escolhidos`}
+                {' · '}mostrando {visible.length} de {available.length}
+              </p>
+            )}
             {mixedUnits && (
               <p className="text-sm text-error-700">
                 As opções de uma escolha precisam ter a mesma unidade.
@@ -424,65 +762,143 @@ export function NewLineDialog({
 
           {!list && (
             <>
+              {/* O campo do orçamento entra pelo nome no tipo de cálculo
+                  ("Por perímetro ÷ distância entre ilhoses") e, no fim, as
+                  fórmulas escritas neste produto e "Nova fórmula…" (IP-2) */}
               <SelectBasic
                 name="new-line-formula"
-                label="Como a quantidade é calculada"
-                options={formulaOptions}
-                value={values.formula}
-                onChange={(value) => set('formula', value as FormulaKey)}
+                label="Tipo de cálculo"
+                options={[
+                  ...formulaOptionsFor(fields, formulas),
+                  ...(onCreateFormula
+                    ? [{ value: NEW_FORMULA, label: 'Nova fórmula…' }]
+                    : []),
+                ]}
+                value={formulaChoiceValue(
+                  values.formula,
+                  values.fieldName || undefined,
+                  values.formulaId,
+                )}
+                onChange={(value) => {
+                  if (value === NEW_FORMULA) {
+                    setFormulaOpen(true)
+                    return
+                  }
+                  const { formula, fieldName, formulaId } =
+                    parseFormulaChoice(value)
+                  setValues((current) => ({
+                    ...current,
+                    formula,
+                    fieldName: fieldName || '',
+                    formulaId,
+                  }))
+                }}
               />
               <p className="-mt-2 text-sm text-gray">
-                {formulaObj[values.formula]?.help}
+                {values.formula === 'CUSTOM'
+                  ? `Consumo × (${formulas.find((item) => item.id === values.formulaId)?.expression || '…'})`
+                  : formulaHelp(values.formula, values.fieldName || undefined)}
+                {!fields.length &&
+                  values.formula !== 'CUSTOM' &&
+                  ' Para calcular por um valor que o vendedor informa (nº de letras, distância entre ilhoses…), crie o campo em "Campos do orçamento" e ele passa a aparecer aqui.'}
               </p>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {onCreateFormula && (
+                <FormulaDialog
+                  open={formulaOpen}
+                  fields={fields}
+                  lineRefs={lineRefs}
+                  testVars={testVars}
+                  onOpenChange={setFormulaOpen}
+                  onSave={async (formulaValues) => {
+                    const id = await onCreateFormula(formulaValues)
+                    if (!id) return false
+                    setValues((current) => ({
+                      ...current,
+                      formula: 'CUSTOM',
+                      fieldName: '',
+                      formulaId: id,
+                    }))
+                    return true
+                  }}
+                />
+              )}
+              <div
+                className={cn(
+                  'grid grid-cols-1 gap-4',
+                  isTime ? 'sm:grid-cols-2' : 'sm:grid-cols-3',
+                )}
+              >
                 <div className="space-y-2">
                   <Label htmlFor="new-line-per-unit">
-                    Consumo{unit ? ` (${unit})` : ''}
+                    {isTime
+                      ? 'Tempo (h:mm)'
+                      : `Consumo${unit ? ` (${unit})` : ''}`}
                   </Label>
-                  <Input
-                    id="new-line-per-unit"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={values.perUnit}
-                    onChange={(event) =>
-                      set('perUnit', Number(event.target.value) || 0)
-                    }
-                  />
+                  {isTime ? (
+                    <DurationInput
+                      id="new-line-per-unit"
+                      value={values.perUnit}
+                      onChange={(minutes) => set('perUnit', minutes ?? 0)}
+                    />
+                  ) : (
+                    <Input
+                      id="new-line-per-unit"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={values.perUnit}
+                      onChange={(event) =>
+                        set('perUnit', Number(event.target.value) || 0)
+                      }
+                    />
+                  )}
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-line-loss">Perda (%)</Label>
-                  <Input
-                    id="new-line-loss"
-                    type="number"
-                    min={0}
-                    step="1"
-                    value={values.lossPercent}
-                    onChange={(event) =>
-                      set('lossPercent', Number(event.target.value) || 0)
-                    }
-                  />
-                </div>
+                {!isTime && (
+                  <div className="space-y-2">
+                    <Label htmlFor="new-line-loss">Perda (%)</Label>
+                    <Input
+                      id="new-line-loss"
+                      type="number"
+                      min={0}
+                      step="1"
+                      value={values.lossPercent}
+                      onChange={(event) =>
+                        set('lossPercent', Number(event.target.value) || 0)
+                      }
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="new-line-minimum">
-                    Mínimo{unit ? ` (${unit})` : ''}
+                    {isTime
+                      ? 'Tempo mínimo (h:mm)'
+                      : `Mínimo${unit ? ` (${unit})` : ''}`}
                   </Label>
-                  <Input
-                    id="new-line-minimum"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    placeholder="Sem mínimo"
-                    value={values.minimum ?? ''}
-                    onChange={(event) =>
-                      set(
-                        'minimum',
-                        event.target.value === ''
-                          ? null
-                          : Number(event.target.value),
-                      )
-                    }
-                  />
+                  {isTime ? (
+                    <DurationInput
+                      id="new-line-minimum"
+                      placeholder="Sem mínimo"
+                      value={values.minimum}
+                      onChange={(minutes) => set('minimum', minutes)}
+                    />
+                  ) : (
+                    <Input
+                      id="new-line-minimum"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="Sem mínimo"
+                      value={values.minimum ?? ''}
+                      onChange={(event) =>
+                        set(
+                          'minimum',
+                          event.target.value === ''
+                            ? null
+                            : Number(event.target.value),
+                        )
+                      }
+                    />
+                  )}
                 </div>
               </div>
             </>
@@ -506,9 +922,9 @@ export function NewLineDialog({
           <Button
             type="button"
             disabled={!valid}
-            onClick={() => onSave(values)}
+            onClick={() => onSave({ ...values, name: finalName })}
           >
-            Adicionar linha
+            Adicionar {resourceKindObj[values.kind].toLowerCase()}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -527,6 +943,11 @@ export type LineValues = {
   minimum: number | null
   optional: boolean
   optionalDefault: boolean
+  // O campo do orçamento que a fórmula lê (IP-4)
+  fieldName?: string
+  fieldDefault?: number
+  // A fórmula do produto, quando o tipo é 'CUSTOM' (IP-2)
+  formulaId?: string
   // Aproveitamento de folha (AP-3, AP-4)
   sheetMargin?: number
   sheetGap?: number
@@ -545,12 +966,22 @@ const optionalNumber = (value: string) =>
 
 export function LineDialog({
   line,
+  fields = [],
+  formulas = [],
+  lineRefs = [],
+  testVars = {},
+  onCreateFormula,
   variationName,
   ownStage,
   onOpenChange,
   onSave,
 }: {
   line?: ComputedLine
+  fields?: QuoteField[]
+  formulas?: ProductFormula[]
+  lineRefs?: string[]
+  testVars?: { [name: string]: number }
+  onCreateFormula?: (values: FormulaValues) => Promise<string | null>
   // Na variação só o consumo muda: o 4x4 passa a folha duas vezes (PV-7)
   variationName?: string
   // A etapa foi montada no produto: não há processo por trás
@@ -566,6 +997,7 @@ export function LineDialog({
     optional: false,
     optionalDefault: true,
   })
+  const [formulaOpen, setFormulaOpen] = useState(false)
 
   useEffect(() => {
     if (line) {
@@ -576,6 +1008,9 @@ export function LineDialog({
         minimum: line.minimum,
         optional: !!line.optional,
         optionalDefault: line.optionalDefault ?? true,
+        fieldName: line.fieldName || '',
+        fieldDefault: line.extraValue ?? 0,
+        formulaId: line.formulaId,
         sheetMargin: line.sheetMargin,
         sheetGap: line.sheetGap,
         chargeWholeSheets: line.chargeWholeSheets,
@@ -593,6 +1028,8 @@ export function LineDialog({
   }, [line])
 
   const unit = line?.selected?.unit || line?.options[0]?.unit || ''
+  // Mão de obra é tempo: h:mm com o relógio, sem perda (03/10/2026)
+  const isTime = line?.kind === 'LABOR' || unit === 'min'
 
   return (
     <Dialog open={!!line} onOpenChange={onOpenChange}>
@@ -616,83 +1053,164 @@ export function LineDialog({
           {!variationName && (
             <SelectBasic
               name="line-formula"
-              label="Como a quantidade é calculada"
-              options={formulaOptions}
-              value={values.formula}
-              onChange={(value) =>
+              label="Tipo de cálculo"
+              options={[
+                ...formulaOptionsFor(fields, formulas),
+                ...(onCreateFormula
+                  ? [{ value: NEW_FORMULA, label: 'Nova fórmula…' }]
+                  : []),
+              ]}
+              value={formulaChoiceValue(
+                values.formula,
+                values.fieldName || undefined,
+                values.formulaId,
+              )}
+              onChange={(value) => {
+                if (value === NEW_FORMULA) {
+                  setFormulaOpen(true)
+                  return
+                }
+                const { formula, fieldName, formulaId } =
+                  parseFormulaChoice(value)
                 setValues((current) => ({
                   ...current,
-                  formula: value as FormulaKey,
+                  formula,
+                  fieldName: fieldName || '',
+                  formulaId,
                 }))
-              }
+              }}
             />
           )}
           {!variationName && (
             <p className="-mt-2 text-sm text-gray">
-              {formulaObj[values.formula]?.help}
+              {values.formula === 'CUSTOM'
+                ? `Consumo × (${formulas.find((item) => item.id === values.formulaId)?.expression || '…'})`
+                : formulaHelp(values.formula, values.fieldName || undefined)}
+              {!fields.length &&
+                values.formula !== 'CUSTOM' &&
+                ' Para calcular por um valor que o vendedor informa, crie o campo em "Campos do orçamento" e ele passa a aparecer aqui.'}
             </p>
           )}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {!variationName && onCreateFormula && (
+            <FormulaDialog
+              open={formulaOpen}
+              fields={fields}
+              lineRefs={lineRefs}
+              testVars={testVars}
+              onOpenChange={setFormulaOpen}
+              onSave={async (formulaValues) => {
+                const id = await onCreateFormula(formulaValues)
+                if (!id) return false
+                setValues((current) => ({
+                  ...current,
+                  formula: 'CUSTOM',
+                  fieldName: '',
+                  formulaId: id,
+                }))
+                return true
+              }}
+            />
+          )}
+          <div
+            className={cn(
+              'grid grid-cols-1 gap-4',
+              isTime ? 'sm:grid-cols-2' : 'sm:grid-cols-3',
+            )}
+          >
             <div className="space-y-2">
-              <Label htmlFor="line-per-unit">Consumo ({unit})</Label>
-              <Input
-                id="line-per-unit"
-                type="number"
-                min={0}
-                step="0.01"
-                value={values.perUnit}
-                onChange={(event) =>
-                  setValues((current) => ({
-                    ...current,
-                    perUnit: Number(event.target.value) || 0,
-                  }))
-                }
-              />
+              <Label htmlFor="line-per-unit">
+                {isTime ? 'Tempo (h:mm)' : `Consumo (${unit})`}
+              </Label>
+              {isTime ? (
+                <DurationInput
+                  id="line-per-unit"
+                  value={values.perUnit}
+                  onChange={(minutes) =>
+                    setValues((current) => ({
+                      ...current,
+                      perUnit: minutes ?? 0,
+                    }))
+                  }
+                />
+              ) : (
+                <Input
+                  id="line-per-unit"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={values.perUnit}
+                  onChange={(event) =>
+                    setValues((current) => ({
+                      ...current,
+                      perUnit: Number(event.target.value) || 0,
+                    }))
+                  }
+                />
+              )}
             </div>
             {!variationName && (
               <>
+                {!isTime && (
+                  <div className="space-y-2">
+                    <Label htmlFor="line-loss">Perda (%)</Label>
+                    <Input
+                      id="line-loss"
+                      type="number"
+                      min={0}
+                      step="1"
+                      value={values.lossPercent}
+                      onChange={(event) =>
+                        setValues((current) => ({
+                          ...current,
+                          lossPercent: Number(event.target.value) || 0,
+                        }))
+                      }
+                    />
+                  </div>
+                )}
                 <div className="space-y-2">
-                  <Label htmlFor="line-loss">Perda (%)</Label>
-                  <Input
-                    id="line-loss"
-                    type="number"
-                    min={0}
-                    step="1"
-                    value={values.lossPercent}
-                    onChange={(event) =>
-                      setValues((current) => ({
-                        ...current,
-                        lossPercent: Number(event.target.value) || 0,
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="line-minimum">Mínimo ({unit})</Label>
-                  <Input
-                    id="line-minimum"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    placeholder="Sem mínimo"
-                    value={values.minimum ?? ''}
-                    onChange={(event) =>
-                      setValues((current) => ({
-                        ...current,
-                        minimum:
-                          event.target.value === ''
-                            ? null
-                            : Number(event.target.value),
-                      }))
-                    }
-                  />
+                  <Label htmlFor="line-minimum">
+                    {isTime ? 'Tempo mínimo (h:mm)' : `Mínimo (${unit})`}
+                  </Label>
+                  {isTime ? (
+                    <DurationInput
+                      id="line-minimum"
+                      placeholder="Sem mínimo"
+                      value={values.minimum}
+                      onChange={(minutes) =>
+                        setValues((current) => ({
+                          ...current,
+                          minimum: minutes,
+                        }))
+                      }
+                    />
+                  ) : (
+                    <Input
+                      id="line-minimum"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="Sem mínimo"
+                      value={values.minimum ?? ''}
+                      onChange={(event) =>
+                        setValues((current) => ({
+                          ...current,
+                          minimum:
+                            event.target.value === ''
+                              ? null
+                              : Number(event.target.value),
+                        }))
+                      }
+                    />
+                  )}
                 </div>
               </>
             )}
           </div>
           <p className="text-sm text-gray">
-            A perda é somada ao consumo (a sobra do corte). O mínimo impede que
-            a peça pequena saia com custo irreal.
+            {isTime
+              ? 'O tempo mínimo impede que a peça pequena saia com tempo irreal: o preparo que existe mesmo para uma unidade.'
+              : 'A perda é somada ao consumo (a sobra do corte). O mínimo impede que a peça pequena saia com custo irreal.'}
           </p>
           {!variationName &&
             line?.formula === 'SHEET_YIELD' &&
@@ -748,7 +1266,7 @@ export function LineDialog({
                     </span>
                     <span className="block text-sm text-gray">
                       Desligado, cobra só a fração aproveitada — quando a sobra
-                      volta para o estoque.
+                      volta para o estoque. O padrão vem do material.
                     </span>
                   </span>
                   <Switch
@@ -778,9 +1296,15 @@ export function LineDialog({
                   <thead className="bg-gray-50 text-left text-xs text-gray">
                     <tr>
                       <th className="px-3 py-2 font-medium">Opção</th>
-                      <th className="px-3 py-2 font-medium">Consumo</th>
-                      <th className="px-3 py-2 font-medium">Perda (%)</th>
-                      <th className="px-3 py-2 font-medium">Mínimo</th>
+                      <th className="px-3 py-2 font-medium">
+                        {isTime ? 'Tempo' : 'Consumo'}
+                      </th>
+                      {!isTime && (
+                        <th className="px-3 py-2 font-medium">Perda (%)</th>
+                      )}
+                      <th className="px-3 py-2 font-medium">
+                        {isTime ? 'Tempo mínimo' : 'Mínimo'}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -810,56 +1334,84 @@ export function LineDialog({
                             {option.name}
                           </td>
                           <td className="px-3 py-2">
-                            <Input
-                              type="number"
-                              min={0}
-                              step="0.01"
-                              aria-label={`Consumo de ${option.name}`}
-                              placeholder={String(values.perUnit)}
-                              value={current?.perUnit ?? ''}
-                              onChange={(event) =>
-                                setOption(
-                                  'perUnit',
-                                  optionalNumber(event.target.value),
-                                )
-                              }
-                            />
+                            {isTime ? (
+                              <DurationInput
+                                aria-label={`Tempo de ${option.name}`}
+                                placeholder={minutesToHhmm(values.perUnit)}
+                                value={current?.perUnit ?? null}
+                                onChange={(minutes) =>
+                                  setOption('perUnit', minutes ?? undefined)
+                                }
+                              />
+                            ) : (
+                              <Input
+                                type="number"
+                                min={0}
+                                step="0.01"
+                                aria-label={`Consumo de ${option.name}`}
+                                placeholder={String(values.perUnit)}
+                                value={current?.perUnit ?? ''}
+                                onChange={(event) =>
+                                  setOption(
+                                    'perUnit',
+                                    optionalNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            )}
                           </td>
+                          {!isTime && (
+                            <td className="px-3 py-2">
+                              <Input
+                                type="number"
+                                min={0}
+                                step="1"
+                                aria-label={`Perda de ${option.name}`}
+                                placeholder={String(values.lossPercent)}
+                                value={current?.lossPercent ?? ''}
+                                onChange={(event) =>
+                                  setOption(
+                                    'lossPercent',
+                                    optionalNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            </td>
+                          )}
                           <td className="px-3 py-2">
-                            <Input
-                              type="number"
-                              min={0}
-                              step="1"
-                              aria-label={`Perda de ${option.name}`}
-                              placeholder={String(values.lossPercent)}
-                              value={current?.lossPercent ?? ''}
-                              onChange={(event) =>
-                                setOption(
-                                  'lossPercent',
-                                  optionalNumber(event.target.value),
-                                )
-                              }
-                            />
-                          </td>
-                          <td className="px-3 py-2">
-                            <Input
-                              type="number"
-                              min={0}
-                              step="0.01"
-                              aria-label={`Mínimo de ${option.name}`}
-                              placeholder={
-                                values.minimum === null
-                                  ? '-'
-                                  : String(values.minimum)
-                              }
-                              value={current?.minimum ?? ''}
-                              onChange={(event) =>
-                                setOption(
-                                  'minimum',
-                                  optionalNumber(event.target.value),
-                                )
-                              }
-                            />
+                            {isTime ? (
+                              <DurationInput
+                                aria-label={`Tempo mínimo de ${option.name}`}
+                                placeholder={
+                                  values.minimum === null
+                                    ? '-'
+                                    : minutesToHhmm(values.minimum)
+                                }
+                                value={current?.minimum ?? null}
+                                onChange={(minutes) =>
+                                  setOption('minimum', minutes ?? undefined)
+                                }
+                              />
+                            ) : (
+                              <Input
+                                type="number"
+                                min={0}
+                                step="0.01"
+                                aria-label={`Mínimo de ${option.name}`}
+                                placeholder={
+                                  values.minimum === null
+                                    ? '-'
+                                    : String(values.minimum)
+                                }
+                                value={current?.minimum ?? ''}
+                                onChange={(event) =>
+                                  setOption(
+                                    'minimum',
+                                    optionalNumber(event.target.value),
+                                  )
+                                }
+                              />
+                            )}
                           </td>
                         </tr>
                       )
@@ -909,9 +1461,6 @@ const describe = (rules: SaleRules) =>
     quantityModeObj[rules.quantityMode],
     rules.followsBase ? 'acompanha a quantidade da base' : 'uma vez por pedido',
     dimensionRuleOptions.find((item) => item.value === rules.dimension)?.label,
-    rules.extraField === 'NONE'
-      ? null
-      : `campo extra "${rules.extraFieldName}"`,
     rules.timeField
       ? `com campo tempo (${minutesToHhmm(rules.timeFieldDefault || 0)})`
       : null,
@@ -1061,42 +1610,8 @@ export function RulesDialog({
               value={rules.dimension}
               onChange={(value) => set('dimension', value as DimensionRule)}
             />
-            <SelectBasic
-              name="rules-extra"
-              label="Campo extra"
-              options={toOptions(extraFieldKindObj)}
-              value={rules.extraField}
-              onChange={(value) => set('extraField', value as ExtraFieldKind)}
-            />
-            {rules.extraField !== 'NONE' && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="rules-extra-name">
-                    Nome do campo extra para o vendedor
-                  </Label>
-                  <Input
-                    id="rules-extra-name"
-                    value={rules.extraFieldName}
-                    onChange={(event) =>
-                      set('extraFieldName', event.target.value)
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="rules-extra-default">Valor padrão</Label>
-                  <Input
-                    id="rules-extra-default"
-                    type="number"
-                    min={0}
-                    step={rules.extraField === 'INTEGER' ? '1' : '0.01'}
-                    value={rules.extraFieldDefault}
-                    onChange={(event) =>
-                      set('extraFieldDefault', Number(event.target.value) || 0)
-                    }
-                  />
-                </div>
-              </>
-            )}
+            {/* O campo extra da etapa saiu (03/10/2026): a linha aponta para
+                um campo do orçamento do produto (IP-4) */}
             <label className="flex items-center justify-between gap-4 rounded-lg border border-gray-200 px-4 py-3">
               <span className="text-sm font-medium">Campo tempo</span>
               <Switch
@@ -1459,10 +1974,12 @@ export function LibraryDialog({
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconBooks} />
             <div>
-              <DialogTitle>Biblioteca de composições</DialogTitle>
+              <DialogTitle>Biblioteca de produtos</DialogTitle>
               <DialogDescription>
-                Composições prontas, com etapas e recursos. Importe e ajuste ao
-                seu jeito de produzir.
+                Produtos com a composição de referência: etapas, materiais e
+                tempos de quem já produz. Escolha um, cadastre o seu produto a
+                partir dele e revise a composição, que é ponto de partida, não o
+                seu custo.
               </DialogDescription>
             </div>
           </div>

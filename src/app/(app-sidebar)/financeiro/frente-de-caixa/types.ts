@@ -12,13 +12,14 @@ export const paymentMethodLabel: Record<PaymentMethod, string> = {
   CARD: 'Cartão',
 }
 
-// Para onde o dinheiro vai no fechamento (FC-3): dinheiro entra no caixa
-// principal; cartão e PIX viram previsão de recebimento no caixa principal,
-// pelo valor cheio, e a baixa acontece quando o dinheiro cai (FC-10)
+// Para onde o dinheiro vai no fechamento (FC-3, CX-4): um movimento por forma
+// de pagamento, cada um na conta que aceita aquela forma. O dinheiro chega à
+// conta Caixa pendente de aprovação; o cartão vai à operadora pelo valor
+// cheio, e a taxa só aparece na liquidação (FC-10)
 export const paymentMethodDestination: Record<PaymentMethod, string> = {
-  CASH: 'Caixa Empresa',
-  PIX: 'Previsão no caixa principal',
-  CARD: 'Previsão no caixa principal · taxa na baixa',
+  CASH: 'Caixa (gaveta) · pendente de aprovação',
+  PIX: 'banco da conta padrão do PIX',
+  CARD: 'operadora de cartão · valor cheio',
 }
 
 // Uma parte do recebimento. O pagamento misto (FC-9) é simplesmente mais de
@@ -49,12 +50,17 @@ export type CashMovement = {
   // Sangria, suprimento e estorno registram motivo e responsável (FC-8, FC-13)
   reason?: string
   responsible?: string
+  // Dinheiro que entra ou sai tem origem e destino: o suprimento vem de uma
+  // conta da empresa, a sangria vai para uma. Não é receita nem despesa
+  account?: string
+  // Arredondamento no balcão (FC-18), registrado como desconto na venda
+  discount?: number
   parts: PaymentPart[]
 }
 
 // A venda esperando o caixa. O tipo decide o caminho (FC-12.1): a venda
 // rápida sempre passa pelo caixa; o orçamento normal com forma de pagamento
-// definida vai direto ao fluxo financeiro e aqui aparece só como registro
+// definida vai direto ao fluxo financeiro e não passa por aqui
 export type SaleKind = 'QUICK' | 'QUOTATION'
 
 export type PendingSale = {
@@ -70,13 +76,20 @@ export type PendingSale = {
   paid: number
   delivered: boolean
   approvedAt: string
-  // false = foi para o fluxo financeiro; entra no relatório do dia, mas não
-  // no saldo do caixa
+  // false = o caixa faturou para o cliente (FC-4): a venda foi para o fluxo
+  // financeiro e fica aqui só como registro do dia, fora do saldo, até o
+  // fechamento. O orçamento que já nasce faturado não passa pelo caixa
   goesToCash: boolean
   // Com mais de um caixa, quem puxou a venda para atender (FC-5)
   claimedBy?: string | null
   // Revertida para faturamento: a forma escolhida para o cliente (FC-4)
   billing?: string
+  // Trabalho concluído e não entregue (FC-19): sai da fila "A receber" e
+  // passa para "Aguardando retirada". Sem o gerenciador de produção, quem
+  // marca é o caixa ou o vendedor; com ele, a conclusão da ordem marca
+  ready?: boolean
+  readyAt?: string
+  phone?: string
 }
 
 // A venda rápida vista do lado do vendedor, depois de sair do orçamento.
@@ -96,26 +109,38 @@ export type QuickSaleCheckout = {
   parts: PaymentPart[]
 }
 
-// Trabalho pronto e não retirado (FC-19)
-export type AwaitingPickup = {
-  id: string
-  reference: string
-  client: string
-  phone: string
-  finishedAt: string
-  remaining: number
-  deadlineDays: number
-  daysWaiting: number
-}
+// Há quantos dias o trabalho pronto espera o cliente (FC-19)
+export const daysWaiting = (sale: PendingSale) =>
+  sale.readyAt
+    ? Math.max(
+        0,
+        Math.floor((Date.now() - new Date(sale.readyAt).getTime()) / 86400000),
+      )
+    : 0
 
 export type CashSession = {
   id: string
+  // Número do caixa, para o nome dos movimentos do fechamento ("Fechamento FC
+  // nº 12 · dinheiro")
+  number: number
   name: string
   operator: string
   openedAt: string
   openingBalance: number
   status: 'OPEN' | 'CLOSED'
+  // Modo de conferência do fechamento, do cadastro da frente de caixa (FC-7):
+  // conferência simples (padrão) ou contagem às cegas
+  blindCount: boolean
+  // Tolerância da quebra, em centavos. Nula por padrão: toda diferença é
+  // lançada como quebra. Com tolerância, a diferença dentro dela continua
+  // aparecendo, mas não é lançada (FC-7, 30/09/2026)
+  shortageTolerance: number | null
+  // Limite do arredondamento no balcão, em centavos (FC-18): até ele, a
+  // diferença vira desconto na venda, não quebra de caixa. Padrão R$ 1,00
+  roundingLimit: number
   movements: CashMovement[]
+  // O que explica a diferença do fechamento (fora da tolerância é obrigatória)
+  closingNote?: string
 }
 
 const signed = (movement: CashMovement, method?: PaymentMethod) =>
@@ -142,3 +167,6 @@ export const sessionTotal = (session: CashSession) =>
 
 export const saleRemaining = (sale: PendingSale) =>
   Math.max(0, sale.total - sale.paid)
+
+// Limite padrão do arredondamento no balcão (FC-18): R$ 1,00
+export const DEFAULT_ROUNDING_LIMIT = 100

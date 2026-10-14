@@ -153,7 +153,7 @@ export function NfseActionsDropdown({
         throw new Error(result.message || 'Erro ao consultar status')
       }
 
-      toast.success('Consulta realizada com sucesso')
+      toast.success('Consulta realizada')
       onRefetch()
     } catch (error) {
       toast.error(

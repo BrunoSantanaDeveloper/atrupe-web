@@ -10,7 +10,18 @@ import type {
   QuotationItem,
   QuotationLine,
   ItemComposition,
+  ComposedItemSummary,
 } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/composicao/types'
+
+// Actions
+import { resolveComposedItem } from './product-assembly'
+
+/* ---------------------------------------------------------------------------
+ * O item montado na hora (ORC-11): o vendedor monta o fluxo com o mesmo
+ * editor do produto, só naquele item. A linha guarda o retrato da venda
+ * (ORC-10) com o custo; a tela do orçamento recebe só o resumo, sem custo
+ * (ORC-7)
+ * ------------------------------------------------------------------------- */
 
 const newId = (prefix: string) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
@@ -520,6 +531,64 @@ export const removeQuotationItem = async ({
 }
 
 /* ---------------------------------------------------------------------------
+ * O que se acrescenta DENTRO de um item já lançado (ORC-5, 05/10/2026): como
+ * no legado, o item é um recipiente aberto, que recebe processos e
+ * terceirizados depois de lançado. Provisório: fica aqui, por item, até a API
+ * guardar as linhas no item e recalcular o valor dele (backend-pendente.md)
+ * ------------------------------------------------------------------------- */
+
+const itemLines = new Map<string, QuotationLine[]>()
+
+export const getItemLines = async ({
+  quotationId,
+}: {
+  quotationId: string
+}) => {
+  const data: Record<string, QuotationLine[]> = {}
+  itemLines.forEach((lines, key) => {
+    const [quotation, itemId] = key.split('::')
+    if (quotation === quotationId) data[itemId] = lines
+  })
+  return { success: true, data, message: '' }
+}
+
+export const addItemLine = async ({
+  quotationId,
+  itemId,
+  line,
+}: {
+  quotationId: string
+  itemId: string
+  line: Omit<QuotationLine, 'id'>
+}) => {
+  if (!line.name.trim())
+    return { success: false, data: null, message: 'Informe o que acrescentar' }
+  const key = `${quotationId}::${itemId}`
+  itemLines.set(key, [
+    ...(itemLines.get(key) || []),
+    { ...line, id: newId('line') },
+  ])
+  return { success: true, data: null, message: '' }
+}
+
+export const removeItemLine = async ({
+  quotationId,
+  itemId,
+  lineId,
+}: {
+  quotationId: string
+  itemId: string
+  lineId: string
+}) => {
+  const key = `${quotationId}::${itemId}`
+  itemLines.set(
+    key,
+    (itemLines.get(key) || []).filter((line) => line.id !== lineId),
+  )
+  return { success: true, data: null, message: '' }
+}
+
+/* ---------------------------------------------------------------------------
  * Composição do item no orçamento do sistema (IP-36, ORC-3). O item é gravado
  * pela API de sempre; o que o vendedor escolheu na composição fica aqui até a
  * API receber o campo `composition` no item (backend-pendente.md)
@@ -553,3 +622,170 @@ export const getItemCompositions = async ({
   })
   return { success: true, data, message: '' }
 }
+
+type ComposedRecord = ComposedItemSummary & {
+  quotationId: string
+  lines: QuotationLine[]
+}
+
+const composedItems: ComposedRecord[] = []
+
+const num = (value: number) =>
+  value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
+
+const resolveLines = async (
+  draftId: string,
+  measure: { quantity: number; width: number; height: number },
+): Promise<QuotationLine[]> => {
+  const res = await resolveComposedItem({ productId: draftId, measure })
+  if (!res.success || !res.data) return []
+  const resolvedAt = new Date().toISOString()
+  return res.data.map((stage) => ({
+    id: newId('line'),
+    kind: stage.kind,
+    name: stage.name,
+    sector: stage.sector,
+    tags: [
+      `${num(stage.measure.quantity)} un`,
+      stage.measure.width && stage.measure.height
+        ? `${num(stage.measure.width)} x ${num(stage.measure.height)} m`
+        : '',
+    ].filter(Boolean),
+    cost: stage.cost,
+    price: stage.sale,
+    resolvedAt,
+    resolved: stage.resolved.map((resource) => ({
+      ...resource,
+      actualQuantity: null,
+      actualCost: null,
+    })),
+  }))
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const summaryOf = ({ quotationId, lines, ...summary }: ComposedRecord) =>
+  summary
+
+const buildRecord = async (
+  base: Omit<
+    ComposedRecord,
+    'stages' | 'sectors' | 'price' | 'attention' | 'lines'
+  >,
+): Promise<ComposedRecord> => {
+  const lines = await resolveLines(base.draftId, {
+    quantity: base.quantity,
+    width: base.width,
+    height: base.height,
+  })
+  return {
+    ...base,
+    lines,
+    stages: lines.length,
+    sectors: Array.from(new Set(lines.map((line) => line.sector))),
+    price: lines.reduce((sum, line) => sum + line.price, 0),
+    attention: lines.length === 0,
+  }
+}
+
+export const addComposedItem = async ({
+  quotationId,
+  draftId,
+  name,
+  description,
+  quantity,
+  width,
+  height,
+}: {
+  quotationId: string
+  draftId: string
+  name: string
+  description: string
+  quantity: number
+  width: number
+  height: number
+}) => {
+  if (!name.trim()) {
+    return { success: false, data: null, message: 'Informe o nome do item' }
+  }
+  const record = await buildRecord({
+    id: newId('item'),
+    quotationId,
+    draftId,
+    name: name.trim(),
+    description: description.trim(),
+    quantity: Math.max(1, quantity),
+    width,
+    height,
+  })
+  composedItems.push(record)
+  return { success: true, data: summaryOf(record), message: '' }
+}
+
+export const updateComposedItem = async ({
+  quotationId,
+  itemId,
+  name,
+  description,
+  quantity,
+  width,
+  height,
+}: {
+  quotationId: string
+  itemId: string
+  name: string
+  description: string
+  quantity: number
+  width: number
+  height: number
+}) => {
+  const index = composedItems.findIndex(
+    (item) => item.quotationId === quotationId && item.id === itemId,
+  )
+  if (index < 0) {
+    return { success: false, data: null, message: 'Item não encontrado' }
+  }
+  if (!name.trim()) {
+    return { success: false, data: null, message: 'Informe o nome do item' }
+  }
+  const current = composedItems[index]
+  // O retrato é refeito: a venda ainda não aconteceu (AB-4 vale depois)
+  const record = await buildRecord({
+    id: current.id,
+    quotationId,
+    draftId: current.draftId,
+    name: name.trim(),
+    description: description.trim(),
+    quantity: Math.max(1, quantity),
+    width,
+    height,
+  })
+  composedItems[index] = record
+  return { success: true, data: summaryOf(record), message: '' }
+}
+
+export const removeComposedItem = async ({
+  quotationId,
+  itemId,
+}: {
+  quotationId: string
+  itemId: string
+}) => {
+  const index = composedItems.findIndex(
+    (item) => item.quotationId === quotationId && item.id === itemId,
+  )
+  if (index >= 0) composedItems.splice(index, 1)
+  return { success: true, data: null, message: '' }
+}
+
+// O que a tela do orçamento vê: o resumo, sem custo (ORC-7)
+export const getComposedItems = async ({
+  quotationId,
+}: {
+  quotationId: string
+}) => ({
+  success: true,
+  data: composedItems
+    .filter((item) => item.quotationId === quotationId)
+    .map(summaryOf),
+  message: '',
+})

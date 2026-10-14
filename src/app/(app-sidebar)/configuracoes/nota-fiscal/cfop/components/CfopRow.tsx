@@ -14,7 +14,7 @@ import {
 // Icons
 import {
   IconDotsVertical,
-  IconEdit,
+  IconPencil,
   IconTrash,
   IconArrowDown,
   IconArrowUp,
@@ -41,7 +41,7 @@ export function CfopRow({
   cfop,
   onEdit,
   onDelete,
-  isLoading = false,
+  isLoading: _isLoading = false,
 }: CfopRowProps) {
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -79,7 +79,7 @@ export function CfopRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(cfop)}>
-              <IconEdit className="w-4 h-4 mr-2" />
+              <IconPencil className="w-4 h-4 mr-2" />
               Editar
             </DropdownMenuItem>
             <DropdownMenuSeparator />

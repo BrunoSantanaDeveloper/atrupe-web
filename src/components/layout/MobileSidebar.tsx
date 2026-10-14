@@ -20,6 +20,7 @@ import { Dialog } from '@/components/ui/dialog'
 // Components
 import { Avatar } from '../AvatarComponent'
 import { MyProfileDialog } from './MyProfile'
+import { ThemeToggleGroup } from './ThemeToggleGroup'
 
 // Assets
 import favicon from '@public/logo/logo.png'
@@ -143,7 +144,9 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
       return canManageRejectionReasons()
     }
 
-    if (item.path?.includes('/producao')) {
+    // Só a Agenda de entrega depende das abas de entrega: o grupo Produção e
+    // Configurações › Produção têm o Gerenciador, que tem gate próprio
+    if (item.path?.includes('/producao/agenda-de-entrega')) {
       return canManageDeliverySchedule()
     }
 
@@ -258,14 +261,14 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
 
               if (!hasChildren) {
                 return (
-                  <div key={index} className="border-b border-gray-200 py-3">
+                  <div key={index} className="border-b border-gray-60 py-2">
                     <Link
                       href={`${item?.path}${item?.query || ''}` || '#'}
                       onClick={handleLinkClick}
                       className={cn(
-                        'flex items-center justify-between w-full text-left font-medium transition-all hover:no-underline',
+                        'flex h-11 items-center justify-between w-full rounded-lg px-2 text-left font-medium transition-all hover:no-underline',
                         pathname.includes(`${item?.path}`)
-                          ? 'text-brand-600 font-semibold'
+                          ? 'bg-brand-25 text-brand-600 font-semibold'
                           : 'text-gray-600 hover:text-gray-700',
                       )}
                     >
@@ -296,7 +299,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                           variant={
                             isFiscalPending ? 'warningLight' : 'neutralLight'
                           }
-                          className="text-[10px] px-1.5 py-0.5"
+                          className="text-xs px-1.5 py-0.5"
                         >
                           {isFiscalPending ? 'Pendente' : 'Configurar'}
                         </Badge>
@@ -315,8 +318,15 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
               if (!hasPermittedChildren) return null
 
               return (
-                <AccordionItem key={index} value={`${item?.path}`}>
-                  <AccordionTrigger className="py-3 hover:no-underline">
+                <AccordionItem
+                  key={index}
+                  value={`${item?.path}`}
+                  className="border-gray-60 py-2"
+                >
+                  <AccordionTrigger
+                    asHeading={false}
+                    className="h-11 rounded-lg px-2 py-0 hover:no-underline data-[state=open]:bg-brand-25 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600"
+                  >
                     <div className="flex items-center gap-3">
                       <IconComponent
                         icon={item?.icon}
@@ -332,10 +342,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="pl-2">
+                  <AccordionContent className="pt-2">
+                    <ul className="ml-4 space-y-1 border-l border-gray-200 pl-3">
                       {item?.children?.map((navChild, childIndex) => (
-                        <li key={childIndex} className="mb-1">
+                        <li key={childIndex}>
                           <Button
                             asChild
                             type="button"
@@ -344,7 +354,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                               'h-10 w-full justify-between px-2',
                               pathname.includes(`${navChild?.path}`)
                                 ? 'text-brand-600 bg-brand-25 hover:bg-brand-25'
-                                : 'text-gray',
+                                : 'text-gray-500',
                             )}
                             onClick={handleLinkClick}
                           >
@@ -361,13 +371,13 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                                     'size-5',
                                     pathname.includes(`${navChild?.path}`)
                                       ? 'text-brand'
-                                      : navChild?.iconColor || 'text-gray-400',
+                                      : navChild?.iconColor || 'text-gray-500',
                                     navChild?.action ? 'text-brand' : '',
                                   )}
                                 />
                                 <span
                                   className={cn(
-                                    'text-xs font-medium',
+                                    'text-sm font-medium',
                                     navChild?.action &&
                                       'font-semibold text-gray-600',
                                     reviewTextClass(navChild?.review),
@@ -404,6 +414,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                 Perfil
               </span>
             </button>
+          </div>
+          <div className="flex items-center justify-between gap-3 border-b border-gray-200 mt-3 pt-2 pb-3">
+            <span className="text-sm font-semibold text-gray-700">Tema</span>
+            <ThemeToggleGroup />
           </div>
           <div className="border-b border-gray-200 mt-3 pb-2">
             <button

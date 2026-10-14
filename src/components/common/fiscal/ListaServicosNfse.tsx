@@ -197,6 +197,7 @@ export function CodigoServicoCombobox({
           id={id}
           type="button"
           variant="input"
+          size="md"
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
@@ -552,7 +553,7 @@ export function ListaServicosManagerDialog({
                 isLoading={salvando}
                 RightIcon={editandoId ? IconPencil : IconPlus}
               >
-                {editandoId ? 'Salvar alterações' : 'Adicionar'}
+                {editandoId ? 'Salvar' : 'Adicionar'}
               </Button>
             </div>
           </div>

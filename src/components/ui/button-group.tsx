@@ -63,10 +63,10 @@ const buttonGroupItemVariants = cva(
         active: 'text-gray-800 bg-gray-50',
       },
       size: {
-        default: 'h-11',
+        default: 'h-10',
         sm: 'h-9 px-3',
         lg: 'h-14 px-6',
-        icon: 'h-11 w-11 p-3',
+        icon: 'h-10 w-10 p-2.5',
       },
     },
     defaultVariants: {

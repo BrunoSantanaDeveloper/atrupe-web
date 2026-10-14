@@ -49,24 +49,30 @@ import {
   cashDayTotals,
   accountKindLabel,
   type CashDay,
+  type Movement,
   type BankAccount,
 } from '../types'
 
 // Actions
-import { getCashControl } from '@/actions/cash-accounts'
+import { approveMovement, getCashControl } from '@/actions/cash-accounts'
 
 // Third-party
+import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconEye,
   IconPencil,
   IconSearch,
+  IconEyeOff,
   IconPrinter,
   IconArrowBackUp,
   IconCircleCheck,
   IconAlertTriangle,
+  IconSortAscending,
+  IconSortDescending,
 } from '@tabler/icons-react'
 
 // Consts
@@ -108,6 +114,9 @@ export function CashControl(_: SearchParamsType) {
   const isAdmin = !!session?.user?.isAdmin
 
   const [dialog, setDialog] = useState<Dialog>(null)
+  // Os saldos ficam escondidos até alguém pedir, como no Fluxo financeiro:
+  // valor grande à vista na tela é informação para quem passa por ela
+  const [showTotals, setShowTotals] = useState(false)
   // Aba e filtro ficam na URL (design.md §5.1, §8)
   const router = useRouter()
   const params = useSearchParams()
@@ -115,11 +124,9 @@ export function CashControl(_: SearchParamsType) {
   const tab: Tab =
     statusParam === 'OPEN' || statusParam === 'CLOSED' ? statusParam : 'ALL'
   const accountFilter = params.get('conta') || 'all'
-  const setTab = (value: Tab) =>
-    updateFilterParam('status', value === 'ALL' ? 'all' : value, {
-      router,
-      params,
-    })
+  // Ordem do histórico, com o mesmo botão do Fluxo financeiro: do mais novo
+  // para o mais antigo (padrão) ou o contrário, guardada na URL
+  const sort = params.get('sort') === 'asc' ? 'asc' : 'desc'
   const setAccountFilter = (value: string) =>
     updateFilterParam('conta', value, { router, params })
 
@@ -150,7 +157,19 @@ export function CashControl(_: SearchParamsType) {
       (tab === 'ALL' || day.status === tab) &&
       (accountFilter === 'all' || day.accountId === accountFilter),
   )
-  const dates = Array.from(new Set(filtered.map((day) => day.date)))
+  const dates = Array.from(new Set(filtered.map((day) => day.date))).sort(
+    (a, b) => (sort === 'asc' ? a.localeCompare(b) : b.localeCompare(a)),
+  )
+
+  // O caixa principal aprova o que recebe da frente de caixa (4.2)
+  const approve = async (day: CashDay, movement: Movement) => {
+    const res = await approveMovement(day.id, movement.id)
+    if (!res.success) return toast.error(res.message)
+    toast.success('Valor aprovado e somado ao saldo')
+    await refresh()
+  }
+  const awaiting = (day?: CashDay) =>
+    day?.movements.filter((item) => item.awaitingApproval) || []
 
   const dialogDay =
     dialog && 'day' in dialog
@@ -158,7 +177,9 @@ export function CashControl(_: SearchParamsType) {
       : undefined
   const dialogAccount = dialogDay ? accountOf(dialogDay.accountId) : undefined
 
-  const todayCard = (account: BankAccount) => {
+  // Uma linha por conta, com a situação do dia e a ação que ela pede. Os
+  // valores só aparecem com "Mostrar totais"
+  const todayRow = (account: BankAccount) => {
     const day = days.find(
       (item) => item.accountId === account.id && item.date === today,
     )
@@ -166,66 +187,92 @@ export function CashControl(_: SearchParamsType) {
     const totals = day ? cashDayTotals(day) : undefined
 
     return (
-      <Card
+      <TableRow
         key={account.id}
-        className={cn(!account.cashControl && 'bg-gray-50 shadow-none')}
+        className={cn(!account.cashControl && 'bg-gray-25')}
       >
-        <CardContent className="flex h-full flex-col gap-4 p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <AccountIcon icon={account.bankIcon} />
-              <div>
-                <p className="font-semibold text-gray-800">{account.name}</p>
-                <p className="text-xs text-gray">
-                  {accountKindLabel[account.kind]}
-                </p>
-              </div>
-            </div>
-            {!account.cashControl ? (
-              <Badge variant={cashTodayStatusObj.FREE.variant}>
-                {cashTodayStatusObj.FREE.text}
-              </Badge>
-            ) : day ? (
-              <Badge variant={cashControlStatusObj[day.status].variant}>
-                {cashControlStatusObj[day.status].text}
-              </Badge>
-            ) : (
-              <Badge variant={cashTodayStatusObj.NO_DAY.variant}>
-                {cashTodayStatusObj.NO_DAY.text}
-              </Badge>
-            )}
-          </div>
-
-          <div>
-            <p className="text-xs text-gray">Saldo</p>
-            <p
-              className={cn(
-                'text-2xl font-semibold',
-                account.balance < 0 ? 'text-error-600' : 'text-gray-900',
-              )}
-            >
-              {money(account.balance)}
-            </p>
-            <p className="mt-1 text-xs text-gray">
-              {!account.cashControl
-                ? 'Recebe e paga sem abrir caixa'
-                : day?.status === 'OPEN' && totals
-                  ? `Aberto às ${hora(day.openedAt)} · entrou ${money(totals.entries)} · saiu ${money(totals.exits)}`
-                  : day?.status === 'CLOSED'
-                    ? `Fechado às ${hora(day.closedAt)} por ${day.closedBy}`
-                    : blockedBy
-                      ? `O caixa de ${brDate(blockedBy.date)} ainda está aberto`
-                      : 'O caixa de hoje ainda não foi aberto'}
-            </p>
-            {totals && totals.pending !== 0 && (
-              <p className="mt-1 text-xs text-gray">
-                + {money(totals.pending)} previstos
+        <TableCell className="py-2.5">
+          <div className="flex items-center gap-3">
+            <AccountIcon icon={account.bankIcon} />
+            <div>
+              <p className="font-medium text-gray-800">{account.name}</p>
+              <p className="text-xs text-gray">
+                {accountKindLabel[account.kind]}
               </p>
-            )}
+            </div>
           </div>
-
-          <div className="mt-auto flex flex-wrap gap-2">
-            {!account.cashControl ? (
+        </TableCell>
+        <TableCell className="py-2.5">
+          {account.kind === 'CARD' ? (
+            <Badge variant={cashTodayStatusObj.NO_CLOSE.variant}>
+              {cashTodayStatusObj.NO_CLOSE.text}
+            </Badge>
+          ) : !account.cashControl ? (
+            <Badge variant={cashTodayStatusObj.FREE.variant}>
+              {cashTodayStatusObj.FREE.text}
+            </Badge>
+          ) : day ? (
+            <Badge variant={cashControlStatusObj[day.status].variant}>
+              {cashControlStatusObj[day.status].text}
+            </Badge>
+          ) : (
+            <Badge variant={cashTodayStatusObj.NO_DAY.variant}>
+              {cashTodayStatusObj.NO_DAY.text}
+            </Badge>
+          )}
+          <p className="mt-1 text-xs text-gray">
+            {account.kind === 'CARD'
+              ? 'O que a operadora ainda deve, pelo valor cheio. Confere na liquidação'
+              : !account.cashControl
+                ? 'Recebe e paga sem abrir caixa'
+                : awaiting(day).length
+                  ? `${awaiting(day).length === 1 ? '1 valor' : `${awaiting(day).length} valores`} da frente de caixa aguardando aprovação`
+                  : day?.status === 'OPEN'
+                    ? `Aberto às ${hora(day.openedAt)}`
+                    : day?.status === 'CLOSED'
+                      ? `Fechado às ${hora(day.closedAt)} por ${day.closedBy}`
+                      : blockedBy
+                        ? `O caixa de ${brDate(blockedBy.date)} ainda está aberto`
+                        : 'O caixa de hoje ainda não foi aberto'}
+          </p>
+        </TableCell>
+        {showTotals && (
+          <>
+            <TableCell className="py-2.5 text-right text-sm">
+              {day?.status === 'OPEN' && totals ? (
+                <>
+                  <span className="text-success-600">
+                    + {money(totals.entries)}
+                  </span>
+                  <br />
+                  <span className="text-error-600">
+                    − {money(totals.exits)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-gray">-</span>
+              )}
+            </TableCell>
+            <TableCell className="py-2.5 text-right">
+              <p
+                className={cn(
+                  'font-medium',
+                  account.balance < 0 ? 'text-error-600' : 'text-gray-800',
+                )}
+              >
+                {money(account.balance)}
+              </p>
+              {totals && totals.pending !== 0 && (
+                <p className="text-xs text-gray">
+                  + {money(totals.pending)} previstos
+                </p>
+              )}
+            </TableCell>
+          </>
+        )}
+        <TableCell className="py-2.5">
+          <div className="flex justify-end gap-2">
+            {account.kind === 'CARD' ? null : !account.cashControl ? (
               <Button type="button" variant="neutralOutline" size="sm" asChild>
                 <Link href="/configuracoes/financeiro/contas-bancarias">
                   Ligar controle
@@ -233,13 +280,15 @@ export function CashControl(_: SearchParamsType) {
               </Button>
             ) : day?.status === 'OPEN' ? (
               <PermissionGate permissions={['financial:cash_control:edit']}>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => setDialog({ kind: 'close', day })}
-                >
-                  Fechar caixa
-                </Button>
+                {awaiting(day).length > 0 && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={() => setDialog({ kind: 'detail', day })}
+                  >
+                    Aprovar
+                  </Button>
+                )}
                 <Button
                   type="button"
                   variant="neutralOutline"
@@ -247,6 +296,13 @@ export function CashControl(_: SearchParamsType) {
                   onClick={() => setDialog({ kind: 'adjust', day })}
                 >
                   Ajuste
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setDialog({ kind: 'close', day })}
+                >
+                  Fechar caixa
                 </Button>
               </PermissionGate>
             ) : day?.status === 'CLOSED' ? (
@@ -262,9 +318,17 @@ export function CashControl(_: SearchParamsType) {
               <Button
                 type="button"
                 size="sm"
-                onClick={() => setDialog({ kind: 'close', day: blockedBy })}
+                onClick={() =>
+                  setDialog(
+                    awaiting(blockedBy).length
+                      ? { kind: 'detail', day: blockedBy }
+                      : { kind: 'close', day: blockedBy },
+                  )
+                }
               >
-                Fechar {brDate(blockedBy.date)}
+                {awaiting(blockedBy).length
+                  ? `Aprovar e fechar ${brDate(blockedBy.date)}`
+                  : `Fechar ${brDate(blockedBy.date)}`}
               </Button>
             ) : (
               <PermissionGate permissions={['financial:cash_control:create']}>
@@ -280,8 +344,8 @@ export function CashControl(_: SearchParamsType) {
               </PermissionGate>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </TableCell>
+      </TableRow>
     )
   }
 
@@ -298,6 +362,25 @@ export function CashControl(_: SearchParamsType) {
             review="new"
             title="Controle de caixa"
             supportText={`Hoje, ${longDate(today)}`}
+            // As abas do histórico ficam no cabeçalho, com o estado na URL
+            // (design.md §5.1)
+            paramName="status"
+            activeTab={tab === 'ALL' ? 'all' : tab}
+            tabs={[
+              { value: 'all', tab: 'all', label: 'Todos', count: days.length },
+              {
+                value: 'OPEN',
+                tab: 'OPEN',
+                label: 'Abertos',
+                count: days.filter((day) => day.status === 'OPEN').length,
+              },
+              {
+                value: 'CLOSED',
+                tab: 'CLOSED',
+                label: 'Fechados',
+                count: days.filter((day) => day.status === 'CLOSED').length,
+              },
+            ]}
             primaryCta={
               <PermissionGate permissions={['financial:cash_control:create']}>
                 <Button
@@ -309,15 +392,24 @@ export function CashControl(_: SearchParamsType) {
               </PermissionGate>
             }
             secondaryCta={
-              <PermissionGate permissions={['financial:cash_control:create']}>
-                <Button
-                  type="button"
+              <div className="flex items-center gap-3">
+                <PermissionGate permissions={['financial:cash_control:create']}>
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    onClick={() => setDialog({ kind: 'open' })}
+                  >
+                    Abrir caixa de outro dia
+                  </Button>
+                </PermissionGate>
+                <ActionButton
+                  size="iconMd"
                   variant="neutralOutline"
-                  onClick={() => setDialog({ kind: 'open' })}
-                >
-                  Abrir caixa de outro dia
-                </Button>
-              </PermissionGate>
+                  tooltip={showTotals ? 'Ocultar totais' : 'Mostrar totais'}
+                  Icon={showTotals ? IconEyeOff : IconEye}
+                  onClick={() => setShowTotals((current) => !current)}
+                />
+              </div>
             }
           />
 
@@ -336,6 +428,9 @@ export function CashControl(_: SearchParamsType) {
                   </strong>{' '}
                   Enquanto ele não for conferido e fechado, esta conta não abre
                   o dia de hoje. As outras contas não são afetadas.
+                  {awaiting(day).length
+                    ? ' Há valor da frente de caixa aguardando aprovação nele.'
+                    : ''}
                 </p>
               </div>
               <Button
@@ -349,46 +444,65 @@ export function CashControl(_: SearchParamsType) {
             </div>
           ))}
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {accounts.map(todayCard)}
-          </div>
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-[34%]">Conta</TableHead>
+                  <TableHead className="w-full">Hoje</TableHead>
+                  {showTotals && (
+                    <>
+                      <TableHead className="text-right">Movimento</TableHead>
+                      <TableHead numeric>Saldo</TableHead>
+                    </>
+                  )}
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>{accounts.map(todayRow)}</TableBody>
+            </Table>
+          </Card>
 
           <Card>
             <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-4">
-              <div className="flex flex-wrap gap-2">
-                {(
-                  [
-                    ['ALL', 'Todos'],
-                    ['OPEN', 'Abertos'],
-                    ['CLOSED', 'Fechados'],
-                  ] as const
-                ).map(([value, label]) => (
-                  <Button
-                    key={value}
-                    type="button"
-                    variant={tab === value ? 'default' : 'neutralOutline'}
-                    onClick={() => setTab(value)}
-                  >
-                    {label}
-                  </Button>
-                ))}
+              <p className="text-sm text-gray">
+                Histórico dos caixas por dia e por conta. O relatório de cada
+                dia abre na lupa.
+              </p>
+              <div className="flex items-end gap-3">
+                <SelectBasic
+                  name="account-filter"
+                  label="Conta"
+                  className="w-full sm:w-[220px]"
+                  options={[
+                    { value: 'all', label: 'Todas as contas' },
+                    ...accounts
+                      .filter((account) => account.cashControl)
+                      .map((account) => ({
+                        value: account.id,
+                        label: account.name,
+                      })),
+                  ]}
+                  value={accountFilter}
+                  onChange={setAccountFilter}
+                />
+                <ActionButton
+                  size="iconMd"
+                  variant="neutralOutline"
+                  tooltip={
+                    sort === 'asc'
+                      ? 'Ordenação decrescente'
+                      : 'Ordenação crescente'
+                  }
+                  Icon={sort === 'asc' ? IconSortDescending : IconSortAscending}
+                  onClick={() =>
+                    updateFilterParam('sort', sort === 'asc' ? 'desc' : 'asc', {
+                      router,
+                      params,
+                    })
+                  }
+                />
               </div>
-              <SelectBasic
-                name="account-filter"
-                label="Conta"
-                className="w-full sm:w-[220px]"
-                options={[
-                  { value: 'all', label: 'Todas as contas' },
-                  ...accounts
-                    .filter((account) => account.cashControl)
-                    .map((account) => ({
-                      value: account.id,
-                      label: account.name,
-                    })),
-                ]}
-                value={accountFilter}
-                onChange={setAccountFilter}
-              />
             </CardContent>
             <div className="overflow-x-auto">
               <Table>
@@ -399,7 +513,7 @@ export function CashControl(_: SearchParamsType) {
                     <TableHead className="text-right">Entradas</TableHead>
                     <TableHead className="text-right">Saídas</TableHead>
                     <TableHead className="text-right">Retroativo</TableHead>
-                    <TableHead className="text-right">Saldo</TableHead>
+                    <TableHead numeric>Saldo</TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
@@ -456,15 +570,24 @@ export function CashControl(_: SearchParamsType) {
                               <TableCell className="whitespace-nowrap text-right text-gray">
                                 {money(day.opening)}
                               </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-success-700">
+                              <TableCell
+                                numeric
+                                className="whitespace-nowrap text-success-700"
+                              >
                                 {money(totals.entries)}
                               </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-error-600">
+                              <TableCell
+                                numeric
+                                className="whitespace-nowrap text-error-600"
+                              >
                                 {totals.exits
                                   ? `− ${money(totals.exits)}`
                                   : money(0)}
                               </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-gray">
+                              <TableCell
+                                numeric
+                                className="whitespace-nowrap text-gray"
+                              >
                                 {totals.retroactive
                                   ? money(totals.retroactive)
                                   : '—'}
@@ -594,6 +717,7 @@ export function CashControl(_: SearchParamsType) {
             day={dialog?.kind === 'detail' ? dialogDay : undefined}
             account={dialogAccount}
             onOpenChange={() => setDialog(null)}
+            onApprove={(movement) => dialogDay && approve(dialogDay, movement)}
           />
         </div>
       </TooltipProvider>

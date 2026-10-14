@@ -38,7 +38,7 @@ import {
   IconTrash,
   IconPencil,
   IconPrinter,
-  IconCirclePlus,
+  IconPlus,
   IconLayoutGrid,
   IconAlertTriangle,
 } from '@tabler/icons-react'
@@ -173,9 +173,7 @@ export function PayrollItems({ data }: Props) {
           <div className="flex justify-between items-center">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Itens
-              </CardTitle>
+              <CardTitle>Itens</CardTitle>
             </div>
             <div className="flex gap-3 items-center">
               <TooltipProvider>
@@ -322,7 +320,7 @@ export function PayrollItems({ data }: Props) {
             >
               <FeaturedIcon
                 variant={data?.status === 'CLOSED' ? 'neutralLight' : 'light'}
-                Icon={IconCirclePlus}
+                Icon={IconPlus}
                 rounded
               />
               <p className="text-sm text-gray-600 font-medium">

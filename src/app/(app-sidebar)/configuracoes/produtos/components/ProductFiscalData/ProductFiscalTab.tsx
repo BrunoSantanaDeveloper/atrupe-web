@@ -9,7 +9,7 @@
  *
  * Usado em:
  * - ProductFiscalDataDialog (configuração fiscal standalone)
- * - NewProduct.tsx (aba "Dados Fiscais" dentro do modal de produto)
+ * - NewProduct.tsx (aba "Dados fiscais" dentro do modal de produto)
  * - InvoiceItemConfigDialog (configuração fiscal do item da NF)
  */
 
@@ -29,7 +29,7 @@ export function ProductFiscalTab() {
     <div className="space-y-6">
       {/* Item */}
       <div className="space-y-4">
-        <h4 className="font-semibold text-gray-700 text-sm border-b border-gray-100 pb-2">
+        <h4 className="type-body-strong border-b border-gray-100 pb-2">
           Identificação do Item
         </h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -78,9 +78,7 @@ export function ProductFiscalTab() {
 
       {/* ICMS */}
       <div className="space-y-4">
-        <h4 className="font-semibold text-gray-700 text-sm border-b border-gray-100 pb-2">
-          ICMS
-        </h4>
+        <h4 className="type-body-strong border-b border-gray-100 pb-2">ICMS</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormSelect
             name="icmsOrigin"
@@ -160,7 +158,7 @@ export function ProductFiscalTab() {
 
       {/* PIS / COFINS */}
       <div className="space-y-4">
-        <h4 className="font-semibold text-gray-700 text-sm border-b border-gray-100 pb-2">
+        <h4 className="type-body-strong border-b border-gray-100 pb-2">
           PIS / COFINS
         </h4>
         <div className="grid grid-cols-2 gap-4">
@@ -187,9 +185,7 @@ export function ProductFiscalTab() {
 
       {/* IPI */}
       <div className="space-y-4">
-        <h4 className="font-semibold text-gray-700 text-sm border-b border-gray-100 pb-2">
-          IPI
-        </h4>
+        <h4 className="type-body-strong border-b border-gray-100 pb-2">IPI</h4>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormInput
             name="ipiFramework"

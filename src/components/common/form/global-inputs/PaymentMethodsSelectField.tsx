@@ -46,7 +46,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createItemNew } from '@/actions/_cruds'
 
 // Icons
-import { IconCirclePlus } from '@tabler/icons-react'
+import { IconPlus } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -114,7 +114,7 @@ function SelectPaymentMethodCreateField<T extends FieldValues>({
       fieldOnChangeRef.current(newId)
       additionalOnChange?.(newId, newName)
     }
-    toast.success('Forma de pagamento criada com sucesso')
+    toast.success('Forma de pagamento criada')
     setNewMethodName('')
     setCreateDialogOpen(false)
   }
@@ -164,7 +164,7 @@ function SelectPaymentMethodCreateField<T extends FieldValues>({
                   <SelectGroup>
                     <SelectItem value={CREATE_NEW_VALUE}>
                       <span className="flex items-center gap-1.5 text-primary font-medium">
-                        <IconCirclePlus size={14} />
+                        <IconPlus size={14} />
                         Adicionar nova forma
                       </span>
                     </SelectItem>

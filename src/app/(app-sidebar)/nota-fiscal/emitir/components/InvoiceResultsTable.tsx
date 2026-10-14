@@ -779,7 +779,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
           toast.error('Não foi possível cancelar o rascunho')
           return
         }
-        toast.success('Rascunho cancelado com sucesso')
+        toast.success('Rascunho cancelado')
         fetchOrders()
       } catch {
         toast.error('Erro ao cancelar o rascunho')
@@ -1248,10 +1248,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                         route: `/fiscal/nfce/${nfce?.id}/status`,
                                       })
                                       if (result.success) {
-                                        toast.success(
-                                          'Consulta realizada com sucesso',
-                                          { id: 'consult-nfce' },
-                                        )
+                                        toast.success('Consulta realizada', {
+                                          id: 'consult-nfce',
+                                        })
                                         fetchOrders()
                                       } else {
                                         toast.error(

@@ -135,7 +135,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         freshData.corporateName !== watch('general.corporateName')
       ) {
         setValue('general.corporateName', freshData.corporateName)
-        updated.push('Razão Social')
+        updated.push('Razão social')
       }
       if (freshData.phone && freshData.phone !== watch('general.phone')) {
         setValue('general.phone', freshData.phone)

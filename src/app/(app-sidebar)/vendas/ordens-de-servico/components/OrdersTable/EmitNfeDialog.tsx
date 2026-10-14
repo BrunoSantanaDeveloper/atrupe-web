@@ -139,9 +139,7 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
       setEmissionResult(result.data)
 
       if (result.data.status === 'AUTHORIZED') {
-        toast.success(
-          `NF-e ${result.data.numero}/${result.data.serie} emitida com sucesso!`,
-        )
+        toast.success(`NF-e ${result.data.numero}/${result.data.serie} emitida`)
         queryClient.invalidateQueries({ queryKey: ['order-list'] })
         queryClient.invalidateQueries({ queryKey: ['order-data', orderId] })
       } else {

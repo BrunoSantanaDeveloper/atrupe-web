@@ -20,15 +20,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import {
+  MoneyInput,
+  CashCountCheck,
+  needsExplanation,
+} from '../../_components/cash/CashCountCheck'
 
 // Types
-import {
-  COUNT_TOLERANCE,
-  cashDayTotals,
-  type CashDay,
-  type BankAccount,
-} from '../types'
+import { cashDayTotals, type CashDay, type BankAccount } from '../types'
 
 // Actions
 import {
@@ -46,45 +47,23 @@ import { useTransactionCategory } from '@/hooks/queries/useTransactionCategory'
 // Third-party
 import { toast } from 'sonner'
 
+// Icons
+import {
+  type Icon,
+  IconLock,
+  IconLockOpen,
+  IconRestore,
+  IconTrendingUp,
+  IconTrendingDown,
+  IconArrowsExchange,
+} from '@tabler/icons-react'
+
 // Utils
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { formatCurrencyToBrl } from '@/lib/utils'
 
 const money = (value: number) => formatCurrencyToBrl(value)
 const brDate = (iso: string) => iso.split('-').reverse().join('/')
 const today = () => new Date().toISOString().slice(0, 10)
-
-function MoneyInput({
-  id,
-  label,
-  value,
-  onChange,
-  autoFocus,
-}: {
-  id: string
-  label: string
-  value: number
-  onChange: (value: number) => void
-  autoFocus?: boolean
-}) {
-  return (
-    <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        type="number"
-        min={0}
-        step="0.01"
-        autoFocus={autoFocus}
-        startAdornment={<span className="text-sm">R$</span>}
-        value={value ? (value / 100).toFixed(2) : ''}
-        placeholder="0,00"
-        onChange={(event) =>
-          onChange(Math.round(Number(event.target.value || 0) * 100))
-        }
-      />
-    </div>
-  )
-}
 
 type Base = {
   open: boolean
@@ -92,11 +71,15 @@ type Base = {
   onDone: () => void
 }
 
+// O mesmo cabeçalho dos diálogos do Fluxo financeiro e da frente de caixa:
+// ícone destacado, título e descrição
 function Shell({
   open,
   onOpenChange,
   title,
   description,
+  icon,
+  iconVariant = 'neutralOutline',
   children,
   footer,
   wide,
@@ -105,6 +88,8 @@ function Shell({
   onOpenChange: (open: boolean) => void
   title: string
   description?: string
+  icon: Icon
+  iconVariant?: 'neutralOutline' | 'success' | 'error'
   children: React.ReactNode
   footer: React.ReactNode
   wide?: boolean
@@ -113,8 +98,15 @@ function Shell({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={wide ? 'sm:max-w-[620px]' : 'sm:max-w-[480px]'}>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant={iconVariant} Icon={icon} />
+            <div>
+              <DialogTitle>{title}</DialogTitle>
+              {description && (
+                <DialogDescription>{description}</DialogDescription>
+              )}
+            </div>
+          </div>
         </DialogHeader>
         <DialogBody className="space-y-4">{children}</DialogBody>
         <DialogFooter>
@@ -172,6 +164,7 @@ export function OpenDayDialog({
       onOpenChange={onOpenChange}
       title="Abrir caixa"
       description="A abertura é o saldo com que o caixa anterior desta conta fechou."
+      icon={IconLockOpen}
       footer={
         <Button
           type="button"
@@ -277,6 +270,8 @@ export function AdjustmentDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={`Ajuste · ${account.name}`}
+      icon={direction === 'in' ? IconTrendingUp : IconTrendingDown}
+      iconVariant={direction === 'in' ? 'success' : 'error'}
       description={`Caixa de ${brDate(day.date)}. Para corrigir um lançamento, prefira estorná-lo: o ajuste é para o que não tem lançamento de origem.`}
       footer={
         <Button
@@ -289,22 +284,26 @@ export function AdjustmentDialog({
         </Button>
       }
     >
+      {/* O mesmo desenho de "Nova receita" e "Nova despesa" do Fluxo
+          financeiro: o ajuste é uma receita ou uma despesa lançada direto no
+          caixa, com plano de contas (CX-5) */}
       <div className="grid grid-cols-2 gap-2">
-        {(
-          [
-            ['in', 'Entrada'],
-            ['out', 'Saída'],
-          ] as const
-        ).map(([value, label]) => (
-          <Button
-            key={value}
-            type="button"
-            variant={direction === value ? 'default' : 'neutralOutline'}
-            onClick={() => setDirection(value)}
-          >
-            {label}
-          </Button>
-        ))}
+        <Button
+          type="button"
+          variant={direction === 'in' ? 'success' : 'neutralOutline'}
+          LeftIcon={IconTrendingUp}
+          onClick={() => setDirection('in')}
+        >
+          Entrada (receita)
+        </Button>
+        <Button
+          type="button"
+          variant={direction === 'out' ? 'error' : 'neutralOutline'}
+          LeftIcon={IconTrendingDown}
+          onClick={() => setDirection('out')}
+        >
+          Saída (despesa)
+        </Button>
       </div>
       <MoneyInput
         id="adjust-amount"
@@ -363,7 +362,8 @@ export function AdjustmentDialog({
 }
 
 /* ---------------------------------------------------------------------------
- * Fechar — a gaveta se conta às cegas; o banco confere o extrato (CX-3)
+ * Fechar — a gaveta se conta (conferência simples ou às cegas, conforme o
+ * cadastro da conta); o banco confere o extrato (CX-3, 4.1)
  * ------------------------------------------------------------------------- */
 
 export function CloseDayDialog({
@@ -378,24 +378,26 @@ export function CloseDayDialog({
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
 
+  const isCash = account?.kind === 'CASH'
+  // Às cegas só na conta Caixa que pediu isso no cadastro; o padrão é a
+  // conferência simples, com o esperado à vista e o contado já preenchido
+  const blind = isCash && !!account?.blindCount
+  const expected = day ? cashDayTotals(day).balance : 0
+
   useEffect(() => {
     if (open) {
-      setStep('inform')
-      setInformed(0)
+      setStep(blind ? 'inform' : 'check')
+      setInformed(blind ? 0 : expected)
       setNote('')
     }
-  }, [open])
+  }, [open, blind, expected])
 
   if (!day || !account) return null
 
-  const isCash = account.kind === 'CASH'
-  const expected = cashDayTotals(day).balance
-  const difference = informed - expected
-  // Na gaveta, centavos dentro da tolerância não pedem explicação; no banco,
+  const tolerance = isCash ? account.shortageTolerance : null
+  // Sem tolerância, toda diferença pede explicação e vira quebra; no banco,
   // o extrato tem de bater ou ser explicado
-  const needsNote = isCash
-    ? Math.abs(difference) > COUNT_TOLERANCE
-    : difference !== 0
+  const needsNote = needsExplanation(expected, informed, tolerance)
 
   const save = async () => {
     setSaving(true)
@@ -407,24 +409,33 @@ export function CloseDayDialog({
     onOpenChange(false)
   }
 
+  const informedField = (
+    <MoneyInput
+      id="close-informed"
+      label={isCash ? 'Total contado na gaveta' : 'Saldo do extrato'}
+      value={informed}
+      onChange={setInformed}
+      autoFocus
+    />
+  )
+
   return (
     <Shell
       open={open}
       onOpenChange={onOpenChange}
       title={`Fechar ${account.name} · ${brDate(day.date)}`}
+      icon={IconLock}
       description={
         isCash
-          ? 'Conte o dinheiro e informe o total. O valor esperado aparece só depois — vendo antes, a contagem tende a bater sempre.'
+          ? blind
+            ? 'Conte o dinheiro e informe o total. O valor esperado aparece só depois da contagem.'
+            : 'Confira o dinheiro da gaveta: confirme o valor contado ou corrija se for diferente.'
           : 'Informe o saldo do extrato no fim do dia. Se não bater com o sistema, explique a diferença.'
       }
       wide
       footer={
         step === 'inform' ? (
-          <Button
-            type="button"
-            disabled={!informed && informed !== 0}
-            onClick={() => setStep('check')}
-          >
+          <Button type="button" onClick={() => setStep('check')}>
             Conferir
           </Button>
         ) : (
@@ -440,58 +451,17 @@ export function CloseDayDialog({
       }
     >
       {step === 'inform' ? (
-        <MoneyInput
-          id="close-informed"
-          label={isCash ? 'Total contado na gaveta' : 'Saldo do extrato'}
-          value={informed}
-          onChange={setInformed}
-          autoFocus
-        />
+        informedField
       ) : (
         <>
-          <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray">
-                {isCash ? 'Você contou' : 'Extrato'}
-              </span>
-              <span className="font-medium">{money(informed)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray">O sistema esperava</span>
-              <span className="font-medium">{money(expected)}</span>
-            </div>
-            <div className="flex justify-between border-t border-gray-200 pt-2">
-              <span className="font-medium">
-                {difference === 0
-                  ? 'Bateu'
-                  : difference < 0
-                    ? 'Falta'
-                    : 'Sobra'}
-              </span>
-              <span
-                className={cn(
-                  'text-lg font-semibold',
-                  difference === 0
-                    ? 'text-success-700'
-                    : difference < 0
-                      ? 'text-error-600'
-                      : 'text-warning-700',
-                )}
-              >
-                {money(Math.abs(difference))}
-              </span>
-            </div>
-          </div>
-          {difference !== 0 && (
-            <p className="text-sm text-gray">
-              {isCash
-                ? 'A diferença vai para "Quebra de caixa", no nome de quem operou o caixa — não vira ajuste escondido.'
-                : 'A diferença fica registrada no fechamento, com a explicação.'}
-              {isCash && !needsNote
-                ? ' Está dentro da tolerância, então não precisa explicar.'
-                : ''}
-            </p>
-          )}
+          {!blind && informedField}
+          {/* A mesma conferência da frente de caixa (4.1, FC-7) */}
+          <CashCountCheck
+            expected={expected}
+            counted={informed}
+            tolerance={tolerance}
+            kind={isCash ? 'cash' : 'bank'}
+          />
           <div className="space-y-2">
             <Label htmlFor="close-note">
               {needsNote ? 'O que explica a diferença?' : 'Observação'}
@@ -502,14 +472,16 @@ export function CloseDayDialog({
               onChange={(event) => setNote(event.target.value)}
             />
           </div>
-          <Button
-            type="button"
-            variant="link"
-            className="px-0"
-            onClick={() => setStep('inform')}
-          >
-            {isCash ? 'Contar de novo' : 'Corrigir o saldo informado'}
-          </Button>
+          {blind && (
+            <Button
+              type="button"
+              variant="link"
+              className="px-0"
+              onClick={() => setStep('inform')}
+            >
+              Contar de novo
+            </Button>
+          )}
         </>
       )}
     </Shell>
@@ -551,6 +523,7 @@ export function ReopenDayDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={`Reabrir ${account.name} · ${brDate(day.date)}`}
+      icon={IconRestore}
       description="O dia volta a aceitar lançamentos e a conferência feita no fechamento é desfeita: ele precisará ser conferido e fechado de novo."
       footer={
         <Button
@@ -640,6 +613,7 @@ export function TransferDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Transferência entre contas"
+      icon={IconArrowsExchange}
       description="Sai de uma conta e entra na outra no mesmo lançamento. Não é receita nem despesa: não mexe no resultado."
       wide
       footer={

@@ -117,9 +117,7 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconAdjustments} />
               <div>
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Campos adicionais
-                </CardTitle>
+                <CardTitle>Campos adicionais</CardTitle>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Indicadores da Reforma Tributária, tributos aproximados e INSS
                   — opcionais
@@ -150,7 +148,7 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                       )
                     }
                   />
-                  <p className="text-[11px] text-gray-500">
+                  <p className="text-xs text-gray-500">
                     Tabela Anexo VII (6 dígitos)
                   </p>
                 </div>
@@ -225,7 +223,7 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[11px] text-gray-500">
+                  <p className="text-xs text-gray-500">
                     Também usado em serviços sobre bens imóveis (tpOper)
                   </p>
                 </div>
@@ -251,7 +249,7 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-[11px] text-gray-500">
+                  <p className="text-xs text-gray-500">
                     Só quando o tomador é administração pública direta,
                     autarquia ou fundação (tpEnteGov)
                   </p>

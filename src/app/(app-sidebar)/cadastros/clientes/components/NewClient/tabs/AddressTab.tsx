@@ -3,7 +3,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { Button } from '@/components/ui/button'
 import { COUNTRIES } from '@/consts/country-codes'
-import { IconCirclePlus, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import { NewClientFormType } from '../schema'
 import { useCheckZipcode } from '@/hooks/queries/useCheckZipcode'
 import { useEffect } from 'react'
@@ -45,9 +45,7 @@ export function AddressTab() {
         return (
           <div key={field.id} className="relative space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-md text-gray-700 font-medium">
-                Endereço {index + 1}
-              </h3>
+              <h3 className="type-card-title">Endereço {index + 1}</h3>
               {index > 0 && (
                 <Button
                   type="button"
@@ -135,7 +133,7 @@ export function AddressTab() {
       })}
       <div className="w-full flex justify-center">
         <Button type="button" variant="ghost" onClick={handleAddAddress}>
-          <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+          <FeaturedIcon variant="light" Icon={IconPlus} rounded />
           Adicionar endereço
         </Button>
       </div>

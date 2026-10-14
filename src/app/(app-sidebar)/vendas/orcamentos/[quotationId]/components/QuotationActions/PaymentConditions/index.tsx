@@ -43,12 +43,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import {
-  IconCoin,
-  IconPencil,
-  IconCircleCheck,
-  IconProgressCheck,
-} from '@tabler/icons-react'
+import { IconCoin, IconPencil, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -79,7 +74,7 @@ export function PaymentConditionsDialog({
   quotationData,
   onFinish,
   actionTitle = 'Concluir orçamento',
-  actionIcon = IconProgressCheck,
+  actionIcon = IconCircleCheck,
   actionIconVariant = 'lightBlueBorderedLight',
   submitLabel,
 }: Props) {
@@ -295,7 +290,7 @@ export function PaymentConditionsDialog({
 
               <FormBrlInput
                 name="commission.totalCommission"
-                label="Valor Comissão"
+                label="Valor da comissão"
                 startAdornment={<>R$</>}
                 width="flex-[1_0_200px]"
                 disabled

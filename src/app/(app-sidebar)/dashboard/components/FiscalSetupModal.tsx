@@ -140,7 +140,7 @@ export function FiscalSetupModal() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setCertificateFile(acceptedFiles[0])
-      toast.success('Certificado carregado!')
+      toast.success('Certificado carregado')
     }
   }, [])
 
@@ -228,7 +228,7 @@ export function FiscalSetupModal() {
         }
         if (data.numero) form.setValue('numero', data.numero)
         if (data.complemento) form.setValue('complemento', data.complemento)
-        toast.success('Dados da empresa preenchidos!', { id: 'cnpj-fetch' })
+        toast.success('Dados da empresa preenchidos', { id: 'cnpj-fetch' })
       } else {
         toast.dismiss('cnpj-fetch')
       }
@@ -277,7 +277,7 @@ export function FiscalSetupModal() {
         if (rd.status === 'ACTIVE') {
           setFormStatus('success')
           setResultMessage(rd.message)
-          toast.success('Módulo fiscal ativado!')
+          toast.success('Módulo fiscal ativado')
           await queryClient.invalidateQueries()
           setTimeout(() => {
             setOpen(false)
@@ -408,9 +408,7 @@ export function FiscalSetupModal() {
                     <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
                       <IconCheck className="h-8 w-8 text-green-600" />
                     </div>
-                    <h3 className="text-lg font-semibold">
-                      Módulo fiscal ativado!
-                    </h3>
+                    <h3 className="type-card-title">Módulo fiscal ativado!</h3>
                     <p className="text-sm text-muted-foreground">
                       {resultMessage}
                     </p>
@@ -423,7 +421,7 @@ export function FiscalSetupModal() {
                     <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
                       <IconAlertTriangle className="h-8 w-8 text-amber-600" />
                     </div>
-                    <h3 className="text-lg font-semibold">Dados recebidos!</h3>
+                    <h3 className="type-card-title">Dados recebidos!</h3>
                     <p className="text-sm text-muted-foreground">
                       {resultMessage}
                     </p>
@@ -454,9 +452,7 @@ export function FiscalSetupModal() {
                   >
                     {/* Dados da Empresa */}
                     <div className="space-y-3">
-                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Dados da Empresa
-                      </h3>
+                      <h3 className="type-body-strong">Dados da Empresa</h3>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
                           <Label htmlFor="m-cnpj">CNPJ *</Label>
@@ -497,16 +493,16 @@ export function FiscalSetupModal() {
                         <Label htmlFor="m-razao">Razão Social *</Label>
                         <Input
                           id="m-razao"
-                          placeholder="Razão Social"
+                          placeholder="Razão social"
                           {...form.register('razaoSocial', { required: true })}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <Label htmlFor="m-fantasia">Nome Fantasia</Label>
+                          <Label htmlFor="m-fantasia">Nome fantasia</Label>
                           <Input
                             id="m-fantasia"
-                            placeholder="Nome Fantasia"
+                            placeholder="Nome fantasia"
                             {...form.register('nomeFantasia')}
                           />
                         </div>
@@ -551,9 +547,7 @@ export function FiscalSetupModal() {
 
                     {/* Endereço */}
                     <div className="space-y-3">
-                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        Endereço
-                      </h3>
+                      <h3 className="type-body-strong">Endereço</h3>
                       <div className="grid grid-cols-3 gap-3">
                         <div className="space-y-1">
                           <Label htmlFor="m-cep">CEP</Label>
@@ -615,7 +609,7 @@ export function FiscalSetupModal() {
 
                     {/* Certificado */}
                     <div className="space-y-3">
-                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      <h3 className="type-body-strong">
                         Certificado Digital (opcional)
                       </h3>
                       <div

@@ -80,7 +80,7 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn('space-y-2', className)} {...props} />
+      <div ref={ref} className={cn('space-y-1.5', className)} {...props} />
     </FormItemContext.Provider>
   )
 })
@@ -90,17 +90,12 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
+  // O rótulo não muda de cor no erro: borda e mensagem já sinalizam.
   const field = useFormField()
-  const error = field?.error
   const formItemId = field?.formItemId
 
   return (
-    <Label
-      ref={ref}
-      className={cn(error && 'text-error dark:text-error-900', className)}
-      htmlFor={formItemId}
-      {...props}
-    />
+    <Label ref={ref} className={className} htmlFor={formItemId} {...props} />
   )
 })
 FormLabel.displayName = 'FormLabel'
@@ -142,7 +137,7 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-sm text-gray dark:text-gray-400', className)}
+      className={cn('type-helper', className)}
       {...props}
     />
   )
@@ -166,10 +161,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn(
-        'text-sm font-medium text-error dark:text-error-900 form-message',
-        className,
-      )}
+      className={cn('type-helper text-error form-message', className)}
       {...props}
     >
       {body === 'Required' ? 'Campo obrigatório' : body}

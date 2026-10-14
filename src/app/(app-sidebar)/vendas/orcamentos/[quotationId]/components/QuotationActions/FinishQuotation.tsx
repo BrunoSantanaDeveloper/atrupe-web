@@ -21,13 +21,15 @@ import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQu
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
-import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Type
 import { QuotationType } from '@/types/sales/quotation'
 
 // Action
 import { createItemNew } from '@/actions/_cruds'
+import { getComposedItems } from '@/actions/quotation-composition'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -35,10 +37,9 @@ import { cn } from '@/lib/utils'
 // Icons
 import {
   IconLoader2,
-  IconArrowRight,
   IconCircleCheck,
   IconAlertTriangle,
-  IconProgressCheck,
+  IconPrinter,
 } from '@tabler/icons-react'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 import { PaymentConditionsDialog } from './PaymentConditions'
@@ -66,6 +67,16 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   const queryClient = useQueryClient()
 
+  // Item de composição sem nenhuma etapa impede concluir (ORC-11, MS-12)
+  const { data: composedRes } = useQuery({
+    queryKey: ['composed-items', data?.id],
+    queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  // Item sem etapa não bloqueia mais a conclusão (MS-12, 05/10/2026): é a
+  // saída do dia a dia, e o aviso fica no item
+  const composedAttention = !!composedRes?.data?.some((item) => item.attention)
+
   // Se tiver pendente de configurar as condições de pagamento, abrir o modal direto antes de concluir
   const hasInstallments = data?.paymentConditions?.installmentQty > 0
   const hasPaymentCondition = !!data?.paymentConditions?.paymentCondition?.id
@@ -89,6 +100,12 @@ export function FinishQuotation({ data, canFinish }: Props) {
   }
 
   const handleFinish = async () => {
+    if (composedAttention) {
+      toast.warning(
+        'Há um item sem etapas. O orçamento segue, mas monte a composição depois para o custo e a produção.',
+      )
+    }
+
     setLoading(true)
 
     setOpen(true)
@@ -130,7 +147,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
         canFinishDirectly ? (
           <AlertDialog open={open} onOpenChange={setOpen}>
             <CustomButton
-              icon={IconProgressCheck}
+              icon={IconCircleCheck}
               title="Concluir orçamento"
               iconVariant="lightBlueBorderedLight"
               onClick={handleFinish}
@@ -187,7 +204,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
             <AlertDialogCancel onClick={handleClose}>Fechar</AlertDialogCancel>
             <Button
               type="button"
-              RightIcon={IconArrowRight}
+              RightIcon={IconPrinter}
               onClick={() => setOpenPrint(true)}
             >
               Imprimir

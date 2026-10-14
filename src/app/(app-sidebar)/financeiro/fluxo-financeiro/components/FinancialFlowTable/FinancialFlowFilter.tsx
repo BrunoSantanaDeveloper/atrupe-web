@@ -131,8 +131,8 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
         )}
         <SelectBasic
           name="status"
-          label="Situação"
-          placeholder="Selecione uma situação"
+          label="Status"
+          placeholder="Selecione o status"
           className="w-full sm:w-[220px]"
           options={[
             { value: 'all', label: 'Todas' },

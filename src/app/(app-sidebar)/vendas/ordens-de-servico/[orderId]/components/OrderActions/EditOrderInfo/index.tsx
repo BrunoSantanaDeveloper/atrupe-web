@@ -31,7 +31,7 @@ import { ClientAddressSelectField } from '@/components/common/form/global-inputs
 import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'
 
 // Icons
-import { IconPencil, IconCircleCheck, IconUserEdit } from '@tabler/icons-react'
+import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -218,7 +218,7 @@ export function EditOrderInfoDialog({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconUserEdit} />
+                <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
                 <span>Editar informações da OS</span>
               </div>
             </DialogTitle>
@@ -345,7 +345,7 @@ export function EditOrderInfoDialog({
               isLoading={form.formState.isSubmitting}
               RightIcon={IconCircleCheck}
             >
-              Salvar alterações
+              Salvar
             </Button>
           </DialogFooter>
         </DialogContent>

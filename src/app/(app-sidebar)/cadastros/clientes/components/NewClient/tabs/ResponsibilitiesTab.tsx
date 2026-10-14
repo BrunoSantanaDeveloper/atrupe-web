@@ -2,7 +2,7 @@ import { useFormContext, useFieldArray } from 'react-hook-form'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { Button } from '@/components/ui/button'
-import { IconCirclePlus, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import { NewClientFormType } from '../schema'
 import { MaskPhoneNumber } from '@/lib/utils'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -31,9 +31,7 @@ export function ResponsibilitiesTab() {
       {fields.map((field, index) => (
         <div key={field.id} className="relative space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-md text-gray-700 font-medium">
-              Responsável {index + 1}
-            </h3>
+            <h3 className="type-card-title">Responsável {index + 1}</h3>
             {index > 0 && (
               <Button
                 type="button"
@@ -107,7 +105,7 @@ export function ResponsibilitiesTab() {
       ))}
       <div className="w-full flex justify-center">
         <Button type="button" variant="ghost" onClick={handleAddResponsible}>
-          <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+          <FeaturedIcon variant="light" Icon={IconPlus} rounded />
           Adicionar responsável
         </Button>
       </div>

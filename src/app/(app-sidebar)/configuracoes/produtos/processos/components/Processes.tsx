@@ -5,8 +5,7 @@
 // (acabamento, serviço de máquina, primário) sai do que o processo tem.
 
 // React / Next
-import { Fragment } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { Fragment, useState } from 'react'
 
 // UI
 import {
@@ -22,8 +21,8 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 // Components
-import { Topbar } from '@/components/common/Topbar'
-import { NewProcessModal } from './NewProcess'
+import { Topbar, type TabNavType } from '@/components/common/Topbar'
+import { ProcessDialog, NewProcessTriggerButton } from './NewProcess'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -33,43 +32,26 @@ import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { getProcessList, updateProcessMeta } from '@/actions/product-assembly'
+import { getProcessList } from '@/actions/product-assembly'
 
 // Hooks / Store / Consts
-import { useAlertDialog } from '@/store/useAlertDialog'
 import { resourceKindObj } from '@/consts/processes'
-import { updateFilterParam } from '@/lib/filter-utils'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 import { quantityModeObj } from '../../[id]/composicao/assembly'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import {
-  IconSearch,
-  IconRestore,
-  IconBan,
-  IconListCheck,
-} from '@tabler/icons-react'
+import { IconStack2, IconListCheck } from '@tabler/icons-react'
 
 // Utils
-import { cn } from '@/lib/utils'
-
-type ProcessRow = NonNullable<
-  Awaited<ReturnType<typeof getProcessList>>['data']
->[number]
-
-const tabs = [
-  { value: 'ativos', label: 'Ativos' },
-  { value: 'inativos', label: 'Inativos' },
-]
 
 export function Processes({ searchParams }: SearchParamsType) {
-  const router = useRouter()
-  const params = useSearchParams()
-  const queryClient = useQueryClient()
-  const alertDialog = useAlertDialog()
-
+  // Os mesmos diálogos do produto: criar, editar e, depois de criar, reabrir
+  // na Composição
+  const [openDialog, setOpenDialog] = useState('')
+  const [selectedId, setSelectedId] = useState('')
   const { data, isLoading } = useQuery({
     queryKey: ['process-list'],
     queryFn: () => getProcessList(),
@@ -82,35 +64,21 @@ export function Processes({ searchParams }: SearchParamsType) {
   )
   const sectors = Array.from(new Set(processes.map((item) => item.sector)))
 
-  // Processo usado em produto é inativado, não excluído (regra geral)
-  const toggleActive = (process: ProcessRow) =>
-    alertDialog.open({
-      title: process.active
-        ? `Inativar ${process.name}?`
-        : `Reativar ${process.name}?`,
-      description: process.active
-        ? `Ele deixa de aparecer para escolher nas composições.${
-            process.usedIn
-              ? ` Os ${process.usedIn} produtos que já o usam continuam como estão.`
-              : ''
-          }`
-        : 'Ele volta a aparecer nas listas de escolha.',
-      confirmLabel: process.active ? 'Inativar' : 'Reativar',
-      cancelLabel: 'Cancelar',
-      confirmVariant: process.active ? 'error' : 'primary',
-      onConfirm: async () => {
-        const res = await updateProcessMeta({
-          processId: process.id,
-          values: { active: !process.active },
-        })
-        if (!res.success) throw new Error(res.message)
-        await queryClient.invalidateQueries({ queryKey: ['process-list'] })
-      },
-      toastMsg: {
-        success: process.active ? 'Processo inativado' : 'Processo reativado',
-        error: 'Não foi possível alterar o processo',
-      },
-    })
+  // As abas no Topbar, como em Produtos
+  const tabs: TabNavType[] = [
+    {
+      value: 'ativos',
+      tab: 'ativos',
+      label: 'Ativos',
+      count: all.filter((item) => item.active).length,
+    },
+    {
+      value: 'inativos',
+      tab: 'inativos',
+      label: 'Inativos',
+      count: all.filter((item) => !item.active).length,
+    },
+  ]
 
   return (
     <TooltipProvider>
@@ -118,53 +86,18 @@ export function Processes({ searchParams }: SearchParamsType) {
         <Topbar
           review="new"
           title="Processos"
+          tabs={tabs}
+          activeTab={status}
+          paramName="status"
           supportText="Etapas produtivas de cada setor, com os recursos e o tempo que usam"
           primaryCta={
             <PermissionGate permissions={['product_settings:products:edit']}>
-              <NewProcessModal
-                onCreated={(id) =>
-                  router.push(`/configuracoes/produtos/processos/${id}`)
-                }
+              <NewProcessTriggerButton
+                onOpenChange={() => setOpenDialog('new-process')}
               />
             </PermissionGate>
           }
         />
-
-        <div className="flex gap-2">
-          {tabs.map((tab) => {
-            const count = all.filter((item) =>
-              tab.value === 'ativos' ? item.active : !item.active,
-            ).length
-            return (
-              <button
-                key={tab.value}
-                type="button"
-                onClick={() =>
-                  updateFilterParam(
-                    'status',
-                    tab.value === 'ativos' ? 'all' : tab.value,
-                    { router, params },
-                  )
-                }
-                className={cn(
-                  'flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium',
-                  status === tab.value
-                    ? 'border-brand-600 text-gray-900'
-                    : 'border-transparent text-gray hover:text-gray-700',
-                )}
-              >
-                {tab.label}
-                <Badge
-                  variant={
-                    status === tab.value ? 'successLight' : 'neutralLight'
-                  }
-                >
-                  {count}
-                </Badge>
-              </button>
-            )
-          })}
-        </div>
 
         <Card>
           {isLoading ? (
@@ -239,7 +172,10 @@ export function Processes({ searchParams }: SearchParamsType) {
                                   <div className="flex flex-wrap gap-1">
                                     {process.kinds.map((kind) => (
                                       <Badge key={kind} variant="neutralLight">
-                                        {resourceKindObj[kind]}
+                                        <ResourceKindLabel
+                                          kind={kind}
+                                          label={resourceKindObj[kind]}
+                                        />
                                       </Badge>
                                     ))}
                                   </div>
@@ -259,9 +195,11 @@ export function Processes({ searchParams }: SearchParamsType) {
                               </TableCell>
                               <TableCell>
                                 <div className="flex justify-end gap-1">
+                                  {/* Como na linha do produto: a página
+                                      da composição e o lápis do diálogo */}
                                   <ActionButton
-                                    Icon={IconSearch}
-                                    tooltip={`Abrir ${process.name}`}
+                                    Icon={IconStack2}
+                                    tooltip={`Composição de ${process.name}`}
                                     link={`/configuracoes/produtos/processos/${process.id}`}
                                   />
                                   <PermissionGate
@@ -269,21 +207,12 @@ export function Processes({ searchParams }: SearchParamsType) {
                                       'product_settings:products:edit',
                                     ]}
                                   >
-                                    <ActionButton
-                                      Icon={
-                                        process.active ? IconBan : IconRestore
-                                      }
-                                      variant={
-                                        process.active
-                                          ? 'errorGhost'
-                                          : 'neutralGhost'
-                                      }
-                                      tooltip={
-                                        process.active
-                                          ? `Inativar ${process.name}`
-                                          : `Reativar ${process.name}`
-                                      }
-                                      onClick={() => toggleActive(process)}
+                                    <NewProcessTriggerButton
+                                      editMode
+                                      onOpenChange={() => {
+                                        setSelectedId(process.id)
+                                        setOpenDialog('edit-process')
+                                      }}
                                     />
                                   </PermissionGate>
                                 </div>
@@ -298,12 +227,38 @@ export function Processes({ searchParams }: SearchParamsType) {
               <CardFooter className="text-sm text-gray">
                 {processes.length}{' '}
                 {processes.length === 1 ? 'processo' : 'processos'} · o produto
-                copia o processo ao incluí-lo, e pode ajustar a cópia
+                acompanha o processo e pode ajustar só para ele
               </CardFooter>
             </>
           )}
         </Card>
       </div>
+
+      <ProcessDialog
+        open={openDialog === 'new-process'}
+        onOpenChange={() => setOpenDialog('')}
+        onCreated={(id) => {
+          // Criou, reabre na Composição para montar as linhas (CP-16)
+          setTimeout(() => {
+            setSelectedId(id)
+            setOpenDialog('compose-process')
+          }, 300)
+        }}
+      />
+      <ProcessDialog
+        open={openDialog === 'edit-process' || openDialog === 'compose-process'}
+        editMode
+        processId={selectedId}
+        initialTab={
+          openDialog === 'compose-process' ? 'composition' : 'general'
+        }
+        onOpenChange={(open) => {
+          if (!open) {
+            setOpenDialog('')
+            setSelectedId('')
+          }
+        }}
+      />
     </TooltipProvider>
   )
 }

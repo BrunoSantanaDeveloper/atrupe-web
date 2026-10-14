@@ -39,11 +39,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import {
-  IconCopyPlus,
-  IconArrowRight,
-  IconCircleCheck,
-} from '@tabler/icons-react'
+import { IconCopy, IconArrowRight, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -137,16 +133,12 @@ export function DuplicateQuotationButton({
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <ActionButton
-            Icon={IconCopyPlus}
-            tooltip={tooltip}
-            disabled={disabled}
-          />
+          <ActionButton Icon={IconCopy} tooltip={tooltip} disabled={disabled} />
         </DialogTrigger>
         <DialogContent className="sm:max-w-[695px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCopyPlus} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
               <DialogTitle>Duplicar orçamento</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>

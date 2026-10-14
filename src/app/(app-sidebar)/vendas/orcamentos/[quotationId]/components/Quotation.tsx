@@ -168,7 +168,7 @@ export function Quotation({ id }: Props) {
                 variant: 'neutralLight',
               }
             }
-            label={data?.quickSale ? 'Venda Rápida' : ''}
+            label={data?.quickSale ? 'Venda rápida' : ''}
           />
           <Card className="w-full">
             <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
@@ -225,7 +225,7 @@ export function Quotation({ id }: Props) {
               variant: 'neutralLight',
             }
           }
-          label={data?.quickSale ? 'Venda Rápida' : ''}
+          label={data?.quickSale ? 'Venda rápida' : ''}
         />
         <div className="space-y-3">
           <QuotationActions data={data} />

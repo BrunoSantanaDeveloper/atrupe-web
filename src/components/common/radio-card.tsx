@@ -44,9 +44,9 @@ export const RadioCard = React.forwardRef<
         className={cn(
           'group/card relative flex cursor-pointer rounded-lg border p-4 shadow-sm transition-all duration-200',
           // Default styling
-          'border-[#EAECF0] bg-white hover:bg-gray-50',
+          'border-gray-200 bg-white hover:bg-gray-50',
           // Selected styling using arbitrary group selection on Radix's state attributes
-          'has-[[data-state=checked]]:border-[#099260] has-[[data-state=checked]]:bg-[#D2F9E3]',
+          'has-[[data-state=checked]]:border-brand-500 has-[[data-state=checked]]:bg-brand-50',
           // Disabled styling
           'has-[input:disabled]:opacity-50 has-[input:disabled]:cursor-not-allowed',
           // Layout structure

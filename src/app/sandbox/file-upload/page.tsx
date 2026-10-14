@@ -89,17 +89,17 @@ export default function FileUploadSandboxPage() {
     <div className="min-h-screen bg-gray-50 py-12 pb-32">
       <div className="max-w-4xl mx-auto px-6 space-y-12">
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             File Uploader — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Catálogo completo de variações do Dropzone e File Cards.
           </p>
         </div>
 
         {/* INTERACTIVE */}
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Componente Interativo (Real-time Simulation)
           </h2>
           <div className="w-full max-w-[500px]">
@@ -118,8 +118,8 @@ export default function FileUploadSandboxPage() {
         </section>
 
         {/* STATIC STATES - NORMAL */}
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
             Estados Estáticos Fixos
           </h2>
 

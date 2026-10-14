@@ -9,8 +9,16 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
+
+// Components
+import {
+  RateInput,
+  parseDecimal,
+  formatPercent,
+  parseCentsInput,
+  formatCentsInput,
+} from '@/components/common/RateInput'
 
 // Types
 import type { DistributionSector } from '../../types'
@@ -25,6 +33,13 @@ interface Props {
   administrativeCost: number
   onChange: (id: string, percentage: number) => void
   disabled?: boolean
+}
+
+// Percentual digitado fica com duas casas (design.md §6.8)
+const parsePercent = (text: string) => {
+  const value = parseDecimal(text)
+
+  return value === null ? null : Math.round(value * 100) / 100
 }
 
 // Sem custo mostra `-`; valor não calculado nunca vira R$ 0,00 (design.md §7)
@@ -49,17 +64,25 @@ export function DistributionData({
     return sector.directCost + received
   }
 
+  // O valor digitado vira o percentual exato, para o setor receber o que foi
+  // arredondado à mão (design.md §6.8)
+  const handleValue = (id: string, cents: number) =>
+    onChange(id, administrativeCost ? (cents / administrativeCost) * 100 : 0)
+
   return (
-    <Table className="min-w-[760px]">
+    <Table className="min-w-[860px]">
       <TableHeader>
         <TableRow className="bg-gray-50">
-          <TableHead className="w-[28%] min-w-[180px]">
+          <TableHead className="w-[24%] min-w-[180px]">
             Setores produtivos
           </TableHead>
-          <TableHead className="w-[30%] min-w-[220px]">Quanto recebe</TableHead>
-          <TableHead className="w-[14%] text-right">Custo direto</TableHead>
-          <TableHead className="w-[14%] text-right">Custo recebido</TableHead>
-          <TableHead className="w-[14%] text-right">Custo total</TableHead>
+          <TableHead className="w-[46%] min-w-[400px]">Quanto recebe</TableHead>
+          <TableHead numeric className="w-[15%]">
+            Custo direto
+          </TableHead>
+          <TableHead numeric className="w-[15%]">
+            Custo total
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -72,7 +95,7 @@ export function DistributionData({
               <TableCell>
                 <div className="flex items-center gap-3">
                   <Slider
-                    className="w-full max-w-[160px]"
+                    className="w-full max-w-[140px]"
                     min={0}
                     max={100}
                     step={1}
@@ -81,30 +104,30 @@ export function DistributionData({
                     aria-label={`Quanto recebe — ${sector.name}`}
                     onValueChange={([value]) => onChange(sector.id, value)}
                   />
-                  <Input
-                    type="number"
-                    min={0}
-                    max={100}
-                    className="h-10 w-[92px]"
-                    value={String(percentage)}
+                  <RateInput
+                    className="h-10 w-[104px] shrink-0"
+                    value={percentage}
+                    format={formatPercent}
+                    parse={parsePercent}
+                    onCommit={(value) => onChange(sector.id, value)}
                     disabled={disabled}
                     endAdornment={<span className="text-sm">%</span>}
                     aria-label={`Quanto recebe em porcentagem — ${sector.name}`}
-                    onChange={(event) =>
-                      onChange(sector.id, Number(event.target.value || 0))
-                    }
+                  />
+                  <RateInput
+                    className="h-10 w-[148px] shrink-0"
+                    value={receivedBy(sector)}
+                    format={formatCentsInput}
+                    parse={parseCentsInput}
+                    onCommit={(cents) => handleValue(sector.id, cents)}
+                    disabled={disabled || !administrativeCost}
+                    startAdornment={<span className="text-sm">R$</span>}
+                    aria-label={`Quanto recebe em reais — ${sector.name}`}
                   />
                 </div>
               </TableCell>
-              <TableCell className="text-right">
-                {formatValue(sector.directCost)}
-              </TableCell>
-              <TableCell className="text-right">
-                {percentage === 0
-                  ? '-'
-                  : formatCurrencyToBrl(receivedBy(sector))}
-              </TableCell>
-              <TableCell className="text-right font-semibold">
+              <TableCell numeric>{formatValue(sector.directCost)}</TableCell>
+              <TableCell numeric className="font-semibold">
                 {formatValue(totalOf(sector))}
               </TableCell>
             </TableRow>

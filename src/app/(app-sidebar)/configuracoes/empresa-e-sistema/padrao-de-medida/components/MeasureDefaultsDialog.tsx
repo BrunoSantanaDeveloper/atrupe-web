@@ -113,7 +113,7 @@ export function MeasureDefaultsDialog() {
         }),
       ])
 
-      toast.success('Padrões de medida atualizados com sucesso!')
+      toast.success('Padrões de medida atualizados')
       setOpen(false)
     } catch (error) {
       console.error('Erro ao salvar padrões:', error)

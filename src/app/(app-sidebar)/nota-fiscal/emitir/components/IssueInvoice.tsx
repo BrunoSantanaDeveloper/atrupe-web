@@ -136,7 +136,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
         <div className="space-y-5 h-full flex flex-col">
           <FiscalModulePendingBanner />
           <Topbar
-            title="Emissão de Nota Fiscal"
+            title="Emissão de nota fiscal"
             primaryCta={
               <div className="flex items-center gap-3">
                 <div className="hidden flex-wrap gap-2 xl:flex">
@@ -152,7 +152,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                 </div>
                 <ExportXmlButton />
                 <Button LeftIcon={IconFilePlus} onClick={handleOpenModal}>
-                  Emitir Nota Avulsa
+                  Emitir nota avulsa
                 </Button>
               </div>
             }

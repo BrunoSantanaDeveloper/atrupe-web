@@ -104,6 +104,126 @@ bun dev
 
 A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
+## 💻 Rodando em outro computador
+
+Checklist para continuar o trabalho numa máquina nova. O que está no Git é o
+código e a documentação; o que **não** está e precisa ser copiado à mão são
+as credenciais (`.env.local`) e o navegador do Playwright.
+
+### Repositórios e branches
+
+Desde 06/10/2026 o código e as regras ficam em **dois repositórios** da
+organização [Atrupe-Sistemas](https://github.com/Atrupe-Sistemas), dona dos dois:
+
+| Repositório | O que tem | Quem acessa |
+|---|---|---|
+| [`atrupe-front`](https://github.com/Atrupe-Sistemas/atrupe-front) | o código do sistema (este) | o Maicol e os parceiros de desenvolvimento e design |
+| [`atrupe-regras`](https://github.com/Atrupe-Sistemas/atrupe-regras) | as regras de negócio, análises, decisões e prompts (antiga pasta `openspec/`) | só o Maicol |
+
+No computador do Maicol, o `atrupe-regras` é clonado **dentro** do
+`atrupe-front`, na pasta `openspec/`, que o Git do front ignora
+(`.git/info/exclude`). Assim os caminhos `openspec/...` citados no código e
+nos documentos continuam valendo, e as regras nunca entram no repositório do
+front. Quem não tem acesso ao `atrupe-regras` trabalha só com o front.
+
+| Remoto do front | Onde | Para quê |
+|---|---|---|
+| `origin` | `github.com/Atrupe-Sistemas/atrupe-front` | onde o trabalho é commitado e enviado |
+| `upstream` | `github.com/BrunoSantanaDeveloper/atrupe-web` (produção) | só leitura; o push está desativado de propósito |
+
+O repositório anterior, `Maicol-Atrupe/Atrupe-OpenSpec`, guardava os dois
+juntos e fica como arquivo, sem uso.
+
+Branches, do mais antigo ao mais novo (cada um nasce do anterior; os dois
+repositórios têm os mesmos nomes):
+
+1. `base-de-custos-rateios-2026-09-29` — base de custos e rateios
+2. `orcamento-fluxo-2026-10-01` — fluxo de etapas do orçamento (FL-1..FL-13)
+3. `revisao-layout-2026-10-03` — **branch atual de trabalho**: revisão de
+   layout, materiais, variações, orçamento. Revisado pelo
+   [PR #1](https://github.com/Atrupe-Sistemas/atrupe-front/pull/1) para o
+   branch 2.
+4. `processos-2026-10-06` — processos iguais a produtos
+   ([PR #2](https://github.com/Atrupe-Sistemas/atrupe-front/pull/2)); dele
+   saem `orcamento-2026-10-06` (PR #3) e `gerenciador-2026-10-06` (PR #4).
+
+Nunca trabalhe direto na `main` do fork nem na `main` do upstream.
+
+### Passo a passo
+
+```bash
+# 1. Clonar o front e apontar o upstream (só leitura)
+git clone -b revisao-layout-2026-10-03 https://github.com/Atrupe-Sistemas/atrupe-front.git
+cd atrupe-front
+git remote add upstream https://github.com/BrunoSantanaDeveloper/atrupe-web.git
+git remote set-url --push upstream ENVIO-DESATIVADO-repositorio-de-producao
+
+# 2. Só para quem tem acesso às regras: clonar dentro, na pasta openspec,
+#    e fazer o Git do front ignorá-la nesta máquina
+git clone -b revisao-layout-2026-10-03 https://github.com/Atrupe-Sistemas/atrupe-regras.git openspec
+echo "openspec/" >> .git/info/exclude
+#    Ao trocar de branch no front, troque para o mesmo nome no openspec:
+#    git -C openspec checkout <branch>
+
+# 3. Node e dependências (a referência é Node 26 e npm 11; Node 18+ funciona)
+#    Com nvm: nvm install 26 && nvm use 26
+npm ci          # instala exatamente o que está no package-lock.json
+
+# 4. Variáveis de ambiente
+cp .env.example .env.local
+#    Depois COPIE do computador antigo os valores que não estão no exemplo:
+#    AUTH_SECRET, E2E_USER_EMAIL/PASSWORD, E2E_ADMIN_EMAIL/PASSWORD,
+#    LEGACY_USER/PASSWORD. O .env.local nunca vai para o Git.
+
+# 5. Navegador do Playwright (para as capturas e os testes)
+npx playwright install chromium
+
+# 6. Subir
+npm run dev     # http://localhost:3000
+```
+
+### Conferindo que está tudo certo
+
+- `npx tsc --noEmit -p .` só pode acusar os erros de imagens `.png` ausentes,
+  que já existem na base.
+- `npx eslint <arquivo>` nos arquivos que você mexer; o husky roda o
+  `lint-staged` em todo commit.
+- Entre no sistema com a conta `E2E_USER_EMAIL` (empresa de teste, LITE na
+  API). O menu lateral só mostra os módulos do PRO/ELITE/FULL se
+  `NEXT_PUBLIC_DEV_FEATURES` estiver preenchida, e o plano exibido vem de
+  `DEV_PLAN_NAME`.
+- Vitrines para conferir telas sem depender da API: `/sandbox/fluxo` (fluxo
+  de etapas e modal Composição) e `/sandbox/orcamento` (itens do orçamento
+  com um orçamento de mentira).
+
+### O que é provisório e vive só na memória do servidor
+
+Enquanto o backend não tem os endpoints (lista em
+[`openspec/analise/backend-pendente.md`](openspec/analise/backend-pendente.md)),
+o PRO e parte do LITE leem **dados de exemplo em memória** em
+`src/actions/*.ts`: materiais, composição, variações, itens montados no
+orçamento e o que foi acrescentado dentro de um item. Tudo isso **some quando
+o `npm run dev` reinicia** e não é compartilhado entre computadores.
+
+### Trabalhando com o Claude Code
+
+A memória do assistente (preferências, histórico das decisões com o Maicol,
+fornecedores) fica fora do repositório, em
+`~/.claude/projects/<pasta-do-projeto>/memory/` do computador antigo. Para
+continuar com o mesmo contexto na máquina nova, copie essa pasta para o mesmo
+caminho relativo. As permissões locais do Claude ficam em
+`.claude/settings.local.json`, que também não vai para o Git.
+
+As regras de negócio e as decisões do produto estão todas no repositório
+[`atrupe-regras`](https://github.com/Atrupe-Sistemas/atrupe-regras), clonado em
+`openspec/`: é a fonte de verdade, independente do computador. Commits nas
+regras são feitos e enviados de dentro da pasta `openspec/`, que é um
+repositório Git próprio.
+
+**Sessões em nuvem do Claude Code** (claude.ai/code): selecione os **dois**
+repositórios na sessão. O app do Claude no GitHub precisa estar instalado na
+organização Atrupe-Sistemas, com acesso aos dois.
+
 ## 📁 Estrutura do Projeto (deprecated)
 
 ```

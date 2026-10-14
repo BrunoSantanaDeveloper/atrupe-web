@@ -379,7 +379,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       }
 
       setPreviewOpen(false)
-      toast.success('NFC-e avulsa emitida com sucesso!')
+      toast.success('NFC-e avulsa emitida')
       router.push(
         linkedOrderId
           ? `/nota-fiscal/emitir?tab=gestao&highlight=${result.data?.id}`
@@ -436,7 +436,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               </Button>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-xl font-semibold text-gray-900">
+                  <h1 className="type-page-title">
                     Nota Fiscal Avulsa - NFC-e
                   </h1>
                   <Badge variant="blueLight" className="ml-2">
@@ -538,9 +538,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
                 <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
                 <div className="flex-1">
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Consumidor (Opcional)
-                  </CardTitle>
+                  <CardTitle>Consumidor (Opcional)</CardTitle>
                 </div>
               </CardHeader>
 
@@ -599,9 +597,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
                 <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
                 <div className="flex-1">
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Informações Complementares
-                  </CardTitle>
+                  <CardTitle>Informações Complementares</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="p-6">

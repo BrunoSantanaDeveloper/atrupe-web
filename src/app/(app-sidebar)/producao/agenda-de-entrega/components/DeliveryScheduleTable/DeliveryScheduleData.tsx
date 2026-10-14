@@ -25,6 +25,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TableGroupRow,
 } from '@/components/ui/table'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -58,9 +59,8 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import {
   IconSearch,
   IconPrinter,
-  IconMoneybag,
-  IconMessage,
   IconRefreshDot,
+  IconMessage,
   IconCircleCheck,
   IconQuestionMark,
   IconCalendarRepeat,
@@ -207,14 +207,9 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
               <TableBody>
                 {deliveryScheduleArray.map((group) => (
                   <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={6}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {formatToWeekDate(group?.date)}
-                      </TableCell>
-                    </TableRow>
+                    <TableGroupRow>
+                      {formatToWeekDate(group?.date)}
+                    </TableGroupRow>
                     {group?.deliveries?.length
                       ? group?.deliveries?.map((deliverySchedule) => {
                           const link = `/vendas/ordens-de-servico/${deliverySchedule?.order?.id}`
@@ -353,7 +348,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       >
                                         <ActionButton
                                           variant="neutralLight"
-                                          Icon={IconMoneybag}
+                                          Icon={IconRefreshDot}
                                           badge="errorLight"
                                           tooltip="Faturar"
                                           onClick={() => {

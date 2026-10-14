@@ -61,9 +61,7 @@ export function ProductionSheet({ id }: { id: string }) {
       <div className="mx-auto max-w-[820px] rounded-xl border border-gray-200 bg-white p-8 text-sm print:max-w-none print:border-0 print:p-0">
         <div className="flex items-start justify-between gap-6 border-b border-gray-300 pb-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray">
-              Ficha de produção
-            </p>
+            <p className="type-eyebrow">Ficha de produção</p>
             <p className="text-xl font-semibold text-gray-900">
               Ordem {project.number}
             </p>
@@ -96,7 +94,7 @@ export function ProductionSheet({ id }: { id: string }) {
                     task.baseTaskId && 'ml-6 border-l-2 border-gray-300 pl-3',
                   )}
                 >
-                  <p className="font-semibold uppercase text-gray-800">
+                  <p className="type-eyebrow">
                     {task.sector} – {task.stageName}
                     <span className="ml-2 font-mono text-xs font-normal text-gray">
                       #{task.code}

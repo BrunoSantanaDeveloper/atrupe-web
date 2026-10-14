@@ -1,5 +1,5 @@
 // React
-import { Fragment, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 // UI
@@ -19,12 +19,6 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -39,6 +33,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { QuotationItemsModal } from '../../components/QuotationItems/QuotationItemsModal'
+import { QuotationComposeModal } from '../../components/QuotationItems/QuotationComposeModal'
 import { QuotationProdDetailModal } from '../../components/QuotationItems/QuotationProdDetailModal'
 import { QuotationCategorySelectorModal } from '../../components/QuotationItems/QuotationCategorySelectorModal'
 
@@ -46,14 +41,14 @@ import { QuotationCategorySelectorModal } from '../../components/QuotationItems/
 import {
   IconSearch,
   IconCopy,
-  IconCoin,
+  IconCurrencyReal,
+  IconChevronRight,
   IconPhoto,
-  IconTrashX,
+  IconTrash,
   IconPencil,
   IconMessage,
-  IconCirclePlus,
+  IconPlus,
   IconLayoutGrid,
-  IconCornerDownRight,
 } from '@tabler/icons-react'
 
 // Type
@@ -69,20 +64,28 @@ import { useQuotation } from '@/contexts/quotationContext'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 import {
   calculateTotalQuantity,
-  calculateDisplayUnitValue,
   calculateItemDisplayUnitValue,
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 
 // Actions
 import { createItem } from '@/actions/_cruds'
-import { getItemCompositions } from '@/actions/quotation-composition'
+import {
+  getItemLines,
+  removeItemLine,
+  getComposedItems,
+  getItemCompositions,
+  removeComposedItem,
+} from '@/actions/quotation-composition'
+import { AddToItem } from './AddToItem'
 import {
   CompositionReport,
   type ReportTarget,
 } from '../composicao/components/CompositionReport'
+import type { ComposedItemSummary } from '../composicao/types'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 interface Props {
   data: QuotationType
@@ -128,6 +131,65 @@ export function QuotationItems({ data }: Props) {
     compositionsRes?.data?.[item.id] ||
     compositionsRes?.data?.[item.product?.originalProductId]
 
+  // Os itens montados na hora (ORC-11) ficam no mock até a API guardar o
+  // item sem produto. Chegam sem custo (ORC-7)
+  const alertDialog = useAlertDialog()
+  const [composeTarget, setComposeTarget] =
+    useState<ComposedItemSummary | null>(null)
+  const { data: composedRes } = useQuery({
+    queryKey: ['composed-items', data?.id],
+    queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  const composed = composedRes?.data || []
+
+  // O que foi acrescentado dentro de cada item (ORC-5). Provisório, no mock,
+  // até a API guardar as linhas no item (backend-pendente.md)
+  const { data: linesRes } = useQuery({
+    queryKey: ['quotation-item-lines', data?.id],
+    queryFn: () => getItemLines({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  const linesOf = (item: QuotationItemType) => linesRes?.data?.[item.id] || []
+  const [addingTo, setAddingTo] = useState<string | null>(null)
+  const removeLine = (item: QuotationItemType, lineId: string, name: string) =>
+    alertDialog.open({
+      title: `Retirar ${name}?`,
+      description: `Sai de ${item.description}.`,
+      confirmLabel: 'Retirar',
+      cancelLabel: 'Cancelar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await removeItemLine({
+          quotationId: String(data?.id),
+          itemId: item.id,
+          lineId,
+        })
+        if (!res.success) throw new Error(res.message)
+        queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
+      },
+      toastMsg: { success: 'Retirado do item', error: 'Erro ao retirar' },
+    })
+
+  const removeComposed = (item: ComposedItemSummary) =>
+    alertDialog.open({
+      title: `Excluir ${item.name}?`,
+      description:
+        'O item sai do orçamento. Esta ação não poderá ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await removeComposedItem({
+          quotationId: String(data?.id),
+          itemId: item.id,
+        })
+        if (!res.success) throw new Error(res.message)
+        queryClient.invalidateQueries({ queryKey: ['composed-items'] })
+      },
+      toastMsg: { success: 'Item excluído', error: 'Erro ao excluir o item' },
+    })
+
   // A API guarda as medidas em milímetros; o relatório calcula em metros
   const reportTarget = (item: QuotationItemType): ReportTarget => {
     const first = item.product?.compositions?.[0]
@@ -171,451 +233,498 @@ export function QuotationItems({ data }: Props) {
         <CardHeader>
           <div className="flex gap-3 items-center">
             <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
-            <CardTitle className="text-gray-700 font-semibold text-base">
-              Itens
-            </CardTitle>
+            <CardTitle>Itens</CardTitle>
             <Badge variant="neutralLight" className="mt-1">
-              {items?.length}
+              {(items?.length || 0) + composed.length}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="pb-0">
-          {items?.length ? (
+          {items?.length || composed.length ? (
             <>
-              <Accordion
-                type="multiple"
-                value={accordionValue}
-                onValueChange={setAccordionValue}
-              >
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="min-w-[300px]">
-                        Referência
-                      </TableHead>
-                      <TableHead>Qtd. Item</TableHead>
-                      <TableHead>Detalhamento</TableHead>
-                      <TableHead>Qtd. Total</TableHead>
-                      <PermissionGate permissions={['values:values:view']}>
-                        <TableHead>Valor un.</TableHead>
-                        <TableHead>Desconto</TableHead>
-                        <TableHead>Valor Final</TableHead>
-                      </PermissionGate>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  {items?.map((item, index) => {
-                    const isComposite = item.product.compositions.length > 1
-
-                    // Renderização para produtos simples (apenas 1 composição)
-                    if (
-                      !isComposite &&
-                      item.product.compositions.length === 1
-                    ) {
-                      const composition = item.product.compositions[0]
-
-                      return (
-                        <TableBody
-                          key={item?.id + index}
-                          className="[&_tr:last-child]:border-b"
-                        >
-                          {/* Linha única para produtos simples - dados da composição diretamente */}
-                          <TableRow className="border-b">
-                            <TableCell className="font-medium pl-14 flex items-center gap-4 py-6 text-sm">
-                              {item?.description}
-                            </TableCell>
-                            <TableCell className="py-4 text-sm text-gray">
-                              {item.product.quantity}
-                            </TableCell>
-                            <TableCell className="py-4 text-sm text-gray">
-                              {generateFormattedQuantityDetails(composition)}
-                            </TableCell>
-                            <TableCell className="py-4 text-sm text-gray text-nowrap">
-                              {
-                                calculateTotalQuantity(
-                                  item.product.quantity,
-                                  composition,
-                                ).formatted
-                              }
-                            </TableCell>
-                            <PermissionGate
-                              permissions={['values:values:view']}
-                            >
-                              <TableCell className="py-4 text-sm text-gray">
-                                {formatCurrencyToBrl(
-                                  calculateItemDisplayUnitValue(
-                                    item,
-                                    composition,
-                                  ),
-                                )}
-                              </TableCell>
-                              <TableCell className="text-warning-600 text-nowrap py-4">
-                                -
-                                {formatCurrencyToBrl(
-                                  Math.max(
-                                    0,
-                                    item?.totalValue - item?.finalValue,
-                                  ),
-                                )}
-                              </TableCell>
-                              <TableCell className="py-4 text-sm text-gray">
-                                {formatCurrencyToBrl(item?.finalValue)}
-                              </TableCell>
-                            </PermissionGate>
-                            <TableCell className="py-4">
-                              <div className="flex justify-end gap-1">
-                                <TooltipProvider>
-                                  {compositionOf(item) && (
-                                    <FeatureGate
-                                      features={[
-                                        FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={IconSearch}
-                                        tooltip="Ver a composição completa"
-                                        onClick={() =>
-                                          setReport(reportTarget(item))
-                                        }
-                                      />
-                                    </FeatureGate>
-                                  )}
-                                  <PermissionGate
-                                    permissions={['sale:quotation:edit']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconMessage}
-                                      tooltip="Observações"
-                                      onClick={() => {
-                                        setOpenDialog('notes')
-                                        setRowData(item)
-                                      }}
-                                      badge={
-                                        item?.notes ? 'warningLight' : undefined
-                                      }
-                                      disabled={actionDisabled('notes', status)}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:view']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconPhoto}
-                                      tooltip="Imagem"
-                                      onClick={() => {
-                                        setOpenDialog('image')
-                                        setRowData(item)
-                                      }}
-                                      disabled={actionDisabled('image', status)}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:create']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconCopy}
-                                      tooltip="Duplicar item"
-                                      onClick={() => handleDuplicateItem(item)}
-                                      disabled={actionDisabled(
-                                        'duplicate',
-                                        status,
-                                      )}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:edit']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Editar item"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        openChangeModal(
-                                          true,
-                                          'productDetailEdit',
-                                        )
-                                      }}
-                                      disabled={actionDisabled('edit', status)}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={[
-                                      'sale:quotation:edit',
-                                      'values:values:view',
-                                    ]}
-                                    requireAll
-                                  >
-                                    <ActionButton
-                                      Icon={IconCoin}
-                                      tooltip="Valores"
-                                      onClick={() => {
-                                        setOpenDialog('values')
-                                        setRowData(item)
-                                      }}
-                                      disabled={actionDisabled(
-                                        'values',
-                                        status,
-                                      )}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:delete']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconTrashX}
-                                      tooltip="Excluir item"
-                                      onClick={() => {
-                                        setOpenDialog('delete')
-                                        setRowData(item)
-                                      }}
-                                      disabled={actionDisabled(
-                                        'delete',
-                                        status,
-                                      )}
-                                    />
-                                  </PermissionGate>
-                                </TooltipProvider>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      )
-                    }
-
-                    // Renderização para produtos compostos
-                    return (
-                      <AccordionItem
-                        asChild
-                        key={item?.id + index}
-                        value={item?.id + index}
-                      >
-                        <TableBody className="[&_tr:last-child]:border-b">
-                          <TableRow
-                            className={cn(
-                              accordionValue?.includes(item?.id + index)
-                                ? 'bg-gray-100'
-                                : 'border-0',
-                            )}
-                          >
-                            <TableCell>
-                              <AccordionTrigger className="flex-row-reverse justify-end px-1 [&>svg]:text-gray [&>svg]:size-5 gap-3">
-                                {item?.description || '-'}
-                              </AccordionTrigger>
-                            </TableCell>
-                            <TableCell className="text-sm text-gray">
-                              {item?.product?.quantity || 1}
-                            </TableCell>
-                            <TableCell className="text-sm text-gray">
-                              -
-                            </TableCell>
-                            <TableCell className="text-sm text-gray">
-                              {`${item?.product?.quantity || 1} un`}
-                            </TableCell>
-                            <PermissionGate
-                              permissions={['values:values:view']}
-                            >
-                              <TableCell className="text-sm text-gray">
-                                {formatCurrencyToBrl(
-                                  item?.totalValue /
-                                    (item?.product?.quantity || 1),
-                                )}
-                              </TableCell>
-                              <TableCell className="text-warning-600 text-nowrap">
-                                -
-                                {formatCurrencyToBrl(
-                                  Math.max(
-                                    0,
-                                    item?.totalValue - item?.finalValue,
-                                  ),
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray">
-                                {formatCurrencyToBrl(item?.finalValue)}
-                              </TableCell>
-                            </PermissionGate>
-                            <TableCell>
-                              <div className="flex justify-end gap-1">
-                                <TooltipProvider>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:edit']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconMessage}
-                                      tooltip="Observações"
-                                      onClick={() => {
-                                        setOpenDialog('notes')
-                                        setRowData(item)
-                                      }}
-                                      badge={
-                                        item?.notes ? 'warningLight' : undefined
-                                      }
-                                      disabled={actionDisabled('notes', status)}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:view']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconPhoto}
-                                      tooltip="Imagem"
-                                      onClick={() => {
-                                        setOpenDialog('image')
-                                        setRowData(item)
-                                      }}
-                                      disabled={actionDisabled('image', status)}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:create']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconCopy}
-                                      tooltip="Duplicar item"
-                                      onClick={() => handleDuplicateItem(item)}
-                                      disabled={actionDisabled(
-                                        'duplicate',
-                                        status,
-                                      )}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:edit']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Editar item"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        openChangeModal(
-                                          true,
-                                          'productDetailEdit',
-                                        )
-                                      }}
-                                      disabled={actionDisabled('edit', status)}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={[
-                                      'sale:quotation:edit',
-                                      'values:values:view',
-                                    ]}
-                                    requireAll
-                                  >
-                                    <ActionButton
-                                      Icon={IconCoin}
-                                      tooltip="Valores"
-                                      onClick={() => {
-                                        setOpenDialog('values')
-                                        setRowData(item)
-                                      }}
-                                      disabled={actionDisabled(
-                                        'values',
-                                        status,
-                                      )}
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={['sale:quotation:delete']}
-                                  >
-                                    <ActionButton
-                                      Icon={IconTrashX}
-                                      tooltip="Excluir item"
-                                      onClick={() => {
-                                        setOpenDialog('delete')
-                                        setRowData(item)
-                                      }}
-                                      disabled={actionDisabled(
-                                        'delete',
-                                        status,
-                                      )}
-                                    />
-                                  </PermissionGate>
-                                </TooltipProvider>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-
-                          {item?.product?.compositions?.length
-                            ? item?.product?.compositions?.map(
-                                (composition, index) => (
-                                  <Fragment key={composition?.id}>
-                                    <TableRow
-                                      className={cn(
-                                        item?.product?.compositions?.length ===
-                                          index + 1
-                                          ? 'border-b'
-                                          : 'border-0',
-                                        'bg-gray-50 ',
-                                      )}
-                                    >
-                                      <TableCell className="pl-14 py-0">
-                                        <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
-                                          <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
-                                          {composition?.name}
-                                        </AccordionContent>
-                                      </TableCell>
-                                      <TableCell className="py-0 text-sm text-gray">
-                                        <AccordionContent className="py-4">
-                                          {item.product.quantity}
-                                        </AccordionContent>
-                                      </TableCell>
-                                      <TableCell className="py-0 text-sm text-gray">
-                                        <AccordionContent className="py-4">
-                                          {generateFormattedQuantityDetails(
-                                            composition,
-                                          )}
-                                        </AccordionContent>
-                                      </TableCell>
-                                      <TableCell className="py-0 text-sm text-gray">
-                                        <AccordionContent className="py-4">
-                                          {
-                                            calculateTotalQuantity(
-                                              item.product.quantity,
-                                              composition,
-                                            ).formatted
-                                          }
-                                        </AccordionContent>
-                                      </TableCell>
-                                      <PermissionGate
-                                        permissions={['values:values:view']}
-                                      >
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            {formatCurrencyToBrl(
-                                              calculateDisplayUnitValue(
-                                                item.product.quantity,
-                                                composition,
-                                              ),
-                                            )}
-                                          </AccordionContent>
-                                        </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            -
-                                          </AccordionContent>
-                                        </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            {formatCurrencyToBrl(
-                                              composition?.totalValue,
-                                            )}
-                                          </AccordionContent>
-                                        </TableCell>
-                                      </PermissionGate>
-                                      <TableCell className="py-0 text-sm text-gray">
-                                        <AccordionContent className="py-4"></AccordionContent>
-                                      </TableCell>
-                                    </TableRow>
-                                  </Fragment>
-                                ),
-                              )
-                            : null}
-                        </TableBody>
-                      </AccordionItem>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="min-w-[300px]">Referência</TableHead>
+                    <TableHead>Qtd. Item</TableHead>
+                    <TableHead>Detalhamento</TableHead>
+                    <TableHead>Qtd. Total</TableHead>
+                    <PermissionGate permissions={['values:values:view']}>
+                      <TableHead>Valor un.</TableHead>
+                      <TableHead>Desconto</TableHead>
+                      <TableHead>Valor final</TableHead>
+                    </PermissionGate>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                {/* Todo item abre (05/10/2026, levantamento do legado):
+                      fechado, a linha tem só editar, valores e excluir;
+                      aberto, mostra as partes com o valor de cada uma, as
+                      escolhas da venda e as ações de apoio (observações,
+                      imagem, duplicar) */}
+                {items?.map((item, index) => {
+                  const key = item?.id + index
+                  const open = !!accordionValue?.includes(key)
+                  const parts = item.product?.compositions || []
+                  const single = parts.length === 1 ? parts[0] : null
+                  const chosen = compositionOf(item)
+                  const added = linesOf(item)
+                  const addedTotal = added.reduce(
+                    (sum, line) => sum + line.price,
+                    0,
+                  )
+                  const discount = Math.max(
+                    0,
+                    item?.totalValue - item?.finalValue,
+                  )
+                  const toggle = () =>
+                    setAccordionValue((current = []) =>
+                      current.includes(key)
+                        ? current.filter((value) => value !== key)
+                        : [...current, key],
                     )
-                  })}
-                </Table>
-              </Accordion>
+
+                  return (
+                    <TableBody key={key} className="[&_tr:last-child]:border-b">
+                      <TableRow
+                        className={cn(open ? 'bg-gray-50' : 'border-b')}
+                      >
+                        <TableCell className="py-4 text-sm font-medium">
+                          <button
+                            type="button"
+                            onClick={toggle}
+                            aria-expanded={open}
+                            className="flex items-center gap-3 text-left"
+                          >
+                            <IconChevronRight
+                              className={cn(
+                                'size-5 shrink-0 text-gray transition-transform',
+                                open && 'rotate-90',
+                              )}
+                              aria-hidden="true"
+                            />
+                            <span>{item?.description || '-'}</span>
+                            {item?.notes ? (
+                              <IconMessage
+                                className="size-4 shrink-0 text-warning-600"
+                                aria-label="Tem observações"
+                              />
+                            ) : null}
+                          </button>
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray">
+                          {item.product?.quantity || 1}
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray">
+                          {single
+                            ? generateFormattedQuantityDetails(single)
+                            : `${parts.length} partes`}
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray text-nowrap">
+                          {single
+                            ? calculateTotalQuantity(
+                                item.product.quantity,
+                                single,
+                              ).formatted
+                            : `${item?.product?.quantity || 1} un`}
+                        </TableCell>
+                        <PermissionGate permissions={['values:values:view']}>
+                          <TableCell className="py-4 text-sm text-gray">
+                            {formatCurrencyToBrl(
+                              single
+                                ? calculateItemDisplayUnitValue(item, single)
+                                : item?.totalValue /
+                                    (item?.product?.quantity || 1),
+                            )}
+                          </TableCell>
+                          <TableCell className="py-4 text-warning-600 text-nowrap">
+                            {discount > 0
+                              ? `-${formatCurrencyToBrl(discount)}`
+                              : '-'}
+                          </TableCell>
+                          <TableCell className="py-4 text-sm text-gray">
+                            {formatCurrencyToBrl(item?.finalValue)}
+                            {addedTotal > 0 && (
+                              <span className="block text-xs text-brand-700">
+                                + {formatCurrencyToBrl(addedTotal)} acrescentado
+                              </span>
+                            )}
+                          </TableCell>
+                        </PermissionGate>
+                        <TableCell className="py-4">
+                          <div className="flex justify-end gap-1">
+                            <TooltipProvider>
+                              <PermissionGate
+                                permissions={['sale:quotation:edit']}
+                              >
+                                <ActionButton
+                                  Icon={IconPencil}
+                                  tooltip="Editar item"
+                                  onClick={() => {
+                                    setRowData(item)
+                                    openChangeModal(true, 'productDetailEdit')
+                                  }}
+                                  disabled={actionDisabled('edit', status)}
+                                />
+                              </PermissionGate>
+                              <PermissionGate
+                                permissions={[
+                                  'sale:quotation:edit',
+                                  'values:values:view',
+                                ]}
+                                requireAll
+                              >
+                                <ActionButton
+                                  Icon={IconCurrencyReal}
+                                  tooltip="Valores, desconto e acréscimo"
+                                  onClick={() => {
+                                    setOpenDialog('values')
+                                    setRowData(item)
+                                  }}
+                                  disabled={actionDisabled('values', status)}
+                                />
+                              </PermissionGate>
+                              <PermissionGate
+                                permissions={['sale:quotation:delete']}
+                              >
+                                <ActionButton
+                                  Icon={IconTrash}
+                                  variant="errorGhost"
+                                  tooltip="Excluir item"
+                                  onClick={() => {
+                                    setOpenDialog('delete')
+                                    setRowData(item)
+                                  }}
+                                  disabled={actionDisabled('delete', status)}
+                                />
+                              </PermissionGate>
+                            </TooltipProvider>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+
+                      {open && (
+                        <TableRow className="bg-gray-50 hover:bg-gray-50">
+                          <TableCell colSpan={8} className="px-6 pb-5 pt-0">
+                            <div className="ml-2 space-y-3 border-l-2 border-gray-200 pl-5">
+                              {/* As partes do item, no formato do legado:
+                                    nome · dados informados · valor */}
+                              <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
+                                {parts.map((part) => (
+                                  <li
+                                    key={part.id}
+                                    className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm"
+                                  >
+                                    <span className="font-medium text-gray-800">
+                                      {part.name}
+                                    </span>
+                                    <span className="text-gray">
+                                      {generateFormattedQuantityDetails(part)}
+                                    </span>
+                                    <span className="text-gray">
+                                      {
+                                        calculateTotalQuantity(
+                                          item.product.quantity,
+                                          part,
+                                        ).formatted
+                                      }
+                                    </span>
+                                    <PermissionGate
+                                      permissions={['values:values:view']}
+                                    >
+                                      <span className="ml-auto font-medium text-gray-800">
+                                        {formatCurrencyToBrl(part.totalValue)}
+                                      </span>
+                                    </PermissionGate>
+                                  </li>
+                                ))}
+                                {added.map((line) => (
+                                  <li
+                                    key={line.id}
+                                    className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm"
+                                  >
+                                    <Badge
+                                      variant={
+                                        line.kind === 'LOOSE'
+                                          ? 'warningLight'
+                                          : 'blueLight'
+                                      }
+                                    >
+                                      {line.kind === 'LOOSE'
+                                        ? 'Terceirizado'
+                                        : line.sector || 'Processo'}
+                                    </Badge>
+                                    <span className="font-medium text-gray-800">
+                                      {line.name}
+                                    </span>
+                                    {line.tags.map((tag) => (
+                                      <span key={tag} className="text-gray">
+                                        {tag}
+                                      </span>
+                                    ))}
+                                    <PermissionGate
+                                      permissions={['values:values:view']}
+                                    >
+                                      <span className="ml-auto font-medium text-gray-800">
+                                        {formatCurrencyToBrl(line.price)}
+                                      </span>
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={['sale:quotation:edit']}
+                                    >
+                                      <TooltipProvider>
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          variant="errorGhost"
+                                          size="iconSm"
+                                          tooltip={`Retirar ${line.name}`}
+                                          onClick={() =>
+                                            removeLine(item, line.id, line.name)
+                                          }
+                                          disabled={actionDisabled(
+                                            'edit',
+                                            status,
+                                          )}
+                                        />
+                                      </TooltipProvider>
+                                    </PermissionGate>
+                                  </li>
+                                ))}
+                              </ul>
+
+                              {addedTotal > 0 && (
+                                <p className="text-xs text-gray">
+                                  O que foi acrescentado ainda não soma no total
+                                  do orçamento nem nas condições de pagamento.
+                                </p>
+                              )}
+
+                              {addingTo === item.id && (
+                                <AddToItem
+                                  quotationId={String(data?.id)}
+                                  itemId={item.id}
+                                  itemName={item.description}
+                                  measure={{
+                                    quantity: item.product?.quantity || 1,
+                                    width: single?.width
+                                      ? single.width / 1000
+                                      : 1,
+                                    height: single?.height
+                                      ? single.height / 1000
+                                      : 1,
+                                  }}
+                                  onClose={() => setAddingTo(null)}
+                                />
+                              )}
+
+                              {chosen?.summary?.length ? (
+                                <div className="flex flex-wrap items-center gap-2">
+                                  {chosen.summary.map((entry) => (
+                                    <Badge key={entry} variant="neutralLight">
+                                      {entry}
+                                    </Badge>
+                                  ))}
+                                  <FeatureGate
+                                    features={[
+                                      FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+                                    ]}
+                                  >
+                                    <Button
+                                      type="button"
+                                      size="sm"
+                                      variant="link"
+                                      LeftIcon={IconSearch}
+                                      onClick={() =>
+                                        setReport(reportTarget(item))
+                                      }
+                                    >
+                                      Ver a composição completa
+                                    </Button>
+                                  </FeatureGate>
+                                </div>
+                              ) : null}
+
+                              {item?.notes ? (
+                                <p className="text-sm text-gray-700">
+                                  <span className="font-medium">
+                                    Observações:
+                                  </span>{' '}
+                                  {item.notes}
+                                </p>
+                              ) : null}
+
+                              <div className="flex flex-wrap gap-2">
+                                {addingTo !== item.id && (
+                                  <FeatureGate
+                                    features={[
+                                      FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+                                    ]}
+                                  >
+                                    <PermissionGate
+                                      permissions={['sale:quotation:edit']}
+                                    >
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="light"
+                                        LeftIcon={IconPlus}
+                                        onClick={() => setAddingTo(item.id)}
+                                        disabled={actionDisabled(
+                                          'edit',
+                                          status,
+                                        )}
+                                      >
+                                        Acrescentar a este item
+                                      </Button>
+                                    </PermissionGate>
+                                  </FeatureGate>
+                                )}
+                                <PermissionGate
+                                  permissions={['sale:quotation:edit']}
+                                >
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="neutralOutline"
+                                    LeftIcon={IconMessage}
+                                    onClick={() => {
+                                      setOpenDialog('notes')
+                                      setRowData(item)
+                                    }}
+                                    disabled={actionDisabled('notes', status)}
+                                  >
+                                    Observações
+                                  </Button>
+                                </PermissionGate>
+                                <PermissionGate
+                                  permissions={['sale:quotation:view']}
+                                >
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="neutralOutline"
+                                    LeftIcon={IconPhoto}
+                                    onClick={() => {
+                                      setOpenDialog('image')
+                                      setRowData(item)
+                                    }}
+                                    disabled={actionDisabled('image', status)}
+                                  >
+                                    Imagem
+                                  </Button>
+                                </PermissionGate>
+                                <PermissionGate
+                                  permissions={['sale:quotation:create']}
+                                >
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="neutralOutline"
+                                    LeftIcon={IconCopy}
+                                    onClick={() => handleDuplicateItem(item)}
+                                    disabled={actionDisabled(
+                                      'duplicate',
+                                      status,
+                                    )}
+                                  >
+                                    Duplicar
+                                  </Button>
+                                </PermissionGate>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  )
+                })}
+
+                {/* Os itens montados na hora (ORC-11). O tipo fica
+                      discreto, como marcação (ORC-3); sem etapa, "Exige
+                      atenção" (MS-12) */}
+                {composed.map((item) => (
+                  <TableBody
+                    key={item.id}
+                    className="[&_tr:last-child]:border-b"
+                  >
+                    <TableRow className="border-b">
+                      <TableCell className="pl-14 py-6 text-sm font-medium">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span>{item.name}</span>
+                          <Badge variant="blueLight">Composição</Badge>
+                          {item.attention && (
+                            <Badge status variant="warningLight">
+                              Exige atenção
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="mt-1 text-xs font-normal text-gray">
+                          {item.attention
+                            ? 'Sem nenhuma etapa. O orçamento segue, mas monte as etapas depois para ter custo e produção.'
+                            : item.description ||
+                              `${item.stages} ${item.stages === 1 ? 'etapa' : 'etapas'} · ${item.sectors.join(', ')}`}
+                        </p>
+                      </TableCell>
+                      <TableCell className="py-4 text-sm text-gray">
+                        {item.quantity}
+                      </TableCell>
+                      <TableCell className="py-4 text-sm text-gray">
+                        {item.width && item.height
+                          ? `${item.width} x ${item.height} m`.replace(
+                              /\./g,
+                              ',',
+                            )
+                          : '-'}
+                      </TableCell>
+                      <TableCell className="py-4 text-sm text-gray text-nowrap">
+                        {item.quantity} un
+                      </TableCell>
+                      <PermissionGate permissions={['values:values:view']}>
+                        <TableCell className="py-4 text-sm text-gray">
+                          {formatCurrencyToBrl(
+                            Math.round(item.price / (item.quantity || 1)),
+                          )}
+                        </TableCell>
+                        <TableCell className="text-warning-600 text-nowrap py-4">
+                          -
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray">
+                          {formatCurrencyToBrl(item.price)}
+                        </TableCell>
+                      </PermissionGate>
+                      <TableCell className="py-4">
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            <PermissionGate
+                              permissions={['sale:quotation:edit']}
+                            >
+                              <ActionButton
+                                Icon={IconPencil}
+                                tooltip="Editar item"
+                                onClick={() => {
+                                  setComposeTarget(item)
+                                  openChangeModal(true, 'composeItem')
+                                }}
+                                disabled={actionDisabled('edit', status)}
+                              />
+                            </PermissionGate>
+                            <PermissionGate
+                              permissions={['sale:quotation:delete']}
+                            >
+                              <ActionButton
+                                Icon={IconTrash}
+                                tooltip="Excluir item"
+                                onClick={() => removeComposed(item)}
+                                disabled={actionDisabled('delete', status)}
+                              />
+                            </PermissionGate>
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                ))}
+              </Table>
 
               {/* Modal de ações do item */}
               <ItemNotesDialog
@@ -660,7 +769,7 @@ export function QuotationItems({ data }: Props) {
                 variant={
                   actionDisabled('addItem', status) ? 'neutralLight' : 'light'
                 }
-                Icon={IconCirclePlus}
+                Icon={IconPlus}
                 rounded
               />
               <p className="text-sm text-gray-600 font-medium">
@@ -682,6 +791,16 @@ export function QuotationItems({ data }: Props) {
         editMode={true}
         data={rowData}
         composition={rowData ? compositionOf(rowData) : undefined}
+      />
+      {/* O item montado na hora (ORC-11): criar e editar com o mesmo modal */}
+      <QuotationComposeModal
+        open={modalType === 'composeItem'}
+        quotationId={String(data?.id)}
+        editing={composeTarget}
+        onClose={() => {
+          openChangeModal(false)
+          setComposeTarget(null)
+        }}
       />
       <CompositionReport item={report} onOpenChange={() => setReport(null)} />
     </>

@@ -1,0 +1,85 @@
+Rotas: antes 75, depois 79
+Fontes antes:  14px 53.1% · 12px 37.7% · 16px 3.4% · 18px 3.2% · 20px 2.1% · 24px 0.3% · 10px 0.0%
+Fontes depois: 14px 63.0% · 12px 29.1% · 24px 2.9% · 16px 2.9% · 18px 2.2% · 30px 0.0%
+Botões sem nome: 256 → 243
+title nativo:    46 → 25
+
+/base-de-custos: nova
+/base-de-custos/comparativo: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/base-de-custos/despesas-administrativas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 57 → 73/89
+/base-de-custos/distribuicao: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0; linhas 57 → 73/53
+/base-de-custos/mao-de-obra: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0; linhas 57 → 73
+/base-de-custos/patrimonios: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0; linhas 57 → 103/55/123
+/base-de-custos/por-setor: fontes −[20px, 16px] +[]; h1 ["Base de custos"] → []; tamanho do h1 18px → —; sem nome 2 → 0; title 1 → 0; linhas 57 → —
+/base-de-custos/resumo: fontes −[20px] +[24px, 16px, 30px]; tamanho do h1 18px → 24px; title 1 → 0
+/cadastros/clientes: fontes −[20px] +[24px, 16px]; tamanho do h1 18px → 24px; sem nome 3 → 4; title 0 → 1; linhas — → 57
+/cadastros/clientes/categorias: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 57 → 73
+/cadastros/fornecedores: fontes −[20px] +[24px, 16px]; tamanho do h1 18px → 24px; sem nome 4 → 5; title 0 → 1; linhas — → 57
+/cadastros/fornecedores/categorias: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 57 → 73
+/configuracoes: nova
+/configuracoes/empresa-e-sistema: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/empresa-e-sistema/assinatura: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/empresa-e-sistema/cargos: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/empresa-e-sistema/colaboradores-e-usuarios: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 93/51 → 57
+/configuracoes/empresa-e-sistema/patrimonios: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/configuracoes/empresa-e-sistema/patrimonios/grupos: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/configuracoes/empresa-e-sistema/setores: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/financeiro: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/financeiro/config-despesas-fixas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; sem nome 10 → 3; linhas 73 → 57
+/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/financeiro/contas-bancarias: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 9 → 8
+/configuracoes/financeiro/folhas-de-pagamento: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; sem nome 2 → 3; title 1 → 0; linhas — → 73/52
+/configuracoes/financeiro/plano-de-contas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/importacoes: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/nota-fiscal: fontes −[20px] +[24px]; h1 ["Configurações Fiscais"] → ["Configurações fiscais"]; tamanho do h1 18px → 24px
+/configuracoes/nota-fiscal/cfop: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; sem nome 6 → 2; linhas 65 → —
+/configuracoes/nota-fiscal/emissores: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/nota-fiscal/gestao: nova
+/configuracoes/nota-fiscal/invoicy: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; sem nome 2 → 3; title 0 → 1
+/configuracoes/producao: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0; linhas 53/73/81/93/125 → 53/73/81/93/107
+/configuracoes/produtos: fontes −[20px] +[24px, 16px]; tamanho do h1 18px → 24px; title 0 → 1; linhas — → 57
+/configuracoes/produtos/grupo-de-produtos: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; sem nome 12 → 2; linhas 73/53 → 57
+/configuracoes/produtos/materiais: fontes −[20px, 10px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0; linhas 35/73/53/81 → 37/73/35/81
+/configuracoes/produtos/processos: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/configuracoes/vendas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/vendas/origens-de-contato: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/vendas/perfil-de-vendedor: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 41/81 → 73/81
+/configuracoes/vendas/series-de-venda: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/configuracoes/vendas/status-de-orcamento: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 57 → 73
+/configuracoes/vendas/venda-rapida: fontes −[16px, 20px] +[]; h1 ["Venda rápida"] → []; tamanho do h1 18px → —; title 1 → 0
+/dashboard: fontes −[20px] +[24px]; h1 [] → ["Painel"]; tamanho do h1 — → 24px
+/estoque: fontes −[20px] +[]
+/estoque/entrada-de-nota: fontes −[20px] +[]
+/financeiro/a-pagar: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/financeiro/a-receber: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/financeiro/controle-de-caixa: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/financeiro/despesas-fixas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/financeiro/fluxo-financeiro: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/financeiro/folha-de-pagamento: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/financeiro/frente-de-caixa: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/nota-fiscal/emitir: fontes −[20px] +[]
+/nota-fiscal/emitir-nfse/consolidado: fontes −[20px] +[]
+/nota-fiscal/emitir/avulsa: fontes −[20px] +[]
+/nota-fiscal/emitir/avulsa/nfce: fontes −[20px] +[]
+/nota-fiscal/emitir/avulsa/nfe: fontes −[20px] +[]
+/nota-fiscal/emitir/avulsa/nfse: fontes −[20px] +[]
+/nota-fiscal/emitir/consolidado: fontes −[20px] +[]
+/precificacao: nova
+/precificacao/mao-de-obra: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/precificacao/maquinas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/precificacao/materiais: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/precificacao/produtos: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/precificacao/resumo: fontes −[20px] +[]; tamanho do h1 18px → 24px; title 1 → 0
+/producao/agenda-de-entrega: fontes −[20px, 10px] +[24px]; tamanho do h1 18px → 24px; title 2 → 1
+/producao/gerenciador: fontes −[20px] +[]; tamanho do h1 18px → 24px; title 1 → 0
+/producao/produtividade: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/producao/projetos: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; title 1 → 0
+/relatorios/comissoes: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/relatorios/dfc: fontes −[20px] +[24px]; tamanho do h1 18px → 24px; linhas 49 → —
+/relatorios/financeiro: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/relatorios/projecao-de-caixa: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/relatorios/resultado-por-setor: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/relatorios/vendas: fontes −[20px] +[24px]; tamanho do h1 18px → 24px
+/vendas/orcamentos: fontes −[20px, 16px] +[24px]; tamanho do h1 18px → 24px
+/vendas/ordens-de-servico: fontes −[20px] +[24px]; tamanho do h1 18px → 24px

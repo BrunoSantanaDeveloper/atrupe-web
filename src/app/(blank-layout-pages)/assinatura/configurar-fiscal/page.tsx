@@ -243,7 +243,7 @@ export default function ConfigurarFiscalPage() {
         <Card className="w-full max-w-lg text-center">
           <CardContent className="pt-10 pb-10">
             <IconLoader2 className="mx-auto h-16 w-16 animate-spin text-primary mb-6" />
-            <h2 className="text-xl font-semibold mb-2">
+            <h2 className="type-section-title mb-2">
               Configurando módulo fiscal...
             </h2>
             <p className="text-muted-foreground">
@@ -264,9 +264,7 @@ export default function ConfigurarFiscalPage() {
             <div className="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-6">
               <IconCheck className="h-8 w-8 text-green-600" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">
-              Módulo fiscal ativado!
-            </h2>
+            <h2 className="type-section-title mb-2">Módulo fiscal ativado!</h2>
             <p className="text-muted-foreground mb-4">{resultMessage}</p>
             <p className="text-sm text-muted-foreground">
               Redirecionando para o dashboard...
@@ -285,7 +283,7 @@ export default function ConfigurarFiscalPage() {
             <div className="mx-auto h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
               <IconAlertTriangle className="h-8 w-8 text-amber-600" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">Dados recebidos!</h2>
+            <h2 className="type-section-title mb-2">Dados recebidos!</h2>
             <p className="text-muted-foreground mb-4">{resultMessage}</p>
             <p className="text-sm text-muted-foreground">
               Você receberá um e-mail quando o módulo estiver pronto.
@@ -310,7 +308,7 @@ export default function ConfigurarFiscalPage() {
           <div className="flex justify-center mb-4">
             <Logo />
           </div>
-          <CardTitle className="text-2xl">Configuração Fiscal</CardTitle>
+          <CardTitle>Configuração Fiscal</CardTitle>
           <CardDescription>
             Preencha os dados abaixo para ativar o módulo de emissão de notas
             fiscais.
@@ -322,9 +320,7 @@ export default function ConfigurarFiscalPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {/* Dados da Empresa */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  Dados da Empresa
-                </h3>
+                <h3 className="type-body-strong">Dados da Empresa</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -414,9 +410,7 @@ export default function ConfigurarFiscalPage() {
 
               {/* Endereço */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                  Endereço
-                </h3>
+                <h3 className="type-body-strong">Endereço</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
@@ -480,7 +474,7 @@ export default function ConfigurarFiscalPage() {
 
               {/* Certificado Digital */}
               <div className="space-y-4">
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                <h3 className="type-body-strong">
                   Certificado Digital (opcional)
                 </h3>
                 <p className="text-sm text-muted-foreground">

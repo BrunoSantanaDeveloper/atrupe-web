@@ -4,7 +4,7 @@ import { SalesSettingsClient } from './components/SalesSettingsClient'
 
 export function metadata() {
   return {
-    title: 'Configurações de Vendas',
+    title: 'Configurações de vendas',
   }
 }
 

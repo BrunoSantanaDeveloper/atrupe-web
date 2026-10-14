@@ -25,7 +25,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
-import { IconFolderPlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -86,7 +86,7 @@ export function NewCategoryDialog({
         : createItem({ route: 'accountsPlanRoute', data }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Sucesso!')
+      toast.success('Sucesso')
       handleOpenChange(false)
     },
     onError: () => {
@@ -140,7 +140,7 @@ export function NewCategoryDialog({
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       {!editMode && (
         <DialogTrigger asChild>
-          <Button type="button" LeftIcon={IconFolderPlus}>
+          <Button type="button" LeftIcon={IconPlus}>
             Nova categoria
           </Button>
         </DialogTrigger>
@@ -149,7 +149,7 @@ export function NewCategoryDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconFolderPlus} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
               <span>{editMode ? 'Editar categoria' : 'Nova categoria'}</span>
             </div>
           </DialogTitle>

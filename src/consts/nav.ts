@@ -102,7 +102,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconNews,
-        title: 'Ordens de Serviço',
+        title: 'Ordens de serviço',
         path: '/vendas/ordens-de-servico',
         permission: 'sale:order:view',
       },
@@ -216,7 +216,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       // },
       {
         icon: IconTruckLoading,
-        title: 'Agenda de Entrega',
+        title: 'Agenda de entrega',
         path: '/producao/agenda-de-entrega',
         review: 'todo',
         permission: 'production:delivery_schedule:view',
@@ -249,7 +249,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
   },
   {
     icon: IconFileSymlink,
-    title: 'Nota Fiscal',
+    title: 'Nota fiscal',
     path: '/nota-fiscal/emitir',
     permission: 'nota_fiscal:emitir:view',
     requiredModule: 'nota_fiscal',
@@ -273,13 +273,9 @@ export const defaultMainNavigation: MainNavigationType[] = [
         permission: 'register:supplier:view',
       },
       // Produtos, materiais e processos são cadastros do dia a dia, não
-      // configuração: ficavam escondidos em abas dentro de Configurações
-      {
-        icon: IconBoxSeam,
-        title: 'Produtos',
-        path: '/configuracoes/produtos',
-        permission: 'product_settings:products:view',
-      },
+      // configuração: ficavam escondidos em abas dentro de Configurações.
+      // Ordem pedida pelo time (03/10/2026): materiais → processos →
+      // produtos, a ordem em que a composição é montada
       {
         icon: IconPackages,
         title: 'Materiais',
@@ -295,6 +291,12 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'product_settings:products:view',
         requiredModule: 'cost_base',
+      },
+      {
+        icon: IconBoxSeam,
+        title: 'Produtos',
+        path: '/configuracoes/produtos',
+        permission: 'product_settings:products:view',
       },
       /* {
         icon: IconSquareRoundedPlusFilled,
@@ -413,7 +415,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconReceitaFederal,
-        title: 'Nota Fiscal',
+        title: 'Nota fiscal',
         path: '/configuracoes/nota-fiscal',
         permission: 'nota_fiscal:config:view',
         requiredModule: 'nota_fiscal',
@@ -545,7 +547,7 @@ export const adminMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconReceiptTax,
-        title: 'Parâmetros Fiscais',
+        title: 'Parâmetros fiscais',
         path: '/admin/sistema/fiscal',
       },
       {

@@ -113,7 +113,7 @@ export function NewGroupModal() {
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="neutralOutline">
               Cancelar
             </Button>
           </DialogClose>
@@ -122,7 +122,7 @@ export function NewGroupModal() {
             disabled={!name}
             onClick={() => mutate()}
           >
-            {isPending ? 'Criando...' : 'Criar grupo'}
+            {isPending ? 'Cadastrando...' : 'Cadastrar grupo'}
           </Button>
         </DialogFooter>
       </DialogContent>

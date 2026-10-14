@@ -173,7 +173,7 @@ export function EmissoresListClient() {
       return result
     },
     onSuccess: () => {
-      toast.success('Emissor configurado com sucesso!')
+      toast.success('Emissor configurado')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
@@ -204,7 +204,7 @@ export function EmissoresListClient() {
       return result
     },
     onSuccess: () => {
-      toast.success('Emissor atualizado com sucesso!')
+      toast.success('Emissor atualizado')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
@@ -228,7 +228,7 @@ export function EmissoresListClient() {
         toast.error(result.message || 'Erro ao excluir emissor')
         return
       }
-      toast.success('Configuração removida com sucesso!')
+      toast.success('Configuração removida')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setDeleteEmissor(null)
@@ -252,7 +252,7 @@ export function EmissoresListClient() {
         toast.error(result.message || 'Erro ao definir padrão')
         return
       }
-      toast.success('Definido como padrão!')
+      toast.success('Definido como padrão')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
     },
@@ -274,7 +274,7 @@ export function EmissoresListClient() {
     },
     onSuccess: (result) => {
       if (result.success && result.data?.success) {
-        toast.success('Autenticação validada!')
+        toast.success('Autenticação validada')
       } else {
         toast.error(result.message || 'Falha na autenticação.')
       }
@@ -364,12 +364,10 @@ export function EmissoresListClient() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <FeaturedIcon variant="outline" Icon={IconBuilding} />
-          <div>
-            <h2 className="text-lg font-semibold">Emissores de Nota Fiscal</h2>
-            <p className="text-sm text-gray-500">
-              Gerencie as configurações fiscais por empresa/filial
-            </p>
-          </div>
+          {/* O título já está no cabeçalho da página; aqui só o contexto. */}
+          <p className="type-secondary">
+            Gerencie as configurações fiscais por empresa/filial
+          </p>
         </div>
         {/* Botão Novo Emissor removido pois a lista é baseada em empresas cadastradas */}
       </div>
@@ -377,9 +375,7 @@ export function EmissoresListClient() {
       {combinedEmissores.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
           <IconBuilding className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-700 mb-2">
-            Nenhuma empresa encontrada
-          </h3>
+          <h3 className="type-card-title mb-2">Nenhuma empresa encontrada</h3>
           <p className="text-gray-500 mb-4">
             Cadastre uma empresa no menu Configurações &gt; Empresa e Sistema
           </p>
@@ -431,7 +427,7 @@ export function EmissoresListClient() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remover Configuração</AlertDialogTitle>
+            <AlertDialogTitle>Remover configuração</AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja remover as configurações fiscais de{' '}
               <strong>{deleteEmissor?.name}</strong>? A emissão de notas será
@@ -444,7 +440,7 @@ export function EmissoresListClient() {
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700"
             >
-              Remover Configuração
+              Remover configuração
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

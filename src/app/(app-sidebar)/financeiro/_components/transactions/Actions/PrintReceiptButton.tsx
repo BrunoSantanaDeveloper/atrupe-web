@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dialog'
 
 // Icons
-import { IconCircleCheck } from '@tabler/icons-react'
+import { IconPrinter } from '@tabler/icons-react'
 
 // Components
 
@@ -138,7 +138,7 @@ export function PrintReceiptButton({
             </DialogClose>
             <Button
               type="button"
-              RightIcon={IconCircleCheck}
+              RightIcon={IconPrinter}
               isLoading={isLoadingPDF}
               onClick={handlePrintReceipt}
             >

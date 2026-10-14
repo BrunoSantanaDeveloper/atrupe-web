@@ -14,12 +14,11 @@ import {
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { IconArrowRight } from '@tabler/icons-react'
+import { IconArrowRight, IconAlertTriangle } from '@tabler/icons-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionTrigger } from '@/components/ui/accordion'
 import { AccordionContent, AccordionItem } from '@radix-ui/react-accordion'
@@ -136,7 +135,7 @@ export function CreditLimit() {
         queryKey: ['credit-limit'],
       })
 
-      toast.success('Limite de crédito atualizado!')
+      toast.success('Limite de crédito atualizado')
       setOpen(false)
       handleClose()
     } catch (error) {
@@ -218,7 +217,7 @@ export function CreditLimit() {
                         (method, methodIndex) => (
                           <div key={method.id}>
                             <div className="w-full bg-gray-100 h-11 px-6 border-gray-200 flex items-center">
-                              <h3 className="font-medium text-gray-500 text-xs">
+                              <h3 className="type-body-strong">
                                 {method.name}
                               </h3>
                             </div>
@@ -262,7 +261,7 @@ export function CreditLimit() {
                         (method, methodIndex) => (
                           <div key={method.id}>
                             <div className="w-full bg-gray-100 h-11 px-6 border-gray-200 flex items-center">
-                              <h3 className="font-medium text-gray-500 text-xs">
+                              <h3 className="type-body-strong">
                                 {method.name}
                               </h3>
                             </div>
@@ -310,9 +309,7 @@ export function CreditLimit() {
                       >
                         <CardHeader>
                           <div className="flex justify-between">
-                            <CardTitle className="text-gray-700 font-semibold text-base">
-                              Opções avançadas
-                            </CardTitle>
+                            <CardTitle>Opções avançadas</CardTitle>
                             <AccordionTrigger
                               className={cn(
                                 buttonVariants({
@@ -328,7 +325,7 @@ export function CreditLimit() {
                           <Separator />
                           <CardContent className="p-6">
                             <Alert className="bg-warning-50 border border-warning-50 mb-6">
-                              <AlertTriangle
+                              <IconAlertTriangle
                                 size={20}
                                 className="stroke-warning-600"
                               />
@@ -413,7 +410,7 @@ export function CreditLimit() {
             </div>
 
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={handleClose}>
+              <Button variant="neutralOutline" onClick={handleClose}>
                 Cancelar
               </Button>
               <Button onClick={handleValidateAllTabs}>Salvar</Button>

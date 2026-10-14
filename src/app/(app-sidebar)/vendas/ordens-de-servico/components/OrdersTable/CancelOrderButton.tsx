@@ -94,7 +94,7 @@ export function CancelOrderButton({ order }: Props) {
         return
       }
 
-      toast.success('Venda cancelada!')
+      toast.success('Venda cancelada')
       queryClient.invalidateQueries()
 
       if (res?.data) {

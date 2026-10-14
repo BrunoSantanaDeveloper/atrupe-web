@@ -48,13 +48,20 @@ import { saveBankAccount } from '@/actions/cash-accounts'
 import { toast } from 'sonner'
 
 // Icons
-import { IconBuildingBank, IconCash } from '@tabler/icons-react'
+import {
+  IconBuildingBank,
+  IconCash,
+  IconCreditCard,
+  IconPencil,
+  IconPlus,
+} from '@tabler/icons-react'
 
 // Hooks
 import { useMoney } from '@/hooks/useMoney'
 
 // Utils
 import { cn } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const banks = [
   { value: '000', label: 'Empresa (dinheiro)' },
@@ -88,6 +95,11 @@ const kinds: {
     icon: IconBuildingBank,
     text: 'Conta corrente ou digital. O dia se fecha conferindo o extrato.',
   },
+  {
+    value: 'CARD',
+    icon: IconCreditCard,
+    text: 'O que a operadora ainda deve, pelo valor cheio. Não fecha o dia: confere na liquidação.',
+  },
 ]
 
 type Draft = Omit<
@@ -103,6 +115,8 @@ const empty = (methods: { id: string; name: string }[]): Draft => ({
   bankCode: '',
   bankName: '',
   cashControl: false,
+  blindCount: false,
+  shortageTolerance: null,
   openingBalance: 0,
   openingDate: new Date().toISOString().slice(0, 10),
   rules: methods.map((method) => ({
@@ -180,7 +194,13 @@ export function AccountDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[860px]">
         <DialogHeader>
-          <DialogTitle>{isNew ? 'Nova conta' : draft.name}</DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={isNew ? IconPlus : IconPencil}
+            />
+            <DialogTitle>{isNew ? 'Nova conta' : draft.name}</DialogTitle>
+          </div>
           <DialogDescription>
             Onde o dinheiro da empresa fica: a gaveta, o cofre ou uma conta no
             banco.
@@ -189,7 +209,7 @@ export function AccountDialog({
         <DialogBody className="space-y-8">
           {/* 1. Que conta é */}
           <section className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-3">
               {kinds.map(({ value, icon: Icon, text }) => (
                 <button
                   key={value}
@@ -224,12 +244,27 @@ export function AccountDialog({
                 <Input
                   id="account-name"
                   placeholder={
-                    draft.kind === 'CASH' ? 'Caixa do balcão' : 'Bradesco'
+                    draft.kind === 'CASH'
+                      ? 'Caixa do balcão'
+                      : draft.kind === 'CARD'
+                        ? 'Rede (cartões)'
+                        : 'Bradesco'
                   }
                   value={draft.name}
                   onChange={(event) => set('name', event.target.value)}
                 />
               </div>
+              {draft.kind === 'CARD' && (
+                <div className="space-y-2">
+                  <Label htmlFor="account-operator">Operadora</Label>
+                  <Input
+                    id="account-operator"
+                    placeholder="Rede, Cielo, Stone, Getnet"
+                    value={draft.bankName}
+                    onChange={(event) => set('bankName', event.target.value)}
+                  />
+                </div>
+              )}
               {draft.kind === 'BANK' && (
                 <SelectBasic
                   name="account-bank"
@@ -290,24 +325,100 @@ export function AccountDialog({
             )}
           </section>
 
-          {/* 2. Controle de caixa — por conta (CX-1) */}
-          <section className="flex items-start justify-between gap-6 rounded-xl border border-gray-200 bg-gray-50 p-4">
-            <div>
-              <p className="font-semibold text-gray-800">Controle de caixa</p>
+          {/* 2. Controle de caixa — por conta (CX-1). A operadora não fecha
+              o dia (CX-3); a conta Caixa com controle escolhe a contagem às
+              cegas e a tolerância da quebra (4.1) */}
+          {draft.kind === 'CARD' ? (
+            <section className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <p className="font-semibold text-gray-800">Sem fechamento</p>
               <p className="mt-1 max-w-xl text-sm text-gray">
-                {draft.cashControl
-                  ? draft.kind === 'CASH'
-                    ? 'Ligado: o caixa abre e fecha todo dia, o dinheiro é contado às cegas, ajuste pede motivo e o dia fechado fica travado.'
-                    : 'Ligado: o caixa abre e fecha todo dia, o fechamento confere o extrato, ajuste pede motivo e o dia fechado fica travado.'
-                  : 'Desligado: recebe e paga sem abrir nem fechar caixa. O saldo e o histórico continuam registrados.'}
+                A operadora não abre nem fecha caixa: o dia mostra só o total
+                que entrou, pelo valor cheio. A conferência acontece na
+                liquidação, quando o dinheiro cai no banco já com a taxa
+                descontada.
               </p>
-            </div>
-            <Switch
-              checked={draft.cashControl}
-              onCheckedChange={(checked) => set('cashControl', checked)}
-              aria-label="Controle de caixa"
-            />
-          </section>
+            </section>
+          ) : (
+            <section className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+              <div className="flex items-start justify-between gap-6">
+                <div>
+                  <p className="font-semibold text-gray-800">
+                    Controle de caixa
+                  </p>
+                  <p className="mt-1 max-w-xl text-sm text-gray">
+                    {draft.cashControl
+                      ? draft.kind === 'CASH'
+                        ? 'Ligado: o caixa abre e fecha todo dia, o dinheiro é contado no fechamento, ajuste pede motivo e o dia fechado fica travado.'
+                        : 'Ligado: o caixa abre e fecha todo dia, o fechamento confere o extrato, ajuste pede motivo e o dia fechado fica travado.'
+                      : 'Desligado: recebe e paga sem abrir nem fechar caixa. O saldo e o histórico continuam registrados.'}
+                  </p>
+                </div>
+                <Switch
+                  checked={draft.cashControl}
+                  onCheckedChange={(checked) => set('cashControl', checked)}
+                  aria-label="Controle de caixa"
+                />
+              </div>
+              {draft.cashControl && draft.kind === 'CASH' && (
+                <div className="space-y-4 border-t border-gray-200 pt-4">
+                  <div className="flex items-start justify-between gap-6">
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        Contagem às cegas
+                      </p>
+                      <p className="text-sm text-gray">
+                        Quem fecha digita o que contou sem ver o esperado. O
+                        padrão é a conferência simples, com o esperado à vista.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={draft.blindCount}
+                      onCheckedChange={(checked) => set('blindCount', checked)}
+                      aria-label="Contagem às cegas"
+                    />
+                  </div>
+                  <div className="flex items-start justify-between gap-6">
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">
+                        Tolerância da quebra
+                      </p>
+                      <p className="text-sm text-gray">
+                        Desligada, toda diferença é lançada como quebra. Ligada,
+                        a diferença até o valor aparece no fechamento, mas não é
+                        lançada.
+                      </p>
+                    </div>
+                    <Switch
+                      checked={draft.shortageTolerance !== null}
+                      onCheckedChange={(checked) =>
+                        set('shortageTolerance', checked ? 50 : null)
+                      }
+                      aria-label="Tolerância da quebra"
+                    />
+                  </div>
+                  {draft.shortageTolerance !== null && (
+                    <div className="max-w-[220px] space-y-2">
+                      <Label htmlFor="account-tolerance">Até</Label>
+                      <Input
+                        id="account-tolerance"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        startAdornment={<span className="text-sm">R$</span>}
+                        value={(draft.shortageTolerance / 100).toFixed(2)}
+                        onChange={(event) =>
+                          set(
+                            'shortageTolerance',
+                            Math.round(Number(event.target.value || 0) * 100),
+                          )
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+          )}
 
           {/* 3. O que recebe e o que paga (CX-2) */}
           <section className="space-y-3">
@@ -433,7 +544,7 @@ export function AccountDialog({
             Cancelar
           </Button>
           <Button type="button" isLoading={saving} onClick={save}>
-            {isNew ? 'Criar conta' : 'Salvar'}
+            {isNew ? 'Cadastrar conta' : 'Salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

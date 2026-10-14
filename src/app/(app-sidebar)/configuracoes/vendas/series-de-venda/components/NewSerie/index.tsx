@@ -91,7 +91,7 @@ export function NewSerieDialog({ open, setOpen }: Props) {
       return
     }
 
-    toast.success('Série criada com sucesso.')
+    toast.success('Série criada.')
     queryClient.invalidateQueries()
     handleOpenChange(false)
   }

@@ -198,13 +198,13 @@ export function VerifyEmailForm() {
         <div className="mt-6 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-4">
           <div className="flex items-center gap-2 mb-2">
             <IconBug size={16} className="text-amber-600" />
-            <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+            <span className="type-eyebrow text-amber-700">
               Dev / Homolog only
             </span>
           </div>
           <p className="text-sm text-amber-800">
             Token de verificação:{' '}
-            <span className="font-mono font-bold text-lg tracking-widest text-amber-900">
+            <span className="font-mono font-semibold text-lg tracking-widest text-amber-900">
               {verificationToken}
             </span>
           </p>

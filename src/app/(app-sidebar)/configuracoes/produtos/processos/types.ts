@@ -31,6 +31,8 @@ export type FormulaKey =
   | 'PER_AREA_EXTRA' // 21 — insumo × m² × quantidade × campo extra
   // Novo (AP-1): folhas necessárias pelas peças que cabem em cada folha
   | 'SHEET_YIELD'
+  // Fórmula escrita no produto (IP-2, 03/10/2026): a linha aponta para ela
+  | 'CUSTOM'
 
 export type DimensionRule =
   | 'NONE'

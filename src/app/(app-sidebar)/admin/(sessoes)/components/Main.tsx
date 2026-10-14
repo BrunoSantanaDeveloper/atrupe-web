@@ -93,28 +93,22 @@ export function Main() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Usuários Online
-            </CardTitle>
+            <CardTitle>Usuários Online</CardTitle>
             <IconCircleCheck className="text-green-400" />
           </CardHeader>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-gray-700">
-              {sessions.length}
-            </div>
+            <div className="type-kpi-value">{sessions.length}</div>
             <p className="text-xs text-gray">Ativos nos últimos 5 minutos</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Empresas Online
-            </CardTitle>
+            <CardTitle>Empresas Online</CardTitle>
             <IconBuildingCommunity className="text-purple-400" />
           </CardHeader>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-gray-700">
+            <div className="type-kpi-value">
               {new Set(sessions.map((s) => s.companyId)).size}
             </div>
             <p className="text-xs text-gray">Empresas com usuários ativos</p>
@@ -123,15 +117,11 @@ export function Main() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Sessões Ativas
-            </CardTitle>
+            <CardTitle>Total de Sessões Ativas</CardTitle>
             <IconClock className="text-blue-400" />
           </CardHeader>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-gray-700">
-              {totalSessions}
-            </div>
+            <div className="type-kpi-value">{totalSessions}</div>
             <p className="text-xs text-gray">Sessões ativas no momento</p>
           </CardContent>
         </Card>

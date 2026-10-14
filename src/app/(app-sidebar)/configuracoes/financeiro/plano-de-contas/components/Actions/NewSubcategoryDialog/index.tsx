@@ -69,7 +69,7 @@ export function NewSubcategoryDialog({
       }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Subcategoria criada!')
+      toast.success('Subcategoria criada')
       handleOpenChange(false)
     },
     onError: () => {

@@ -136,7 +136,7 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
           ) : (
             <ListDataTotalEmpty
               icon={IconReportMoney}
-              title="Sem entregas agendadas"
+              title="Nenhuma entrega agendada"
             />
           )}
         </Card>

@@ -122,7 +122,7 @@ export function EditTransactionData({
     }
 
     queryClient.invalidateQueries()
-    toast.success('Dados alterados!')
+    toast.success('Dados alterados')
     handleOpenChange(false)
     transactionDialogOpen(false)
   }

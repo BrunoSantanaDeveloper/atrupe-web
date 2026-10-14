@@ -14,10 +14,10 @@ const defaultPath = 'nota-fiscal'
 export function FiscalSettingsClient() {
   const settings: CompanySettingsType[] = [
     {
-      category: 'Configurações Fiscais',
+      category: 'Configurações fiscais',
       items: [
         {
-          title: 'Dados do Emissor',
+          title: 'Dados do emissor',
           icon: IconBuilding,
           description:
             'Configure emitente, séries, numeração e padrões para emissão de notas fiscais',
@@ -25,7 +25,7 @@ export function FiscalSettingsClient() {
           permission: 'nota_fiscal:config:view',
         },
         {
-          title: 'Natureza de Operação e CFOP',
+          title: 'Natureza de operação e CFOP',
           icon: IconArrowsSplit,
           description:
             'Configure as naturezas de operação e CFOPs para emissão de notas',

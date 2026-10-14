@@ -6,7 +6,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
-    title: 'Colaboradores e Usuários',
+    title: 'Colaboradores e usuários',
   }
 }
 

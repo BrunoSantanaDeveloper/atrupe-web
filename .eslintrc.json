@@ -9,6 +9,35 @@
         "destructuredArrayIgnorePattern": "^_",
         "varsIgnorePattern": "^_"
       }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "JSXAttribute[name.name='className'] Literal[value=/text-\\[\\d+px\\]/]",
+        "message": "Tamanho de fonte em pixel não existe na escala (mínimo 12 px). Use um papel type-* ou text-xs/sm/md/lg (design/openspec, tipografia-e-hierarquia)."
+      },
+      {
+        "selector": "JSXAttribute[name.name='className'] TemplateElement[value.raw=/text-\\[\\d+px\\]/]",
+        "message": "Tamanho de fonte em pixel não existe na escala (mínimo 12 px). Use um papel type-* ou text-xs/sm/md/lg (design/openspec, tipografia-e-hierarquia)."
+      },
+      {
+        "selector": "JSXAttribute[name.name='className'] Literal[value=/(^|\\s)uppercase(\\s|$)/]",
+        "message": "Caixa alta só pelo papel type-eyebrow. Em campo que força maiúsculas na digitação, desative esta linha com comentário explicando."
+      },
+      {
+        "selector": "JSXAttribute[name.name='className'] TemplateElement[value.raw=/(^|\\s)uppercase(\\s|$)/]",
+        "message": "Caixa alta só pelo papel type-eyebrow. Em campo que força maiúsculas na digitação, desative esta linha com comentário explicando."
+      },
+      {
+        "selector": "JSXAttribute[name.name='className'] Literal[value=/(^|\\s)font-bold(\\s|$)/]",
+        "message": "Peso 700 não faz parte dos papéis tipográficos. Use type-kpi-hero para destaque ou font-semibold."
+      }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/app/sandbox/**"],
+      "rules": { "no-restricted-syntax": "off" }
+    }
+  ]
 }

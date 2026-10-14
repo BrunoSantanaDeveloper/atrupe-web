@@ -14,6 +14,31 @@ export type MaterialVariation = {
   price: number | null
 }
 
+// Configuração avançada (MT-10.1, decidida em 03/10/2026): as referências
+// que as fórmulas, o aproveitamento e o plano de corte leem. Medidas em
+// milímetros, peso em quilos. Convenção: a primeira medida do catálogo é X e
+// a segunda é Y (50 × 30 → X 50, Y 30); qual lado desconta é escolha de quem
+// escreve a fórmula (CP-19)
+export type MaterialShape = 'PROFILE' | 'SHEET' | 'OTHER'
+
+export type MaterialAdvanced = {
+  shape: MaterialShape
+  // Perfil, barra, tubo
+  x?: number | null
+  y?: number | null
+  barLength?: number | null
+  // Chapa, folha, bobina
+  width?: number | null
+  height?: number | null
+  // Cobrar a folha inteira ou só a fração aproveitada (AP-4, 05/10/2026).
+  // Padrão: inteira; a etapa do produto pode trocar
+  wholeSheets?: boolean
+  // Peso em quilos POR UNIDADE DE VENDA do material (orientação do time,
+  // 03/10/2026): a lona vendida por m² tem peso por m², o perfil vendido por
+  // metro tem peso por metro, o ilhós tem peso por unidade
+  weight?: number | null
+}
+
 export type Material = {
   id: string
   code: string
@@ -29,4 +54,5 @@ export type Material = {
   price: number | null
   variations: MaterialVariation[]
   active: boolean
+  advanced?: MaterialAdvanced
 }

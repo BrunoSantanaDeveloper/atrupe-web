@@ -57,7 +57,11 @@ export default function CostBaseLayout({ children }: Props) {
             title="Base de custos"
             supportText="Custo mensal de referência da empresa"
           />
-          <Tabs value={segment || 'resumo'} className="overflow-x-auto">
+          <Tabs
+            value={segment || 'resumo'}
+            variant="pill"
+            className="overflow-x-auto"
+          >
             <TabsList>
               {tabs.map((tab) => (
                 <TabsTrigger key={tab.tab} value={tab.tab} asChild>

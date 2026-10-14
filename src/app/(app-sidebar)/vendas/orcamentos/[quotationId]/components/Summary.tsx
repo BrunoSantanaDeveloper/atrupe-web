@@ -114,7 +114,7 @@ function EditableDateField({
       return
     }
 
-    toast.success('Data atualizada com sucesso!')
+    toast.success('Data atualizada')
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
@@ -167,9 +167,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconFileInvoice} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Resumo
-                </CardTitle>
+                <CardTitle>Resumo</CardTitle>
               </div>
               <div className="flex gap-3">
                 <TooltipProvider>
@@ -301,7 +299,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
                     text={data?.client?.email || '-'}
                   />
                   <TextSupportingText
-                    supporting="Telefone Cliente"
+                    supporting="Telefone do cliente"
                     text={data?.client?.phoneNumber || '-'}
                   />
                   <TextSupportingText

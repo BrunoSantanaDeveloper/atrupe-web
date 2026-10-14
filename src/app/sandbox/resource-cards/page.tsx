@@ -96,7 +96,7 @@ export default function ResourceCardsSandboxPage() {
   }: {
     size?: 'md' | 'lg' | 'fluid'
   }) => (
-    <div className="absolute inset-0 bg-gradient-to-br from-[#A9F1CC] to-[#0fd27f]">
+    <div className="absolute inset-0 bg-gradient-to-br from-brand-100 to-[#0fd27f]">
       {/* Abstract Pattern overlay simulation */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent opacity-60 mix-blend-overlay"></div>
       <div className="absolute inset-0 flex items-center justify-center">
@@ -147,7 +147,7 @@ export default function ResourceCardsSandboxPage() {
                     actions={
                       <div className="flex items-center gap-2 cursor-pointer group">
                         {PlayIcon}
-                        <span className="text-sm font-semibold text-[#085d40] group-hover:underline">
+                        <span className="text-sm font-semibold text-brand-700 group-hover:underline">
                           Watch video
                         </span>
                       </div>
@@ -192,7 +192,7 @@ export default function ResourceCardsSandboxPage() {
                     actions={
                       <div className="flex items-center gap-2 cursor-pointer group">
                         {PlayIcon}
-                        <span className="text-sm font-semibold text-[#085d40] group-hover:underline">
+                        <span className="text-sm font-semibold text-brand-700 group-hover:underline">
                           Watch video
                         </span>
                       </div>
@@ -235,7 +235,7 @@ export default function ResourceCardsSandboxPage() {
                     actions={
                       <div className="flex items-center gap-2 cursor-pointer group">
                         {PlayIcon}
-                        <span className="text-sm font-semibold text-[#085d40] group-hover:underline">
+                        <span className="text-sm font-semibold text-brand-700 group-hover:underline">
                           Watch video
                         </span>
                       </div>
@@ -266,10 +266,10 @@ export default function ResourceCardsSandboxPage() {
                     media={<StandardUpdateMedia size="md" />}
                     actions={
                       <>
-                        <button className="text-sm font-semibold text-[#667085] hover:text-[#344054]">
+                        <button className="text-sm font-semibold text-gray-500 hover:text-gray-700">
                           Dismiss
                         </button>
-                        <button className="text-sm font-semibold text-[#085d40] hover:underline">
+                        <button className="text-sm font-semibold text-brand-700 hover:underline">
                           Changelog
                         </button>
                       </>
@@ -291,10 +291,10 @@ export default function ResourceCardsSandboxPage() {
                     media={<StandardUpdateMedia size="lg" />}
                     actions={
                       <>
-                        <button className="text-sm font-semibold text-[#667085] hover:text-[#344054]">
+                        <button className="text-sm font-semibold text-gray-500 hover:text-gray-700">
                           Dismiss
                         </button>
-                        <button className="text-sm font-semibold text-[#085d40] hover:underline">
+                        <button className="text-sm font-semibold text-brand-700 hover:underline">
                           Changelog
                         </button>
                       </>
@@ -316,10 +316,10 @@ export default function ResourceCardsSandboxPage() {
                     media={<StandardUpdateMedia size="lg" />}
                     actions={
                       <>
-                        <button className="text-sm font-semibold text-[#667085] hover:text-[#344054]">
+                        <button className="text-sm font-semibold text-gray-500 hover:text-gray-700">
                           Dismiss
                         </button>
-                        <button className="text-sm font-semibold text-[#085d40] hover:underline">
+                        <button className="text-sm font-semibold text-brand-700 hover:underline">
                           Changelog
                         </button>
                       </>

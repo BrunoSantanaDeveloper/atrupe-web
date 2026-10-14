@@ -6,7 +6,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { StandaloneNfseForm } from './components/StandaloneNfseForm'
 
 export const metadata: Metadata = {
-  title: 'NFS-e Nota Avulsa',
+  title: 'NFS-e avulsa',
   description: 'Emissão de Nota Fiscal de Serviço Eletrônica Avulsa',
 }
 

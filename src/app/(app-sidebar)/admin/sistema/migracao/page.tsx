@@ -230,7 +230,7 @@ export default function AdminMigracaoPage() {
         <Card>
           <CardContent className="flex flex-col gap-4 p-6">
             <div>
-              <h2 className="text-lg font-semibold">1. Encontre o cliente</h2>
+              <h2 className="type-section-title">1. Encontre o cliente</h2>
               <p className="text-sm text-muted-foreground">
                 Informe o CNPJ que o cliente passou ao pedir a migração. A busca
                 procura a base dele no sistema legado e a conta do Atrupe com o
@@ -369,7 +369,7 @@ export default function AdminMigracaoPage() {
           <Card>
             <CardContent className="flex flex-col gap-4 p-6">
               <div>
-                <h2 className="text-lg font-semibold">2. Simule antes</h2>
+                <h2 className="type-section-title">2. Simule antes</h2>
                 <p className="text-sm text-muted-foreground">
                   A simulação não grava nada. Ela confere linha a linha e mostra
                   o que seria recusado — é o passo que revela problema de dado
@@ -419,7 +419,7 @@ export default function AdminMigracaoPage() {
             <CardContent className="flex flex-col gap-4 p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold">
+                  <h2 className="type-section-title">
                     {run.dryRun
                       ? 'Resultado da simulação'
                       : 'Resultado da carga'}

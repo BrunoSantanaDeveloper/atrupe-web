@@ -126,19 +126,19 @@ export function Stock({ searchParams }: SearchParamsType) {
                       <TableHead className="w-[30%] min-w-[200px]">
                         Material
                       </TableHead>
-                      <TableHead className="w-[14%] text-right">
+                      <TableHead numeric className="w-[14%]">
                         Saldo
                       </TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Mínimo
                       </TableHead>
-                      <TableHead className="w-[14%] text-right">
+                      <TableHead numeric className="w-[14%]">
                         Custo médio
                       </TableHead>
                       <TableHead className="w-[14%] text-right">
                         Última entrada
                       </TableHead>
-                      <TableHead className="w-[16%]">Situação</TableHead>
+                      <TableHead className="w-[16%]">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -166,7 +166,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                           <TableCell className="text-right text-gray">
                             {item.minimum} {item.unit}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {money(item.averageCost)}
                           </TableCell>
                           <TableCell className="text-right">
@@ -227,7 +227,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                   <TableHead className="w-[14%]">Data</TableHead>
                   <TableHead className="w-[16%]">Tipo</TableHead>
                   <TableHead className="w-[30%]">Material</TableHead>
-                  <TableHead className="w-[14%] text-right">
+                  <TableHead numeric className="w-[14%]">
                     Quantidade
                   </TableHead>
                   <TableHead className="w-[26%]">Origem</TableHead>

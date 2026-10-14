@@ -8,7 +8,7 @@ export const companySchema = z.object({
     cnpj: z.string(),
     stateRegistration: z.string().optional(),
     municipalRegistration: z.string().optional(),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
+    email: z.string().email('E-mail inválido').optional().or(z.literal('')),
     siteUrl: z.string().optional(),
     phone: z.string().min(1, 'Telefone é obrigatório'),
     mobile: z.string().optional(),

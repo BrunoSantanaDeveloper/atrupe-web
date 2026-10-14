@@ -293,7 +293,7 @@ export function Orders({ searchParams }: SearchParamsType) {
             ) : totals?.todas && totals?.todas > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Nenhuma ordem de serviço com o status ${statusLabel || 'selecionado'}`}
+                  title={`Nenhuma ordem de serviço para o status: ${statusLabel || 'selecionado'}`}
                   icon={IconNewsOff}
                 />
               ) : (
@@ -309,7 +309,7 @@ export function Orders({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconNewsOff}
-                title="Sem ordens de serviço"
+                title="Nenhuma ordem de serviço cadastrada"
                 description="Cadastre um orçamento"
                 cta={
                   <NewQuotationTriggerButton

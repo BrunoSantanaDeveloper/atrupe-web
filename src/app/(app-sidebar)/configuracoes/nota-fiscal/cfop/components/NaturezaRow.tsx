@@ -2,7 +2,6 @@
 
 // UI
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import {
   DropdownMenu,
@@ -15,7 +14,7 @@ import {
 // Icons
 import {
   IconDotsVertical,
-  IconEdit,
+  IconPencil,
   IconTrash,
   IconArrowDown,
   IconArrowUp,
@@ -119,7 +118,7 @@ export function NaturezaRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(nature)}>
-              <IconEdit className="w-4 h-4 mr-2" />
+              <IconPencil className="w-4 h-4 mr-2" />
               Editar
             </DropdownMenuItem>
             <DropdownMenuSeparator />

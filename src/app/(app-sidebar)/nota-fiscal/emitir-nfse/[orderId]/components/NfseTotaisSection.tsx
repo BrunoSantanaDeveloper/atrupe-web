@@ -30,9 +30,7 @@ export function NfseTotaisSection({
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Totais
-              </CardTitle>
+              <CardTitle>Totais</CardTitle>
             </div>
             <AccordionTrigger
               className={cn(
@@ -48,19 +46,15 @@ export function NfseTotaisSection({
             <CardContent className="p-0">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6">
                 <div className="space-y-1">
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                    Valor Total Serviços
-                  </p>
-                  <p className="text-xl font-bold text-brand-600">
+                  <p className="type-label">Valor total dos serviços</p>
+                  <p className="type-kpi-value text-brand-600">
                     {formatCurrency(servicesTotal)}
                   </p>
                 </div>
                 {issRetido && (
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                      ISS Retido ({aliquotaIss}%)
-                    </p>
-                    <p className="text-xl font-bold text-error-600">
+                    <p className="type-label">ISS retido ({aliquotaIss}%)</p>
+                    <p className="type-kpi-value text-error-600">
                       -
                       {formatCurrency(
                         servicesTotal * ((aliquotaIss || 0) / 100),
@@ -70,10 +64,8 @@ export function NfseTotaisSection({
                 )}
                 {issRetido && (
                   <div className="space-y-1">
-                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                      Líquido a Pagar
-                    </p>
-                    <p className="text-xl font-bold text-success-600">
+                    <p className="type-label">Líquido a pagar</p>
+                    <p className="type-kpi-value text-success-600">
                       {formatCurrency(
                         servicesTotal * (1 - (aliquotaIss || 0) / 100),
                       )}

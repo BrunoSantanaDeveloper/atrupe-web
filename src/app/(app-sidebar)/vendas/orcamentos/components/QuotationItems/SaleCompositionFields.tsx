@@ -62,7 +62,7 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
     )
     setExtras(
       saleForm.extras.map((extra) => ({
-        blockId: extra.blockId,
+        fieldId: extra.fieldId,
         value: extra.defaultValue,
       })),
     )
@@ -85,8 +85,8 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
   const included = (lineId: string) =>
     !!optionals.find((optional) => optional.lineId === lineId)?.included
 
-  const extraValue = (blockId: string) =>
-    extras.find((extra) => extra.blockId === blockId)?.value ?? 0
+  const extraValue = (fieldId: string) =>
+    extras.find((extra) => extra.fieldId === fieldId)?.value ?? 0
   const choiceValue = (lineId: string) =>
     choices.find((choice) => choice.lineId === lineId)?.optionId || ''
   const listValue = (lineId: string, optionId: string) =>
@@ -119,7 +119,7 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
               )}`,
           ),
           ...saleForm.extras.map(
-            (extra) => `${extra.name}: ${extraValue(extra.blockId)}`,
+            (extra) => `${extra.name}: ${extraValue(extra.fieldId)}`,
           ),
           ...saleForm.choices.map(
             (choice) =>
@@ -203,26 +203,26 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
               </div>
             ))}
             {saleForm.extras.map((extra) => (
-              <div key={extra.blockId} className="space-y-1.5">
+              <div key={extra.fieldId} className="space-y-1.5">
                 <label
-                  htmlFor={`extra-${extra.blockId}`}
+                  htmlFor={`extra-${extra.fieldId}`}
                   className="text-sm font-medium"
                 >
                   {extra.name}
                 </label>
                 <Input
-                  id={`extra-${extra.blockId}`}
+                  id={`extra-${extra.fieldId}`}
                   type="number"
                   min={0}
                   step={extra.kind === 'INTEGER' ? '1' : '0.01'}
-                  value={String(extraValue(extra.blockId))}
+                  value={String(extraValue(extra.fieldId))}
                   onChange={(event) =>
                     setExtras((current) => [
                       ...current.filter(
-                        (item) => item.blockId !== extra.blockId,
+                        (item) => item.fieldId !== extra.fieldId,
                       ),
                       {
-                        blockId: extra.blockId,
+                        fieldId: extra.fieldId,
                         value: Number(event.target.value || 0),
                       },
                     ])

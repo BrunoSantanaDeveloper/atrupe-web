@@ -67,7 +67,7 @@ export function AddPanel({
         <Button
           size="sm"
           type="button"
-          variant="outline"
+          variant="neutralOutline"
           LeftIcon={IconX}
           onClick={onClose}
         >

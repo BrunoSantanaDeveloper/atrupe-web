@@ -7,7 +7,7 @@
 
 // React / Next
 import { Fragment, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 // UI
 import {
@@ -57,7 +57,6 @@ import {
 } from '@/actions/production-manager'
 
 // Hooks / Store / Consts
-import { updateFilterParam } from '@/lib/filter-utils'
 import {
   timeModeObj,
   releaseRuleObj,
@@ -74,12 +73,11 @@ import {
   IconUsers,
   IconPencil,
   IconRestore,
-  IconCirclePlus,
+  IconPlus,
   IconListNumbers,
 } from '@tabler/icons-react'
 
 // Utils
-import { cn } from '@/lib/utils'
 
 const EDIT = ['production:production:view']
 
@@ -97,7 +95,6 @@ const tabs = [
 ]
 
 export function ProductionSettings() {
-  const router = useRouter()
   const params = useSearchParams()
   const queryClient = useQueryClient()
   const [dialog, setDialog] = useState<Dialog>(null)
@@ -145,10 +142,17 @@ export function ProductionSettings() {
           review="new"
           title="Produção"
           supportText="Gerenciadores e tipos de tarefa do gerenciador de produção"
+          paramName="aba"
+          activeTab={tab}
+          tabs={tabs.map((item) => ({
+            value: item.value,
+            tab: item.value,
+            label: item.label,
+          }))}
           primaryCta={
             <PermissionGate permissions={EDIT}>
               <Button
-                LeftIcon={IconCirclePlus}
+                LeftIcon={IconPlus}
                 onClick={() =>
                   setDialog(
                     tab === 'tipos' ? { kind: 'type' } : { kind: 'manager' },
@@ -160,30 +164,6 @@ export function ProductionSettings() {
             </PermissionGate>
           }
         />
-
-        <div className="flex gap-2">
-          {tabs.map((item) => (
-            <button
-              key={item.value}
-              type="button"
-              onClick={() =>
-                updateFilterParam(
-                  'aba',
-                  item.value === 'gerenciadores' ? 'all' : item.value,
-                  { router, params },
-                )
-              }
-              className={cn(
-                'border-b-2 px-4 py-2 text-sm font-medium',
-                tab === item.value
-                  ? 'border-brand-600 text-gray-900'
-                  : 'border-transparent text-gray hover:text-gray-700',
-              )}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
 
         {tab === 'gerenciadores' ? (
           <Card>

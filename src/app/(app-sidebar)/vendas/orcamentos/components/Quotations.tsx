@@ -330,7 +330,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={`Nenhum orçamento com o status ${statusLabel || 'selecionado'}`}
+                title={`Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`}
                 icon={IconReportOff}
               />
             ) : (
@@ -346,7 +346,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : (
             <ListDataTotalEmpty
               icon={IconReportOff}
-              title="Sem orçamentos cadastrados"
+              title="Nenhum orçamento cadastrado"
               description="Cadastre seu primeiro orçamento"
               cta={
                 <NewQuotationTriggerButton

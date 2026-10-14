@@ -139,7 +139,7 @@ export function CfopConfigForm() {
         return
       }
 
-      toast.success('Configuração salva com sucesso!')
+      toast.success('Configuração salva')
       queryClient.invalidateQueries({ queryKey: ['invoicy-config'] })
     } catch (error) {
       toast.error('Erro ao salvar configuração')
@@ -161,7 +161,7 @@ export function CfopConfigForm() {
       <div className="flex items-center gap-4">
         <FeaturedIcon variant="outline" Icon={IconArrowsSplit} />
         <div>
-          <h2 className="text-lg font-semibold">Natureza de Operação e CFOP</h2>
+          <h2 className="type-section-title">Natureza de Operação e CFOP</h2>
           <p className="text-sm text-gray-500">
             Configure o CFOP e natureza da operação padrão para emissão de NF-e.
             Estas configurações podem ser sobrescritas em cada produto.
@@ -173,7 +173,7 @@ export function CfopConfigForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Default CFOP and Operation Nature */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Configurações Padrão</h3>
+            <h3 className="type-card-title">Configurações Padrão</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormSelect
@@ -191,7 +191,7 @@ export function CfopConfigForm() {
 
           {/* Info Card */}
           <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
-            <h4 className="font-medium text-blue-900 mb-2">
+            <h4 className="type-card-title text-blue-900 mb-2">
               Sobre CFOP e Natureza da Operação
             </h4>
             <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
@@ -228,9 +228,7 @@ export function CfopConfigForm() {
               RightIcon={IconDeviceFloppy}
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting
-                ? 'Salvando...'
-                : 'Salvar Configuração'}
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar'}
             </Button>
           </div>
         </form>
