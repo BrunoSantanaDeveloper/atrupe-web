@@ -13,6 +13,33 @@ class AccessTransferred extends CredentialsSignin {
   code = 'access_transferred'
 }
 
+/** Folga para o relógio da Vercel e o do backend não baterem ao segundo. */
+const BACKEND_TOKEN_MARGIN_MS = 60 * 1000
+
+/**
+ * O access_token do backend vale 4h a partir do login e não é renovado. A
+ * sessão do NextAuth, sim: cada consulta do navegador a reassina por mais 4h.
+ * Sem esta checagem a sessão seguia aberta com um token que o backend já
+ * recusava, toda chamada voltava 401 e o redirect para /logout entrava em
+ * laço. Lê o `exp` do token sem validar a assinatura, que é do backend.
+ */
+function backendTokenExpired(accessToken: unknown): boolean {
+  if (typeof accessToken !== 'string') return false
+  const payload = accessToken.replace(/^Bearer\s+/i, '').split('.')[1]
+  if (!payload) return false
+  try {
+    const { exp } = JSON.parse(
+      atob(payload.replace(/-/g, '+').replace(/_/g, '/')),
+    )
+    return (
+      typeof exp === 'number' &&
+      Date.now() >= exp * 1000 - BACKEND_TOKEN_MARGIN_MS
+    )
+  } catch {
+    return false
+  }
+}
+
 interface LoginResponse {
   id: string
   name: string
@@ -221,11 +248,39 @@ export const {
   pages: {
     signIn: '/login',
   },
+  events: {
+    // Registra a saída no monitor de atividade do backend. Roda em todo
+    // signOut (tela de logout, troca de conta). Com o token vencido o backend
+    // responderia 401, então nem chama.
+    async signOut(message) {
+      const token = 'token' in message ? message.token : null
+      if (!token?.accessToken || !token.sessionId) return
+      if (backendTokenExpired(token.accessToken)) return
+
+      await axios
+        .post(`${process.env.API_URL}/activity-monitor/logout`, undefined, {
+          headers: {
+            Authorization: String(token.accessToken),
+            'x-session-id': String(token.sessionId),
+          },
+          timeout: 5000,
+        })
+        .catch((error) => {
+          console.error('Erro ao registrar logout no backend:', error?.message)
+        })
+    },
+  },
   callbacks: {
     jwt({ token, user, trigger, session }) {
       // Se há um usuário (primeiro login), use os dados do usuário
       if (user) {
         return { ...user, ...token }
+      }
+
+      // Token do backend vencido: null encerra a sessão, e o middleware manda
+      // para o login em vez de abrir páginas cujas chamadas voltam 401.
+      if (backendTokenExpired(token.accessToken)) {
+        return null
       }
 
       // Se é um update trigger, atualize os dados do token

@@ -1,25 +1,23 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { signOut } from 'next-auth/react'
 
 import Loading from '@/app/loading'
-import logout from '@/actions/logout'
-import { useQueryClient } from '@tanstack/react-query'
 
+/**
+ * Sai pela rota do NextAuth (/api/auth/signout), num fetch comum. Com server
+ * action, o logout entrava na fila de actions do router atrás de outras: uma
+ * que voltasse 401 recarregava esta página antes de ele rodar, e o cookie
+ * nunca era apagado. A navegação de página inteira para /login descarta o
+ * estado do cliente.
+ */
 export default function Logout() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
-
   useEffect(() => {
-    async function signOut() {
-      await logout()
-      queryClient.clear()
-      router.replace('/login')
-    }
-
-    signOut()
-  }, [router, queryClient])
+    signOut({ redirect: false })
+      .catch(() => null)
+      .finally(() => window.location.replace('/login'))
+  }, [])
 
   return <Loading />
 }
