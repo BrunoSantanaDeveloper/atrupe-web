@@ -487,6 +487,8 @@ export function QuotationProdDetailModal({
       await queryClient.invalidateQueries({
         queryKey: [QUOTATION_DATA_QUERY_KEY],
       })
+      // A O.S. aprovada também edita o item por aqui (PO, 14/10/2026)
+      queryClient.invalidateQueries({ queryKey: ['order-data'] })
       reset()
       return
     }

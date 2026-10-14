@@ -56,6 +56,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Libs
 import { actionDisabled } from '@/lib/quotation'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { OrderItemEdit } from './OrderItemEdit'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import {
   calculateTotalQuantity,
@@ -81,6 +83,10 @@ export function OrderItems({ data }: Props) {
   const [accordionValue, setAccordionValue] = useState<string[]>()
 
   const status = data?.status
+  // Sem estoque, o item da O.S. aprovada muda a composição e o servidor
+  // refaz o retrato (PO, 14/10/2026); com estoque, fica como foi vendido
+  const { hasFeature } = usePlanFeatures()
+  const canEditItem = status !== 'CANCELED' && !hasFeature('stock_control')
 
   const queryClient = useQueryClient()
 
@@ -199,6 +205,14 @@ export function OrderItems({ data }: Props) {
                               <TableCell className="py-4">
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
+                                    {canEditItem &&
+                                    item?.product?.originalProductId ? (
+                                      <PermissionGate
+                                        permissions={['sale:order:edit']}
+                                      >
+                                        <OrderItemEdit item={item} />
+                                      </PermissionGate>
+                                    ) : null}
                                     <PermissionGate
                                       permissions={['sale:order:edit']}
                                     >
@@ -361,6 +375,14 @@ export function OrderItems({ data }: Props) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
+                                    {canEditItem &&
+                                    item?.product?.originalProductId ? (
+                                      <PermissionGate
+                                        permissions={['sale:order:edit']}
+                                      >
+                                        <OrderItemEdit item={item} />
+                                      </PermissionGate>
+                                    ) : null}
                                     <PermissionGate
                                       permissions={['sale:order:edit']}
                                     >
