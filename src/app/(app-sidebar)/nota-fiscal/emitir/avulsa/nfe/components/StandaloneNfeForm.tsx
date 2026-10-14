@@ -536,6 +536,9 @@ export function StandaloneNfeForm() {
         : {}),
       items: data.items.map((item) => ({
         productId: item.productId,
+        // Codigo cadastrado do produto: e ele que vira o cProd do XML e
+        // aparece como "COD. PROD." no DANFE. Sem enviar, saia o UUID.
+        productCode: item.productCode,
         quantity: item.quantity,
         unitValue: item.unitValue,
         discount: item.discount,
