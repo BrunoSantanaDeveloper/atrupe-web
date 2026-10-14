@@ -275,7 +275,7 @@ export function PayrollItems({ data }: Props) {
                           </PermissionGate>
                           {isAdvancePaid ? (
                             <PermissionGate
-                              permissions={['financial:payroll:delete']}
+                              permissions={['financial:payroll:edit']}
                             >
                               <ActionButton
                                 Icon={IconTrash}
@@ -286,7 +286,7 @@ export function PayrollItems({ data }: Props) {
                             </PermissionGate>
                           ) : (
                             <PermissionGate
-                              permissions={['financial:payroll:delete']}
+                              permissions={['financial:payroll:edit']}
                             >
                               <ActionButton
                                 Icon={IconTrash}

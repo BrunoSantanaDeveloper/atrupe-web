@@ -130,7 +130,7 @@ import {
 // Utils
 import { cn } from '@/lib/utils'
 
-const EDIT = ['product_settings:products:edit']
+const EDIT = ['product_settings:composition:edit']
 
 const num = (value: number, digits = 3) =>
   value.toLocaleString('pt-BR', { maximumFractionDigits: digits })

@@ -71,6 +71,7 @@ export function SalesSettingsClient() {
           icon: IconRoute,
           description: 'Gerencie as origens de onde seus clientes chegam.',
           link: `${defaultPath}/origens-de-contato`,
+          permission: 'sales_settings:contact_sources:view',
         },
         {
           title: 'Perfil de vendedor',

@@ -61,8 +61,11 @@ interface Props {
 
 export function NewSerieDialog({ open, setOpen }: Props) {
   const queryClient = useQueryClient()
-  const { canBillOnDeliveryAndCheckout, canManageDeliverySchedule } =
-    usePlanFeatures()
+  const {
+    canBillOnDeliveryAndCheckout,
+    canBillOnCheckout,
+    canManageDeliverySchedule,
+  } = usePlanFeatures()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -101,11 +104,13 @@ export function NewSerieDialog({ open, setOpen }: Props) {
     reset()
   }
 
-  const filteredBillingOptions = !canBillOnDeliveryAndCheckout()
-    ? billingOptions.filter(
-        (o) => o.value === 'ON_ORDER' || o.value === 'NO_INVOICE',
-      )
-    : billingOptions
+  const filteredBillingOptions = billingOptions.filter((o) =>
+    o.value === 'ON_CHECKOUT'
+      ? canBillOnCheckout()
+      : o.value === 'ON_DELIVERY'
+        ? canBillOnDeliveryAndCheckout()
+        : true,
+  )
 
   const productionStatusOptions = !canManageDeliverySchedule()
     ? [{ value: 'PRODUCTION_COMPLETED', label: 'Produção concluída' }]

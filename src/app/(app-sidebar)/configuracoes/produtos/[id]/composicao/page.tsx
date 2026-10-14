@@ -16,7 +16,7 @@ export default function CompositionPage({
 }) {
   return (
     <PermissionGate
-      permissions={['product_settings:products:view']}
+      permissions={['product_settings:composition:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as composições.

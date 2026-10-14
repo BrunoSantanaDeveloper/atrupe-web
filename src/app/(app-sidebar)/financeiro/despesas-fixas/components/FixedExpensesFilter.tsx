@@ -193,8 +193,9 @@ export function FixedExpensesFilter({
       <div className="flex items-end w-full sm:w-auto">
         {/* EC-22: a chave era 'fixed_expenses' (plural), que pertence às
             configurações. A linha da matriz "Lançamento de despesas fixas" é
-            'fixed_expense', então nenhum cargo recebia este botão */}
-        <PermissionGate permissions={['financial:fixed_expense:edit']}>
+            'fixed_expense', então nenhum cargo recebia este botão. Lançar
+            várias pede "Cria", como lançar uma (PO, 14/10/2026) */}
+        <PermissionGate permissions={['financial:fixed_expense:create']}>
           <Button
             variant="neutralOutline"
             LeftIcon={IconPlus}

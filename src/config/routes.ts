@@ -58,6 +58,8 @@ export const ALLOWED_WHEN_TRIAL_EXPIRED = ['/logout', '/assinatura'] as const
  * página de não encontrada com status 200 e às vezes quebrava no navegador.
  */
 export const DEMO_ROUTES = [
+  // Esqueleto sem ação: escondida até a Fase 7 (PO, 14/10/2026)
+  '/financeiro/frente-de-caixa',
   '/base-de-custos',
   '/precificacao',
   '/estoque',

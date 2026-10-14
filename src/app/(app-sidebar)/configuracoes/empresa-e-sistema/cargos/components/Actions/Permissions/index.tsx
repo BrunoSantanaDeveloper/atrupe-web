@@ -140,7 +140,12 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'financial.cash_control': ['cash_control'],
   'register.credit_limit': ['credit_limit_configuration'],
   'financial_settings.credit_limits': ['credit_limit_configuration'],
-  'production.delivery_schedule': ['delivery_production_tabs'],
+  // A Agenda de entrega não pede recurso: abre do Start em diante (PO,
+  // 14/10/2026)
+  'product_settings.composition': ['product_composition'],
+  'invoice.nfse': ['nota_fiscal'],
+  'financial.pdv': ['pdv_screen'],
+  'financial.checkout': ['pdv_screen'],
   'sale.quotation_result': ['cost_base'],
   'company_settings.sectors': ['sectors_configuration'],
   'sales_settings.rejection_reasons': ['quotation_rejection_reasons'],
@@ -160,6 +165,9 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
  * Cada uma sai desta lista quando a rota dela sair de DEMO_ROUTES.
  */
 const DEMO_PERMISSIONS = [
+  // A frente de caixa fica escondida até a Fase 7 (PO, 14/10/2026)
+  'financial.pdv',
+  'financial.checkout',
   'cost.base',
   'cost.pricing',
   'production.production',

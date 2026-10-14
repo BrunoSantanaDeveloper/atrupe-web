@@ -191,7 +191,8 @@ export function PayrollFilter({
         />
       </div>
       <div className="flex items-end w-full sm:w-auto">
-        <PermissionGate permissions={['financial:payroll:edit']}>
+        {/* Lançar várias pede "Cria", como lançar uma (PO, 14/10/2026) */}
+        <PermissionGate permissions={['financial:payroll:create']}>
           <Button
             variant="neutralOutline"
             LeftIcon={IconPlus}

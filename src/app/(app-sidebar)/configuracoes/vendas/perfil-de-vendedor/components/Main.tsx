@@ -195,7 +195,7 @@ export function Main({ searchParams }: SearchParamsType) {
                                     <TooltipProvider>
                                       <PermissionGate
                                         permissions={[
-                                          'sales_settings:seller_profile:delete',
+                                          'sales_settings:seller_profile:edit',
                                         ]}
                                       >
                                         <ActionButton

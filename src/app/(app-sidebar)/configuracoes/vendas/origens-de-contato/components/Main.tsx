@@ -16,6 +16,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Components
 import { NewItemDialog } from './NewItem'
@@ -44,22 +45,26 @@ export function Main() {
   const ActionButtons = ({ item }: { item: IContactSource }) => (
     <div className="flex justify-end gap-1">
       <TooltipProvider>
-        <ActionButton
-          Icon={IconPencil}
-          tooltip="Editar"
-          onClick={() => {
-            setOpenDialog('edit')
-            setRowData(item)
-          }}
-        />
-        <ActionButton
-          Icon={IconTrash}
-          tooltip="Excluir"
-          onClick={() => {
-            setOpenDialog('delete')
-            setRowData(item)
-          }}
-        />
+        <PermissionGate permissions={['sales_settings:contact_sources:edit']}>
+          <ActionButton
+            Icon={IconPencil}
+            tooltip="Editar"
+            onClick={() => {
+              setOpenDialog('edit')
+              setRowData(item)
+            }}
+          />
+        </PermissionGate>
+        <PermissionGate permissions={['sales_settings:contact_sources:delete']}>
+          <ActionButton
+            Icon={IconTrash}
+            tooltip="Excluir"
+            onClick={() => {
+              setOpenDialog('delete')
+              setRowData(item)
+            }}
+          />
+        </PermissionGate>
       </TooltipProvider>
     </div>
   )
@@ -70,9 +75,13 @@ export function Main() {
         title="Origens de contato"
         previousPage="/configuracoes/vendas"
         primaryCta={
-          <Button onClick={() => setOpenDialog('new')} LeftIcon={IconPlus}>
-            Nova origem
-          </Button>
+          <PermissionGate
+            permissions={['sales_settings:contact_sources:create']}
+          >
+            <Button onClick={() => setOpenDialog('new')} LeftIcon={IconPlus}>
+              Nova origem
+            </Button>
+          </PermissionGate>
         }
       />
 

@@ -40,7 +40,6 @@ import {
 // Types
 import { PayrollDetailType, PayrollPdfType } from '@/types/financial/payroll'
 import { useQueryClient } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
 
 interface Props {
   data: PayrollDetailType
@@ -52,7 +51,6 @@ export function PayrollActions({ data }: Props) {
   const [showSignature, setShowSignature] = useState(true)
   const { open: openAlertDialog } = useAlertDialog()
   const queryClient = useQueryClient()
-  const { data: session } = useSession()
 
   const handleTogglePayroll = async () => {
     const isOpen = data.status === 'OPEN'
@@ -191,17 +189,15 @@ export function PayrollActions({ data }: Props) {
             />
           </PermissionGate>
         ) : (
-          // TODO: Ajustar permissão para reabrir folha
-          session?.user?.role === 'Admin' && (
-            <PermissionGate permissions={['financial:payroll:delete']}>
-              <CustomButton
-                icon={IconArrowBackUp}
-                title="Reabrir folha"
-                iconVariant="lightBlueBorderedLight"
-                onClick={handleTogglePayroll}
-              />
-            </PermissionGate>
-          )
+          // Reabrir a folha é mexer no registro: "Edita" (PO, 14/10/2026)
+          <PermissionGate permissions={['financial:payroll:edit']}>
+            <CustomButton
+              icon={IconArrowBackUp}
+              title="Reabrir folha"
+              iconVariant="lightBlueBorderedLight"
+              onClick={handleTogglePayroll}
+            />
+          </PermissionGate>
         )}
       </div>
     </>

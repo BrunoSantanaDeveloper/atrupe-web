@@ -20,7 +20,7 @@ export default function ProcessPage({ params }: { params: { id: string } }) {
 
   return (
     <PermissionGate
-      permissions={['product_settings:products:view']}
+      permissions={['product_settings:composition:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar os processos.

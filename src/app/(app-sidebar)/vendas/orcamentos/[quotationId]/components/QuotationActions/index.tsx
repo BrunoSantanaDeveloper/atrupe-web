@@ -87,7 +87,7 @@ export function QuotationActions({ data, primaryAction }: Props) {
         </div>
         <div className="flex flex-wrap gap-4">
           {canReject ? (
-            <PermissionGate permissions={['sale:quotation:delete']}>
+            <PermissionGate permissions={['sale:quotation:edit']}>
               <RejectQuotation data={data} />
             </PermissionGate>
           ) : null}

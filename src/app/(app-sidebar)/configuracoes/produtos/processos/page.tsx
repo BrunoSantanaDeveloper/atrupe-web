@@ -15,7 +15,7 @@ export function metadata() {
 export default function ProcessesPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['product_settings:products:view']}
+      permissions={['product_settings:composition:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar os processos.

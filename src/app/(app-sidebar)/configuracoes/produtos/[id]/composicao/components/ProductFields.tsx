@@ -55,7 +55,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 // Icons
 import { IconPlus, IconTrash } from '@tabler/icons-react'
 
-const EDIT = ['product_settings:products:edit']
+const EDIT = ['product_settings:composition:edit']
 
 interface Props {
   productId: string

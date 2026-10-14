@@ -152,7 +152,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Controle de caixa',
         path: '/financeiro/controle-de-caixa',
         review: 'new',
-        permission: ['financial:flow:view', 'values:values:view'],
+        // A mesma chave da página (PO, 14/10/2026)
+        permission: ['financial:cash_control:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredFeature: 'cash_control',
       },
@@ -164,6 +165,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredFeature: 'pdv_screen',
+        // Esqueleto sem ação: escondida até a Fase 7 (PO, 14/10/2026)
+        demo: true,
       },
       {
         icon: IconCalendarDollar,
@@ -220,13 +223,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
     icon: IconListSearch,
     title: 'Produção',
     path: '/producao',
-    // O grupo aparece com qualquer uma das chaves dos itens: com a da Agenda
-    // no grupo inteiro, um ELITE sem ela perderia o Gerenciador
-    requiredFeature: [
-      'delivery_production_tabs',
-      'production_manager',
-      'productivity_tracking',
-    ],
+    // A Agenda de entrega vale em todo plano (Start em diante, PO, 14/10/2026)
     children: [
       // {
       //   icon: IconClipboardList,
@@ -244,7 +241,6 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/producao/agenda-de-entrega',
         review: 'todo',
         permission: 'production:delivery_schedule:view',
-        requiredFeature: 'delivery_production_tabs',
       },
       {
         icon: IconListCheck,
@@ -317,7 +313,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Processos',
         path: '/configuracoes/produtos/processos',
         review: 'new',
-        permission: 'product_settings:products:view',
+        permission: 'product_settings:composition:view',
         requiredFeature: 'cost_base',
       },
       {
@@ -467,6 +463,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
           'sales_settings:seller_profile:view',
           'sales_settings:rejection_reasons:view',
           'sales_settings:quotation_status:view',
+          'sales_settings:contact_sources:view',
         ],
         requireAllPermissions: false,
       },

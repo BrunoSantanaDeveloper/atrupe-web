@@ -440,7 +440,7 @@ export function QuotationItems({ data }: Props) {
                                 />
                               </PermissionGate>
                               <PermissionGate
-                                permissions={['sale:quotation:delete']}
+                                permissions={['sale:quotation:edit']}
                               >
                                 <ActionButton
                                   Icon={IconTrash}
@@ -795,7 +795,7 @@ export function QuotationItems({ data }: Props) {
                               />
                             </PermissionGate>
                             <PermissionGate
-                              permissions={['sale:quotation:delete']}
+                              permissions={['sale:quotation:edit']}
                             >
                               <ActionButton
                                 Icon={IconTrash}

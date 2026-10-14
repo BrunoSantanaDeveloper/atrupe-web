@@ -78,6 +78,23 @@ export const permissionsData = [
         name: 'Lançamento de folha de pagamento',
         key: 'payroll',
       },
+      // As telas já pediam; a tela de cargos passou a conceder (PO, 14/10)
+      {
+        name: 'Contas a pagar',
+        key: 'payable',
+      },
+      {
+        name: 'Contas a receber',
+        key: 'receivable',
+      },
+      {
+        name: 'Frente de caixa (PDV)',
+        key: 'pdv',
+      },
+      {
+        name: 'Caixas da frente de caixa',
+        key: 'checkout',
+      },
     ],
   },
   {
@@ -192,6 +209,10 @@ export const permissionsData = [
         name: 'Setores',
         key: 'sectors',
       },
+      {
+        name: 'Assinatura',
+        key: 'subscription',
+      },
     ],
   },
   {
@@ -202,6 +223,11 @@ export const permissionsData = [
         name: 'Produtos',
         key: 'products',
         exportable: true,
+      },
+      // A composição por etapas, os processos e os recursos (D18)
+      {
+        name: 'Composição e processos',
+        key: 'composition',
       },
     ],
   },
@@ -255,6 +281,10 @@ export const permissionsData = [
         name: 'Status de orçamento',
         key: 'quotation_status',
       },
+      {
+        name: 'Origens de contato',
+        key: 'contact_sources',
+      },
     ],
   },
   {
@@ -280,6 +310,56 @@ export const permissionsData = [
       {
         name: 'Configurações fiscais',
         key: 'config',
+      },
+    ],
+  },
+  {
+    section: 'Cadastros fiscais',
+    key: 'invoice',
+    items: [
+      {
+        name: 'CFOP, naturezas de operação e emissores',
+        key: 'nfse',
+      },
+    ],
+  },
+  {
+    section: 'Importações',
+    key: 'import_settings',
+    items: [
+      {
+        name: 'Importações',
+        key: 'import',
+      },
+      {
+        name: 'Importar clientes',
+        key: 'clients',
+      },
+      {
+        name: 'Importar fornecedores',
+        key: 'suppliers',
+      },
+      {
+        name: 'Importar produtos',
+        key: 'products',
+      },
+      {
+        name: 'Importar orçamentos',
+        key: 'quotations',
+      },
+      {
+        name: 'Importar financeiro',
+        key: 'financial',
+      },
+    ],
+  },
+  {
+    section: 'Academy',
+    key: 'academy',
+    items: [
+      {
+        name: 'Academy',
+        key: 'academy',
       },
     ],
   },

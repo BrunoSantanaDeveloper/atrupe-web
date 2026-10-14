@@ -92,7 +92,7 @@ export function Processes({ searchParams }: SearchParamsType) {
           paramName="status"
           supportText="Etapas produtivas de cada setor, com os recursos e o tempo que usam"
           primaryCta={
-            <PermissionGate permissions={['product_settings:products:edit']}>
+            <PermissionGate permissions={['product_settings:composition:edit']}>
               <NewProcessTriggerButton
                 onOpenChange={() => setOpenDialog('new-process')}
               />
@@ -208,7 +208,7 @@ export function Processes({ searchParams }: SearchParamsType) {
                                   />
                                   <PermissionGate
                                     permissions={[
-                                      'product_settings:products:edit',
+                                      'product_settings:composition:edit',
                                     ]}
                                   >
                                     <NewProcessTriggerButton

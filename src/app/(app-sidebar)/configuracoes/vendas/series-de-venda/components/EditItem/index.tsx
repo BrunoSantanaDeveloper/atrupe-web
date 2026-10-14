@@ -84,8 +84,11 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const [selectedProfileIds, setSelectedProfileIds] = useState<string[]>([])
   const isAdmin = Boolean(session?.user?.isAdmin)
 
-  const { canBillOnDeliveryAndCheckout, canManageDeliverySchedule } =
-    usePlanFeatures()
+  const {
+    canBillOnDeliveryAndCheckout,
+    canBillOnCheckout,
+    canManageDeliverySchedule,
+  } = usePlanFeatures()
 
   const { data: profilesData, isLoading: isLoadingProfiles } = useQuery({
     staleTime: 60000,
@@ -152,12 +155,16 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     )
   }
 
-  const filteredBillingOptions = !canBillOnDeliveryAndCheckout()
-    ? billingOptions.filter(
-        (option) =>
-          option.value === 'ON_ORDER' || option.value === 'NO_INVOICE',
-      )
-    : billingOptions
+  // A série que já fatura de um jeito o mantém na lista
+  const filteredBillingOptions = billingOptions.filter(
+    (option) =>
+      option.value === rowData?.billing?.value ||
+      (option.value === 'ON_CHECKOUT'
+        ? canBillOnCheckout()
+        : option.value === 'ON_DELIVERY'
+          ? canBillOnDeliveryAndCheckout()
+          : true),
+  )
 
   const filterProductionStatusOptions = !canManageDeliverySchedule()
     ? productionStatusOptions.filter(

@@ -449,7 +449,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                     </PermissionGate>
                                     {order?.status !== 'CANCELED' && (
                                       <PermissionGate
-                                        permissions={['sale:order:delete']}
+                                        permissions={['sale:order:edit']}
                                       >
                                         <CancelOrderButton order={order} />
                                       </PermissionGate>

@@ -126,7 +126,7 @@ export function OrderActions({ data }: Props) {
         </div>
         <div className="flex flex-wrap gap-4">
           {canCancel ? (
-            <PermissionGate permissions={['sale:order:delete']}>
+            <PermissionGate permissions={['sale:order:edit']}>
               <CancelOrder data={data} />
             </PermissionGate>
           ) : null}

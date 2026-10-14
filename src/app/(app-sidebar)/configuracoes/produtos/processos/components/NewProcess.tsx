@@ -78,7 +78,7 @@ interface Props {
   onCreated?: (processId: string) => void
 }
 
-const EDIT = ['product_settings:products:edit']
+const EDIT = ['product_settings:composition:edit']
 
 // As duas preferências como cartões de regra, no desenho do modal de
 // precificação (openspec/design.md): o texto de apoio diz quando usar cada
