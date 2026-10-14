@@ -8,6 +8,7 @@
 // Types
 import type {
   Material,
+  MaterialFiscal,
   MaterialUnit,
   MaterialAdvanced,
   MaterialVariation,
@@ -18,7 +19,12 @@ import type {
 } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
+import {
+  getItem,
+  putItemNew,
+  createItemNew,
+  updateItemNew,
+} from '@/actions/_cruds'
 
 // A lista vem em páginas de até 100 (teto da API); a tela agrupa tudo por
 // setor, então a action junta as páginas. O limite é uma proteção: acima
@@ -42,6 +48,7 @@ type ApiMaterial = Omit<
   price?: number | null
   variations?: ApiVariation[]
   advanced?: MaterialAdvanced | null
+  fiscal?: MaterialFiscal | null
 }
 
 const toVariation = (variation: ApiVariation): MaterialVariation => ({
@@ -68,6 +75,7 @@ const toMaterial = (material: ApiMaterial): Material => ({
   variations: (material.variations || []).map(toVariation),
   active: material.active,
   advanced: material.advanced || undefined,
+  fiscal: material.fiscal || {},
 })
 
 export const getMaterials = async ({
@@ -321,6 +329,31 @@ export const previewMaterialImport = async ({
     data: (res.data?.data || []) as ImportPreviewRow[],
     message: '',
   }
+}
+
+// Os dados fiscais do material de venda direta (PO, 14/10/2026): o módulo
+// Nota Fiscal e `nota_fiscal:config:edit`. Os campos vazios não vão: na
+// nota, saem do padrão do emissor
+export const updateMaterialFiscal = async ({
+  materialId,
+  fiscal,
+}: {
+  materialId: string
+  fiscal: MaterialFiscal
+}) => {
+  const data = Object.fromEntries(
+    Object.entries(fiscal)
+      .map(([key, value]) => [key, (value ?? '').trim()])
+      .filter(([, value]) => value),
+  )
+  const res = await putItemNew({
+    route: `/material/${encodeURIComponent(materialId)}/fiscal`,
+    data,
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
+  }
+  return { success: true, data: toMaterial(res.data), message: '' }
 }
 
 export const importMaterials = async ({

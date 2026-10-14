@@ -128,6 +128,8 @@ type ProductType = {
   unitValue: number
   finalValue: number
   compositions: CompositionItemType[]
+  // A unidade do material de venda direta (Fase 4.4); nula nos outros itens
+  unit?: string | null
 }
 
 // Tipo para imagem

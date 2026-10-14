@@ -39,6 +39,21 @@ export type MaterialAdvanced = {
   weight?: number | null
 }
 
+// Os dados fiscais da venda direta (NCM, CFOP, CSTs), com o módulo Nota Fiscal
+export type MaterialFiscal = Partial<{
+  ncm: string
+  cest: string
+  cean: string
+  commercialUnit: string
+  icmsOrigin: string
+  icmsCst: string
+  pisCst: string
+  cofinsCst: string
+  ipiCst: string
+  cfopInState: string
+  cfopOutState: string
+}>
+
 export type Material = {
   id: string
   code: string
@@ -57,4 +72,7 @@ export type Material = {
   variations: MaterialVariation[]
   active: boolean
   advanced?: MaterialAdvanced
+  // Os dados fiscais da venda direta, com o módulo Nota Fiscal: o que
+  // ficar vazio sai do padrão do emissor na nota (PO, 14/10/2026)
+  fiscal?: MaterialFiscal
 }

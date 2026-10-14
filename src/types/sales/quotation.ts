@@ -25,6 +25,17 @@ export type QuotationItemType = {
   // Acréscimo em centavos, fora do desconto (ALT-25)
   addition?: number
   origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL'
+  // O material de venda direta (ORG-1); nulo nos outros itens. O preço por
+  // unidade só vem com a permissão de valores
+  material?: {
+    id: string
+    name: string | null
+    unit: string | null
+    sector: string | null
+    variationId: string | null
+    variation: string | null
+    unitPrice?: number | null
+  } | null
   variation?: { id: string; name: string } | null
   // As escolhas da composição e o resumo; o retrato com custo fica no
   // servidor (ORC-7)

@@ -71,7 +71,7 @@ import {
 } from '@/lib/quotation-display-utils'
 
 // Actions
-import { createItem } from '@/actions/_cruds'
+import { createItem, deleteItemNew } from '@/actions/_cruds'
 import {
   getComposedItems,
   getItemCompositions,
@@ -88,6 +88,17 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationItems'
+
+// A unidade do material de venda direta, como a tela mostra
+const MATERIAL_UNIT_LABEL: Record<string, string> = {
+  HR: 'h',
+  M2: 'm²',
+  M: 'm',
+  KM: 'km',
+  UN: 'un',
+  KG: 'kg',
+  LT: 'l',
+}
 
 interface Props {
   data: QuotationType
@@ -151,7 +162,32 @@ export function QuotationItems({ data }: Props) {
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
     enabled: !!data?.id && DEMO_DATA,
   })
-  const composed = composedRes?.data || []
+  // O material de venda direta vem da API (Fase 4.4) e aparece como os
+  // itens montados: com a unidade e o preço do material
+  const materialRows: ComposedItemSummary[] = (data?.quotationItems ?? [])
+    .filter((item) => item.origin === 'MATERIAL')
+    .map((item) => ({
+      id: item.id,
+      origin: 'MATERIAL',
+      draftId: '',
+      materialId: item.material?.id,
+      variationId: item.material?.variationId ?? null,
+      unit: MATERIAL_UNIT_LABEL[item.material?.unit ?? ''] ?? 'un',
+      unitPrice: item.material?.unitPrice ?? item.unitValue,
+      name: item.description,
+      description: item.material?.sector
+        ? `Material · ${item.material.sector}`
+        : 'Material',
+      quantity: item.product?.quantity || 1,
+      width: 0,
+      height: 0,
+      stages: 0,
+      sectors: item.material?.sector ? [item.material.sector] : [],
+      price: item.finalValue,
+      attention: false,
+      fromApi: true,
+    }))
+  const composed = [...materialRows, ...(composedRes?.data || [])]
 
   // O que foi acrescentado dentro de cada item (ORC-5): vem no item, do
   // detalhe do orçamento, sem custo (ORC-7)
@@ -186,12 +222,18 @@ export function QuotationItems({ data }: Props) {
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
-        const res = await removeComposedItem({
-          quotationId: String(data?.id),
-          itemId: item.id,
-        })
+        // O material veio da API: sai pela rota do item do orçamento
+        const res = item.fromApi
+          ? await deleteItemNew({
+              route: `/sale/quotation/remove-product/${item.id}`,
+            })
+          : await removeComposedItem({
+              quotationId: String(data?.id),
+              itemId: item.id,
+            })
         if (!res.success) throw new Error(res.message)
         queryClient.invalidateQueries({ queryKey: ['composed-items'] })
+        queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       },
       toastMsg: { success: 'Item excluído', error: 'Erro ao excluir o item' },
     })
@@ -234,7 +276,10 @@ export function QuotationItems({ data }: Props) {
     }
   }
 
-  const items = data?.quotationItems
+  // O material vai com os itens montados, abaixo
+  const items = data?.quotationItems?.filter(
+    (item) => item.origin !== 'MATERIAL',
+  )
 
   return (
     <>

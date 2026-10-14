@@ -1474,7 +1474,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {(printOptions.showDimensions || isProduction) && (
                       <View style={{ width: columnWidths.qtyTotal }}>
                         <Text style={styles.textCenterSmall}>
-                          {`${item.product.quantity || 1} un`}
+                          {`${item.product.quantity || 1} ${item.product.unit || 'un'}`}
                         </Text>
                         {(isProduction ||
                           (printOptions.showDimensions &&

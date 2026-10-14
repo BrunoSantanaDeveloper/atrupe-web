@@ -114,7 +114,7 @@ interface Props {
 export function ProductsReportPdf({ data }: Props) {
   const renderProduct = (product: ProductSold) => (
     <View
-      key={`${product.productId}-${product.unit}`}
+      key={`${product.productId ?? product.name}-${product.unit}`}
       style={styles.tableRow}
       wrap={false}
     >

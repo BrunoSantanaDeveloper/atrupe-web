@@ -154,4 +154,7 @@ export type ComposedItemSummary = {
   price: number
   // Sem nenhuma etapa: fica marcado e o orçamento não conclui (MS-12)
   attention: boolean
+  // O item veio da API (material de venda direta, Fase 4.4): editar e
+  // excluir vão para as rotas do orçamento, não para o exemplo
+  fromApi?: boolean
 }

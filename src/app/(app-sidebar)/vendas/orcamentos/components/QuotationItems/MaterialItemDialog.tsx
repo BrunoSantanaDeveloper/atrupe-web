@@ -3,8 +3,8 @@
 // O material de venda direta como item do orçamento (ORG-1, 06/10/2026): o
 // vendedor escolhe a variação (marca · cor), se houver, e a quantidade; o
 // item nasce com a unidade e o preço do material. Serve para criar e para
-// editar a quantidade. Fica no mock dos itens montados na hora, com a origem
-// marcada, até a API aceitar item sem produto (backend-pendente.md).
+// editar a quantidade. Vai para a API (Fase 4.4): o servidor calcula o
+// valor pelo preço de hoje do material.
 
 // React
 import { useEffect, useState } from 'react'
@@ -33,7 +33,8 @@ import {
   addMaterialItem,
   updateMaterialItem,
   getDirectSaleMaterials,
-} from '@/actions/quotation-composition'
+} from '@/actions/material-item'
+import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
 
 // Types
 import type { ComposedItemSummary } from '../../[quotationId]/composicao/types'
@@ -101,7 +102,6 @@ export function MaterialItemDialog({
     setSaving(true)
     const res = editing
       ? await updateMaterialItem({
-          quotationId,
           itemId: editing.id,
           variationId,
           quantity: qty,
@@ -115,7 +115,8 @@ export function MaterialItemDialog({
     setSaving(false)
     if (!res.success) return toast.error(res.message)
     toast.success(editing ? 'Item editado' : 'Item adicionado')
-    queryClient.invalidateQueries({ queryKey: ['composed-items'] })
+    // O item e o total do orçamento voltam do servidor
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     onClose()
   }
 

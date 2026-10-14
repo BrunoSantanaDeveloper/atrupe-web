@@ -56,7 +56,7 @@ import { sectorIcons } from '@/consts/sectors'
 import { FEATURES } from '@/consts/features'
 
 // Actions
-import { getDirectSaleMaterials } from '@/actions/quotation-composition'
+import { getDirectSaleMaterials } from '@/actions/material-item'
 
 // Utils
 import { cn, parseCurrencyToBrl } from '@/lib/utils'

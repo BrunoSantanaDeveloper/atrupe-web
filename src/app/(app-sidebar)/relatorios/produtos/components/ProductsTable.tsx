@@ -97,8 +97,17 @@ export function ProductsTable({ searchParams }: SearchParamsType) {
             </TableHeader>
             <TableBody>
               {products.map((product) => (
-                <TableRow key={`${product.productId}-${product.unit}`}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
+                <TableRow
+                  key={`${product.productId ?? product.name}-${product.unit}`}
+                >
+                  <TableCell className="font-medium">
+                    {product.name}
+                    {product.type && product.type !== 'Produto' && (
+                      <span className="ml-2 text-xs font-normal text-gray">
+                        {product.type}
+                      </span>
+                    )}
+                  </TableCell>
                   <TableCell className="text-right text-gray-600 text-nowrap">
                     {formatQuantity(product.quantity)}
                   </TableCell>

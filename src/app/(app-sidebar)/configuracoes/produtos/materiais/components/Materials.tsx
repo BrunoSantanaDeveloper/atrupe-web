@@ -25,6 +25,8 @@ import { NewMaterialModal } from './NewMaterial'
 import { VariationsModal } from './VariationsModal'
 import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
 import { ImportMaterialsDialog } from './ImportMaterialsDialog'
+import { MaterialFiscalDialog } from './MaterialFiscalDialog'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -56,6 +58,7 @@ import {
   IconCurrencyReal,
   IconChevronDown,
   IconChevronRight,
+  IconReceiptTax,
 } from '@tabler/icons-react'
 
 // Ativo e inativo são abas, como em Produtos (design.md da raiz, listagem).
@@ -78,6 +81,9 @@ export function Materials({ searchParams }: SearchParamsType) {
   // Material sem variação é precificado aqui mesmo, no modal da Precificação
   // (DC-6, MT-3); com variação, o preço vive em cada combinação
   const [pricing, setPricing] = useState<PricingItem | undefined>()
+  // Os dados fiscais da venda direta, com o módulo Nota Fiscal (PO, 14/10)
+  const [fiscal, setFiscal] = useState<Material | null>(null)
+  const { hasFiscalModule } = usePlanFeatures()
   const pricingItemOf = (material: Material): PricingItem => ({
     id: `mat:${material.id}`,
     name: material.name,
@@ -318,6 +324,22 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           }
                                         />
                                       </PermissionGate>
+                                      {material.directSale &&
+                                        hasFiscalModule() && (
+                                          <PermissionGate
+                                            permissions={[
+                                              'nota_fiscal:config:edit',
+                                            ]}
+                                          >
+                                            <ActionButton
+                                              Icon={IconReceiptTax}
+                                              tooltip={`Dados fiscais de ${material.name}`}
+                                              onClick={() =>
+                                                setFiscal(material)
+                                              }
+                                            />
+                                          </PermissionGate>
+                                        )}
                                     </div>
                                   </TableCell>
                                 </TableRow>
@@ -391,6 +413,10 @@ export function Materials({ searchParams }: SearchParamsType) {
             setPricing(undefined)
             queryClient.invalidateQueries({ queryKey: ['materials'] })
           }}
+        />
+        <MaterialFiscalDialog
+          material={fiscal}
+          onOpenChange={() => setFiscal(null)}
         />
         <ImportMaterialsDialog
           open={importing}
