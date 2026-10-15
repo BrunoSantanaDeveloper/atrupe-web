@@ -38,7 +38,7 @@ import {
   DEFAULT_ROUNDING_LIMIT,
   type PaymentPart,
   type PaymentMethod,
-} from '../../types'
+} from '../types'
 
 // Hooks / Store / Consts
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -169,7 +169,14 @@ export function useCashReceipt(
           amount -= taken
           changeLeft -= taken
         }
-        return { method, amount }
+        // A forma do cadastro e a conta vão junto: a API guarda as duas
+        // em cada parte (FC-9)
+        return {
+          method,
+          amount,
+          paymentConditionId: part.paymentConditionId,
+          bankAccountId: part.bankAccountId || undefined,
+        }
       })
       .filter((part) => part.amount > 0)
   }

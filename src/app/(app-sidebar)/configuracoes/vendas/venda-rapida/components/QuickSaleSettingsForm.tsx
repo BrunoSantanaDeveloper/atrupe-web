@@ -51,14 +51,7 @@ export function QuickSaleSettingsForm() {
     queryFn: () => getQuickSaleSettings(),
   })
 
-  const { data: optionsData } = useQuery({
-    staleTime: Infinity,
-    queryKey: ['quick-sale-options'],
-    queryFn: () => getQuickSaleOptions(),
-  })
-
   const settings = data?.data
-  const options = optionsData?.data
 
   const [enabled, setEnabled] = useState(true)
   // O cliente padrão é um cliente de verdade, não um nome digitado: criar o
@@ -74,6 +67,14 @@ export function QuickSaleSettingsForm() {
   const [cashMethods, setCashMethods] = useState<string[]>([])
   const [downPaymentRequired, setDownPaymentRequired] = useState(false)
   const [downPaymentPercent, setDownPaymentPercent] = useState(50)
+
+  // O responsável é um contato do cliente padrão: as opções seguem o cliente
+  const { data: optionsData } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['quick-sale-options', client?.value ?? ''],
+    queryFn: () => getQuickSaleOptions(client?.value),
+  })
+  const options = optionsData?.data
 
   useEffect(() => {
     if (!settings) return
@@ -172,7 +173,11 @@ export function QuickSaleSettingsForm() {
                 route="/client"
                 width="w-full"
                 value={client}
-                onChange={setClient}
+                onChange={(value) => {
+                  setClient(value)
+                  // O responsável era contato do cliente anterior
+                  setResponsibleId('none')
+                }}
                 minChars={1}
                 label="Cliente padrão"
                 placeholder="Busque o cliente da venda de balcão"

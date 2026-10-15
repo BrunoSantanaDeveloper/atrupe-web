@@ -33,18 +33,15 @@ import type { QuotationType } from '@/types/sales/quotation'
 
 // Actions
 import { createItemNew, getData, getDataOld } from '@/actions/_cruds'
-import { getQuickSaleSettings } from '@/actions/quick-sale'
 
 // Third-party
 import { toast } from 'sonner'
-import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconReportOff } from '@tabler/icons-react'
 import { quotationsStatusObj } from '@/consts/quotations'
 import { usePermissions } from '@/hooks/usePermissions'
-import { DEMO_DATA } from '@/lib/demo'
 
 type QuotationExportType = QuotationType & {
   groupDate?: string
@@ -164,18 +161,15 @@ export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
   const router = useRouter()
   const pathname = usePathname()
-  const { data: session } = useSession()
 
   // "Venda rápida" no menu leva para cá com ?novo=venda-rapida (o link antigo,
   // ?venda-rapida=1, continua valendo)
   const quickSaleRequested =
     searchParams?.novo === 'venda-rapida' ||
     searchParams?.['venda-rapida'] === '1'
-  // ALT-22 / VR-1 (fork): com a configuração completa, a venda rápida pula o
-  // modal e o orçamento nasce direto, abrindo na tela dos itens. A
-  // configuração ainda vem de dado de demonstração, por isso o caminho só
-  // vale com a flag; sem ela, o menu abre o formulário da venda rápida
-  const isQuickSale = DEMO_DATA && quickSaleRequested
+  // ALT-22 / VR-1: com a configuração completa, a venda rápida pula o modal
+  // e o orçamento nasce direto, abrindo na tela dos itens
+  const isQuickSale = quickSaleRequested
   const [creatingQuickSale, setCreatingQuickSale] = useState(false)
 
   // Fora da URL da venda rápida, a próxima entrada pelo menu tenta de novo
@@ -183,53 +177,23 @@ export function Quotations({ searchParams }: SearchParamsType) {
     if (!isQuickSale) setCreatingQuickSale(false)
   }, [isQuickSale])
 
-  // Caminho padrão: o formulário da venda rápida, com cliente opcional
-  useEffect(() => {
-    if (!quickSaleRequested || isQuickSale) return
-    setOpenDialog('quick-sale')
-    router.replace(pathname)
-  }, [quickSaleRequested, isQuickSale, router, pathname])
-
   useEffect(() => {
     if (!isQuickSale || creatingQuickSale) return
 
     const createQuickSale = async () => {
       setCreatingQuickSale(true)
 
-      const config = await getQuickSaleSettings()
-      const settings = config?.data
+      // A API cria com os padrões da configuração e o vendedor da sessão
+      const res = await createItemNew({ route: '/sale/quotation/quick-sale' })
 
-      // Sem configuração completa não há como criar sozinho. Em vez de falhar
-      // calado, a venda rápida cai no formulário da venda rápida e diz o que
-      // falta — o vendedor termina a venda e alguém ajusta a configuração
-      // depois
-      if (!settings?.enabled || !settings?.clientId || !settings?.seriesId) {
-        toast.info(
-          'Venda rápida ainda não configurada: escolha o cliente padrão e a série em Configurações › Vendas › Venda rápida',
-        )
+      // Sem configuração completa (ou sem colaborador vinculado) não há como
+      // criar sozinho. Em vez de falhar calado, a venda rápida cai no
+      // formulário da venda rápida e diz o que falta — o vendedor termina a
+      // venda e alguém ajusta a configuração depois
+      if (!res.success || !res.data?.id) {
+        toast.info(res.message || 'Erro ao abrir a venda rápida')
         setOpenDialog('quick-sale')
         // Sem o parâmetro, a lista volta quando o formulário fechar
-        router.replace(pathname)
-        return
-      }
-
-      const res = await createItemNew({
-        route: '/sale/quotation',
-        data: {
-          companyId: session?.company?.id,
-          clientId: settings.clientId,
-          contactId: '',
-          description: settings.description,
-          contactSourceId: settings.serviceTypeId,
-          seriesId: settings.seriesId,
-          sellerId: session?.user?.employeeId,
-          quickSale: true,
-        },
-      })
-
-      if (!res.success || !res.data?.id) {
-        toast.error(res.message || 'Erro ao abrir a venda rápida')
-        setOpenDialog('quick-sale')
         router.replace(pathname)
         return
       }
@@ -239,7 +203,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
     }
 
     createQuickSale()
-  }, [isQuickSale, creatingQuickSale, session, router, pathname])
+  }, [isQuickSale, creatingQuickSale, router, pathname])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({

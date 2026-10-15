@@ -21,7 +21,7 @@ import {
   MoneyInput,
   CashCountCheck,
   needsExplanation,
-} from '../../../_components/cash/CashCountCheck'
+} from '../../_components/cash/CashCountCheck'
 
 // Types
 import {
@@ -33,11 +33,12 @@ import {
   type CashSession,
   type PendingSale,
   type PaymentMethod,
-} from '../../types'
+} from '../types'
 
 // Actions
 import {
   discardPickup,
+  reverseSale,
   openCashSession,
   addCashMovement,
   closeCashSession,
@@ -175,7 +176,7 @@ export function CashMovementDialog({
   const save = async () => {
     const account = accounts.find((item) => item.id === accountId)
     setSaving(true)
-    const res = await addCashMovement(kind, amount, reason, account?.name)
+    const res = await addCashMovement(kind, amount, reason, account?.id)
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -508,6 +509,91 @@ export function CloseCashDialog({
             onClick={save}
           >
             Fechar caixa
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * Cancelar a venda com estorno (FC-13, ALT-7): o que foi pago volta pelas
+ * formas em que entrou. Pede justificativa
+ * ------------------------------------------------------------------------- */
+
+export function ReverseSaleDialog({
+  sale,
+  onDone,
+  onOpenChange,
+}: {
+  sale?: PendingSale
+  onDone: () => void
+  onOpenChange: (open: boolean) => void
+}) {
+  const [reason, setReason] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (sale) setReason('')
+  }, [sale])
+
+  const save = async () => {
+    if (!sale) return
+    setSaving(true)
+    const res = await reverseSale(sale.id, reason)
+    setSaving(false)
+
+    if (!res.success) return toast.error(res.message)
+
+    toast.success(
+      sale.paid > 0
+        ? 'Venda cancelada e estorno registrado'
+        : 'Venda cancelada',
+    )
+    onDone()
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={!!sale} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Cancelar {sale?.reference}?</DialogTitle>
+          <DialogDescription>
+            {sale && sale.paid > 0
+              ? `O cliente já pagou ${money(sale.paid)}. O estorno sai pelas formas em que o valor entrou e fica registrado com a justificativa e com quem o fez.`
+              : 'A venda sai da fila do caixa e a ordem de serviço é cancelada. O cancelamento fica registrado.'}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody className="space-y-2">
+          <label htmlFor="reverse-reason" className="text-sm font-medium">
+            Justificativa
+          </label>
+          <Textarea
+            id="reverse-reason"
+            rows={3}
+            autoFocus
+            value={reason}
+            placeholder="Ex.: cliente desistiu"
+            onChange={(event) => setReason(event.target.value)}
+          />
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Voltar
+          </Button>
+          <Button
+            type="button"
+            variant="error"
+            isLoading={saving}
+            disabled={!reason.trim()}
+            onClick={save}
+          >
+            Cancelar venda
           </Button>
         </DialogFooter>
       </DialogContent>

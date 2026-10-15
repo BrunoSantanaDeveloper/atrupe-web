@@ -1,25 +1,26 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não tem os endpoints da configuração da venda
-// rápida (ALT-22). A configuração fica em memória, por empresa, mas as opções
-// e os padrões vêm dos cadastros reais — séries, atendimentos e clientes —,
-// para o atalho criar um orçamento de verdade.
-
-// Libs
-import { auth } from '@/lib/auth'
+// A configuração da venda rápida (VR-4, VR-5, FC-17, Fase 7.3) pela API:
+// GET/PUT /sale/quick-sale/settings. Sem nada salvo, a API devolve os
+// padrões (série padrão, atendimento "Venda Direta", cliente de balcão). As
+// opções dos selects vêm dos cadastros: séries, atendimentos e os contatos
+// do cliente padrão (o responsável).
 
 // Actions
-import { getData, getDataOld } from '@/actions/_cruds'
+import { getData, getDataOld, getItem, putItemNew } from '@/actions/_cruds'
 
 // Types
 import type { QuickSaleSettings } from '@/app/(app-sidebar)/configuracoes/vendas/venda-rapida/types'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
+type ApiResult = {
+  success: boolean
+  // O corpo de cada rota é tipado onde é lido
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any
+  message?: string
+}
 
 type Option = { value: string; label: string }
-
-const byCompany = new Map<string, QuickSaleSettings>()
 
 const cashMethods: Option[] = [
   { value: 'dinheiro', label: 'Dinheiro' },
@@ -27,189 +28,98 @@ const cashMethods: Option[] = [
   { value: 'cartao', label: 'Cartão' },
 ]
 
-const companyKey = async () => {
-  const session = await auth()
-  return session?.company?.id || 'sem-empresa'
-}
-
-async function realSeries() {
-  const res = await getDataOld({
-    route: 'saleSeriesRoute',
-    perPage: '999999',
-    filters: { isActive: true },
-  })
-
-  return (res?.data || []) as {
-    id: string
-    code: string
-    description: string
-    isDefault: boolean
-    isTraining: boolean
-  }[]
-}
-
-async function realContactSources() {
-  const res = await getData({ route: '/contact-source', perPage: '999999' })
-  return (res?.success ? res.data : []) as { id: string; name: string }[]
-}
-
-async function realClients(search: string) {
-  const res = await getData({
-    route: '/client',
-    perPage: '20',
-    filters: { search },
-  })
-  return (res?.success ? res.data : []) as { id: string; name: string }[]
-}
-
-// O cliente de balcão: um "Consumidor", se a empresa tiver; senão o "Cliente
-// Exemplo" que toda conta nova recebe; senão o primeiro cliente que houver
-async function defaultClient() {
-  for (const search of ['Consumidor', 'Cliente Exemplo', '']) {
-    const found = await realClients(search)
-    const exact = found.find((client) =>
-      client.name?.toLowerCase().includes(search.toLowerCase()),
-    )
-    if (exact || found[0]) return exact || found[0]
-  }
-  return undefined
-}
-
-// Sem configuração salva, a empresa começa com um padrão que funciona: a
-// série padrão, o atendimento "Venda Direta" e o cliente de balcão. Assim o
-// atalho já cria o orçamento na primeira vez, e a tela de configuração só
-// ajusta
-async function defaults(): Promise<QuickSaleSettings> {
-  const [series, sources, client] = await Promise.all([
-    realSeries(),
-    realContactSources(),
-    defaultClient(),
-  ])
-
-  const serie =
-    series.find((item) => item.isDefault && !item.isTraining) ||
-    series.find((item) => item.isDefault) ||
-    series[0]
-  const source =
-    sources.find((item) => item.name === 'Venda Direta') || sources[0]
-
-  return {
-    enabled: true,
-    payment: 'CASH_ONLY',
-    cashMethods: cashMethods.map((method) => method.value),
-    downPaymentRequired: false,
-    downPaymentPercent: 50,
-    clientId: client?.id || '',
-    clientName: client?.name || '',
-    description: '',
-    seriesId: serie?.id || '',
-    serviceTypeId: source?.id || '',
-    responsibleId: null,
-  }
+const EMPTY: QuickSaleSettings = {
+  payment: 'CASH_ONLY',
+  cashMethods: [],
+  downPaymentRequired: false,
+  downPaymentPercent: 0,
+  enabled: false,
+  clientId: '',
+  clientName: '',
+  description: '',
+  seriesId: '',
+  serviceTypeId: '',
+  responsibleId: null,
 }
 
 export const getQuickSaleSettings = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: {
-        payment: 'CASH_ONLY' as const,
-        cashMethods: [],
-        downPaymentRequired: false,
-        downPaymentPercent: 0,
-        enabled: false,
-        clientId: '',
-        clientName: '',
-        description: '',
-        seriesId: '',
-        serviceTypeId: '',
-        responsibleId: null,
-      },
-      message: '',
-    }
-  const key = await companyKey()
-
-  let settings = byCompany.get(key)
-  if (!settings || !settings.clientId || !settings.seriesId) {
-    settings = { ...(await defaults()), ...clean(settings) }
-    byCompany.set(key, settings)
+  const res: ApiResult = await getItem({ route: '/sale/quick-sale/settings' })
+  if (!res.success) {
+    return { success: false, data: EMPTY, message: res.message || '' }
   }
-
-  return { success: true, data: settings, message: '' }
+  return { success: true, data: res.data as QuickSaleSettings, message: '' }
 }
 
-// Mantém o que a empresa já escolheu, sem deixar um campo vazio apagar o
-// padrão encontrado
-const clean = (settings?: QuickSaleSettings) =>
-  settings
-    ? Object.fromEntries(
-        Object.entries(settings).filter(
-          ([, value]) => value !== '' && value !== undefined,
-        ),
-      )
-    : {}
-
-export const updateQuickSaleSettings = async (
-  values: Partial<QuickSaleSettings>,
-) => {
-  if (!DEMO_DATA) return demoOff()
-  // Sem cliente padrão a venda rápida não consegue criar o orçamento, que é
-  // justamente o que ela existe para fazer (ALT-22)
-  if (values.enabled && values.clientId !== undefined && !values.clientId) {
-    return {
-      success: false,
-      data: null,
-      message: 'Escolha o cliente padrão da venda rápida',
-    }
+// A tela sempre envia o objeto inteiro (o nome do cliente é só da tela)
+export const updateQuickSaleSettings = async (values: QuickSaleSettings) => {
+  const res: ApiResult = await putItemNew({
+    route: '/sale/quick-sale/settings',
+    data: {
+      enabled: values.enabled,
+      payment: values.payment,
+      cashMethods: values.cashMethods,
+      downPaymentRequired: values.downPaymentRequired,
+      downPaymentPercent: values.downPaymentPercent,
+      clientId: values.clientId || null,
+      description: values.description,
+      seriesId: values.seriesId || null,
+      serviceTypeId: values.serviceTypeId || null,
+      responsibleId: values.responsibleId || null,
+    },
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message || '' }
   }
-
-  if (
-    values.downPaymentRequired &&
-    (values.downPaymentPercent === undefined ||
-      values.downPaymentPercent <= 0 ||
-      values.downPaymentPercent > 100)
-  ) {
-    return {
-      success: false,
-      data: null,
-      message: 'O sinal precisa ser um percentual entre 1% e 100%',
-    }
-  }
-
-  const key = await companyKey()
-  const current = byCompany.get(key) || (await defaults())
-  const settings = { ...current, ...values }
-  byCompany.set(key, settings)
-
-  return { success: true, data: settings, message: '' }
+  return { success: true, data: res.data as QuickSaleSettings, message: '' }
 }
 
-// Opções vindas dos cadastros reais da empresa
-export const getQuickSaleOptions = async () => {
-  if (!DEMO_DATA)
-    return {
-      success: true,
-      data: { series: [], serviceTypes: [], cashMethods: [], users: [] },
-      message: '',
-    }
-  const [series, sources] = await Promise.all([
-    realSeries(),
-    realContactSources(),
+// Opções dos cadastros da empresa; o responsável é um contato do cliente
+// padrão, ou nenhum (VR-2)
+export const getQuickSaleOptions = async (clientId?: string) => {
+  const [series, sources, contacts] = await Promise.all([
+    getDataOld({
+      route: 'saleSeriesRoute',
+      perPage: '999999',
+      filters: { isActive: true },
+    }),
+    getData({ route: '/contact-source', perPage: '999999' }),
+    clientId
+      ? (getItem({
+          route: '/contact',
+          params: { clientId, page: '1', limit: '100' },
+        }) as Promise<ApiResult>)
+      : Promise.resolve({ success: true, data: [] } as ApiResult),
   ])
+  const seriesRows = (series?.data || []) as {
+    id: string
+    code: string
+    description: string
+  }[]
+  const sourceRows = (sources?.success ? sources.data : []) as {
+    id: string
+    name: string
+  }[]
+  const contactRows = (contacts.data?.data ?? contacts.data ?? []) as {
+    id: string
+    name: string
+  }[]
 
   return {
     success: true,
     data: {
-      series: series.map((item) => ({
+      series: seriesRows.map((item) => ({
         value: item.id,
         label: `${item.code} - ${item.description}`,
       })),
-      serviceTypes: sources.map((item) => ({
+      serviceTypes: sourceRows.map((item) => ({
         value: item.id,
         label: item.name,
       })),
       cashMethods,
-      users: [{ value: 'none', label: 'Sem responsável' }],
+      users: [
+        { value: 'none', label: 'Sem responsável' },
+        ...contactRows.map((item) => ({ value: item.id, label: item.name })),
+      ],
     },
     message: '',
   }

@@ -1,14 +1,7 @@
 // Component Imports
 import { PDV } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV'
-import { PDV as DemoPDV } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/demo/PDV'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
-
-// Libs
-import { DEMO_DATA } from '@/lib/demo'
-
-// Type Imports
-import type { SearchParamsType } from '@/types/coreTypes'
 
 // Constants
 import { FEATURES } from '@/consts/features'
@@ -19,7 +12,9 @@ export function metadata() {
   }
 }
 
-export default function PDVsPage({ searchParams }: SearchParamsType) {
+// A frente de caixa (FC-1 a FC-20) pela API /financial/pdv (Fase 7.4). O
+// operador vê os valores do caixa sem a permissão de valores (FC-15)
+export default function PDVsPage() {
   return (
     <PermissionGate
       permissions={['financial:pdv:view']}
@@ -37,10 +32,7 @@ export default function PDVsPage({ searchParams }: SearchParamsType) {
           pageTitle: true,
         }}
       >
-        {/* A frente de caixa nova (FC-1 a FC-20) ainda roda sobre dados de
-            exemplo: só com a flag de demonstração. Sem ela, a tela real,
-            com os caixas em /financeiro/frente-de-caixa/[pdvId] */}
-        {DEMO_DATA ? <DemoPDV /> : <PDV searchParams={searchParams} />}
+        <PDV />
       </FeatureGate>
     </PermissionGate>
   )

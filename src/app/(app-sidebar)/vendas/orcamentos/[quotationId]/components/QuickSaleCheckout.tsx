@@ -7,8 +7,8 @@
 // ao caixa, e quem recebe é o caixa. Enviar é aprovar (FC-12), e a venda
 // enviada trava (FC-11).
 //
-// PROVISÓRIO nos dados: a API ainda não tem os endpoints da frente de caixa
-// nem os da venda rápida; tudo passa por `src/actions/cash-front.ts`.
+// Os dados vêm da API (Fase 7.3): a situação no caixa, o "Cobrar" e o
+// enviar ao caixa passam por `src/actions/cash-front.ts`.
 
 // React
 import { useEffect, useState } from 'react'
@@ -39,7 +39,7 @@ import {
   useCashReceipt,
   CashReceiptFields,
   CashReceiptBalance,
-} from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/demo/PaymentSplit'
+} from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit'
 import { Form } from '@/components/ui/form'
 
 // Types

@@ -85,9 +85,10 @@ const REAL_URLS = [
   '/configuracoes/vendas',
   '/configuracoes/financeiro/contas-bancarias',
   '/configuracoes/financeiro/folhas-de-pagamento',
-  // A frente de caixa fica em DEMO_ROUTES até a Fase 7 (decisão do PO de
-  // 13/10/2026): o 404 dela já é coberto acima
   '/financeiro/controle-de-caixa',
+  // A venda rápida e a frente de caixa pela API (Fase 7.3/7.4)
+  '/financeiro/frente-de-caixa',
+  '/configuracoes/vendas/venda-rapida',
   '/producao/agenda-de-entrega',
 ]
 
@@ -99,7 +100,7 @@ const DEMO_TEXTS = [
   'A agenda como quadro de gestão à vista',
   // Cartões de configuração que levam a telas de demonstração
   'Cadastre máquinas, equipamentos, móveis e veículos',
-  'Pule o cadastro do orçamento e caia direto na escolha do item.',
+  // O cartão da venda rápida é real desde a Fase 7.3
   // O cartão do terceirizado avulso é real desde a Fase 4.2 (086d5b4c)
 ]
 

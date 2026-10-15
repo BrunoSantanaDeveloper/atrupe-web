@@ -48,6 +48,6 @@ export type Invoice = {
   supplier: string
   issueDate: string
   total: number
-  status: 'PENDING' | 'MATCHED'
+  status: 'PENDING' | 'MATCHED' | 'ENTERED'
   items: InvoiceItem[]
 }

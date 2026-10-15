@@ -31,6 +31,10 @@ export type PaymentPart = {
   // caixa principal, com o líquido entre parênteses, e é confirmada na baixa,
   // quando se informa o recebido e a taxa (FC-10)
   amount: number
+  // A forma do cadastro e a conta em que o valor entra (CX-2): a API guarda
+  // as duas em cada parte, e o estorno volta por elas (FC-13)
+  paymentConditionId?: string
+  bankAccountId?: string | null
 }
 
 export type CashMovementKind = 'SALE' | 'WITHDRAWAL' | 'SUPPLY' | 'REVERSAL'

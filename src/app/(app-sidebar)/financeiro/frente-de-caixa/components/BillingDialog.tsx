@@ -30,7 +30,7 @@ import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInpu
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 // Types
-import type { PendingSale } from '../../types'
+import type { PendingSale } from '../types'
 
 // Actions
 import { reverseToBilling } from '@/actions/cash-front'

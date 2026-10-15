@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 // UI
 import {
@@ -35,7 +35,11 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import type { InvoiceItem } from '../../types'
 
 // Actions
-import { getInvoices, confirmInvoiceEntry } from '@/actions/stock'
+import {
+  getInvoices,
+  importInvoiceXml,
+  confirmInvoiceEntry,
+} from '@/actions/stock'
 
 // Hooks / Store / Consts
 
@@ -47,7 +51,7 @@ import { toast } from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconLink } from '@tabler/icons-react'
+import { IconLink, IconFileImport } from '@tabler/icons-react'
 
 const formatDate = (date: string) =>
   new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR')
@@ -60,6 +64,23 @@ export function InvoiceEntry() {
     invoiceId: string
     item: InvoiceItem
   }>()
+
+  // A nota entra pelo XML da NF-e que o fornecedor mandou (Fase 7.5)
+  const fileInput = useRef<HTMLInputElement>(null)
+  const { mutate: importXml, isPending: importing } = useMutation({
+    mutationFn: (file: File) => {
+      const form = new FormData()
+      form.append('file', file)
+      return importInvoiceXml(form)
+    },
+    onSuccess: (response) => {
+      if (!response.success) return toast.error(response.message)
+
+      toast.success('Nota lançada: confira o vínculo dos itens')
+      queryClient.invalidateQueries({ queryKey: ['invoices'] })
+    },
+    onError: () => toast.error('Erro ao lançar a nota'),
+  })
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -92,6 +113,28 @@ export function InvoiceEntry() {
           title="Entrada de nota"
           previousPage="/estoque"
           supportText="Cada item da nota vira material interno, com a conversão da unidade"
+          primaryCta={
+            <PermissionGate permissions={['stock:invoice_entry:create']}>
+              <input
+                ref={fileInput}
+                type="file"
+                accept=".xml,text/xml,application/xml"
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) importXml(file)
+                  event.target.value = ''
+                }}
+              />
+              <Button
+                LeftIcon={IconFileImport}
+                isLoading={importing}
+                onClick={() => fileInput.current?.click()}
+              >
+                Importar XML da NF-e
+              </Button>
+            </PermissionGate>
+          }
         />
 
         {invoices.map((invoice) => {
@@ -213,7 +256,8 @@ export function InvoiceEntry() {
           <Card>
             <CardContent className="py-8 px-6">
               <p className="text-sm text-gray text-center">
-                Nenhuma nota aguardando entrada.
+                Nenhuma nota aguardando entrada. Importe o XML da NF-e que o
+                fornecedor mandou.
               </p>
             </CardContent>
           </Card>

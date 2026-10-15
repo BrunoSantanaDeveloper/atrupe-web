@@ -32,7 +32,7 @@ import {
 } from './PaymentSplit'
 
 // Types
-import { saleRemaining, type PendingSale } from '../../types'
+import { saleRemaining, type PendingSale } from '../types'
 
 // Actions
 import { receiveSale } from '@/actions/cash-front'
@@ -40,7 +40,7 @@ import { getQuickSaleSettings } from '@/actions/quick-sale'
 
 // Third-party
 import { toast } from 'sonner'
-import { useSession } from 'next-auth/react'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
@@ -68,7 +68,9 @@ export function ReceiveSaleDialog({
   const [rounding, setRounding] = useState(false)
   const [saving, setSaving] = useState(false)
 
-  const { data: session } = useSession()
+  // Dispensar o sinal é permissão própria (FC-15, PO 13/10/2026)
+  const { hasPermission } = usePermissions()
+  const canWaive = hasPermission('financial:pdv_down_payment:edit')
   const { data: settingsRes } = useQuery({
     queryKey: ['quick-sale-settings'],
     queryFn: () => getQuickSaleSettings(),
@@ -102,13 +104,21 @@ export function ReceiveSaleDialog({
   const belowDownPayment = !deliver && !waived && paying < downPayment
   // Entregar é com tudo pago: o restante do sinal é cobrado na retirada
   const deliverWithDebt = deliver && missing > 0
-  const blocked = !received || belowDownPayment || deliverWithDebt
+  // Pago e pronto, a retirada é só a entrega
+  const blocked =
+    (!received && remaining > 0) || belowDownPayment || deliverWithDebt
 
   const save = form.handleSubmit(async () => {
     if (!sale || blocked) return
 
     setSaving(true)
-    const res = await receiveSale(sale.id, receipt.parts(), deliver, discount)
+    const res = await receiveSale(
+      sale.id,
+      receipt.parts(),
+      deliver,
+      discount,
+      waived,
+    )
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -190,7 +200,7 @@ export function ReceiveSaleDialog({
                       ? 'O trabalho só fica para retirada com a entrada mínima paga. O restante é cobrado quando o cliente buscar.'
                       : 'Entrada coberta. O restante é cobrado na retirada.'}
                   </p>
-                  {session?.user?.isAdmin && (
+                  {canWaive && (
                     <label className="mt-3 flex items-center gap-2 font-medium text-gray-800">
                       <Checkbox
                         checked={waived}

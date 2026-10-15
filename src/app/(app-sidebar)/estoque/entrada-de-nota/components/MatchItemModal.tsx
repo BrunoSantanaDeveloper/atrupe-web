@@ -83,7 +83,6 @@ export function MatchItemModal({ invoiceId, item, open, onOpenChange }: Props) {
         invoiceId: invoiceId || '',
         itemId: item?.id || '',
         materialId,
-        materialName: selected?.name || '',
         conversionFactor: Number(factor || 1),
       }),
     onSuccess: (response) => {

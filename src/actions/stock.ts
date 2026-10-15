@@ -1,7 +1,8 @@
 'use server'
 
-// PROVISÓRIO: a API ainda não tem os endpoints de estoque (recurso do FULL).
-// Dados de exemplo em memória.
+// Estoque e entrada de nota (ES-1 a ES-6, FULL, Fase 7.5) pela API: /stock,
+// /stock/movement e /stock/invoice-entry. Valores em centavos; quantidades
+// na unidade do material. A nota entra pelo XML da NF-e.
 
 // Types
 import type {
@@ -10,259 +11,128 @@ import type {
   StockMovement,
 } from '@/app/(app-sidebar)/estoque/types'
 
-// Flag de demonstração: sem ela, as actions não leem nem gravam o exemplo
-import { DEMO_DATA, demoOff } from '@/lib/demo'
+// Actions
+import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
 
-const items: StockItem[] = [
-  {
-    id: 'st1',
-    materialId: 'lona-440',
-    name: 'Lona 440',
-    variation: 'Marca X · Branca',
-    unit: 'm²',
-    quantity: 120,
-    minimum: 50,
-    averageCost: 1250,
-    lastEntryCost: 1310,
-    lastEntryDate: '2026-09-10',
-  },
-  {
-    id: 'st2',
-    materialId: 'ilhos',
-    name: 'Ilhós',
-    variation: null,
-    unit: 'un',
-    quantity: 320,
-    minimum: 500,
-    averageCost: 12,
-    lastEntryCost: 14,
-    lastEntryDate: '2026-08-28',
-  },
-  {
-    id: 'st3',
-    materialId: 'mdf-15',
-    name: 'MDF 15 mm',
-    variation: null,
-    unit: 'un',
-    quantity: 0,
-    minimum: 4,
-    averageCost: 11200,
-    lastEntryCost: null,
-    lastEntryDate: null,
-  },
-  {
-    id: 'st4',
-    materialId: 'tinta-sublimatica',
-    name: 'Tinta sublimática',
-    variation: null,
-    unit: 'l',
-    quantity: 8,
-    minimum: 4,
-    averageCost: 28000,
-    lastEntryCost: 29500,
-    lastEntryDate: '2026-09-02',
-  },
-]
+type ApiResult = {
+  success: boolean
+  // O corpo de cada rota é tipado onde é lido
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data?: any
+  message?: string
+}
 
-const movements: StockMovement[] = [
-  {
-    id: 'mv1',
-    date: '2026-09-10',
-    kind: 'ENTRY',
-    name: 'Lona 440 · Marca X · Branca',
-    quantity: 100,
-    unit: 'm²',
-    origin: 'NF 12.345 — Distribuidora Sul',
-  },
-  {
-    id: 'mv2',
-    date: '2026-09-11',
-    kind: 'CONSUMPTION',
-    name: 'Lona 440 · Marca X · Branca',
-    quantity: -12,
-    unit: 'm²',
-    origin: 'OS #1042 — Impressão em lona',
-  },
-  {
-    id: 'mv3',
-    date: '2026-09-11',
-    kind: 'CONSUMPTION',
-    name: 'Ilhós',
-    quantity: -24,
-    unit: 'un',
-    origin: 'OS #1042 — Acabamento de banner',
-  },
-  {
-    id: 'mv4',
-    date: '2026-09-12',
-    kind: 'ADJUSTMENT',
-    name: 'Tinta sublimática',
-    quantity: -1,
-    unit: 'l',
-    origin: 'Ajuste de inventário',
-  },
-]
-
-const invoices: Invoice[] = [
-  {
-    id: 'nf1',
-    number: '12.987',
-    supplier: 'Distribuidora Sul',
-    issueDate: '2026-09-20',
-    total: 186000,
-    status: 'PENDING',
-    items: [
-      {
-        id: 'it1',
-        supplierCode: 'LN440-BR',
-        description: 'LONA BRILHO 440G 1,52M BRANCA',
-        supplierUnit: 'ROLO',
-        quantity: 2,
-        unitValue: 68000,
-        gtin: '7891234567890',
-        materialId: 'lona-440',
-        materialName: 'Lona 440 · Marca X · Branca',
-        conversionFactor: 76,
-      },
-      {
-        id: 'it2',
-        supplierCode: 'ILH-10',
-        description: 'ILHOS 10MM LATAO PACOTE 500UN',
-        supplierUnit: 'PCT',
-        quantity: 1,
-        unitValue: 50000,
-        gtin: null,
-        materialId: null,
-        materialName: null,
-        conversionFactor: null,
-      },
-    ],
-  },
-]
+// A aba "Todos" da tela é o saldo sem filtro
+const clean = (filters?: { [key: string]: string | undefined }) =>
+  Object.fromEntries(
+    Object.entries(filters ?? {}).filter(
+      ([key, value]) =>
+        !!value &&
+        ['status', 'search', 'page', 'limit'].includes(key) &&
+        !(key === 'status' && value === 'todos'),
+    ),
+  ) as { [key: string]: string }
 
 export const getStockItems = async ({
   filters,
 }: {
   filters?: { [key: string]: string | undefined }
 }) => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
-  const search = filters?.search?.trim().toLowerCase()
-  const status = filters?.status
-
-  const data = items
-    .filter((item) => {
-      if (status === 'abaixo-do-minimo') return item.quantity < item.minimum
-      if (status === 'zerados') return item.quantity === 0
-
-      return true
-    })
-    .filter((item) => !search || item.name.toLowerCase().includes(search))
-
-  return { success: true, data, message: '' }
+  const res: ApiResult = await getItem({
+    route: '/stock',
+    params: { limit: '100', ...clean(filters) },
+  })
+  if (!res.success)
+    return { success: false, data: [] as StockItem[], message: res.message }
+  return {
+    success: true,
+    data: (res.data?.data ?? []) as StockItem[],
+    message: '',
+  }
 }
 
 export const getStockMovements = async () => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  const res: ApiResult = await getItem({
+    route: '/stock/movement',
+    params: { limit: '100' },
+  })
+  if (!res.success)
+    return { success: false, data: [] as StockMovement[], message: res.message }
   return {
     success: true,
-    data: movements,
+    data: (res.data?.data ?? []) as StockMovement[],
     message: '',
   }
 }
 
+// As notas que aguardam entrada (pendentes e prontas)
 export const getInvoices = async () => {
-  if (!DEMO_DATA) return { success: true, data: [], message: '' }
+  const res: ApiResult = await getItem({
+    route: '/stock/invoice-entry',
+    params: { limit: '50' },
+  })
+  if (!res.success)
+    return { success: false, data: [] as Invoice[], message: res.message }
   return {
     success: true,
-    data: invoices,
+    data: (res.data?.data ?? []) as Invoice[],
     message: '',
   }
+}
+
+// O XML da NF-e que o fornecedor mandou: os itens chegam como estão na nota,
+// e o de-para já reconhece o que foi vinculado antes
+export const importInvoiceXml = async (formData: FormData) => {
+  const res: ApiResult = await createItemNew({
+    route: '/stock/invoice-entry',
+    data: formData,
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  if (!res.success)
+    return { success: false, data: null, message: res.message || '' }
+  return { success: true, data: res.data as Invoice, message: '' }
 }
 
 // Conciliação: o item do fornecedor é ligado ao material interno, com o fator
-// de conversão da unidade de compra para a unidade de venda (§13 e DC-9)
+// de conversão da unidade de compra para a do material (ES-3). O nome do
+// material vem do cadastro
 export const matchInvoiceItem = async ({
   invoiceId,
   itemId,
   materialId,
-  materialName,
+  variationId,
   conversionFactor,
 }: {
   invoiceId: string
   itemId: string
   materialId: string
-  materialName: string
+  variationId?: string | null
   conversionFactor: number
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const invoice = invoices.find((item) => item.id === invoiceId)
-  const item = invoice?.items.find((current) => current.id === itemId)
-
-  if (!invoice || !item) {
-    return { success: false, data: null, message: 'Item não encontrado' }
-  }
-
-  item.materialId = materialId
-  item.materialName = materialName
-  item.conversionFactor = conversionFactor
-
-  invoice.status = invoice.items.every((current) => current.materialId)
-    ? 'MATCHED'
-    : 'PENDING'
-
-  return { success: true, data: item, message: '' }
+  const res: ApiResult = await updateItemNew({
+    route: `/stock/invoice-entry/${invoiceId}/item/${itemId}`,
+    data: {
+      materialId,
+      ...(variationId ? { variationId } : {}),
+      conversionFactor,
+    },
+  })
+  if (!res.success)
+    return { success: false, data: null, message: res.message || '' }
+  return { success: true, data: res.data, message: '' }
 }
 
-// Confirmar a entrada soma a quantidade convertida e atualiza o custo do
-// material (D3 §7.4: preço variável recalcula; fixo muda a margem)
+// Confirmar a entrada soma a quantidade convertida e atualiza o custo médio,
+// que passa a ser o custo do material (ES-4, ES-5)
 export const confirmInvoiceEntry = async ({
   invoiceId,
 }: {
   invoiceId: string
 }) => {
-  if (!DEMO_DATA) return demoOff()
-  const invoice = invoices.find((item) => item.id === invoiceId)
-
-  if (!invoice) {
-    return { success: false, data: null, message: 'Nota não encontrada' }
-  }
-
-  const pending = invoice.items.filter((item) => !item.materialId)
-
-  if (pending.length) {
-    return {
-      success: false,
-      data: null,
-      message: `${pending.length} item(ns) da nota ainda não foram vinculados a um material.`,
-    }
-  }
-
-  invoice.items.forEach((item) => {
-    const stock = items.find(
-      (current) => current.materialId === item.materialId,
-    )
-    const quantity = item.quantity * (item.conversionFactor || 1)
-
-    if (stock) {
-      stock.quantity += quantity
-      stock.lastEntryCost = Math.round(
-        (item.unitValue * item.quantity) / quantity,
-      )
-      stock.lastEntryDate = invoice.issueDate
-    }
-
-    movements.unshift({
-      id: `mv-${Date.now()}-${item.id}`,
-      date: invoice.issueDate,
-      kind: 'ENTRY',
-      name: item.materialName || item.description,
-      quantity,
-      unit: stock?.unit || item.supplierUnit,
-      origin: `NF ${invoice.number} — ${invoice.supplier}`,
-    })
+  const res: ApiResult = await createItemNew({
+    route: `/stock/invoice-entry/${invoiceId}/confirm`,
   })
-
-  invoice.status = 'MATCHED'
-
-  return { success: true, data: null, message: '' }
+  if (!res.success)
+    return { success: false, data: null, message: res.message || '' }
+  return { success: true, data: res.data, message: '' }
 }

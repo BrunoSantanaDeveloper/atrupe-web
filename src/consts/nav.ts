@@ -161,12 +161,10 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconDeviceDesktopDollar,
         title: 'Frente de caixa (PDV)',
         path: '/financeiro/frente-de-caixa',
-        review: 'new',
-        permission: ['financial:flow:view', 'values:values:view'],
-        requireAllPermissions: true,
+        // O operador vê os valores do caixa sem a permissão de valores
+        // (FC-15); a API é da Fase 7.4
+        permission: 'financial:pdv:view',
         requiredFeature: 'pdv_screen',
-        // Esqueleto sem ação: escondida até a Fase 7 (PO, 14/10/2026)
-        demo: true,
       },
       {
         icon: IconCalendarDollar,

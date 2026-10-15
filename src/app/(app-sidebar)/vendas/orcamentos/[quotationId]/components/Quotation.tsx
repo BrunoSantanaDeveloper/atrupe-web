@@ -24,7 +24,6 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Lib
 import { cn } from '@/lib/utils'
-import { DEMO_DATA } from '@/lib/demo'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -118,10 +117,8 @@ export function Quotation({ id }: Props) {
   if (error || !data) notFound()
 
   // A venda rápida tem arranjo próprio: recebimento no lugar das condições de
-  // pagamento, e a situação no caixa depois que ela sai. O checkout ainda é
-  // de demonstração (caixa em memória): só com a flag. Sem ela, a venda
-  // rápida segue Concluir/Aprovar e Informar cliente
-  if (data.quickSale && DEMO_DATA) {
+  // pagamento, e a situação no caixa depois que ela sai (Fase 7.3)
+  if (data.quickSale) {
     return <QuickSaleQuotation data={data} previousUrl={previousUrl} />
   }
 
