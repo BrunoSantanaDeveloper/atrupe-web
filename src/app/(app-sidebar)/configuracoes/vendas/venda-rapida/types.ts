@@ -26,4 +26,7 @@ export type QuickSaleSettings = {
   serviceTypeId: string
   // O vendedor é sempre o usuário logado, e o responsável nasce vazio (VR-2)
   responsibleId: string | null
+  // O arredondamento no balcão da frente padrão (FC-18), só leitura
+  roundingType?: 'VALUE' | 'PERCENT'
+  roundingLimit?: number
 }

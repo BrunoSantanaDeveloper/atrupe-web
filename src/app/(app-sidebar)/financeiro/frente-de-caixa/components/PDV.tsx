@@ -36,6 +36,7 @@ import {
 } from './CashDialogs'
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
 import { BillingDialog } from './BillingDialog'
+import { CashFrontSettingsDialog } from './CashFrontSettingsDialog'
 
 // Types
 import {
@@ -47,7 +48,12 @@ import {
 } from '../types'
 
 // Actions
-import { claimSale, getCashFront, markSaleReady } from '@/actions/cash-front'
+import {
+  claimSale,
+  releaseSale,
+  getCashFront,
+  markSaleReady,
+} from '@/actions/cash-front'
 
 // Third-party
 import { toast } from 'sonner'
@@ -61,6 +67,8 @@ import {
   IconTrash,
   IconThumbUp,
   IconUserCheck,
+  IconSettings,
+  IconArrowBackUp,
   IconThumbDown,
   IconRefreshDot,
   IconTrendingUp,
@@ -134,6 +142,15 @@ export function PDV() {
     queryClient.invalidateQueries({ queryKey: ['cash-front'] })
 
   const isOpen = session?.status === 'OPEN'
+  // Aberto num dia anterior: só fecha (FC-14)
+  const stale = isOpen && !!session?.stale
+  const canOperate = isOpen && !stale
+  // Os caixas de outros operadores esquecidos abertos: quem pode fechar
+  // fecha, com justificativa (FC-14)
+  const forgotten = data?.data?.forgotten || []
+  const [closingForgotten, setClosingForgotten] = useState<
+    (typeof forgotten)[number] | undefined
+  >()
 
   // As vendas que foram para o fluxo financeiro entram no relatório do dia,
   // mas não no saldo do caixa. Ficam separadas de propósito: se entrassem na
@@ -155,6 +172,13 @@ export function PDV() {
   const me = session ? `${session.name} · ${session.operator}` : ''
   const claimOf = (sale: PendingSale) =>
     !sale.claimedBy ? 'FREE' : sale.claimedBy === me ? 'MINE' : 'OTHER'
+
+  const release = async (sale: PendingSale) => {
+    const res = await releaseSale(sale.id)
+    if (!res.success) return toast.error(res.message)
+    toast.success(`${sale.reference} de volta à fila`)
+    await refresh()
+  }
 
   const claim = async (sale: PendingSale) => {
     const res = await claimSale(sale.id)
@@ -225,6 +249,15 @@ export function PDV() {
           secondaryCta={
             session ? (
               <div className="flex items-center gap-2">
+                <PermissionGate permissions={['financial:pdv_settings:edit']}>
+                  <ActionButton
+                    size="iconMd"
+                    variant="neutralOutline"
+                    tooltip="Configurar frente de caixa"
+                    Icon={IconSettings}
+                    onClick={() => setDialog('configurar')}
+                  />
+                </PermissionGate>
                 {/* Ordem da fila, com o mesmo botão do Fluxo financeiro */}
                 {aba === 'receber' && (
                   <ActionButton
@@ -251,7 +284,7 @@ export function PDV() {
                     Fluxo financeiro: o que sai em vermelho, o que entra em
                     verde. Mas não é receita nem despesa: é dinheiro mudando
                     de lugar, com origem e destino */}
-                {isOpen && (
+                {canOperate && (
                   <PermissionGate permissions={['financial:pdv:edit']}>
                     <Button
                       type="button"
@@ -275,6 +308,46 @@ export function PDV() {
             ) : undefined
           }
         />
+
+        {stale && session && (
+          <Card className="border-warning-300 bg-warning-50 p-4 text-sm text-warning-800">
+            O caixa nº {session.number} foi aberto em{' '}
+            {new Date(session.openedAt).toLocaleDateString('pt-BR')} e ficou
+            aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se
+            lança nada no dia seguinte com o caixa anterior aberto (FC-14).
+          </Card>
+        )}
+
+        {forgotten.length > 0 && (
+          <PermissionGate permissions={['financial:pdv:edit']}>
+            <Card className="p-4">
+              <p className="mb-2 text-sm font-medium">
+                Caixas esquecidos abertos
+              </p>
+              <div className="space-y-2">
+                {forgotten.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                  >
+                    <span className="text-gray">
+                      {item.name} nº {item.number} · {item.operator} · aberto em{' '}
+                      {new Date(item.openedAt).toLocaleDateString('pt-BR')}
+                    </span>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="neutralOutline"
+                      onClick={() => setClosingForgotten(item)}
+                    >
+                      Fechar com justificativa
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </PermissionGate>
+        )}
 
         {!session ? (
           <Card>
@@ -345,10 +418,20 @@ export function PDV() {
                                   Icon={IconUserCheck}
                                   variant="neutralGhost"
                                   tooltip="Puxar para mim"
-                                  disabled={!isOpen}
+                                  disabled={!canOperate}
                                   onClick={() => claim(sale)}
                                 />
                               )}
+                              {multiCash &&
+                                claimOf(sale) === 'MINE' &&
+                                sale.paid === 0 && (
+                                  <ActionButton
+                                    Icon={IconArrowBackUp}
+                                    variant="neutralGhost"
+                                    tooltip="Devolver à fila"
+                                    onClick={() => release(sale)}
+                                  />
+                                )}
                               <ActionButton
                                 Icon={
                                   sale.paid > 0 ? IconThumbUp : IconThumbDown
@@ -359,15 +442,19 @@ export function PDV() {
                                     : 'neutralGhost'
                                 }
                                 tooltip={
-                                  !isOpen
-                                    ? 'Abra o caixa para receber'
+                                  !canOperate
+                                    ? stale
+                                      ? 'Feche o caixa do dia anterior antes de receber'
+                                      : 'Abra o caixa para receber'
                                     : claimOf(sale) === 'OTHER'
                                       ? `Sendo atendida no ${sale.claimedBy}`
                                       : sale.paid > 0
                                         ? 'Receber o restante'
                                         : 'Receber'
                                 }
-                                disabled={!isOpen || claimOf(sale) === 'OTHER'}
+                                disabled={
+                                  !canOperate || claimOf(sale) === 'OTHER'
+                                }
                                 onClick={() => setReceiving(sale)}
                               />
                               {/* Sem o gerenciador de produção, o caixa
@@ -587,13 +674,15 @@ export function PDV() {
                                       : 'neutralGhost'
                                   }
                                   tooltip={
-                                    !isOpen
-                                      ? 'Abra o caixa para receber'
+                                    !canOperate
+                                      ? stale
+                                        ? 'Feche o caixa do dia anterior antes de receber'
+                                        : 'Abra o caixa para receber'
                                       : saleRemaining(sale) > 0
                                         ? 'Receber o restante e entregar'
                                         : 'Entregar'
                                   }
-                                  disabled={!isOpen}
+                                  disabled={!canOperate}
                                   onClick={() => setReceiving(sale)}
                                 />
                               </PermissionGate>
@@ -640,6 +729,7 @@ export function PDV() {
         <ReceiveSaleDialog
           sale={receiving}
           roundingLimit={session?.roundingLimit}
+          roundingType={session?.roundingType}
           onDone={refresh}
           onOpenChange={(open) => !open && setReceiving(undefined)}
         />
@@ -666,6 +756,23 @@ export function PDV() {
         <CashMovementDialog
           kind={dialog === 'sangria' ? 'WITHDRAWAL' : 'SUPPLY'}
           open={dialog === 'sangria' || dialog === 'suprimento'}
+          onDone={refresh}
+          onOpenChange={() => setDialog('')}
+        />
+        {closingForgotten && (
+          <CloseCashDialog
+            session={closingForgotten}
+            forgotten
+            open={!!closingForgotten}
+            onDone={() => {
+              refresh()
+              toast.success('Caixa esquecido fechado')
+            }}
+            onOpenChange={(open) => !open && setClosingForgotten(undefined)}
+          />
+        )}
+        <CashFrontSettingsDialog
+          open={dialog === 'configurar'}
           onDone={refresh}
           onOpenChange={() => setDialog('')}
         />

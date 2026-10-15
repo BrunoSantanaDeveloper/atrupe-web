@@ -142,6 +142,14 @@ export type CashSession = {
   // Limite do arredondamento no balcão, em centavos (FC-18): até ele, a
   // diferença vira desconto na venda, não quebra de caixa. Padrão R$ 1,00
   roundingLimit: number
+  // O arredondamento em valor (centavos) ou em percentual do total, em
+  // centésimos de ponto (FC-18)
+  roundingType?: 'VALUE' | 'PERCENT'
+  // Aberta num dia anterior: só fecha (FC-14)
+  stale?: boolean
+  closedBy?: string
+  // Abrir a frente ligou o controle de caixa nesta conta (CX-1)
+  controlEnabled?: string | null
   movements: CashMovement[]
   // O que explica a diferença do fechamento (fora da tolerância é obrigatória)
   closingNote?: string
@@ -174,3 +182,30 @@ export const saleRemaining = (sale: PendingSale) =>
 
 // Limite padrão do arredondamento no balcão (FC-18): R$ 1,00
 export const DEFAULT_ROUNDING_LIMIT = 100
+
+// O limite do arredondamento para a venda: em valor ou em percentual do
+// total (FC-18), como a API confere
+export const roundingFor = (
+  limit: number | undefined,
+  type: 'VALUE' | 'PERCENT' | undefined,
+  total: number,
+) =>
+  type === 'PERCENT'
+    ? Math.floor((Math.max(0, total) * (limit ?? 0)) / 10000)
+    : (limit ?? DEFAULT_ROUNDING_LIMIT)
+
+// O cadastro da frente de caixa (FC-15)
+export type CashFront = {
+  id: string
+  name: string
+  isDefault: boolean
+  isActive: boolean
+  blindCount: boolean
+  shortageTolerance: number | null
+  roundingType: 'VALUE' | 'PERCENT'
+  roundingLimit: number
+  drawerAccountId: string | null
+  drawerAccount: string | null
+  // Há caixa aberto nela agora
+  open: boolean
+}

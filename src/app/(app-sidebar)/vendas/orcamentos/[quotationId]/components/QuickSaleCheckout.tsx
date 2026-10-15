@@ -45,6 +45,7 @@ import { Form } from '@/components/ui/form'
 // Types
 import { QuotationType } from '@/types/sales/quotation'
 import {
+  roundingFor,
   paymentMethodLabel,
   type PaymentMethod,
   type QuickSaleCheckout,
@@ -139,6 +140,12 @@ export function useQuickSale(data: QuotationType) {
 
   return {
     path,
+    // O arredondamento no balcão da frente padrão (FC-18)
+    roundingLimit: roundingFor(
+      settings?.roundingLimit,
+      settings?.roundingType,
+      total,
+    ),
     methods: methods.length ? methods : (['CASH', 'PIX', 'CARD'] as const),
     total,
     itemCount,
@@ -183,6 +190,7 @@ function ChargeNowDialog({
   // formas aceitas na configuração da venda rápida
   const receipt = useCashReceipt(sale.total, {
     methods: sale.methods,
+    roundingLimit: sale.roundingLimit,
     rounding,
   })
   const refresh = useRefresh(sale.origin.quotationId)

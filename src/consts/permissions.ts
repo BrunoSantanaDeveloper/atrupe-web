@@ -70,6 +70,11 @@ export const permissionsData = [
         name: 'Controle de caixa',
         key: 'cash_control',
       },
+      // Reabrir caixa fechado (CX-3, ALT-7): restrita, com justificativa
+      {
+        name: 'Reabrir caixa',
+        key: 'cash_control_reopen',
+      },
       {
         name: 'Lançamento de despesas fixas',
         key: 'fixed_expense',
@@ -94,6 +99,19 @@ export const permissionsData = [
       {
         name: 'Caixas da frente de caixa',
         key: 'checkout',
+      },
+      // As permissões restritas da frente de caixa (FC-15, PO 30/09/2026)
+      {
+        name: 'Configurar frente de caixa',
+        key: 'pdv_settings',
+      },
+      {
+        name: 'Dispensar sinal',
+        key: 'pdv_down_payment',
+      },
+      {
+        name: 'Reverter venda para faturamento',
+        key: 'pdv_billing',
       },
     ],
   },

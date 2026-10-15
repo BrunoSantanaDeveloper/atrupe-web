@@ -144,8 +144,12 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   // 14/10/2026)
   'product_settings.composition': ['product_composition'],
   'invoice.nfse': ['nota_fiscal'],
+  'financial.cash_control_reopen': ['cash_control'],
   'financial.pdv': ['pdv_screen'],
   'financial.checkout': ['pdv_screen'],
+  'financial.pdv_settings': ['pdv_screen'],
+  'financial.pdv_down_payment': ['pdv_screen'],
+  'financial.pdv_billing': ['pdv_screen'],
   'sale.quotation_result': ['cost_base'],
   'company_settings.sectors': ['sectors_configuration'],
   'sales_settings.rejection_reasons': ['quotation_rejection_reasons'],

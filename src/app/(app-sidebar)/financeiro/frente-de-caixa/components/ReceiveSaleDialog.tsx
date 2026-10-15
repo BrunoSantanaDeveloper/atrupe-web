@@ -32,7 +32,7 @@ import {
 } from './PaymentSplit'
 
 // Types
-import { saleRemaining, type PendingSale } from '../types'
+import { roundingFor, saleRemaining, type PendingSale } from '../types'
 
 // Actions
 import { receiveSale } from '@/actions/cash-front'
@@ -53,6 +53,7 @@ interface Props {
   sale?: PendingSale
   // Limite do arredondamento no balcão, do cadastro da frente de caixa
   roundingLimit?: number
+  roundingType?: 'VALUE' | 'PERCENT'
   onDone: () => void
   onOpenChange: (open: boolean) => void
 }
@@ -60,6 +61,7 @@ interface Props {
 export function ReceiveSaleDialog({
   sale,
   roundingLimit,
+  roundingType,
   onDone,
   onOpenChange,
 }: Props) {
@@ -78,7 +80,10 @@ export function ReceiveSaleDialog({
   const settings = settingsRes?.data
 
   const remaining = sale ? saleRemaining(sale) : 0
-  const receipt = useCashReceipt(remaining, { roundingLimit, rounding })
+  const receipt = useCashReceipt(remaining, {
+    roundingLimit: roundingFor(roundingLimit, roundingType, sale?.total ?? 0),
+    rounding,
+  })
   const { form, received, missing, discount } = receipt
 
   useEffect(() => {

@@ -82,6 +82,12 @@ export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
     if (!res.success) return toast.error(res.message)
 
     toast.success('Caixa aberto')
+    // Ligar a frente de caixa liga o controle de caixa na gaveta (CX-1)
+    if (res.data?.controlEnabled) {
+      toast.info(
+        `O controle de caixa da conta ${res.data.controlEnabled} foi ligado: o dinheiro do fechamento é conferido no caixa do dia`,
+      )
+    }
     onDone()
     onOpenChange(false)
   }
@@ -276,6 +282,9 @@ const methods: PaymentMethod[] = ['PIX', 'CARD']
 
 interface CloseProps extends BaseProps {
   session: CashSession
+  // O caixa esquecido de outro operador (FC-14): pede justificativa, e a
+  // diferença fica no nome de quem operava
+  forgotten?: boolean
   // As vendas do dia que foram para o fluxo financeiro: aparecem no
   // fechamento como registro, fora da soma do caixa (3.2)
   billed?: PendingSale[]
@@ -290,6 +299,7 @@ export function CloseCashDialog({
   open,
   session,
   billed = [],
+  forgotten = false,
   onDone,
   onOpenChange,
 }: CloseProps) {
@@ -316,7 +326,7 @@ export function CloseCashDialog({
 
   // Fora da tolerância (ou sem ela), a diferença pede explicação, como no
   // fechamento do dia do controle de caixa
-  const needsNote = needsExplanation(expected, counted, tolerance)
+  const needsNote = forgotten || needsExplanation(expected, counted, tolerance)
   const transfers = [
     {
       method: 'CASH' as const,
@@ -333,7 +343,7 @@ export function CloseCashDialog({
 
   const save = async () => {
     setSaving(true)
-    const res = await closeCashSession(counted, keep, note)
+    const res = await closeCashSession(counted, keep, note, session.id)
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -351,6 +361,9 @@ export function CloseCashDialog({
             <div>
               <DialogTitle>Fechar o caixa nº {session.number}</DialogTitle>
               <DialogDescription>
+                {forgotten
+                  ? `Aberto por ${session.operator} em ${new Date(session.openedAt).toLocaleDateString('pt-BR')} e esquecido. Informe a justificativa; a diferença fica no nome de quem operava. `
+                  : ''}
                 {blind
                   ? 'Conte o dinheiro da gaveta e informe o total. O valor esperado só aparece depois.'
                   : 'Confira o dinheiro da gaveta: confirme o valor contado ou corrija se for diferente.'}
@@ -427,7 +440,11 @@ export function CloseCashDialog({
               />
               <div className="space-y-2">
                 <label htmlFor="close-note" className="text-sm font-medium">
-                  {needsNote ? 'O que explica a diferença?' : 'Observação'}
+                  {forgotten
+                    ? 'Justificativa do fechamento'
+                    : needsNote
+                      ? 'O que explica a diferença?'
+                      : 'Observação'}
                 </label>
                 <Textarea
                   id="close-note"

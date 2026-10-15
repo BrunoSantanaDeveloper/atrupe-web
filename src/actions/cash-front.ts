@@ -7,6 +7,7 @@
 
 // Types
 import type {
+  CashFront,
   CashSession,
   PaymentPart,
   PendingSale,
@@ -14,7 +15,12 @@ import type {
 } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/types'
 
 // Actions
-import { getItem, createItemNew } from '@/actions/_cruds'
+import {
+  getItem,
+  createItemNew,
+  deleteItemNew,
+  updateItemNew,
+} from '@/actions/_cruds'
 
 type ApiResult = {
   success: boolean
@@ -45,12 +51,15 @@ export const getCashFront = async () => {
     session: null as CashSession | null,
     sales: [] as PendingSale[],
     openCashFronts: 0,
+    forgotten: [] as CashSession[],
   }
   if (!res.success) return fail(res.message, empty)
   return ok({
     session: (res.data?.session ?? null) as CashSession | null,
     sales: (res.data?.sales ?? []) as PendingSale[],
     openCashFronts: (res.data?.openCashFronts ?? 0) as number,
+    // Os caixas de outros operadores esquecidos abertos (FC-14)
+    forgotten: (res.data?.forgotten ?? []) as CashSession[],
   })
 }
 
@@ -146,8 +155,10 @@ export const closeCashSession = async (
   countedCash: number,
   keep = 0,
   note = '',
+  // O caixa esquecido de outro operador (FC-14); sem ele, o do operador
+  sessionId?: string,
 ) => {
-  const id = await openSessionId()
+  const id = sessionId || (await openSessionId())
   if (!id) return fail('Nenhum caixa aberto', null)
   const res: ApiResult = await createItemNew({
     route: `/financial/pdv/session/${id}/close`,
@@ -185,6 +196,33 @@ export const claimSale = async (saleId: string) => {
   })
   if (!res.success) return fail(res.message, null)
   return ok<PendingSale>(res.data)
+}
+
+// Devolver a venda à fila (FC-5): quem puxou e ainda não recebeu nada
+export const releaseSale = async (saleId: string) => {
+  const res: ApiResult = await deleteItemNew({
+    route: `/financial/pdv/sale/${saleId}/claim`,
+  })
+  if (!res.success) return fail(res.message, null)
+  return ok<PendingSale>(res.data)
+}
+
+// O cadastro das frentes de caixa (FC-15)
+export const getCashFronts = async () => {
+  const res: ApiResult = await getItem({ route: '/financial/pdv/front' })
+  if (!res.success) return fail(res.message, [] as CashFront[])
+  return ok<CashFront[]>(res.data ?? [])
+}
+
+export const saveCashFront = async (
+  id: string | undefined,
+  values: Omit<CashFront, 'id' | 'open' | 'drawerAccount'>,
+) => {
+  const res: ApiResult = id
+    ? await updateItemNew({ route: `/financial/pdv/front/${id}`, data: values })
+    : await createItemNew({ route: '/financial/pdv/front', data: values })
+  if (!res.success) return fail(res.message, null)
+  return ok<CashFront>(res.data)
 }
 
 // Reverter a venda rápida para faturamento (FC-4): no nome do cliente, com a
