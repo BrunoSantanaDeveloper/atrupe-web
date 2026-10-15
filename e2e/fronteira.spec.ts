@@ -85,8 +85,9 @@ const REAL_URLS = [
   '/configuracoes/vendas',
   '/configuracoes/financeiro/contas-bancarias',
   '/configuracoes/financeiro/folhas-de-pagamento',
+  // A frente de caixa fica em DEMO_ROUTES até a Fase 7 (decisão do PO de
+  // 13/10/2026): o 404 dela já é coberto acima
   '/financeiro/controle-de-caixa',
-  '/financeiro/frente-de-caixa',
   '/producao/agenda-de-entrega',
 ]
 
@@ -99,7 +100,7 @@ const DEMO_TEXTS = [
   // Cartões de configuração que levam a telas de demonstração
   'Cadastre máquinas, equipamentos, móveis e veículos',
   'Pule o cadastro do orçamento e caia direto na escolha do item.',
-  'Defina o markup padrão aplicado ao custo do terceirizado lançado na hora.',
+  // O cartão do terceirizado avulso é real desde a Fase 4.2 (086d5b4c)
 ]
 
 async function expectNotFound(page: Page, url: string) {
