@@ -165,9 +165,7 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
  * Cada uma sai desta lista quando a rota dela sair de DEMO_ROUTES.
  */
 const DEMO_PERMISSIONS = [
-  // A frente de caixa fica escondida até a Fase 7 (PO, 14/10/2026)
-  'financial.pdv',
-  'financial.checkout',
+  // A frente de caixa saiu daqui na Fase 7 (API em /financial/pdv)
   'cost.base',
   'cost.pricing',
   'production.production',
