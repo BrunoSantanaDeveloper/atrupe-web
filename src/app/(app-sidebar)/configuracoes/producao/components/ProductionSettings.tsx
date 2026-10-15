@@ -38,6 +38,7 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { ProductionCalendarCard } from './ProductionCalendar'
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
@@ -109,13 +110,19 @@ type Dialog =
   | { kind: 'vehicle'; vehicle?: Vehicle }
   | null
 
-type Tab = 'gerenciadores' | 'tipos' | 'colaboradores' | 'veiculos'
+type Tab =
+  | 'gerenciadores'
+  | 'tipos'
+  | 'colaboradores'
+  | 'veiculos'
+  | 'expediente'
 
 const tabs: { value: Tab; label: string }[] = [
   { value: 'gerenciadores', label: 'Gerenciadores' },
   { value: 'tipos', label: 'Tipos de tarefa' },
   { value: 'colaboradores', label: 'Colaboradores' },
   { value: 'veiculos', label: 'Veículos' },
+  { value: 'expediente', label: 'Expediente' },
 ]
 
 export function ProductionSettings() {
@@ -166,6 +173,7 @@ export function ProductionSettings() {
     tipos: 'Novo tipo de tarefa',
     colaboradores: '',
     veiculos: 'Novo veículo',
+    expediente: '',
   }
 
   return (
@@ -599,6 +607,13 @@ export function ProductionSettings() {
               acessa&quot;, na aba Gerenciadores.
             </CardFooter>
           </Card>
+        )}
+
+        {tab === 'expediente' && (
+          <ProductionCalendarCard
+            calendar={config.calendar}
+            onSaved={refresh}
+          />
         )}
 
         {tab === 'veiculos' && (

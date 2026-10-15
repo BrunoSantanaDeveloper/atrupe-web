@@ -131,9 +131,25 @@ const toTask = (row: Raw): TaskView => {
  * Leitura
  * ------------------------------------------------------------------------- */
 
+/** O expediente (§4.8): dias (0 = domingo), horário e feriados. */
+export type ProductionCalendar = {
+  workDays: number[]
+  startTime: string
+  endTime: string
+  holidays: string[]
+}
+
+const DEFAULT_CALENDAR: ProductionCalendar = {
+  workDays: [1, 2, 3, 4, 5],
+  startTime: '08:00',
+  endTime: '18:00',
+  holidays: [],
+}
+
 export const getManagerConfig = async () => {
   const res: ApiResult = await getItem({ route: '/production/config' })
   const empty = {
+    calendar: DEFAULT_CALENDAR,
     flows: [] as ProductionFlow[],
     managers: [] as (ProductionManager & { sectorId: string })[],
     taskTypes: [] as TaskType[],
@@ -147,6 +163,7 @@ export const getManagerConfig = async () => {
     taskTypes: res.data.taskTypes || [],
     collaborators: (res.data.collaborators || []).map(toCollaborator),
     vehicles: (res.data.vehicles || []).map(toVehicle),
+    calendar: res.data.calendar || DEFAULT_CALENDAR,
   })
 }
 
@@ -506,6 +523,15 @@ export const moveTaskStep = async ({
   return res.success ? ok(null) : fail(res.message, null)
 }
 
+// O expediente da produção: a cadeia de alertas conta só esse tempo
+export const saveCalendar = async (values: ProductionCalendar) => {
+  const res: ApiResult = await putItemNew({
+    route: '/production/calendar',
+    data: values,
+  })
+  return res.success ? ok(null) : fail(res.message, null)
+}
+
 // Frota (VS-7): os veículos cadastrados
 export const saveVehicle = async ({
   id,
@@ -787,8 +813,13 @@ export const changeDelivery = async ({
     route: `/production/project/${id}/delivery`,
     data: { due },
   })
+  // A Agenda de entrega vai junto (decisão de 15/10/2026)
   return res.success
-    ? ok<string>('Entrega alterada')
+    ? ok<string>(
+        res.data?.scheduleMoved
+          ? 'Entrega alterada, também na Agenda de entrega'
+          : 'Entrega alterada',
+      )
     : fail(res.message, null as string | null)
 }
 

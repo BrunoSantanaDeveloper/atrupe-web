@@ -445,7 +445,7 @@ export function ProjectDetail({ id }: { id: string }) {
               onClick={async () => {
                 const res = await changeDelivery({ id, due })
                 if (!res.success) return toast.error(res.message)
-                toast.success('Entrega alterada')
+                toast.success(res.data || 'Entrega alterada')
                 setDeliveryOpen(false)
                 await refresh()
               }}
