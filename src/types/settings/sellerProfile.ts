@@ -8,6 +8,7 @@ export type SellerProfileType = {
   minValue: number
   canApprovePreRegistration: boolean
   canCancelSale: boolean
+  onlySendToCash?: boolean
 }
 
 export type SellerProfileEmployeesType = {

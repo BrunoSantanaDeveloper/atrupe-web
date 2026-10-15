@@ -36,6 +36,8 @@ import type { SellerProfileType } from '@/types/settings/sellerProfile'
 import { updateItem } from '@/actions/_cruds'
 import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -45,6 +47,7 @@ interface Props extends SearchParamsType {
 
 export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const { hasFeature } = usePlanFeatures()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -55,6 +58,7 @@ export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
       minValue: rowData?.minValue || 0,
       canApprovePreRegistration: rowData?.canApprovePreRegistration || false,
       canCancelSale: rowData?.canCancelSale || false,
+      onlySendToCash: rowData?.onlySendToCash || false,
     },
   })
 
@@ -139,6 +143,16 @@ export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
                   label="Cancela venda"
                   className="w-full"
                 />
+                {/* O vendedor só envia a venda rápida à frente de caixa: a
+                    forma de pagamento e o faturamento ficam com o caixa
+                    (FC-12.1) */}
+                {hasFeature(FEATURES.FINANCIAL.PDV_SCREEN) && (
+                  <FormSwitch<FormType>
+                    name="onlySendToCash"
+                    label="Somente enviar ao caixa"
+                    className="w-full"
+                  />
+                )}
               </div>
             </form>
           </Form>
