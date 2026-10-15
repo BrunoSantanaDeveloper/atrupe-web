@@ -6,6 +6,7 @@ import {
   IconNews,
   IconBook,
   IconCoins,
+  IconArrowsDiff,
   IconGraph,
   IconUsers,
   IconUpload,
@@ -153,6 +154,15 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/financeiro/controle-de-caixa',
         review: 'new',
         // A mesma chave da página (PO, 14/10/2026)
+        permission: ['financial:cash_control:view', 'values:values:view'],
+        requireAllPermissions: true,
+        requiredFeature: 'cash_control',
+      },
+      // A conciliação com o extrato em OFX (CX-6), do controle de caixa
+      {
+        icon: IconArrowsDiff,
+        title: 'Conciliação bancária',
+        path: '/financeiro/conciliacao',
         permission: ['financial:cash_control:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredFeature: 'cash_control',
