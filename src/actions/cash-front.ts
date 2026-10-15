@@ -105,6 +105,8 @@ export const receiveSale = async (
   deliver: boolean,
   discount = 0,
   waiveDownPayment = false,
+  // O troco dado, para o comprovante (FC-16)
+  change = 0,
 ) => {
   const res: ApiResult = await createItemNew({
     route: `/financial/pdv/sale/${saleId}/receive`,
@@ -113,6 +115,7 @@ export const receiveSale = async (
       deliver,
       discount,
       waiveDownPayment,
+      change,
     },
   })
   if (!res.success) return fail(res.message, null)
@@ -279,10 +282,12 @@ export const chargeQuickSaleNow = async (
   origin: QuickSaleOrigin,
   parts: PaymentPart[],
   discount = 0,
+  // O troco dado, para o comprovante (FC-16)
+  change = 0,
 ) => {
   const res: ApiResult = await createItemNew({
     route: `/sale/quotation/${origin.quotationId}/quick-sale/charge`,
-    data: { parts: parts.map(partBody), discount },
+    data: { parts: parts.map(partBody), discount, change },
   })
   if (!res.success) return fail(res.message, null)
   return ok<QuickSaleCheckout>(res.data)

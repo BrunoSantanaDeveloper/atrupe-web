@@ -209,6 +209,7 @@ function ChargeNowDialog({
       sale.origin,
       receipt.parts(),
       receipt.discount,
+      receipt.change,
     )
     setSaving(false)
 

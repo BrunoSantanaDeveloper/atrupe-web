@@ -123,6 +123,7 @@ export function ReceiveSaleDialog({
       deliver,
       discount,
       waived,
+      receipt.change,
     )
     setSaving(false)
 

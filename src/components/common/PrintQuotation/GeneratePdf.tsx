@@ -1733,7 +1733,42 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <MoneySignIcon />
                 <Text style={styles.sectionTitle}>Pagamento</Text>
 
-                {printOptions.showPaymentDelivery && data.payment?.method ? (
+                {data.cashReceipt ? (
+                  // A venda rápida recebida no caixa (FC-16): o que entrou
+                  // por forma, o troco, o arredondamento e o que falta
+                  <>
+                    {data.cashReceipt.cancelled && (
+                      <Text>Venda cancelada no caixa</Text>
+                    )}
+                    {data.cashReceipt.parts.map((part, index) => (
+                      <Text key={`${part.method}-${index}`}>
+                        {part.label}: {formatCurrencyToBrl(part.amount)}
+                      </Text>
+                    ))}
+                    {data.cashReceipt.change > 0 && (
+                      <Text>
+                        Troco: {formatCurrencyToBrl(data.cashReceipt.change)}
+                      </Text>
+                    )}
+                    {data.cashReceipt.discount > 0 && (
+                      <Text>
+                        Arredondamento:{' '}
+                        {formatCurrencyToBrl(data.cashReceipt.discount)}
+                      </Text>
+                    )}
+                    {data.cashReceipt.remaining > 0 ? (
+                      <Text>
+                        Falta receber:{' '}
+                        {formatCurrencyToBrl(data.cashReceipt.remaining)}, na
+                        retirada
+                      </Text>
+                    ) : (
+                      <Text>
+                        Pago{data.cashReceipt.delivered ? ' e entregue' : ''}
+                      </Text>
+                    )}
+                  </>
+                ) : printOptions.showPaymentDelivery && data.payment?.method ? (
                   // Exibição específica quando showPaymentDelivery está ativo e há dados
                   <>
                     {shouldDetailPayment ? (

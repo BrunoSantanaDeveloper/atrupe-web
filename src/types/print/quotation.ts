@@ -234,4 +234,16 @@ export type PrintQuotationType = {
   cost: CostType
   payment: PaymentType
   total: TotalType
+  // A venda rápida recebida no caixa (FC-16), em centavos
+  cashReceipt?: {
+    path: 'CASH_ONLY' | 'POS'
+    total: number
+    paid: number
+    remaining: number
+    discount: number
+    change: number
+    delivered: boolean
+    cancelled: boolean
+    parts: { method: string; label: string; amount: number }[]
+  }
 }

@@ -37,6 +37,7 @@ import {
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
 import { BillingDialog } from './BillingDialog'
 import { CashFrontSettingsDialog } from './CashFrontSettingsDialog'
+import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
 // Types
 import {
@@ -68,6 +69,7 @@ import {
   IconThumbUp,
   IconUserCheck,
   IconSettings,
+  IconPrinter,
   IconArrowBackUp,
   IconThumbDown,
   IconRefreshDot,
@@ -148,6 +150,8 @@ export function PDV() {
   // Os caixas de outros operadores esquecidos abertos: quem pode fechar
   // fecha, com justificativa (FC-14)
   const forgotten = data?.data?.forgotten || []
+  // O comprovante sai a pedido, não automático (FC-16)
+  const [printing, setPrinting] = useState<string>()
   const [closingForgotten, setClosingForgotten] = useState<
     (typeof forgotten)[number] | undefined
   >()
@@ -466,6 +470,14 @@ export function PDV() {
                                 tooltip="Pronto, aguardando retirada"
                                 onClick={() => markReady(sale)}
                               />
+                              {sale.paid > 0 && sale.quotationId && (
+                                <ActionButton
+                                  Icon={IconPrinter}
+                                  variant="neutralGhost"
+                                  tooltip="Comprovante"
+                                  onClick={() => setPrinting(sale.quotationId)}
+                                />
+                              )}
                               {canBill &&
                                 sale.kind === 'QUICK' &&
                                 sale.paid === 0 && (
@@ -771,6 +783,12 @@ export function PDV() {
             onOpenChange={(open) => !open && setClosingForgotten(undefined)}
           />
         )}
+        <PrintQuotationDialog
+          type="quotation"
+          quotationId={printing || ''}
+          open={!!printing}
+          onOpenChange={(open) => !open && setPrinting(undefined)}
+        />
         <CashFrontSettingsDialog
           open={dialog === 'configurar'}
           onDone={refresh}
