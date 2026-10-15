@@ -182,12 +182,15 @@ export const getCashControl = async () => {
     accounts: [] as BankAccount[],
     days: [] as CashDay[],
     today: '',
+    workdayEnd: '18:00',
   }
   if (!cashRes.success) return fail(cashRes.message, empty)
   return ok({
     accounts: accountsRes.data.filter((account) => account.isActive),
     days: (cashRes.data?.days ?? []) as CashDay[],
     today: (cashRes.data?.today ?? '') as string,
+    // O fim do expediente, para o aviso antes do bloqueio (CX-3)
+    workdayEnd: (cashRes.data?.workdayEnd ?? '18:00') as string,
   })
 }
 

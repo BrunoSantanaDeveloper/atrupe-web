@@ -37,6 +37,7 @@ import {
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
 import { BillingDialog } from './BillingDialog'
 import { CashFrontSettingsDialog } from './CashFrontSettingsDialog'
+import { nearWorkdayEnd } from '@/lib/workday'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
 // Types
@@ -312,6 +313,13 @@ export function PDV() {
             ) : undefined
           }
         />
+
+        {canOperate && nearWorkdayEnd(data?.data?.workdayEnd) && (
+          <Card className="border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+            O expediente termina às {data?.data?.workdayEnd}: feche o caixa
+            antes de sair. Aberto, amanhã ele não recebe nem lança nada.
+          </Card>
+        )}
 
         {stale && session && (
           <Card className="border-warning-300 bg-warning-50 p-4 text-sm text-warning-800">

@@ -78,6 +78,7 @@ import {
 // Consts
 import { cashControlStatusObj } from '@/consts/cashControl'
 import { cashTodayStatusObj } from '@/consts/cashAccounts'
+import { nearWorkdayEnd } from '@/lib/workday'
 
 // Utils
 import { updateFilterParam } from '@/lib/filter-utils'
@@ -415,6 +416,17 @@ export function CashControl(_: SearchParamsType) {
               </div>
             }
           />
+
+          {/* No fim do expediente, quem está com caixa aberto é avisado
+              antes do bloqueio do dia seguinte (CX-3) */}
+          {nearWorkdayEnd(data?.data?.workdayEnd) &&
+            days.some((day) => day.date === today && day.status === 'OPEN') && (
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+                O expediente termina às {data?.data?.workdayEnd}: confira e
+                feche os caixas abertos de hoje. Aberto, o caixa trava o dia
+                seguinte da conta.
+              </div>
+            )}
 
           {/* O aviso antes do bloqueio (FC-14) */}
           {stuck.map((day) => (

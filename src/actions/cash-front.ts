@@ -52,6 +52,7 @@ export const getCashFront = async () => {
     sales: [] as PendingSale[],
     openCashFronts: 0,
     forgotten: [] as CashSession[],
+    workdayEnd: '18:00',
   }
   if (!res.success) return fail(res.message, empty)
   return ok({
@@ -60,6 +61,8 @@ export const getCashFront = async () => {
     openCashFronts: (res.data?.openCashFronts ?? 0) as number,
     // Os caixas de outros operadores esquecidos abertos (FC-14)
     forgotten: (res.data?.forgotten ?? []) as CashSession[],
+    // O fim do expediente, para o aviso antes do bloqueio (FC-14)
+    workdayEnd: (res.data?.workdayEnd ?? '18:00') as string,
   })
 }
 
