@@ -28,6 +28,8 @@ export const settleModeLabel: Record<SettleMode, string> = {
 
 // O que a conta faz com cada forma de pagamento, em receitas e em despesas
 export type MethodRule = {
+  // O id da regra gravada (a API distingue editar de criar por ele)
+  ruleId?: string
   methodId: string
   methodName: string
   acceptIncomes: boolean

@@ -25,7 +25,7 @@ import {
   type CashDay,
   type Movement,
   type BankAccount,
-} from '../../types'
+} from '../types'
 
 // Icons
 import { IconPrinter, IconSearch } from '@tabler/icons-react'

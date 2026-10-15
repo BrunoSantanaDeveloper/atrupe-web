@@ -1,10 +1,6 @@
 // Components
 import { BankAccounts } from './components/BankAccounts'
-import { BankAccounts as DemoBankAccounts } from './components/demo/BankAccounts'
 import { PermissionGate } from '@/components/common/PermissionGate'
-
-// Libs
-import { DEMO_DATA } from '@/lib/demo'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -15,6 +11,8 @@ export function metadata() {
   }
 }
 
+// As contas com tipo, padrão por forma e saldo calculado (CX-0 a CX-5,
+// Fase 7.1), pela API
 export default function BankAccountsPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
@@ -25,13 +23,7 @@ export default function BankAccountsPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      {/* A tela nova (CX-0 a CX-5) ainda roda sobre dados de exemplo: só com
-          a flag de demonstração. Sem ela, a tela real */}
-      {DEMO_DATA ? (
-        <DemoBankAccounts searchParams={searchParams} />
-      ) : (
-        <BankAccounts searchParams={searchParams} />
-      )}
+      <BankAccounts searchParams={searchParams} />
     </PermissionGate>
   )
 }

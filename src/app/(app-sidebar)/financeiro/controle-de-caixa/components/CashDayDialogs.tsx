@@ -26,10 +26,10 @@ import {
   MoneyInput,
   CashCountCheck,
   needsExplanation,
-} from '../../../_components/cash/CashCountCheck'
+} from '../../_components/cash/CashCountCheck'
 
 // Types
-import { cashDayTotals, type CashDay, type BankAccount } from '../../types'
+import { cashDayTotals, type CashDay, type BankAccount } from '../types'
 
 // Actions
 import {
@@ -244,19 +244,17 @@ export function AdjustmentDialog({
     setCategoryId('')
   }, [direction])
 
-  const categoryLabel = (Array.isArray(categories) ? categories : []).find(
-    (item: { id: string }) => item.id === categoryId,
-  )?.description
-
   if (!day || !account) return null
 
   const save = async () => {
     setSaving(true)
+    // A API grava natureza e categoria (CX-5), não o texto
     const res = await addAdjustment(
       day.id,
       direction === 'in' ? amount : -amount,
       reason,
-      categoryLabel || '',
+      natureId,
+      categoryId,
     )
     setSaving(false)
     if (!res.success) return toast.error(res.message)
