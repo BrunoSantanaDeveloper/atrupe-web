@@ -8,7 +8,6 @@
 // React / Next
 import Link from 'next/link'
 import { Fragment, useState } from 'react'
-import { useSession } from 'next-auth/react'
 
 // UI
 import {
@@ -58,6 +57,7 @@ import {
 import {
   getProject,
   changeDelivery,
+  getViewer,
   getManagerConfig,
   setProjectStatus,
 } from '@/actions/production-manager'
@@ -90,8 +90,6 @@ const date = (value: string) =>
 export function ProjectDetail({ id }: { id: string }) {
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
-  const { data: session } = useSession()
-  const userName = session?.user?.name || 'usuário'
   const [taskId, setTaskId] = useState<string | null>(null)
   const [deliveryOpen, setDeliveryOpen] = useState(false)
   const [due, setDue] = useState('')
@@ -103,6 +101,12 @@ export function ProjectDetail({ id }: { id: string }) {
   const { data: configRes } = useQuery({
     queryKey: ['production-config'],
     queryFn: () => getManagerConfig(),
+  })
+  // Quem está olhando: o padrão de "Quem faz" no diálogo da tarefa
+  const { data: viewerRes } = useQuery({
+    queryKey: ['production-viewer'],
+    queryFn: () => getViewer(),
+    staleTime: 60_000,
   })
 
   const detail = data?.data
@@ -144,7 +148,7 @@ export function ProjectDetail({ id }: { id: string }) {
       cancelLabel: 'Cancelar',
       confirmVariant: status === 'CANCELED' ? 'error' : 'primary',
       onConfirm: async () => {
-        const res = await setProjectStatus({ id, status, by: userName })
+        const res = await setProjectStatus({ id, status })
         if (!res.success) throw new Error(res.message)
         await refresh()
       },
@@ -399,7 +403,7 @@ export function ProjectDetail({ id }: { id: string }) {
         task={task}
         collaborators={configRes?.data?.collaborators || []}
         vehicles={configRes?.data?.vehicles || []}
-        userName={userName}
+        viewerCollaboratorId={viewerRes?.data?.collaboratorId ?? null}
         onOpenChange={() => setTaskId(null)}
         onChanged={refresh}
       />

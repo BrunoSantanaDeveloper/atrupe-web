@@ -10,6 +10,9 @@ export type DeliveryScheduleType = {
   notes: string
   scheduledDate: Date
   addScheduleTime: boolean
+  // Venda com projeto no gerenciador (ELITE): as etapas espelham as
+  // tarefas e não se editam na agenda (D20)
+  managedByProduction?: boolean
   financial: {
     billed: boolean
     invoiceStatus: string

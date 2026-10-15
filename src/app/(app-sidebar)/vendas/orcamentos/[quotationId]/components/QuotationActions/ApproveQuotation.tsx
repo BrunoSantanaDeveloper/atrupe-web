@@ -148,7 +148,13 @@ export function ApproveQuotation({ data }: Props) {
       return
     }
 
-    toast.success('Orçamento aprovado')
+    // No ELITE, a aprovação cria o projeto de produção em stand-by (PCP-4)
+    const project = res?.data?.productionProject
+    toast.success(
+      project
+        ? `Orçamento aprovado. Projeto de produção criado em stand-by, com ${project.tasks} tarefa(s)`
+        : 'Orçamento aprovado',
+    )
 
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     queryClient.invalidateQueries({ queryKey: ['order-data'] })

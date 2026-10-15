@@ -37,8 +37,6 @@ import { getProductivity } from '@/actions/production-manager'
 
 // Hooks / Store / Consts
 import { cn } from '@/lib/utils'
-import { usePermissions } from '@/hooks/usePermissions'
-import { PRODUCTION_MANAGE } from '@/consts/productionManager'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -50,17 +48,16 @@ const percent = (value: number | null) =>
   value === null ? '-' : `${value.toString().replace('.', ',')}%`
 
 export function Productivity() {
-  const { hasPermission } = usePermissions()
-  const perPerson = hasPermission(PRODUCTION_MANAGE[0])
-
+  // Por pessoa só para quem tem a permissão: o servidor nem manda (PCP-3)
   const { data, isLoading } = useQuery({
-    queryKey: ['productivity', perPerson],
-    queryFn: () => getProductivity({ perPerson }),
+    queryKey: ['productivity'],
+    queryFn: () => getProductivity(),
   })
 
   if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
 
   const bySector = data?.data?.bySector || []
+  const perPerson = !!data?.data?.people
   const people = data?.data?.people || []
 
   return (

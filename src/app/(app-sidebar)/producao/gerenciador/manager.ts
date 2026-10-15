@@ -111,7 +111,8 @@ export type TimeCorrection = {
   at: string
   by: string
   entryId: string
-  before: { collaboratorId: string; minutes: number }
+  // Nulo no tempo lançado à mão (não havia trecho antes)
+  before: { collaboratorId: string; minutes: number } | null
   after: { collaboratorId: string; minutes: number }
   note: string
 }
@@ -124,8 +125,9 @@ export type AttachmentVersion = {
   fileName: string
   size: number
   mime: string
-  // Prévia, quando é imagem pequena; o arquivo de verdade fica no
-  // armazenamento de objetos (GP-27, fora desta rotina)
+  // O link assinado de 15 minutos do arquivo (GP-27); a prévia da imagem
+  // usa o mesmo link
+  url: string | null
   dataUrl: string | null
   uploadedBy: string
   uploadedAt: string
@@ -213,6 +215,8 @@ export type ProductionTask = {
 
 export type ProductionProject = {
   id: string
+  // A venda de onde o projeto nasceu (a API manda)
+  quotationId?: string
   number: string
   client: string
   seller: string
@@ -234,6 +238,8 @@ export type ChainAlert = {
 
 // O que a tela recebe de uma tarefa, já com o que se deriva dela
 export type TaskView = ProductionTask & {
+  // O id do setor do gerenciador da etapa (a API manda)
+  sectorId?: string | null
   project: ProductionProject
   taskType: TaskType
   step: TaskStep

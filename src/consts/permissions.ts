@@ -119,6 +119,16 @@ export const permissionsData = [
         name: 'Gerenciador de produção',
         key: 'production',
       },
+      // Corrigir e lançar tempo no gerenciador (GP-44)
+      {
+        name: 'Correção de tempo',
+        key: 'time_entry',
+      },
+      // A produtividade de cada pessoa (PCP-3)
+      {
+        name: 'Produtividade por pessoa',
+        key: 'productivity',
+      },
       {
         name: 'Agenda de entrega',
         key: 'delivery_schedule',

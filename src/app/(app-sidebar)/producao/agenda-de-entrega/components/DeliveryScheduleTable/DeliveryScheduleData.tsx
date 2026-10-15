@@ -271,6 +271,9 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                   canChangeStatus={
                                                     canChangeStageStatus
                                                   }
+                                                  managedByProduction={
+                                                    !!deliverySchedule?.managedByProduction
+                                                  }
                                                 >
                                                   <ActionButton
                                                     Icon={

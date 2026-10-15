@@ -10,6 +10,7 @@
 
 // React
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 // UI
 import {
@@ -59,7 +60,6 @@ import {
   addPendency,
   scheduleTask,
   addTimeEntry,
-  addAttachment,
   setTaskVehicle,
   correctTimeEntry,
   setCurrentVersion,
@@ -79,6 +79,9 @@ import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
 // Third-party
 import { toast } from 'sonner'
+
+// Utils
+import { uploadProductionAttachment } from '@/lib/production-upload'
 
 // Icons
 import {
@@ -145,9 +148,7 @@ interface Props {
   task: TaskView | null
   collaborators: Collaborator[]
   vehicles?: Vehicle[]
-  // Quem está usando a tela: o nome vai para o histórico, e o colaborador
-  // (se for um) é quem o relógio individual registra
-  userName: string
+  // O colaborador da sessão (se for um): o padrão de "Quem faz"
   viewerCollaboratorId?: string | null
   onOpenChange: (open: boolean) => void
   onChanged: () => void
@@ -157,7 +158,6 @@ export function TaskDetailDialog({
   task,
   collaborators,
   vehicles = [],
-  userName,
   viewerCollaboratorId = null,
   onOpenChange,
   onChanged,
@@ -179,6 +179,8 @@ export function TaskDetailDialog({
   const [attachName, setAttachName] = useState('')
   const [attachKind, setAttachKind] = useState<AttachmentKind>('ART')
   const [attachFile, setAttachFile] = useState<File | null>(null)
+  const [sending, setSending] = useState(false)
+  const { data: session } = useSession()
   // Correção de apontamento
   const [correcting, setCorrecting] = useState<string | 'new' | null>(null)
   const [correctMinutes, setCorrectMinutes] = useState('')
@@ -242,7 +244,6 @@ export function TaskDetailDialog({
       actOnTask({
         id: task.id,
         action,
-        by: userName,
         // Iniciar pelo diálogo liga o relógio de quem foi escolhido em
         // "Quem faz" (individual); no coletivo, arrasta-se no quadro
         collaboratorId:
@@ -250,39 +251,23 @@ export function TaskDetailDialog({
       }),
     )
 
-  const readFile = (file: File) =>
-    new Promise<string | null>((resolve) => {
-      // Só imagens pequenas viram prévia; o arquivo mesmo vai para o
-      // armazenamento de objetos (GP-27, backend)
-      if (!file.type.startsWith('image/') || file.size > 300_000) {
-        resolve(null)
-        return
-      }
-      const reader = new FileReader()
-      reader.onload = () => resolve(String(reader.result))
-      reader.onerror = () => resolve(null)
-      reader.readAsDataURL(file)
-    })
-
+  // O arquivo vai do navegador para a API, guardado em armazenamento
+  // privado; a tela recebe o link assinado (GP-27)
   const sendAttachment = async () => {
     if (!attachFile) return
-    const dataUrl = await readFile(attachFile)
+    setSending(true)
     const saved = await run(
-      addAttachment({
-        id: task.id,
+      uploadProductionAttachment({
+        token: session?.accessToken,
+        taskId: task.id,
         attachmentId: attachOpen === 'new' ? null : attachOpen,
         name: attachName,
         kind: attachKind,
-        file: {
-          fileName: attachFile.name,
-          size: attachFile.size,
-          mime: attachFile.type,
-          dataUrl,
-        },
-        by: userName,
+        file: attachFile,
       }),
       'Anexo guardado',
     )
+    setSending(false)
     if (saved) {
       setAttachOpen(null)
       setAttachName('')
@@ -441,7 +426,6 @@ export function TaskDetailDialog({
                           addPendency({
                             id: task.id,
                             text: pendencyText,
-                            by: userName,
                           }),
                           'Pendência registrada',
                         )
@@ -495,7 +479,6 @@ export function TaskDetailDialog({
                         await run(
                           releaseNext({
                             id: task.id,
-                            by: userName,
                             quantity: Number(releaseQty) || null,
                           }),
                         )
@@ -659,7 +642,18 @@ export function TaskDetailDialog({
                             <span className="font-mono">
                               v{version.version}
                             </span>
-                            <span>{version.fileName}</span>
+                            {version.url ? (
+                              <a
+                                href={version.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-brand-700 hover:underline"
+                              >
+                                {version.fileName}
+                              </a>
+                            ) : (
+                              <span>{version.fileName}</span>
+                            )}
                             <span>· {size(version.size)}</span>
                             <span>
                               · {version.uploadedBy}, {when(version.uploadedAt)}
@@ -675,7 +669,6 @@ export function TaskDetailDialog({
                                         id: task.id,
                                         attachmentId: attachment.id,
                                         version: version.version,
-                                        by: userName,
                                       }),
                                       'Versão válida alterada',
                                     )
@@ -744,6 +737,7 @@ export function TaskDetailDialog({
                   <Button
                     type="button"
                     size="sm"
+                    isLoading={sending}
                     disabled={
                       !attachFile ||
                       (attachOpen === 'new' && !attachName.trim())
@@ -829,7 +823,7 @@ export function TaskDetailDialog({
                     disabled={!schedule.date || !schedule.minutes}
                     onClick={() =>
                       run(
-                        scheduleTask({ id: task.id, schedule, by: userName }),
+                        scheduleTask({ id: task.id, schedule }),
                         'Tarefa agendada',
                       )
                     }
@@ -846,7 +840,6 @@ export function TaskDetailDialog({
                           scheduleTask({
                             id: task.id,
                             schedule: null,
-                            by: userName,
                           }),
                           'Agendamento removido',
                         )
@@ -897,7 +890,6 @@ export function TaskDetailDialog({
                             id: task.id,
                             vehicleId: vehicleId || null,
                             km: Number(km) || null,
-                            by: userName,
                           }),
                           'Veículo reservado',
                         )
@@ -935,7 +927,6 @@ export function TaskDetailDialog({
                         assignTask({
                           id: task.id,
                           collaboratorId: worker,
-                          by: userName,
                         }),
                         'Tarefa atribuída',
                       )
@@ -975,7 +966,7 @@ export function TaskDetailDialog({
                       LeftIcon={IconPlayerStop}
                       onClick={() =>
                         run(
-                          stopWork({ collaboratorId: person.id }),
+                          stopWork({ id: task.id, collaboratorId: person.id }),
                           'Relógio parado',
                         )
                       }
@@ -1134,7 +1125,6 @@ export function TaskDetailDialog({
                                 collaboratorId: correctWho,
                                 minutes: Number(correctMinutes) || 0,
                                 note: correctNote,
-                                by: userName,
                               })
                             : correctTimeEntry({
                                 id: task.id,
@@ -1142,7 +1132,6 @@ export function TaskDetailDialog({
                                 minutes: Number(correctMinutes) || 0,
                                 collaboratorId: correctWho,
                                 note: correctNote,
-                                by: userName,
                               }),
                           'Apontamento corrigido',
                         )
@@ -1166,9 +1155,16 @@ export function TaskDetailDialog({
                 <ul className="space-y-1 text-xs text-gray">
                   {task.corrections.map((correction) => (
                     <li key={correction.id}>
-                      {when(correction.at)} · {correction.by} corrigiu:{' '}
-                      {personName(correction.before.collaboratorId)}{' '}
-                      {duration(correction.before.minutes)} →{' '}
+                      {when(correction.at)} · {correction.by}{' '}
+                      {correction.before ? (
+                        <>
+                          corrigiu:{' '}
+                          {personName(correction.before.collaboratorId)}{' '}
+                          {duration(correction.before.minutes)} →{' '}
+                        </>
+                      ) : (
+                        'lançou: '
+                      )}
                       {personName(correction.after.collaboratorId)}{' '}
                       {duration(correction.after.minutes)} · {correction.note}
                     </li>

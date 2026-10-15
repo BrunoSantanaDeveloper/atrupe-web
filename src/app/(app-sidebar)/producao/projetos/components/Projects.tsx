@@ -1,26 +1,16 @@
 'use client'
 
 // Acompanhamento dos projetos (GP-8, GP-18, PCP-4): cada venda aprovada vira
-// um projeto, com as tarefas geradas da composição. Situação na URL
-// (?status=), abas segmentadas no Topbar, card com ícone de destaque
-// (design.md §18.4). Enquanto a API não cria o projeto ao aprovar o
-// orçamento, há um botão de exemplo que faz o mesmo com um produto de
-// exemplo.
+// um projeto, com as tarefas geradas da composição (a API cria na
+// aprovação). Situação na URL (?status=), abas segmentadas no Topbar com a
+// contagem do servidor, busca pelo número ou cliente e paginação no
+// servidor; card com ícone de destaque (design.md §18.4).
 
 // React / Next
-import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
-import {
-  Dialog,
-  DialogBody,
-  DialogTitle,
-  DialogFooter,
-  DialogHeader,
-  DialogContent,
-  DialogDescription,
-} from '@/components/ui/dialog'
 import {
   Table,
   TableRow,
@@ -31,8 +21,6 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -47,30 +35,24 @@ import {
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
-import { SelectBasic } from '@/components/common/form/FormSelect'
-import { PermissionGate } from '@/components/common/PermissionGate'
+import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
 import type { ProjectStatus } from '../../gerenciador/manager'
 
 // Actions
-import {
-  getProjects,
-  createProjectFromSale,
-} from '@/actions/production-manager'
-import { getQuotationProducts } from '@/actions/quotation-composition'
+import { getProjects, getProjectQuantity } from '@/actions/production-manager'
 
 // Hooks / Store / Consts
-import { projectStatusObj, PRODUCTION_MANAGE } from '@/consts/productionManager'
+import { projectStatusObj } from '@/consts/productionManager'
+import { updateFilterParam } from '@/lib/filter-utils'
 
 // Third-party
-import { toast } from 'sonner'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconPlus,
   IconSearch,
   IconListCheck,
   IconClipboardList,
@@ -88,17 +70,33 @@ const tabs: { value: ProjectStatus; label: string }[] = [
 ]
 
 export function Projects() {
+  const router = useRouter()
   const params = useSearchParams()
-  const queryClient = useQueryClient()
   const status = (params.get('status') as ProjectStatus) || 'PRODUCTION'
-  const [exampleOpen, setExampleOpen] = useState(false)
+  const page = Number(params.get('page')) || 1
+  const search = params.get('busca') || ''
+  const [text, setText] = useState(search)
+
+  // A busca vai para a URL depois de uma pausa na digitação
+  useEffect(() => {
+    if (text === search) return
+    const timer = setTimeout(
+      () => updateFilterParam('busca', text.trim(), { router, params }),
+      400,
+    )
+    return () => clearTimeout(timer)
+  }, [text, search, router, params])
 
   const { data, isLoading } = useQuery({
-    queryKey: ['production-projects'],
-    queryFn: () => getProjects(),
+    queryKey: ['production-projects', status, page, search],
+    queryFn: () => getProjects({ status, page, search }),
   })
-  const all = data?.data || []
-  const projects = all.filter((item) => item.status === status)
+  const { data: quantityRes } = useQuery({
+    queryKey: ['production-projects', 'quantity'],
+    queryFn: () => getProjectQuantity(),
+  })
+  const projects = data?.data?.data || []
+  const quantity = quantityRes?.data
 
   return (
     <TooltipProvider>
@@ -113,23 +111,12 @@ export function Projects() {
             value: tab.value,
             tab: tab.value,
             label: tab.label,
-            count: all.filter((item) => item.status === tab.value).length,
+            count: quantity?.[tab.value] ?? 0,
           }))}
-          primaryCta={
-            <PermissionGate permissions={PRODUCTION_MANAGE}>
-              <Button
-                variant="neutralOutline"
-                LeftIcon={IconPlus}
-                onClick={() => setExampleOpen(true)}
-              >
-                Projeto da venda aprovada (exemplo)
-              </Button>
-            </PermissionGate>
-          }
         />
 
         <Card>
-          <CardHeader>
+          <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
             <div className="flex items-center gap-3">
               <FeaturedIcon variant="neutralOutline" Icon={IconClipboardList} />
               <div>
@@ -140,13 +127,25 @@ export function Projects() {
                 </CardDescription>
               </div>
             </div>
+            <Input
+              aria-label="Buscar projeto"
+              placeholder="Número da venda ou cliente"
+              className="w-full sm:w-[260px]"
+              startAdornment={<IconSearch className="size-4 text-gray" />}
+              value={text}
+              onChange={(event) => setText(event.target.value)}
+            />
           </CardHeader>
           {isLoading ? (
             <TableSkeleton cols={6} rows={4} />
           ) : !projects.length ? (
             <ListDataTotalEmpty
               icon={IconListCheck}
-              title={`Nenhum projeto para o status: ${tabs.find((tab) => tab.value === status)?.label}`}
+              title={
+                search
+                  ? `Nenhum projeto encontrado para "${search}"`
+                  : `Nenhum projeto para o status: ${tabs.find((tab) => tab.value === status)?.label}`
+              }
               description="O projeto nasce quando a venda é aprovada."
             />
           ) : (
@@ -234,183 +233,16 @@ export function Projects() {
                   ))}
                 </TableBody>
               </Table>
+              {(data?.data?.lastPage ?? 1) > 1 && (
+                <TablePagination
+                  searchParams={Object.fromEntries(params.entries())}
+                  lastPage={data?.data?.lastPage}
+                />
+              )}
             </CardContent>
           )}
         </Card>
       </div>
-
-      <ExampleProjectDialog
-        open={exampleOpen}
-        onOpenChange={setExampleOpen}
-        onCreated={() =>
-          queryClient.invalidateQueries({ queryKey: ['production-projects'] })
-        }
-      />
     </TooltipProvider>
-  )
-}
-
-// O que a API vai fazer ao aprovar o orçamento (PCP-4), chamado à mão com um
-// produto de exemplo, para o fluxo ser conferido de ponta a ponta
-function ExampleProjectDialog({
-  open,
-  onOpenChange,
-  onCreated,
-}: {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onCreated: () => void
-}) {
-  const [number, setNumber] = useState('')
-  const [client, setClient] = useState('')
-  const [productId, setProductId] = useState('')
-  const [quantity, setQuantity] = useState('1')
-  const [width, setWidth] = useState('1')
-  const [height, setHeight] = useState('1')
-  const [due, setDue] = useState('')
-  const [saving, setSaving] = useState(false)
-
-  const { data: productsRes } = useQuery({
-    queryKey: ['quotation-products'],
-    queryFn: () => getQuotationProducts(),
-    enabled: open,
-  })
-  const products = (productsRes?.data || []).filter(
-    (product) => product.hasComposition,
-  )
-
-  const create = async () => {
-    const product = products.find((item) => item.id === productId)
-    if (!product) return
-    setSaving(true)
-    const res = await createProjectFromSale({
-      number,
-      client,
-      seller: 'Natihely',
-      deliveryType: 'Cliente retira',
-      due,
-      items: [
-        {
-          productId: product.id,
-          name: product.name,
-          measure: {
-            quantity: Number(quantity) || 1,
-            width: Number(width.replace(',', '.')) || 1,
-            height: Number(height.replace(',', '.')) || 1,
-          },
-        },
-      ],
-    })
-    setSaving(false)
-    if (!res.success || !res.data) return toast.error(res.message)
-    toast.success(`Projeto criado com ${res.data.tasks} tarefa(s), em stand-by`)
-    onCreated()
-    onOpenChange(false)
-  }
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[560px]">
-        <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
-            <div>
-              <DialogTitle>Projeto da venda aprovada</DialogTitle>
-              <DialogDescription>
-                Exemplo do que a aprovação do orçamento vai fazer: o projeto
-                nasce em stand-by, com uma tarefa por etapa da composição.
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
-        <DialogBody className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="example-number">Número da venda</Label>
-            <Input
-              id="example-number"
-              placeholder="Ex.: 1027-V1"
-              value={number}
-              onChange={(event) => setNumber(event.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="example-client">Cliente</Label>
-            <Input
-              id="example-client"
-              value={client}
-              onChange={(event) => setClient(event.target.value)}
-            />
-          </div>
-          <div className="sm:col-span-2">
-            <SelectBasic
-              name="example-product"
-              label="Produto com composição"
-              options={products.map((product) => ({
-                value: product.id,
-                label: `${product.name} · ${product.sector}`,
-              }))}
-              value={productId}
-              onChange={(value) => value && setProductId(String(value))}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="example-qty">Quantidade</Label>
-            <Input
-              id="example-qty"
-              type="number"
-              min={1}
-              value={quantity}
-              onChange={(event) => setQuantity(event.target.value)}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-2">
-              <Label htmlFor="example-width">Largura (m)</Label>
-              <Input
-                id="example-width"
-                inputMode="decimal"
-                value={width}
-                onChange={(event) => setWidth(event.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="example-height">Altura (m)</Label>
-              <Input
-                id="example-height"
-                inputMode="decimal"
-                value={height}
-                onChange={(event) => setHeight(event.target.value)}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="example-due">Entrega</Label>
-            <Input
-              id="example-due"
-              type="date"
-              value={due}
-              onChange={(event) => setDue(event.target.value)}
-            />
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="neutralOutline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            isLoading={saving}
-            disabled={!number.trim() || !client.trim() || !productId}
-            onClick={create}
-          >
-            Criar projeto
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   )
 }

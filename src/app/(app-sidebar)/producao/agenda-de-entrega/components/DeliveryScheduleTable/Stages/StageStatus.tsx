@@ -47,14 +47,21 @@ interface Props extends SearchParamsType, PropsWithChildren {
    * desabilitadas, com o motivo.
    */
   canChangeStatus?: boolean
+  /**
+   * A etapa que segue o gerenciador de produção (ELITE, D20): sem troca
+   * aqui, com o motivo no menu.
+   */
+  managedByProduction?: boolean
 }
 
 export function StageStatusDropdown({
   rowData,
   searchParams,
   children,
-  canChangeStatus = true,
+  canChangeStatus: planAllows = true,
+  managedByProduction = false,
 }: Props) {
+  const canChangeStatus = planAllows && !managedByProduction
   const [open, setOpen] = useState(false)
 
   const queryClient = useQueryClient()
@@ -102,7 +109,9 @@ export function StageStatusDropdown({
         <DropdownMenuContent className="min-w-48" align="start">
           {!canChangeStatus && (
             <DropdownMenuLabel className="max-w-60 text-xs font-normal text-gray-600">
-              Trocar o status da etapa não faz parte do seu plano.
+              {managedByProduction
+                ? 'Esta etapa segue as tarefas do Gerenciador de produção.'
+                : 'Trocar o status da etapa não faz parte do seu plano.'}
             </DropdownMenuLabel>
           )}
           <DropdownMenuGroup>

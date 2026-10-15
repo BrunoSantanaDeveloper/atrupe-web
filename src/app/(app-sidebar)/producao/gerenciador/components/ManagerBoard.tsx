@@ -15,7 +15,6 @@
 // React / Next
 import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -122,7 +121,6 @@ export function ManagerBoard() {
   const router = useRouter()
   const params = useSearchParams()
   const queryClient = useQueryClient()
-  const { data: session } = useSession()
   const { hasPermission } = usePermissions()
   const colorOf = useSectorColor()
 
@@ -134,14 +132,12 @@ export function ManagerBoard() {
 
   const view = (params.get('visao') as View) || 'quadro'
   const isManager = hasPermission(PRODUCTION_MANAGE[0])
-  const userName = session?.user?.name || 'usuário'
 
-  // Quem está olhando (GP-11): casa a sessão com um colaborador
+  // Quem está olhando (GP-11): o servidor decide pela sessão
   const { data: viewerRes } = useQuery({
-    queryKey: ['production-viewer', session?.user?.email, isManager],
-    queryFn: () =>
-      getViewer({ email: session?.user?.email || null, isManager }),
-    staleTime: Infinity,
+    queryKey: ['production-viewer'],
+    queryFn: () => getViewer(),
+    staleTime: 60_000,
   })
   const viewer = viewerRes?.data || {
     collaboratorId: null,
@@ -157,15 +153,8 @@ export function ManagerBoard() {
   const managerId = params.get('gerenciador') || summary[0]?.id || ''
 
   const { data: boardRes, isLoading: loadingBoard } = useQuery({
-    queryKey: ['production-board', managerId, viewer],
-    queryFn: () =>
-      getManagerBoard({
-        managerId,
-        viewer: {
-          manager: viewer.manager,
-          collaboratorId: viewer.collaboratorId,
-        },
-      }),
+    queryKey: ['production-board', managerId],
+    queryFn: () => getManagerBoard({ managerId }),
     enabled: !!managerId && view === 'quadro',
   })
   const board = boardRes?.data
@@ -530,7 +519,10 @@ export function ManagerBoard() {
                                 type="button"
                                 className="mt-1 text-xs font-medium text-error-700 hover:underline"
                                 onClick={async () => {
-                                  await stopWork({ collaboratorId: worker.id })
+                                  await stopWork({
+                                    id: worker.working?.taskId,
+                                    collaboratorId: worker.id,
+                                  })
                                   toast.success('Relógio parado')
                                   await refresh()
                                 }}
@@ -578,7 +570,6 @@ export function ManagerBoard() {
         task={task}
         collaborators={board?.collaborators || []}
         vehicles={board?.vehicles || agenda?.vehicles || []}
-        userName={userName}
         viewerCollaboratorId={viewer.collaboratorId}
         onOpenChange={() => setTaskId(null)}
         onChanged={refresh}
