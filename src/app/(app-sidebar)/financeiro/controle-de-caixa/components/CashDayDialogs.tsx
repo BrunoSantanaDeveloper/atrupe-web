@@ -572,8 +572,13 @@ export function TransferDialog({
   const [toId, setToId] = useState('')
   const [method, setMethod] = useState('PIX')
   const [amount, setAmount] = useState(0)
+  // A liquidação da operadora de cartão (FC-10): a operadora baixa o valor
+  // cheio, o banco recebe o líquido e a diferença é a taxa de cartão
+  const [fee, setFee] = useState(0)
   const [date, setDate] = useState(today())
   const [saving, setSaving] = useState(false)
+  const fromCard =
+    accounts.find((account) => account.id === fromId)?.kind === 'CARD'
 
   useEffect(() => {
     if (open) {
@@ -581,6 +586,7 @@ export function TransferDialog({
       setToId('')
       setMethod('PIX')
       setAmount(0)
+      setFee(0)
       setDate(today())
     }
   }, [open])
@@ -598,10 +604,15 @@ export function TransferDialog({
       method,
       amount,
       date,
+      ...(fromCard && fee > 0 ? { fee } : {}),
     })
     setSaving(false)
     if (!res.success) return toast.error(res.message)
-    toast.success('Transferência lançada nas duas contas')
+    toast.success(
+      fromCard && fee > 0
+        ? `Liquidação lançada: ${money(amount - fee)} no destino e ${money(fee)} de taxa de cartão`
+        : 'Transferência lançada nas duas contas',
+    )
     onDone()
     onOpenChange(false)
   }
@@ -618,7 +629,13 @@ export function TransferDialog({
         <Button
           type="button"
           isLoading={saving}
-          disabled={!fromId || !toId || fromId === toId || amount <= 0}
+          disabled={
+            !fromId ||
+            !toId ||
+            fromId === toId ||
+            amount <= 0 ||
+            (fromCard && fee >= amount)
+          }
           onClick={save}
         >
           Transferir
@@ -655,6 +672,20 @@ export function TransferDialog({
           value={amount}
           onChange={setAmount}
         />
+        {fromCard && (
+          <div className="space-y-1">
+            <MoneyInput
+              id="transfer-fee"
+              label="Taxa da operadora"
+              value={fee}
+              onChange={setFee}
+            />
+            <p className="text-sm text-gray">
+              Caem {money(Math.max(0, amount - fee))} no destino; a taxa vai
+              para a tarifa de cartão.
+            </p>
+          </div>
+        )}
         <div className="space-y-2">
           <Label htmlFor="transfer-date">Dia</Label>
           <Input

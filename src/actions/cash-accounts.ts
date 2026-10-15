@@ -220,6 +220,8 @@ export const transferBetweenAccounts = async (values: {
   method: string
   amount: number
   date: string
+  // A taxa na liquidação da operadora de cartão (FC-10), em centavos
+  fee?: number
 }) => {
   const res: ApiResult = await createItemNew({
     route: '/financial/cash-control/transfer',
