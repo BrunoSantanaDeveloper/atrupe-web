@@ -3,9 +3,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
-// PROVISÓRIO nos dados: lê `src/actions/product-assembly.ts`, que também faz
-// o cálculo (SEG-1).
-//
 // O produto composto montado por etapas — o "item pronto" do legado na nova
 // versão (área 8, §3.4.1). A pergunta que a tela responde primeiro: quanto
 // custa este produto na medida em que ele é vendido, e se o preço cobre.
@@ -130,17 +127,6 @@ import {
   removeAssemblyBlock,
   adoptSuggestedPrice,
 } from '@/actions/assembly'
-// As exceções por linha da variação (PV-2) não foram para a API: o
-// trecho que as usa fica escondido (SHOW_SECOND_PART) e no exemplo
-import {
-  addVariationBlock,
-  removeVariationBlock,
-  addVariation,
-  removeVariation,
-  setVariationLine,
-  setVariationPrice,
-  clearVariationLine,
-} from '@/actions/product-assembly'
 
 // Actions (cadastro)
 import { getItemOld } from '@/actions/_cruds'
@@ -195,7 +181,6 @@ import {
 } from '@tabler/icons-react'
 
 // Utils
-import { updateFilterParam } from '@/lib/filter-utils'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 const SHOW_SECOND_PART = false
@@ -353,7 +338,6 @@ function AssemblyEditorBody({
   // A medida da simulação é da tela; a medida padrão só muda ao salvar
   const [measure, setMeasure] = useState<AssemblyMeasure>()
   const [dialog, setDialog] = useState<Dialog>(null)
-  const [newVariation, setNewVariation] = useState<string | null>(null)
   // A etapa escolhida no fluxo: o detalhe dela (recursos, tempo) aparece
   // embaixo do desenho (FL-5, FL-8)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -388,13 +372,11 @@ function AssemblyEditorBody({
   const router = useRouter()
   const params = useSearchParams()
   const variationId = params.get('variacao')
-  const setVariation = (id: string | null) =>
-    updateFilterParam('variacao', id || 'all', { router, params })
   const [description, setDescription] = useState('')
 
   // O produto do cadastro (API), para a composição abrir com a unidade, o
   // valor e a medida que o START/LITE já tinham (CP-16). Só para ids reais;
-  // os exemplos do mock e os rascunhos do orçamento não têm cadastro
+  // os rascunhos do orçamento não têm cadastro
   const isCatalogId = /^[0-9a-f-]{32,36}$/i.test(productId)
   const { data: catalogProduct, isFetched: catalogFetched } = useQuery({
     staleTime: Infinity,
@@ -478,10 +460,9 @@ function AssemblyEditorBody({
 
   // A composição vazia já nasce com a etapa do setor do produto (pedido do
   // time, 03/10/2026): a tela abre direto nos botões Máquina · Material ·
-  // Mão de obra. Vale sempre que a composição estiver vazia, inclusive quando
-  // o mock zera com a tela aberta; só não vale depois de a pessoa remover a
-  // última etapa de propósito, quando fica o estado vazio com "começa em
-  // outro setor"
+  // Mão de obra. Vale sempre que a composição estiver vazia; só não vale
+  // depois de a pessoa remover a última etapa de propósito, quando fica o
+  // estado vazio com "começa em outro setor"
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission(EDIT[0])
   const autoStage = useRef(false)
@@ -539,26 +520,6 @@ function AssemblyEditorBody({
   const stageMenu = (node: FlowNode): FlowMenuItem[] => {
     const block = assembly.blocks.find((item) => item.id === node.id)
     if (!block) return []
-    if (inVariation) {
-      return block.variationOnly
-        ? [
-            {
-              label: 'Remover desta variação',
-              icon: IconTrash,
-              destructive: true,
-              onSelect: () =>
-                run(
-                  removeVariationBlock({
-                    productId,
-                    variationId: variation!.id,
-                    blockId: block.id,
-                  }),
-                  'Etapa removida da variação',
-                ),
-            },
-          ]
-        : []
-    }
     return [
       ...(block.part
         ? []
@@ -602,14 +563,8 @@ function AssemblyEditorBody({
   // venda, o mesmo campo do cadastro do START
   const adoptSuggested = () =>
     run(
-      assembly.activeVariation
-        ? setVariationPrice({
-            productId,
-            variationId: assembly.activeVariation.id,
-            unitPrice: assembly.suggestedUnitPrice,
-          })
-        : // O servidor calcula o sugerido na medida padrão (DC-14)
-          adoptSuggestedPrice({ productId }),
+      // O servidor calcula o sugerido na medida padrão (DC-14)
+      adoptSuggestedPrice({ productId }),
       'Preço sugerido adotado',
     )
 
@@ -1107,39 +1062,6 @@ function AssemblyEditorBody({
                 </span>
               </p>
             </PermissionGate>
-            {/* Na variação: acabamento só dela sobre a base, e a etapa só
-                dela sai inteira (PV-7) */}
-            {inVariation && (
-              <PermissionGate permissions={EDIT}>
-                <div className="flex gap-1">
-                  {!item.variationOnly && (
-                    <ActionButton
-                      Icon={IconPlus}
-                      variant="neutralGhost"
-                      tooltip={`Etapa seguinte só em ${variation?.name}`}
-                      onClick={() => setDialog({ kind: 'next', after: item })}
-                    />
-                  )}
-                  {item.variationOnly && (
-                    <ActionButton
-                      Icon={IconTrash}
-                      variant="errorGhost"
-                      tooltip="Remover desta variação"
-                      onClick={() =>
-                        run(
-                          removeVariationBlock({
-                            productId,
-                            variationId: variation!.id,
-                            blockId: item.id,
-                          }),
-                          'Etapa removida da variação',
-                        )
-                      }
-                    />
-                  )}
-                </div>
-              </PermissionGate>
-            )}
             {/* A estrutura é da base: a variação só muda linhas (PV-2) */}
             {!inVariation && (
               <PermissionGate permissions={EDIT}>
@@ -1270,20 +1192,12 @@ function AssemblyEditorBody({
                             value={line.selectedId}
                             onChange={(value) =>
                               run(
-                                assembly.activeVariation
-                                  ? setVariationLine({
-                                      productId,
-                                      variationId: assembly.activeVariation.id,
-                                      blockId: item.id,
-                                      lineId: line.id,
-                                      values: { selectedId: value },
-                                    })
-                                  : updateAssemblyLine({
-                                      productId,
-                                      blockId: item.id,
-                                      lineId: line.id,
-                                      values: { selectedId: value },
-                                    }),
+                                updateAssemblyLine({
+                                  productId,
+                                  blockId: item.id,
+                                  lineId: line.id,
+                                  values: { selectedId: value },
+                                }),
                               )
                             }
                           />
@@ -1449,26 +1363,6 @@ function AssemblyEditorBody({
                                 }
                               />
                             )}
-                            {line.variationOverride &&
-                              assembly.activeVariation && (
-                                <ActionButton
-                                  Icon={IconArrowBackUp}
-                                  variant="neutralGhost"
-                                  tooltip="Voltar a acompanhar a base"
-                                  onClick={() =>
-                                    run(
-                                      clearVariationLine({
-                                        productId,
-                                        variationId:
-                                          assembly.activeVariation!.id,
-                                        blockId: item.id,
-                                        lineId: line.id,
-                                      }),
-                                      'Linha voltou a acompanhar a base',
-                                    )
-                                  }
-                                />
-                              )}
                             {!inVariation && line.mode !== 'SINGLE' && (
                               <ActionButton
                                 Icon={IconListDetails}
@@ -1761,28 +1655,19 @@ function AssemblyEditorBody({
                       <div className="flex flex-col">
                         <Label htmlFor="assembly-unit-price" className="mb-2">
                           {unitSaleLabel[assembly.unitKind]}
-                          {variation ? ` · ${variation.name}` : ''}
                         </Label>
                         <Input
-                          key={`${assembly.unitKind}-${assembly.unitPrice}-${variation?.id}-${variation?.unitPrice}`}
+                          key={`${assembly.unitKind}-${assembly.unitPrice}`}
                           id="assembly-unit-price"
                           type="number"
                           min={0}
                           step="0.01"
                           startAdornment={<span className="text-sm">R$</span>}
-                          placeholder={
-                            variation && assembly.unitPrice !== null
-                              ? `O do produto: ${(assembly.unitPrice / 100).toFixed(2)}`
-                              : '0,00'
-                          }
+                          placeholder="0,00"
                           defaultValue={
-                            variation
-                              ? variation.unitPrice === null
-                                ? ''
-                                : variation.unitPrice / 100
-                              : assembly.unitPrice === null
-                                ? ''
-                                : assembly.unitPrice / 100
+                            assembly.unitPrice === null
+                              ? ''
+                              : assembly.unitPrice / 100
                           }
                           onBlur={(event) => {
                             const value =
@@ -1790,16 +1675,10 @@ function AssemblyEditorBody({
                                 ? null
                                 : Math.round(Number(event.target.value) * 100)
                             run(
-                              variation
-                                ? setVariationPrice({
-                                    productId,
-                                    variationId: variation.id,
-                                    unitPrice: value,
-                                  })
-                                : updateAssembly({
-                                    productId,
-                                    values: { unitPrice: value },
-                                  }),
+                              updateAssembly({
+                                productId,
+                                values: { unitPrice: value },
+                              }),
                             )
                           }}
                         />
@@ -2018,175 +1897,12 @@ function AssemblyEditorBody({
         }
       />
 
-      {/* Segunda parte (decisão de 30/09 e 02/10/2026): faixa de quantidade e
-          variações ficam fora da tela enquanto a composição é acertada. O
-          código continua; só não é mostrado */}
+      {/* Segunda parte (decisão de 30/09 e 02/10/2026): a faixa de quantidade
+          fica fora da tela enquanto a composição é acertada. O código
+          continua; só não é mostrado. A tabela comercial fica ao lado do
+          custo técnico (FQ-1 a FQ-3) */}
       {SHOW_SECOND_PART && (
-        <>
-          {/* A tabela comercial ao lado do custo técnico (FQ-1 a FQ-3) */}
-          <PriceTiersCard assembly={assembly} onSaved={refresh} />
-
-          {/* 3. As variações: a mesma composição com exceções (PV-1 a PV-7) */}
-          <Card>
-            <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
-              <div>
-                <CardTitle>Variações</CardTitle>
-                <CardDescription>
-                  P, M, G; 4x0 ou 4x4; com ou sem laminação. A variação nasce
-                  igual à base, e só o que você mudar nela passa a ser dela.
-                </CardDescription>
-              </div>
-              <PermissionGate permissions={EDIT}>
-                {newVariation === null ? (
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    LeftIcon={IconPlus}
-                    onClick={() => setNewVariation('')}
-                  >
-                    Nova variação
-                  </Button>
-                ) : (
-                  <div className="flex w-full gap-2 sm:w-auto">
-                    <Input
-                      autoFocus
-                      aria-label="Nome da variação"
-                      placeholder="Ex.: 4x4, GG, laminado"
-                      value={newVariation}
-                      onChange={(event) => setNewVariation(event.target.value)}
-                    />
-                    <Button
-                      type="button"
-                      onClick={async () => {
-                        const res = await addVariation({
-                          productId,
-                          name: newVariation,
-                        })
-                        if (!res.success) return toast.error(res.message)
-                        setNewVariation(null)
-                        await refresh()
-                        setVariation(res.data as string)
-                      }}
-                    >
-                      Criar
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setNewVariation(null)}
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
-                )}
-              </PermissionGate>
-            </CardHeader>
-            <CardContent className="space-y-4 px-6 pb-6">
-              <div className="flex flex-wrap gap-2">
-                {assembly.variationSummary.map((item) => (
-                  <Button
-                    key={item.id || 'base'}
-                    type="button"
-                    variant={
-                      (variation?.id || '') === item.id
-                        ? 'default'
-                        : 'neutralOutline'
-                    }
-                    onClick={() => setVariation(item.id || null)}
-                  >
-                    {item.name}
-                  </Button>
-                ))}
-              </div>
-              {assembly.variationSummary.length > 1 && (
-                <PermissionGate permissions={['values:values:view']}>
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50">
-                        <TableHead className="w-[40%]">Variação</TableHead>
-                        <TableHead numeric className="w-[20%]">
-                          Custo
-                        </TableHead>
-                        <TableHead numeric className="w-[20%]">
-                          Preço de venda
-                        </TableHead>
-                        <TableHead numeric className="w-[20%]">
-                          Margem
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {assembly.variationSummary.map((item) => (
-                        <TableRow key={item.id || 'base'}>
-                          <TableCell className="font-medium">
-                            {item.name}
-                          </TableCell>
-                          <TableCell numeric>{money(item.cost)}</TableCell>
-                          <TableCell numeric>
-                            {money(item.priceForMeasure)}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              'text-right font-medium',
-                              item.margin !== null &&
-                                item.margin < 0 &&
-                                'text-error-700',
-                            )}
-                          >
-                            {item.margin === null
-                              ? '-'
-                              : `${num(item.margin, 1)}%`}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </PermissionGate>
-              )}
-              {variation && (
-                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-light-300 bg-blue-light-50 p-4 text-sm">
-                  <p className="text-gray-700">
-                    <strong>Você está na variação {variation.name}.</strong> O
-                    que mudar nas linhas abaixo vale só para ela; o resto
-                    acompanha a base. Etapas se acrescentam na base.
-                  </p>
-                  <PermissionGate permissions={EDIT}>
-                    <Button
-                      type="button"
-                      variant="errorGhost"
-                      size="sm"
-                      onClick={() =>
-                        alertDialog.open({
-                          title: `Remover a variação ${variation.name}?`,
-                          description:
-                            'As exceções desta variação se perdem. A base não muda.',
-                          confirmLabel: 'Remover',
-                          cancelLabel: 'Cancelar',
-                          confirmVariant: 'error',
-                          onConfirm: async () => {
-                            const res = await removeVariation({
-                              productId,
-                              variationId: variation.id,
-                            })
-                            if (!res.success) throw new Error(res.message)
-                            setVariation(null)
-                            await refresh()
-                          },
-                          toastMsg: {
-                            success: 'Variação removida',
-                            error: 'Erro ao remover a variação',
-                          },
-                        })
-                      }
-                    >
-                      Remover variação
-                    </Button>
-                  </PermissionGate>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </>
+        <PriceTiersCard assembly={assembly} onSaved={refresh} />
       )}
 
       {/* 4. A composição é a lista de etapas, na ordem da produção, como o
@@ -2498,25 +2214,16 @@ function AssemblyEditorBody({
           const insertBefore = dialog.before?.id
           setDialog(null)
           run(
-            variation
-              ? addVariationBlock({
-                  productId,
-                  variationId: variation.id,
-                  processId,
-                  dependsOn,
-                })
-              : addAssemblyBlock({
-                  productId,
-                  processId,
-                  dependsOn,
-                  insertBefore,
-                }).then((res) => {
-                  if (res.success && res.data) setSelectedId(res.data)
-                  return res
-                }),
-            variation
-              ? `Etapa acrescentada só em ${variation.name}`
-              : 'Etapa adicionada',
+            addAssemblyBlock({
+              productId,
+              processId,
+              dependsOn,
+              insertBefore,
+            }).then((res) => {
+              if (res.success && res.data) setSelectedId(res.data)
+              return res
+            }),
+            'Etapa adicionada',
           )
         }}
         onCreateOwn={(name, sector) => {
@@ -2679,19 +2386,6 @@ function AssemblyEditorBody({
           if (dialog?.kind !== 'line') return
           const { block: target, line } = dialog
           setDialog(null)
-          if (variation) {
-            run(
-              setVariationLine({
-                productId,
-                variationId: variation.id,
-                blockId: target.id,
-                lineId: line.id,
-                values: { perUnit: values.perUnit },
-              }),
-              `Linha ajustada na variação ${variation.name}`,
-            )
-            return
-          }
           run(
             updateAssemblyLine({
               productId,

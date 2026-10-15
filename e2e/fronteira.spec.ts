@@ -45,7 +45,6 @@ const NOT_FOUND_URLS = [
   '/estoque/entrada-de-nota',
   `/producao/projetos/${FAKE_ID}/ficha`,
   '/configuracoes/empresa-e-sistema/patrimonios/grupos',
-  `/vendas/orcamentos/${FAKE_ID}/composicao/proposta`,
 ]
 
 /**

@@ -39,7 +39,7 @@ import {
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
 import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
-import { materialUnitSymbol } from '@/actions/materials-data'
+import { materialUnitSymbol } from '@/consts/materials'
 
 // Hooks / Store / Consts
 

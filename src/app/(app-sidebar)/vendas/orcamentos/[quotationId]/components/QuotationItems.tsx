@@ -56,12 +56,11 @@ import {
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
 // Third-party
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Libs
 import { actionDisabled } from '@/lib/quotation'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-import { DEMO_DATA } from '@/lib/demo'
 import { useQuotation } from '@/contexts/quotationContext'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 import {
@@ -72,17 +71,9 @@ import {
 
 // Actions
 import { createItem, deleteItemNew } from '@/actions/_cruds'
-import {
-  getComposedItems,
-  getItemCompositions,
-  removeComposedItem,
-} from '@/actions/quotation-composition'
 import { removeItemLine } from '@/actions/quotation-lines'
 import { AddToItem } from './AddToItem'
-import {
-  CompositionReport,
-  type ReportTarget,
-} from '../composicao/components/CompositionReport'
+import { CompositionReport, type ReportTarget } from './CompositionReport'
 import type { ComposedItemSummary } from '../composicao/types'
 import { draftHostOf } from '@/lib/composed-draft'
 import { FeatureGate } from '@/components/common/FeatureGate'
@@ -133,22 +124,13 @@ export function QuotationItems({ data }: Props) {
   const queryClient = useQueryClient()
 
   // A composição que o vendedor escolheu em cada item (IP-36) vem no item
-  // da API; o exemplo em memória fica só com a flag de demonstração, para
-  // os itens lançados antes, como os montados e acrescentados abaixo
-  const { data: compositionsRes } = useQuery({
-    queryKey: ['quotation-item-compositions', data?.id],
-    queryFn: () => getItemCompositions({ quotationId: String(data?.id) }),
-    enabled: !!data?.id && DEMO_DATA,
-  })
+  // da API
   const [report, setReport] = useState<ReportTarget | null>(null)
 
   const compositionOf = (item: QuotationItemType) =>
-    item.composition ||
-    compositionsRes?.data?.[item.id] ||
-    compositionsRes?.data?.[item.product?.originalProductId]
+    item.composition ?? undefined
 
-  // Os itens montados na hora (ORC-11) ficam no mock até a API guardar o
-  // item sem produto. Chegam sem custo (ORC-7)
+  // Os itens montados na hora (ORC-11) chegam sem custo (ORC-7)
   const alertDialog = useAlertDialog()
   const [composeTarget, setComposeTarget] =
     useState<ComposedItemSummary | null>(null)
@@ -158,11 +140,6 @@ export function QuotationItems({ data }: Props) {
   // Produto inativado depois de lançado (PAD-7): o item fica marcado, o bloco
   // avisa e a aprovação é travada até trocar ou retirar o item
   const { inactiveItems, isItemInactive } = useInactiveQuotationItems(data)
-  const { data: composedRes } = useQuery({
-    queryKey: ['composed-items', data?.id],
-    queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
-    enabled: !!data?.id && DEMO_DATA,
-  })
   // O material de venda direta vem da API (Fase 4.4) e aparece como os
   // itens montados: com a unidade e o preço do material
   const materialRows: ComposedItemSummary[] = (data?.quotationItems ?? [])
@@ -186,7 +163,6 @@ export function QuotationItems({ data }: Props) {
       sectors: item.material?.sector ? [item.material.sector] : [],
       price: item.finalValue,
       attention: false,
-      fromApi: true,
     }))
   // O item montado na hora vem da API (Fase 4.5): o editor abre o rascunho
   // dele; a medida vem em mm e a tela mostra em metros
@@ -205,13 +181,8 @@ export function QuotationItems({ data }: Props) {
       sectors: [],
       price: item.finalValue,
       attention: !!item.attention,
-      fromApi: true,
     }))
-  const composed = [
-    ...materialRows,
-    ...composedRows,
-    ...(composedRes?.data || []),
-  ]
+  const composed = [...materialRows, ...composedRows]
 
   // O que foi acrescentado dentro de cada item (ORC-5): vem no item, do
   // detalhe do orçamento, sem custo (ORC-7)
@@ -246,17 +217,11 @@ export function QuotationItems({ data }: Props) {
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
-        // O material veio da API: sai pela rota do item do orçamento
-        const res = item.fromApi
-          ? await deleteItemNew({
-              route: `/sale/quotation/remove-product/${item.id}`,
-            })
-          : await removeComposedItem({
-              quotationId: String(data?.id),
-              itemId: item.id,
-            })
+        // Sai pela rota do item do orçamento
+        const res = await deleteItemNew({
+          route: `/sale/quotation/remove-product/${item.id}`,
+        })
         if (!res.success) throw new Error(res.message)
-        queryClient.invalidateQueries({ queryKey: ['composed-items'] })
         queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       },
       toastMsg: { success: 'Item excluído', error: 'Erro ao excluir o item' },
@@ -275,8 +240,6 @@ export function QuotationItems({ data }: Props) {
       variation: item.variation?.name ?? null,
       variationId: item.variation?.id ?? null,
       composition: compositionOf(item),
-      // O item lançado lê o relatório da API
-      fromApi: !!item.composition,
     }
   }
 

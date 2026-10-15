@@ -29,21 +29,19 @@ import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQu
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Type
 import { QuotationType } from '@/types/sales/quotation'
 
 // Action
 import { createItemNew } from '@/actions/_cruds'
-import { getComposedItems } from '@/actions/quotation-composition'
 
 // Hooks
 import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationItems'
 
 // Lib
 import { cn } from '@/lib/utils'
-import { DEMO_DATA } from '@/lib/demo'
 
 // Icons
 import {
@@ -81,19 +79,11 @@ export function FinishQuotation({ data, canFinish }: Props) {
   const queryClient = useQueryClient()
 
   // Item de composição sem nenhuma etapa não bloqueia a conclusão (MS-12,
-  // 05/10/2026): é a saída do dia a dia, e o aviso fica no item. Os itens
-  // montados ainda ficam em dado de demonstração: só com a flag
-  const { data: composedRes } = useQuery({
-    queryKey: ['composed-items', data?.id],
-    queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
-    enabled: !!data?.id && DEMO_DATA,
-  })
-  // O item montado da API sem etapa também trava (MS-12; o servidor confere)
-  const composedAttention =
-    !!composedRes?.data?.some((item) => item.attention) ||
-    !!data?.quotationItems?.some(
-      (item) => item.origin === 'COMPOSED' && item.attention,
-    )
+  // 05/10/2026): é a saída do dia a dia, e o aviso fica no item. O item
+  // montado da API sem etapa também trava (MS-12; o servidor confere)
+  const composedAttention = !!data?.quotationItems?.some(
+    (item) => item.origin === 'COMPOSED' && item.attention,
+  )
 
   // Produto inativado depois de lançado (PAD-7): concluir pode, aprovar não
   const { inactiveItems } = useInactiveQuotationItems(data)

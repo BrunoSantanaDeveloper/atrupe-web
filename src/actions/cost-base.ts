@@ -6,9 +6,6 @@
 // até duas casas (a API recusa mais). O rateio entre os equipamentos do setor
 // fica em sector-allocation.ts. Toda resposta traz o mês de referência
 // (AAAA-MM), o último mês completo.
-//
-// A Precificação e a composição ainda leem o exemplo em memória
-// (cost-base-data.ts e sector-allocation-data.ts) até serem ligadas à API.
 
 // Types
 import type {

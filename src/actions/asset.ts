@@ -1,10 +1,8 @@
 'use server'
 
-// Patrimônios (recurso do PRO, módulo 4): as rotas /asset da API. As telas
-// do cadastro liam o exemplo em memória (assets.ts), que continua para as
-// telas de demonstração que ainda leem assets-data.ts (rateio do setor e
-// base de custos). Valores em centavos e datas YYYY-MM-DD dos dois lados; o
-// setor, o grupo e a conta do plano de contas vão pelo id.
+// Patrimônios (recurso do PRO, módulo 4): as rotas /asset da API. Valores
+// em centavos e datas YYYY-MM-DD dos dois lados; o setor, o grupo e a conta
+// do plano de contas vão pelo id.
 //
 // Sem values:values:view, a leitura vem sem os valores e a escrita é
 // recusada (403). As páginas já pedem a permissão; o valor que faltar chega

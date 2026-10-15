@@ -39,7 +39,6 @@ import {
   previewItemLine,
   type ItemLineInput,
 } from '@/actions/quotation-lines'
-import { getQuotationProducts } from '@/actions/quotation-composition'
 
 // Hooks
 import { useCanSeeValues } from '@/hooks/useMoney'
@@ -142,52 +141,33 @@ export function AddToItem({
 
   const { data: apiProducts } = useProducts()
   const { data: apiSectors } = useSectorWithProducts()
-  // Sem API (dev), valem os produtos de exemplo do mock, para o painel não
-  // ficar sem opção
-  const { data: mockProductsRes } = useQuery({
-    queryKey: ['quotation-products'],
-    queryFn: () => getQuotationProducts(),
-    enabled: mode === 'catalog' && !apiProducts?.length,
-  })
   const catalog = useMemo<CatalogProduct[]>(() => {
-    if (apiProducts?.length) {
-      const sectorName = (id: string) =>
-        apiSectors?.find((item) => item.id === id)?.name || 'Sem setor'
-      return apiProducts
-        .filter((product) => product.isActive !== false)
-        .map((product) => {
-          const first = product.items?.[0]
-          const kind = (first?.unitKind || 'UNITY').toUpperCase()
-          const unitKind: CatalogProduct['unitKind'] =
-            kind === 'AREA' ? 'AREA' : kind === 'LENGTH' ? 'LENGTH' : 'UNITY'
-          const unitPrice = first?.unitCost
-            ? convertRawToUnitCost(unitKind, first.unitCost)
-            : (product.items ?? []).reduce(
-                (sum, item) =>
-                  sum + (item.salePrice ?? 0) * (item.quantity ?? 1),
-                0,
-              ) ||
-              product.salePrice ||
-              0
-          return {
-            id: product.id,
-            name: product.name,
-            sector: sectorName(product.sectorId),
-            unitKind,
-            unitPrice: Math.round(unitPrice),
-          }
-        })
-    }
-    return (mockProductsRes?.data || [])
-      .filter((option) => option.releasedForSale !== false)
-      .map((option) => ({
-        id: option.id,
-        name: option.name,
-        sector: option.sector,
-        unitKind: option.unit === 'm²' ? 'AREA' : 'UNITY',
-        unitPrice: option.price,
-      }))
-  }, [apiProducts, apiSectors, mockProductsRes])
+    const sectorName = (id: string) =>
+      apiSectors?.find((item) => item.id === id)?.name || 'Sem setor'
+    return (apiProducts || [])
+      .filter((product) => product.isActive !== false)
+      .map((product) => {
+        const first = product.items?.[0]
+        const kind = (first?.unitKind || 'UNITY').toUpperCase()
+        const unitKind: CatalogProduct['unitKind'] =
+          kind === 'AREA' ? 'AREA' : kind === 'LENGTH' ? 'LENGTH' : 'UNITY'
+        const unitPrice = first?.unitCost
+          ? convertRawToUnitCost(unitKind, first.unitCost)
+          : (product.items ?? []).reduce(
+              (sum, item) => sum + (item.salePrice ?? 0) * (item.quantity ?? 1),
+              0,
+            ) ||
+            product.salePrice ||
+            0
+        return {
+          id: product.id,
+          name: product.name,
+          sector: sectorName(product.sectorId),
+          unitKind,
+          unitPrice: Math.round(unitPrice),
+        }
+      })
+  }, [apiProducts, apiSectors])
 
   const options =
     mode === 'catalog'

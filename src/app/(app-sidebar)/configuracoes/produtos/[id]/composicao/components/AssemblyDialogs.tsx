@@ -40,7 +40,6 @@ import {
   type LineMode,
   type NewLineValues,
   type AssemblyResource,
-  type LibraryEntry,
   type SaleRules,
   type QuantityMode,
   type ComputedLine,
@@ -73,7 +72,6 @@ import {
   IconSettings,
   IconListDetails,
   IconPuzzle,
-  IconBooks,
   IconSearch,
 } from '@tabler/icons-react'
 
@@ -1970,157 +1968,6 @@ export function PartDialog({
             onClick={() => onOpenChange(false)}
           >
             Cancelar
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-/* ---------------------------------------------------------------------------
- * Biblioteca de composições prontas (IP-7): o cliente importa em vez de
- * montar do zero. Importar é copiar — depois, a composição é do produto
- * ------------------------------------------------------------------------- */
-
-export function LibraryDialog({
-  open,
-  entries,
-  hasStages,
-  onOpenChange,
-  onImport,
-}: {
-  open: boolean
-  entries: LibraryEntry[]
-  // O produto já tem etapas: as importadas entram depois delas
-  hasStages: boolean
-  onOpenChange: (open: boolean) => void
-  onImport: (libraryId: string) => void
-}) {
-  const [search, setSearch] = useState('')
-  const [segment, setSegment] = useState('all')
-
-  useEffect(() => {
-    if (open) {
-      setSearch('')
-      setSegment('all')
-    }
-  }, [open])
-
-  const segments = Array.from(new Set(entries.map((item) => item.segment)))
-  const visible = entries.filter(
-    (item) =>
-      (segment === 'all' || item.segment === segment) &&
-      item.name.toLowerCase().includes(search.trim().toLowerCase()),
-  )
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[760px]">
-        <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBooks} />
-            <div>
-              <DialogTitle>Biblioteca de produtos</DialogTitle>
-              <DialogDescription>
-                Produtos com a composição de referência: etapas, materiais e
-                tempos de quem já produz. Escolha um, cadastre o seu produto a
-                partir dele e revise a composição, que é ponto de partida, não o
-                seu custo.
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
-        <DialogBody className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Input
-              aria-label="Buscar na biblioteca"
-              placeholder="Buscar pelo nome"
-              className="min-w-[220px] flex-1"
-              startAdornment={<IconSearch className="size-4 text-gray" />}
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-            {['all', ...segments].map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setSegment(item)}
-                className={cn(
-                  'rounded-full border px-3 py-1.5 text-sm',
-                  segment === item
-                    ? 'border-brand-500 bg-brand-25 font-medium text-brand-700'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50',
-                )}
-              >
-                {item === 'all' ? 'Todos' : item}
-              </button>
-            ))}
-          </div>
-
-          {hasStages && (
-            <p className="rounded-lg bg-warning-50 px-4 py-3 text-sm text-warning-700">
-              Este produto já tem etapas. As importadas entram depois delas —
-              remova o que não servir.
-            </p>
-          )}
-
-          <div className="max-h-[50vh] space-y-2 overflow-y-auto">
-            {visible.length ? (
-              visible.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex flex-wrap items-start justify-between gap-4 rounded-lg border border-gray-200 p-4"
-                >
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div>
-                      <p className="font-medium text-gray-800">{entry.name}</p>
-                      <p className="text-sm text-gray">
-                        {entry.segment} · {entry.description}
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {entry.stages.map((stage) => (
-                        <span
-                          key={stage.name}
-                          className={cn(
-                            'rounded px-2 py-0.5 text-xs',
-                            stage.role === 'FINISHING'
-                              ? 'bg-blue-50 text-blue-700'
-                              : 'bg-gray-100 text-gray-700',
-                          )}
-                        >
-                          {stage.name} · {stage.sector}
-                        </span>
-                      ))}
-                      <span className="px-1 py-0.5 text-xs text-gray">
-                        {entry.resources} linhas
-                      </span>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="neutralOutline"
-                    onClick={() => onImport(entry.id)}
-                  >
-                    Importar
-                  </Button>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-gray">
-                Nada encontrado com esse nome.
-              </p>
-            )}
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Fechar
           </Button>
         </DialogFooter>
       </DialogContent>

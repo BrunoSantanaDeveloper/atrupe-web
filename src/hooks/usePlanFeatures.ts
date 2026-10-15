@@ -2,8 +2,6 @@
 
 import { useSession } from 'next-auth/react'
 import { useCallback } from 'react'
-import { isDemoRoute } from '@/config/routes'
-import { DEMO_DATA } from '@/lib/demo'
 
 export function usePlanFeatures() {
   const { data: session } = useSession()
@@ -95,12 +93,9 @@ export function usePlanFeatures() {
   const canBillOnDeliveryAndCheckout = () =>
     hasFeature('can_bill_on_delivery_and_checkout')
 
-  // Faturar na frente de caixa pede também a frente de caixa (LITE), que
-  // fica escondida até a Fase 7 (decisão do PO, 14/10/2026)
+  // Faturar na frente de caixa pede também a frente de caixa (LITE)
   const canBillOnCheckout = () =>
-    canBillOnDeliveryAndCheckout() &&
-    hasFeature('pdv_screen') &&
-    (DEMO_DATA || !isDemoRoute('/financeiro/frente-de-caixa'))
+    canBillOnDeliveryAndCheckout() && hasFeature('pdv_screen')
 
   const canManageCancelTransactionReasons = () =>
     hasFeature('transaction_cancel_reasons')

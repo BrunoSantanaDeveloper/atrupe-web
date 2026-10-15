@@ -6,9 +6,6 @@
 // simula com os números que recebeu, e a API confere de novo ao salvar.
 // Dinheiro em centavos. O percentual manual aceita mais de duas casas (BC-9),
 // para o equipamento receber o valor que foi arredondado à mão.
-//
-// A Precificação e a composição ainda leem o rateio do exemplo em memória
-// (sector-allocation-data.ts) até serem ligadas à API.
 
 // Types
 import type {

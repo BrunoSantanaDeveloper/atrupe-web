@@ -39,7 +39,7 @@ import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
 import { getMaterials, updateMaterialPrice } from '@/actions/materials'
-import { materialUnitSymbol } from '@/actions/materials-data'
+import { materialUnitSymbol } from '@/consts/materials'
 
 // Hooks / Store / Consts
 

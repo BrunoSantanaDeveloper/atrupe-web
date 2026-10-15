@@ -757,18 +757,6 @@ export const formulaInputs: { [key in FormulaKey]: FormulaInput[] } = {
   CUSTOM: [],
 }
 
-// Biblioteca de composições prontas (IP-7): curadoria do Atrupe, importada
-// para o produto do cliente já com etapas e materiais. É o passo 2 do
-// caminho do produto até o PRO (CP-16)
-export type LibraryEntry = {
-  id: string
-  name: string
-  segment: string
-  description: string
-  stages: { name: string; sector: string; role: BlockRole }[]
-  resources: number
-}
-
 // Os tipos de tarefa que a etapa gera na produção (IP-23, MS-8)
 export const TASK_TYPES = [
   'Criação',

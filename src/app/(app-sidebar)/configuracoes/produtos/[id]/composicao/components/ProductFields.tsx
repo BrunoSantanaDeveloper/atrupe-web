@@ -31,12 +31,6 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import type { QuoteField } from '../assembly'
 
 // Actions
-// O item montado no orçamento (`orcamento:`) ainda é do exemplo
-import {
-  addProductField as addDraftField,
-  removeProductField as removeDraftField,
-  updateProductField as updateDraftField,
-} from '@/actions/product-assembly'
 import {
   addProductField,
   removeProductField,
@@ -83,13 +77,8 @@ export function ProductFields({
   onSaved,
 }: Props) {
   const queryClient = useQueryClient()
-  // O processo e o produto gravam na API; o item montado no orçamento
-  // (`orcamento:`), no exemplo
+  // O processo e o produto gravam na API
   const isProcess = productId.startsWith('processo:')
-  const isDraft = productId.startsWith('orcamento:')
-  const addField = isDraft ? addDraftField : addProductField
-  const removeField = isDraft ? removeDraftField : removeProductField
-  const updateField = isDraft ? updateDraftField : updateProductField
   const [name, setName] = useState('')
   const [defaultValue, setDefaultValue] = useState('')
   const [allowsFraction, setAllowsFraction] = useState(false)
@@ -109,7 +98,7 @@ export function ProductFields({
       }
       return isProcess
         ? addProcessField({ hostId: productId, ...values })
-        : addField({ productId, ...values })
+        : addProductField({ productId, ...values })
     },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
@@ -127,7 +116,7 @@ export function ProductFields({
     mutationFn: (fieldId: string) =>
       isProcess
         ? removeProcessField({ hostId: productId, fieldId })
-        : removeField({ productId, fieldId }),
+        : removeProductField({ productId, fieldId }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       toast.success('Campo removido')
@@ -145,7 +134,7 @@ export function ProductFields({
     }) =>
       isProcess
         ? updateProcessField({ hostId: productId, ...values })
-        : updateField({ productId, ...values }),
+        : updateProductField({ productId, ...values }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       invalidate()

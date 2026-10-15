@@ -5,11 +5,20 @@
 // orçamento com origin MATERIAL e o bloco `material`; o preço é o do
 // cadastro do material (ou da variação), calculado no servidor.
 
-// Types
-import type { DirectSaleMaterial } from './quotation-composition'
-
 // Actions
 import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
+
+export type DirectSaleMaterial = {
+  id: string
+  code: string
+  name: string
+  sector: string
+  unit: string
+  // Preço por unidade de venda, em centavos; vazio quando só as variações
+  // têm preço
+  price: number | null
+  variations: { id: string; name: string; price: number | null }[]
+}
 
 type ApiResult = {
   success: boolean

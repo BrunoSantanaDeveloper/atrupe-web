@@ -19,12 +19,6 @@ import { FormulaDialog, type FormulaValues } from './AssemblyDialogs'
 import type { QuoteField, ProductFormula } from '../assembly'
 
 // Actions
-// O item montado no orçamento (`orcamento:`) ainda é do exemplo
-import {
-  addProductFormula as addDraftFormula,
-  removeProductFormula as removeDraftFormula,
-  updateProductFormula as updateDraftFormula,
-} from '@/actions/product-assembly'
 import {
   addProductFormula,
   removeProductFormula,
@@ -74,13 +68,8 @@ export function ProductFormulas({
   onSaved,
 }: Props) {
   const queryClient = useQueryClient()
-  // O processo e o produto gravam na API; o item montado no orçamento
-  // (`orcamento:`), no exemplo
+  // O processo e o produto gravam na API
   const isProcess = productId.startsWith('processo:')
-  const isDraft = productId.startsWith('orcamento:')
-  const addFormula = isDraft ? addDraftFormula : addProductFormula
-  const removeFormula = isDraft ? removeDraftFormula : removeProductFormula
-  const updateFormula = isDraft ? updateDraftFormula : updateProductFormula
   const [dialog, setDialog] = useState<
     { kind: 'new' } | { kind: 'edit'; formula: ProductFormula } | null
   >(null)
@@ -94,7 +83,7 @@ export function ProductFormulas({
     mutationFn: (formulaId: string) =>
       isProcess
         ? removeProcessFormula({ hostId: productId, formulaId })
-        : removeFormula({ productId, formulaId }),
+        : removeProductFormula({ productId, formulaId }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       toast.success('Fórmula removida')
@@ -112,14 +101,14 @@ export function ProductFormulas({
               formulaId: dialog.formula.id,
               ...values,
             })
-          : await updateFormula({
+          : await updateProductFormula({
               productId,
               formulaId: dialog.formula.id,
               ...values,
             })
         : isProcess
           ? await addProcessFormula({ hostId: productId, ...values })
-          : await addFormula({ productId, ...values })
+          : await addProductFormula({ productId, ...values })
     if (!response.success) {
       toast.error(response.message)
       return false

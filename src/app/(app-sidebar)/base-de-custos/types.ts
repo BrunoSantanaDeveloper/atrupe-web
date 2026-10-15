@@ -18,8 +18,7 @@ export type AdminExpenseAccount = {
   name: string
   // O código da conta no plano de contas ("02.01.01.02")
   chartAccount: string
-  // A API não manda: a lista é plana (decisão de 22/09/2026). Só o exemplo em
-  // memória (actions/cost-base-data.ts), que a Precificação ainda lê, agrupa
+  // A API não manda: a lista é plana (decisão de 22/09/2026)
   groupId?: string
   lastMonth: number | null
   avg3: number | null
@@ -283,8 +282,7 @@ export type SectorAllocation = {
   previousCriterion: Exclude<AllocationCriterion, 'MANUAL'> | null
   // No manual, entrou ou saiu um equipamento do setor depois do último
   // salvar: o rateio não se atualiza sozinho, e o bem novo fica com 0% até a
-  // empresa salvar de novo (BC-3.1). O exemplo em memória
-  // (actions/sector-allocation-data.ts) não tem, por isso é opcional
+  // empresa salvar de novo (BC-3.1)
   allocationOutdated?: boolean
   // O custo do setor a repartir entre os equipamentos
   pool: number
