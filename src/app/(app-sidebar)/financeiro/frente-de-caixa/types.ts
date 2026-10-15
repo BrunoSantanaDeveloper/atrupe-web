@@ -206,6 +206,18 @@ export type CashFront = {
   roundingLimit: number
   drawerAccountId: string | null
   drawerAccount: string | null
+  // A conta do PIX e a do cartão desta frente (CX-2): vazias, vale a padrão
+  // da forma
+  pixAccountId: string | null
+  pixAccount: string | null
+  cardAccountId: string | null
+  cardAccount: string | null
   // Há caixa aberto nela agora
   open: boolean
 }
+
+// O que o cadastro da frente envia
+export type CashFrontValues = Omit<
+  CashFront,
+  'id' | 'open' | 'drawerAccount' | 'pixAccount' | 'cardAccount'
+>

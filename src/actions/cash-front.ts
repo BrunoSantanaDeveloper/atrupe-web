@@ -8,6 +8,7 @@
 // Types
 import type {
   CashFront,
+  CashFrontValues,
   CashSession,
   PaymentPart,
   PendingSale,
@@ -222,7 +223,7 @@ export const getCashFronts = async () => {
 
 export const saveCashFront = async (
   id: string | undefined,
-  values: Omit<CashFront, 'id' | 'open' | 'drawerAccount'>,
+  values: CashFrontValues,
 ) => {
   const res: ApiResult = id
     ? await updateItemNew({ route: `/financial/pdv/front/${id}`, data: values })

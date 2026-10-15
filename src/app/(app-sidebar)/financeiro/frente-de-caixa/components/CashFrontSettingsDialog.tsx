@@ -27,7 +27,7 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import { MoneyInput } from '../../_components/cash/CashCountCheck'
 
 // Types
-import type { CashFront } from '../types'
+import type { CashFrontValues } from '../types'
 
 // Actions
 import { getCashFronts, saveCashFront } from '@/actions/cash-front'
@@ -42,7 +42,10 @@ import { IconSettings, IconPlus } from '@tabler/icons-react'
 
 const NEW = 'nova'
 
-const blank: Omit<CashFront, 'id' | 'open' | 'drawerAccount'> = {
+// A frente sem conta própria usa a padrão da forma
+const DEFAULT_ACCOUNT = 'padrao'
+
+const blank: CashFrontValues = {
   name: '',
   isDefault: false,
   isActive: true,
@@ -51,6 +54,8 @@ const blank: Omit<CashFront, 'id' | 'open' | 'drawerAccount'> = {
   roundingType: 'VALUE',
   roundingLimit: 100,
   drawerAccountId: null,
+  pixAccountId: null,
+  cardAccountId: null,
 }
 
 export function CashFrontSettingsDialog({
@@ -83,6 +88,13 @@ export function CashFrontSettingsDialog({
   const drawers = (accountsRes?.data || []).filter(
     (account) => account.isActive && account.kind === 'CASH',
   )
+  // O PIX e o cartão vão para um banco ou uma operadora (CX-2)
+  const receivingAccounts = [
+    { value: DEFAULT_ACCOUNT, label: 'A padrão da forma' },
+    ...(accountsRes?.data || [])
+      .filter((account) => account.isActive && account.kind !== 'CASH')
+      .map((account) => ({ value: account.id, label: account.name })),
+  ]
 
   useEffect(() => {
     if (open && !selected && fronts.length) setSelected(fronts[0].id)
@@ -101,6 +113,8 @@ export function CashFrontSettingsDialog({
         roundingType: front.roundingType,
         roundingLimit: front.roundingLimit,
         drawerAccountId: front.drawerAccountId,
+        pixAccountId: front.pixAccountId,
+        cardAccountId: front.cardAccountId,
       })
     }
   }, [selected, fronts])
@@ -259,6 +273,40 @@ export function CashFrontSettingsDialog({
               label: account.name,
             }))}
           />
+
+          <div className="space-y-2">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <SelectBasic
+                name="pix-account"
+                label="Conta do PIX"
+                value={form.pixAccountId || DEFAULT_ACCOUNT}
+                onChange={(value) =>
+                  set(
+                    'pixAccountId',
+                    value === DEFAULT_ACCOUNT ? null : value || null,
+                  )
+                }
+                options={receivingAccounts}
+              />
+              <SelectBasic
+                name="card-account"
+                label="Conta do cartão"
+                value={form.cardAccountId || DEFAULT_ACCOUNT}
+                onChange={(value) =>
+                  set(
+                    'cardAccountId',
+                    value === DEFAULT_ACCOUNT ? null : value || null,
+                  )
+                }
+                options={receivingAccounts}
+              />
+            </div>
+            <p className="text-xs text-gray">
+              Onde o operador não escolhe a conta, o PIX e o cartão desta frente
+              vão para estas contas e, sem elas, para a padrão da forma em
+              Contas bancárias.
+            </p>
+          </div>
 
           <div className="flex flex-wrap gap-6">
             <label className="flex items-center gap-2 text-sm">
