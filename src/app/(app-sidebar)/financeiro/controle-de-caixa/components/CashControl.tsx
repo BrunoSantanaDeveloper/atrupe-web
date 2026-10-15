@@ -149,8 +149,11 @@ export function CashControl(_: SearchParamsType) {
     ])
 
   // Caixas de dias anteriores ainda abertos: são eles que travam o dia de
-  // hoje daquela conta (FC-14). O aviso vem antes do bloqueio
-  const stuck = days.filter((day) => day.status === 'OPEN' && day.date < today)
+  // hoje daquela conta (FC-14). O aviso vem antes do bloqueio. O aberto sem
+  // nenhum lançamento não trava: abrir o dia o traz para hoje
+  const stuck = days.filter(
+    (day) => day.status === 'OPEN' && day.date < today && !day.untouched,
+  )
 
   const filtered = days.filter(
     (day) =>

@@ -135,6 +135,9 @@ export type CashDay = {
   informed?: number
   note?: string
   reopenings: { at: string; by: string; reason: string }[]
+  // Aberto e sem nenhum lançamento (o caixa que o cadastro da empresa abre):
+  // não trava o dia seguinte, vira o caixa dele
+  untouched?: boolean
   movements: Movement[]
 }
 
