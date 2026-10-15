@@ -13,19 +13,16 @@ import {
   calculatePeriodDates,
   type PeriodType,
 } from '@/lib/filter-utils'
-import { DEMO_DATA } from '@/lib/demo'
 
 // Types
 import type { CommissionRecord } from './types'
 
 export type CommissionMode = 'sold_value' | 'received_value'
 
-// O modo "pelo valor recebido" depende de a API trazer as vendas pela data do
-// recebimento (ALT-23), o que a de produção ainda não faz: ela devolvia as
-// vendas do mês corrente e zerava a comissão (CR-2). Sem a flag de
-// demonstração o relatório fica no modo vendido, que calcula como produção
+// O modo "pelo valor recebido" (ALT-23): a API traz um registro por
+// recebimento no período, inclusive de vendas de meses anteriores
 export const commissionModeOf = (value?: string | null): CommissionMode =>
-  DEMO_DATA && value === 'received_value' ? 'received_value' : 'sold_value'
+  value === 'received_value' ? 'received_value' : 'sold_value'
 
 export const commissionModeCopy: Record<
   CommissionMode,
@@ -78,23 +75,9 @@ export function commissionFilters(params: Params, restrictedSellerId?: string) {
     restrictedSellerId ||
     (params.sellerId && params.sellerId !== 'all' ? params.sellerId : undefined)
 
-  // Sem a flag, os filtros vão à API como em produção: as datas da URL, a da
-  // venda e a do recebimento, sem completar o período. Sem datas, a API usa o
-  // mês atual até agora (completar com o último dia do mês, à meia-noite,
-  // deixava de fora as vendas desse dia)
-  if (!DEMO_DATA) {
-    return {
-      startDate: params.startDate || undefined,
-      endDate: params.endDate || undefined,
-      receivedStartDate: params.receivedStartDate || undefined,
-      receivedEndDate: params.receivedEndDate || undefined,
-      sellerId,
-    }
-  }
-
-  // Com a flag (ALT-23), o período da tela é um só e o modo decide se ele
-  // filtra a data da venda ou a do recebimento. Sem datas na URL, vale o
-  // período escolhido (o mês atual por padrão)
+  // O período da tela é um só e o modo decide se ele filtra a data da venda
+  // ou a do recebimento (ALT-23). Sem datas na URL, vale o período escolhido
+  // (o mês atual por padrão)
   const mode = commissionModeOf(params.commissionType)
 
   let startDate = params.startDate || undefined
