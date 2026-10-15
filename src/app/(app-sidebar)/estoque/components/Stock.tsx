@@ -44,10 +44,20 @@ import { stockMovementObj } from '@/consts/stock'
 import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { ActionButton } from '@/components/common/ActionButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
+import { StockItemDialog } from './StockItemDialog'
+import type { StockItem } from '../types'
 
 // Icons
-import { IconBoxSeam, IconFileInvoice } from '@tabler/icons-react'
+import {
+  IconBoxSeam,
+  IconFileInvoice,
+  IconTarget,
+  IconAdjustments,
+} from '@tabler/icons-react'
 
 const statusTabs = [
   { tab: 'todos', label: 'Todos' },
@@ -62,6 +72,12 @@ export function Stock({ searchParams }: SearchParamsType) {
   // Custo e preço só para quem tem a permissão de valores (§9)
   const money = useMoney()
   const status = (searchParams?.status as string) || 'todos'
+  const queryClient = useQueryClient()
+  // O mínimo e o ajuste de inventário de um material (stock:stock:edit)
+  const [editing, setEditing] = useState<{
+    item: StockItem
+    mode: 'minimum' | 'adjustment'
+  }>()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -139,6 +155,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                         Última entrada
                       </TableHead>
                       <TableHead className="w-[16%]">Status</TableHead>
+                      <TableHead />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -197,6 +214,28 @@ export function Stock({ searchParams }: SearchParamsType) {
                                 Normal
                               </Badge>
                             )}
+                          </TableCell>
+                          <TableCell>
+                            <PermissionGate permissions={['stock:stock:edit']}>
+                              <div className="flex justify-end gap-1">
+                                <ActionButton
+                                  Icon={IconTarget}
+                                  variant="neutralGhost"
+                                  tooltip="Estoque mínimo"
+                                  onClick={() =>
+                                    setEditing({ item, mode: 'minimum' })
+                                  }
+                                />
+                                <ActionButton
+                                  Icon={IconAdjustments}
+                                  variant="neutralGhost"
+                                  tooltip="Ajuste de inventário"
+                                  onClick={() =>
+                                    setEditing({ item, mode: 'adjustment' })
+                                  }
+                                />
+                              </div>
+                            </PermissionGate>
                           </TableCell>
                         </TableRow>
                       )
@@ -263,6 +302,16 @@ export function Stock({ searchParams }: SearchParamsType) {
             </Table>
           </CardContent>
         </Card>
+
+        <StockItemDialog
+          item={editing?.item}
+          mode={editing?.mode ?? 'minimum'}
+          onDone={() => {
+            queryClient.invalidateQueries({ queryKey: ['stock-items'] })
+            queryClient.invalidateQueries({ queryKey: ['stock-movements'] })
+          }}
+          onOpenChange={() => setEditing(undefined)}
+        />
       </div>
     </TooltipProvider>
   )

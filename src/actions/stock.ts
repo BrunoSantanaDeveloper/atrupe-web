@@ -136,3 +136,29 @@ export const confirmInvoiceEntry = async ({
     return { success: false, data: null, message: res.message || '' }
   return { success: true, data: res.data, message: '' }
 }
+
+// O mínimo do material: abaixo dele, a aba "Abaixo do mínimo" avisa
+export const setStockMinimum = async (id: string, minimum: number) => {
+  const res: ApiResult = await updateItemNew({
+    route: `/stock/${id}/minimum`,
+    data: { minimum },
+  })
+  if (!res.success)
+    return { success: false, data: null, message: res.message || '' }
+  return { success: true, data: res.data, message: '' }
+}
+
+// O ajuste de inventário pela contagem física, com motivo
+export const adjustStock = async (
+  id: string,
+  counted: number,
+  reason: string,
+) => {
+  const res: ApiResult = await createItemNew({
+    route: `/stock/${id}/adjustment`,
+    data: { counted, reason },
+  })
+  if (!res.success)
+    return { success: false, data: null, message: res.message || '' }
+  return { success: true, data: res.data, message: '' }
+}
