@@ -3,11 +3,12 @@
 // Third-party Imports
 import { SessionProvider, signOut, useSession } from 'next-auth/react'
 import type { Session } from 'next-auth'
+import { usePathname } from 'next/navigation'
 
 // Types Imports
 import type { PropsWithChildren } from 'react'
 import { useEffect, useRef, useCallback } from 'react'
-import { fetchCompanySession } from '@/actions/checkout'
+import type { CompanySessionBlock } from '@/types/checkout'
 
 interface Props {
   basePath?: string
@@ -21,25 +22,33 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
   const { data: session, status, update } = useSession()
   const lastActivityRef = useRef<number>(Date.now())
   const lastCompanyRefreshRef = useRef<number>(0)
+  // Na tela de saída nada consulta o servidor nem renova a sessão: um
+  // update() concorrente reemitiria o cookie que o signOut acabou de apagar.
+  const isLoggingOut = usePathname() === '/logout'
 
   /**
    * Busca no servidor o estado da empresa — plano, bloqueio e situação da
    * cobrança — e o leva à sessão. `update()` sem argumentos só reassinava o
    * token, sem consultar nada: bloqueio e pagamento confirmado só apareciam
-   * no login seguinte.
+   * no login seguinte. Vai pela rota de API, e não por server action: ver
+   * `app/api/company/session/route.ts`.
    */
   const refreshCompanyState = useCallback(async () => {
     if (!session?.company?.id) return
     if (Date.now() - lastCompanyRefreshRef.current < 60 * 1000) return
     lastCompanyRefreshRef.current = Date.now()
-    const res = await fetchCompanySession().catch(() => null)
-    if (res?.success && res.data) {
+    const block: CompanySessionBlock | null = await fetch(
+      '/api/company/session',
+    )
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null)
+    if (block) {
       await update({
         company: {
-          plan: res.data.plan,
-          blockLevel: res.data.blockLevel,
-          billing: res.data.billing,
-          isOwner: res.data.isOwner,
+          plan: block.plan,
+          blockLevel: block.blockLevel,
+          billing: block.billing,
+          isOwner: block.isOwner,
         },
       })
     }
@@ -181,7 +190,11 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
       return
     }
 
-    if (status === 'authenticated' && !initialRefreshDoneRef.current) {
+    if (
+      status === 'authenticated' &&
+      !initialRefreshDoneRef.current &&
+      !isLoggingOut
+    ) {
       initialRefreshDoneRef.current = true
       refreshUserData()
       // O plano (recursos e limites) pode ter mudado no painel do superadmin:
@@ -196,7 +209,8 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     const handleVisibilityChange = async () => {
       if (
         document.visibilityState === 'visible' &&
-        status === 'authenticated'
+        status === 'authenticated' &&
+        !isLoggingOut
       ) {
         const timeSinceLastActivity = Date.now() - lastActivityRef.current
 
@@ -215,11 +229,11 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [update, refreshUserData, refreshCompanyState, status])
+  }, [update, refreshUserData, refreshCompanyState, status, isLoggingOut])
 
   // Periodic session refresh to detect blockLevel changes (every 5 minutes)
   useEffect(() => {
-    if (status !== 'authenticated') return
+    if (status !== 'authenticated' || isLoggingOut) return
 
     const BLOCK_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
@@ -228,7 +242,7 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     }, BLOCK_CHECK_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [refreshCompanyState, status])
+  }, [refreshCompanyState, status, isLoggingOut])
 
   return <>{children}</>
 }
