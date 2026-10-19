@@ -9,6 +9,8 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import { ClientHistoryDialog } from '../../components/ClientHistoryDialog'
 import { SyncAsaasDialog } from '../../components/SyncAsaasDialog'
+import { ResetDataDialog } from '../../components/ResetDataDialog'
+import { DataResets } from './DataResets'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -53,6 +55,7 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconEraser,
   IconExternalLink,
   IconHistory,
   IconRefresh,
@@ -95,6 +98,7 @@ function usersComposition(users: AccountUsers) {
 export function AccountDetails({ companyId }: { companyId: string }) {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   const [isSyncOpen, setIsSyncOpen] = useState(false)
+  const [isResetOpen, setIsResetOpen] = useState(false)
 
   // Mesmo prefixo da lista: "Verificar Asaas" atualiza a lista e o detalhe.
   const { data, isLoading } = useQuery({
@@ -133,6 +137,12 @@ export function AccountDetails({ companyId }: { companyId: string }) {
                   tooltip="Histórico"
                   variant="neutralLight"
                   onClick={() => setIsHistoryOpen(true)}
+                />
+                <ActionButton
+                  Icon={IconEraser}
+                  tooltip="Zerar dados"
+                  variant="errorLight"
+                  onClick={() => setIsResetOpen(true)}
                 />
               </div>
             </TooltipProvider>
@@ -503,6 +513,8 @@ export function AccountDetails({ companyId }: { companyId: string }) {
               </p>
             )}
           </Section>
+
+          <DataResets companyId={companyId} />
         </>
       )}
 
@@ -514,6 +526,11 @@ export function AccountDetails({ companyId }: { companyId: string }) {
       <ClientHistoryDialog
         open={isHistoryOpen}
         setOpen={setIsHistoryOpen}
+        rowData={rowData}
+      />
+      <ResetDataDialog
+        open={isResetOpen}
+        setOpen={setIsResetOpen}
         rowData={rowData}
       />
     </div>
