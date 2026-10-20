@@ -1,0 +1,15 @@
+{
+  "inicio": {
+    "backToLogin": "Back to login",
+    "recoverPassword": "Recover password",
+    "resetYourPassword": "Reset your password",
+    "enterYourRegisteredEmailTo": "Enter your registered email to reset your password."
+  },
+  "emailEnviado": {
+    "emailSentSuccessfully": "Email sent successfully",
+    "inAFewMomentsYou": "In a few moments you'll receive the instructions to change your password in your email.",
+    "ifYouDonTReceive": "If you don't receive it within 10 minutes, check your trash and spam folders. If the problem persists, please contact",
+    "ourSupportTeam": "our support team",
+    "goToTheHomePage": "Go to the home page"
+  }
+}

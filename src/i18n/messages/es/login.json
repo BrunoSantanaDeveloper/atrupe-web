@@ -1,0 +1,11 @@
+{
+  "inicio": {
+    "stayLoggedIn": "Mantener sesión iniciada",
+    "forgotMyPassword": "Olvidé mi contraseña",
+    "logIn": "Ingresar",
+    "donTHaveAnAccount": "¿No tiene una cuenta?",
+    "tryItFree": "¡Pruebe gratis!",
+    "login": "Inicio de sesión",
+    "logInToYourAccount": "Ingrese a su cuenta"
+  }
+}

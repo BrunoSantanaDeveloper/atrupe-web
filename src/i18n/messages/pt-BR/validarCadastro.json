@@ -1,0 +1,8 @@
+{
+  "inicio": {
+    "signUpCompletedSuccessfullyLogging": "Cadastro realizado com sucesso. Fazendo login...",
+    "errorLoggingInPleaseTry": "Erro ao fazer login. Por favor, tente novamente com os dados do cadastro.",
+    "errorCompletingSignUpPlease": "Erro ao finalizar cadastro. Por favor, tente novamente.",
+    "weReSettingUpYour": "Estamos preparando o ambiente da sua conta."
+  }
+}

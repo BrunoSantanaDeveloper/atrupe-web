@@ -1,0 +1,6 @@
+{
+  "inicio": {
+    "errorResettingPassword": "Error al restablecer la contraseña",
+    "createNewPassword": "Creación de nueva contraseña"
+  }
+}

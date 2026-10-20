@@ -1,0 +1,18 @@
+{
+  "inicio": {
+    "errorConnectingToTheServer": "Error connecting to the server. Try again.",
+    "changePlan": "Change plan",
+    "planChanged": "Plan changed",
+    "yourPlanWasChangedTo": "Your plan was changed to",
+    "weGeneratedANewCharge": "We generated a new charge for the price of the plan you chose, due today. Complete the payment in",
+    "settlePayment": "Settle payment",
+    "toReactivateAccessYouWere": "to reactivate access — you were not charged for the period the account was blocked.",
+    "chooseThePlanYouWant": "Choose the plan you want to use. When you confirm, your outstanding charge is replaced by a single charge for the price of the plan you chose, due today — you don't pay for the period you were without access.",
+    "accountSuspended": "Account suspended",
+    "yourAccountWasSuspendedDue": "Your account was suspended due to outstanding payments",
+    "yourCompanySAccessWas": "Your company's access was suspended due to outstanding payments. Settle your balance to use the system again.",
+    "yourSubscriptionHasPendingPayments": "Your subscription has pending payments. Once the payment is confirmed, access will be restored.",
+    "ifYouThinkThisIs": "If you think this is a mistake,",
+    "contactUs": "contact us"
+  }
+}

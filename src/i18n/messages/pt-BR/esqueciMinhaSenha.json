@@ -1,0 +1,15 @@
+{
+  "inicio": {
+    "backToLogin": "Voltar ao Login",
+    "recoverPassword": "Recuperar senha",
+    "resetYourPassword": "Redefina sua senha",
+    "enterYourRegisteredEmailTo": "Digite o e-mail cadastrado para redefinir sua senha."
+  },
+  "emailEnviado": {
+    "emailSentSuccessfully": "E-mail enviado com sucesso",
+    "inAFewMomentsYou": "Dentro de alguns instantes você receberá em seu e-mail as instruções para a troca de senha.",
+    "ifYouDonTReceive": "Se não receber em 10 minutos, verifique a lixeira e o spam. Se o problema persistir, favor entrar em contato com o",
+    "ourSupportTeam": "nosso suporte",
+    "goToTheHomePage": "Ir para a página inicial"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "inicio": {
+    "belowMinimum": "Debajo del mínimo",
+    "outOfStock": "En cero",
+    "inventory": "Inventario",
+    "materialBalances": "Saldo de los materiales",
+    "receiptsComeFromTheReconciled": "La entrada viene de la factura conciliada y la salida viene del gestor de producción, según el consumo real de las etapas.",
+    "noMaterialsInInventory": "Ningún material en inventario",
+    "theBalanceShowsUpHere": "El saldo aparece aquí después de la primera entrada de factura.",
+    "lastReceipt": "Última entrada",
+    "noReceipt": "sin entrada",
+    "outOfStock2": "En cero",
+    "normal": "Normal",
+    "theAverageCostFeedsThe": "El costo promedio alimenta la composición; cuando la última entrada queda por encima, el costo de los productos aún no refleja la compra.",
+    "latestMovements": "Últimos movimientos",
+    "receiptsFromInvoicesUsageFrom": "Entrada por factura, consumo por producción y ajustes de inventario.",
+    "youDonTHavePermission": "Usted no tiene permiso para ver el inventario.",
+    "inventoryControlIsPartOf": "El control de inventario forma parte del plan FULL. La entrada viene de la factura conciliada y la salida, del consumo real de la producción."
+  },
+  "entradaDeNota": {
+    "itemLinkedToMaterial": "Ítem vinculado al material",
+    "errorLinkingTheItem": "Error al vincular el ítem",
+    "linkInvoiceItem": "Vincular ítem de la factura",
+    "chooseTheInternalMaterialAnd": "Elija el material interno y la conversión de la unidad.",
+    "each": "{supplierCode} · {quantity} {supplierUnit} · {valor} c/u",
+    "texto": "{name} ({valor})",
+    "conversion": "Conversión",
+    "howMany": "Cuántos",
+    "doesItContainEG": "contiene. Ej.: un rollo de lona con 76 m².",
+    "inventoryReceipt": "Entrada al inventario",
+    "receiptCostPer": "Costo de entrada: {unitCost} por {valor}",
+    "linkItem": "Vincular ítem",
+    "youDonTHavePermission": "Usted no tiene permiso para ver la entrada de facturas.",
+    "receivingInvoicesIntoInventoryIs": "La entrada de facturas al inventario forma parte del plan FULL. Cada ítem de la factura se convierte en material interno, con la conversión de la unidad de compra."
+  }
+}

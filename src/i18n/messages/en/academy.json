@@ -1,0 +1,18 @@
+{
+  "components": {
+    "markAsNotCompleted": "Mark as not completed",
+    "markAsCompleted": "Mark as completed",
+    "pleaseWait": "Please wait",
+    "atrupeLogo": "Atrupe logo",
+    "fullManual": "Full manual {valor}",
+    "atrupeAcademy": "Atrupe Academy",
+    "video": "Video: {title}"
+  },
+  "inicio": {
+    "loadingContent": "Loading content…",
+    "errorLoadingAcademy": "Error loading Academy",
+    "noContentAvailableForThis": "No content available for this plan right now.",
+    "overallProgress": "Overall progress",
+    "comingSoon": "Coming soon"
+  }
+}

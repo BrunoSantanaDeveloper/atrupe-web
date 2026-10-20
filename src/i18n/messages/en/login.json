@@ -1,0 +1,11 @@
+{
+  "inicio": {
+    "stayLoggedIn": "Stay logged in",
+    "forgotMyPassword": "Forgot my password",
+    "logIn": "Log in",
+    "donTHaveAnAccount": "Don't have an account?",
+    "tryItFree": "Try it free!",
+    "login": "Login",
+    "logInToYourAccount": "Log in to your account"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "auditTests": {
+    "missingId": "Missing id",
+    "invalidRequestBody": "Invalid request body"
+  },
+  "proxyImage": {
+    "imageUrlIsRequired": "La URL de la imagen es obligatoria",
+    "unauthorizedUrl": "URL no autorizada",
+    "failedToLoadTheImage": "Error al cargar la imagen",
+    "internalServerError": "Error interno del servidor"
+  },
+  "user": {
+    "unauthorized": "No autorizado"
+  }
+}

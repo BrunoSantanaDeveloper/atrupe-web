@@ -1,0 +1,8 @@
+{
+  "inicio": {
+    "signUpCompletedSuccessfullyLogging": "Registro realizado con éxito. Iniciando sesión…",
+    "errorLoggingInPleaseTry": "Error al iniciar sesión. Por favor, intente nuevamente con los datos del registro.",
+    "errorCompletingSignUpPlease": "Error al finalizar el registro. Por favor, intente nuevamente.",
+    "weReSettingUpYour": "Estamos preparando el entorno de su cuenta."
+  }
+}

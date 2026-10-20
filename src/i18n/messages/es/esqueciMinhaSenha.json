@@ -1,0 +1,15 @@
+{
+  "inicio": {
+    "backToLogin": "Volver al inicio de sesión",
+    "recoverPassword": "Recuperar contraseña",
+    "resetYourPassword": "Restablezca su contraseña",
+    "enterYourRegisteredEmailTo": "Ingrese el correo electrónico registrado para restablecer su contraseña."
+  },
+  "emailEnviado": {
+    "emailSentSuccessfully": "Correo electrónico enviado con éxito",
+    "inAFewMomentsYou": "En unos instantes recibirá en su correo electrónico las instrucciones para cambiar la contraseña.",
+    "ifYouDonTReceive": "Si no lo recibe en 10 minutos, revise la papelera y el spam. Si el problema persiste, comuníquese con",
+    "ourSupportTeam": "nuestro soporte",
+    "goToTheHomePage": "Ir a la página de inicio"
+  }
+}

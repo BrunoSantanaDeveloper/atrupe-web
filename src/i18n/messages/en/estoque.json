@@ -1,0 +1,36 @@
+{
+  "inicio": {
+    "belowMinimum": "Below minimum",
+    "outOfStock": "Out of stock",
+    "inventory": "Inventory",
+    "materialBalances": "Material balances",
+    "receiptsComeFromTheReconciled": "Receipts come from the reconciled invoice and deductions come from the production board, based on actual usage in each step.",
+    "noMaterialsInInventory": "No materials in inventory",
+    "theBalanceShowsUpHere": "The balance shows up here after the first invoice receipt.",
+    "lastReceipt": "Last receipt",
+    "noReceipt": "no receipt",
+    "outOfStock2": "Out of stock",
+    "normal": "Normal",
+    "theAverageCostFeedsThe": "The average cost feeds the build-up; when the last receipt is above it, product costs don't reflect the purchase yet.",
+    "latestMovements": "Latest movements",
+    "receiptsFromInvoicesUsageFrom": "Receipts from invoices, usage from production and inventory adjustments.",
+    "youDonTHavePermission": "You don't have permission to view inventory.",
+    "inventoryControlIsPartOf": "Inventory control is part of the FULL plan. Receipts come from the reconciled invoice and deductions from actual production usage."
+  },
+  "entradaDeNota": {
+    "itemLinkedToMaterial": "Item linked to material",
+    "errorLinkingTheItem": "Error linking the item",
+    "linkInvoiceItem": "Link invoice item",
+    "chooseTheInternalMaterialAnd": "Choose the internal material and the unit conversion.",
+    "each": "{supplierCode} · {quantity} {supplierUnit} · {valor} each",
+    "texto": "{name} ({valor})",
+    "conversion": "Conversion",
+    "howMany": "How many",
+    "doesItContainEG": "does it contain? E.g., a roll of banner vinyl with 76 m².",
+    "inventoryReceipt": "Inventory receipt",
+    "receiptCostPer": "Receipt cost: {unitCost} per {valor}",
+    "linkItem": "Link item",
+    "youDonTHavePermission": "You don't have permission to view invoice receipts.",
+    "receivingInvoicesIntoInventoryIs": "Receiving invoices into inventory is part of the FULL plan. Each invoice item becomes an internal material, with the purchase unit conversion."
+  }
+}

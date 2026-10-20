@@ -1,0 +1,19 @@
+{
+  "auditTests": {
+    "missingId": "Missing id",
+    "invalidRequestBody": "Invalid request body"
+  },
+  "fiscal": {
+    "informeOPeriodoInicialE": "Informe o período inicial e final.",
+    "sessaoExpiradaEntreNovamente": "Sessão expirada. Entre novamente."
+  },
+  "proxyImage": {
+    "imageUrlIsRequired": "URL da imagem é obrigatória",
+    "unauthorizedUrl": "URL não autorizada",
+    "failedToLoadTheImage": "Falha ao carregar a imagem",
+    "internalServerError": "Erro interno do servidor"
+  },
+  "user": {
+    "unauthorized": "Não autorizado"
+  }
+}

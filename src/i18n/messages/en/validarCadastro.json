@@ -1,0 +1,8 @@
+{
+  "inicio": {
+    "signUpCompletedSuccessfullyLogging": "Sign-up completed successfully. Logging in…",
+    "errorLoggingInPleaseTry": "Error logging in. Please try again with your sign-up details.",
+    "errorCompletingSignUpPlease": "Error completing sign-up. Please try again.",
+    "weReSettingUpYour": "We're setting up your account environment."
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "inicio": {
+    "mainAccountOwnerSCpf": "Main account owner's CPF",
+    "cpfOfThePersonWho": "CPF of the person who will be the main administrator of this account.",
+    "alreadyHaveAnAccount": "Already have an account?",
+    "logInNow": "Log in now!",
+    "byContinuingIAgreeTo": "By continuing, I agree to the",
+    "termsOfUse": "Terms of use",
+    "privacyNotice": "Privacy notice",
+    "ofAtrupe": "of Atrupe.",
+    "createYourAccount": "Create your account",
+    "letSGetStarted": "Let's get started!",
+    "createYourAccountAndTry": "Create your account and try it free for 7 days!"
+  },
+  "novaSenha": {
+    "sessionExpiredPleaseSignUp": "Session expired. Please sign up again.",
+    "createPassword": "Create password",
+    "createYourPassword": "Create your password"
+  },
+  "verificarEmail": {
+    "couldnTResendTheCode": "Couldn't resend the code. Please sign up again.",
+    "codeResentSuccessfully": "Code resent successfully",
+    "resendIn": "Resend in {countdown}",
+    "resendCode": "Resend code",
+    "devHomologOnly": "Dev / Homolog only",
+    "verificationToken": "Verification token:",
+    "verifyEmail": "Verify email",
+    "checkYourEmail": "Check your email",
+    "emailVerification": "Email verification",
+    "weSentAVerificationCode": "We sent a verification code to the email"
+  }
+}

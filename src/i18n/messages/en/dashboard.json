@@ -1,0 +1,48 @@
+{
+  "inicio": {
+    "hideAmounts": "Hide amounts",
+    "showAmounts": "Show amounts",
+    "restrictedAccess": "Restricted access",
+    "youDonTHavePermission": "You don't have permission to view the dashboard overview.",
+    "last30Days": "Last 30 days",
+    "week": "Week",
+    "month": "Month",
+    "realizedIncome": "Realized income",
+    "realizedExpense": "Realized expense",
+    "realizedBalance": "Realized balance",
+    "toBeRealized": "To be realized",
+    "overdue": "Overdue",
+    "financialSummary": "Financial summary",
+    "viewCashFlow": "View cash flow",
+    "texto30Days": "30 days",
+    "texto6Months": "6 months",
+    "texto1Year": "1 year",
+    "salesItemsDashboard": "Sales items dashboard",
+    "reports": "Reports",
+    "salesReport": "Sales report",
+    "quickAccess": "Quick access",
+    "approved": "Approved",
+    "notApproved": "Not approved",
+    "viewQuotes": "View quotes",
+    "approvedSales": "Approved sales",
+    "awaitingResponse": "Awaiting response",
+    "notApproved2": "Not approved",
+    "averageTicket": "Average ticket",
+    "estimatedCommission": "Estimated commission",
+    "salesSummary": "Sales summary",
+    "viewReport": "View report"
+  },
+  "SalesBySeller": {
+    "noSalesBySalespersonIn": "No sales by salesperson in the period.",
+    "salesBySalesperson": "Sales by salesperson"
+  },
+  "SalesEvolution": {
+    "approved": "Approved",
+    "noApprovedSalesInThe": "No approved sales in the period.",
+    "salesTrend": "Sales trend"
+  },
+  "TopClients": {
+    "noCustomersWithAnApproved": "No customers with an approved sale in the period.",
+    "topCustomers": "Top customers"
+  }
+}
