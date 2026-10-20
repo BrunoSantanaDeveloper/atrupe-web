@@ -33,22 +33,33 @@ jobs:
       # versionadas; o deploy.yml de produção recusa o build se encontrar
       # alguma delas ligada. Ver "Telas em implantação" no README. Rodado à
       # mão com "demonstracao" desligado, homolog sobe sem elas, como produção.
+      #
+      # A API do homolog: o ambiente Preview do projeto na Vercel apontava
+      # para outro backend (o login e as telas do homolog não chegavam à API
+      # do homolog). O deploy fixa a API_URL no build (no arquivo que o
+      # 'vercel pull' baixou) e na execução (--env no deploy). A variável de
+      # repositório HOMOLOG_API_URL troca o endereço sem mexer aqui.
       - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          sed -i '/^API_URL=/d' .vercel/.env.preview.local
+          echo "API_URL=\"$HOMOLOG_API_URL\"" >> .vercel/.env.preview.local
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
+          HOMOLOG_API_URL: ${{ vars.HOMOLOG_API_URL || 'https://dev.atrupe.com.br' }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           NEXT_PUBLIC_DEMO_DATA: ${{ github.event_name == 'workflow_dispatch' && !inputs.demonstracao && 'off' || 'on' }}
           NEXT_PUBLIC_REVIEW_MARKS: ${{ github.event_name == 'workflow_dispatch' && !inputs.demonstracao && 'off' || 'on' }}
 
-      # O deployment carrega o metadado de branch (dev), então a Vercel atribui
-      # homolog.atrupe.com.br automaticamente por ser branch domain da dev.
-      # Não usar `vercel alias set`: domínios ligados a um ambiente recusam
-      # atribuição manual ("You don't have access to the domain").
+      # O homolog não tem domínio próprio: é a URL estável da Vercel do autor
+      # do token (app-web-atrupe-dev-admin-atrupes-projects.vercel.app), que
+      # aponta sempre para o deploy mais recente. Sem integração git nem
+      # `vercel alias set` (decisão de 20/07/2026).
       - name: Deploy Project Artifacts to Vercel
         run: |
-          URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(vercel deploy --prebuilt --env API_URL="$HOMOLOG_API_URL" --token=${{ secrets.VERCEL_TOKEN }})
           echo "Deployment: $URL"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          HOMOLOG_API_URL: ${{ vars.HOMOLOG_API_URL || 'https://dev.atrupe.com.br' }}
