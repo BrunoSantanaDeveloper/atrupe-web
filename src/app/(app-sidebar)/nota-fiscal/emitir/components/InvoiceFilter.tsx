@@ -27,6 +27,7 @@ const NFE_STATUS_OPTIONS = [
   { value: 'NAO_EMITIDA', label: 'Não emitida' },
   { value: 'EM_DIGITACAO', label: 'Em digitação' },
   { value: 'EMITIDA', label: 'Emitida' },
+  { value: 'REJEITADA', label: 'Rejeitada' },
   { value: 'CANCELADA', label: 'Cancelada' },
   { value: 'TODOS', label: 'Todos' },
 ]
