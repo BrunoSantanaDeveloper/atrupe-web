@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useSession } from 'next-auth/react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconAdjustments, IconLoader } from '@tabler/icons-react'
+import { IconAdjustments } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -202,15 +202,13 @@ export function EditLimitDialog({
           >
             Cancelar
           </Button>
-          <Button type="button" onClick={handleConfirm} disabled={!canConfirm}>
-            {saving ? (
-              <span className="flex items-center gap-1">
-                <IconLoader size={16} className="animate-spin" />
-                Salvando...
-              </span>
-            ) : (
-              'Salvar'
-            )}
+          <Button
+            type="button"
+            onClick={handleConfirm}
+            disabled={!canConfirm}
+            isLoading={saving}
+          >
+            Salvar
           </Button>
         </DialogFooter>
       </DialogContent>

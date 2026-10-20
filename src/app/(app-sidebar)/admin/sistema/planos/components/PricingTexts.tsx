@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconLoader } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -248,8 +247,9 @@ function PlanCard({ plan }: { plan: PlanMatrixPlan }) {
               type="button"
               onClick={saveTexts}
               disabled={!textsChanged || !pitch.trim() || savingTexts}
+              isLoading={savingTexts}
             >
-              {savingTexts ? 'Salvando...' : 'Salvar textos'}
+              Salvar textos
             </Button>
           </div>
         </div>
@@ -377,15 +377,9 @@ function ConfirmPricingDialog({
             type="button"
             onClick={handleConfirm}
             disabled={saving || (needsPassword && !password.trim())}
+            isLoading={saving}
           >
-            {saving ? (
-              <span className="flex items-center gap-1">
-                <IconLoader size={16} className="animate-spin" />
-                Salvando...
-              </span>
-            ) : (
-              'Salvar preço'
-            )}
+            Salvar preço
           </Button>
         </DialogFooter>
       </DialogContent>

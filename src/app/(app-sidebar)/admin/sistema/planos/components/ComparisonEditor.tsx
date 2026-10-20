@@ -247,8 +247,9 @@ export function ComparisonEditor() {
                   type="button"
                   onClick={save}
                   disabled={!changed || saving}
+                  isLoading={saving}
                 >
-                  {saving ? 'Salvando...' : 'Salvar tabela'}
+                  Salvar tabela
                 </Button>
               </div>
             </div>

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconAlertTriangle, IconLoader } from '@tabler/icons-react'
+import { IconAlertTriangle } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -421,19 +421,13 @@ export function ConfirmFeatureDialog({
               type="button"
               onClick={handleConfirm}
               disabled={!canConfirm}
+              isLoading={saving}
             >
-              {saving ? (
-                <span className="flex items-center gap-1">
-                  <IconLoader size={16} className="animate-spin" />
-                  Salvando...
-                </span>
-              ) : !request?.enabled ? (
-                'Retirar'
-              ) : otherPlans.length > 0 ? (
-                `Incluir em ${otherPlans.length + 1} planos`
-              ) : (
-                'Incluir'
-              )}
+              {!request?.enabled
+                ? 'Retirar'
+                : otherPlans.length > 0
+                  ? `Incluir em ${otherPlans.length + 1} planos`
+                  : 'Incluir'}
             </Button>
           )}
         </DialogFooter>

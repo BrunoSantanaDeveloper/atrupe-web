@@ -1,7 +1,8 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import {
   IconAlertCircle,
   IconArrowRight,

@@ -359,7 +359,7 @@ export function SectorAllocationDialog({
                 isLoading={isPending}
                 onClick={() => mutate()}
               >
-                {isPending ? 'Salvando...' : 'Salvar rateio'}
+                Salvar rateio
               </Button>
             </PermissionGate>
           </div>

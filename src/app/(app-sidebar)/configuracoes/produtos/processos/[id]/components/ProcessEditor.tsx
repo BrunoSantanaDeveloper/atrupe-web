@@ -11,7 +11,7 @@
 
 // React / Next
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useEffect, useMemo, useState } from 'react'
 
 // UI

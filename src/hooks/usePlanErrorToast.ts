@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { IconAlertTriangle } from '@tabler/icons-react'

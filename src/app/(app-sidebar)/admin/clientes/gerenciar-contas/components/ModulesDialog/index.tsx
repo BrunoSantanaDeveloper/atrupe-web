@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconLoader, IconStack2 } from '@tabler/icons-react'
+import { IconStack2 } from '@tabler/icons-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -356,17 +356,13 @@ function CourtesyDialog({
           >
             Cancelar
           </Button>
-          <Button type="button" onClick={handleConfirm} disabled={!canConfirm}>
-            {saving ? (
-              <span className="flex items-center gap-1">
-                <IconLoader size={16} className="animate-spin" />
-                Salvando...
-              </span>
-            ) : granting ? (
-              'Conceder'
-            ) : (
-              'Retirar'
-            )}
+          <Button
+            type="button"
+            onClick={handleConfirm}
+            disabled={!canConfirm}
+            isLoading={saving}
+          >
+            {granting ? 'Conceder' : 'Retirar'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -12,7 +12,7 @@ import { FinishQuotation } from './FinishQuotation'
 import { ApproveQuotation } from './ApproveQuotation'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
 

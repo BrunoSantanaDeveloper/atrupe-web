@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import { Card, CardHeader, CardContent } from '@/components/ui/card'

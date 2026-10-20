@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
