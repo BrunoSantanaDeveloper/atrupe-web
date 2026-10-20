@@ -11,9 +11,22 @@ on:
         type: boolean
         default: true
 
+# Dois pushes seguidos na dev disputavam o deploy: o do commit anterior podia
+# terminar depois e ficar como o mais recente (20/10/2026). O push novo
+# cancela o deploy que ainda está rodando.
+concurrency:
+  group: deploy-homolog
+  cancel-in-progress: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Cada deploy fica registrado no ambiente "homolog" do GitHub com a URL
+    # dele: o link do último homolog aparece no repositório (Deployments) e o
+    # e2e testa exatamente o deploy do commit que ele está testando
+    environment:
+      name: homolog
+      url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -56,9 +69,12 @@ jobs:
       # aponta sempre para o deploy mais recente. Sem integração git nem
       # `vercel alias set` (decisão de 20/07/2026).
       - name: Deploy Project Artifacts to Vercel
+        id: deploy
         run: |
           URL=$(vercel deploy --prebuilt --env API_URL="$HOMOLOG_API_URL" --token=${{ secrets.VERCEL_TOKEN }})
           echo "Deployment: $URL"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "### Homolog deste commit: $URL" >> "$GITHUB_STEP_SUMMARY"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

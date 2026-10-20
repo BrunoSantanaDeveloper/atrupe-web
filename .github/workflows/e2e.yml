@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: read
       actions: read
+      deployments: read
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -32,6 +33,17 @@ jobs:
             case "$RUN" in
               "completed success")
                 echo "Deploy de homolog concluído"
+                # A URL do deploy deste commit, registrada no ambiente
+                # "homolog": o alias estável da Vercel pode ficar parado num
+                # deploy antigo (em 20/10/2026 servia um build de antes de 23/09)
+                DEPLOY_ID=$(gh api "repos/$GITHUB_REPOSITORY/deployments?sha=$GITHUB_SHA&environment=homolog" --jq '.[0].id' 2>/dev/null || true)
+                if [ -n "$DEPLOY_ID" ]; then
+                  URL=$(gh api "repos/$GITHUB_REPOSITORY/deployments/$DEPLOY_ID/statuses" --jq '[.[] | select(.environment_url != null and .environment_url != "")][0].environment_url' 2>/dev/null || true)
+                  if [ -n "$URL" ]; then
+                    echo "Homolog deste commit: $URL"
+                    echo "E2E_DEPLOY_URL=$URL" >> "$GITHUB_ENV"
+                  fi
+                fi
                 exit 0
                 ;;
               completed*)
@@ -98,7 +110,7 @@ jobs:
         run: |
           EXCLUIR='@mock|@captura'
           if [ "$E2E_INCLUDE_MOCK" = "true" ]; then EXCLUIR='@captura'; fi
-          E2E_BASE_URL=${E2E_HOMOLOG_URL:-https://app-web-atrupe-dev-admin-atrupes-projects.vercel.app} npx playwright test --reporter=github --grep-invert "$EXCLUIR"
+          E2E_BASE_URL=${E2E_DEPLOY_URL:-${E2E_HOMOLOG_URL:-https://app-web-atrupe-dev-admin-atrupes-projects.vercel.app}} npx playwright test --reporter=github --grep-invert "$EXCLUIR"
 
       - uses: actions/upload-artifact@v4
         if: always()
