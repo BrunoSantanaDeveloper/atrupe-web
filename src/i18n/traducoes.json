@@ -2623,6 +2623,10 @@
   "es": "Producto sin ítem de venta",
   "en": "Product has no sales item"
  },
+ "2d30d65cf0": {
+  "es": "dentro de lo previsto",
+  "en": "on plan"
+ },
  "2d354fdfec": {
   "es": "Adelanto ya pagado",
   "en": "Advance already paid"
@@ -4914,10 +4918,6 @@
  "51efe3403b": {
   "es": "Unidad de medida no encontrada. Verifique si todavía existe.",
   "en": "Unit of measure not found. Check that it still exists."
- },
- "51f8c23083": {
-  "es": "por debajo de lo previsto",
-  "en": "below plan"
  },
  "5205388438": {
   "es": "Activo actualizado",
@@ -12306,10 +12306,6 @@
  "c9e5c918ef": {
   "es": "No se encontró ningún activo.",
   "en": "No assets found."
- },
- "c9e8c7f5ba": {
-  "es": "por encima de lo previsto",
-  "en": "above plan"
  },
  "c9edb1152f": {
   "es": "Entradas compensadas",

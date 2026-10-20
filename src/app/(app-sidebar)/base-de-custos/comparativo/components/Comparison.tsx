@@ -251,9 +251,12 @@ export function Comparison({ searchParams }: SearchParamsType) {
                                       )}
                                     </span>
                                     <Badge variant="neutralLight">
-                                      {account.difference >= 0
-                                        ? 'abaixo do previsto'
-                                        : 'acima do previsto'}
+                                      {/* Diferença zero não é desvio: está no previsto */}
+                                      {account.difference === 0
+                                        ? 'no previsto'
+                                        : account.difference > 0
+                                          ? 'abaixo do previsto'
+                                          : 'acima do previsto'}
                                       {account.differencePercent !== null &&
                                         ` · ${Math.abs(
                                           account.differencePercent,

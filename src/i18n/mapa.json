@@ -7016,12 +7016,6 @@
    "src/app/(blank-layout-pages)/assinatura/contratacao/components/ContractingFlow.tsx:452 (atributo:title)"
   ]
  },
- "baseDeCustos.comparativo.abovePlan": {
-  "pt": "acima do previsto",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:256 (jsx)"
-  ]
- },
  "baseDeCustos.comparativo.accountsComeFromTheChart": {
   "pt": "As contas vêm do plano de contas, fora as despesas administrativas, que ficam na aba própria.",
   "usos": [
@@ -7044,12 +7038,6 @@
   "pt": "Todas as contas têm previsão",
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:167 (atributo:title)"
-  ]
- },
- "baseDeCustos.comparativo.belowPlan": {
-  "pt": "abaixo do previsto",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:255 (jsx)"
   ]
  },
  "baseDeCustos.comparativo.chartOfAccountsEntriesThat": {
@@ -7090,7 +7078,7 @@
  "baseDeCustos.comparativo.noEstimateInTheRecords": {
   "pt": "Nenhuma estimativa nos cadastros aponta para esta conta. Ela é candidata a virar custo de cadastro.",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:296 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:299 (jsx)"
   ]
  },
  "baseDeCustos.comparativo.noForecast": {
@@ -7112,7 +7100,13 @@
    "total"
   ],
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:314 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:317 (jsx)"
+  ]
+ },
+ "baseDeCustos.comparativo.onPlan": {
+  "pt": "no previsto",
+  "usos": [
+   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:256 (jsx)"
   ]
  },
  "baseDeCustos.comparativo.plannedAndActual": {
@@ -7172,7 +7166,7 @@
  "baseDeCustos.comparativo.thePlannedAmountAddsThe": {
   "pt": "O previsto soma os custos dos patrimônios pelo volume do período (as leituras do contador, o que foi vendido pelas composições ou a produtividade do cadastro), o custo financeiro sobre o recebido e o material das composições vendidas. Períodos maiores são mais precisos: a compra não acontece no mesmo mês do consumo. A depreciação não aparece aqui, porque não tem lançamento financeiro correspondente.",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:316 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:319 (jsx)"
   ]
  },
  "baseDeCustos.comparativo.theRestOfTheChart": {
