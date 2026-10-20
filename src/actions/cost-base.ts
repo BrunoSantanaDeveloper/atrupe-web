@@ -27,6 +27,7 @@ import type {
   DepreciationTotals,
   ComparisonAccount,
   ComparisonResponse,
+  ComparisonSettings,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 // Actions
@@ -509,4 +510,46 @@ export const getCostComparison = async ({
     lastPage: num(res.data?.lastPage) || 1,
     total: num(res.data?.total),
   })
+}
+
+/* --------------------------------------------------------------------------
+ * Comparativo: as contas das fontes que não vêm de um patrimônio
+ * ------------------------------------------------------------------------ */
+
+const toComparisonSettings = (
+  data: ApiRow | undefined,
+): ComparisonSettings => ({
+  materialSubCategoryId: (data?.materialSubCategoryId as string) ?? null,
+  financialCostSubCategoryId:
+    (data?.financialCostSubCategoryId as string) ?? null,
+  accounts: rowsOf(data?.accounts).map((account) => ({
+    id: String(account.id ?? ''),
+    chartAccount: String(account.chartAccount ?? ''),
+    name: String(account.name ?? ''),
+  })),
+})
+
+export const getComparisonSettings = async () => {
+  const res: ApiResult = await getItem({
+    route: '/cost-base/comparison/settings',
+  })
+  if (!res.success) {
+    return fail<ComparisonSettings>(res, toComparisonSettings(undefined))
+  }
+  return ok<ComparisonSettings>(toComparisonSettings(res.data))
+}
+
+// `null` volta à conta padrão; o campo que não vier não muda
+export const updateComparisonSettings = async (values: {
+  materialSubCategoryId?: string | null
+  financialCostSubCategoryId?: string | null
+}) => {
+  const res: ApiResult = await updateItemNew({
+    route: '/cost-base/comparison/settings',
+    data: values,
+  })
+  if (!res.success) {
+    return fail<ComparisonSettings>(res, toComparisonSettings(undefined))
+  }
+  return ok<ComparisonSettings>(toComparisonSettings(res.data))
 }

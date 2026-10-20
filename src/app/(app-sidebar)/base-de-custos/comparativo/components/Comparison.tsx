@@ -27,6 +27,9 @@ import {
 
 // Components
 import { LoadError } from '../../components/LoadError'
+import { ComparisonSettingsDialog } from './ComparisonSettingsDialog'
+import { Button } from '@/components/ui/button'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { FetchingRegion } from '@/components/common/FetchingRegion'
@@ -50,6 +53,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query'
 // Icons
 import {
   IconScale,
+  IconSettings,
   IconChevronDown,
   IconChevronRight,
 } from '@tabler/icons-react'
@@ -60,6 +64,7 @@ const formatValue = (value: number | null) =>
 
 export function Comparison({ searchParams }: SearchParamsType) {
   const [expanded, setExpanded] = useState<string[]>([])
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const period = (searchParams?.period as string) || '12'
   const status = (searchParams?.status as string) || 'todas'
 
@@ -137,6 +142,18 @@ export function Comparison({ searchParams }: SearchParamsType) {
                 ))}
               </TabsList>
             </Tabs>
+            {/* Em que conta entram o material das vendas e o custo financeiro */}
+            <PermissionGate permissions={['cost:base:edit']}>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconSettings}
+                className="ml-auto"
+                onClick={() => setSettingsOpen(true)}
+              >
+                Contas das fontes
+              </Button>
+            </PermissionGate>
           </div>
         </CardHeader>
         <FetchingRegion isFetching={isPlaceholderData}>
@@ -290,16 +307,17 @@ export function Comparison({ searchParams }: SearchParamsType) {
                 </Table>
               </CardContent>
               <CardFooter className="flex-col items-stretch gap-4">
-                {/* O previsto que a API calcula ainda não tem os outros volumes
-                    (km rodados, m² vendidos, custo financeiro, material das
-                    composições): por isso o aviso discreto no rodapé */}
+                {/* De onde vem o previsto: o rodapé explica as fontes */}
                 <p className="text-sm text-gray">
                   {periodLabel}
                   {coverage
                     ? `${coverage.withEstimate} de ${coverage.total} contas já têm previsão no sistema. `
                     : ''}
-                  Por enquanto, o previsto vem só dos custos cadastrados nos
-                  patrimônios. Períodos maiores são mais precisos: a compra não
+                  O previsto soma os custos dos patrimônios pelo volume do
+                  período (as leituras do contador, o que foi vendido pelas
+                  composições ou a produtividade do cadastro), o custo
+                  financeiro sobre o recebido e o material das composições
+                  vendidas. Períodos maiores são mais precisos: a compra não
                   acontece no mesmo mês do consumo. A depreciação não aparece
                   aqui, porque não tem lançamento financeiro correspondente.
                 </p>
@@ -314,6 +332,10 @@ export function Comparison({ searchParams }: SearchParamsType) {
           )}
         </FetchingRegion>
       </Card>
+      <ComparisonSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+      />
     </TooltipProvider>
   )
 }

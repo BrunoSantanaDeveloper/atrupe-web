@@ -290,3 +290,13 @@ export type SectorAllocation = {
   // Bem sem tempo informado não recebe nada pelo tempo de atividade (ORG-33)
   missingTime: string[]
 }
+
+// As contas das fontes do comparativo que não vêm de um patrimônio: o
+// material das composições vendidas e o custo financeiro sobre o recebido.
+// Sem escolha, a API resolve a padrão ("Matéria Prima" e "Tarifa de Cartão
+// de Crédito") e devolve o id já resolvido
+export type ComparisonSettings = {
+  materialSubCategoryId: string | null
+  financialCostSubCategoryId: string | null
+  accounts: { id: string; chartAccount: string; name: string }[]
+}

@@ -192,3 +192,13 @@ export type AssetSetupValues = {
   timePerUnit: number
   monthlyProductivity: number
 }
+
+// Uma leitura do contador do bem (hodômetro, horímetro, contador de m²): a
+// diferença entre as leituras é o volume do bem no comparativo da base de
+// custos
+export type AssetReading = {
+  id: string
+  date: string
+  value: number
+  createdByName: string
+}

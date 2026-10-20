@@ -19,6 +19,7 @@ import type {
   AssetItem,
   AssetKind,
   AssetQuantity,
+  AssetReading,
   AssetRecord,
   AssetReviewValues,
   AssetSale,
@@ -657,4 +658,70 @@ export const getAssetAccounts = async ({
         [account.code, account.description].filter(Boolean).join(' — '),
     })),
   )
+}
+
+/* --------------------------------------------------------------------------
+ * Leituras do contador (hodômetro, horímetro, contador de m²): a diferença
+ * entre elas é o volume do bem no período, no comparativo da base de custos
+ * ------------------------------------------------------------------------ */
+
+export const getAssetReadings = async ({ assetId }: { assetId: string }) => {
+  const empty = {
+    unit: null as AssetUnit | null,
+    readings: [] as AssetReading[],
+  }
+  const res: ApiResult = await getItem({
+    route: `/asset/${seg(assetId)}/readings`,
+    params: { page: '1', limit: String(PAGE_SIZE) },
+  })
+  if (!res.success) return fail(res, empty)
+  const rows: { [key: string]: unknown }[] = Array.isArray(res.data?.data)
+    ? res.data.data
+    : []
+  return ok({
+    unit: (res.data?.unit ?? null) as AssetUnit | null,
+    readings: rows.map(
+      (row): AssetReading => ({
+        id: String(row.id ?? ''),
+        date: String(row.date ?? ''),
+        value: Number(row.value) || 0,
+        createdByName: String(row.createdByName ?? ''),
+      }),
+    ),
+  })
+}
+
+export const createAssetReading = async ({
+  assetId,
+  date,
+  value,
+}: {
+  assetId: string
+  date: string
+  value: number
+}) => {
+  if (!date) return refuse<null>('Informe a data da leitura', null)
+  if (!Number.isFinite(value)) {
+    return refuse<null>('Informe o que o contador marca', null)
+  }
+  const res: ApiResult = await createItemNew({
+    route: `/asset/${seg(assetId)}/readings`,
+    data: { date, value },
+  })
+  if (!res.success) return fail<null>(res, null)
+  return ok<null>(null)
+}
+
+export const deleteAssetReading = async ({
+  assetId,
+  readingId,
+}: {
+  assetId: string
+  readingId: string
+}) => {
+  const res: ApiResult = await deleteItemNew({
+    route: `/asset/${seg(assetId)}/readings/${seg(readingId)}`,
+  })
+  if (!res.success) return fail<null>(res, null)
+  return ok<null>(null)
 }

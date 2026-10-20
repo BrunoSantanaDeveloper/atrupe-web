@@ -30,6 +30,7 @@ import {
 import { Topbar } from '@/components/common/Topbar'
 import { NewCostModal } from './NewCostModal'
 import { NewSetupModal } from './NewSetupModal'
+import { AssetReadingsCard } from './AssetReadingsCard'
 import { SellAssetModal } from './SellAssetModal'
 import { EditAssetModal } from './EditAssetModal'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -443,6 +444,8 @@ export function AssetDetail({ id }: Props) {
                 )}
               </CardContent>
             </Card>
+
+            <AssetReadingsCard assetId={asset.id} unit={asset.unit} />
 
             <Card>
               <CardHeader>
