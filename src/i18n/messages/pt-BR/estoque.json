@@ -12,20 +12,31 @@
     "noReceipt": "sem entrada",
     "outOfStock2": "Zerado",
     "normal": "Normal",
+    "minimumStock": "Estoque mínimo",
+    "inventoryAdjustment": "Ajuste de inventário",
     "theAverageCostFeedsThe": "O custo médio alimenta a composição; quando a última entrada fica acima dele, o custo dos produtos ainda não reflete a compra.",
     "latestMovements": "Últimas movimentações",
     "receiptsFromInvoicesUsageFrom": "Entrada pela nota, consumo pela produção e ajustes de inventário.",
+    "texto": "· {variation}",
+    "currentlyEnterTheCountedQuantity": "· hoje {quantity} {unit}. Informe o que foi contado: a diferença vira o ajuste.",
+    "belowItTheMaterialShows": "· abaixo dele, o material aparece em \"Abaixo do mínimo\".",
+    "countedQuantity": "Quantidade contada",
+    "eGVinylCuttingWaste": "Ex.: perda de recorte, contagem do fim do mês",
     "youDonTHavePermission": "Você não tem permissão para visualizar o estoque.",
-    "inventoryControlIsPartOf": "O controle de estoque faz parte do plano FULL. A entrada vem da nota conciliada e a baixa, do consumo real da produção."
+    "receiptsComeFromTheReconciled2": "A entrada vem da nota conciliada e a baixa, do consumo real da produção."
   },
   "entradaDeNota": {
+    "notaLancadaConfiraOVinculo": "Nota lançada: confira o vínculo dos itens",
+    "erroAoLancarANota": "Erro ao lançar a nota",
     "entradaConfirmadaEEstoqueAtualizado": "Entrada confirmada e estoque atualizado",
     "erroAoConfirmarAEntrada": "Erro ao confirmar a entrada",
+    "importarXmlDaNfE": "Importar XML da NF-e",
     "nf": "NF {number} — {supplier}",
     "emitidaEm": "Emitida em {issueDate} · {total}",
     "itemNsSemVinculo": "{valor} item(ns) sem vínculo",
     "prontaParaEntrada": "Pronta para entrada",
     "itemNaNota": "Item na nota",
+    "valorUnitario": "Valor unitário",
     "materialInterno": "Material interno",
     "gtin": "· GTIN {gtin}",
     "texto1NaUnidadeDoMaterial": "1 {supplierUnit} = {conversionFactor} na unidade do material",
@@ -33,7 +44,7 @@
     "vincular": "Vincular {description}",
     "oVinculoFicaGuardadoNa": "O vínculo fica guardado: na próxima nota do mesmo fornecedor, o item já vem reconhecido.",
     "confirmarEntrada": "Confirmar entrada",
-    "nenhumaNotaAguardandoEntrada": "Nenhuma nota aguardando entrada.",
+    "nenhumaNotaAguardandoEntradaImporte": "Nenhuma nota aguardando entrada. Importe o XML da NF-e que o fornecedor mandou.",
     "itemLinkedToMaterial": "Item vinculado ao material",
     "errorLinkingTheItem": "Erro ao vincular o item",
     "linkInvoiceItem": "Vincular item da nota",
@@ -47,6 +58,6 @@
     "receiptCostPer": "Custo de entrada: {unitCost} por {valor}",
     "linkItem": "Vincular item",
     "youDonTHavePermission": "Você não tem permissão para visualizar a entrada de nota.",
-    "receivingInvoicesIntoInventoryIs": "A entrada de nota no estoque faz parte do plano FULL. Cada item da nota vira material interno, com a conversão da unidade de compra."
+    "eachInvoiceItemBecomesAn": "Cada item da nota vira material interno, com a conversão da unidade de compra."
   }
 }

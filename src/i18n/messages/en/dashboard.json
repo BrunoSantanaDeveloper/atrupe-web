@@ -2,6 +2,7 @@
   "inicio": {
     "hideAmounts": "Hide amounts",
     "showAmounts": "Show amounts",
+    "dashboard": "Dashboard",
     "restrictedAccess": "Restricted access",
     "youDonTHavePermission": "You don't have permission to view the dashboard overview.",
     "last30Days": "Last 30 days",
@@ -37,7 +38,6 @@
     "salesBySalesperson": "Sales by salesperson"
   },
   "SalesEvolution": {
-    "approved": "Approved",
     "noApprovedSalesInThe": "No approved sales in the period.",
     "salesTrend": "Sales trend"
   },

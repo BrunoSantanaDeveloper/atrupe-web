@@ -9,10 +9,8 @@
     "video": "Video: {title}"
   },
   "inicio": {
-    "loadingContent": "Cargando contenido…",
     "errorLoadingAcademy": "Error al cargar Academy",
     "noContentAvailableForThis": "Ningún contenido disponible para este plan por el momento.",
-    "overallProgress": "Progreso general",
-    "comingSoon": "Próximamente"
+    "overallProgress": "Progreso general"
   }
 }

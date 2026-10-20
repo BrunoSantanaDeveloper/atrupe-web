@@ -11,11 +11,18 @@
     "noReceipt": "sin entrada",
     "outOfStock2": "En cero",
     "normal": "Normal",
+    "minimumStock": "Inventario mínimo",
+    "inventoryAdjustment": "Ajuste de inventario",
     "theAverageCostFeedsThe": "El costo promedio alimenta la composición; cuando la última entrada queda por encima, el costo de los productos aún no refleja la compra.",
     "latestMovements": "Últimos movimientos",
     "receiptsFromInvoicesUsageFrom": "Entrada por factura, consumo por producción y ajustes de inventario.",
+    "texto": "· {variation}",
+    "currentlyEnterTheCountedQuantity": "· hoy hay {quantity} {unit}. Indique lo que se contó: la diferencia se convierte en el ajuste.",
+    "belowItTheMaterialShows": "· por debajo de él, el material aparece en \"Debajo del mínimo\".",
+    "countedQuantity": "Cantidad contada",
+    "eGVinylCuttingWaste": "Ej.: pérdida en el corte de vinil, conteo de fin de mes",
     "youDonTHavePermission": "Usted no tiene permiso para ver el inventario.",
-    "inventoryControlIsPartOf": "El control de inventario forma parte del plan FULL. La entrada viene de la factura conciliada y la salida, del consumo real de la producción."
+    "receiptsComeFromTheReconciled2": "La entrada viene de la factura conciliada y la salida, del consumo real de la producción."
   },
   "entradaDeNota": {
     "itemLinkedToMaterial": "Ítem vinculado al material",
@@ -31,6 +38,6 @@
     "receiptCostPer": "Costo de entrada: {unitCost} por {valor}",
     "linkItem": "Vincular ítem",
     "youDonTHavePermission": "Usted no tiene permiso para ver la entrada de facturas.",
-    "receivingInvoicesIntoInventoryIs": "La entrada de facturas al inventario forma parte del plan FULL. Cada ítem de la factura se convierte en material interno, con la conversión de la unidad de compra."
+    "eachInvoiceItemBecomesAn": "Cada ítem de la factura se convierte en material interno, con la conversión de la unidad de compra."
   }
 }

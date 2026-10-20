@@ -11,11 +11,18 @@
     "noReceipt": "no receipt",
     "outOfStock2": "Out of stock",
     "normal": "Normal",
+    "minimumStock": "Minimum stock",
+    "inventoryAdjustment": "Inventory adjustment",
     "theAverageCostFeedsThe": "The average cost feeds the build-up; when the last receipt is above it, product costs don't reflect the purchase yet.",
     "latestMovements": "Latest movements",
     "receiptsFromInvoicesUsageFrom": "Receipts from invoices, usage from production and inventory adjustments.",
+    "texto": "· {variation}",
+    "currentlyEnterTheCountedQuantity": "· currently {quantity} {unit}. Enter the counted quantity: the difference becomes the adjustment.",
+    "belowItTheMaterialShows": "· below it, the material shows up under \"Below minimum\".",
+    "countedQuantity": "Counted quantity",
+    "eGVinylCuttingWaste": "E.g.: vinyl cutting waste, month-end count",
     "youDonTHavePermission": "You don't have permission to view inventory.",
-    "inventoryControlIsPartOf": "Inventory control is part of the FULL plan. Receipts come from the reconciled invoice and deductions from actual production usage."
+    "receiptsComeFromTheReconciled2": "Receipts come from the reconciled invoice and deductions from actual production usage."
   },
   "entradaDeNota": {
     "itemLinkedToMaterial": "Item linked to material",
@@ -31,6 +38,6 @@
     "receiptCostPer": "Receipt cost: {unitCost} per {valor}",
     "linkItem": "Link item",
     "youDonTHavePermission": "You don't have permission to view invoice receipts.",
-    "receivingInvoicesIntoInventoryIs": "Receiving invoices into inventory is part of the FULL plan. Each invoice item becomes an internal material, with the purchase unit conversion."
+    "eachInvoiceItemBecomesAn": "Each invoice item becomes an internal material, converted from the purchase unit."
   }
 }

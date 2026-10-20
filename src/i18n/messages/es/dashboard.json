@@ -2,6 +2,7 @@
   "inicio": {
     "hideAmounts": "Ocultar valores",
     "showAmounts": "Mostrar valores",
+    "dashboard": "Panel",
     "restrictedAccess": "Acceso restringido",
     "youDonTHavePermission": "Usted no tiene permiso para ver la información general del panel.",
     "last30Days": "Últimos 30 días",
@@ -37,7 +38,6 @@
     "salesBySalesperson": "Ventas por vendedor"
   },
   "SalesEvolution": {
-    "approved": "Aprobadas",
     "noApprovedSalesInThe": "Ninguna venta aprobada en el período.",
     "salesTrend": "Evolución de ventas"
   },

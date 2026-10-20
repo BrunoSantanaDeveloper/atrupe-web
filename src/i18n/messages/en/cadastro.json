@@ -1,7 +1,10 @@
 {
   "inicio": {
-    "mainAccountOwnerSCpf": "Main account owner's CPF",
-    "cpfOfThePersonWho": "CPF of the person who will be the main administrator of this account.",
+    "fullName": "Full name *",
+    "email": "Email *",
+    "tradeName": "Trade name *",
+    "mobilePhone": "Mobile phone *",
+    "fieldsMarkedWithAreRequired": "Fields marked with * are required.",
     "alreadyHaveAnAccount": "Already have an account?",
     "logInNow": "Log in now!",
     "byContinuingIAgreeTo": "By continuing, I agree to the",

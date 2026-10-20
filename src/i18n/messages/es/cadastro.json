@@ -1,7 +1,10 @@
 {
   "inicio": {
-    "mainAccountOwnerSCpf": "CPF del responsable principal",
-    "cpfOfThePersonWho": "CPF de quien será el administrador principal de esta cuenta.",
+    "fullName": "Nombre completo *",
+    "email": "Correo electrónico *",
+    "tradeName": "Nombre comercial *",
+    "mobilePhone": "Celular *",
+    "fieldsMarkedWithAreRequired": "Los campos con * son obligatorios.",
     "alreadyHaveAnAccount": "¿Ya tiene una cuenta?",
     "logInNow": "¡Ingrese ahora!",
     "byContinuingIAgreeTo": "Al continuar, estoy de acuerdo con los",
