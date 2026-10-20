@@ -37,11 +37,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import {
-  IconCircleCheck,
-  IconThumbUp,
-  IconCornerRightDown,
-} from '@tabler/icons-react'
+import { IconCircleCheck, IconCornerRightDown } from '@tabler/icons-react'
 
 // Types
 import type {
@@ -293,7 +289,6 @@ export function PaymentDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">
                 {type === 'payable' ? 'Pagamento' : 'Recebimento'}
@@ -373,13 +368,13 @@ export function PaymentDialog({
                   >
                     <div className="flex items-center gap-2">
                       <FeaturedIcon
-                        variant={
+                        tone={
                           (type === 'payable' && difference > 0) ||
                           (type === 'receivable' && difference < 0)
-                            ? 'errorLight'
-                            : 'successLight'
+                            ? 'error'
+                            : 'success'
                         }
-                        size="xs"
+                        size="sm"
                         Icon={IconCornerRightDown}
                       />
                       <p className="text-sm font-medium">Saldo</p>

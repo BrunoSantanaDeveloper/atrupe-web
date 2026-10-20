@@ -19,6 +19,7 @@ import {
   IconBuildingStore,
   IconTool,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface Props {
   open: boolean
@@ -111,7 +112,7 @@ export function InvoiceTypeSelectModal({ open, onOpenChange, orderId }: Props) {
                   ${type.disabled ? 'bg-gray-100 text-gray-400' : 'bg-primary-100 text-primary-600 group-hover:bg-primary-200'}
                 `}
                   >
-                    <Icon size={20} />
+                    <Icon size={ICON_SIZE.md} />
                   </div>
 
                   <div className="flex-1 min-w-0">

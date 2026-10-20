@@ -200,7 +200,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <FeaturedIcon variant="outline" Icon={IconCategory} />
+          <FeaturedIcon tone="brand" Icon={IconCategory} />
           <div>
             <h2 className="type-section-title">Histórico de Natureza</h2>
             <p className="text-sm text-gray-500">
@@ -224,7 +224,12 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
         </div>
       ) : natures.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
-          <IconCategory className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+          <FeaturedIcon
+            tone="neutral"
+            size="lg"
+            Icon={IconCategory}
+            className="mx-auto mb-4 flex"
+          />
           <h3 className="type-card-title mb-2">Nenhuma Natureza cadastrada</h3>
           <p className="text-gray-500 mb-4">
             Cadastre naturezas de operação para facilitar a emissão de notas

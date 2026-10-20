@@ -29,11 +29,6 @@ Regras de manutenção:
   contraste mínimo, anel de foco único, gráficos por token, lint de hex e
   paleta; toca `globals.css`, `tailwind.config.ts`, `consts/*status*`,
   `ui/*`, gráficos e os 67 arquivos com hexadecimal. Design: `design/sistema-visual.md`.
-- `icones` — ícones · `spec-only`. Tabler como única biblioteca (kit sai do
-  Lucide), tamanhos 16/20/24 por contexto via `Icon`, dicionário de glifos,
-  ícones customizados separados de logos, `FeaturedIcon` enxuto; toca
-  `ui/*`, `button.tsx`, `ActionButton`, `CustomIcons`, `featured-icon.tsx`
-  e os pontos com glifo ambíguo. Design: `design/sistema-visual.md`.
 - `botoes-e-acoes` — botões · `spec-only`. Sistema de 4 níveis × 2 tons com
   codemod das 31 variantes, uma primária por região, `RowActions` (linha
   clicável + menu), `ConfirmDialog` com tom, vocabulário de rótulos, fim do
@@ -105,7 +100,7 @@ Arestas duras (A não termina antes de B):
   variáveis em `globals.css` e o mapeamento em `tailwind.config.ts`; a
   camada semântica nasce com os valores escuros já decididos lá.
 - `botoes-e-acoes` → `cores-e-contraste` (tons, foco e desabilitado do
-  botão vêm dos tokens semânticos) e `icones` (tamanho do ícone por `size`).
+  botão vêm dos tokens semânticos).
 - `interacao-e-movimento` → `cores-e-contraste` (`ring-focus`, `scrim`).
 - `componentes-adequados` → `botoes-e-acoes` (`RowActions`, `SelectionBar`,
   `ConfirmDialog`) e `espacamento-e-layout` (`size` de Dialog/Sheet,
@@ -121,8 +116,6 @@ Arestas duras (A não termina antes de B):
 
 Arestas suaves (preferência de ordem, não bloqueio):
 
-- `icones` antes de `componentes-adequados`: o kit já sai do Lucide antes de
-  ganhar componentes novos.
 - `telas-vendas` antes de `telas-nota-fiscal`: `TotalsBlock` nasce em vendas
   e a nota o reutiliza.
 - `telas-cadastros-producao-custos` antes de `telas-dashboard-e-relatorios`:
@@ -134,15 +127,14 @@ Arestas suaves (preferência de ordem, não bloqueio):
    futura depende dos tokens escuros.
    - `tema-claro-escuro` — em andamento; única da onda.
 2. Fundação visual — muda o que toda tela herda sem tocar nas telas
-   (`design/sistema-visual.md` §5). Paralelizáveis entre si. Os papéis
+   (`design/sistema-visual.md` §5). Os papéis
    tipográficos (`src/lib/typography-roles.ts`) apontam para as rampas; quando
    a camada semântica de cor existir, só aquela tabela muda.
-   - `icones` — pequena; independente.
    - `cores-e-contraste` — espera `tema-claro-escuro` arquivar; contende
      `globals.css`/`tailwind.config.ts`.
 3. Componentes — cria o que a onda seguinte usa. `botoes-e-acoes` e
    `espacamento-e-layout` primeiro (os outros três dependem deles).
-   - `botoes-e-acoes` — espera cores e ícones.
+   - `botoes-e-acoes` — espera cores.
    - `espacamento-e-layout` — contende `dialog.tsx`/`table.tsx` com
      `componentes-adequados` (por isso vem antes).
    - `interacao-e-movimento` — espera cores; toca `ui/*` inteiro (foco), por

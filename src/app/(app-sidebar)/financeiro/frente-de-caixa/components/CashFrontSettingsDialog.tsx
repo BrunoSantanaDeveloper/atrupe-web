@@ -22,7 +22,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { MoneyInput } from '../../_components/cash/CashCountCheck'
 
@@ -38,7 +37,7 @@ import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconSettings, IconPlus } from '@tabler/icons-react'
+import { IconPlus } from '@tabler/icons-react'
 
 const NEW = 'nova'
 
@@ -142,16 +141,11 @@ export function CashFrontSettingsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
-            <div>
-              <DialogTitle>Configurar frente de caixa</DialogTitle>
-              <DialogDescription>
-                Cada frente tem a sua conferência do fechamento, a tolerância da
-                quebra, o arredondamento no balcão e a gaveta.
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Configurar frente de caixa</DialogTitle>
+          <DialogDescription>
+            Cada frente tem a sua conferência do fechamento, a tolerância da
+            quebra, o arredondamento no balcão e a gaveta.
+          </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
           <div className="flex items-end gap-2">

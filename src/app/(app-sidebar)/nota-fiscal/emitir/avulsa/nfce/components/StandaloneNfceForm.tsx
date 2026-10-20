@@ -33,6 +33,7 @@ import {
   IconMessage,
   IconX,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
@@ -432,7 +433,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão avulsa"
               >
-                <IconArrowLeft size={20} />
+                <IconArrowLeft aria-hidden size={ICON_SIZE.sm} />
               </Button>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -456,14 +457,14 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             <CustomButton
               icon={IconX}
               title="Cancelar digitação"
-              iconVariant="errorLight"
+              iconTone="error"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
                 title="Pré-visualizar"
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing}
                 isLoading={isPreviewing}
@@ -471,7 +472,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               <CustomButton
                 icon={IconCircleCheck}
                 title="Emitir NFC-e"
-                iconVariant="successLight"
+                iconTone="success"
                 onClick={handleEmit}
                 disabled={isEmitting}
                 isLoading={isEmitting}
@@ -492,7 +493,11 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
         {isHomologacao && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
-              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              <IconAlertTriangleFilled
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-warning-500"
+              />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>
@@ -512,7 +517,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
         {error && (
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6 px-6">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
               <div>
                 <p className="font-semibold text-error-700">
                   Erro ao carregar configurações fiscais
@@ -536,7 +541,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             {/* 1. Consumer Identification Card */}
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-                <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
+                <FeaturedIcon tone="neutral" Icon={IconUser} />
                 <div className="flex-1">
                   <CardTitle>Consumidor (Opcional)</CardTitle>
                 </div>
@@ -595,7 +600,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             {/* 4. Complementary Info Section */}
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-                <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
+                <FeaturedIcon tone="neutral" Icon={IconMessage} />
                 <div className="flex-1">
                   <CardTitle>Informações Complementares</CardTitle>
                 </div>

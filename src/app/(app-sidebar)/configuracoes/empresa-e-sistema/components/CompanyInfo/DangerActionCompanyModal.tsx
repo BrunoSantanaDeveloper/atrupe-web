@@ -62,10 +62,9 @@ export function DangerActionCompanyModal(props: Props) {
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconAlertTriangle}
-            rounded
             size="lg"
-            variant="orangeBorderedLight"
-            className="mx-auto mb-2"
+            tone="warning"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description && (

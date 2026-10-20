@@ -1,6 +1,6 @@
 'use client'
 
-import { User } from 'lucide-react'
+import { IconUser as User } from '@tabler/icons-react'
 import { FormAsyncSelect } from '@/components/common/form/FormAsyncSelect'
 
 interface Props {

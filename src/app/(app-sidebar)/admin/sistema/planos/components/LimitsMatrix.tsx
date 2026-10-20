@@ -5,6 +5,7 @@ import { IconPencil } from '@tabler/icons-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { EditLimitDialog, type LimitEditRequest } from './EditLimitDialog'
@@ -79,7 +80,11 @@ export function LimitsMatrix() {
                             aria-label={`Alterar ${limit.name} do plano ${plan.name}`}
                           >
                             {limitLabel(value)}
-                            <IconPencil size={14} className="text-gray-400" />
+                            <Icon
+                              icon={IconPencil}
+                              size="sm"
+                              className="text-gray-400"
+                            />
                           </button>
                           {differs && (
                             <div className="text-xs text-amber-600">

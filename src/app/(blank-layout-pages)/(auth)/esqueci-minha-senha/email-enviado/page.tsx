@@ -13,7 +13,7 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { CheckCircle } from 'lucide-react'
+import { IconCircleCheck as CheckCircle } from '@tabler/icons-react'
 
 export const metadata: Metadata = {
   title: 'E-mail enviado com sucesso',
@@ -26,10 +26,9 @@ export default function SignupPage() {
       <CardHeader className="p-0 mb-1 text-center">
         <FeaturedIcon
           Icon={CheckCircle}
-          variant="successBorderedLight"
-          size="xl"
-          className="mx-auto mb-2"
-          rounded
+          tone="success"
+          size="lg"
+          className="mx-auto mb-2 flex"
         />
         <CardTitle>E-mail enviado com sucesso</CardTitle>
       </CardHeader>

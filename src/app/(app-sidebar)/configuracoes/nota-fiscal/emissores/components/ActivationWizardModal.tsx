@@ -27,6 +27,7 @@ import {
   IconInfoCircle,
   IconPlugConnected,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
@@ -277,7 +278,11 @@ export function ActivationWizardModal({
               )}
               {isProducao && (
                 <div className="flex items-start gap-2 rounded-lg border border-warning-100 bg-warning-50 p-3 text-warning-700">
-                  <IconAlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <Icon
+                    icon={IconAlertTriangle}
+                    size="sm"
+                    className="shrink-0 mt-0.5"
+                  />
                   <p>
                     Documentos emitidos em produção têm validade fiscal real.
                   </p>
@@ -311,7 +316,11 @@ export function ActivationWizardModal({
           {step === 2 && (
             <div className="space-y-4">
               <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-blue-800 text-sm">
-                <IconInfoCircle className="h-4 w-4 shrink-0 mt-0.5 text-blue-500" />
+                <Icon
+                  icon={IconInfoCircle}
+                  size="sm"
+                  className="shrink-0 mt-0.5 text-blue-500"
+                />
                 <div className="space-y-1">
                   <p className="font-medium">Como obter o CSC da NFC-e</p>
                   <ol className="list-decimal pl-4 space-y-0.5 text-blue-700">
@@ -410,7 +419,11 @@ export function ActivationWizardModal({
                 </>
               ) : (
                 <div className="flex items-start gap-2 rounded-lg border border-warning-100 bg-warning-50 p-3 text-warning-700 text-sm">
-                  <IconAlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <Icon
+                    icon={IconAlertTriangle}
+                    size="sm"
+                    className="shrink-0 mt-0.5"
+                  />
                   <p>
                     Ajuste de numeração ambiental pendente de implementação no
                     backend. Verifique o diagnóstico de prontidão.
@@ -434,7 +447,7 @@ export function ActivationWizardModal({
                 onClick={() => testConnectionMutation.mutate()}
                 isLoading={testConnectionMutation.isPending}
               >
-                <IconPlugConnected className="h-4 w-4 mr-2" />
+                <Icon icon={IconPlugConnected} size="sm" className="mr-2" />
                 Testar autenticação
               </Button>
             </div>
@@ -460,12 +473,20 @@ export function ActivationWizardModal({
                   <span className="text-gray-500">Prontidão:</span>{' '}
                   {ready ? (
                     <>
-                      <IconCircleCheckFilled className="h-4 w-4 text-success" />
+                      <Icon
+                        icon={IconCircleCheckFilled}
+                        size="sm"
+                        className="text-success"
+                      />
                       Pronto
                     </>
                   ) : (
                     <>
-                      <IconCircleXFilled className="h-4 w-4 text-error" />
+                      <Icon
+                        icon={IconCircleXFilled}
+                        size="sm"
+                        className="text-error"
+                      />
                       Pendências bloqueantes
                     </>
                   )}
@@ -489,7 +510,11 @@ export function ActivationWizardModal({
                             key={check}
                             className="text-xs text-error-700 flex items-start gap-1.5"
                           >
-                            <IconCircleXFilled className="h-3 w-3 shrink-0 mt-0.5" />
+                            <Icon
+                              icon={IconCircleXFilled}
+                              size="sm"
+                              className="shrink-0 mt-0.5"
+                            />
                             <span>
                               <span className="font-medium">
                                 {readinessLabel(check)}
@@ -549,7 +574,11 @@ export function ActivationWizardModal({
             <div className="space-y-3">
               {activated ? (
                 <div className="flex items-start gap-2 rounded-lg border border-success-100 bg-success-50 p-3 text-success-700">
-                  <IconCircleCheckFilled className="h-5 w-5 shrink-0" />
+                  <Icon
+                    icon={IconCircleCheckFilled}
+                    size="md"
+                    className="shrink-0"
+                  />
                   <div>
                     <p className="font-medium">Ambiente ativado</p>
                     <p className="text-sm">
@@ -559,7 +588,11 @@ export function ActivationWizardModal({
                 </div>
               ) : (
                 <div className="flex items-start gap-2 rounded-lg border border-error-100 bg-error-50 p-3 text-error-700">
-                  <IconCircleXFilled className="h-5 w-5 shrink-0" />
+                  <Icon
+                    icon={IconCircleXFilled}
+                    size="md"
+                    className="shrink-0"
+                  />
                   <div>
                     <p className="font-medium">Falha na ativação</p>
                     <p className="text-sm">{activationError}</p>

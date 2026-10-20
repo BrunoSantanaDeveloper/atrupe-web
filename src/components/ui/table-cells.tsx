@@ -9,6 +9,7 @@ import {
   IconEdit,
   IconDotsVertical,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // ============================================
 // COMPONENTES DE CONTEÚDO DE CÉLULA (TABLE CELLS)
@@ -107,7 +108,7 @@ export function CellFile({
           iconColor,
         )}
       >
-        {icon ?? <IconFileText className="w-5 h-5" />}
+        {icon ?? <Icon icon={IconFileText} size="md" />}
       </div>
       <CellText title={title} subtitle={subtitle} />
     </div>
@@ -131,7 +132,7 @@ export function CellPayment({
   return (
     <div className={cn('flex items-center gap-3', className)} {...props}>
       <div className="flex items-center justify-center w-[46px] h-8 bg-white border border-gray-100 rounded-md shrink-0 shadow-sm text-[#172B85]">
-        {icon ?? <IconCreditCard className="w-6 h-6" />}
+        {icon ?? <Icon icon={IconCreditCard} size="lg" />}
       </div>
       <CellText title={title} subtitle={subtitle} />
     </div>
@@ -254,7 +255,7 @@ export function CellActionGroup({
           {mode === 'text' ? (
             deleteText
           ) : (
-            <IconTrash className="w-5 h-5 text-gray-500" />
+            <Icon icon={IconTrash} size="md" className="text-gray-500" />
           )}
         </button>
       )}
@@ -266,13 +267,13 @@ export function CellActionGroup({
           {mode === 'text' ? (
             editText
           ) : (
-            <IconEdit className="w-5 h-5 text-gray-500" />
+            <Icon icon={IconEdit} size="md" className="text-gray-500" />
           )}
         </button>
       )}
       {mode === 'icon' && !onEdit && !onDelete && (
         <button className="cursor-pointer text-gray-400 hover:text-gray-500 transition-colors">
-          <IconDotsVertical className="w-5 h-5" />
+          <Icon icon={IconDotsVertical} size="md" />
         </button>
       )}
     </div>

@@ -46,7 +46,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Card,
   CardTitle,
@@ -181,6 +180,7 @@ import {
   IconArrowBackUp,
   IconListDetails,
 } from '@tabler/icons-react'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -994,7 +994,7 @@ function AssemblyEditorBody({
                   >
                     <CardTitle>{item.name}</CardTitle>
                     <IconPencil
-                      size={14}
+                      size={ICON_SIZE.sm}
                       aria-hidden="true"
                       className="text-gray opacity-0 transition-opacity group-hover:opacity-100"
                     />
@@ -1608,9 +1608,17 @@ function AssemblyEditorBody({
               </CardDescription>
             </div>
             {productOpen ? (
-              <IconChevronUp size={20} className="shrink-0 text-gray" />
+              <IconChevronUp
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="shrink-0 text-gray"
+              />
             ) : (
-              <IconChevronDown size={20} className="shrink-0 text-gray" />
+              <IconChevronDown
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="shrink-0 text-gray"
+              />
             )}
           </button>
           {productOpen && (
@@ -1630,7 +1638,7 @@ function AssemblyEditorBody({
                     />
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-gray">
-                      <IconPackage size={28} aria-hidden="true" />
+                      <Icon icon={IconPackage} size="lg" />
                       <span className="text-xs">
                         A imagem é a do cadastro do produto
                       </span>
@@ -2204,7 +2212,7 @@ function AssemblyEditorBody({
             {/* A gravação é por ação (IP-40): a situação aparece só aqui,
                 com o relógio, para não repetir no cabeçalho (03/10/2026) */}
             <p className="inline-flex items-center gap-1.5 text-sm text-gray">
-              <IconClock size={16} aria-hidden="true" />
+              <IconClock size={ICON_SIZE.sm} aria-hidden="true" />
               {pendingDescription
                 ? 'Descritivo técnico ainda não salvo. O resto já está gravado.'
                 : savedAt
@@ -2625,7 +2633,6 @@ export function AssemblyEditor(props: EditorProps) {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
               <div>
                 <DialogTitle>
                   {variantDialog?.kind === 'rename'

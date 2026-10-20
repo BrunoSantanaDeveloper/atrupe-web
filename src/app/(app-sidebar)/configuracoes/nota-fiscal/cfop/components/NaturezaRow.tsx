@@ -19,6 +19,7 @@ import {
   IconArrowDown,
   IconArrowUp,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Types
 export interface CfopReference {
@@ -67,9 +68,9 @@ export function NaturezaRow({
       <td className="px-4 py-3">
         <div className="flex items-center gap-2">
           {nature.type === 'ENTRADA' ? (
-            <IconArrowDown className="w-4 h-4 text-green-600" />
+            <Icon icon={IconArrowDown} size="sm" className="text-green-600" />
           ) : (
-            <IconArrowUp className="w-4 h-4 text-blue-600" />
+            <Icon icon={IconArrowUp} size="sm" className="text-blue-600" />
           )}
           <span className="font-medium text-gray-900">
             {nature.description}
@@ -114,12 +115,12 @@ export function NaturezaRow({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <IconDotsVertical className="w-4 h-4" />
+              <Icon icon={IconDotsVertical} size="md" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => onEdit(nature)}>
-              <IconPencil className="w-4 h-4 mr-2" />
+              <Icon icon={IconPencil} size="md" className="mr-2" />
               Editar
             </DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -127,7 +128,7 @@ export function NaturezaRow({
               onClick={() => onDelete(nature)}
               className="text-red-600 focus:text-red-600"
             >
-              <IconTrash className="w-4 h-4 mr-2" />
+              <Icon icon={IconTrash} size="md" className="mr-2" />
               Excluir
             </DropdownMenuItem>
           </DropdownMenuContent>

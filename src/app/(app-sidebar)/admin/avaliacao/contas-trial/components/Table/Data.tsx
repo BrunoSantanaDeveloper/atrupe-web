@@ -43,7 +43,7 @@ import { formatToWeekDate } from '@/lib/formatDate'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
-import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
+import { LogoAtrupe } from '@/assets/logos'
 import {
   IconTrash,
   IconPencil,
@@ -51,6 +51,7 @@ import {
   IconSettings,
   IconBuildingStore,
 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -155,7 +156,9 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         ) : (
                                           <div className="w-full h-full flex items-center justify-center bg-gray-200">
                                             <IconBuildingStore
-                                              size={24}
+                                              aria-hidden
+                                              size={ICON_SIZE.lg}
+                                              stroke={ICON_STROKE.lg}
                                               className="text-gray-400"
                                             />
                                           </div>
@@ -201,7 +204,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         {currentStatus !== 'descartadas' && (
                                           <>
                                             <ActionButton
-                                              Icon={IconAtrupeLogo}
+                                              Icon={LogoAtrupe}
                                               variant="ghost"
                                               tooltip="Upgrade para Start"
                                               onClick={() => {

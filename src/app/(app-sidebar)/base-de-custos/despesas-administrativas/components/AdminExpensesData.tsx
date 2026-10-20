@@ -36,6 +36,7 @@ import {
   IconInfoCircle,
   IconArrowsSplit2,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface Props {
   accounts: AdminExpenseAccount[]
@@ -101,7 +102,7 @@ export function AdminExpensesData({
                         aria-label="O que é o custo mensal de referência"
                         className="text-gray-400 hover:text-gray-600"
                       >
-                        <IconInfoCircle className="size-4" />
+                        <IconInfoCircle aria-hidden size={ICON_SIZE.sm} />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">

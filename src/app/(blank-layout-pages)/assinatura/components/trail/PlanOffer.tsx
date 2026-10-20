@@ -6,6 +6,7 @@ import { IconCircleCheck, IconMinus, IconPlus } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import {
@@ -224,7 +225,11 @@ export function PlanOfferCard({
             key={action}
             className="flex items-start gap-2 text-sm leading-[1.45] text-gray-600"
           >
-            <IconCircleCheck className="mt-px size-4 flex-none text-brand-600" />
+            <Icon
+              icon={IconCircleCheck}
+              size="sm"
+              className="mt-px flex-none text-brand-600"
+            />
             <span>{action}</span>
           </li>
         ))}
@@ -348,7 +353,7 @@ export function UsersAddonCard({
             disabled={disabled || value <= min}
             onClick={() => onChange(Math.max(min, value - 1))}
           >
-            <IconMinus className="size-[18px]" />
+            <IconMinus aria-hidden />
           </Button>
           <input
             type="number"
@@ -365,7 +370,7 @@ export function UsersAddonCard({
             disabled={disabled || value >= max}
             onClick={() => onChange(Math.min(max, value + 1))}
           >
-            <IconPlus className="size-[18px]" />
+            <IconPlus aria-hidden />
           </Button>
         </div>
       </div>

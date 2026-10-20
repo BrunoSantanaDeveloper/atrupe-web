@@ -7,6 +7,7 @@ import {
   IconInfoCircle,
   IconListDetails,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
@@ -118,7 +119,11 @@ function NumeracaoPorAmbiente({
       />
 
       <div className="flex gap-2 rounded-md border border-blue-200 bg-blue-50 p-3">
-        <IconInfoCircle className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+        <Icon
+          icon={IconInfoCircle}
+          size="sm"
+          className="text-blue-600 shrink-0 mt-0.5"
+        />
         <div className="text-xs text-blue-900">
           <p>
             A série e o próximo número acima valem para{' '}

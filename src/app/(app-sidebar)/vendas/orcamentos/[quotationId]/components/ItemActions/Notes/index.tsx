@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Form
@@ -20,7 +19,7 @@ import { itemNotesSchema, type ItemNotesType } from './schema'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 // Icons
-import { IconCircleCheck, IconMessage } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -80,7 +79,6 @@ export function ItemNotesDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
             <DialogTitle>{rowData?.description}</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

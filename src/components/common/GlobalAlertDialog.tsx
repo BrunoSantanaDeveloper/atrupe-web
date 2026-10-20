@@ -27,7 +27,7 @@ export function GlobalAlertDialog() {
     onConfirm,
     onCancel,
     Icon,
-    iconVariant,
+    iconTone,
     confirmVariant,
     isConfirming,
     close,
@@ -44,10 +44,9 @@ export function GlobalAlertDialog() {
           {Icon && (
             <FeaturedIcon
               Icon={Icon}
-              rounded
               size="lg"
-              variant={iconVariant}
-              className="mx-auto mb-2"
+              tone={iconTone}
+              className="mx-auto mb-2 flex"
             />
           )}
           <AlertDialogTitle>{title}</AlertDialogTitle>

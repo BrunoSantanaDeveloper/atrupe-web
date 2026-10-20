@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Icons
@@ -27,6 +26,7 @@ import type { FinancialTab } from '../types'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { Icon } from '@/components/ui/icon'
 
 interface SummaryCardsProps extends SearchParamsType {
   tab: FinancialTab
@@ -55,25 +55,21 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
   const cards = [
     {
       icon: IconCircleCheck,
-      variant: 'successLight',
       label: `${tab === 'receitas' ? 'Recebidos' : 'Pagos'} (${data?.receivedCount || 0})`,
       value: formatCurrencyToBrl(data?.received || 0),
     },
     {
       icon: IconClockCheck,
-      variant: 'blueLight',
       label: `Confirmadas (${data?.confirmedCount || 0})`,
       value: formatCurrencyToBrl(data?.confirmed || 0),
     },
     {
       icon: IconClockHour4,
-      variant: 'warningLight',
       label: `A ${tab === 'receitas' ? 'receber' : 'pagar'} (${data?.toReceiveCount || 0})`,
       value: formatCurrencyToBrl(data?.toReceive || 0),
     },
     {
       icon: IconAlertCircle,
-      variant: 'errorLight',
       label: `Vencidas (${data?.overdueCount || 0})`,
       value: formatCurrencyToBrl(data?.overdue || 0),
     },
@@ -111,11 +107,7 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
     >
       {visibleCards.map((card, index) => (
         <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
-          <FeaturedIcon
-            size="md"
-            variant={card.variant as FeaturedIconProps['variant']}
-            Icon={card.icon}
-          />
+          <Icon icon={card.icon} size="md" className="text-gray-600" />
           <div className="flex flex-col min-w-0">
             <span className="type-kpi-label truncate">{card.label}</span>
             <span className="type-kpi-value">{card.value}</span>

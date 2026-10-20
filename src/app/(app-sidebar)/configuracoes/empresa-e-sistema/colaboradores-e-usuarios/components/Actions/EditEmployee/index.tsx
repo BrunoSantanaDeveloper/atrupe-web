@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -47,7 +46,7 @@ import type {
 import { payrollContractLabel } from '@/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/types'
 
 // Icons
-import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Lib
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
@@ -174,7 +173,6 @@ export function EditEmployeeDialog({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
                 <span>Editar colaborador</span>
               </div>
             </DialogTitle>

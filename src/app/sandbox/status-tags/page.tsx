@@ -40,56 +40,56 @@ export default function StatusTagSandboxPage() {
               variant="draft"
               tabLabel="Rascunho"
               title="Planejamento"
-              icon={<IconPencil className="w-1/2 h-1/2" />}
+              icon={<IconPencil aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="approval"
               tabLabel="Aprovação"
               title="Aguardando Diretoria"
-              icon={<IconCheck className="w-1/2 h-1/2" />}
+              icon={<IconCheck aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="inProgress"
               tabLabel="Em Progresso"
               title="Desenvolvimento"
-              icon={<IconClock className="w-1/2 h-1/2" />}
+              icon={<IconClock aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="inReview"
               tabLabel="Em Revisão"
               title="Code Review"
-              icon={<IconSearch className="w-1/2 h-1/2" />}
+              icon={<IconSearch aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="rejected"
               tabLabel="Rejeitada"
               title="Ajustes Necessários"
-              icon={<IconX className="w-1/2 h-1/2" />}
+              icon={<IconX aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="readyForDev"
               tabLabel="Pronto para Dev"
               title="Prioridade Alta"
-              icon={<IconRocket className="w-1/2 h-1/2" />}
+              icon={<IconRocket aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="blocked"
               tabLabel="Bloqueada"
               title="Dependência Externa"
-              icon={<IconLock className="w-1/2 h-1/2" />}
+              icon={<IconLock aria-hidden className="w-1/2 h-1/2" />}
             />
             <StatusTag
               size="lg"
               variant="complete"
               tabLabel="Concluída"
               title="Finalizada com Sucesso"
-              icon={<IconShieldCheck className="w-1/2 h-1/2" />}
+              icon={<IconShieldCheck aria-hidden className="w-1/2 h-1/2" />}
             />
           </div>
         </section>

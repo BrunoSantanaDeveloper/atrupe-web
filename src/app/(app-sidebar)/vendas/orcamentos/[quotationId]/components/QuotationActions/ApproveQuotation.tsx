@@ -179,7 +179,7 @@ export function ApproveQuotation({ data }: Props) {
       <CustomButton
         icon={IconCircleCheck}
         title="Aprovar orçamento"
-        iconVariant="successLight"
+        iconTone="success"
         onClick={handleTriggerClick}
       />
 
@@ -192,14 +192,9 @@ export function ApproveQuotation({ data }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={openBlocked === 'payment' ? IconAlertTriangle : IconBan}
-              rounded
               size="lg"
-              variant={
-                openBlocked !== 'payment'
-                  ? 'errorBorderedLight'
-                  : 'warningBorderedLight'
-              }
-              className="mx-auto mb-2"
+              tone={openBlocked !== 'payment' ? 'error' : 'warning'}
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>
               {openBlocked === 'credit'
@@ -273,10 +268,9 @@ export function ApproveQuotation({ data }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconAlertTriangle}
-              rounded
               size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
+              tone="warning"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
             <AlertDialogDescription>

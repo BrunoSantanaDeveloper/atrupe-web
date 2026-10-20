@@ -23,13 +23,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Switch } from '@/components/ui/switch'
 import {
   IconTrash,
-  IconUpload,
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
   IconAlertCircle,
   IconExternalLink,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 import { downloadExcelCsvTemplate } from '@/lib/csv-template'
@@ -272,12 +272,6 @@ export function ImportProductModal() {
           <DialogHeader>
             <DialogTitle>
               <div className="flex flex-col items-center gap-4 text-center">
-                <FeaturedIcon
-                  variant="successBorderedLight"
-                  Icon={IconUpload}
-                  size="lg"
-                  rounded
-                />
                 <span>Importar planilha de produtos</span>
               </div>
             </DialogTitle>
@@ -299,10 +293,9 @@ export function ImportProductModal() {
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center gap-2">
                     <FeaturedIcon
-                      variant="neutralBorderedLight"
+                      tone="neutral"
                       Icon={IconCloudUpload}
-                      size="default"
-                      rounded
+                      size="md"
                     />
                     <p className="text-sm ">
                       <span className="text-brand-700 font-semibold">
@@ -330,7 +323,7 @@ export function ImportProductModal() {
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash className="w-5 h-5" />
+                      <IconTrash aria-hidden size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -397,7 +390,6 @@ export function ImportProductModal() {
         <DialogContent className="sm:max-w-[940px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAlertCircle} />
               <DialogTitle>Erros de importação</DialogTitle>
               <DialogDescription className="sr-only">
                 Verifique se as informações foram inseridas corretamente na
@@ -409,7 +401,7 @@ export function ImportProductModal() {
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle className="h-4 w-4" />
+                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -451,7 +443,11 @@ export function ImportProductModal() {
                               size="sm"
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
-                              <IconExternalLink className="w-4 h-4 mr-1" />
+                              <IconExternalLink
+                                aria-hidden
+                                size={ICON_SIZE.sm}
+                                className="mr-1"
+                              />
                               Abrir
                             </Button>
                           )}

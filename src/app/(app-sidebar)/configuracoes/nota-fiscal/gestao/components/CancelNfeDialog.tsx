@@ -13,13 +13,12 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Icons
-import { IconAlertTriangle, IconX } from '@tabler/icons-react'
+import { IconX } from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -126,7 +125,6 @@ export function CancelNfeDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
               <div>
                 <span>Cancelar {docLabel}</span>
                 <p className="text-sm font-normal text-gray-500">

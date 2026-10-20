@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Plus } from 'lucide-react'
+import { IconPlus as Plus } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 import {
@@ -62,7 +62,10 @@ const AvatarAddButton = React.forwardRef<
       {...props}
     >
       <span className="sr-only">{tooltipText}</span>
-      <Plus className={cn('shrink-0', iconSizeClass, iconStrokeClass)} />
+      <Plus
+        aria-hidden
+        className={cn('shrink-0', iconSizeClass, iconStrokeClass)}
+      />
     </button>
   )
 

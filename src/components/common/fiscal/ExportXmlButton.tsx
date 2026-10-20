@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { IconFileZip, IconDownload } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { extractApiErrorMessage } from '@/lib/api-error-message'
 
 /**
@@ -111,7 +112,7 @@ export function ExportXmlButton() {
         onClick={() => setIsOpen(true)}
         className="gap-2"
       >
-        <IconFileZip className="h-4 w-4 text-gray-500" />
+        <Icon icon={IconFileZip} size="sm" className="text-gray-500" />
         <span className="hidden sm:inline">Exportar XMLs (ZIP)</span>
       </Button>
 
@@ -160,7 +161,7 @@ export function ExportXmlButton() {
               disabled={isLoading}
               className="gap-2"
             >
-              <IconDownload className="h-4 w-4" />
+              <Icon icon={IconDownload} size="md" />
               {isLoading ? 'Exportando...' : 'Exportar ZIP'}
             </Button>
           </DialogFooter>

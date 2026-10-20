@@ -109,13 +109,7 @@ export function UpgradeWallView({
       )}
       aria-busy={loading || undefined}
     >
-      <FeaturedIcon
-        Icon={IconLock}
-        variant="neutralBorderedLight"
-        size="xl"
-        rounded
-        className="mb-6"
-      />
+      <FeaturedIcon Icon={IconLock} tone="neutral" size="lg" className="mb-6" />
       <Heading className="type-card-title mb-2">{title}</Heading>
       {description ? (
         <p className="text-gray-600 max-w-md mb-2">{description}</p>

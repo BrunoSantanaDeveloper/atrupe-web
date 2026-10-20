@@ -18,6 +18,7 @@ import {
 
 // Icons
 import { IconCircleFilled } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -123,10 +124,11 @@ export function StageStatusDropdown({
                     onClick={() => handleChangeStatus(item.newStatus)}
                     disabled={!canChangeStatus}
                   >
-                    <IconCircleFilled
-                      aria-hidden="true"
+                    <Icon
+                      icon={IconCircleFilled}
+                      size="md"
                       className={cn(
-                        'size-2 mr-2',
+                        'mr-2',
                         `text-${item.color}`,
                         item.color === 'pink' && 'text-pink',
                         item.color === 'white' && 'stroke-2 stroke-gray',

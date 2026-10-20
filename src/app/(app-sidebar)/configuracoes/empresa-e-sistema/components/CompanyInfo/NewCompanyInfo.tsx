@@ -31,12 +31,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { DangerActionCompanyModal } from './DangerActionCompanyModal'
 
 // Icons
-import {
-  IconArrowRight,
-  IconBuildingStore,
-  IconCircleCheck,
-  IconPlus,
-} from '@tabler/icons-react'
+import { IconArrowRight, IconCircleCheck, IconPlus } from '@tabler/icons-react'
 
 // Form
 import {
@@ -213,7 +208,6 @@ export function NewCompany({
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconBuildingStore} />
               <DialogTitle>Configuração da empresa</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>
@@ -351,7 +345,7 @@ export function NewCompanyTriggerButton({
         title="Não disponível no plano atual"
         className="hidden"
       >
-        <FeaturedIcon variant="light" Icon={IconPlus} rounded />
+        <FeaturedIcon tone="brand" Icon={IconPlus} />
         Adicionar empresa
       </Button>
     )
@@ -364,7 +358,7 @@ export function NewCompanyTriggerButton({
       size="default"
       onClick={() => onOpenChange(true)}
     >
-      <FeaturedIcon variant="light" Icon={IconPlus} rounded />
+      <FeaturedIcon tone="brand" Icon={IconPlus} />
       Adicionar empresa
     </Button>
   )

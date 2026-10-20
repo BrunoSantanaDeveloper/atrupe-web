@@ -8,7 +8,6 @@ import { useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -54,6 +53,7 @@ import { CompositionsWarning } from '../CompositionsWarning'
 
 // Icons
 import { IconPlus, IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface Props {
   // Os setores ativos da empresa, pelo id
@@ -219,10 +219,6 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={isEdit ? IconPencil : IconPlus}
-            />
             <DialogTitle>
               {isEdit ? 'Editar patrimônio' : 'Novo patrimônio'}
             </DialogTitle>
@@ -263,7 +259,11 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-gray-400">
-                  <IconPhoto size={24} />
+                  <IconPhoto
+                    aria-hidden
+                    size={ICON_SIZE.lg}
+                    stroke={ICON_STROKE.lg}
+                  />
                 </div>
               )}
             </div>

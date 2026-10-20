@@ -52,7 +52,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { clientStatusObj } from '@/consts/client'
 
 // Icons
-import { IconSearch, IconTrash } from '@tabler/icons-react'
+import { IconTrash } from '@tabler/icons-react'
 import { NewClientModal, NewClientTriggerButton } from '../NewClient'
 
 interface Props extends SearchParamsType {
@@ -104,7 +104,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
         'Tem certeza que deseja excluir? Esta ação não poderá ser desfeita.',
       confirmLabel: 'Excluir',
       cancelLabel: 'Cancelar',
-      iconVariant: 'error',
+      iconTone: 'error',
       confirmVariant: 'error',
       onConfirm: async () => {
         try {
@@ -247,7 +247,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
                             >
                               <ActionButton
                                 link={`/cadastros/clientes/${client?.id}/dados`}
-                                Icon={IconSearch}
+                                gesto="ver"
                                 tooltip="Detalhes"
                               />
                             </PermissionGate>

@@ -180,7 +180,7 @@ export function CfopConfigForm() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <FeaturedIcon variant="outline" Icon={IconArrowsSplit} />
+        <FeaturedIcon tone="brand" Icon={IconArrowsSplit} />
         <div>
           <h2 className="type-section-title">Natureza de Operação e CFOP</h2>
           <p className="text-sm text-gray-500">

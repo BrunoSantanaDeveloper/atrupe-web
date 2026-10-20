@@ -179,7 +179,7 @@ export function InvoicyConfigForm() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <FeaturedIcon variant="outline" Icon={IconSettings} />
+        <FeaturedIcon tone="brand" Icon={IconSettings} />
         <div>
           <h2 className="type-section-title">Configurações gerais</h2>
           <p className="text-sm text-gray-500">

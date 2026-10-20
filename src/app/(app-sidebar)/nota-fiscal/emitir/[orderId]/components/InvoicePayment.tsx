@@ -28,6 +28,7 @@ import {
   IconRefresh,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -198,14 +199,14 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
           <AccordionItem value="payment" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
+                <FeaturedIcon tone="neutral" Icon={IconCoin} />
                 <CardTitle>Pagamento</CardTitle>
                 {hasDivergence && (
                   <Badge
                     variant="warning"
                     className="text-xs flex items-center gap-1"
                   >
-                    <IconAlertTriangle size={12} />
+                    <IconAlertTriangle aria-hidden size={ICON_SIZE.sm} />
                     Valor diverge do total da NF
                   </Badge>
                 )}
@@ -279,7 +280,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                           className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 transition-colors"
                           title={`Sincronizar com total da NF (${formatCurrency(currentTotal)})`}
                         >
-                          <IconRefresh size={12} />
+                          <IconRefresh aria-hidden size={ICON_SIZE.sm} />
                           Sincronizar ({formatCurrency(currentTotal)})
                         </button>
                       )}
@@ -347,7 +348,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
           <AccordionItem value="duplicates" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
+                <FeaturedIcon tone="neutral" Icon={IconReceipt} />
                 <CardTitle>Duplicatas</CardTitle>
               </div>
               <div className="flex gap-3">
@@ -392,7 +393,11 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                         className="w-20"
                       />
                       <Button variant="neutral" onClick={generateInstallments}>
-                        <IconCalculator size={16} className="mr-2" />
+                        <IconCalculator
+                          aria-hidden
+                          size={ICON_SIZE.md}
+                          className="mr-2"
+                        />
                         Gerar
                       </Button>
                     </div>
@@ -426,7 +431,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                         className="absolute right-2 top-2 text-gray-400 hover:text-error-600 p-1"
                         aria-label="Remover duplicata"
                       >
-                        <IconTrash size={14} />
+                        <IconTrash aria-hidden size={ICON_SIZE.sm} />
                       </button>
 
                       <div className="space-y-3">

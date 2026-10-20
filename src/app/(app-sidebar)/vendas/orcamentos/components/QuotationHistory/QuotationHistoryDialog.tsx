@@ -10,10 +10,10 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconHistory, IconLoader2 } from '@tabler/icons-react'
+import { IconLoader2 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
@@ -50,7 +50,6 @@ export function QuotationHistoryDialog({ open, setOpen, quotation }: Props) {
       <DialogContent className="sm:max-w-[692px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
             <DialogTitle>Histórico do orçamento</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>
@@ -58,7 +57,12 @@ export function QuotationHistoryDialog({ open, setOpen, quotation }: Props) {
         <DialogBody>
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+              <IconLoader2
+                aria-hidden
+                size={ICON_SIZE.lg}
+                stroke={ICON_STROKE.lg}
+                className="animate-spin text-gray-500"
+              />
             </div>
           ) : events.length > 0 ? (
             <Timeline events={events} />

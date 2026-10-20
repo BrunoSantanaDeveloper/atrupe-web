@@ -23,7 +23,6 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Types
 import type { Material, MaterialFiscal } from '../types'
@@ -35,7 +34,7 @@ import { updateMaterialFiscal } from '@/actions/materials'
 import { useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconCircleCheck, IconReceiptTax } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 type Field = {
   key: keyof MaterialFiscal
@@ -168,16 +167,11 @@ export function MaterialFiscalDialog({ material, onOpenChange }: Props) {
     <Dialog open={!!material} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[720px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconReceiptTax} />
-            <div>
-              <DialogTitle>Dados fiscais de {material?.name}</DialogTitle>
-              <DialogDescription>
-                Vale quando o material é vendido sozinho no orçamento. O campo
-                vazio sai do padrão do emissor.
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Dados fiscais de {material?.name}</DialogTitle>
+          <DialogDescription>
+            Vale quando o material é vendido sozinho no orçamento. O campo vazio
+            sai do padrão do emissor.
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

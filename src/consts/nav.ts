@@ -1,4 +1,5 @@
 import {
+  IconRocket,
   IconCoin,
   IconFileInvoice,
   IconListCheck,
@@ -42,8 +43,9 @@ import {
   IconDeviceDesktopDollar,
   IconReceiptTax,
   IconTicket,
+  IconBuildingFactory2,
 } from '@tabler/icons-react'
-import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
+import { IconReceitaFederal } from '@/assets/icons/pictogramas'
 import type { SVGProps } from 'react'
 import type { IconProps } from '@tabler/icons-react'
 import type { ReviewMarkKind } from './revisao'
@@ -52,7 +54,6 @@ export interface MainNavigationType {
   icon:
     | React.ComponentType<IconProps>
     | React.ComponentType<SVGProps<SVGSVGElement>>
-  iconColor?: string
   title: string // ** "Clientes"
   path?: string // ** "cadastros/clientes"
   query?: string // ** "?status=ACTIVE&page=1"
@@ -476,7 +477,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requireAllPermissions: false,
       },
       {
-        icon: IconListCheck,
+        icon: IconBuildingFactory2,
         title: 'Produção',
         path: '/configuracoes/producao',
         review: 'new',
@@ -498,32 +499,27 @@ export const defaultMainNavigation: MainNavigationType[] = [
     path: '/academy',
     children: [
       {
-        icon: IconAtrupeLogo,
-        iconColor: 'text-[#4CBC89]',
+        icon: IconRocket,
         title: 'Start',
         path: '/academy/start',
       },
       // {
       //   icon: IconAtrupeLogo,
-      //   iconColor: 'text-[#6B809C]',
       //   title: 'Lite',
       //   path: '/academy/lite',
       // },
       // {
       //   icon: IconAtrupeLogo,
-      //   iconColor: 'text-[#A87D63]',
       //   title: 'Pro',
       //   path: '/academy/pro',
       // },
       // {
       //   icon: IconAtrupeLogo,
-      //   iconColor: 'text-[#501201]',
       //   title: 'Elite',
       //   path: '/academy/elite',
       // },
       // {
       //   icon: IconAtrupeLogo,
-      //   iconColor: 'text-[#083B5A]',
       //   title: 'Full',
       //   path: '/academy/full',
       // },

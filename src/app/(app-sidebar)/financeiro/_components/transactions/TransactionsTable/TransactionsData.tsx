@@ -57,7 +57,6 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query'
 // Icons
 import {
   IconX,
-  IconSearch,
   IconMessage,
   IconHistory,
   IconTrendingUp,
@@ -189,12 +188,12 @@ export function TransactionsData({ type, searchParams }: Props) {
                               >
                                 <div className="flex items-center gap-2">
                                   <FeaturedIcon
-                                    variant={
+                                    tone={
                                       type === 'receivable'
-                                        ? 'successLight'
-                                        : 'errorLight'
+                                        ? 'success'
+                                        : 'error'
                                     }
-                                    size="xs"
+                                    size="sm"
                                     Icon={
                                       type === 'receivable'
                                         ? IconTrendingUp
@@ -284,7 +283,7 @@ export function TransactionsData({ type, searchParams }: Props) {
                                           ]}
                                         >
                                           <ActionButton
-                                            Icon={IconSearch}
+                                            gesto="ver"
                                             tooltip={
                                               item?.status === 'CANCELED'
                                                 ? 'Movimentação cancelada'

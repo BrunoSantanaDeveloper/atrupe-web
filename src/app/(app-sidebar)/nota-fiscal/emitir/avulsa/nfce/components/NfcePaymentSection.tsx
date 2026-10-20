@@ -14,6 +14,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { IconPlus, IconTrash, IconCash } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 export interface Pagamento {
   tipo: string
@@ -111,7 +112,7 @@ export function NfcePaymentSection({
   return (
     <Card className="border-none shadow-sm overflow-hidden">
       <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-        <FeaturedIcon variant="successOutline" Icon={IconCash} />
+        <FeaturedIcon tone="success" Icon={IconCash} />
         <div className="flex-1">
           <CardTitle>Forma de Pagamento</CardTitle>
         </div>
@@ -203,7 +204,7 @@ export function NfcePaymentSection({
                         onClick={() => handleRemovePayment(idx)}
                         className="text-red-500 hover:text-red-700 transition"
                       >
-                        <IconTrash size={16} />
+                        <IconTrash aria-hidden size={ICON_SIZE.sm} />
                       </button>
                     </div>
                   </div>

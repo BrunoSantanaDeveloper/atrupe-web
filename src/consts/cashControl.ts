@@ -1,16 +1,17 @@
 // Type
 import {
-  IconItau,
-  IconStripe,
-  IconPayPal,
-  IconBradesco,
-  IconSantander,
-  IconAtrupeLogo,
-  IconBancoDoBrasil,
-  IconCaixaEconomica,
-} from '@/assets/icons/CustomIcons'
+  LogoItau,
+  LogoStripe,
+  LogoPayPal,
+  LogoBradesco,
+  LogoSantander,
+  LogoAtrupe,
+  LogoBancoDoBrasil,
+  LogoCaixa,
+} from '@/assets/logos'
 import { BadgeType } from '@/types/coreTypes'
-import { SVGProps } from 'react'
+import type { ComponentType } from 'react'
+import type { LogoProps } from '@/assets/logos'
 
 export const cashControlStatusObj: {
   [key: string]: BadgeType
@@ -20,15 +21,15 @@ export const cashControlStatusObj: {
 }
 
 export const bankIcons: {
-  [key: string]: (props: SVGProps<SVGSVGElement>) => JSX.Element
+  [key: string]: ComponentType<LogoProps>
 } = {
-  company: IconAtrupeLogo,
-  payPal: IconPayPal,
-  bradesco: IconBradesco,
-  bancoBradesco: IconBradesco,
-  stripe: IconStripe,
-  bancoItau: IconItau,
-  bancoDoBrasil: IconBancoDoBrasil,
-  caixaEconomicaFederal: IconCaixaEconomica,
-  bancoSantanderBrasil: IconSantander,
+  company: LogoAtrupe,
+  payPal: LogoPayPal,
+  bradesco: LogoBradesco,
+  bancoBradesco: LogoBradesco,
+  stripe: LogoStripe,
+  bancoItau: LogoItau,
+  bancoDoBrasil: LogoBancoDoBrasil,
+  caixaEconomicaFederal: LogoCaixa,
+  bancoSantanderBrasil: LogoSantander,
 }

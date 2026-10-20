@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { OTPInput, OTPInputContext } from 'input-otp'
-import { Dot } from 'lucide-react'
+import { IconPointFilled as Dot } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 
@@ -67,7 +67,7 @@ const InputOTPSeparator = React.forwardRef<
   React.ComponentPropsWithoutRef<'div'>
 >(({ ...props }, ref) => (
   <div ref={ref} role="separator" {...props}>
-    <Dot />
+    <Dot aria-hidden />
   </div>
 ))
 InputOTPSeparator.displayName = 'InputOTPSeparator'

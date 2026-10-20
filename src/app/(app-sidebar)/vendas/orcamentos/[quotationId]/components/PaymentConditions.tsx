@@ -19,6 +19,7 @@ import { PaymentConditionsDialog } from './QuotationActions/PaymentConditions'
 
 // Icons
 import { IconCoin, IconFileInvoice } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -100,7 +101,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
           <CardHeader>
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
+                <FeaturedIcon tone="neutral" Icon={IconCoin} />
                 <CardTitle>Condições de pagamento</CardTitle>
               </div>
               <div className="flex gap-3">
@@ -144,7 +145,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                         variant="outline"
                         className="text-xs font-medium border-blue-200 bg-blue-50 text-blue-700 gap-1 mt-1"
                       >
-                        <IconFileInvoice className="h-3 w-3" />
+                        <IconFileInvoice aria-hidden size={ICON_SIZE.sm} />
                         Gera{' '}
                         {data.paymentCondition.invoiceType === 'NFE'
                           ? 'NF-e'

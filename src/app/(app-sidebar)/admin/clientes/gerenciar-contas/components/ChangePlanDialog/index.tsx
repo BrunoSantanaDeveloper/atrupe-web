@@ -13,7 +13,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -33,7 +32,7 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconArrowsExchange, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -122,10 +121,6 @@ export function ChangePlanDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="neutralOutline"
-                Icon={IconArrowsExchange}
-              />
               <span>Trocar plano</span>
             </div>
           </DialogTitle>

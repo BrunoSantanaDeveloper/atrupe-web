@@ -10,6 +10,7 @@ import {
   IconBrandFacebook,
   IconBrandLinkedin,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export function Step4() {
   return (
@@ -18,19 +19,19 @@ export function Step4() {
         name="socialNetworks.instagram"
         label="Instagram"
         placeholder="seu_perfil"
-        startAdornment={<IconBrandInstagram className="size-5" />}
+        startAdornment={<Icon icon={IconBrandInstagram} size="md" />}
       />
       <FormInput<CompanyFormType>
         name="socialNetworks.facebook"
         label="Facebook"
         placeholder="sua_pagina"
-        startAdornment={<IconBrandFacebook className="size-5" />}
+        startAdornment={<Icon icon={IconBrandFacebook} size="md" />}
       />
       <FormInput<CompanyFormType>
         name="socialNetworks.linkedin"
         label="LinkedIn"
         placeholder="seu_perfil"
-        startAdornment={<IconBrandLinkedin className="size-5" />}
+        startAdornment={<Icon icon={IconBrandLinkedin} size="md" />}
       />
     </div>
   )

@@ -2,6 +2,7 @@
 
 import { IconCircleCheck, IconCoin } from '@tabler/icons-react'
 
+import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { PAYMENT_METHOD_OPTIONS } from '@/lib/plans/methodTrail'
@@ -33,7 +34,11 @@ function Row({
           accent ? 'text-brand-600' : 'text-gray-500',
         )}
       >
-        <IconCircleCheck className="size-4 flex-none text-brand-500" />
+        <Icon
+          icon={IconCircleCheck}
+          size="sm"
+          className="flex-none text-brand-500"
+        />
         <span>{label}</span>
       </span>
       <span
@@ -133,7 +138,11 @@ export function OrderSummary({ quote, isLoading, billingType }: Props) {
           <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
             <span>Total</span>
             <span className="flex items-center gap-1 text-xl font-semibold text-gray-700">
-              <IconCoin className="size-6 flex-none text-brand-500" />
+              <Icon
+                icon={IconCoin}
+                size="lg"
+                className="flex-none text-brand-500"
+              />
               {formatCurrencyToBrl(quote.totalCents)}
               <small className="ml-0.5 text-sm font-normal text-gray-500">
                 {quote.totalSuffix}

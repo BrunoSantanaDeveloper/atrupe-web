@@ -114,6 +114,17 @@ async function collect(page: Page) {
       tally(svgSizes, `${Math.round(r.width)}x${Math.round(r.height)}`)
     }
 
+    // Só ícones do Tabler (classe tabler-icon): a escala é 16/20/24
+    // (design/openspec/changes/icones). Gráficos, logos e pictogramas ficam
+    // de fora.
+    const iconSizes: Record<string, number> = {}
+    for (const svg of Array.from(
+      document.querySelectorAll('svg.tabler-icon'),
+    ).filter(visible)) {
+      const r = svg.getBoundingClientRect()
+      tally(iconSizes, `${Math.round(r.width)}x${Math.round(r.height)}`)
+    }
+
     const rowHeights: Record<string, number> = {}
     for (const tr of Array.from(document.querySelectorAll('tbody tr')).slice(
       0,
@@ -134,6 +145,7 @@ async function collect(page: Page) {
         visible,
       ).length,
       svgSizes: sorted(svgSizes),
+      iconSizes: sorted(iconSizes),
       tableRows: document.querySelectorAll('tbody tr').length,
       rowHeights: sorted(rowHeights),
     }

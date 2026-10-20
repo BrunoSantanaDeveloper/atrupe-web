@@ -41,11 +41,9 @@ import { createItemNew } from '@/actions/_cruds'
 import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationItems'
 
 // Lib
-import { cn } from '@/lib/utils'
 
 // Icons
 import {
-  IconLoader2,
   IconCircleCheck,
   IconAlertTriangle,
   IconPrinter,
@@ -191,7 +189,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
           <CustomButton
             icon={IconCircleCheck}
             title="Concluir orçamento"
-            iconVariant="lightBlueBorderedLight"
+            iconTone="info"
             onClick={handleFinish}
           />
 
@@ -201,10 +199,9 @@ export function FinishQuotation({ data, canFinish }: Props) {
               <AlertDialogHeader>
                 <FeaturedIcon
                   Icon={IconAlertTriangle}
-                  rounded
                   size="lg"
-                  variant="warningBorderedLight"
-                  className="mx-auto mb-2"
+                  tone="warning"
+                  className="mx-auto mb-2 flex"
                 />
                 <AlertDialogTitle>Concluir mesmo assim?</AlertDialogTitle>
                 <AlertDialogDescription asChild>
@@ -243,13 +240,11 @@ export function FinishQuotation({ data, canFinish }: Props) {
             <AlertDialogContent className="max-w-96">
               <AlertDialogHeader>
                 <FeaturedIcon
-                  Icon={loading ? IconLoader2 : IconAlertTriangle}
-                  rounded
+                  Icon={IconAlertTriangle}
+                  isLoading={loading}
                   size="lg"
-                  variant={
-                    loading ? 'neutralBorderedLight' : 'warningBorderedLight'
-                  }
-                  className={cn('mx-auto mb-2', loading && 'animate-spin')}
+                  tone={loading ? 'neutral' : 'warning'}
+                  className="mx-auto mb-2 flex"
                 />
                 <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
                 <AlertDialogDescription>
@@ -273,10 +268,9 @@ export function FinishQuotation({ data, canFinish }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconCircleCheck}
-              rounded
               size="lg"
-              variant="successBorderedLight"
-              className="mx-auto mb-2"
+              tone="success"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Orçamento concluído</AlertDialogTitle>
             <AlertDialogDescription>

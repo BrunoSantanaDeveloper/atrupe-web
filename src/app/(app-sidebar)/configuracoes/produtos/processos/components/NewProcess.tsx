@@ -62,6 +62,7 @@ import {
   IconRulerMeasure,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -92,7 +93,7 @@ const afterBaseCards: { value: AfterBase; Icon: typeof IconLink }[] = [
 function AfterSave({ title, text }: { title: string; text: string }) {
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
-      <FeaturedIcon variant="light" Icon={IconHierarchy2} rounded />
+      <FeaturedIcon tone="brand" Icon={IconHierarchy2} />
       <p className="text-base font-semibold text-gray-700">{title}</p>
       <p className="max-w-md text-sm text-gray">{text}</p>
     </div>
@@ -185,7 +186,6 @@ export function ProcessDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconListCheck} />
               <span>
                 {editMode
                   ? `Editar processo${detail ? ` · ${detail.block.name}` : ''}`
@@ -204,15 +204,27 @@ export function ProcessDialog({
             <div className="px-6 pt-4 border-b border-gray-100">
               <TabsList>
                 <TabsTrigger value="general">
-                  <IconListCheck size={14} className="mr-1.5" />
+                  <IconListCheck
+                    aria-hidden
+                    size={ICON_SIZE.sm}
+                    className="mr-1.5"
+                  />
                   Processo
                 </TabsTrigger>
                 <TabsTrigger value="composition">
-                  <IconHierarchy2 size={14} className="mr-1.5" />
+                  <IconHierarchy2
+                    aria-hidden
+                    size={ICON_SIZE.sm}
+                    className="mr-1.5"
+                  />
                   Composição
                 </TabsTrigger>
                 <TabsTrigger value="usage">
-                  <IconPackages size={14} className="mr-1.5" />
+                  <IconPackages
+                    aria-hidden
+                    size={ICON_SIZE.sm}
+                    className="mr-1.5"
+                  />
                   Uso
                 </TabsTrigger>
               </TabsList>
@@ -295,9 +307,8 @@ export function ProcessDialog({
                               )}
                             >
                               <FeaturedIcon
-                                variant={selected ? 'light' : 'neutralOutline'}
+                                tone={selected ? 'brand' : 'neutral'}
                                 size="sm"
-                                rounded
                                 Icon={Icon}
                               />
                               <span className="flex-1">
@@ -310,13 +321,13 @@ export function ProcessDialog({
                               </span>
                               {selected ? (
                                 <IconCircleCheckFilled
-                                  size={20}
+                                  size={ICON_SIZE.md}
                                   className="shrink-0 text-brand-600"
                                   aria-hidden="true"
                                 />
                               ) : (
                                 <IconCircle
-                                  size={20}
+                                  size={ICON_SIZE.md}
                                   className="shrink-0 text-gray-300"
                                   aria-hidden="true"
                                 />

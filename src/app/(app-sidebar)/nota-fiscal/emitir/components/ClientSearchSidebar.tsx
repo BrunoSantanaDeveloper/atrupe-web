@@ -18,6 +18,7 @@ import {
   IconCheck,
   IconLoader2,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -114,7 +115,11 @@ export function ClientSearchSidebar({ searchParams }: Props) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               startAdornment={
-                <IconSearch size={18} className="text-gray-400" />
+                <IconSearch
+                  aria-hidden
+                  size={ICON_SIZE.md}
+                  className="text-gray-400"
+                />
               }
             />
           </div>
@@ -158,7 +163,11 @@ export function ClientSearchSidebar({ searchParams }: Props) {
                   )}
                 </div>
                 {selectedClientId === client.id && (
-                  <IconCheck size={18} className="text-success-600" />
+                  <IconCheck
+                    aria-hidden
+                    size={ICON_SIZE.md}
+                    className="text-success-600"
+                  />
                 )}
               </button>
             ))}
@@ -166,13 +175,7 @@ export function ClientSearchSidebar({ searchParams }: Props) {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
             <div className="space-y-4">
-              <FeaturedIcon
-                Icon={IconUserSearch}
-                size="xl"
-                variant="borderedLight"
-                rounded
-                color="success"
-              />
+              <FeaturedIcon Icon={IconUserSearch} size="lg" tone="brand" />
               <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-900">
                   {isSearching ? 'Buscando...' : 'Sem clientes filtrados'}

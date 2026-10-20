@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Icons
@@ -18,6 +17,7 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import { Icon } from '@/components/ui/icon'
 
 export function SummaryCards({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
@@ -39,20 +39,17 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
   const cards = [
     {
       icon: IconArrowUp,
-      variant: 'successLight',
       label: 'Receitas Totais',
       value: formatCurrencyToBrl(data?.totalRevenue || 0),
     },
     {
       icon: IconArrowDown,
-      variant: 'errorLight',
       label: 'Despesas Totais',
       value: formatCurrencyToBrl(data?.totalExpenses || 0),
       isNegative: true,
     },
     {
       icon: IconCash,
-      variant: 'blueLight',
       label: 'Fluxo de Caixa Final',
       value: formatCurrencyToBrl(data?.finalCashFlow || 0),
     },
@@ -78,11 +75,7 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {cards.map((card, index) => (
         <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
-          <FeaturedIcon
-            size="md"
-            variant={card.variant as FeaturedIconProps['variant']}
-            Icon={card.icon}
-          />
+          <Icon icon={card.icon} size="md" className="text-gray-600" />
           <div className="flex flex-col min-w-0">
             <span className="text-xs text-gray truncate">{card.label}</span>
             <span

@@ -9,6 +9,7 @@ import {
   IconLoader2,
   IconArrowRight,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export function FiscalOnboardingBanner() {
   const { hasFeature } = usePlanFeatures()
@@ -27,7 +28,11 @@ export function FiscalOnboardingBanner() {
     return (
       <div className="rounded-lg border border-warning-200 bg-warning-50 p-4 flex items-center gap-3 animate-in fade-in-0 duration-base">
         <div className="flex-shrink-0 h-10 w-10 rounded-full bg-warning-100 flex items-center justify-center">
-          <IconLoader2 className="h-5 w-5 text-warning-600 animate-spin" />
+          <Icon
+            icon={IconLoader2}
+            size="md"
+            className="text-warning-600 animate-spin"
+          />
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-warning-800">
@@ -48,7 +53,7 @@ export function FiscalOnboardingBanner() {
           className="w-full rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-center gap-3 hover:bg-brand-100 transition-colors group text-left animate-in fade-in-0 duration-base"
         >
           <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center">
-            <IconFileSymlink className="h-5 w-5 text-brand-600" />
+            <Icon icon={IconFileSymlink} size="md" className="text-brand-600" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold text-brand-800">
@@ -59,7 +64,11 @@ export function FiscalOnboardingBanner() {
               notas.
             </p>
           </div>
-          <IconArrowRight className="h-5 w-5 text-brand-400 group-hover:text-brand-600 transition-colors" />
+          <Icon
+            icon={IconArrowRight}
+            size="md"
+            className="text-brand-400 group-hover:text-brand-600 transition-colors"
+          />
         </button>
 
         <FiscalOnboardingModal open={modalOpen} onOpenChange={setModalOpen} />

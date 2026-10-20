@@ -14,6 +14,8 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { Icon } from '@/components/ui/icon'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -114,7 +116,12 @@ export function AvailabilityTab() {
             </div>
           ) : plans.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500">
-              <IconLayoutGrid size={48} className="text-gray-300 mb-2" />
+              <FeaturedIcon
+                tone="neutral"
+                size="lg"
+                Icon={IconLayoutGrid}
+                className="mb-2"
+              />
               <p className="font-semibold text-gray-700">
                 Nenhum plano encontrado
               </p>
@@ -163,12 +170,12 @@ export function AvailabilityTab() {
                       <td className="p-4">
                         {plan.isActive ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                            <IconCheck size={12} className="stroke-[3px]" />
+                            <Icon icon={IconCheck} size="sm" />
                             Disponível
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
-                            <IconX size={12} className="stroke-[3px]" />
+                            <Icon icon={IconX} size="sm" />
                             {plan.badge?.text || 'Indisponível'}
                           </span>
                         )}
@@ -210,7 +217,11 @@ export function AvailabilityTab() {
         <DialogContent className="sm:max-w-[460px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
-              <IconAlertTriangle size={22} className="text-[#FF4201]" />
+              <Icon
+                icon={IconAlertTriangle}
+                size="lg"
+                className="text-[#FF4201]"
+              />
               <span>
                 {pendingToggle?.next
                   ? 'Disponibilizar plano'

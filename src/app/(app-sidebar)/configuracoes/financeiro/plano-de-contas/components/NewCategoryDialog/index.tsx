@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -149,7 +148,6 @@ export function NewCategoryDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
               <span>{editMode ? 'Editar categoria' : 'Nova categoria'}</span>
             </div>
           </DialogTitle>

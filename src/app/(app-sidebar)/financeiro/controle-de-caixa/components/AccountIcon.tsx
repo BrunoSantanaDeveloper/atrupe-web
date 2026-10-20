@@ -6,14 +6,13 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Consts
 import { bankIcons } from '@/consts/cashControl'
-import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
+import { LogoAtrupe } from '@/assets/logos'
 
 export function AccountIcon({ icon }: { icon?: string }) {
   return (
     <FeaturedIcon
-      Icon={(icon && bankIcons[icon]) || IconAtrupeLogo}
-      variant="neutralLight"
-      rounded
+      Icon={(icon && bankIcons[icon]) || LogoAtrupe}
+      tone="neutral"
     />
   )
 }

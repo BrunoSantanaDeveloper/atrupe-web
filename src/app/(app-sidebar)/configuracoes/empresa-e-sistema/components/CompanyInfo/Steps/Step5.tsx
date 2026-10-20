@@ -12,6 +12,7 @@ import {
   IconSettings,
   IconClock,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 export function Step5() {
   const { hasFeature } = usePlanFeatures()
@@ -45,9 +47,7 @@ export function Step5() {
   if (!hasFiscalModule) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
-        <div className="h-14 w-14 rounded-full bg-brand-50 flex items-center justify-center">
-          <IconReceipt className="h-7 w-7 text-brand-600" />
-        </div>
+        <FeaturedIcon tone="brand" size="lg" Icon={IconReceipt} />
         <div className="space-y-1">
           <h3 className="type-card-title">Módulo Fiscal não contratado</h3>
           <p className="text-sm text-gray-500 max-w-xs mx-auto">
@@ -67,9 +67,7 @@ export function Step5() {
   if (!isActive) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
-        <div className="h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
-          <IconClock className="h-7 w-7 text-amber-500" />
-        </div>
+        <FeaturedIcon tone="warning" size="lg" Icon={IconClock} />
         <div className="space-y-1">
           <h3 className="type-card-title">
             {isPending
@@ -138,7 +136,7 @@ export function Step5() {
       <div className="rounded-lg border border-brand-100 bg-brand-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
-            <IconSettings className="h-4 w-4 text-brand-700" />
+            <Icon icon={IconSettings} size="sm" className="text-brand-700" />
           </div>
           <div>
             <p className="text-sm font-semibold text-brand-900">

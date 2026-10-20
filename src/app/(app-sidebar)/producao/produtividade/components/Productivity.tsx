@@ -71,7 +71,7 @@ export function Productivity() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-3">
-            <FeaturedIcon variant="neutralOutline" Icon={IconChartBar} />
+            <FeaturedIcon tone="neutral" Icon={IconChartBar} />
             <div>
               <CardTitle>Por setor</CardTitle>
               <CardDescription>
@@ -154,7 +154,7 @@ export function Productivity() {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUsers} />
+              <FeaturedIcon tone="neutral" Icon={IconUsers} />
               <div>
                 <CardTitle>Por colaborador</CardTitle>
                 <CardDescription>

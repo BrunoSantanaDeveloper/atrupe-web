@@ -179,7 +179,7 @@ export function HistoryTab() {
                           className="gap-1"
                           onClick={() => revert(entry)}
                         >
-                          <IconArrowBackUp size={14} />
+                          <IconArrowBackUp aria-hidden />
                           Reverter
                         </Button>
                       )}

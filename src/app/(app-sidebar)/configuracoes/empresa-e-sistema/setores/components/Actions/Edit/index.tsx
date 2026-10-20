@@ -19,7 +19,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { IconComponent } from '@/components/common/Icon'
@@ -28,7 +27,7 @@ import { FormSelect, SelectBasic } from '@/components/common/form/FormSelect'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 
 // Icons
-import { IconCircleCheck, IconPencil } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -74,7 +73,8 @@ const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
     <div className="flex items-center gap-2 text-nowrap">
       <IconComponent
         icon={value.icon}
-        className="size-5 [&>path]:stroke-[2px]"
+        size="md"
+        className="[&>path]:stroke-[2px]"
       />
       {value.text}
     </div>
@@ -214,7 +214,6 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <span>Editar setor</span>
             </div>
           </DialogTitle>

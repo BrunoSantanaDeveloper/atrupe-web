@@ -6,6 +6,7 @@ import {
   IconArrowLeft as ArrowLeft,
   IconArrowRight as ArrowRight,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface Props {
   page?: number
@@ -37,7 +38,7 @@ export function TablePaginationControlled(props: Props) {
         onClick={handlePrevPage}
         disabled={page <= 1}
       >
-        <ArrowLeft size={16} />
+        <ArrowLeft aria-hidden size={ICON_SIZE.md} />
         <span className="ml-1">Anterior</span>
       </Button>
 
@@ -72,7 +73,7 @@ export function TablePaginationControlled(props: Props) {
         disabled={page >= lastPage}
       >
         <span className="mr-1">Proxima</span>
-        <ArrowRight size={18} />
+        <ArrowRight aria-hidden size={ICON_SIZE.md} />
       </Button>
     </div>
   )

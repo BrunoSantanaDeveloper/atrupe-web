@@ -23,6 +23,7 @@ import {
   IconAlertTriangle,
   IconFileText,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Actions
 import { createItemNew, getData } from '@/actions/_cruds'
@@ -271,7 +272,11 @@ export function CorrectionLetterDialog({
 
           {isExpired && (
             <div className="flex gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-              <IconAlertTriangle size={18} className="mt-0.5 shrink-0" />
+              <Icon
+                icon={IconAlertTriangle}
+                size="md"
+                className="mt-0.5 shrink-0"
+              />
               <span>
                 O prazo de {DEADLINE_HOURS} horas (30 dias) para carta de
                 correção expirou. A regularização deve ser feita por NF-e
@@ -377,7 +382,7 @@ export function CorrectionLetterDialog({
                               handleDownloadPdf(event.id, event.sequenciaEvento)
                             }
                           >
-                            <IconFileText size={14} />
+                            <Icon icon={IconFileText} size="sm" />
                             {downloadingPdf === event.id
                               ? 'Obtendo...'
                               : 'DACCE'}
@@ -392,7 +397,7 @@ export function CorrectionLetterDialog({
                               handleDownloadXml(event.id, event.sequenciaEvento)
                             }
                           >
-                            <IconDownload size={14} />
+                            <Icon icon={IconDownload} size="sm" />
                             XML
                           </Button>
                         ) : (
@@ -400,7 +405,11 @@ export function CorrectionLetterDialog({
                             className="text-xs text-gray-400 cursor-not-allowed flex items-center gap-1"
                             title="XML não disponível para este evento"
                           >
-                            <IconDownload size={14} className="opacity-50" />
+                            <Icon
+                              icon={IconDownload}
+                              size="sm"
+                              className="opacity-50"
+                            />
                             XML Indisponível
                           </span>
                         )}

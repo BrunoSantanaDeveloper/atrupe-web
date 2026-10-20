@@ -150,7 +150,6 @@ function EditableDateField({
           variant="neutralLight"
           size="iconSm"
           LeftIcon={IconDeviceFloppy}
-          leftIconSize={16}
           title="Salvar data"
           disabled={isSaving || !hasChanged}
           isLoading={isSaving}
@@ -178,7 +177,7 @@ export function QuotationSummary({
           <CardHeader>
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconFileInvoice} />
+                <FeaturedIcon tone="neutral" Icon={IconFileInvoice} />
                 <CardTitle>Resumo</CardTitle>
               </div>
               <div className="flex gap-3">

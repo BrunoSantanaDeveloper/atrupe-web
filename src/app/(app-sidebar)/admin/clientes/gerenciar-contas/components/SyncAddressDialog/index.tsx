@@ -14,7 +14,6 @@ import {
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Form,
   FormField,
@@ -152,7 +151,6 @@ export function SyncAddressDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconMapPin} />
               <span>Endereço no Asaas</span>
             </div>
           </DialogTitle>

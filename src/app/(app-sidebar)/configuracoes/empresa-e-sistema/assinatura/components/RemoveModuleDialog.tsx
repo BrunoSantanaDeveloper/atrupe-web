@@ -11,9 +11,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { toast } from 'sonner'
-import { IconAlertTriangle } from '@tabler/icons-react'
 import { deleteItemNew } from '@/actions/_cruds'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
@@ -80,11 +78,6 @@ export function RemoveModuleDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="orangeBorderedLight"
-                Icon={IconAlertTriangle}
-                rounded
-              />
               <span>Remover módulo</span>
             </div>
           </DialogTitle>

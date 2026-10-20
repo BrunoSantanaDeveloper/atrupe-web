@@ -3,6 +3,7 @@
 import { IconInfoCircle } from '@tabler/icons-react'
 
 import { Badge } from '@/components/ui/badge'
+import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -58,7 +59,7 @@ export function InfoHint({ children }: { children: React.ReactNode }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <span className="inline-flex cursor-help text-gray-400">
-            <IconInfoCircle size={16} />
+            <Icon icon={IconInfoCircle} size="sm" />
           </span>
         </TooltipTrigger>
         <TooltipContent className="max-w-xs text-xs">{children}</TooltipContent>

@@ -73,11 +73,11 @@ import {
   IconBolt,
   IconPrinter,
   IconReceipt,
-  IconThumbUp,
   IconCashRegister,
   IconCashBanknote,
   IconReceiptRefund,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
 import { quickSaleCheckoutStatusObj } from '@/consts/quickSale'
@@ -229,7 +229,6 @@ function ChargeNowDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">Recebimento</DialogTitle>
               <DialogDescription className="truncate">
@@ -363,8 +362,7 @@ export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
         <div className="flex gap-4">
           <FeaturedIcon
             Icon={isPos ? IconCashRegister : IconBolt}
-            variant="borderedLight"
-            rounded
+            tone="brand"
           />
           <div className="space-y-2">
             <div>
@@ -527,14 +525,9 @@ export function QuickSaleStatusCard({
                     ? IconCircleCheck
                     : IconLock
               }
-              variant={
-                checkout.cancelled
-                  ? 'errorBorderedLight'
-                  : finished
-                    ? 'successBorderedLight'
-                    : 'borderedLight'
+              tone={
+                checkout.cancelled ? 'error' : finished ? 'success' : 'brand'
               }
-              rounded
             />
             <div>
               <div className="flex flex-wrap items-center gap-2">
@@ -580,7 +573,11 @@ export function QuickSaleStatusCard({
                       : 'bg-gray-100 text-gray-500',
                   )}
                 >
-                  {step.done ? <IconCheck size={16} /> : index + 1}
+                  {step.done ? (
+                    <IconCheck aria-hidden size={ICON_SIZE.sm} />
+                  ) : (
+                    index + 1
+                  )}
                 </span>
                 <span>
                   <span className="block text-sm font-medium text-gray-800">

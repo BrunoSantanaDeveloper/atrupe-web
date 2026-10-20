@@ -28,10 +28,13 @@ import { MyProfileDialog } from './MyProfile'
 import { THEME_OPTIONS, THEME_SWITCHER } from './theme-options'
 
 // Icons
-import { CreditCard, LogOut, User } from 'lucide-react'
-
-// Actions
-import { IconDotsVertical } from '@tabler/icons-react'
+import {
+  IconCreditCard as CreditCard,
+  IconDotsVertical,
+  IconLogout as LogOut,
+  IconUser as User,
+} from '@tabler/icons-react'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -64,14 +67,14 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                 : '',
             )}
           >
-            <IconDotsVertical className="text-gray" />
+            <Icon icon={IconDotsVertical} size="sm" className="text-gray" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="min-w-40" align="start">
           <DropdownMenuGroup>
             <DialogTrigger asChild>
               <DropdownMenuItem>
-                <User size={16} className="mr-2" />
+                <Icon icon={User} size="md" className="mr-2" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
             </DialogTrigger>
@@ -81,7 +84,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                   router.push('/configuracoes/empresa-e-sistema/assinatura')
                 }
               >
-                <CreditCard size={16} className="mr-2" />
+                <Icon icon={CreditCard} size="md" className="mr-2" />
                 <span>Assinatura</span>
               </DropdownMenuItem>
             )}
@@ -89,7 +92,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
             {THEME_SWITCHER && (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <currentTheme.icon size={16} className="mr-2" />
+                  <currentTheme.icon size={ICON_SIZE.sm} className="mr-2" />
                   <span>Tema</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
@@ -103,7 +106,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                           key={option.value}
                           value={option.value}
                         >
-                          <option.icon size={16} className="mr-2" />
+                          <option.icon size={ICON_SIZE.sm} className="mr-2" />
                           <span>{option.label}</span>
                         </DropdownMenuRadioItem>
                       ))}
@@ -115,7 +118,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogOut}>
-            <LogOut size={16} className="mr-2" />
+            <Icon icon={LogOut} size="md" className="mr-2" />
             <span>Sair</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

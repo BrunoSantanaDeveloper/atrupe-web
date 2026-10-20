@@ -20,13 +20,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Icons
-import {
-  IconEraser,
-  IconSettings,
-  IconPlus,
-  IconBan,
-  IconRestore,
-} from '@tabler/icons-react'
+import { IconSettings, IconPlus } from '@tabler/icons-react'
 
 // Actions
 import { getDataOld, updateItemNew } from '@/actions/_cruds'
@@ -139,8 +133,8 @@ export function Main() {
                             permissions={['sales_settings:series:edit']}
                           >
                             <ActionButton
-                              variant="neutralLight"
-                              Icon={IconEraser}
+                              variant="errorLight"
+                              gesto="excluir"
                               tooltip="Apagar todos os orçamentos, O.S e movimentações."
                               onClick={() => {
                                 setOpenDialog('wipe')
@@ -156,7 +150,7 @@ export function Main() {
                             variant={
                               item?.isActive ? 'errorLight' : 'successLight'
                             }
-                            Icon={item?.isActive ? IconBan : IconRestore}
+                            gesto={item?.isActive ? 'inativar' : 'reativar'}
                             tooltip={
                               item?.isActive ? 'Inativar série' : 'Ativar série'
                             }

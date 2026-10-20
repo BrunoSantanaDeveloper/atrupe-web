@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Icon } from '@/components/ui/icon'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -225,7 +226,11 @@ export function ConfirmFeatureDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5">
-            <IconAlertTriangle size={22} className="text-[#FF4201]" />
+            <Icon
+              icon={IconAlertTriangle}
+              size="lg"
+              className="text-[#FF4201]"
+            />
             <span>
               {request?.enabled
                 ? `Incluir recurso no plano ${request?.planName}`

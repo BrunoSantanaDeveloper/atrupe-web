@@ -3,7 +3,12 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 // Icons
-import { Lock, CreditCard, AlertTriangle } from 'lucide-react'
+import {
+  IconLock as Lock,
+  IconCreditCard as CreditCard,
+  IconAlertTriangle as AlertTriangle,
+} from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -54,12 +59,7 @@ export default async function BlockedPage() {
           <Card className="rounded-2xl w-full px-8 py-10">
             <CardHeader className="p-0 pb-6 text-center">
               <div className="flex justify-center mb-4">
-                <FeaturedIcon
-                  size="xl"
-                  Icon={Lock}
-                  variant="errorBorderedLight"
-                  rounded
-                />
+                <FeaturedIcon size="lg" Icon={Lock} tone="error" />
               </div>
               <CardTitle>Conta Suspensa</CardTitle>
             </CardHeader>
@@ -71,7 +71,7 @@ export default async function BlockedPage() {
               </p>
 
               <Alert variant="error">
-                <AlertTriangle className="h-4 w-4" />
+                <AlertTriangle aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Sua assinatura possui pagamentos pendentes. Após a confirmação
                   do pagamento, o acesso será restaurado.

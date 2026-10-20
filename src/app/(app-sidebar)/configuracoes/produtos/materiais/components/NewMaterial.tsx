@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -259,10 +258,6 @@ export function NewMaterialModal({ material }: Props) {
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={isEdit ? IconPencil : IconPlus}
-            />
             <DialogTitle>
               {isEdit ? 'Editar material' : 'Novo material'}
             </DialogTitle>

@@ -5,7 +5,6 @@ import Link from 'next/link'
 
 // UI
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import {
   Card,
   CardHeader,
@@ -38,6 +37,7 @@ import {
   IconBuildingFactory,
   IconBuildingWarehouse,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export function CostSummaryView() {
   const { data, isLoading } = useQuery({
@@ -51,28 +51,24 @@ export function CostSummaryView() {
   const origins = [
     {
       icon: IconReceipt,
-      variant: 'neutralLight',
       label: 'Despesas administrativas',
       value: summary?.byOrigin.adminExpenses,
       href: '/base-de-custos/despesas-administrativas',
     },
     {
       icon: IconUsers,
-      variant: 'blueLight',
       label: 'Mão de obra',
       value: summary?.byOrigin.labor,
       href: '/base-de-custos/mao-de-obra',
     },
     {
       icon: IconBuildingWarehouse,
-      variant: 'indigoLight',
       label: 'Custos de patrimônios',
       value: summary?.byOrigin.assets,
       href: '/base-de-custos/patrimonios',
     },
     {
       icon: IconTrendingDown,
-      variant: 'neutralLight',
       label: 'Depreciação',
       value: summary?.byOrigin.depreciation,
       href: '/base-de-custos/patrimonios',
@@ -130,11 +126,7 @@ export function CostSummaryView() {
         {origins.map((origin) => (
           <Link key={origin.label} href={origin.href}>
             <Card className="p-6 flex items-center gap-3 rounded-xl h-full hover:border-gray-300">
-              <FeaturedIcon
-                size="md"
-                variant={origin.variant as FeaturedIconProps['variant']}
-                Icon={origin.icon}
-              />
+              <Icon icon={origin.icon} size="md" className="text-gray-600" />
               <div className="flex flex-col min-w-0">
                 <span className="type-kpi-label truncate">{origin.label}</span>
                 <span className="type-kpi-value">
@@ -159,10 +151,10 @@ export function CostSummaryView() {
           </CardHeader>
           <CardContent className="space-y-4 px-6 pb-6">
             <div className="flex items-center gap-3">
-              <FeaturedIcon
+              <Icon
+                icon={IconBuildingFactory}
                 size="md"
-                variant="successLight"
-                Icon={IconBuildingFactory}
+                className="text-gray-600"
               />
               <div>
                 <p className="type-kpi-label">Estrutura produtiva</p>
@@ -172,11 +164,7 @@ export function CostSummaryView() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <FeaturedIcon
-                size="md"
-                variant="neutralLight"
-                Icon={IconBuilding}
-              />
+              <Icon icon={IconBuilding} size="md" className="text-gray-600" />
               <div>
                 <p className="type-kpi-label">Estrutura administrativa</p>
                 <p className="type-kpi-value">

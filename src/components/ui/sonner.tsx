@@ -5,11 +5,12 @@ import { Toaster as Sonner } from 'sonner'
 
 import {
   IconLoader,
-  IconXboxXFilled,
+  IconCircleXFilled,
   IconInfoCircleFilled,
-  IconAlertCircleFilled,
+  IconAlertTriangleFilled,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
@@ -34,11 +35,27 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       {...props}
       icons={{
-        loading: <IconLoader size={16} className="animate-spin" />,
-        success: <IconCircleCheckFilled size={16} className="text-success" />,
-        warning: <IconAlertCircleFilled size={16} className="text-warning" />,
-        error: <IconXboxXFilled size={16} className="text-error" />,
-        info: <IconInfoCircleFilled size={16} className="text-blue" />,
+        loading: <Icon icon={IconLoader} size="sm" className="animate-spin" />,
+        success: (
+          <Icon
+            icon={IconCircleCheckFilled}
+            size="sm"
+            className="text-success"
+          />
+        ),
+        warning: (
+          <Icon
+            icon={IconAlertTriangleFilled}
+            size="sm"
+            className="text-warning"
+          />
+        ),
+        error: (
+          <Icon icon={IconCircleXFilled} size="sm" className="text-error" />
+        ),
+        info: (
+          <Icon icon={IconInfoCircleFilled} size="sm" className="text-blue" />
+        ),
       }}
       expand={true}
       visibleToasts={3}

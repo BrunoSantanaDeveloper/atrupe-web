@@ -45,6 +45,7 @@ import {
 
 // Icons
 import { IconCopy, IconArrowRight, IconCircleCheck } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -129,7 +130,6 @@ export function DuplicateDialog(props: Props) {
         <DialogContent className="sm:max-w-[695px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
               <DialogTitle>Duplicar orçamento</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>
@@ -199,10 +199,9 @@ export function DuplicateDialog(props: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconCircleCheck}
-              rounded
               size="lg"
-              variant="successBorderedLight"
-              className="mx-auto mb-2"
+              tone="success"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Orçamento duplicado</AlertDialogTitle>
             <AlertDialogDescription>
@@ -216,7 +215,11 @@ export function DuplicateDialog(props: Props) {
             <Button asChild type="button">
               <Link href={`/vendas/orcamentos/${newQuotationId}`}>
                 Ver orçamento
-                <IconArrowRight size={24} className="ml-auto" />
+                <IconArrowRight
+                  aria-hidden
+                  size={ICON_SIZE.md}
+                  className="ml-auto"
+                />
               </Link>
             </Button>
           </AlertDialogFooter>

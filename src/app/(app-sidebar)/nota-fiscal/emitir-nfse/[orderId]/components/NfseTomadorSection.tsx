@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconUserCog, IconAlertTriangle, IconPencil } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 
@@ -53,7 +54,7 @@ export function NfseTomadorSection({
         <AccordionItem value="tomador" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUserCog} />
+              <FeaturedIcon tone="neutral" Icon={IconUserCog} />
               <CardTitle>Tomador do Serviço</CardTitle>
             </div>
             <div className="flex gap-2">
@@ -159,7 +160,7 @@ export function NfseTomadorSection({
               {!client?.address?.[0] && (
                 <div className="mt-4 pt-4 border-t border-gray-100">
                   <div className="flex items-center gap-2 text-warning-600">
-                    <IconAlertTriangle size={16} />
+                    <IconAlertTriangle aria-hidden size={ICON_SIZE.sm} />
                     <p className="text-sm">
                       Tomador sem endereço cadastrado. O endereço pode ser
                       exigido pela prefeitura.

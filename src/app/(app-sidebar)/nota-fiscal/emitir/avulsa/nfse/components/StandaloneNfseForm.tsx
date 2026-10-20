@@ -49,6 +49,7 @@ import {
   IconAlertTriangle,
   IconAlertTriangleFilled,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
@@ -580,7 +581,7 @@ export function StandaloneNfseForm() {
         <div className="space-y-6 pb-10">
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
               <div>
                 <p className="font-semibold text-error-700">
                   Erro ao carregar configurações fiscais
@@ -616,7 +617,7 @@ export function StandaloneNfseForm() {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão avulsa"
               >
-                <IconArrowLeft size={20} />
+                <IconArrowLeft aria-hidden size={ICON_SIZE.sm} />
               </Button>
               <div className="flex items-center gap-2">
                 <h1 className="type-page-title">Nota Fiscal Avulsa — NFS-e</h1>
@@ -637,14 +638,14 @@ export function StandaloneNfseForm() {
             <CustomButton
               icon={IconX}
               title="Cancelar digitação"
-              iconVariant="errorLight"
+              iconTone="error"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
                 title="Pré-visualizar"
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing}
                 isLoading={isPreviewing}
@@ -652,7 +653,7 @@ export function StandaloneNfseForm() {
               <CustomButton
                 icon={IconCircleCheck}
                 title="Emitir NFS-e"
-                iconVariant="successLight"
+                iconTone="success"
                 onClick={handleEmit}
                 disabled={isEmitting}
                 isLoading={isEmitting}
@@ -673,7 +674,11 @@ export function StandaloneNfseForm() {
         {isHomologacao && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
-              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              <IconAlertTriangleFilled
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-warning-500"
+              />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>

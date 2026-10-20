@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -37,12 +36,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
 // Icons
-import {
-  IconPencil,
-  IconUserCheck,
-  IconFileText,
-  IconPlus,
-} from '@tabler/icons-react'
+import { IconUserCheck, IconFileText, IconPlus } from '@tabler/icons-react'
 
 // Masks / utils
 import {
@@ -514,7 +508,6 @@ export function InvoiceRecipientEditDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <span>Editar destinatário</span>
             </div>
           </DialogTitle>

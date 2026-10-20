@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Icon } from '@/components/ui/icon'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Card,
@@ -100,7 +101,7 @@ export function ProductionCalendarCard({
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <FeaturedIcon variant="neutralOutline" Icon={IconCalendarTime} />
+          <FeaturedIcon tone="neutral" Icon={IconCalendarTime} />
           <div>
             <CardTitle>Expediente</CardTitle>
             <CardDescription>
@@ -197,7 +198,7 @@ export function ProductionCalendarCard({
                       })
                     }
                   >
-                    <IconX className="size-3" />
+                    <Icon icon={IconX} size="sm" />
                   </button>
                 )}
               </Badge>

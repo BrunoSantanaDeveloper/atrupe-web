@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { IconArrowLeft } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { Logo } from '@/components/Logo'
 
 interface Props {
@@ -26,11 +27,11 @@ export function CheckoutHeader({ title, backHref, onBack }: Props) {
               aria-label="Voltar"
               className={BACK_CLASS}
             >
-              <IconArrowLeft className="size-5" />
+              <Icon icon={IconArrowLeft} size="md" />
             </button>
           ) : (
             <Link href={backHref} aria-label="Voltar" className={BACK_CLASS}>
-              <IconArrowLeft className="size-5" />
+              <Icon icon={IconArrowLeft} size="md" />
             </Link>
           )}
           <h1 className="truncate text-lg font-semibold leading-7 text-gray-900">

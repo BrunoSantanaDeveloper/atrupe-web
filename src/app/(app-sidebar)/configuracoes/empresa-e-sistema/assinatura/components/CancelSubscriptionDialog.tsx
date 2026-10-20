@@ -18,11 +18,10 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { toast } from 'sonner'
 
 // Icons
-import { IconAlertTriangle, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Actions
 import { deleteWithBody } from '@/actions/_cruds'
@@ -116,11 +115,6 @@ export function CancelSubscriptionDialog({
             <DialogHeader>
               <DialogTitle>
                 <div className="flex items-center gap-4">
-                  <FeaturedIcon
-                    variant="orangeBorderedLight"
-                    Icon={IconAlertTriangle}
-                    rounded
-                  />
                   <span>Cancelar assinatura</span>
                 </div>
               </DialogTitle>
@@ -185,12 +179,6 @@ export function CancelSubscriptionDialog({
             <DialogHeader>
               <DialogTitle>
                 <div className="flex items-center gap-4">
-                  <FeaturedIcon
-                    variant="errorBorderedLight"
-                    Icon={IconAlertTriangle}
-                    rounded
-                    size="lg"
-                  />
                   <span>Confirmar cancelamento</span>
                 </div>
               </DialogTitle>

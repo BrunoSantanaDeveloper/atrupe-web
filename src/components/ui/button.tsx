@@ -4,10 +4,12 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-import { LoaderCircle } from 'lucide-react'
+import { IconLoader2 } from '@tabler/icons-react'
+
+import { ICON_SIZE, ICON_STROKE, type IconSize } from './icon'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold ring-offset-white transition-[color,background-color,border-color,box-shadow,opacity] duration-base ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled-idle:bg-gray-100 disabled-idle:text-gray-300 disabled-idle:border-gray-200',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap [&_svg]:shrink-0 font-semibold ring-offset-white transition-[color,background-color,border-color,box-shadow,opacity] duration-base ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled-idle:bg-gray-100 disabled-idle:text-gray-300 disabled-idle:border-gray-200',
   {
     variants: {
       variant: {
@@ -92,16 +94,18 @@ const buttonVariants = cva(
           'bg-white/90 backdrop-blur text-gray-800 border border-gray-200 shadow-sm hover:bg-white/100 hover:border-gray-300 active:bg-gray-50',
       },
       size: {
-        default: 'h-10 px-4 text-sm',
-        md: 'h-10 px-3 text-sm',
-        sm: 'h-8 px-2 text-sm',
-        lg: 'h-14 px-6 text-sm',
-        icon: 'h-10 w-10 p-2.5',
-        iconMd: 'h-10 w-10 p-2',
-        iconSm: 'h-8 min-w-8 max-w-8 p-1.5',
-        iconXs: 'h-6 min-w-6 max-w-6 p-1',
-        iconXxs: 'h-4 min-w-4 max-w-4 p-0.5',
-        iconLg: 'h-14 min-w-14',
+        // O ícone acompanha o tamanho do botão (16 no pequeno, 20 nos demais),
+        // inclusive quando vem como filho: `[&_svg]` vence h-*/w-* da tela
+        default: 'h-10 px-4 text-sm [&_svg]:size-icon-md',
+        md: 'h-10 px-3 text-sm [&_svg]:size-icon-md',
+        sm: 'h-8 px-2 text-sm [&_svg]:size-icon-sm',
+        lg: 'h-14 px-6 text-sm [&_svg]:size-icon-md',
+        icon: 'h-10 w-10 p-2 [&_svg]:size-icon-md',
+        iconMd: 'h-10 w-10 p-2 [&_svg]:size-icon-md',
+        iconSm: 'h-8 min-w-8 max-w-8 p-2 [&_svg]:size-icon-sm',
+        iconXs: 'h-6 min-w-6 max-w-6 p-1 [&_svg]:size-icon-sm',
+        iconXxs: 'h-4 min-w-4 max-w-4 p-0 [&_svg]:size-icon-sm',
+        iconLg: 'h-14 min-w-14 [&_svg]:size-icon-lg',
         none: 'p-0',
       },
       rounded: {
@@ -119,16 +123,25 @@ const buttonVariants = cva(
 
 interface IconProps {
   LeftIcon?: React.ElementType
-  leftIconSize?: number
   RightIcon?: React.ElementType
-  rightIconSize?: number
 }
 
 interface IconRefProps {
   LeftIcon?: never
-  leftIconSize?: never
   RightIcon?: never
-  rightIconSize?: number
+}
+
+type ButtonSize = VariantProps<typeof buttonVariants>['size']
+
+// Tamanho do ícone pelo tamanho do botão (design/openspec/changes/icones)
+function iconSizeFor(size: ButtonSize): IconSize {
+  if (size === 'iconLg') return 'lg'
+  return size === 'sm' ||
+    size === 'iconSm' ||
+    size === 'iconXs' ||
+    size === 'iconXxs'
+    ? 'sm'
+    : 'md'
 }
 
 export interface ButtonProps
@@ -139,15 +152,6 @@ export interface ButtonProps
 }
 
 export type ButtonIconProps = IconProps | IconRefProps
-
-// Spinner proporcional ao botão
-const SPINNER_SIZE: Partial<Record<NonNullable<ButtonProps['size']>, number>> =
-  {
-    sm: 16,
-    iconSm: 16,
-    iconXs: 14,
-    iconXxs: 12,
-  }
 
 const Button = React.forwardRef<
   HTMLButtonElement,
@@ -163,12 +167,15 @@ const Button = React.forwardRef<
       LeftIcon,
       RightIcon,
       isLoading,
-      leftIconSize = 24,
-      rightIconSize = 24,
       ...props
     },
     ref,
   ) => {
+    const iconSize = iconSizeFor(size)
+    const glyph = {
+      size: ICON_SIZE[iconSize],
+      stroke: ICON_STROKE[iconSize],
+    }
     // https://enhanced-button.vercel.app/
     if (asChild) {
       // O filho único recebe as props (Slot), então o conteúdo não pode ser
@@ -181,23 +188,17 @@ const Button = React.forwardRef<
           {...props}
           disabled={isLoading || props.disabled}
         >
-          {!isLoading && LeftIcon && (
-            <LeftIcon aria-hidden="true" size={leftIconSize} />
-          )}
+          {!isLoading && LeftIcon && <LeftIcon aria-hidden="true" {...glyph} />}
           <Slottable>{props.children}</Slottable>
           {isLoading ? (
-            <LoaderCircle
+            <IconLoader2
               aria-hidden="true"
-              size={rightIconSize}
+              {...glyph}
               className="animate-spin"
             />
           ) : (
             RightIcon && (
-              <RightIcon
-                aria-hidden="true"
-                size={rightIconSize}
-                className="ml-auto"
-              />
+              <RightIcon aria-hidden="true" {...glyph} className="ml-auto" />
             )
           )}
         </Comp>
@@ -221,21 +222,17 @@ const Button = React.forwardRef<
         aria-busy={isLoading || undefined}
       >
         <span className={cn('contents', isLoading && 'invisible')}>
-          {LeftIcon && <LeftIcon aria-hidden="true" size={leftIconSize} />}
+          {LeftIcon && <LeftIcon aria-hidden="true" {...glyph} />}
           {props.children}
           {RightIcon && (
-            <RightIcon
-              aria-hidden="true"
-              size={rightIconSize}
-              className="ml-auto"
-            />
+            <RightIcon aria-hidden="true" {...glyph} className="ml-auto" />
           )}
         </span>
         {isLoading && (
           <span className="absolute inset-0 flex items-center justify-center">
-            <LoaderCircle
+            <IconLoader2
               aria-hidden="true"
-              size={SPINNER_SIZE[size ?? 'default'] ?? 20}
+              {...glyph}
               className="animate-spin"
             />
           </span>

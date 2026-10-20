@@ -6,7 +6,6 @@ import { useState } from 'react'
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Table,
   TableRow,
@@ -125,7 +124,6 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[720px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCurrencyReal} />
             <DialogTitle>Custo e preço de {material?.name}</DialogTitle>
             <DialogDescription className="sr-only">
               Custo e preço de venda de cada variação do material.

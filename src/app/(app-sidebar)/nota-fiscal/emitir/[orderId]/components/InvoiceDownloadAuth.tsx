@@ -23,6 +23,7 @@ import {
   IconTrash,
   IconId,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
@@ -77,7 +78,7 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
         <AccordionItem value="auth" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCloudDownload} />
+              <FeaturedIcon tone="neutral" Icon={IconCloudDownload} />
               <CardTitle>Autorização de download (autXML)</CardTitle>
             </div>
             <div>
@@ -135,7 +136,11 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
                     className="flex items-center justify-between p-3 border rounded-lg bg-white"
                   >
                     <div className="flex items-center gap-3">
-                      <IconId className="text-gray-400" size={20} />
+                      <IconId
+                        aria-hidden
+                        className="text-gray-400"
+                        size={ICON_SIZE.md}
+                      />
                       <span className="font-medium text-gray-700">
                         {formatDoc(doc)}
                       </span>
@@ -147,7 +152,7 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
                       onClick={() => removeDoc(idx)}
                       aria-label="Remover autorização"
                     >
-                      <IconTrash size={16} />
+                      <IconTrash aria-hidden size={ICON_SIZE.sm} />
                     </Button>
                   </div>
                 ))}

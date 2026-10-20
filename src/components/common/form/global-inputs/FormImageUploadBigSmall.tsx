@@ -33,6 +33,7 @@ import {
   IconTrash,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Omitted: import noImage from '@/assets/images/image-placeholder.svg'
 // since it's not strictly needed if we don't use it in this layout
@@ -177,13 +178,17 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                             />
                           ) : (
                             <div className="h-20 min-w-32 max-w-32 border border-brand-300 rounded bg-brand-50 animate-pulse flex items-center justify-center">
-                              <IconCloudUpload className="text-brand-500 opacity-50" />
+                              <IconCloudUpload
+                                aria-hidden
+                                className="text-brand-500 opacity-50"
+                              />
                             </div>
                           )}
                           <div className="flex w-full flex-col justify-between">
                             <div className="flex items-center gap-2">
                               <IconCircleCheckFilled
-                                size={16}
+                                aria-hidden
+                                size={ICON_SIZE.sm}
                                 className={
                                   previewUrl
                                     ? 'text-success-600'
@@ -227,7 +232,7 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                               disabled={isLoading}
                             >
                               <IconTrash
-                                className="size-5"
+                                size={ICON_SIZE.md}
                                 aria-hidden="true"
                               />
                               <span className="sr-only">Remover arquivo</span>
@@ -243,8 +248,7 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                       <FeaturedIcon
                         Icon={IconCloudUpload}
                         size="lg"
-                        variant="neutralBorderedLight"
-                        rounded
+                        tone="neutral"
                       />
                       <div className="flex flex-col gap-1 text-gray text-sm mt-3 items-center">
                         <p>

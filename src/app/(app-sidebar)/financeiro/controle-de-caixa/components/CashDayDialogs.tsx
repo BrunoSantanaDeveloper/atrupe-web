@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import {
   MoneyInput,
@@ -48,15 +47,7 @@ import { useTransactionCategory } from '@/hooks/queries/useTransactionCategory'
 import { toast } from 'sonner'
 
 // Icons
-import {
-  type Icon,
-  IconLock,
-  IconLockOpen,
-  IconRestore,
-  IconTrendingUp,
-  IconTrendingDown,
-  IconArrowsExchange,
-} from '@tabler/icons-react'
+import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -78,8 +69,6 @@ function Shell({
   onOpenChange,
   title,
   description,
-  icon,
-  iconVariant = 'neutralOutline',
   children,
   footer,
   wide,
@@ -88,8 +77,6 @@ function Shell({
   onOpenChange: (open: boolean) => void
   title: string
   description?: string
-  icon: Icon
-  iconVariant?: 'neutralOutline' | 'success' | 'error'
   children: React.ReactNode
   footer: React.ReactNode
   wide?: boolean
@@ -99,7 +86,6 @@ function Shell({
       <DialogContent className={wide ? 'sm:max-w-[620px]' : 'sm:max-w-[480px]'}>
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant={iconVariant} Icon={icon} />
             <div>
               <DialogTitle>{title}</DialogTitle>
               {description && (
@@ -164,7 +150,6 @@ export function OpenDayDialog({
       onOpenChange={onOpenChange}
       title="Abrir caixa"
       description="A abertura é o saldo com que o caixa anterior desta conta fechou."
-      icon={IconLockOpen}
       footer={
         <Button
           type="button"
@@ -268,8 +253,6 @@ export function AdjustmentDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={`Ajuste · ${account.name}`}
-      icon={direction === 'in' ? IconTrendingUp : IconTrendingDown}
-      iconVariant={direction === 'in' ? 'success' : 'error'}
       description={`Caixa de ${brDate(day.date)}. Para corrigir um lançamento, prefira estorná-lo: o ajuste é para o que não tem lançamento de origem.`}
       footer={
         <Button
@@ -422,7 +405,6 @@ export function CloseDayDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={`Fechar ${account.name} · ${brDate(day.date)}`}
-      icon={IconLock}
       description={
         isCash
           ? blind
@@ -521,7 +503,6 @@ export function ReopenDayDialog({
       open={open}
       onOpenChange={onOpenChange}
       title={`Reabrir ${account.name} · ${brDate(day.date)}`}
-      icon={IconRestore}
       description="O dia volta a aceitar lançamentos e a conferência feita no fechamento é desfeita: ele precisará ser conferido e fechado de novo."
       footer={
         <Button
@@ -622,7 +603,6 @@ export function TransferDialog({
       open={open}
       onOpenChange={onOpenChange}
       title="Transferência entre contas"
-      icon={IconArrowsExchange}
       description="Sai de uma conta e entra na outra no mesmo lançamento. Não é receita nem despesa: não mexe no resultado."
       wide
       footer={

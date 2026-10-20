@@ -31,13 +31,7 @@ import { ClientContactSelect } from '@/components/common/form/global-inputs/Clie
 import { SelectContactSourceField } from '@/components/common/form/global-inputs/ContactSourcesSelectField'
 
 // Icons
-import {
-  IconPlus,
-  IconArrowRight,
-  IconReportMoney,
-  IconBolt,
-} from '@tabler/icons-react'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { IconPlus, IconArrowRight, IconBolt } from '@tabler/icons-react'
 
 // Hooks
 import { useForm, type FieldErrors } from 'react-hook-form'
@@ -259,7 +253,6 @@ export function NewQuotationModal({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
                 {isQuickSale
                   ? !editMode
                     ? 'Nova venda rápida'

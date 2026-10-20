@@ -172,7 +172,7 @@ function LogoUpload({
             className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-md hover:bg-gray-200"
             aria-label="Remover imagem"
           >
-            <FeaturedIcon variant="neutralLight" Icon={IconTrash} />
+            <FeaturedIcon tone="neutral" Icon={IconTrash} />
           </Button>
         </div>
       )}

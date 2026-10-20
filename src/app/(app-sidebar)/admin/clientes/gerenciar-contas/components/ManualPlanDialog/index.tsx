@@ -19,7 +19,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -39,7 +38,7 @@ import { formatCurrencyToBrl, maskCpfCnpj } from '@/lib/utils'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconGift, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -126,7 +125,6 @@ export function ManualPlanDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconGift} />
               <span>Plano manual, sem cobrança</span>
             </div>
           </DialogTitle>

@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Form Imports
@@ -20,7 +19,7 @@ import { schema, type FormType } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icon Imports
-import { IconMessage, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 import { useEffect } from 'react'
 
 // Third-party
@@ -80,7 +79,6 @@ export function DeliveryScheduleNotesDialog({ open, rowData, setOpen }: Props) {
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
             <DialogTitle>Observação</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

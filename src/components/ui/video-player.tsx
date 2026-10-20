@@ -3,7 +3,11 @@
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Play, Pause } from 'lucide-react'
+import {
+  IconPlayerPlay as Play,
+  IconPlayerPause as Pause,
+} from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 const videoPlayerVariants = cva(
   'relative overflow-hidden rounded-lg bg-black group transition-all duration-300 isolate',
@@ -147,6 +151,7 @@ export const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
             className={cn(centerPlayButtonVariants({ size }))}
           >
             <Play
+              aria-hidden
               className={cn(
                 'fill-current ml-1',
                 size === 'xs' || size === 'sm' ? 'w-5 h-5' : 'w-8 h-8',
@@ -199,7 +204,7 @@ export const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
               onClick={handlePlayToggle}
               className="text-white hover:text-white/80 transition-colors mr-3 focus:outline-none"
             >
-              <Pause className="w-5 h-5 fill-current" />
+              <Icon icon={Pause} size="md" className="fill-current" />
             </button>
           )}
 

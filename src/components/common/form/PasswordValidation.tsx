@@ -22,9 +22,10 @@ export function PasswordValidation({ password }: { password: string }) {
     <div className="space-y-1 text-sm">
       <div className="flex items-center gap-1 text-gray">
         <IconComponent
+          size="sm"
           icon={IconCircleCheckFilled}
           className={cn(
-            'size-3 ml-0.5',
+            'ml-0.5',
             validations.minLength ? 'text-success' : 'text-gray-400',
           )}
         />
@@ -32,9 +33,10 @@ export function PasswordValidation({ password }: { password: string }) {
       </div>
       <div className="flex items-center gap-1 text-gray">
         <IconComponent
+          size="sm"
           icon={IconCircleCheckFilled}
           className={cn(
-            'size-3 ml-0.5',
+            'ml-0.5',
             validations.upperCase ? 'text-success' : 'text-gray-400',
           )}
         />
@@ -42,9 +44,10 @@ export function PasswordValidation({ password }: { password: string }) {
       </div>
       <div className="flex items-center gap-1 text-gray">
         <IconComponent
+          size="sm"
           icon={IconCircleCheckFilled}
           className={cn(
-            'size-3 ml-0.5',
+            'ml-0.5',
             validations.lowerCase ? 'text-success' : 'text-gray-400',
           )}
         />
@@ -52,9 +55,10 @@ export function PasswordValidation({ password }: { password: string }) {
       </div>
       <div className="flex items-center gap-1 text-gray">
         <IconComponent
+          size="sm"
           icon={IconCircleCheckFilled}
           className={cn(
-            'size-3 ml-0.5',
+            'ml-0.5',
             validations.number ? 'text-success' : 'text-gray-400',
           )}
         />
@@ -62,9 +66,10 @@ export function PasswordValidation({ password }: { password: string }) {
       </div>
       <div className="flex items-center gap-1 text-gray">
         <IconComponent
+          size="sm"
           icon={IconCircleCheckFilled}
           className={cn(
-            'size-3 ml-0.5',
+            'ml-0.5',
             validations.special ? 'text-success' : 'text-gray-400',
           )}
         />

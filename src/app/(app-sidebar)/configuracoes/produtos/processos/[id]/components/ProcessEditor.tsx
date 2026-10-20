@@ -126,6 +126,7 @@ import {
   IconCircleCheck,
   IconListDetails,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -857,7 +858,7 @@ export function ProcessEditor({
                           {block.name}
                         </span>
                         <IconPencil
-                          size={14}
+                          size={ICON_SIZE.sm}
                           aria-hidden="true"
                           className="text-gray opacity-0 transition-opacity group-hover:opacity-100"
                         />
@@ -1340,7 +1341,7 @@ export function ProcessEditor({
           <Card className="sticky bottom-0 z-10">
             <CardContent className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
               <p className="inline-flex items-center gap-1.5 text-sm text-gray">
-                <IconClock size={16} aria-hidden="true" />
+                <IconClock size={ICON_SIZE.sm} aria-hidden="true" />
                 {metaChanged
                   ? 'O card Processo ainda não foi salvo. As linhas já estão gravadas.'
                   : savedAt

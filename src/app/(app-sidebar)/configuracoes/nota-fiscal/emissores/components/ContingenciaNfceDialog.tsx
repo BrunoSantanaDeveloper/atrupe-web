@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { IconAlertTriangle } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { createItemNew } from '@/actions/_cruds'
 
@@ -125,7 +126,11 @@ export function ContingenciaNfceDialog({
           {!desativando && (
             <>
               <div className="flex gap-2 rounded-md border border-amber-200 bg-amber-50 p-3">
-                <IconAlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+                <Icon
+                  icon={IconAlertTriangle}
+                  size="sm"
+                  className="text-amber-600 shrink-0 mt-0.5"
+                />
                 <div className="text-xs text-amber-900 space-y-1">
                   <p className="font-medium">
                     Use apenas quando a SEFAZ estiver indisponível.

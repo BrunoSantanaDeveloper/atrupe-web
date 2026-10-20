@@ -14,7 +14,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 
 // Components
@@ -35,12 +34,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { schema, type FormType } from './schema'
 
 // Icons
-import {
-  IconBox,
-  IconClock,
-  IconPencil,
-  IconCircleCheck,
-} from '@tabler/icons-react'
+import { IconClock, IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -238,7 +233,6 @@ export function DeliveryDialog({ quotationData }: Props) {
       <DialogContent className="sm:max-w-[695px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
             <DialogTitle>Editar entrega</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>
@@ -315,7 +309,7 @@ export function DeliveryDialog({ quotationData }: Props) {
                   placeholder="00:00"
                   maxLength={5}
                   inputMode="numeric"
-                  endAdornment={<IconClock className="size-4" />}
+                  endAdornment={<IconClock aria-hidden size={ICON_SIZE.sm} />}
                   width="w-full"
                   additionalOnChange={(value) => {
                     setValue('deliveryTime', maskTime(String(value)))

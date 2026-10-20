@@ -17,7 +17,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -46,6 +45,7 @@ import {
   IconPlus,
   IconCalendarMonth,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Action
 import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
@@ -183,7 +183,6 @@ function NewFixedExpenseModal({
               <DialogHeader>
                 <DialogTitle>
                   <div className="flex items-center gap-4">
-                    <FeaturedIcon variant="error" Icon={IconPlus} />
                     <span>
                       {editMode ? 'Editar despesa fixa' : 'Nova despesa fixa'}
                     </span>
@@ -239,7 +238,9 @@ function NewFixedExpenseModal({
                       min={1}
                       max={31}
                       width="flex-[1_0_300px]"
-                      startAdornment={<IconCalendarMonth size={20} />}
+                      startAdornment={
+                        <IconCalendarMonth aria-hidden size={ICON_SIZE.md} />
+                      }
                     />
                   </div>
                 </DialogBody>

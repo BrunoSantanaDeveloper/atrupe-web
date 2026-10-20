@@ -39,7 +39,6 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { EmptyState } from '@/components/ui/empty-state'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -103,7 +102,6 @@ import {
   IconLink,
   IconTrash,
   IconUnlink,
-  IconPuzzle,
   IconReplace,
   IconPlus,
 } from '@tabler/icons-react'
@@ -390,7 +388,6 @@ export function QuotationComposeModal({
         <DialogContent className="sm:max-w-[90%] lg:max-w-[1040px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPuzzle} />
               <div>
                 <DialogTitle className="flex flex-wrap items-center gap-2">
                   {editing ? 'Editar composição' : 'Composição'}

@@ -10,11 +10,7 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
-
-// Icon Imports
-import { IconHistory } from '@tabler/icons-react'
 
 // Type Imports
 import { Timeline } from '@/components/common/Timeline'
@@ -53,7 +49,6 @@ export function UserHistoryDialog(props: Props) {
       <DialogContent className="sm:max-w-[692px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
             <DialogTitle>Histórico</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

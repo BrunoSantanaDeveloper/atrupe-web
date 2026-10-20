@@ -13,6 +13,7 @@ import {
   IconCalendar,
   IconTrash,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // UI Components
 import { Card, CardContent } from '@/components/ui/card'
@@ -32,6 +33,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // Actions
 import { getData, createItemNew, updateItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Coupon {
   id: string
@@ -286,7 +288,7 @@ export default function AdminCouponsPage() {
 
       <div className="flex justify-between items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2 max-w-sm w-full bg-white rounded-lg border border-gray-200 px-3 py-1.5">
-          <IconTicket size={18} className="text-gray-400" />
+          <Icon icon={IconTicket} size="md" className="text-gray-400" />
           <input
             type="text"
             placeholder="Buscar por código ou descrição..."
@@ -301,7 +303,7 @@ export default function AdminCouponsPage() {
           onClick={handleOpenCreateDialog}
           className="flex items-center gap-1.5 h-10 px-4 text-sm font-semibold"
         >
-          <IconPlus size={16} />
+          <Icon icon={IconPlus} size="md" />
           Criar Cupom
         </Button>
       </div>
@@ -316,7 +318,12 @@ export default function AdminCouponsPage() {
             </div>
           ) : coupons.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500">
-              <IconTicket size={48} className="text-gray-300 mb-2" />
+              <FeaturedIcon
+                tone="neutral"
+                size="lg"
+                Icon={IconTicket}
+                className="mb-2"
+              />
               <p className="font-semibold text-gray-700">
                 Nenhum cupom cadastrado
               </p>
@@ -404,7 +411,11 @@ export default function AdminCouponsPage() {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1 text-xs">
-                          <IconCalendar size={14} className="text-gray-400" />
+                          <Icon
+                            icon={IconCalendar}
+                            size="sm"
+                            className="text-gray-400"
+                          />
                           <span>
                             {coupon.validFrom
                               ? new Date(coupon.validFrom).toLocaleDateString()
@@ -430,12 +441,12 @@ export default function AdminCouponsPage() {
                       <td className="p-4">
                         {coupon.isActive && !isExpired ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                            <IconCheck size={12} className="stroke-[3px]" />
+                            <Icon icon={IconCheck} size="sm" />
                             Ativo
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded-full">
-                            <IconX size={12} className="stroke-[3px]" />
+                            <Icon icon={IconX} size="sm" />
                             {isExpired ? 'Expirado' : 'Inativo'}
                           </span>
                         )}
@@ -448,7 +459,7 @@ export default function AdminCouponsPage() {
                             onClick={() => handleOpenUsages(coupon)}
                             title="Ver usos"
                           >
-                            <IconEye size={18} />
+                            <Icon icon={IconEye} size="md" />
                           </button>
                           <button
                             type="button"
@@ -456,7 +467,7 @@ export default function AdminCouponsPage() {
                             onClick={() => handleOpenEditDialog(coupon)}
                             title="Editar cupom"
                           >
-                            <IconEdit size={18} />
+                            <Icon icon={IconEdit} size="md" />
                           </button>
                           {coupon.isActive && (
                             <button
@@ -465,7 +476,7 @@ export default function AdminCouponsPage() {
                               onClick={() => handleDeactivateCoupon(coupon)}
                               title="Desativar cupom"
                             >
-                              <IconTrash size={18} />
+                              <Icon icon={IconTrash} size="md" />
                             </button>
                           )}
                         </div>
@@ -484,7 +495,7 @@ export default function AdminCouponsPage() {
         <DialogContent className="sm:max-w-[650px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2.5">
-              <IconTicket size={22} className="text-[#FF4201]" />
+              <Icon icon={IconTicket} size="lg" className="text-[#FF4201]" />
               <span>{editingCoupon ? 'Editar Cupom' : 'Criar Novo Cupom'}</span>
             </DialogTitle>
           </DialogHeader>
@@ -750,7 +761,7 @@ export default function AdminCouponsPage() {
         <DialogContent className="sm:max-w-[750px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <IconEye size={22} className="text-[#FF4201]" />
+              <Icon icon={IconEye} size="lg" className="text-[#FF4201]" />
               <span>
                 Histórico de Usos do Cupom:{' '}
                 <strong>{selectedCouponForUsages?.code}</strong>
@@ -767,7 +778,12 @@ export default function AdminCouponsPage() {
               </div>
             ) : usages.length === 0 ? (
               <div className="text-center p-8 text-gray-500">
-                <IconTicket size={40} className="text-gray-300 mb-2 mx-auto" />
+                <FeaturedIcon
+                  tone="neutral"
+                  size="lg"
+                  Icon={IconTicket}
+                  className="mb-2 mx-auto flex"
+                />
                 <p className="font-semibold text-gray-600">
                   Nenhum uso registrado
                 </p>

@@ -45,6 +45,7 @@ import {
   IconAlertTriangleFilled,
   IconBan,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -576,7 +577,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         title: 'Erro na emissão da NFS-e',
         description: message,
         Icon: IconBan,
-        iconVariant: 'error',
+        iconTone: 'error',
         confirmLabel: 'Entendi',
         cancelLabel: '',
         onConfirm: () => {},
@@ -634,7 +635,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           <Topbar title="Emissão de NFS-e" previousPage="/nota-fiscal/emitir" />
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
               <div>
                 <p className="font-semibold text-error-700">
                   Erro ao carregar dados
@@ -758,7 +759,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão"
               >
-                <IconArrowLeft size={20} />
+                <IconArrowLeft aria-hidden size={ICON_SIZE.sm} />
               </Button>
               <div className="flex items-center gap-2">
                 <h1 className="type-page-title">
@@ -784,14 +785,14 @@ export function IssueNfseForm({ id, orderIds }: Props) {
             <CustomButton
               icon={IconX}
               title="Cancelar digitação"
-              iconVariant="errorLight"
+              iconTone="error"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
                 title="Pré-visualizar"
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing}
                 isLoading={isPreviewing}
@@ -801,7 +802,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                 title={
                   isConsolidated ? 'Emitir NFS-e Consolidada' : 'Emitir NFS-e'
                 }
-                iconVariant="successLight"
+                iconTone="success"
                 onClick={handleEmit}
                 disabled={isEmitting}
                 isLoading={isEmitting}
@@ -821,7 +822,11 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         {isHomologacao && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
-              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              <IconAlertTriangleFilled
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-warning-500"
+              />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>
@@ -831,7 +836,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         {conferencia && conferencia.exigeConfirmacao && (
           <div className="rounded-lg border border-warning-200 bg-warning-50 p-4 space-y-3">
             <div className="flex items-start gap-3">
-              <FeaturedIcon variant="warningLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="warning" Icon={IconAlertTriangle} />
               <div className="flex-1">
                 <p className="text-sm font-semibold text-warning-800">
                   Confira a classificação fiscal antes de emitir

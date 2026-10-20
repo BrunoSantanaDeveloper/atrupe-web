@@ -9,7 +9,12 @@ import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { IconFileInvoice, IconSettings, IconLoader2 } from '@tabler/icons-react'
+import {
+  IconFileInvoice,
+  IconSettings,
+  IconHourglass,
+} from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface FiscalModuleGateProps {
   children: React.ReactNode
@@ -56,7 +61,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
     return (
       <>
         <div className="flex flex-col items-center justify-center py-20 px-4">
-          <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
+          <FeaturedIcon tone="neutral" Icon={IconSettings} />
           <h2 className="type-section-title mt-6 mb-2 text-center">
             Configure seu módulo fiscal
           </h2>
@@ -65,7 +70,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
             fiscais.
           </p>
           <Button onClick={() => setModalOpen(true)}>
-            <IconFileInvoice className="h-4 w-4 mr-2" />
+            <IconFileInvoice aria-hidden size={ICON_SIZE.md} className="mr-2" />
             Configurar agora
           </Button>
         </div>
@@ -79,7 +84,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   if (isPending) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
-        <FeaturedIcon variant="neutralOutline" Icon={IconLoader2} />
+        <FeaturedIcon tone="neutral" size="lg" Icon={IconHourglass} />
         <h2 className="type-section-title mt-6 mb-2 text-center">
           Módulo em ativação
         </h2>

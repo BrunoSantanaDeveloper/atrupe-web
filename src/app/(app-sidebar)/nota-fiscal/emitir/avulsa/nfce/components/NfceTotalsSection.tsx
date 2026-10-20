@@ -30,7 +30,7 @@ export function NfceTotalsSection({
   return (
     <Card className="border-none shadow-sm overflow-hidden sticky top-6">
       <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-        <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
+        <FeaturedIcon tone="neutral" Icon={IconCalculator} />
         <div>
           <CardTitle>Resumo dos Totais</CardTitle>
         </div>

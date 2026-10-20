@@ -141,7 +141,7 @@ export function NfseCamposAdicionaisSection({
         <AccordionItem value="campos-adicionais" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAdjustments} />
+              <FeaturedIcon tone="neutral" Icon={IconAdjustments} />
               <div>
                 <CardTitle>Campos adicionais</CardTitle>
                 <p className="text-xs text-gray-500 mt-0.5">

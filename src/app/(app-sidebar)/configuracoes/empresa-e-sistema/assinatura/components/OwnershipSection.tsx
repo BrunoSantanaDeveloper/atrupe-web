@@ -16,18 +16,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
 
 // Icons
-import {
-  IconAlertTriangle,
-  IconArrowRight,
-  IconShieldLock,
-} from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 
 // Actions
 import {
@@ -282,16 +277,7 @@ function SendTransferDialog({
     >
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="errorBorderedLight"
-                Icon={IconShieldLock}
-                rounded
-              />
-              <span>Transferir titularidade</span>
-            </div>
-          </DialogTitle>
+          <DialogTitle>Transferir titularidade</DialogTitle>
           <DialogDescription>
             Pedimos apenas o e-mail. O CNPJ e os dados da empresa são informados
             por quem recebe — eles pertencem a ela.
@@ -392,16 +378,7 @@ function CancelTransferDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[460px]">
         <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="warningBorderedLight"
-                Icon={IconAlertTriangle}
-                rounded
-              />
-              <span>Cancelar a transferência?</span>
-            </div>
-          </DialogTitle>
+          <DialogTitle>Cancelar a transferência?</DialogTitle>
           <DialogDescription>
             O link enviado deixa de valer. O ambiente permanece como está.
           </DialogDescription>

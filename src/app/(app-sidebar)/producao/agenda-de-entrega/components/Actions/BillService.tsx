@@ -64,10 +64,9 @@ export function BillServiceDialog({ open, rowData, setOpen }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconAlertTriangle}
-              rounded
               size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
+              tone="warning"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>
               Realizar faturamento deste serviço?

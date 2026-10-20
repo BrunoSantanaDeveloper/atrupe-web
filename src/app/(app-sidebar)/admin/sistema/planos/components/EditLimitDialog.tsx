@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { savePlanLimit } from '@/actions/planConfig'
@@ -118,7 +119,7 @@ export function EditLimitDialog({
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5">
-            <IconAdjustments size={22} className="text-[#FF4201]" />
+            <Icon icon={IconAdjustments} size="lg" className="text-[#FF4201]" />
             <span>
               {request?.limit.name} — plano {request?.plan.name}
             </span>

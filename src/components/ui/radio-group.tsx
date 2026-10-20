@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
-import { Circle } from 'lucide-react'
+import { IconCircleFilled as Circle } from '@tabler/icons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
@@ -53,6 +53,7 @@ const RadioGroupItem = React.forwardRef<
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center h-full w-full">
         <Circle
+          aria-hidden
           className={cn(
             'fill-current text-current',
             size === 'md' ? 'h-2 w-2' : 'h-1.5 w-1.5',

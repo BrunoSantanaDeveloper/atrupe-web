@@ -13,7 +13,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
@@ -30,7 +29,6 @@ import { getData, createItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
 import { IconCircleCheck } from '@tabler/icons-react'
 
 // Libs
@@ -116,7 +114,6 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAtrupeLogo} />
               <span>Upgrade de plano</span>
             </div>
           </DialogTitle>

@@ -23,6 +23,7 @@ import {
   IconLayoutGrid,
   IconTrash,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 import { Checkbox } from '@/components/ui/checkbox'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -96,7 +97,7 @@ export function InvoiceItems({
           <AccordionItem value="items" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+                <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
                 <CardTitle>Itens</CardTitle>
                 {filteredItems.length > 0 && (
                   <Badge variant="neutralLight" className="text-xs">
@@ -120,7 +121,12 @@ export function InvoiceItems({
               <CardContent className="p-0">
                 {filteredItems.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                    <IconLayoutGrid size={32} className="mb-3 opacity-40" />
+                    <FeaturedIcon
+                      tone="neutral"
+                      size="lg"
+                      Icon={IconLayoutGrid}
+                      className="mb-3"
+                    />
                     <p className="text-sm font-medium">
                       Nenhum item adicionado
                     </p>
@@ -282,7 +288,7 @@ export function InvoiceItems({
                                     setEditItem({ item, initialTab: 'valores' })
                                   }
                                 >
-                                  <IconPencil size={16} />
+                                  <IconPencil aria-hidden size={ICON_SIZE.sm} />
                                 </Button>
                                 {onRemoveItem && (
                                   <Button
@@ -294,7 +300,10 @@ export function InvoiceItems({
                                       onRemoveItem(item.itemNumber)
                                     }
                                   >
-                                    <IconTrash size={16} />
+                                    <IconTrash
+                                      aria-hidden
+                                      size={ICON_SIZE.sm}
+                                    />
                                   </Button>
                                 )}
                               </div>

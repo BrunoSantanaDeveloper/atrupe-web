@@ -79,7 +79,7 @@ export function CancelOrder({ data }: Props) {
     if (!canRequestOrderCancellationReason()) {
       const confirmed = await alertDialog.open({
         title: 'Confirma cancelamento da venda?',
-        iconVariant: 'errorBorderedLight',
+        iconTone: 'error',
         confirmLabel: 'Cancelar venda',
         confirmVariant: 'error',
         toastMsg: undefined,
@@ -170,7 +170,7 @@ export function CancelOrder({ data }: Props) {
       alertDialog.open({
         title: 'Atenção: Parcelas não canceladas',
         description: warningMessage,
-        iconVariant: 'warningBorderedLight',
+        iconTone: 'warning',
         confirmLabel: 'Entendi',
         confirmVariant: 'default',
         timeout: 300000,
@@ -184,7 +184,7 @@ export function CancelOrder({ data }: Props) {
       <CustomButton
         icon={IconX}
         title="Cancelar venda"
-        iconVariant="errorLight"
+        iconTone="error"
         onClick={handleCancel}
       />
     )
@@ -194,20 +194,15 @@ export function CancelOrder({ data }: Props) {
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
-          <CustomButton
-            icon={IconX}
-            title="Cancelar venda"
-            iconVariant="errorLight"
-          />
+          <CustomButton icon={IconX} title="Cancelar venda" iconTone="error" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconAlertCircle}
-              rounded
               size="lg"
-              variant="errorBorderedLight"
-              className="mx-auto mb-2"
+              tone="error"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Cancelar ordem de serviço</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">

@@ -6,7 +6,8 @@ import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 import { cn } from '@/lib/utils'
 import { type ButtonIconProps, buttonVariants } from '@/components/ui/button'
 
-import { LoaderCircle } from 'lucide-react'
+import { IconLoader2 as LoaderCircle } from '@tabler/icons-react'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 const AlertDialog = AlertDialogPrimitive.Root
 
@@ -120,13 +121,13 @@ const AlertDialogAction = React.forwardRef<
     aria-busy={isLoading || undefined}
   >
     <span className={cn('contents', isLoading && 'invisible')}>
-      {LeftIcon && <LeftIcon aria-hidden="true" size={20} />}
+      {LeftIcon && <LeftIcon aria-hidden="true" size={ICON_SIZE.md} />}
       {props.children}
-      {RightIcon && <RightIcon aria-hidden="true" size={20} />}
+      {RightIcon && <RightIcon aria-hidden="true" size={ICON_SIZE.md} />}
     </span>
     {isLoading && (
       <span className="absolute inset-0 flex items-center justify-center">
-        <LoaderCircle aria-hidden="true" size={20} className="animate-spin" />
+        <Icon icon={LoaderCircle} size="md" className="animate-spin" />
       </span>
     )}
   </AlertDialogPrimitive.Action>

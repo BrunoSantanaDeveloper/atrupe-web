@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { IconCheck, IconMinus } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 import { fetchPlanComparison } from '@/actions/checkout'
 import {
@@ -127,16 +128,18 @@ function FragmentGroup({
               )}
             >
               {includesFeature(t, row.since) ? (
-                <IconCheck
-                  size={18}
+                <Icon
+                  icon={IconCheck}
+                  size="md"
                   className="mx-auto text-brand-600"
-                  aria-label="Incluído"
+                  label="Incluído"
                 />
               ) : (
-                <IconMinus
-                  size={18}
+                <Icon
+                  icon={IconMinus}
+                  size="md"
                   className="mx-auto text-gray-300"
-                  aria-label="Não incluído"
+                  label="Não incluído"
                 />
               )}
             </td>

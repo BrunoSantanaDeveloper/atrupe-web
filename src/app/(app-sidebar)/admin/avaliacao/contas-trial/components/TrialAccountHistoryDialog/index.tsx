@@ -11,12 +11,12 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
 // Icons
-import { IconHistory, IconLoader2, IconSend } from '@tabler/icons-react'
+import { IconLoader2, IconSend } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Types
 import type { TrialAccountItem } from '../Table/Data'
@@ -95,7 +95,6 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[692px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
             <DialogTitle>Histórico</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>
@@ -103,7 +102,12 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
         <DialogBody>
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+              <IconLoader2
+                aria-hidden
+                size={ICON_SIZE.lg}
+                stroke={ICON_STROKE.lg}
+                className="animate-spin text-gray-500"
+              />
             </div>
           ) : events.length > 0 ? (
             <Timeline events={events} />
@@ -138,7 +142,7 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
             disabled={mutation.isPending || !message.trim()}
             isLoading={mutation.isPending}
           >
-            <IconSend className="h-4 w-4 mr-2" />
+            <IconSend aria-hidden size={ICON_SIZE.md} className="mr-2" />
             Enviar mensagem
           </Button>
         </DialogFooter>

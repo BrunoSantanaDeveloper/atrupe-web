@@ -11,7 +11,6 @@ import {
   IconCircleCheck,
   IconClock,
 } from '@tabler/icons-react'
-import { cn } from '@/lib/utils'
 import {
   CheckoutShell,
   ProceedButton,
@@ -20,6 +19,8 @@ import { Button } from '@/components/ui/button'
 import { createItemNew } from '@/actions/_cruds'
 import { SUBSCRIPTION_PAGE } from '@/config/routes'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import type { IconComponentType } from '@/components/ui/icon'
 
 type SubscriptionStatus = 'processing' | 'success' | 'error' | 'waiting_payment'
 
@@ -267,7 +268,7 @@ export default function FinishSubscriptionPage() {
     return (
       <ResultCard
         tone="ok"
-        icon={<IconCircleCheck className="size-6" />}
+        icon={IconCircleCheck}
         title="Contratação confirmada!"
         actions={goToDashboard}
       >
@@ -283,7 +284,7 @@ export default function FinishSubscriptionPage() {
     return (
       <ResultCard
         tone="ok"
-        icon={<IconClock className="size-6" />}
+        icon={IconClock}
         title="Processando pagamento…"
         actions={
           <div className="flex w-full flex-col gap-3">
@@ -312,7 +313,7 @@ export default function FinishSubscriptionPage() {
     return (
       <ResultCard
         tone="warning"
-        icon={<IconAlertCircle className="size-6" />}
+        icon={IconAlertCircle}
         title="Não foi possível confirmar agora"
         actions={goToDashboard}
       >
@@ -339,7 +340,7 @@ function ResultCard({
   children,
 }: {
   tone?: 'ok' | 'warning'
-  icon?: React.ReactNode
+  icon?: IconComponentType
   title: string
   actions?: React.ReactNode
   children: React.ReactNode
@@ -348,16 +349,11 @@ function ResultCard({
     <CheckoutShell title="Plano" backHref="/dashboard">
       <div className="mx-auto flex w-full max-w-[464px] flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-white px-8 py-10 text-center">
         {icon && (
-          <div
-            className={cn(
-              'grid size-12 place-items-center rounded-full',
-              tone === 'warning'
-                ? 'bg-warning-50 text-warning-700'
-                : 'bg-brand-50 text-brand-700',
-            )}
-          >
-            {icon}
-          </div>
+          <FeaturedIcon
+            size="lg"
+            tone={tone === 'warning' ? 'warning' : 'brand'}
+            Icon={icon}
+          />
         )}
         <h1 className="type-section-title">{title}</h1>
         <div className="flex flex-col gap-3 text-sm text-gray-600">

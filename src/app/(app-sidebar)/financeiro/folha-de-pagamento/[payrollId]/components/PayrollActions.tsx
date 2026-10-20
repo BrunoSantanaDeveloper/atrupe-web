@@ -62,7 +62,7 @@ export function PayrollActions({ data }: Props) {
       title: `${action === 'fechar' ? 'Fechar' : 'Abrir'} folha ${action === 'fechar' ? 'para' : 'para'} edições?`,
       confirmLabel: 'Sim',
       Icon: IconAlertTriangle,
-      iconVariant: 'warningBorderedLight',
+      iconTone: 'warning',
       onConfirm: async () => {
         const result = await updateItemNew({
           route: '/financial/payroll/toggle',
@@ -184,7 +184,7 @@ export function PayrollActions({ data }: Props) {
             <CustomButton
               icon={IconCircleCheck}
               title="Fechar folha"
-              iconVariant="successLight"
+              iconTone="success"
               onClick={handleTogglePayroll}
             />
           </PermissionGate>
@@ -194,7 +194,7 @@ export function PayrollActions({ data }: Props) {
             <CustomButton
               icon={IconArrowBackUp}
               title="Reabrir folha"
-              iconVariant="lightBlueBorderedLight"
+              iconTone="info"
               onClick={handleTogglePayroll}
             />
           </PermissionGate>

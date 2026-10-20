@@ -24,6 +24,7 @@ import {
   IconTruckDelivery,
   IconX,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -148,10 +149,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
           <AccordionItem value="transport" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon
-                  variant="neutralOutline"
-                  Icon={IconTruckDelivery}
-                />
+                <FeaturedIcon tone="neutral" Icon={IconTruckDelivery} />
                 <CardTitle>Transportadora</CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -167,7 +165,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                     onClick={() => handleSupplierSelect(null)}
                     title="Limpar transportadora"
                   >
-                    <IconX size={14} />
+                    <IconX aria-hidden size={ICON_SIZE.sm} />
                     Limpar
                   </Button>
                 )}
@@ -330,7 +328,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
       {data.emissao.modalidadeFrete === 9 ? (
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center gap-3 py-4 bg-white">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
+            <FeaturedIcon tone="neutral" Icon={IconBox} />
             <div>
               <CardTitle>Volumes transportados</CardTitle>
               <p className="text-xs text-gray-400 mt-0.5">
@@ -346,7 +344,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
             <AccordionItem value="volumes" className="border-0">
               <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                 <div className="flex gap-3 items-center">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
+                  <FeaturedIcon tone="neutral" Icon={IconBox} />
                   <CardTitle>Volumes transportados</CardTitle>
                 </div>
                 <div className="flex gap-3">
@@ -399,7 +397,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                           onClick={() => removeVolume(index)}
                           aria-label="Remover volume"
                         >
-                          <IconTrash size={16} />
+                          <IconTrash aria-hidden size={ICON_SIZE.sm} />
                         </Button>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pr-8">

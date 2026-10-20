@@ -22,6 +22,7 @@ import { type VerifyEmailType, verifyEmailSchema } from './schema'
 
 // Icons
 import { IconArrowNarrowRight, IconBug } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Actions
 import { createItemNew } from '@/actions/_cruds'
@@ -197,7 +198,7 @@ export function VerifyEmailForm() {
       {isDevEnv && verificationToken && (
         <div className="mt-6 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <IconBug size={16} className="text-amber-600" />
+            <Icon icon={IconBug} size="sm" className="text-amber-600" />
             <span className="type-eyebrow text-amber-700">
               Dev / Homolog only
             </span>

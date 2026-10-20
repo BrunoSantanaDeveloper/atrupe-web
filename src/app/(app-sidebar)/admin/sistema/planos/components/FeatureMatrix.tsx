@@ -125,7 +125,7 @@ export function FeatureMatrix() {
                         className="mt-1 h-7 gap-1 px-2 text-xs"
                         onClick={() => setRestorePlan(plan)}
                       >
-                        <IconRestore size={14} />
+                        <IconRestore aria-hidden />
                         Restaurar padrão
                       </Button>
                     </th>

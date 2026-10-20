@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { IconArrowRight, IconBuilding } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
@@ -100,7 +101,7 @@ export function IdentificacaoTab({ emissor, isEditing }: Props) {
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <IconBuilding className="h-4 w-4 text-gray-500" />
+            <Icon icon={IconBuilding} size="sm" className="text-gray-500" />
             <h4 className="type-body-strong">Dados cadastrais da empresa</h4>
           </div>
           <Button

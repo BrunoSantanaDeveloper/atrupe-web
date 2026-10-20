@@ -1,7 +1,8 @@
 'use client'
 
 // React
-import { useEffect, SVGProps } from 'react'
+import { useEffect } from 'react'
+import type { IconComponentType } from '@/components/ui/icon'
 
 // UI
 import {
@@ -16,7 +17,6 @@ import {
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Form,
   FormField,
@@ -41,13 +41,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import {
-  IconAlertTriangle,
-  IconLock,
-  IconSquareX,
-  IconCheck,
-  IconProps,
-} from '@tabler/icons-react'
+import { IconLock, IconSquareX, IconCheck } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -79,9 +73,7 @@ const getStatusConfig = (currentStatus?: StatusOption) => {
     Array<{
       label: string
       value: string
-      icon:
-        | React.ComponentType<IconProps>
-        | React.ComponentType<SVGProps<SVGSVGElement>>
+      icon: IconComponentType
     }>
   > = {
     ACTIVE: [
@@ -202,12 +194,6 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex flex-col items-center gap-4 text-center">
-              <FeaturedIcon
-                variant="warningBorderedLight"
-                Icon={IconAlertTriangle}
-                size="lg"
-                rounded
-              />
               <span>Alterar status</span>
             </div>
           </DialogTitle>

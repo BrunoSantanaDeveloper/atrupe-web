@@ -13,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Form } from '@/components/ui/form'
 
 // Component Imports
@@ -27,8 +26,8 @@ import {
   IconArrowLeft,
   IconCircleCheck,
   IconHelpCircle,
-  IconPackage,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party Imports
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -524,7 +523,6 @@ export function QuotationProdDetailModal({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
               {isLoading ? (
                 <Skeleton className="h-5 w-48" />
               ) : (
@@ -645,8 +643,15 @@ export function QuotationProdDetailModal({
                         endAdornment={
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger type="button">
-                                <IconHelpCircle className="text-gray-400 h-4 w-4" />
+                              <TooltipTrigger
+                                type="button"
+                                aria-label="Ajuda sobre a quantidade"
+                              >
+                                <IconHelpCircle
+                                  aria-hidden
+                                  size={ICON_SIZE.sm}
+                                  className="text-gray-400"
+                                />
                               </TooltipTrigger>
                               <TooltipContent className="w-[205px] text-center">
                                 <p>

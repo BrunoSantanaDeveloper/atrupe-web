@@ -9,6 +9,7 @@ import { useRouter } from '@/hooks/useRouter'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
+import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -531,8 +532,8 @@ function InviteAcceptForm({
             )}
             {representative.status === 'verified' && (
               <p className="flex items-center gap-2 text-sm text-brand-700">
-                <IconCircleCheck size={18} /> Conferido no registro público:{' '}
-                {representative.name}
+                <Icon icon={IconCircleCheck} size="sm" /> Conferido no registro
+                público: {representative.name}
                 {representative.qualification
                   ? ` (${representative.qualification})`
                   : ''}

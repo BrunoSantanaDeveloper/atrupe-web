@@ -355,7 +355,7 @@ export function EmissoresListClient() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <FeaturedIcon variant="outline" Icon={IconBuilding} />
+          <FeaturedIcon tone="brand" Icon={IconBuilding} />
           {/* O título já está no cabeçalho da página; aqui só o contexto. */}
           <p className="type-secondary">
             Gerencie as configurações fiscais por empresa/filial
@@ -385,7 +385,12 @@ export function EmissoresListClient() {
         </div>
       ) : combinedEmissores.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
-          <IconBuilding className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+          <FeaturedIcon
+            tone="neutral"
+            size="lg"
+            Icon={IconBuilding}
+            className="mx-auto mb-4 flex"
+          />
           <h3 className="type-card-title mb-2">Nenhuma empresa encontrada</h3>
           <p className="text-gray-500 mb-4">
             Cadastre uma empresa no menu Configurações &gt; Empresa e Sistema

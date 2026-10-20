@@ -6,7 +6,7 @@ import { useRouter } from '@/hooks/useRouter'
 import { Button } from '@/components/ui/button'
 
 // Icons
-import { RefreshCw } from 'lucide-react'
+import { IconRefresh as RefreshCw } from '@tabler/icons-react'
 
 export function TryAgainButton() {
   const router = useRouter()

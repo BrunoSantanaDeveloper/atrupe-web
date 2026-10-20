@@ -18,7 +18,6 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -44,9 +43,6 @@ import { cycleLabel } from '../billing'
 // Types
 import type { AccountItem } from '../Table/Data'
 import type { ResetOptions, ResetPreview } from '@/types/accountReset'
-
-// Icons
-import { IconEraser } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -150,16 +146,8 @@ export function ResetDataDialog({ open, setOpen, rowData }: Props) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[560px] border-4 border-error">
         <DialogHeader>
-          <DialogTitle className="pr-0">
-            <div className="flex flex-col items-center gap-4 text-center">
-              <FeaturedIcon
-                variant="errorBorderedLight"
-                Icon={IconEraser}
-                size="lg"
-                rounded
-              />
-              <span>Zerar dados da conta</span>
-            </div>
+          <DialogTitle className="pr-0 text-center">
+            Zerar dados da conta
           </DialogTitle>
           <DialogDescription className="text-center">
             <strong>{companyName}</strong>

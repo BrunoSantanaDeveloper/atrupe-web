@@ -1,0 +1,12 @@
+Capturas — ícones (design/openspec/changes/icones)
+Antes: design/evidencia/tipografia-depois.json. Depois: design/evidencia/icones-depois.json.
+Rotas renderizadas (200, sem login): 79 → 79
+
+Todos os SVGs visíveis (inclui gráficos, logos, pictogramas e ilustrações):
+  em 16/20/24 px: 1839 → 2746
+  fora da escala: 1009 → 159
+
+Só ícones do Tabler (svg.tabler-icon), depois: {"16x16":928,"20x20":1704,"24x24":84,"33x33":1}
+  O único 33x33 é o spinner de "Carregando empresas..." em /configuracoes/nota-fiscal/invoicy medido no meio do giro (24 px rotacionado).
+
+Botões visíveis sem nome acessível: 243 → 242 (os sete botões de relatório viraram "Exportar"; o resto é de botoes-e-acoes 5.2).

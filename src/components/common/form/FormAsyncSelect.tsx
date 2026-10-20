@@ -10,7 +10,12 @@ import {
 } from '@/components/ui/form'
 
 // Icons
-import { User, ChevronDown, LucideIcon } from 'lucide-react'
+import {
+  IconChevronDown as ChevronDown,
+  IconUser as User,
+  type TablerIcon,
+} from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -124,7 +129,7 @@ interface Props<T extends EntityBase = EntityBase> {
   value?: string
   route: string // Rota da API para buscar os dados
   filterField?: string // Campo usado para filtrar na API (default: 'search')
-  icon?: LucideIcon // Ícone personalizado
+  icon?: TablerIcon // Ícone personalizado
   minChars?: number // Mínimo de caracteres para iniciar a busca
   mapFunction?: (entity: T) => SelectOption // Função para mapear entidades para opções
   additionalOnChange?: (value: string) => void
@@ -193,7 +198,11 @@ export function FormAsyncSelect<T extends EntityBase = EntityBase>({
                 unstyled
                 components={{
                   DropdownIndicator: () => (
-                    <ChevronDown className="size-5 text-gray-700" />
+                    <ChevronDown
+                      aria-hidden
+                      size={ICON_SIZE.md}
+                      className="text-gray-700"
+                    />
                   ),
                 }}
                 onChange={(newValue) => {

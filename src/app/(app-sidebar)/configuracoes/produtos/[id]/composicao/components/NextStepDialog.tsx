@@ -23,7 +23,6 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Components
@@ -36,7 +35,8 @@ import type { NextStepCandidates, ProcessCatalogItem } from '../assembly'
 import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Icons
-import { IconPlus, IconSearch } from '@tabler/icons-react'
+import { IconSearch } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -164,7 +164,6 @@ export function NextStepDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
               <DialogTitle>{title}</DialogTitle>
               <DialogDescription>
@@ -200,7 +199,7 @@ export function NextStepDialog({
               <Input
                 value={search}
                 placeholder="Buscar processo pelo nome ou setor"
-                startAdornment={<IconSearch size={16} />}
+                startAdornment={<IconSearch aria-hidden size={ICON_SIZE.sm} />}
                 onChange={(event) => setSearch(event.target.value)}
                 aria-label="Buscar processo"
               />
@@ -397,7 +396,6 @@ export function LinkStageDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
               <DialogTitle>
                 {block ? `${block.name} vem depois de…` : 'Ligar a…'}

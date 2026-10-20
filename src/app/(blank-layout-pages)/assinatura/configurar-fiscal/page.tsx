@@ -31,10 +31,12 @@ import {
   IconLoader2,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { createItemNew } from '@/actions/_cruds'
 import { encodeFileToBase64 } from '@/lib/file-to-base64'
 import { maskCnpj, maskCep } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const UF_OPTIONS = [
   'AC',
@@ -242,7 +244,11 @@ export default function ConfigurarFiscalPage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-lg text-center">
           <CardContent className="pt-10 pb-10">
-            <IconLoader2 className="mx-auto h-16 w-16 animate-spin text-primary mb-6" />
+            <Icon
+              icon={IconLoader2}
+              size="lg"
+              className="mx-auto animate-spin text-primary mb-6"
+            />
             <h2 className="type-section-title mb-2">
               Configurando módulo fiscal...
             </h2>
@@ -261,9 +267,12 @@ export default function ConfigurarFiscalPage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-lg text-center">
           <CardContent className="pt-10 pb-10">
-            <div className="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mb-6">
-              <IconCheck className="h-8 w-8 text-green-600" />
-            </div>
+            <FeaturedIcon
+              tone="success"
+              size="lg"
+              Icon={IconCheck}
+              className="mx-auto mb-6 flex"
+            />
             <h2 className="type-section-title mb-2">Módulo fiscal ativado!</h2>
             <p className="text-muted-foreground mb-4">{resultMessage}</p>
             <p className="text-sm text-muted-foreground">
@@ -280,9 +289,12 @@ export default function ConfigurarFiscalPage() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="w-full max-w-lg text-center">
           <CardContent className="pt-10 pb-10">
-            <div className="mx-auto h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center mb-6">
-              <IconAlertTriangle className="h-8 w-8 text-amber-600" />
-            </div>
+            <FeaturedIcon
+              tone="warning"
+              size="lg"
+              Icon={IconAlertTriangle}
+              className="mx-auto mb-6 flex"
+            />
             <h2 className="type-section-title mb-2">Dados recebidos!</h2>
             <p className="text-muted-foreground mb-4">{resultMessage}</p>
             <p className="text-sm text-muted-foreground">
@@ -496,14 +508,22 @@ export default function ConfigurarFiscalPage() {
                   <input {...getInputProps()} />
                   {certificateFile ? (
                     <div className="flex items-center justify-center gap-2">
-                      <IconFileCertificate className="h-6 w-6 text-green-600" />
+                      <Icon
+                        icon={IconFileCertificate}
+                        size="lg"
+                        className="text-green-600"
+                      />
                       <span className="text-sm font-medium text-green-700">
                         {certificateFile.name}
                       </span>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-2">
-                      <IconCloudUpload className="h-8 w-8 text-muted-foreground" />
+                      <Icon
+                        icon={IconCloudUpload}
+                        size="lg"
+                        className="text-muted-foreground"
+                      />
                       <span className="text-sm text-muted-foreground">
                         Arraste o arquivo .pfx aqui ou clique para selecionar
                       </span>

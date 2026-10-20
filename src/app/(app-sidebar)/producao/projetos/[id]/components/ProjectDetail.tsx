@@ -75,7 +75,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   IconBan,
   IconSearch,
-  IconPrinter,
   IconCalendar,
   IconPlayerPlay,
   IconCircleCheck,
@@ -83,7 +82,10 @@ import {
   IconTruckDelivery,
   IconListCheck,
   IconAlertTriangle,
+  IconFileText,
+  IconChevronRight,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 const date = (value: string) =>
   new Date(`${value}T12:00:00`).toLocaleDateString('pt-BR')
@@ -209,7 +211,12 @@ export function ProjectDetail({ id }: { id: string }) {
           badge={projectStatusObj[project.status]}
           primaryCta={
             <div className="flex flex-wrap gap-2">
-              <Button variant="neutralOutline" LeftIcon={IconPrinter} asChild>
+              <Button
+                variant="neutralOutline"
+                LeftIcon={IconFileText}
+                RightIcon={IconChevronRight}
+                asChild
+              >
                 <Link href={`/producao/projetos/${id}/ficha`}>
                   Ficha de produção
                 </Link>
@@ -238,7 +245,11 @@ export function ProjectDetail({ id }: { id: string }) {
 
         {(late || risk || alerts > 0) && (
           <p className="flex items-start gap-2 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-700">
-            <IconAlertTriangle className="mt-0.5 size-4 shrink-0" />
+            <Icon
+              icon={IconAlertTriangle}
+              size="sm"
+              className="mt-0.5 shrink-0"
+            />
             {late
               ? 'O prazo de entrega já passou.'
               : 'A entrega está em risco: o que falta na cadeia não cabe até o prazo.'}{' '}
@@ -251,7 +262,7 @@ export function ProjectDetail({ id }: { id: string }) {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
+                <FeaturedIcon tone="neutral" Icon={IconReportMoney} />
                 <CardTitle>Venda</CardTitle>
               </div>
             </CardHeader>
@@ -273,10 +284,7 @@ export function ProjectDetail({ id }: { id: string }) {
           <Card className="lg:col-span-2">
             <CardHeader className="flex-row items-start justify-between gap-4 space-y-0">
               <div className="flex items-center gap-3">
-                <FeaturedIcon
-                  variant="neutralOutline"
-                  Icon={IconTruckDelivery}
-                />
+                <FeaturedIcon tone="neutral" Icon={IconTruckDelivery} />
                 <div>
                   <CardTitle>Entrega</CardTitle>
                   <CardDescription>{project.deliveryType}</CardDescription>
@@ -334,7 +342,7 @@ export function ProjectDetail({ id }: { id: string }) {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <FeaturedIcon variant="neutralOutline" Icon={IconListCheck} />
+              <FeaturedIcon tone="neutral" Icon={IconListCheck} />
               <div>
                 <CardTitle>Tarefas</CardTitle>
                 <CardDescription>
@@ -452,7 +460,6 @@ export function ProjectDetail({ id }: { id: string }) {
         <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCalendar} />
               <div>
                 <DialogTitle>Alterar entrega</DialogTitle>
                 <DialogDescription>

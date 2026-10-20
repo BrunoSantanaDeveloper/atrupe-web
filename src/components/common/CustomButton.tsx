@@ -1,21 +1,22 @@
 // UI
 import { Button, ButtonProps } from '@/components/ui/button'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
+import {
+  FeaturedIcon,
+  type FeaturedIconTone,
+} from '@/components/ui/featured-icon'
+import type { IconComponentType } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
 
 // Icons
-import { IconLoader2, type IconProps } from '@tabler/icons-react'
-import { SVGProps, forwardRef } from 'react'
+import { forwardRef } from 'react'
 
 interface Props extends ButtonProps {
-  icon?:
-    | React.ComponentType<IconProps>
-    | React.ComponentType<SVGProps<SVGSVGElement>>
+  icon?: IconComponentType
   caption?: string
   title: string
-  iconVariant?: FeaturedIconProps['variant']
+  iconTone?: FeaturedIconTone
   isLoading?: boolean
 }
 
@@ -25,7 +26,7 @@ export const CustomButton = forwardRef<HTMLButtonElement, Props>(
       icon,
       caption,
       title,
-      iconVariant = 'neutralLight',
+      iconTone = 'neutral',
       className,
       isLoading,
       ...props
@@ -45,12 +46,7 @@ export const CustomButton = forwardRef<HTMLButtonElement, Props>(
         {...props}
       >
         {icon && (
-          <FeaturedIcon
-            variant={iconVariant}
-            Icon={isLoading ? IconLoader2 : icon}
-            rounded
-            className={cn(isLoading && 'animate-spin')}
-          />
+          <FeaturedIcon tone={iconTone} Icon={icon} isLoading={isLoading} />
         )}
         <div className="text-start">
           <p className="type-body-strong">{title}</p>

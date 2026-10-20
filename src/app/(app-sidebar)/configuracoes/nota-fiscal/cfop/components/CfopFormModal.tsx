@@ -13,6 +13,10 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 
+// Icons
+import { IconPencil, IconPlus, IconCircleCheck } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
+
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -108,30 +112,14 @@ export function CfopFormModal({
         <div className="bg-gray-50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
-              {/* Using a generic Plus icon or similar as per prototype 'box with plus' */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+              <Icon
+                icon={isEditing ? IconPencil : IconPlus}
+                size="md"
                 className="text-gray-700"
-              >
-                <path d="M12 5l0 14" />
-                <path d="M5 12l14 0" />
-              </svg>
+              />
             </div>
             <DialogTitle>{isEditing ? 'Editar CFOP' : 'Novo CFOP'}</DialogTitle>
           </div>
-          {/* Close button is handled by DialogPrimitive usually, but we can have a custom one if needed. 
-                         The default generic DialogContent usually adds a close X. We will rely on that or user can click outside. 
-                         Wait, shadcn DialogContent adds a Close button absolute positioned. It might overlap. 
-                         We'll let the default X behave as is, or we can hide it via CSS if it conflicts, but usually it's fine.
-                     */}
         </div>
 
         {/* Body */}
@@ -207,21 +195,7 @@ export function CfopFormModal({
             isLoading={form.formState.isSubmitting}
             onClick={form.handleSubmit(handleSubmit)}
             className="bg-green-600 hover:bg-green-700 text-white"
-            RightIcon={({ className }) => (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className={className}
-              >
-                <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
-                <path d="M9 12l2 2l4 -4" />
-              </svg>
-            )}
+            RightIcon={IconCircleCheck}
           >
             Salvar
           </Button>

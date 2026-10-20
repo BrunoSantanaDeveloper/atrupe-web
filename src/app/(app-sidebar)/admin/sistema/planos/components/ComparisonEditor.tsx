@@ -150,7 +150,7 @@ export function ComparisonEditor() {
                       )
                     }
                   >
-                    <IconTrash size={16} />
+                    <IconTrash aria-hidden />
                   </Button>
                 </div>
                 {group.rows.map((row, rowIndex) => (
@@ -195,7 +195,7 @@ export function ComparisonEditor() {
                         })
                       }
                     >
-                      <IconTrash size={16} />
+                      <IconTrash aria-hidden />
                     </Button>
                   </div>
                 ))}
@@ -210,7 +210,7 @@ export function ComparisonEditor() {
                     })
                   }
                 >
-                  <IconPlus size={14} />
+                  <IconPlus aria-hidden />
                   Linha
                 </Button>
               </div>
@@ -229,7 +229,7 @@ export function ComparisonEditor() {
                   ])
                 }
               >
-                <IconPlus size={14} />
+                <IconPlus aria-hidden />
                 Grupo
               </Button>
               <div className="flex gap-2">

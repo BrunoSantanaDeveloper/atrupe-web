@@ -19,6 +19,7 @@ import {
   IconPencil,
   IconFileTypePdf,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Actions
 import { deleteItemNew } from '@/actions/_cruds'
@@ -100,7 +101,7 @@ export function InvoiceFormHeader({
             onClick={() => router.push('/nota-fiscal/emitir')}
             aria-label="Voltar para emissão"
           >
-            <IconArrowLeft size={20} />
+            <Icon icon={IconArrowLeft} size="sm" />
           </Button>
           <div className="flex flex-wrap items-center gap-2">
             <h1 className="type-page-title">Emissão de NF-e</h1>
@@ -123,7 +124,7 @@ export function InvoiceFormHeader({
           <CustomButton
             icon={IconX}
             title="Cancelar digitação"
-            iconVariant="errorLight"
+            iconTone="error"
             onClick={handleCancel}
             disabled={isCanceling || isEmitting}
             isLoading={isCanceling}
@@ -133,7 +134,7 @@ export function InvoiceFormHeader({
               <CustomButton
                 icon={IconFileTypePdf}
                 title="Pré-visualizar"
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={onPreview}
                 disabled={isEmitting || isCanceling || isPreviewing}
                 isLoading={isPreviewing}
@@ -142,7 +143,7 @@ export function InvoiceFormHeader({
             <CustomButton
               icon={IconSend}
               title="Emitir NF-e"
-              iconVariant="light"
+              iconTone="brand"
               onClick={onEmit}
               disabled={isEmitting || isCanceling}
               isLoading={isEmitting}
@@ -155,7 +156,7 @@ export function InvoiceFormHeader({
           <CustomButton
             icon={IconPencil}
             title="Carta de Correção"
-            iconVariant="neutralOutline"
+            iconTone="neutral"
             onClick={onCorrectionLetter}
           />
         </div>

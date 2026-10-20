@@ -14,7 +14,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -29,12 +28,12 @@ import {
 
 // Icons
 import {
-  IconPencil,
   IconDeviceFloppy,
   IconCloudUpload,
   IconCurrencyReal,
   IconReceipt,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Form
 import { commercialUnitOptions } from '@/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/schema'
@@ -330,7 +329,6 @@ export function InvoiceItemEditDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <div>
                 <span>Editar Item</span>
                 <p className="text-sm font-normal text-gray-500 mt-0.5">
@@ -350,11 +348,11 @@ export function InvoiceItemEditDialog({
           >
             <TabsList className="-mb-px">
               <TabsTrigger value="valores" className="gap-1.5">
-                <IconCurrencyReal size={14} />
+                <IconCurrencyReal aria-hidden size={ICON_SIZE.sm} />
                 Valores
               </TabsTrigger>
               <TabsTrigger value="fiscal" className="gap-1.5">
-                <IconReceipt size={14} />
+                <IconReceipt aria-hidden size={ICON_SIZE.sm} />
                 Dados Fiscais
               </TabsTrigger>
             </TabsList>

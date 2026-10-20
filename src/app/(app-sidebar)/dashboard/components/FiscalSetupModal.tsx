@@ -37,8 +37,10 @@ import {
   IconFileCertificate,
   IconArrowLeft,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { useQueryClient } from '@tanstack/react-query'
 import { maskCnpj, maskCep } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const DISMISSAL_KEY = 'fiscal-setup-modal-dismissed'
 
@@ -317,7 +319,7 @@ export function FiscalSetupModal() {
           className="w-full rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-center gap-3 hover:bg-brand-100 transition-colors group text-left"
         >
           <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center">
-            <IconFileInvoice className="h-5 w-5 text-brand-600" />
+            <Icon icon={IconFileInvoice} size="md" className="text-brand-600" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-semibold text-brand-800">
@@ -328,7 +330,11 @@ export function FiscalSetupModal() {
               notas.
             </p>
           </div>
-          <IconChevronRight className="h-5 w-5 text-brand-400 group-hover:text-brand-600 transition-colors" />
+          <Icon
+            icon={IconChevronRight}
+            size="md"
+            className="text-brand-400 group-hover:text-brand-600 transition-colors"
+          />
         </button>
       )}
 
@@ -354,7 +360,11 @@ export function FiscalSetupModal() {
               <DialogBody className="px-6 py-4 space-y-4">
                 <div className="rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-start gap-3">
                   <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center">
-                    <IconRocket className="h-5 w-5 text-brand-600" />
+                    <Icon
+                      icon={IconRocket}
+                      size="md"
+                      className="text-brand-600"
+                    />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-brand-900">
@@ -372,7 +382,7 @@ export function FiscalSetupModal() {
                   Configurar depois
                 </Button>
                 <Button onClick={() => setShowForm(true)}>
-                  <IconRocket className="h-4 w-4" /> Configurar Módulo Fiscal
+                  <Icon icon={IconRocket} size="md" /> Configurar Módulo Fiscal
                 </Button>
               </DialogFooter>
             </>
@@ -391,7 +401,7 @@ export function FiscalSetupModal() {
                     }}
                     className="text-gray-400 hover:text-gray-600"
                   >
-                    <IconArrowLeft className="h-5 w-5" />
+                    <Icon icon={IconArrowLeft} size="md" />
                   </button>
                   Configuração Fiscal
                 </DialogTitle>
@@ -405,9 +415,7 @@ export function FiscalSetupModal() {
                 {/* Success */}
                 {formStatus === 'success' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                      <IconCheck className="h-8 w-8 text-green-600" />
-                    </div>
+                    <FeaturedIcon tone="success" size="lg" Icon={IconCheck} />
                     <h3 className="type-card-title">Módulo fiscal ativado!</h3>
                     <p className="text-sm text-muted-foreground">
                       {resultMessage}
@@ -418,9 +426,11 @@ export function FiscalSetupModal() {
                 {/* Pending review */}
                 {formStatus === 'pending_review' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
-                      <IconAlertTriangle className="h-8 w-8 text-amber-600" />
-                    </div>
+                    <FeaturedIcon
+                      tone="warning"
+                      size="lg"
+                      Icon={IconAlertTriangle}
+                    />
                     <h3 className="type-card-title">Dados recebidos!</h3>
                     <p className="text-sm text-muted-foreground">
                       {resultMessage}
@@ -435,7 +445,11 @@ export function FiscalSetupModal() {
                 {/* Submitting */}
                 {formStatus === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <IconLoader2 className="h-12 w-12 animate-spin text-primary" />
+                    <Icon
+                      icon={IconLoader2}
+                      size="lg"
+                      className="animate-spin text-primary"
+                    />
                     <p className="text-sm text-muted-foreground">
                       Configurando módulo fiscal...
                     </p>
@@ -619,14 +633,22 @@ export function FiscalSetupModal() {
                         <input {...getInputProps()} />
                         {certificateFile ? (
                           <div className="flex items-center justify-center gap-2">
-                            <IconFileCertificate className="h-5 w-5 text-green-600" />
+                            <Icon
+                              icon={IconFileCertificate}
+                              size="md"
+                              className="text-green-600"
+                            />
                             <span className="text-sm font-medium text-green-700">
                               {certificateFile.name}
                             </span>
                           </div>
                         ) : (
                           <div className="flex flex-col items-center gap-1">
-                            <IconCloudUpload className="h-7 w-7 text-muted-foreground" />
+                            <Icon
+                              icon={IconCloudUpload}
+                              size="lg"
+                              className="text-muted-foreground"
+                            />
                             <span className="text-sm text-muted-foreground">
                               Arraste o .pfx aqui ou clique para selecionar
                             </span>

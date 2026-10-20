@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input-uncontrolled'
 
 // Icon Imports
 import { IconSearch } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type Imports
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -63,7 +64,7 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
             type="search"
             value={search}
             placeholder="Buscar por..."
-            startAdornment={<IconSearch size={20} />}
+            startAdornment={<IconSearch aria-hidden size={ICON_SIZE.md} />}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>

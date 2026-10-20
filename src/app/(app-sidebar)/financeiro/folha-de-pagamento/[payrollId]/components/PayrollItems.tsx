@@ -37,7 +37,6 @@ import {
   IconEyeOff,
   IconTrash,
   IconPencil,
-  IconPrinter,
   IconPlus,
   IconLayoutGrid,
   IconAlertTriangle,
@@ -120,7 +119,7 @@ export function PayrollItems({ data }: Props) {
       description: `Deseja excluir "${item.description}"? ${item.type === 'ADVANCE' ? 'A despesa financeira do adiantamento também será removida.' : 'A despesa de salário será recalculada.'}`,
       confirmLabel: 'Excluir',
       Icon: IconAlertTriangle,
-      iconVariant: 'errorBorderedLight',
+      iconTone: 'error',
       onConfirm: async () => {
         const result = await deleteItemNew({
           route: `/financial/payroll/item/${item.id}`,
@@ -146,7 +145,7 @@ export function PayrollItems({ data }: Props) {
       description: `Deseja cancelar "${item.description}"? O pagamento será estornado e o item removido da folha.`,
       confirmLabel: 'Cancelar adiantamento',
       Icon: IconAlertTriangle,
-      iconVariant: 'errorBorderedLight',
+      iconTone: 'error',
       onConfirm: async () => {
         const result = await createItemNew({
           route: `/financial/payroll/item/${item.id}/cancel-advance`,
@@ -172,7 +171,7 @@ export function PayrollItems({ data }: Props) {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+              <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
               <CardTitle>Itens</CardTitle>
             </div>
             <div className="flex gap-3 items-center">
@@ -247,7 +246,7 @@ export function PayrollItems({ data }: Props) {
                         <TooltipProvider>
                           {isAdvance && (
                             <ActionButton
-                              Icon={IconPrinter}
+                              gesto="imprimir"
                               tooltip="Imprimir"
                               onClick={() => handleGeneratePDF(item.id)}
                               isLoading={isLoadingPDF}
@@ -278,7 +277,7 @@ export function PayrollItems({ data }: Props) {
                               permissions={['financial:payroll:edit']}
                             >
                               <ActionButton
-                                Icon={IconTrash}
+                                gesto="cancelar"
                                 tooltip="Cancelar adiantamento e estornar pagamento"
                                 onClick={() => handleCancelAdvance(item)}
                                 disabled={data?.status === 'CLOSED'}
@@ -319,9 +318,8 @@ export function PayrollItems({ data }: Props) {
               disabled={data?.status === 'CLOSED'}
             >
               <FeaturedIcon
-                variant={data?.status === 'CLOSED' ? 'neutralLight' : 'light'}
+                tone={data?.status === 'CLOSED' ? 'neutral' : 'brand'}
                 Icon={IconPlus}
-                rounded
               />
               <p className="text-sm text-gray-600 font-medium">
                 Adicionar item
@@ -342,11 +340,8 @@ export function PayrollItems({ data }: Props) {
               disabled={data?.status === 'CLOSED'}
             >
               <FeaturedIcon
-                variant={
-                  data?.status === 'CLOSED' ? 'neutralLight' : 'orangeLight'
-                }
+                tone={data?.status === 'CLOSED' ? 'neutral' : 'warning'}
                 Icon={IconCash}
-                rounded
               />
               <p className="text-sm text-gray-600 font-medium">
                 Adiantamento de salário

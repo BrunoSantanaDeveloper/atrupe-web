@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
 import { IconMapPin, IconEdit } from '@tabler/icons-react'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
 export interface ClientAddressItem {
@@ -184,7 +185,7 @@ export function InvoiceDeliveryAddressSection({
         <AccordionItem value="delivery" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconMapPin} />
+              <FeaturedIcon tone="neutral" Icon={IconMapPin} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <CardTitle>{sectionTitle}</CardTitle>
                 <label className="inline-flex items-center gap-2 cursor-pointer text-sm text-gray-500 hover:text-gray-700 select-none">
@@ -268,7 +269,8 @@ export function InvoiceDeliveryAddressSection({
                     {addressesList.length > 0 && (
                       <>
                         <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
-                          📍 Escolher Endereço Cadastrado:
+                          <Icon icon={IconMapPin} size="sm" />
+                          Escolher Endereço Cadastrado:
                         </span>
                         <Select
                           value={selectedAddressId || 'custom'}
@@ -313,7 +315,11 @@ export function InvoiceDeliveryAddressSection({
                       onClick={() => setIsEditing(!isEditing)}
                       className="sm:ml-auto"
                     >
-                      <IconEdit size={16} className="mr-2" />
+                      <IconEdit
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="mr-2"
+                      />
                       {isEditing ? 'Ver Dados' : 'Editar Endereço'}
                     </Button>
                   </div>

@@ -36,7 +36,6 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icon Imports
-import { IconSearch } from '@tabler/icons-react'
 import { supplierStatusObj } from '@/consts/supplier'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -120,7 +119,7 @@ export function SuppliersData({ searchParams, tabs }: Props) {
                             >
                               <ActionButton
                                 link={`/cadastros/fornecedores/${supplier?.id}/dados`}
-                                Icon={IconSearch}
+                                gesto="ver"
                                 tooltip="Ver"
                               />
                             </PermissionGate>

@@ -2,7 +2,12 @@
 
 import * as React from 'react'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import { ChevronDown, ChevronUp, Search } from 'lucide-react'
+import {
+  IconChevronDown as ChevronDown,
+  IconChevronUp as ChevronUp,
+  IconSearch as Search,
+} from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
@@ -293,9 +298,17 @@ export function MemberSelect({
             {/* Chevron — hidden for 'search' variant (no dropdown indicator) */}
             {iconVariant !== 'search' &&
               (isOpen ? (
-                <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                <Icon
+                  icon={ChevronUp}
+                  size="md"
+                  className="text-gray-500 flex-shrink-0"
+                />
               ) : (
-                <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                <Icon
+                  icon={ChevronDown}
+                  size="md"
+                  className="text-gray-500 flex-shrink-0"
+                />
               ))}
           </button>
         </PopoverPrimitive.Trigger>
@@ -320,7 +333,11 @@ export function MemberSelect({
             {searchable && (
               <div className="px-3.5 py-2 border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <Search className="w-4 h-4 text-gray-500 flex-shrink-0" />
+                  <Icon
+                    icon={Search}
+                    size="sm"
+                    className="text-gray-500 flex-shrink-0"
+                  />
                   <input
                     autoFocus
                     value={query}

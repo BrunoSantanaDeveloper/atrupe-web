@@ -35,6 +35,7 @@ import { reviewTextClass } from '@/consts/revisao'
 // Icons
 import { IconComponent } from '../common/Icon'
 import { IconX, IconUser, IconMenu2, IconLogout } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Hooks
 import { useSession } from 'next-auth/react'
@@ -56,7 +57,6 @@ interface NavigationItem {
   icon:
     | React.ComponentType<IconProps>
     | React.ComponentType<SVGProps<SVGSVGElement>>
-  iconColor?: string
   title: string
   path?: string
   query?: string
@@ -261,8 +261,8 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                       <div className="flex items-center gap-3">
                         <IconComponent
                           icon={item?.icon}
+                          size="md"
                           className={cn(
-                            'size-5',
                             pathname.includes(`${item?.path}`)
                               ? 'text-brand'
                               : 'text-gray-600',
@@ -316,7 +316,8 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                     <div className="flex items-center gap-3">
                       <IconComponent
                         icon={item?.icon}
-                        className="size-5 text-gray-600"
+                        size="md"
+                        className="text-gray-600"
                       />
                       <span
                         className={cn(
@@ -353,11 +354,11 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                               <div className="flex items-center gap-3">
                                 <IconComponent
                                   icon={navChild?.icon}
+                                  size="md"
                                   className={cn(
-                                    'size-5',
                                     pathname.includes(`${navChild?.path}`)
                                       ? 'text-brand'
-                                      : navChild?.iconColor || 'text-gray-500',
+                                      : 'text-gray-500',
                                     navChild?.action ? 'text-brand' : '',
                                   )}
                                 />
@@ -395,7 +396,11 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
               className="flex flex-1 items-center gap-3 pt-2 pb-3 w-full text-left"
               onClick={handleProfileClick}
             >
-              <IconUser className="size-5 text-gray-600" />
+              <IconUser
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-gray-600"
+              />
               <span className="text-sm font-semibold text-gray-700">
                 Perfil
               </span>
@@ -414,7 +419,11 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
               className="flex flex-1 items-center gap-3 pt-2 pb-3 w-full text-left"
               onClick={handleLogOut}
             >
-              <IconLogout className="size-5 text-gray-600" />
+              <IconLogout
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-gray-600"
+              />
               <span className="text-sm font-semibold text-gray-700">Sair</span>
             </button>
           </div>

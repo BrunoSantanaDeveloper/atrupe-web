@@ -30,12 +30,7 @@ export function FilteredDataEmpty({
     <div className="flex justify-center items-center h-[calc(100vh-255px)] w-full">
       <div className="max-w-[352px] text-center space-y-6">
         <div>
-          <FeaturedIcon
-            Icon={IconSearch}
-            size="xl"
-            variant="borderedLight"
-            rounded
-          />
+          <FeaturedIcon Icon={IconSearch} size="lg" tone="brand" />
           <p className="type-card-title mt-4 mb-1">{title}</p>
           <p className="type-secondary">{description}</p>
         </div>
@@ -71,7 +66,7 @@ export function ListDataTotalEmpty({
     <div className="flex justify-center items-center h-[calc(100vh-170px)]">
       <div className="max-w-[352px] text-center space-y-6">
         <div>
-          <FeaturedIcon Icon={icon} size="xl" variant="borderedLight" rounded />
+          <FeaturedIcon Icon={icon} size="lg" tone="brand" />
           <p className="type-card-title mt-4 mb-1">{title}</p>
           <p className="type-secondary">{description}</p>
         </div>
@@ -94,7 +89,7 @@ export function ListDataStatusEmpty({
     <div className="flex justify-center items-center h-[calc(100vh-150px)]">
       <div className="max-w-[352px] text-center space-y-6">
         <div>
-          <FeaturedIcon Icon={icon} size="xl" variant="borderedLight" rounded />
+          <FeaturedIcon Icon={icon} size="lg" tone="brand" />
           <p className="type-card-title mt-4 mb-1">{title}</p>
         </div>
       </div>

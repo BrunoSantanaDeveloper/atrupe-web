@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { IconCoin } from '@tabler/icons-react'
 
+import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -213,7 +214,11 @@ export function ComplementsFlow() {
                   <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
                     <span>Cobrado agora</span>
                     <span className="flex items-center gap-1 text-xl font-semibold text-gray-700">
-                      <IconCoin className="size-6 flex-none text-brand-500" />
+                      <Icon
+                        icon={IconCoin}
+                        size="lg"
+                        className="flex-none text-brand-500"
+                      />
                       {formatCurrencyToBrl(quote.chargedNowCents)}
                     </span>
                   </div>

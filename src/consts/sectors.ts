@@ -1,4 +1,4 @@
-import { SVGProps } from 'react'
+import type { ComponentType } from 'react'
 
 import {
   IconCnc,
@@ -23,7 +23,8 @@ import {
   IconInstallation,
   IconClientPickup,
   IconAdministration,
-} from '@/assets/icons/CustomIcons'
+} from '@/assets/icons/pictogramas'
+import type { PictogramaProps } from '@/assets/icons/pictogramas'
 
 // Cada setor tem uma cor (regra de 05/10/2026, área 9 §4.14): um padrão
 // inicial por setor conhecido, legível sobre fundo branco, que o cadastro de
@@ -33,7 +34,7 @@ import {
 const sectors: {
   [key: string]: {
     text: string
-    icon: (props: SVGProps<SVGSVGElement>) => JSX.Element
+    icon: ComponentType<PictogramaProps>
     color: string
   }
 } = {

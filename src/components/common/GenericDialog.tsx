@@ -9,10 +9,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
-import { IconCircleCheck, IconBulb } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Type Imports
 import { PropsWithChildren } from 'react'
@@ -36,7 +35,6 @@ export function GenericDialog(props: Props) {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBulb} />
             <DialogTitle>{title}</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

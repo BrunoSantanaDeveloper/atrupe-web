@@ -13,7 +13,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Form
@@ -27,7 +26,7 @@ import { useEffect } from 'react'
 import { updateItem } from '@/actions/_cruds'
 
 // Icons
-import { IconCircleCheck, IconUser } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
 import { ProductImageUpload } from '@/components/common/form/global-inputs/ProductImageUpload'
@@ -106,7 +105,6 @@ export function MyProfileDialog() {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
               <span>Meu Perfil</span>
             </div>
           </DialogTitle>
@@ -126,7 +124,6 @@ export function MyProfileDialog() {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
               <span>Meu Perfil</span>
             </div>
           </DialogTitle>
@@ -145,7 +142,6 @@ export function MyProfileDialog() {
       <DialogHeader>
         <DialogTitle>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
             <span>Meu Perfil</span>
           </div>
         </DialogTitle>

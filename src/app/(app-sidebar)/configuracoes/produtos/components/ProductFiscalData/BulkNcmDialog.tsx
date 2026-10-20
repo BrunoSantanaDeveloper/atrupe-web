@@ -30,10 +30,9 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconReceiptTax, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Actions
 import { createItemNew, getItem } from '@/actions/_cruds'
@@ -181,7 +180,6 @@ export function BulkNcmDialog({ open, onOpenChange, scope, onApplied }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconReceiptTax} />
               <span>Alterar NCM em massa</span>
             </div>
           </DialogTitle>

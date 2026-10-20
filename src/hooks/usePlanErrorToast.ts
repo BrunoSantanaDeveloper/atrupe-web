@@ -59,7 +59,7 @@ export function usePlanErrorToast() {
             ? planError.message
             : `${planError.message} ${ASK_PRINCIPAL_ADMIN}`,
           Icon: IconAlertTriangle,
-          iconVariant: 'warningBorderedLight',
+          iconTone: 'warning',
           confirmLabel: isOwner ? 'Ver planos' : '',
           confirmVariant: 'default',
           cancelLabel: 'Entendi',

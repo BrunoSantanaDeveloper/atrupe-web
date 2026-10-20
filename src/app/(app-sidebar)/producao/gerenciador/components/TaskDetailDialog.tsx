@@ -35,6 +35,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Icon } from '@/components/ui/icon'
 
 // Hooks
 import { usePending } from '@/hooks/usePending'
@@ -341,13 +342,13 @@ export function TaskDetailDialog({
 
           {task.alert && (
             <p className="flex items-start gap-2 rounded-lg bg-error-50 px-4 py-2 text-sm text-error-700">
-              <IconAlertTriangle className="mt-0.5 size-4 shrink-0" />
+              <Icon icon={IconAlertTriangle} size="sm" className="mt-0.5" />
               {task.alert.text}
             </p>
           )}
           {task.blocked && task.status === 'NOT_STARTED' && (
             <p className="flex items-start gap-2 rounded-lg bg-gray-50 px-4 py-2 text-sm text-gray-700">
-              <IconLock className="mt-0.5 size-4 shrink-0" />
+              <Icon icon={IconLock} size="sm" className="mt-0.5" />
               Só começa quando {task.blockedBy} terminar ou liberar a próxima
               etapa.
             </p>

@@ -251,10 +251,7 @@ export function ProductionSettings() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <FeaturedIcon
-                  variant="neutralOutline"
-                  Icon={IconBuildingFactory2}
-                />
+                <FeaturedIcon tone="neutral" Icon={IconBuildingFactory2} />
                 <div>
                   <CardTitle>Gerenciadores</CardTitle>
                   <CardDescription>
@@ -427,7 +424,7 @@ export function ProductionSettings() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <FeaturedIcon variant="neutralOutline" Icon={IconListNumbers} />
+                <FeaturedIcon tone="neutral" Icon={IconListNumbers} />
                 <div>
                   <CardTitle>Tipos de tarefa</CardTitle>
                   <CardDescription>
@@ -545,7 +542,7 @@ export function ProductionSettings() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <FeaturedIcon variant="neutralOutline" Icon={IconUsers} />
+                <FeaturedIcon tone="neutral" Icon={IconUsers} />
                 <div>
                   <CardTitle>Colaboradores na produção</CardTitle>
                   <CardDescription>
@@ -655,7 +652,7 @@ export function ProductionSettings() {
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <FeaturedIcon variant="neutralOutline" Icon={IconTruck} />
+                <FeaturedIcon tone="neutral" Icon={IconTruck} />
                 <div>
                   <CardTitle>Veículos</CardTitle>
                   <CardDescription>

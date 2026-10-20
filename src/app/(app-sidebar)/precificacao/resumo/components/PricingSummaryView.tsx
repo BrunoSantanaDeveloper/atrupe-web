@@ -37,6 +37,7 @@ import {
   IconChevronRight,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 const formatPercent = (value: number) =>
   `${(value / 10).toFixed(1).replace('.', ',')}%`
@@ -163,7 +164,11 @@ export function PricingSummaryView() {
     <div className="space-y-5">
       {parameters.markup === null && (
         <Card className="p-4 flex items-center gap-3 border-warning-200 bg-warning-50">
-          <IconAlertTriangle className="size-5 text-warning-600 shrink-0" />
+          <Icon
+            icon={IconAlertTriangle}
+            size="md"
+            className="text-warning-600 shrink-0"
+          />
           <p className="text-sm text-gray-900">
             <span className="font-medium">
               Encargos e lucro somam 100% ou mais.
@@ -179,7 +184,11 @@ export function PricingSummaryView() {
           href={`${pricingGroupPath[belowCostGroup.group]}?status=BELOW_COST`}
         >
           <Card className="p-4 flex items-center gap-3 border-error-200 bg-error-25">
-            <IconAlertTriangle className="size-5 text-error-600 shrink-0" />
+            <Icon
+              icon={IconAlertTriangle}
+              size="md"
+              className="text-error-600 shrink-0"
+            />
             <p className="text-sm text-gray-900">
               <span className="font-medium">
                 {belowCost} {belowCost === 1 ? 'item está' : 'itens estão'}{' '}
@@ -207,7 +216,6 @@ export function PricingSummaryView() {
               variant="neutralOutline"
               className="shrink-0 self-start"
               LeftIcon={IconPencil}
-              leftIconSize={20}
               onClick={() => setEditing(true)}
             >
               Editar parâmetros
@@ -333,7 +341,7 @@ export function PricingSummaryView() {
                     )}
                   </div>
                   <p className="mt-4 text-sm text-brand flex items-center gap-1">
-                    Ver detalhes <IconChevronRight className="size-4" />
+                    Ver detalhes <Icon icon={IconChevronRight} size="sm" />
                   </p>
                 </Card>
               </Link>

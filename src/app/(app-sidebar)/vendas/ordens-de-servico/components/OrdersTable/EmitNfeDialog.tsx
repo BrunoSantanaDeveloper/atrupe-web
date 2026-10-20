@@ -17,7 +17,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -25,11 +24,11 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Icons
 import {
-  IconFileInvoice,
   IconCircleCheck,
   IconExternalLink,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -177,7 +176,6 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="outline" Icon={IconFileInvoice} />
               <span>Emitir NF-e</span>
             </div>
           </DialogTitle>
@@ -220,7 +218,11 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
 
               {emissionResult.statusMessage && (
                 <div className="flex items-start gap-2 p-3 bg-red-50 rounded-lg">
-                  <IconAlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                  <IconAlertTriangle
+                    aria-hidden
+                    size={ICON_SIZE.md}
+                    className="text-red-500 shrink-0 mt-0.5"
+                  />
                   <p className="text-sm text-red-700">
                     {emissionResult.statusMessage}
                   </p>
@@ -233,7 +235,11 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
                   className="w-full"
                   onClick={() => window.open(emissionResult.danfeUrl, '_blank')}
                 >
-                  <IconExternalLink className="w-4 h-4 mr-2" />
+                  <IconExternalLink
+                    aria-hidden
+                    size={ICON_SIZE.md}
+                    className="mr-2"
+                  />
                   Visualizar DANFE
                 </Button>
               )}

@@ -7,7 +7,7 @@
 // mesma busca, marcados como material (ORG-1).
 
 // React
-import { createElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 // UI
 import {
@@ -39,8 +39,8 @@ import {
   IconPuzzle,
   IconSearch,
   IconQuestionMark,
-  IconLayoutGridAdd,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Third-party
 import * as z from 'zod'
@@ -264,7 +264,6 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGridAdd} />
               <span>Qual item deseja adicionar?</span>
             </div>
           </DialogTitle>
@@ -286,7 +285,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                 autoFocus
                 value={search}
                 placeholder="Nome ou código do produto"
-                startAdornment={<IconSearch size={20} />}
+                startAdornment={<Icon icon={IconSearch} size="md" />}
                 onChange={(event) => setSearch(event.target.value)}
               />
             </div>
@@ -322,10 +321,10 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
               {sectors.map((sector) => (
                 <TabsTrigger key={sector.id} value={sector.id}>
                   <span className="flex items-center gap-1.5">
-                    {createElement(
-                      sectorIcons[sector.icon]?.icon || IconQuestionMark,
-                      { className: 'size-4', 'aria-hidden': 'true' },
-                    )}
+                    <Icon
+                      icon={sectorIcons[sector.icon]?.icon || IconQuestionMark}
+                      size="sm"
+                    />
                     {sector.name}
                   </span>
                 </TabsTrigger>
@@ -345,12 +344,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
             ) : empty ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
-                  <FeaturedIcon
-                    Icon={IconBoxOff}
-                    size="xl"
-                    variant="borderedLight"
-                    rounded
-                  />
+                  <FeaturedIcon Icon={IconBoxOff} size="lg" tone="brand" />
                   <p className="mt-4 mb-1 text-lg font-semibold">
                     Nada encontrado
                   </p>

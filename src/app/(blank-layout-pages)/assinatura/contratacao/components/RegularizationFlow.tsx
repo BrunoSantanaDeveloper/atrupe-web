@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { IconCoin } from '@tabler/icons-react'
 
 import { Form } from '@/components/ui/form'
+import { Icon } from '@/components/ui/icon'
 import { Spinner } from '@/components/ui/spinner'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { PAYMENT_METHOD_OPTIONS } from '@/lib/plans/methodTrail'
@@ -196,7 +197,11 @@ export function RegularizationFlow() {
                       <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
                         <span>Total</span>
                         <span className="flex items-center gap-1 text-xl font-semibold text-gray-700">
-                          <IconCoin className="size-6 flex-none text-brand-500" />
+                          <Icon
+                            icon={IconCoin}
+                            size="lg"
+                            className="flex-none text-brand-500"
+                          />
                           {formatCurrencyToBrl(Math.round(charge.value * 100))}
                         </span>
                       </div>

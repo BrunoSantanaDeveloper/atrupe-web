@@ -269,7 +269,7 @@ export default function MicrointeracoesSandbox() {
                 description: 'A exclusão leva 1,5 s nesta demonstração.',
                 confirmLabel: 'Excluir',
                 cancelLabel: 'Cancelar',
-                iconVariant: 'error',
+                iconTone: 'error',
                 confirmVariant: 'error',
                 toastMsg: { success: 'Registro excluído' },
                 onConfirm: async () => {

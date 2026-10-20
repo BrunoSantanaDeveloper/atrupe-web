@@ -22,13 +22,13 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
-  IconUpload,
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
-  IconAlertCircle,
   IconExternalLink,
+  IconCircleX,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 import { downloadExcelCsvTemplate } from '@/lib/csv-template'
@@ -286,12 +286,6 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
           <DialogHeader>
             <DialogTitle>
               <div className="flex flex-col items-center gap-4 text-center">
-                <FeaturedIcon
-                  variant="successBorderedLight"
-                  Icon={IconUpload}
-                  size="lg"
-                  rounded
-                />
                 <span>Importar planilha de fornecedores</span>
               </div>
             </DialogTitle>
@@ -313,10 +307,9 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center gap-2">
                     <FeaturedIcon
-                      variant="neutralBorderedLight"
+                      tone="neutral"
                       Icon={IconCloudUpload}
-                      size="default"
-                      rounded
+                      size="md"
                     />
                     <p className="text-sm ">
                       <span className="text-brand-700 font-semibold">
@@ -344,7 +337,7 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash className="w-5 h-5" />
+                      <IconTrash aria-hidden size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -402,7 +395,6 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
         <DialogContent className="sm:max-w-[940px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAlertCircle} />
               <DialogTitle>Erros de importação</DialogTitle>
               <DialogDescription className="sr-only">
                 Verifique se as informações foram inseridas corretamente na
@@ -414,7 +406,7 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle className="h-4 w-4" />
+                <IconCircleX aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -456,7 +448,11 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
                               size="sm"
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
-                              <IconExternalLink className="w-4 h-4 mr-1" />
+                              <IconExternalLink
+                                aria-hidden
+                                size={ICON_SIZE.sm}
+                                className="mr-1"
+                              />
                               Abrir
                             </Button>
                           )}

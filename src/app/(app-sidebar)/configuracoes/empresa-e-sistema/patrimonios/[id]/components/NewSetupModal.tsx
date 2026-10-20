@@ -6,7 +6,6 @@ import { useState } from 'react'
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -91,7 +90,6 @@ export function NewSetupModal({ asset }: Props) {
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <DialogTitle>Nova configuração produtiva</DialogTitle>
             <DialogDescription className="sr-only">
               Modo de trabalho do bem, com tempo e produtividade próprios.

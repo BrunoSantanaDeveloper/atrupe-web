@@ -23,7 +23,6 @@ import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -46,11 +45,7 @@ import { useQuotation } from '@/contexts/quotationContext'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import {
-  IconArrowLeft,
-  IconCircleCheck,
-  IconPackage,
-} from '@tabler/icons-react'
+import { IconArrowLeft, IconCircleCheck } from '@tabler/icons-react'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -124,14 +119,9 @@ export function MaterialItemDialog({
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
-              <span className="flex flex-wrap items-center gap-2">
-                {material?.name || 'Material'}
-                <Badge variant="warningLight">Material</Badge>
-              </span>
-            </div>
+          <DialogTitle className="flex flex-wrap items-center gap-2">
+            {material?.name || 'Material'}
+            <Badge variant="warningLight">Material</Badge>
           </DialogTitle>
           <DialogDescription className="sr-only">
             Quantidade e variação do material

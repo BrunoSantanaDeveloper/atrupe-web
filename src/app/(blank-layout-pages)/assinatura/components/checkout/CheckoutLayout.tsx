@@ -12,6 +12,7 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Icon } from '@/components/ui/icon'
 import { cn, getInitials } from '@/lib/utils'
 import logout from '@/actions/logout'
 
@@ -124,7 +125,7 @@ export function ProceedButton({
       disabled={disabled}
     >
       {children}
-      {!isLoading && <IconArrowRight aria-hidden="true" className="size-4" />}
+      {!isLoading && <IconArrowRight aria-hidden="true" />}
     </Button>
   )
 }
@@ -213,9 +214,11 @@ export function ArrivalNotice({
           : 'border-warning-200 bg-warning-50',
       )}
     >
-      <IconAlertCircle
+      <Icon
+        icon={IconAlertCircle}
+        size="lg"
         className={cn(
-          'size-6 flex-none',
+          'flex-none',
           tone === 'error' ? 'text-error-500' : 'text-warning-500',
         )}
       />
@@ -289,7 +292,7 @@ export function ChoiceCard({
           className="size-[18px] flex-none accent-[var(--brand-500)]"
         />
         {icon && (
-          <span className="grid size-6 flex-none place-items-center text-gray-500 [&_svg]:size-[22px]">
+          <span className="grid size-6 flex-none place-items-center text-gray-500 [&_svg]:size-icon-md">
             {icon}
           </span>
         )}
@@ -364,7 +367,11 @@ export function TermsCheckbox({
 export function SecureNote() {
   return (
     <p className="flex items-center gap-1.5 text-xs text-gray-500">
-      <IconShieldCheck className="size-3.5 flex-none text-brand-600" />
+      <Icon
+        icon={IconShieldCheck}
+        size="sm"
+        className="flex-none text-brand-600"
+      />
       <span>Pagamento processado com segurança</span>
     </p>
   )
@@ -380,7 +387,11 @@ export function CheckLine({
 }) {
   return (
     <span className={cn('flex items-center gap-2 text-sm', className)}>
-      <IconCircleCheck className="size-4 flex-none text-brand-500" />
+      <Icon
+        icon={IconCircleCheck}
+        size="sm"
+        className="flex-none text-brand-500"
+      />
       <span>{children}</span>
     </span>
   )

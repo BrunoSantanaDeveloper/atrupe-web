@@ -48,20 +48,13 @@ import { saveBankAccount } from '@/actions/cash-accounts'
 import { toast } from 'sonner'
 
 // Icons
-import {
-  IconBuildingBank,
-  IconCash,
-  IconCreditCard,
-  IconPencil,
-  IconPlus,
-} from '@tabler/icons-react'
+import { IconBuildingBank, IconCash, IconCreditCard } from '@tabler/icons-react'
 
 // Hooks
 import { useMoney } from '@/hooks/useMoney'
 
 // Utils
 import { cn } from '@/lib/utils'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const banks = [
   { value: '000', label: 'Empresa (dinheiro)' },
@@ -195,10 +188,6 @@ export function AccountDialog({
       <DialogContent className="sm:max-w-[860px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={isNew ? IconPlus : IconPencil}
-            />
             <DialogTitle>{isNew ? 'Nova conta' : draft.name}</DialogTitle>
           </div>
           <DialogDescription>

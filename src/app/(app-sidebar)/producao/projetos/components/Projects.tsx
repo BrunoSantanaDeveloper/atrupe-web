@@ -60,6 +60,7 @@ import {
   IconClipboardList,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 const date = (value: string) =>
   new Date(`${value}T12:00:00`).toLocaleDateString('pt-BR')
@@ -123,7 +124,7 @@ export function Projects() {
         <Card>
           <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
             <div className="flex items-center gap-3">
-              <FeaturedIcon variant="neutralOutline" Icon={IconClipboardList} />
+              <FeaturedIcon tone="neutral" Icon={IconClipboardList} />
               <div>
                 <CardTitle>Projetos</CardTitle>
                 <CardDescription>
@@ -136,7 +137,9 @@ export function Projects() {
               aria-label="Buscar projeto"
               placeholder="Número da venda ou cliente"
               className="w-full sm:w-[260px]"
-              startAdornment={<IconSearch className="size-4 text-gray" />}
+              startAdornment={
+                <Icon icon={IconSearch} size="sm" className="text-gray" />
+              }
               value={text}
               onChange={(event) => setText(event.target.value)}
             />
@@ -216,7 +219,7 @@ export function Projects() {
                               </span>
                               {project.alerts > 0 && (
                                 <span className="flex items-center gap-1 text-xs text-error-700">
-                                  <IconAlertTriangle className="size-3.5" />
+                                  <Icon icon={IconAlertTriangle} size="sm" />
                                   {project.alerts}
                                 </span>
                               )}
@@ -231,7 +234,7 @@ export function Projects() {
                           <TableCell>
                             <div className="flex justify-end">
                               <ActionButton
-                                Icon={IconSearch}
+                                gesto="ver"
                                 tooltip={`Abrir ${project.number}`}
                                 link={`/producao/projetos/${project.id}`}
                               />

@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import {
   MoneyInput,
@@ -51,12 +50,6 @@ import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import {
-  IconLock,
-  IconLockOpen,
-  IconTrendingUp,
-  IconTrendingDown,
-} from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -97,7 +90,6 @@ export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconLockOpen} />
             <div>
               <DialogTitle>Abrir caixa</DialogTitle>
               <DialogDescription>
@@ -199,10 +191,7 @@ export function CashMovementDialog({
           <div className="flex items-center gap-4">
             {/* O mesmo desenho de "Nova despesa" e "Nova receita" do Fluxo
                 financeiro: sai em vermelho, entra em verde */}
-            <FeaturedIcon
-              variant={sangria ? 'error' : 'success'}
-              Icon={sangria ? IconTrendingDown : IconTrendingUp}
-            />
+
             <div>
               <DialogTitle>{sangria ? 'Sangria' : 'Suprimento'}</DialogTitle>
               <DialogDescription>
@@ -357,7 +346,6 @@ export function CloseCashDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconLock} />
             <div>
               <DialogTitle>Fechar o caixa nº {session.number}</DialogTitle>
               <DialogDescription>

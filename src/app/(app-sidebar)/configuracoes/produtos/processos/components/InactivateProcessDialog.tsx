@@ -11,7 +11,6 @@ import { useState } from 'react'
 // UI
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -29,9 +28,6 @@ import { getProcessUsage, updateProcessMeta } from '@/actions/processes'
 // Third-party
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-
-// Icons
-import { IconBan, IconRestore } from '@tabler/icons-react'
 
 interface Props {
   process: { id: string; name: string; active: boolean }
@@ -81,20 +77,14 @@ export function InactivateProcessDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={inactivating ? IconBan : IconRestore}
-            />
-            <DialogTitle>
-              {inactivating
-                ? `Inativar ${process.name}?`
-                : `Reativar ${process.name}?`}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Confirmação para inativar ou reativar o processo.
-            </DialogDescription>
-          </div>
+          <DialogTitle>
+            {inactivating
+              ? `Inativar ${process.name}?`
+              : `Reativar ${process.name}?`}
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            Confirmação para inativar ou reativar o processo.
+          </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
           {!inactivating ? (

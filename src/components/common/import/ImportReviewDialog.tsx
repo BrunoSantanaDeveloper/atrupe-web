@@ -11,12 +11,8 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
-import {
-  IconAlertCircle,
-  IconArrowRight,
-  IconListCheck,
-} from '@tabler/icons-react'
+import { IconAlertCircle, IconArrowRight } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import type { ImportReference, ImportWarning } from '@/actions/import'
 
@@ -73,7 +69,6 @@ export function ImportReviewDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconListCheck} />
             <DialogTitle>Revisar antes de importar</DialogTitle>
             <DialogDescription className="sr-only">
               Confirme os cadastros que serão criados e os valores que serão
@@ -115,7 +110,7 @@ export function ImportReviewDialog({
 
               {groups.some((group) => group.type === 'bankAccount') && (
                 <Alert variant="warning" className="mt-4">
-                  <IconAlertCircle className="h-4 w-4" />
+                  <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
                   <AlertDescription>
                     As contas bancárias serão criadas sem instituição definida.
                     Você pode ajustar o banco depois em Configurações &gt;

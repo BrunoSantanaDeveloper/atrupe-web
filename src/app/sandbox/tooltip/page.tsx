@@ -5,7 +5,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { HelpCircle } from 'lucide-react'
+import { IconHelpCircle as HelpCircle } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,7 +34,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Top Simple
+                    <Icon icon={HelpCircle} size="sm" /> Top Simple
                   </button>
                 </TooltipTrigger>
                 <TooltipContent intent="light" side="top">
@@ -47,7 +48,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Bottom Simple
+                    <Icon icon={HelpCircle} size="sm" /> Bottom Simple
                   </button>
                 </TooltipTrigger>
                 <TooltipContent intent="light" side="bottom">
@@ -61,7 +62,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Left Complex
+                    <Icon icon={HelpCircle} size="sm" /> Left Complex
                   </button>
                 </TooltipTrigger>
                 <TooltipContent
@@ -86,7 +87,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Right Complex
+                    <Icon icon={HelpCircle} size="sm" /> Right Complex
                   </button>
                 </TooltipTrigger>
                 <TooltipContent
@@ -118,7 +119,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Top Simple
+                    <Icon icon={HelpCircle} size="sm" /> Top Simple
                   </button>
                 </TooltipTrigger>
                 <TooltipContent intent="dark" side="top">
@@ -132,7 +133,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Bottom Simple
+                    <Icon icon={HelpCircle} size="sm" /> Bottom Simple
                   </button>
                 </TooltipTrigger>
                 <TooltipContent intent="dark" side="bottom">
@@ -146,7 +147,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Left Complex
+                    <Icon icon={HelpCircle} size="sm" /> Left Complex
                   </button>
                 </TooltipTrigger>
                 <TooltipContent
@@ -171,7 +172,7 @@ export default function TooltipSandboxPage() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 hover:bg-gray-200 rounded-md transition-colors text-sm text-gray-600">
-                    <HelpCircle className="w-4 h-4" /> Right Complex
+                    <Icon icon={HelpCircle} size="sm" /> Right Complex
                   </button>
                 </TooltipTrigger>
                 <TooltipContent

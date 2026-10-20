@@ -48,14 +48,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Icons
-import {
-  IconEye,
-  IconTrash,
-  IconEyeOff,
-  IconPencil,
-  IconRestore,
-  IconArrowRight,
-} from '@tabler/icons-react'
+import { IconEye, IconEyeOff, IconArrowRight } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
 import { bankAccountStatusObj } from '@/consts/cashAccounts'
@@ -222,7 +216,7 @@ export function BankAccounts(_: SearchParamsType) {
                   permissions={['financial_settings:bank_accounts:edit']}
                 >
                   <ActionButton
-                    Icon={IconPencil}
+                    gesto="editar"
                     variant="neutralGhost"
                     tooltip="Editar"
                     onClick={() => openDialog(account)}
@@ -232,7 +226,7 @@ export function BankAccounts(_: SearchParamsType) {
                   permissions={['financial_settings:bank_accounts:delete']}
                 >
                   <ActionButton
-                    Icon={IconTrash}
+                    gesto={account.hasHistory ? 'inativar' : 'excluir'}
                     variant="errorGhost"
                     tooltip={
                       account.hasHistory ? 'Inativar conta' : 'Excluir conta'
@@ -246,7 +240,7 @@ export function BankAccounts(_: SearchParamsType) {
                 permissions={['financial_settings:bank_accounts:edit']}
               >
                 <ActionButton
-                  Icon={IconRestore}
+                  gesto="reativar"
                   variant="neutralGhost"
                   tooltip="Reativar"
                   onClick={() => reactivate(account)}
@@ -340,7 +334,8 @@ export function BankAccounts(_: SearchParamsType) {
                       href="/financeiro/controle-de-caixa"
                       className="inline-flex items-center gap-1 font-medium text-brand-700 hover:underline"
                     >
-                      Controle de caixa <IconArrowRight size={14} />
+                      Controle de caixa{' '}
+                      <IconArrowRight aria-hidden size={ICON_SIZE.sm} />
                     </Link>
                   </p>
                 </CardContent>

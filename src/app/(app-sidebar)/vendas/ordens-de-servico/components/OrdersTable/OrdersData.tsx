@@ -51,12 +51,6 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { ordersStatusObj } from '@/consts/orders'
 
 // Icons
-import {
-  IconPrinter,
-  IconSearch,
-  IconHistory,
-  IconFileInvoice,
-} from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
 
@@ -353,7 +347,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         >
                                           <ActionButton
                                             link={link}
-                                            Icon={IconSearch}
+                                            gesto="ver"
                                             tooltip="Visualizar venda"
                                           />
                                         </PermissionGate>
@@ -361,7 +355,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                           permissions={['sale:order:view']}
                                         >
                                           <ActionButton
-                                            Icon={IconPrinter}
+                                            gesto="imprimir"
                                             tooltip="Via do cliente"
                                             onClick={() => {
                                               setRowData(order)
@@ -373,7 +367,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                           permissions={['sale:order:view']}
                                         >
                                           <ActionButton
-                                            Icon={IconPrinter}
+                                            gesto="documento"
                                             tooltip="Ficha de produção"
                                             isLoading={loadingProdPDF.includes(
                                               order?.id,
@@ -403,7 +397,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                             >
                                               {authorizedNfe ? (
                                                 <ActionButton
-                                                  Icon={IconFileInvoice}
+                                                  gesto="verNota"
                                                   tooltip={`DANFE NF-e ${authorizedNfe.numero}/${authorizedNfe.serie}`}
                                                   onClick={() => {
                                                     if (
@@ -418,7 +412,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                                 />
                                               ) : issuedNfce ? (
                                                 <ActionButton
-                                                  Icon={IconFileInvoice}
+                                                  gesto="verNota"
                                                   tooltip={`DANFE NFC-e ${issuedNfce.numero}/${issuedNfce.serie}`}
                                                   onClick={() => {
                                                     if (issuedNfce.danfeUrl) {
@@ -431,7 +425,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                                 />
                                               ) : issuedNfse ? (
                                                 <ActionButton
-                                                  Icon={IconFileInvoice}
+                                                  gesto="verNota"
                                                   tooltip={`PDF NFS-e ${issuedNfse.numero}/${issuedNfse.serie}`}
                                                   onClick={() => {
                                                     if (issuedNfse.pdfUrl) {
@@ -444,7 +438,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                                 />
                                               ) : (
                                                 <ActionButton
-                                                  Icon={IconFileInvoice}
+                                                  gesto="emitirNota"
                                                   tooltip="Emitir nota fiscal"
                                                   onClick={() => {
                                                     setRowData(order)
@@ -460,7 +454,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                           permissions={['sale:order:view']}
                                         >
                                           <ActionButton
-                                            Icon={IconHistory}
+                                            gesto="historico"
                                             tooltip="Histórico"
                                             onClick={() => {
                                               setRowData(order)

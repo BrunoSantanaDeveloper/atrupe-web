@@ -94,7 +94,7 @@ export function Main() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Usuários Online</CardTitle>
-            <IconCircleCheck className="text-green-400" />
+            <IconCircleCheck aria-hidden className="text-green-400" />
           </CardHeader>
           <CardContent className="p-6">
             <div className="type-kpi-value">{sessions.length}</div>
@@ -105,7 +105,7 @@ export function Main() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Empresas Online</CardTitle>
-            <IconBuildingCommunity className="text-purple-400" />
+            <IconBuildingCommunity aria-hidden className="text-purple-400" />
           </CardHeader>
           <CardContent className="p-6">
             <div className="type-kpi-value">
@@ -118,7 +118,7 @@ export function Main() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle>Total de Sessões Ativas</CardTitle>
-            <IconClock className="text-blue-400" />
+            <IconClock aria-hidden className="text-blue-400" />
           </CardHeader>
           <CardContent className="p-6">
             <div className="type-kpi-value">{totalSessions}</div>

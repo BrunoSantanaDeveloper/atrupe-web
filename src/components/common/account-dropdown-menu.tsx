@@ -2,7 +2,8 @@
 
 import * as React from 'react'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
-import { Check } from 'lucide-react'
+import { IconCheck as Check } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 
 /* ─────────────────────────────────────────────────────────────
@@ -208,7 +209,7 @@ function CheckboxItem({ item }: { item: AccountMenuItemDef }) {
         {/* DS checkbox box — 16×16 rounded border */}
         <span className="relative flex h-4 w-4 items-center justify-center rounded border border-gray-300 bg-white flex-shrink-0">
           <DropdownMenuPrimitive.ItemIndicator>
-            <Check className="h-3 w-3 text-gray-700" />
+            <Icon icon={Check} size="sm" className="text-gray-700" />
           </DropdownMenuPrimitive.ItemIndicator>
         </span>
         <span className="text-sm">{item.label}</span>

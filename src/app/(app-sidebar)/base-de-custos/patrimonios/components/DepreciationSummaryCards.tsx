@@ -3,7 +3,6 @@
 // UI
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 
 // Types
 import type { DepreciationTotals } from '../../types'
@@ -18,6 +17,7 @@ import {
   IconTrendingDown,
   IconBuildingWarehouse,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   totals?: DepreciationTotals
@@ -28,31 +28,26 @@ export function DepreciationSummaryCards({ totals, isLoading }: Props) {
   const cards = [
     {
       icon: IconCoins,
-      variant: 'neutralLight',
       label: 'Valor total investido',
       value: formatCurrencyToBrl(totals?.invested),
     },
     {
       icon: IconTrendingDown,
-      variant: 'blueLight',
       label: 'Valor já depreciado',
       value: formatCurrencyToBrl(totals?.depreciated),
     },
     {
       icon: IconHourglass,
-      variant: 'indigoLight',
       label: 'Valor restante a depreciar',
       value: formatCurrencyToBrl(totals?.remaining),
     },
     {
       icon: IconTrendingDown,
-      variant: 'successLight',
       label: 'Depreciação mensal atual',
       value: formatCurrencyToBrl(totals?.monthlyDepreciation),
     },
     {
       icon: IconBuildingWarehouse,
-      variant: 'neutralLight',
       label: 'Patrimônios ativos',
       value: totals?.activeAssets ?? 0,
     },
@@ -75,11 +70,7 @@ export function DepreciationSummaryCards({ totals, isLoading }: Props) {
             </>
           ) : (
             <>
-              <FeaturedIcon
-                size="md"
-                variant={card.variant as FeaturedIconProps['variant']}
-                Icon={card.icon}
-              />
+              <Icon icon={card.icon} size="md" className="text-gray-600" />
               <div className="flex flex-col min-w-0">
                 <span className="type-kpi-label truncate">{card.label}</span>
                 <span className="type-kpi-value">{card.value}</span>

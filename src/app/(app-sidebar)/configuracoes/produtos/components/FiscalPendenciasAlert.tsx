@@ -18,6 +18,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
 import { IconAlertTriangle, IconChevronRight } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Actions
 import { getItem } from '@/actions/_cruds'
@@ -97,7 +98,7 @@ export function FiscalPendenciasAlert() {
         }
       >
         <FeaturedIcon
-          variant={severo ? 'errorLight' : 'warningLight'}
+          tone={severo ? 'error' : 'warning'}
           Icon={IconAlertTriangle}
         />
         <div className="flex-1">
@@ -136,10 +137,6 @@ export function FiscalPendenciasAlert() {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon
-                  variant={severo ? 'errorLight' : 'warningLight'}
-                  Icon={IconAlertTriangle}
-                />
                 <div>
                   <span>Pendências fiscais dos serviços</span>
                   <p className="text-sm font-normal text-gray-500">
@@ -175,7 +172,11 @@ export function FiscalPendenciasAlert() {
                   >
                     <Button variant="neutralLight" size="sm">
                       Corrigir
-                      <IconChevronRight size={16} className="ml-1" />
+                      <IconChevronRight
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="ml-1"
+                      />
                     </Button>
                   </Link>
                 </div>

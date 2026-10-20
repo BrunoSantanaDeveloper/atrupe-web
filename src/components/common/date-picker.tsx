@@ -4,6 +4,7 @@ import * as React from 'react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { IconCalendarMonth as CalendarIcon } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 import { Calendar, CalendarProps } from '@/components/ui/calendar'
@@ -72,9 +73,11 @@ export function DatePicker({
                 ? format(value, 'dd/MM/yyyy', { locale: ptBR })
                 : placeholder}
             </span>
-            <CalendarIcon
+            <Icon
+              icon={CalendarIcon}
+              size="md"
               className={cn(
-                'flex-shrink-0 w-5 h-5',
+                'flex-shrink-0',
                 disabled ? 'text-gray-400' : 'text-gray',
               )}
             />

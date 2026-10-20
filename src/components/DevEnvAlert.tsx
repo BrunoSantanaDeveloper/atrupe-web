@@ -1,6 +1,7 @@
 'use client'
 
 import { IconCode, IconX } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { useState } from 'react'
 import { Button } from './ui/button'
 
@@ -14,7 +15,7 @@ export function DevEnvAlert() {
   return (
     <div className="border-b bg-warning-50 border-warning-200 fixed top-0 left-0 w-full z-50 relative">
       <div className="flex flex-wrap items-center justify-center gap-4 py-2 px-4 relative">
-        <IconCode className="size-8 stroke-1 flex-shrink-0 text-warning-600" />
+        <Icon icon={IconCode} size="lg" className="text-warning-600" />
         <div className="flex flex-col flex-shrink-0">
           <span className="text-xs font-semibold text-warning-600">
             Você está em ambiente de Desenvolvimento / Homologação

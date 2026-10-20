@@ -74,6 +74,7 @@ import {
   IconPaperclip,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -362,24 +363,33 @@ export function ManagerBoard() {
               </span>
             )}
             {item.attachments.length > 0 && (
-              <IconPaperclip
-                className="size-3.5 text-gray"
-                aria-label="Tem anexos"
+              <Icon
+                icon={IconPaperclip}
+                size="sm"
+                label="Tem anexos"
+                className="text-gray"
               />
             )}
             {item.vehicleId && (
-              <IconTruck
-                className="size-3.5 text-gray"
-                aria-label="Com veículo"
+              <Icon
+                icon={IconTruck}
+                size="sm"
+                label="Com veículo"
+                className="text-gray"
               />
             )}
             {item.blocked && item.status === 'NOT_STARTED' && (
-              <IconLock className="size-3.5 text-gray" aria-label="Bloqueada" />
+              <Icon
+                icon={IconLock}
+                size="sm"
+                label="Bloqueada"
+                className="text-gray"
+              />
             )}
           </div>
           {(item.workers.length > 0 || item.assignee) && (
             <p className="flex items-center gap-1 text-xs text-gray-700">
-              <IconUser className="size-3.5" />
+              <Icon icon={IconUser} size="sm" />
               {item.workers.length
                 ? `${item.workers.map((worker) => worker.name).join(', ')} na tarefa`
                 : item.assignee?.name}
@@ -387,7 +397,11 @@ export function ManagerBoard() {
           )}
           {item.alert && (
             <p className="flex items-start gap-1 text-xs text-error-700">
-              <IconAlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+              <Icon
+                icon={IconAlertTriangle}
+                size="sm"
+                className="mt-0.5 shrink-0"
+              />
               {item.alert.kind === 'OVERDUE'
                 ? 'Passou do horário planejado'
                 : item.alert.kind === 'LATE_PREDECESSOR'
@@ -413,7 +427,9 @@ export function ManagerBoard() {
           aria-label="Buscar tarefa"
           placeholder="Código, cliente, item"
           className="w-full sm:w-[240px]"
-          startAdornment={<IconSearch className="size-4 text-gray" />}
+          startAdornment={
+            <Icon icon={IconSearch} size="sm" className="text-gray" />
+          }
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -658,7 +674,11 @@ function AgendaView({
     <div className="space-y-4">
       {alerts > 0 && (
         <p className="flex items-start gap-2 rounded-lg border border-error-200 bg-error-50 px-4 py-3 text-sm text-error-700">
-          <IconAlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <Icon
+            icon={IconAlertTriangle}
+            size="sm"
+            className="mt-0.5 shrink-0"
+          />
           {alerts === 1
             ? 'Uma etapa está com alerta na cadeia de produção.'
             : `${alerts} etapas estão com alerta na cadeia de produção.`}{' '}
@@ -694,7 +714,11 @@ function AgendaView({
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <IconAlertTriangle className="size-4 text-warning-600" />
+            <Icon
+              icon={IconAlertTriangle}
+              size="sm"
+              className="text-warning-600"
+            />
             Tarefas não agendadas
             <span className="font-normal text-gray">
               ({unscheduled.length})

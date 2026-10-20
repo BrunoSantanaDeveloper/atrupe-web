@@ -2,7 +2,7 @@
 
 import { useController, useFormContext } from 'react-hook-form'
 import { IconBarcode, IconCreditCard } from '@tabler/icons-react'
-import { IconPix } from '@/assets/icons/CustomIcons'
+import { LogoPix } from '@/assets/logos'
 
 import {
   Select,
@@ -23,9 +23,9 @@ import {
 } from '../../components/checkout/CheckoutLayout'
 
 const ICONS = {
-  CREDIT_CARD: <IconCreditCard />,
-  PIX: <IconPix />,
-  BOLETO: <IconBarcode />,
+  CREDIT_CARD: <IconCreditCard aria-hidden />,
+  PIX: <LogoPix aria-hidden />,
+  BOLETO: <IconBarcode aria-hidden />,
 } as const
 
 type Cycle = 'MONTHLY' | 'YEARLY'

@@ -65,15 +65,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconEye,
-  IconPencil,
-  IconSearch,
   IconEyeOff,
   IconPrinter,
   IconArrowBackUp,
-  IconCircleCheck,
   IconAlertTriangle,
   IconSortAscending,
   IconSortDescending,
+  IconAdjustments,
+  IconLock,
 } from '@tabler/icons-react'
 
 // Consts
@@ -439,7 +438,10 @@ export function CashControl(_: SearchParamsType) {
               className="flex flex-col gap-3 rounded-xl border border-warning-300 bg-warning-50 p-4 sm:flex-row sm:items-center sm:justify-between animate-in fade-in-0 duration-base"
             >
               <div className="flex items-start gap-3">
-                <IconAlertTriangle className="mt-0.5 shrink-0 text-warning-600" />
+                <IconAlertTriangle
+                  aria-hidden
+                  className="mt-0.5 shrink-0 text-warning-600"
+                />
                 <p className="text-sm text-warning-800">
                   <strong>
                     O caixa de {brDate(day.date)} da{' '}
@@ -491,8 +493,7 @@ export function CashControl(_: SearchParamsType) {
           <Card>
             <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-4">
               <p className="text-sm text-gray">
-                Histórico dos caixas por dia e por conta. O relatório de cada
-                dia abre na lupa.
+                Histórico dos caixas por dia e por conta.
               </p>
               <div className="flex items-end gap-3">
                 <SelectBasic
@@ -633,7 +634,7 @@ export function CashControl(_: SearchParamsType) {
                                 <TableCell>
                                   <div className="flex justify-end gap-1">
                                     <ActionButton
-                                      Icon={IconSearch}
+                                      gesto="ver"
                                       variant="neutralGhost"
                                       tooltip="Visualizar"
                                       onClick={() =>
@@ -657,7 +658,7 @@ export function CashControl(_: SearchParamsType) {
                                         ]}
                                       >
                                         <ActionButton
-                                          Icon={IconPencil}
+                                          Icon={IconAdjustments}
                                           variant="neutralGhost"
                                           tooltip="Lançar ajuste"
                                           onClick={() =>
@@ -665,7 +666,7 @@ export function CashControl(_: SearchParamsType) {
                                           }
                                         />
                                         <ActionButton
-                                          Icon={IconCircleCheck}
+                                          Icon={IconLock}
                                           variant="neutralGhost"
                                           tooltip="Fechar caixa"
                                           onClick={() =>

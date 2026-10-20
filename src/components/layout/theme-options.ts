@@ -1,5 +1,10 @@
 // Icons
-import { Monitor, Moon, Sun, type LucideIcon } from 'lucide-react'
+import {
+  IconDeviceDesktop,
+  IconMoon,
+  IconSun,
+  type TablerIcon,
+} from '@tabler/icons-react'
 
 export type ThemeValue = 'light' | 'dark' | 'system'
 
@@ -14,9 +19,9 @@ export const THEME_SWITCHER = false as boolean
 export const THEME_OPTIONS: {
   value: ThemeValue
   label: string
-  icon: LucideIcon
+  icon: TablerIcon
 }[] = [
-  { value: 'light', label: 'Claro', icon: Sun },
-  { value: 'dark', label: 'Escuro', icon: Moon },
-  { value: 'system', label: 'Sistema', icon: Monitor },
+  { value: 'light', label: 'Claro', icon: IconSun },
+  { value: 'dark', label: 'Escuro', icon: IconMoon },
+  { value: 'system', label: 'Sistema', icon: IconDeviceDesktop },
 ]

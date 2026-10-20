@@ -24,7 +24,6 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { DurationInput } from '@/components/common/DurationInput'
 
@@ -65,15 +64,8 @@ import {
 } from '@/consts/processes'
 
 // Icons
-import {
-  IconPlus,
-  IconTrash,
-  IconPencil,
-  IconSettings,
-  IconListDetails,
-  IconPuzzle,
-  IconSearch,
-} from '@tabler/icons-react'
+import { IconPlus, IconTrash, IconSearch } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -119,7 +111,6 @@ export function AddBlockDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
               <DialogTitle>{title}</DialogTitle>
               <DialogDescription>{description}</DialogDescription>
@@ -283,7 +274,6 @@ export function FormulaDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
               <DialogTitle>
                 {initial ? 'Ajustar fórmula' : 'Nova fórmula do produto'}
@@ -638,7 +628,6 @@ export function NewLineDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
               <DialogTitle>
                 Acrescentar {resourceKindObj[values.kind].toLowerCase()} ·{' '}
@@ -724,7 +713,9 @@ export function NewLineDialog({
                 autoComplete="off"
                 placeholder="Buscar pelo nome"
                 className="min-w-[200px] flex-1"
-                startAdornment={<IconSearch size={16} aria-hidden="true" />}
+                startAdornment={
+                  <IconSearch size={ICON_SIZE.sm} aria-hidden="true" />
+                }
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
@@ -1076,7 +1067,6 @@ export function LineDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
             <div>
               <DialogTitle>Ajustar {line?.name.toLowerCase()}</DialogTitle>
               <DialogDescription>
@@ -1548,7 +1538,6 @@ export function RulesDialog({
       <DialogContent className="sm:max-w-[855px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
             <div>
               <DialogTitle>Configurar · {block.name}</DialogTitle>
               <DialogDescription>
@@ -1763,7 +1752,6 @@ export function OptionsDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconListDetails} />
             <div>
               <DialogTitle>Opções · {line.name}</DialogTitle>
               <DialogDescription>
@@ -1915,7 +1903,6 @@ export function PartDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPuzzle} />
             <div>
               <DialogTitle>Acrescentar parte</DialogTitle>
               <DialogDescription>

@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 
 // Icons
 import { IconUsers } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Lib
 import { SUBSCRIPTION_PAGE } from '@/config/routes'
@@ -40,9 +41,10 @@ export function UsersQuotaNotice({ quota }: { quota: UsersQuotaType }) {
         full ? 'border-warning-200 bg-warning-50' : 'border-gray-200 bg-white',
       )}
     >
-      <IconUsers
-        className={cn('size-4', full ? 'text-warning-600' : 'text-gray-500')}
-        aria-hidden="true"
+      <Icon
+        icon={IconUsers}
+        size="sm"
+        className={full ? 'text-warning-600' : 'text-gray-500'}
       />
       <span className="text-gray-700">
         Usuários com acesso:{' '}

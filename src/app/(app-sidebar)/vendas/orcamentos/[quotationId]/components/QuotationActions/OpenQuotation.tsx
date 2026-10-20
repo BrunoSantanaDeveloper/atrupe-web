@@ -80,10 +80,9 @@ export function OpenQuotation({ data }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconAlertTriangle}
-              rounded
               size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
+              tone="warning"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Deseja reabrir este orçamento?</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">

@@ -15,6 +15,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IconArrowRight, IconAlertTriangle } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 
@@ -339,8 +340,9 @@ export function CreditLimit() {
                           <Separator />
                           <CardContent className="p-6">
                             <Alert className="bg-warning-50 border border-warning-50 mb-6">
-                              <IconAlertTriangle
-                                size={20}
+                              <Icon
+                                icon={IconAlertTriangle}
+                                size="md"
                                 className="stroke-warning-600"
                               />
                               <AlertTitle className="text-warning-600">

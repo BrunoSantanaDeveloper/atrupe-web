@@ -18,6 +18,7 @@ import { RangeCalendar } from '@/components/ui/calendar-rac'
 import { DateInput, dateInputStyle } from '@/components/ui/datefield-rac'
 import { Label } from '@/components/ui/label'
 import { IconCalendarWeek } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { getData } from '@/actions/_cruds'
 
 interface FinancialFlowDatePickerProps {
@@ -111,7 +112,7 @@ export function FinancialFlowDatePicker({
           <DateInput slot="end" unstyled />
         </Group>
         <Button className="text-gray hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-600 focus-visible:ring-offset-2 z-10 -ms-9 -me-px flex w-9 items-center justify-center rounded-e-md outline-none data-focus-visible:ring-[3px] transition-all duration-200 ease-in-out disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-200">
-          <IconCalendarWeek size={18} />
+          <Icon icon={IconCalendarWeek} size="md" />
         </Button>
       </div>
       <Popover

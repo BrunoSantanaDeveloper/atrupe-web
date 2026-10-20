@@ -6,7 +6,6 @@ import { useState } from 'react'
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -125,7 +124,6 @@ export function NewCostModal({ asset }: Props) {
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <DialogTitle>Novo custo do patrimônio</DialogTitle>
             <DialogDescription className="sr-only">
               Lance um custo fixo ou variável do bem.

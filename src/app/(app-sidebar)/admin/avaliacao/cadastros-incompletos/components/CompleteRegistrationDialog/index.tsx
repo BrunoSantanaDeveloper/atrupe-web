@@ -14,7 +14,6 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Components
@@ -34,7 +33,7 @@ import { createItemNew } from '@/actions/_cruds'
 import type { IncompleteRegistrationItem } from '../Table/Data'
 
 // Icons
-import { IconUser, IconArrowRight } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -104,7 +103,6 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
               <span>Efetivar cadastro</span>
             </div>
           </DialogTitle>

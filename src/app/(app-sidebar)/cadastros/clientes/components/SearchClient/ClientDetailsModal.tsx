@@ -8,10 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
-import { IconArrowRight, IconSearch } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 import { maskCpfCnpj, MaskPhoneNumber, maskCep } from '@/lib/utils'
 import { useState } from 'react'
 import { NewClientModal } from '../NewClient'
@@ -64,7 +63,6 @@ export function ClientDetailsModal({
         <DialogHeader className="border-none">
           <div className="flex items-center justify-between mb-6 border-b pb-4">
             <div className="flex items-center gap-3">
-              <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
               <DialogTitle>
                 Informações do {clientData.documentType}
               </DialogTitle>
@@ -226,7 +224,6 @@ export function ClientDetailsModalWithNewClient({
           <DialogHeader className="border-none">
             <div className="flex items-center justify-between mb-6 border-b pb-4">
               <div className="flex items-center gap-3">
-                <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
                 <DialogTitle>
                   Informações do {clientData.documentType}
                 </DialogTitle>

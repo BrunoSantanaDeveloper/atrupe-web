@@ -68,10 +68,9 @@ export function OpenCashAlertDialog({ open, setOpen }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconAlertTriangle}
-              rounded
               size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
+              tone="warning"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>
               Abrir este caixa na data de hoje?

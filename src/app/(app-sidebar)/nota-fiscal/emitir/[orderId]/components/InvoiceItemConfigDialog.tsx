@@ -14,16 +14,11 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Form } from '@/components/ui/form'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Icons
-import {
-  IconReceipt,
-  IconDeviceFloppy,
-  IconCloudUpload,
-} from '@tabler/icons-react'
+import { IconDeviceFloppy, IconCloudUpload } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -153,7 +148,6 @@ export function InvoiceItemConfigDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
               <div>
                 <span>Configuração Fiscal do Item</span>
                 <p className="text-sm font-normal text-gray-500 mt-0.5">

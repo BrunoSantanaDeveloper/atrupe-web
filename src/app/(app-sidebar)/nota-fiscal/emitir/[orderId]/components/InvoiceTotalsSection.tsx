@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
 
 // Icons
 import { IconCalculator, IconAlertTriangle } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
@@ -41,7 +42,8 @@ export function InvoiceTotalsSection({
       {valuesModified && (
         <div className="flex items-start gap-3 rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-800 animate-in fade-in slide-in-from-top-2">
           <IconAlertTriangle
-            size={18}
+            aria-hidden
+            size={ICON_SIZE.md}
             className="mt-0.5 shrink-0 text-warning-500"
           />
           <p className="font-medium">
@@ -55,7 +57,7 @@ export function InvoiceTotalsSection({
           <AccordionItem value="totals" className="p-0 m-0 border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
+                <FeaturedIcon tone="neutral" Icon={IconCalculator} />
                 <CardTitle>Totais</CardTitle>
               </div>
               <AccordionTrigger

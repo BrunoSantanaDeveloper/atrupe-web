@@ -1,9 +1,8 @@
 'use client'
 
-import { SVGProps } from 'react'
-
 // Ui
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import type { IconComponentType } from '@/components/ui/icon'
 import { FormItem, FormField, FormMessage } from '@/components/ui/form'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
@@ -11,7 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useFormContext } from 'react-hook-form'
 
 // Icon
-import { IconCheck, IconProps } from '@tabler/icons-react'
+import { IconCheck } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -21,9 +20,7 @@ interface Props {
     label: string
     description?: string
     value: string
-    icon?:
-      | React.ComponentType<IconProps>
-      | React.ComponentType<SVGProps<SVGSVGElement>>
+    icon?: IconComponentType
   }[]
   onChange?: (value: string) => void
   name?: string
@@ -62,12 +59,7 @@ export function FormToggleCard({
                 <div className="flex items-center justify-between gap-1 py-3 cursor-pointer w-full">
                   <div className="flex items-center gap-4 text-start">
                     {option.icon ? (
-                      <FeaturedIcon
-                        Icon={option.icon}
-                        variant="borderedLight"
-                        size="sm"
-                        rounded
-                      />
+                      <FeaturedIcon Icon={option.icon} tone="brand" size="sm" />
                     ) : null}
                     <div className="toggle-label">
                       <p className="text-brand-800">{option.label}</p>
@@ -79,7 +71,8 @@ export function FormToggleCard({
                     </div>
                   </div>
                   <span className="flex items-center justify-center h-4 min-w-4 rounded-full bg-white text-white border border-gray-300 check-icon transition-colors">
-                    <IconCheck size={11} className="stroke-[4px]" />
+                    {/* eslint-disable-next-line no-restricted-syntax -- marca de controle dentro do círculo de 16 px, fora da escala de ícones */}
+                    <IconCheck aria-hidden size={11} className="stroke-[4px]" />
                   </span>
                 </div>
               </ToggleGroupItem>

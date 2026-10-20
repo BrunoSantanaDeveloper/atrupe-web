@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Icon } from '@/components/ui/icon'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -155,7 +156,7 @@ export function RestoreDefaultsDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2.5">
-            <IconRestore size={22} className="text-[#FF4201]" />
+            <Icon icon={IconRestore} size="lg" className="text-[#FF4201]" />
             <span>Restaurar o padrão do plano {plan?.name}</span>
           </DialogTitle>
         </DialogHeader>
@@ -307,7 +308,7 @@ export function RestoreDefaultsDialog({
           <Button type="button" onClick={handleConfirm} disabled={!canConfirm}>
             {saving ? (
               <span className="flex items-center gap-1">
-                <IconLoader size={16} className="animate-spin" />
+                <IconLoader aria-hidden className="animate-spin" />
                 Restaurando...
               </span>
             ) : (

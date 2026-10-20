@@ -6,7 +6,8 @@ import {
   AccountMenuGroup,
   AccountMenuVariant,
 } from '@/components/common/account-dropdown-menu'
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown as ChevronDown } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export const dynamic = 'force-dynamic'
 
@@ -109,7 +110,7 @@ function Trigger({ label }: { label: string }) {
       className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 bg-white shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)] hover:bg-gray-50 transition-colors"
     >
       {label}
-      <ChevronDown className="w-4 h-4 text-gray-500" />
+      <Icon icon={ChevronDown} size="sm" className="text-gray-500" />
     </button>
   )
 }

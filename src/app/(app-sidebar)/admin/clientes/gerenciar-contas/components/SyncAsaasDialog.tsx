@@ -17,7 +17,6 @@ import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -32,7 +31,7 @@ import { formatToCalendarDate } from '@/lib/formatDate'
 import type { AccountItem } from './Table/Data'
 
 // Icons
-import { IconRefresh, IconAlertTriangle, IconCheck } from '@tabler/icons-react'
+import { IconRefresh } from '@tabler/icons-react'
 
 /** Uma cobrança em que o sistema e o Asaas discordam — o que a sincronização alinha. */
 interface ChargeDivergence {
@@ -263,25 +262,6 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex flex-col items-center gap-4 text-center">
-              <FeaturedIcon
-                variant={
-                  showSyncOption
-                    ? 'warningBorderedLight'
-                    : checkResult?.message.includes('inadimplente')
-                      ? 'warningBorderedLight'
-                      : 'successBorderedLight'
-                }
-                Icon={
-                  showSyncOption
-                    ? IconAlertTriangle
-                    : checkResult?.message.includes('inadimplente')
-                      ? IconAlertTriangle
-                      : IconCheck
-                }
-                size="lg"
-                rounded
-                isLoading={isLoading}
-              />
               <span>Verificação Asaas</span>
             </div>
           </DialogTitle>

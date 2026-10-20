@@ -60,6 +60,7 @@ import {
 
 // Icons
 import { IconX, IconSearch, IconArrowLeft } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   quotationId: string
@@ -657,7 +658,7 @@ export function AddToItem({
                   ? 'Buscar produto pelo nome'
                   : 'Buscar processo pelo nome'
               }
-              startAdornment={<IconSearch size={16} />}
+              startAdornment={<Icon icon={IconSearch} size="sm" />}
               onChange={(event) => setSearch(event.target.value)}
             />
             <Tabs value={sector} variant="pill" className="overflow-x-auto">

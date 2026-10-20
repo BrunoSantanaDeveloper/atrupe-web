@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from '@/hooks/useRouter'
-import { Bot, Save } from 'lucide-react'
+import { IconRobot as Bot, IconDeviceFloppy as Save } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { toast } from 'sonner'
 
 import { updateAiAccessSettings } from '@/actions/systemSettings'
@@ -48,7 +49,7 @@ export function AiAccessForm({ initialEnabled }: { initialEnabled: boolean }) {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Bot className="size-5 text-brand-600" />
+          <Icon icon={Bot} size="md" className="text-brand-600" />
           <CardTitle>Assistente IA</CardTitle>
         </div>
         <CardDescription>

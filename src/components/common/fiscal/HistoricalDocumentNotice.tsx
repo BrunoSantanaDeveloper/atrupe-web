@@ -1,6 +1,7 @@
 'use client'
 
 import { IconLock } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 /**
  * No menu de ações de uma nota do CNPJ anterior a uma transferência de
@@ -12,7 +13,7 @@ export function HistoricalDocumentNotice({ reason }: { reason: string }) {
       className="flex gap-2 px-2 py-1.5 text-xs text-gray-600"
       data-nota-historica
     >
-      <IconLock className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
+      <Icon icon={IconLock} size="sm" className="mt-0.5 text-gray-500" />
       <span>{reason}</span>
     </div>
   )

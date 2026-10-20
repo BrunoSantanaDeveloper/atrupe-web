@@ -49,6 +49,7 @@ import { setCookie } from 'cookies-next'
 // Icons
 import { IconComponent } from '../common/Icon'
 import { IconChevronLeft } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 import type { Session } from 'next-auth'
@@ -234,6 +235,8 @@ export function SidebarComponent(props: Props) {
                 onClick={handleCollapse}
               >
                 <IconChevronLeft
+                  aria-hidden
+                  size={ICON_SIZE.sm}
                   className={cn(
                     'text-gray transition-transform ease-out duration-slow',
                     collapsed && 'rotate-180',
@@ -315,6 +318,7 @@ export function SidebarComponent(props: Props) {
                               >
                                 <IconComponent
                                   icon={item?.icon}
+                                  size="md"
                                   className={cn(
                                     currentPath.includes(`${item?.path}`)
                                       ? 'text-brand'
@@ -402,6 +406,7 @@ export function SidebarComponent(props: Props) {
                             >
                               <IconComponent
                                 icon={item?.icon}
+                                size="md"
                                 className="text-gray-600"
                               />
                               <span
@@ -466,14 +471,13 @@ export function SidebarComponent(props: Props) {
                                         <div className="flex items-center gap-4">
                                           <IconComponent
                                             icon={navChild?.icon}
+                                            size="md"
                                             className={cn(
-                                              'size-5',
                                               currentPath.includes(
                                                 `${navChild?.path}`,
                                               )
                                                 ? 'text-brand'
-                                                : navChild?.iconColor ||
-                                                    'text-gray-500',
+                                                : 'text-gray-500',
                                               navChild?.action
                                                 ? 'text-brand'
                                                 : '',

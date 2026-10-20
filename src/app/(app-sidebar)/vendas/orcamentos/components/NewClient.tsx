@@ -7,8 +7,6 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { IconUser } from '@tabler/icons-react'
 
 import { useNewClientStore } from '../store/useNewClientStore'
 import { NewClientForm } from './NewClient/NewClientForm'
@@ -27,7 +25,6 @@ function NewClient() {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
               <span>Novo cliente</span>
             </div>
           </DialogTitle>

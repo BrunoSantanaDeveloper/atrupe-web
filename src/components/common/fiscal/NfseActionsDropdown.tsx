@@ -24,6 +24,7 @@ import {
   IconLoader2,
   IconMail,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Dialogs
 import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/CancelNfeDialog'
@@ -181,7 +182,7 @@ export function NfseActionsDropdown({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="iconSm" aria-label="Ações da NFS-e">
-            <IconDotsVertical size={18} className="text-gray-500" />
+            <Icon icon={IconDotsVertical} size="sm" className="text-gray-500" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
@@ -199,9 +200,13 @@ export function NfseActionsDropdown({
               }}
             >
               {isOpeningPdf ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconFileCheck className="mr-2 h-4 w-4" />
+                <Icon icon={IconFileCheck} size="md" className="mr-2" />
               )}
               <span>Ver PDF</span>
             </DropdownMenuItem>
@@ -216,9 +221,13 @@ export function NfseActionsDropdown({
               }}
             >
               {isDownloadingXml ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconDownload className="mr-2 h-4 w-4" />
+                <Icon icon={IconDownload} size="md" className="mr-2" />
               )}
               <span>Baixar XML</span>
             </DropdownMenuItem>
@@ -242,9 +251,13 @@ export function NfseActionsDropdown({
               }}
             >
               {isSendingEmail ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconMail className="mr-2 h-4 w-4" />
+                <Icon icon={IconMail} size="md" className="mr-2" />
               )}
               <span>Enviar PDF/XML por e-mail</span>
             </DropdownMenuItem>
@@ -259,9 +272,13 @@ export function NfseActionsDropdown({
               }}
             >
               {isConsulting ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconRefresh className="mr-2 h-4 w-4" />
+                <Icon icon={IconRefresh} size="md" className="mr-2" />
               )}
               <span>Consultar status</span>
             </DropdownMenuItem>
@@ -274,7 +291,7 @@ export function NfseActionsDropdown({
                 onClick={() => setIsCancelDialogOpen(true)}
                 className="text-error-600 focus:text-error-600"
               >
-                <IconBan className="mr-2 h-4 w-4" />
+                <Icon icon={IconBan} size="md" className="mr-2" />
                 <span>Cancelar NFS-e</span>
               </DropdownMenuItem>
             </>

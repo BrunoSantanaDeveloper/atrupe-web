@@ -1,4 +1,4 @@
-import { SVGProps } from 'react'
+import type { ComponentType } from 'react'
 
 import { BadgeProps } from '@/components/ui/badge'
 
@@ -25,14 +25,15 @@ import {
   IconInstallation,
   IconClientPickup,
   IconAdministration,
-} from '@/assets/icons/CustomIcons'
+} from '@/assets/icons/pictogramas'
+import type { PictogramaProps } from '@/assets/icons/pictogramas'
 
 // Third-party
 import { v4 as uuidv4 } from 'uuid'
 
 type ProductionStagesType = {
   [key: string]: {
-    icon: (props: SVGProps<SVGSVGElement>) => JSX.Element
+    icon: ComponentType<PictogramaProps>
     name: string
   }
 }

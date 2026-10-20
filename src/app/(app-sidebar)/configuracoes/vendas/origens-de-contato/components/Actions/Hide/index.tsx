@@ -63,10 +63,9 @@ export function HideAlertDialog({ open, setOpen, rowData }: Props) {
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconEyeOff}
-            rounded
             size="lg"
-            variant="neutralOutline"
-            className="mx-auto mb-2"
+            tone="neutral"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>
             Ocultar &quot;{rowData?.name}&quot;?

@@ -57,14 +57,8 @@ export function InstallmentsForm({
       >
         <div className="flex items-center gap-2">
           <FeaturedIcon
-            variant={
-              balance < 0
-                ? 'errorLight'
-                : balance > 0
-                  ? 'successLight'
-                  : 'neutralLight'
-            }
-            size="xs"
+            tone={balance < 0 ? 'error' : balance > 0 ? 'success' : 'neutral'}
+            size="sm"
             Icon={IconCornerRightDown}
           />
           <p className="text-sm font-medium">Saldo a repassar</p>

@@ -4,10 +4,9 @@ import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 // Components
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import type { IconComponentType } from '@/components/ui/icon'
 
 // types
-import { IconProps } from '@tabler/icons-react'
-import { SVGProps } from 'react'
 
 export function DetailCard({
   title,
@@ -16,16 +15,14 @@ export function DetailCard({
 }: {
   title: string
   children: React.ReactNode
-  icon:
-    | React.ComponentType<IconProps>
-    | React.ComponentType<SVGProps<SVGSVGElement>>
+  icon: IconComponentType
 }) {
   return (
     <Card className="w-full pb-4">
       <CardHeader>
         <div className="flex justify-between">
           <div className="flex gap-3 items-center">
-            <FeaturedIcon variant="neutralOutline" Icon={icon} />
+            <FeaturedIcon tone="neutral" Icon={icon} />
             <CardTitle>{title}</CardTitle>
           </div>
         </div>

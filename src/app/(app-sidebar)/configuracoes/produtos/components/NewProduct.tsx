@@ -64,6 +64,7 @@ import {
   IconHierarchy2,
   IconTrash,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Action
 import {
@@ -441,7 +442,6 @@ function NewProductModal({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
                 <span>{editMode ? 'Editar produto' : 'Novo produto'}</span>
               </div>
             </DialogTitle>
@@ -456,18 +456,30 @@ function NewProductModal({
               <div className="px-6 pt-4 border-b border-gray-100">
                 <TabsList>
                   <TabsTrigger value="general">
-                    <IconPackage size={14} className="mr-1.5" />
+                    <IconPackage
+                      aria-hidden
+                      size={ICON_SIZE.sm}
+                      className="mr-1.5"
+                    />
                     Produto
                   </TabsTrigger>
                   {showCompositionTab && (
                     <TabsTrigger value="composition">
-                      <IconHierarchy2 size={14} className="mr-1.5" />
+                      <IconHierarchy2
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="mr-1.5"
+                      />
                       Composição
                     </TabsTrigger>
                   )}
                   {showFiscalTab && (
                     <TabsTrigger value="fiscal">
-                      <IconReceiptTax size={14} className="mr-1.5" />
+                      <IconReceiptTax
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="mr-1.5"
+                      />
                       Dados Fiscais
                     </TabsTrigger>
                   )}
@@ -591,7 +603,7 @@ function NewProductModal({
                                   handleRemoveCompositionProducts(index)
                                 }
                               >
-                                <IconTrash className="size-5" />
+                                <IconTrash aria-hidden size={ICON_SIZE.sm} />
                               </Button>
                             )}
                             <FormInput
@@ -648,11 +660,7 @@ function NewProductModal({
                             className="flex justify-center items-center mx-auto gap-3 py-8"
                             onClick={handleAppendProductItems}
                           >
-                            <FeaturedIcon
-                              variant="light"
-                              Icon={IconPlus}
-                              rounded
-                            />
+                            <FeaturedIcon tone="brand" Icon={IconPlus} />
                             <p className="text-sm text-gray-600 font-medium">
                               Adicionar outra unidade de venda
                             </p>
@@ -709,11 +717,7 @@ function NewProductModal({
                       </TooltipProvider>
                     ) : (
                       <div className="flex flex-col items-center gap-3 py-16 text-center">
-                        <FeaturedIcon
-                          variant="light"
-                          Icon={IconHierarchy2}
-                          rounded
-                        />
+                        <FeaturedIcon tone="brand" Icon={IconHierarchy2} />
                         <p className="text-base font-semibold text-gray-700">
                           O fluxo de etapas vem depois de salvar
                         </p>

@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -20,6 +19,7 @@ import {
   IconTrendingDown,
   IconTrendingUp,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 type DashboardFilters = {
   startDate?: string
@@ -73,14 +73,12 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
       value: formatValue(realizedRevenue),
       detail: `${receivedCount} recebimentos`,
       icon: IconTrendingUp,
-      variant: 'successLight',
     },
     {
       label: 'Despesa realizada',
       value: formatValue(realizedExpense),
       detail: `${paidCount} pagamentos`,
       icon: IconTrendingDown,
-      variant: 'errorLight',
     },
     {
       label: 'Saldo realizado',
@@ -94,14 +92,12 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
       value: formatValue(pendingRevenue - pendingExpense),
       detail: `${formatValue(pendingRevenue)} a receber`,
       icon: IconClockHour4,
-      variant: 'warningLight',
     },
     {
       label: 'Vencidos',
       value: formatValue(overdueTotal),
       detail: `${overdueCount} parcelas no período`,
       icon: IconAlertCircle,
-      variant: 'errorLight',
     },
   ] as const
 
@@ -137,11 +133,7 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
               ))
             : cards.map((card) => (
                 <div key={card.label} className="flex items-center gap-3">
-                  <FeaturedIcon
-                    size="md"
-                    variant={card.variant as FeaturedIconProps['variant']}
-                    Icon={card.icon}
-                  />
+                  <Icon icon={card.icon} size="md" className="text-gray-600" />
                   <div className="min-w-0">
                     <p className="type-kpi-label truncate">{card.label}</p>
                     <p className="type-kpi-value truncate">{card.value}</p>

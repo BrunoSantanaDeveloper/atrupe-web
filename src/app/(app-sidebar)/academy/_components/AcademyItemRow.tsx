@@ -27,6 +27,7 @@ import {
   IconCircleFilled,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Modals
 import { modalRegistry } from './ModalRegistry'
@@ -201,9 +202,9 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
             }
           >
             {checked ? (
-              <IconCircleCheckFilled className="text-success" />
+              <IconCircleCheckFilled aria-hidden className="text-success" />
             ) : (
-              <IconCircleFilled className="text-gray-200" />
+              <IconCircleFilled aria-hidden className="text-gray-200" />
             )}
           </button>
           <div className="max-w-xs md:max-w-md lg:max-w-full">
@@ -276,7 +277,7 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
                       unoptimized
                     />
                   ) : null}
-                  <IconVideo className="size-4 text-gray-500" />
+                  <Icon icon={IconVideo} size="sm" className="text-gray-500" />
                 </button>
               )
             })()}

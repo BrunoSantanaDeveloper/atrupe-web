@@ -14,7 +14,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Components
@@ -36,7 +35,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { SubCategoryType } from '@/types/settings/accountsPlan'
 
 // Icons
-import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -134,7 +133,6 @@ export function EditSubcategoryDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <span>Editar subcategoria</span>
             </div>
           </DialogTitle>

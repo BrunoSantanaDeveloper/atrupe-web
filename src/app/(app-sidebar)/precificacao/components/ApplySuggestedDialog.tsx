@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -41,9 +40,6 @@ import { applySuggestedPrices } from '@/actions/pricing'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-
-// Icons
-import { IconWand } from '@tabler/icons-react'
 
 interface Props {
   group: PricingGroup
@@ -113,17 +109,12 @@ export function ApplySuggestedDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[880px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconWand} />
-            <div>
-              <DialogTitle>Aplicar preço sugerido</DialogTitle>
-              <DialogDescription>
-                {group === 'products'
-                  ? 'O preço passa a ser o da composição na medida padrão.'
-                  : 'O preço passa a ser custo × markup, como preço variável: ele acompanha o custo e preserva o lucro desejado.'}
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Aplicar preço sugerido</DialogTitle>
+          <DialogDescription>
+            {group === 'products'
+              ? 'O preço passa a ser o da composição na medida padrão.'
+              : 'O preço passa a ser custo × markup, como preço variável: ele acompanha o custo e preserva o lucro desejado.'}
+          </DialogDescription>
         </DialogHeader>
         <DialogBody className="overflow-x-auto">
           {isLoading ? (

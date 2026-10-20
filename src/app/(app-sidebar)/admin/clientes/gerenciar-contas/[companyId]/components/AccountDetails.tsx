@@ -15,6 +15,7 @@ import { DataResets } from './DataResets'
 // UI
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Icon } from '@/components/ui/icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import {
@@ -467,7 +468,7 @@ export function AccountDetails({ companyId }: { companyId: string }) {
                               className="inline-flex items-center gap-1 text-sm text-brand-600 hover:underline"
                             >
                               Fatura
-                              <IconExternalLink size={14} />
+                              <Icon icon={IconExternalLink} size="sm" />
                             </a>
                           ) : null}
                         </TableCell>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 
 // Icons
 import { IconCashBanknote, IconArrowNarrowRight } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Libs
 import { auth } from '@/lib/auth'
@@ -29,7 +30,7 @@ export async function PartialBlockAlert() {
   return (
     <div className="border-b bg-warning-50 border-warning-200 z-50">
       <div className="flex flex-wrap items-center justify-center gap-4 py-3 px-4">
-        <IconCashBanknote className="size-8 stroke-1 flex-shrink-0 text-warning-600" />
+        <Icon icon={IconCashBanknote} size="lg" className="text-warning-600" />
         <div className="flex flex-col flex-shrink-0">
           <span className="text-sm font-semibold text-warning-600">
             Conta bloqueada

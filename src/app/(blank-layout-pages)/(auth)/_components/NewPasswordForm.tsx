@@ -55,9 +55,10 @@ export function NewPasswordForm({ onSubmit }: Props) {
           />
           <div className="flex items-center gap-1 text-gray text-sm">
             <IconComponent
+              size="sm"
               icon={IconCircleCheckFilled}
               className={cn(
-                'size-3 ml-0.5',
+                'ml-0.5',
                 watch('password') === watch('confirmPassword') &&
                   watch('password') !== ''
                   ? 'text-success'

@@ -94,7 +94,7 @@ export function RejectQuotation({ data }: Props) {
       <CustomButton
         icon={IconX}
         title="Rejeitar orçamento"
-        iconVariant="errorLight"
+        iconTone="error"
         onClick={handleReject}
       />
     )
@@ -106,17 +106,16 @@ export function RejectQuotation({ data }: Props) {
         <CustomButton
           icon={IconX}
           title="Rejeitar orçamento"
-          iconVariant="errorLight"
+          iconTone="error"
         />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconAlertCircle}
-            rounded
             size="lg"
-            variant="errorBorderedLight"
-            className="mx-auto mb-2"
+            tone="error"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>Rejeitar orçamento</AlertDialogTitle>
           <AlertDialogDescription className="sr-only">

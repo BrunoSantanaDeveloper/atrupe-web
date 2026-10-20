@@ -22,7 +22,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import {
@@ -44,7 +43,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconThumbUp, IconPrinter, IconCircleCheck } from '@tabler/icons-react'
+import { IconPrinter, IconCircleCheck } from '@tabler/icons-react'
 
 // Utils
 import { cn, formatMoney } from '@/lib/utils'
@@ -143,7 +142,6 @@ export function ReceiveSaleDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">
                 {sale?.ready ? 'Retirada' : 'Recebimento'}

@@ -52,6 +52,7 @@ import {
   IconLayoutGrid,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
@@ -274,7 +275,7 @@ export function QuotationItems({ data }: Props) {
       <Card className="w-full">
         <CardHeader>
           <div className="flex gap-3 items-center">
-            <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+            <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
             <CardTitle>Itens</CardTitle>
             <Badge variant="neutralLight" className="mt-1">
               {(items?.length || 0) + composed.length}
@@ -287,7 +288,11 @@ export function QuotationItems({ data }: Props) {
               role="alert"
               className="mb-4 flex items-start gap-3 rounded-lg border border-warning-300 bg-warning-50 px-4 py-3 text-sm text-warning-700"
             >
-              <IconAlertTriangle className="mt-0.5 size-5 shrink-0" />
+              <IconAlertTriangle
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="mt-0.5 shrink-0"
+              />
               <div>
                 <p className="font-medium">
                   {inactiveItems.length === 1
@@ -368,8 +373,9 @@ export function QuotationItems({ data }: Props) {
                             className="flex items-center gap-3 text-left"
                           >
                             <IconChevronRight
+                              size={ICON_SIZE.md}
                               className={cn(
-                                'size-5 shrink-0 text-gray transition-transform',
+                                'shrink-0 text-gray transition-transform',
                                 open && 'rotate-90',
                               )}
                               aria-hidden="true"
@@ -382,7 +388,8 @@ export function QuotationItems({ data }: Props) {
                             )}
                             {item?.notes ? (
                               <IconMessage
-                                className="size-4 shrink-0 text-warning-600"
+                                size={ICON_SIZE.sm}
+                                className="shrink-0 text-warning-600"
                                 aria-label="Tem observações"
                               />
                             ) : null}
@@ -885,11 +892,8 @@ export function QuotationItems({ data }: Props) {
               disabled={actionDisabled('addItem', status)}
             >
               <FeaturedIcon
-                variant={
-                  actionDisabled('addItem', status) ? 'neutralLight' : 'light'
-                }
+                tone={actionDisabled('addItem', status) ? 'neutral' : 'brand'}
                 Icon={IconPlus}
-                rounded
               />
               <p className="text-sm text-gray-600 font-medium">
                 Adicionar item

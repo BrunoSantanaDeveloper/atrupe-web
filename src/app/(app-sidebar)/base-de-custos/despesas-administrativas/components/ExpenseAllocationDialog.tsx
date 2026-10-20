@@ -25,7 +25,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import {
@@ -54,9 +53,6 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 // Third-party
 import { toast } from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
-// Icons
-import { IconArrowsSplit2 } from '@tabler/icons-react'
 
 interface Props {
   account?: AdminExpenseAccount
@@ -170,13 +166,8 @@ export function ExpenseAllocationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconArrowsSplit2} />
-            <div>
-              <DialogTitle>Ratear entre os setores</DialogTitle>
-              <DialogDescription>{account?.name}</DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Ratear entre os setores</DialogTitle>
+          <DialogDescription>{account?.name}</DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-6">
           <p className="text-sm text-gray">

@@ -45,7 +45,9 @@ import {
   IconPlus,
   IconLayoutGrid,
   IconCornerDownRight,
+  IconCurrencyReal,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type
 import { OrderType } from '@/types/sales/order'
@@ -117,7 +119,7 @@ export function OrderItems({ data }: Props) {
       <Card className="w-full">
         <CardHeader>
           <div className="flex gap-3 items-center">
-            <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+            <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
             <CardTitle>Itens</CardTitle>
           </div>
         </CardHeader>
@@ -285,7 +287,7 @@ export function OrderItems({ data }: Props) {
                                       requireAll
                                     >
                                       <ActionButton
-                                        Icon={IconCoin}
+                                        Icon={IconCurrencyReal}
                                         tooltip="Valores"
                                         onClick={() => {
                                           setOpenDialog('values')
@@ -469,7 +471,11 @@ export function OrderItems({ data }: Props) {
                                       >
                                         <TableCell className="pl-14 py-0">
                                           <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
-                                            <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
+                                            <IconCornerDownRight
+                                              aria-hidden
+                                              size={ICON_SIZE.sm}
+                                              className="ml-3 text-gray-400"
+                                            />
                                             {composition?.name}
                                           </AccordionContent>
                                         </TableCell>
@@ -562,7 +568,7 @@ export function OrderItems({ data }: Props) {
             className="flex justify-center items-center h-full w-full gap-3 py-8 disabled:bg-transparent disabled:opacity-50"
             disabled
           >
-            <FeaturedIcon variant="neutralLight" Icon={IconPlus} rounded />
+            <FeaturedIcon tone="neutral" Icon={IconPlus} />
             <p className="text-sm text-gray-600 font-medium">Adicionar item</p>
           </Button>
         </CardFooter>

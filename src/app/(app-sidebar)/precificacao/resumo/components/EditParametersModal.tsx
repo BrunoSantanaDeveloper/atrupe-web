@@ -11,7 +11,6 @@ import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -32,9 +31,6 @@ import { updatePricingParameters } from '@/actions/pricing'
 // Third-party
 import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-// Icons
-import { IconAdjustments } from '@tabler/icons-react'
 
 interface Props {
   parameters?: PricingParameters
@@ -147,15 +143,10 @@ export function EditParametersModal({ parameters, open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconAdjustments} />
-            <div>
-              <DialogTitle>Editar parâmetros</DialogTitle>
-              <DialogDescription>
-                Valem para a empresa inteira e formam o markup de referência.
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Editar parâmetros</DialogTitle>
+          <DialogDescription>
+            Valem para a empresa inteira e formam o markup de referência.
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <form

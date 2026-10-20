@@ -25,7 +25,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import {
@@ -53,9 +52,6 @@ import { allocationCriteria } from '@/consts/cost-base'
 import { toast } from 'sonner'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-
-// Icons
-import { IconArrowsSplit2 } from '@tabler/icons-react'
 
 interface Props {
   allocation?: SectorAllocation
@@ -186,13 +182,8 @@ export function SectorAllocationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[960px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconArrowsSplit2} />
-            <div>
-              <DialogTitle>Rateio entre os equipamentos</DialogTitle>
-              <DialogDescription>{allocation?.sectorName}</DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Rateio entre os equipamentos</DialogTitle>
+          <DialogDescription>{allocation?.sectorName}</DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-6">
           <p className="text-sm text-gray">

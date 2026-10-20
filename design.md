@@ -8,14 +8,14 @@ Regra de prioridade: vale o arquivo mais novo; arquivos antigos só completam la
 
 Abreviações dos arquivos usadas nas fontes:
 
-| Abreviação | Arquivo no Figma | Data |
-|---|---|---|
-| **Allan** | Atrupe Pro, Elite e Full - Allan (cópia) | set/2026 |
-| **Jul/26** | Atrupe Pro, Elite e Full | jul/2026 |
-| **Pro** | Atrupe - Pro | abr/2026 |
-| **Mobile** | Atrupe - Mobile | fev/2026 |
-| **Novas telas** | Atrupe - Novas telas | out/2025 |
-| **DS** | Atrupe - Design System | jan/2024 |
+| Abreviação      | Arquivo no Figma                         | Data     |
+| --------------- | ---------------------------------------- | -------- |
+| **Allan**       | Atrupe Pro, Elite e Full - Allan (cópia) | set/2026 |
+| **Jul/26**      | Atrupe Pro, Elite e Full                 | jul/2026 |
+| **Pro**         | Atrupe - Pro                             | abr/2026 |
+| **Mobile**      | Atrupe - Mobile                          | fev/2026 |
+| **Novas telas** | Atrupe - Novas telas                     | out/2025 |
+| **DS**          | Atrupe - Design System                   | jan/2024 |
 
 ---
 
@@ -40,80 +40,80 @@ Valores reais das variáveis do Figma. Fonte: Allan › Colors (frame "Colors").
 
 **Brand (verde Atrupe)**
 
-| 25 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
-|---|---|---|---|---|---|---|---|---|---|---|
+| 25      | 50      | 100     | 200     | 300     | 400     | 500     | 600     | 700     | 800     | 900     |
+| ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
 | #ECFDF4 | #D2F9E3 | #A9F1CC | #71E4AF | #38CF8F | #14B375 | #099260 | #077550 | #085D40 | #084C36 | #032B1F |
 
 **Gray (neutros)**
 
-| 25 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
-|---|---|---|---|---|---|---|---|---|---|---|
+| 25      | 50      | 100     | 200     | 300     | 400     | 500     | 600     | 700     | 800     | 900     |
+| ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
 | #FCFCFD | #F9FAFB | #F2F4F7 | #EAECF0 | #D0D5DD | #98A2B3 | #667085 | #475467 | #344054 | #1D2939 | #101828 |
 
 Também existe a variável **Gray/60 = #E9EBF0**, usada nas divisórias da sidebar. Fonte: Jul/26 › Orçamentos (variáveis da tela); Allan › Base de Custos (sidebar).
 
 **Feedback**
 
-| Escala | 25 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| Error | #FFFBFA | #FEF3F2 | #FEE4E2 | #FECDCA | #FDA29B | #F97066 | #F04438 | #D92D20 | #B42318 | #912018 | #7A271A |
+| Escala  | 25      | 50      | 100     | 200     | 300     | 400     | 500     | 600     | 700     | 800     | 900     |
+| ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| Error   | #FFFBFA | #FEF3F2 | #FEE4E2 | #FECDCA | #FDA29B | #F97066 | #F04438 | #D92D20 | #B42318 | #912018 | #7A271A |
 | Warning | #FFFCF5 | #FFFAEB | #FEF0C7 | #FEDF89 | #FEC84B | #FDB022 | #F79009 | #DC6803 | #B54708 | #93370D | #7A2E0E |
 | Success | #F6FEF9 | #ECFDF3 | #D1FADF | #A6F4C5 | #6CE9A6 | #32D583 | #12B76A | #039855 | #027A48 | #05603A | #054F31 |
 
 **Cores de apoio** (gráficos, categorias, etiquetas)
 
-| Escala | 25 | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900 |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| Blue gray | – | #F8F9FC | #EAECF5 | #D5D9EB | #AFB5D9 | #717BBC | #4E5BA6 | #3E4784 | #363F72 | #002D4B | #101323 |
+| Escala     | 25      | 50      | 100     | 200     | 300     | 400     | 500     | 600     | 700     | 800     | 900     |
+| ---------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- | ------- |
+| Blue gray  | –       | #F8F9FC | #EAECF5 | #D5D9EB | #AFB5D9 | #717BBC | #4E5BA6 | #3E4784 | #363F72 | #002D4B | #101323 |
 | Blue light | #F5FBFF | #F0F9FF | #E0F2FE | #B9E6FE | #7CD4FD | #36BFFA | #0BA5EC | #0086C9 | #026AA2 | #065986 | #0B4A6F |
-| Blue | #F5FAFF | #EFF8FF | #D1E9FF | #B2DDFF | #84CAFF | #53B1FD | #2E90FA | #1570EF | #175CD3 | #1849A9 | #194185 |
-| Indigo | #F5F8FF | #EEF4FF | #E0EAFF | #C7D7FE | #A4BCFD | #8098F9 | #6172F3 | #444CE7 | #3538CD | #2D31A6 | #2D3282 |
-| Purple | #FAFAFF | #F4F3FF | #EBE9FE | #D9D6FE | #BDB4FE | #9B8AFB | #7A5AF8 | #6938EF | #5925DC | #4A1FB8 | #3E1C96 |
-| Pink | #FEF6FB | #FDF2FA | #FCE7F6 | #FCCEEE | #FAA7E0 | #F670C7 | #EE46BC | #DD2590 | #C11574 | #9E165F | #851651 |
-| Rosé | #FFF5F6 | #FFF1F3 | #FFE4E8 | #FECDD6 | #FEA3B4 | #FD6F8E | #F63D68 | #E31B54 | #C01048 | #A11043 | #89123E |
-| Orange | #FFFAF5 | #FFF6ED | #FFEAD5 | #FDDCAB | #FEB273 | #FD853A | #FB6514 | #EC4A0A | #C4320A | #9C2A10 | #7E2410 |
+| Blue       | #F5FAFF | #EFF8FF | #D1E9FF | #B2DDFF | #84CAFF | #53B1FD | #2E90FA | #1570EF | #175CD3 | #1849A9 | #194185 |
+| Indigo     | #F5F8FF | #EEF4FF | #E0EAFF | #C7D7FE | #A4BCFD | #8098F9 | #6172F3 | #444CE7 | #3538CD | #2D31A6 | #2D3282 |
+| Purple     | #FAFAFF | #F4F3FF | #EBE9FE | #D9D6FE | #BDB4FE | #9B8AFB | #7A5AF8 | #6938EF | #5925DC | #4A1FB8 | #3E1C96 |
+| Pink       | #FEF6FB | #FDF2FA | #FCE7F6 | #FCCEEE | #FAA7E0 | #F670C7 | #EE46BC | #DD2590 | #C11574 | #9E165F | #851651 |
+| Rosé       | #FFF5F6 | #FFF1F3 | #FFE4E8 | #FECDD6 | #FEA3B4 | #FD6F8E | #F63D68 | #E31B54 | #C01048 | #A11043 | #89123E |
+| Orange     | #FFFAF5 | #FFF6ED | #FFEAD5 | #FDDCAB | #FEB273 | #FD853A | #FB6514 | #EC4A0A | #C4320A | #9C2A10 | #7E2410 |
 
 Base: **White #FFFFFF**, **Black #000000**. A página Colors também tem um frame "Gradients" do kit, sem uso identificado nas telas.
 
 **Uso semântico observado nas telas**
 
-| Papel | Token | Fonte |
-|---|---|---|
-| Fundo da página (área de conteúdo) | Gray/100 #F2F4F7 | Jul/26 › Orçamentos (variáveis aplicadas e screenshot) |
-| Superfície de card | White, borda Gray/200 | Allan › Base de Custos |
-| Texto principal / títulos | Gray/900 | Allan › Base de Custos (navbar) |
-| Texto de rótulo | Gray/700 | Allan › Inputs |
-| Texto secundário / dica | Gray/500 | Allan › Inputs |
-| Placeholder | Gray/400 | Allan › Inputs |
-| Ação primária | Brand/500 (hover Brand/700) | Allan › Buttons |
-| Item ativo da sidebar | fundo Brand/25, texto Brand/600 | Allan › Base de Custos (sidebar) |
-| Borda de foco | Brand/300 com anel Gray/600 | Allan › Inputs |
-| Erro em campo | borda Error/300, texto Error/500 | Allan › Inputs |
-| Valor a receber / receita | verde (Success/700 no texto) | Jul/26 › A receber, Fluxo financeiro |
-| Valor a pagar / despesa / desconto | vermelho (Error) | Jul/26 › Fluxo financeiro |
-| Grupo Mão de obra | Blue/500 | Allan › Precificação |
-| Grupo Máquinas | Success/500 | Allan › Precificação |
-| Grupo Materiais | Purple/500 | Allan › Precificação |
-| Grupo Produtos | Orange/500 | Allan › Precificação |
-| Tributação · Comissão · Custo financeiro | Blue/500 · Warning/500 · Purple/500 | Allan › Precificação |
+| Papel                                    | Token                               | Fonte                                                  |
+| ---------------------------------------- | ----------------------------------- | ------------------------------------------------------ |
+| Fundo da página (área de conteúdo)       | Gray/100 #F2F4F7                    | Jul/26 › Orçamentos (variáveis aplicadas e screenshot) |
+| Superfície de card                       | White, borda Gray/200               | Allan › Base de Custos                                 |
+| Texto principal / títulos                | Gray/900                            | Allan › Base de Custos (navbar)                        |
+| Texto de rótulo                          | Gray/700                            | Allan › Inputs                                         |
+| Texto secundário / dica                  | Gray/500                            | Allan › Inputs                                         |
+| Placeholder                              | Gray/400                            | Allan › Inputs                                         |
+| Ação primária                            | Brand/500 (hover Brand/700)         | Allan › Buttons                                        |
+| Item ativo da sidebar                    | fundo Brand/25, texto Brand/600     | Allan › Base de Custos (sidebar)                       |
+| Borda de foco                            | Brand/300 com anel Gray/600         | Allan › Inputs                                         |
+| Erro em campo                            | borda Error/300, texto Error/500    | Allan › Inputs                                         |
+| Valor a receber / receita                | verde (Success/700 no texto)        | Jul/26 › A receber, Fluxo financeiro                   |
+| Valor a pagar / despesa / desconto       | vermelho (Error)                    | Jul/26 › Fluxo financeiro                              |
+| Grupo Mão de obra                        | Blue/500                            | Allan › Precificação                                   |
+| Grupo Máquinas                           | Success/500                         | Allan › Precificação                                   |
+| Grupo Materiais                          | Purple/500                          | Allan › Precificação                                   |
+| Grupo Produtos                           | Orange/500                          | Allan › Precificação                                   |
+| Tributação · Comissão · Custo financeiro | Blue/500 · Warning/500 · Purple/500 | Allan › Precificação                                   |
 
 ### 2.2 Tipografia
 
 Família **Inter**. Fonte: Allan › Typography.
 
-| Estilo | Tamanho / altura de linha | Pesos disponíveis | Letter-spacing |
-|---|---|---|---|
-| Display 2xl | 72 / 90 | Regular 400, Medium 500, Semibold 600, Bold 700 | -2 |
-| Display xl | 60 / 72 | 400 · 500 · 600 · 700 | -2 |
-| Display lg | 48 / 60 | 400 · 500 · 600 · 700 | -2 |
-| Display md | 36 / 44 | 400 · 500 · 600 · 700 | -2 |
-| Display sm | 30 / 38 | 400 · 500 · 600 · 700 | 0 |
-| Display xs | 24 / 32 | 400 · 500 · 600 · 700 | 0 |
-| Text xl | 20 / 30 | 400 · 500 · 600 · 700 | 0 |
-| Text lg | 18 / 28 | 400 · 500 · 600 · 700 (há também "Medium underlined") | 0 |
-| Text md | 16 / 24 | 400 · 500 · 600 · 700 | 0 |
-| Text sm | 14 / 20 | 400 · 500 · 600 · 700 | 0 |
-| Text xs | 12 / 18 | 400 · 500 · 600 · 700 | 0 |
+| Estilo      | Tamanho / altura de linha | Pesos disponíveis                                     | Letter-spacing |
+| ----------- | ------------------------- | ----------------------------------------------------- | -------------- |
+| Display 2xl | 72 / 90                   | Regular 400, Medium 500, Semibold 600, Bold 700       | -2             |
+| Display xl  | 60 / 72                   | 400 · 500 · 600 · 700                                 | -2             |
+| Display lg  | 48 / 60                   | 400 · 500 · 600 · 700                                 | -2             |
+| Display md  | 36 / 44                   | 400 · 500 · 600 · 700                                 | -2             |
+| Display sm  | 30 / 38                   | 400 · 500 · 600 · 700                                 | 0              |
+| Display xs  | 24 / 32                   | 400 · 500 · 600 · 700                                 | 0              |
+| Text xl     | 20 / 30                   | 400 · 500 · 600 · 700                                 | 0              |
+| Text lg     | 18 / 28                   | 400 · 500 · 600 · 700 (há também "Medium underlined") | 0              |
+| Text md     | 16 / 24                   | 400 · 500 · 600 · 700                                 | 0              |
+| Text sm     | 14 / 20                   | 400 · 500 · 600 · 700                                 | 0              |
+| Text xs     | 12 / 18                   | 400 · 500 · 600 · 700                                 | 0              |
 
 Variável extra "Text / Small": Inter Semibold 12 / 16, usada nos contadores das abas. Fonte: Allan › Base de Custos.
 
@@ -124,23 +124,23 @@ um papel com tamanho, linha, peso e cor fixos. Classe `type-<papel>` ou os
 componentes `Heading`/`Text` (`src/components/ui/typography.tsx`); tabela
 em `src/lib/typography-roles.ts`; vitrine em `/sandbox/tipografia`.
 
-| Papel | Estilo | Onde |
-|---|---|---|
-| `page-title` | Display xs Semibold, Gray/900 | título da página (um `h1`) |
-| `page-subtitle` | Text sm Regular, Gray/600 | linha abaixo do título |
-| `section-title` | Text lg Semibold, Gray/900 | `h2` de seção |
-| `card-title` | Text md Semibold, Gray/900 | título de card |
-| `dialog-title` | Text lg Semibold, Gray/900 | título de diálogo e painel |
-| `object-title` | Display xs Semibold, Gray/900 | nome do registro no detalhe |
-| `kpi-value` / `kpi-hero` | Display xs / Display sm Semibold, tabular | valor de indicador |
-| `kpi-label` | Text sm Medium, Gray/600 | rótulo de indicador |
-| `body` / `body-strong` | Text sm Regular Gray/700 / Semibold Gray/900 | corpo, células, identificador da linha |
-| `secondary` / `helper` | Text sm Regular, Gray/600 | apoio, ajuda de campo |
-| `caption` | Text xs Regular, Gray/600 | metadados |
-| `label` | Text sm Medium, Gray/700 | rótulo de campo e de valor |
-| `eyebrow` | Text xs Semibold, Gray/600, caixa alta, +0,04em | único uppercase: grupo de tabela, seção de formulário |
-| `table-header` | Text xs Medium, Gray/600 | cabeçalho de tabela |
-| `nav-item` | Text sm Medium, Gray/700 | item e subitem da barra lateral |
+| Papel                    | Estilo                                          | Onde                                                  |
+| ------------------------ | ----------------------------------------------- | ----------------------------------------------------- |
+| `page-title`             | Display xs Semibold, Gray/900                   | título da página (um `h1`)                            |
+| `page-subtitle`          | Text sm Regular, Gray/600                       | linha abaixo do título                                |
+| `section-title`          | Text lg Semibold, Gray/900                      | `h2` de seção                                         |
+| `card-title`             | Text md Semibold, Gray/900                      | título de card                                        |
+| `dialog-title`           | Text lg Semibold, Gray/900                      | título de diálogo e painel                            |
+| `object-title`           | Display xs Semibold, Gray/900                   | nome do registro no detalhe                           |
+| `kpi-value` / `kpi-hero` | Display xs / Display sm Semibold, tabular       | valor de indicador                                    |
+| `kpi-label`              | Text sm Medium, Gray/600                        | rótulo de indicador                                   |
+| `body` / `body-strong`   | Text sm Regular Gray/700 / Semibold Gray/900    | corpo, células, identificador da linha                |
+| `secondary` / `helper`   | Text sm Regular, Gray/600                       | apoio, ajuda de campo                                 |
+| `caption`                | Text xs Regular, Gray/600                       | metadados                                             |
+| `label`                  | Text sm Medium, Gray/700                        | rótulo de campo e de valor                            |
+| `eyebrow`                | Text xs Semibold, Gray/600, caixa alta, +0,04em | único uppercase: grupo de tabela, seção de formulário |
+| `table-header`           | Text xs Medium, Gray/600                        | cabeçalho de tabela                                   |
+| `nav-item`               | Text sm Medium, Gray/700                        | item e subitem da barra lateral                       |
 
 Divergência deliberada do Figma (Allan › Base de Custos): o título da
 página sobe de Text lg para Display xs, para ficar acima de títulos de
@@ -152,25 +152,25 @@ dica e erro de campo sobem de 12 px para Text sm. Nenhum texto abaixo de
 
 **Escala de espaçamento** (base 16 px). Fonte: Allan › Grids & spacing.
 
-| Token | rem | px |
-|---|---|---|
-| 1 | 0.25 | 4 |
-| 2 | 0.5 | 8 |
-| 3 | 0.75 | 12 |
-| 4 | 1 | 16 |
-| 5 | 1.25 | 20 |
-| 6 | 1.5 | 24 |
-| 8 | 2 | 32 |
-| 10 | 2.5 | 40 |
-| 12 | 3 | 48 |
-| 16 | 4 | 64 |
-| 20 | 5 | 80 |
-| 24 | 6 | 96 |
-| 32 | 8 | 128 |
-| 40 | 10 | 160 |
-| 48 | 12 | 192 |
-| 56 | 14 | 224 |
-| 64 | 16 | 256 |
+| Token | rem  | px  |
+| ----- | ---- | --- |
+| 1     | 0.25 | 4   |
+| 2     | 0.5  | 8   |
+| 3     | 0.75 | 12  |
+| 4     | 1    | 16  |
+| 5     | 1.25 | 20  |
+| 6     | 1.5  | 24  |
+| 8     | 2    | 32  |
+| 10    | 2.5  | 40  |
+| 12    | 3    | 48  |
+| 16    | 4    | 64  |
+| 20    | 5    | 80  |
+| 24    | 6    | 96  |
+| 32    | 8    | 128 |
+| 40    | 10   | 160 |
+| 48    | 12   | 192 |
+| 56    | 14   | 224 |
+| 64    | 16   | 256 |
 
 O guia tem 17 valores, de 4 a 256 px.
 
@@ -180,50 +180,50 @@ Variáveis de espaçamento nomeadas que aparecem aplicadas: **Spacing/spacing-2x
 
 **Grid**
 
-| Breakpoint | Largura do frame | Colunas | Gutter | Margem lateral | Área útil |
-|---|---|---|---|---|---|
-| Desktop | 1440 | 12 | 32 | 32 dentro do container de 1280 | 1216 |
-| Tablet | 768 | 6 | 32 | 32 | 704 |
-| Mobile | 375 | 4 | 16 | 16 | 343 |
+| Breakpoint | Largura do frame | Colunas | Gutter | Margem lateral                 | Área útil |
+| ---------- | ---------------- | ------- | ------ | ------------------------------ | --------- |
+| Desktop    | 1440             | 12      | 32     | 32 dentro do container de 1280 | 1216      |
+| Tablet     | 768              | 6       | 32     | 32                             | 704       |
+| Mobile     | 375              | 4       | 16     | 16                             | 343       |
 
 Fonte: Allan › Grids & spacing (frame "Grid layouts"; colunas contadas pelas réguas).
 
 **Estrutura da aplicação (desktop)**
 
-| Elemento | Medida | Fonte |
-|---|---|---|
-| Sidebar | 296 px de largura | Allan › Base de Custos; Jul/26 (todas as telas) |
-| Área de conteúdo | 1144 px em frame de 1440, ou 1204 px em frame de 1500 | Allan › Base de Custos, Empresas e Sistemas |
-| Navbar da página | 60 px de altura: padding 16 no topo e 24 nas laterais, linha de 44 px | Allan › Base de Custos |
-| Corpo da página | padding 20 no topo, 24 nas laterais e 24 embaixo; gap de 16 entre blocos | Allan › Precificação |
+| Elemento         | Medida                                                                   | Fonte                                           |
+| ---------------- | ------------------------------------------------------------------------ | ----------------------------------------------- |
+| Sidebar          | 296 px de largura                                                        | Allan › Base de Custos; Jul/26 (todas as telas) |
+| Área de conteúdo | 1144 px em frame de 1440, ou 1204 px em frame de 1500                    | Allan › Base de Custos, Empresas e Sistemas     |
+| Navbar da página | 60 px de altura: padding 16 no topo e 24 nas laterais, linha de 44 px    | Allan › Base de Custos                          |
+| Corpo da página  | padding 20 no topo, 24 nas laterais e 24 embaixo; gap de 16 entre blocos | Allan › Precificação                            |
 
 ### 2.4 Raios
 
-| Valor | Variável | Onde aparece | Fonte |
-|---|---|---|---|
-| 4 | Radii/radius-sm | botão de aba segmentada, item ativo da sidebar, miniatura na tabela | Jul/26 › Orçamentos; Allan › Base de Custos |
-| 6 | Radii/radius | barras de progresso | Jul/26 › Orçamentos; Allan › Precificação |
-| 8 | border-radius/rounded-lg | botões, inputs, alertas, container de abas | Allan › Buttons, Inputs, Alert |
-| 10 | – | ícone de destaque quadrado (40 px) | Allan › Base de Custos |
-| 12 | rounded-xl | cards, modais | Allan › Base de Custos, Empresas e Sistemas |
-| 16 | – | badges (pílula) | Allan › Badges |
-| 28 | – | ícone de destaque circular (48 px) | Allan › Empresas e Sistemas |
+| Valor | Variável                 | Onde aparece                                                        | Fonte                                       |
+| ----- | ------------------------ | ------------------------------------------------------------------- | ------------------------------------------- |
+| 4     | Radii/radius-sm          | botão de aba segmentada, item ativo da sidebar, miniatura na tabela | Jul/26 › Orçamentos; Allan › Base de Custos |
+| 6     | Radii/radius             | barras de progresso                                                 | Jul/26 › Orçamentos; Allan › Precificação   |
+| 8     | border-radius/rounded-lg | botões, inputs, alertas, container de abas                          | Allan › Buttons, Inputs, Alert              |
+| 10    | –                        | ícone de destaque quadrado (40 px)                                  | Allan › Base de Custos                      |
+| 12    | rounded-xl               | cards, modais                                                       | Allan › Base de Custos, Empresas e Sistemas |
+| 16    | –                        | badges (pílula)                                                     | Allan › Badges                              |
+| 28    | –                        | ícone de destaque circular (48 px)                                  | Allan › Empresas e Sistemas                 |
 
 ### 2.5 Sombras
 
 Fonte: Allan › Shadows & blurs.
 
-| Token | Valor |
-|---|---|
-| Shadow/xs | 0 1 2 0 #1018280D |
-| Shadow/sm | 0 1 3 0 #1018281A, 0 1 2 0 #1018280F |
-| Shadow/md | 0 4 8 -2 #1018281A, 0 2 4 -2 #1018280F |
-| Shadow/lg | 0 12 16 -4 #10182814, 0 4 6 -2 #10182808 |
-| Shadow/xl | 0 20 24 -4 #10182814, 0 8 8 -4 #10182808 |
-| Shadow/2xl | 0 24 48 -12 #1018282E |
-| Shadow/3xl | 0 32 64 -12 #10182824 |
-| Shadows/sm-strong | 0 1 3 0 #1018281A, 0 1 2 -1 #0000001A (aba ativa) |
-| Focus ring/4px gray-600 | anel de 2 px branco + 4 px #475467 |
+| Token                   | Valor                                             |
+| ----------------------- | ------------------------------------------------- |
+| Shadow/xs               | 0 1 2 0 #1018280D                                 |
+| Shadow/sm               | 0 1 3 0 #1018281A, 0 1 2 0 #1018280F              |
+| Shadow/md               | 0 4 8 -2 #1018281A, 0 2 4 -2 #1018280F            |
+| Shadow/lg               | 0 12 16 -4 #10182814, 0 4 6 -2 #10182808          |
+| Shadow/xl               | 0 20 24 -4 #10182814, 0 8 8 -4 #10182808          |
+| Shadow/2xl              | 0 24 48 -12 #1018282E                             |
+| Shadow/3xl              | 0 32 64 -12 #10182824                             |
+| Shadows/sm-strong       | 0 1 3 0 #1018281A, 0 1 2 -1 #0000001A (aba ativa) |
+| Focus ring/4px gray-600 | anel de 2 px branco + 4 px #475467                |
 
 Uso: cards de tela quase sem sombra (apenas borda, às vezes drop 0 1 1 #1018280D). Modais usam Shadow/xl. Fonte: Allan › Precificação, Empresas e Sistemas.
 
@@ -231,11 +231,15 @@ A página também tem um frame "Blurs" do kit, sem uso identificado.
 
 ### 2.6 Ícones
 
-- **Biblioteca:** Tabler Icons, contorno. A página Icons organiza os ícones pelas categorias do Tabler (Animals, Arrows, Badges, Brand, Buildings, Charts, Communication, Currencies, Database, Document, E-commerce e outras). Fonte: Allan › Icons.
-- **Tamanhos usados:** 16 px em ações de tabela e chevrons; 20 px em botões da navbar e dentro de ícone de destaque; 24 px na sidebar e em botões. Fonte: Allan › Base de Custos; Jul/26 › Orçamentos.
-- **Ícone de destaque (Featured icon):** quadrado de 40 px, raio 10, fundo tingido da cor da categoria (ex.: Success/50) e ícone de 20 a 24 px. Nos cabeçalhos de card e de modal, o fundo é branco com borda Gray/200. Fonte: Allan › Base de Custos; Jul/26 › Clientes (modal).
-- **Ícones de setores e serviços** (256 px, conjunto próprio): Serralheria, CNC, Impressão, Acabamento, Criação, Instalação, Tempo, Pintura, Marcenaria, Entrega, Cliente retira, Frota, Confecção, Administração, Almoxarifado, Produção, Terceirizados, Comercial, Locação, Gráfica rápida, Patrimônio, Serigrafia. Fonte: Jul/26 › Orçamentos (seção "Ícones de setores / serviços").
-- **Outros conjuntos do kit:** ícones de país, meios de pagamento, redes sociais e integrações. Integrações inclui um grupo "Fiscal" próprio. Fonte: Allan › Icons.
+- **Biblioteca:** Tabler Icons, contorno, e só ela: `lucide-react` saiu do projeto e o lint recusa a importação. A página Icons do Figma organiza os ícones pelas categorias do Tabler (Animals, Arrows, Badges, Brand, Buildings, Charts, Communication, Currencies, Database, Document, E-commerce e outras). Fonte: Allan › Icons.
+- **Tamanhos:** três, escolhidos pelo contexto e nunca por número na tela. `sm` 16 px para texto em linha, botão pequeno, chip e badge; `md` 20 px para botão médio e grande, ação de linha, campo, item de menu e barra lateral; `lg` 24 px para cabeçalho, estado vazio e spinner de página. Traço 2 até 20 px e 1,5 em 24 px. No código: `<Icon icon={…} size="sm|md|lg">` (`src/components/ui/icon.tsx`), `ICON_SIZE` e as classes `size-icon-sm|md|lg`. O botão aplica o tamanho do próprio `size` ao ícone. O lint recusa `size={N}` e classes `h-N`/`w-N`/`size-N` em ícone. Fonte do Figma: Allan › Base de Custos; Jul/26 › Orçamentos.
+- **Dicionário de glifos:** um gesto, um ícone, em `src/consts/icones.ts` (`ICONE`); o `ActionButton` aceita `gesto="ver"`. Ver é olho, nunca lupa; a lupa é só busca. Impressora só imprime; ficha e documento usam `IconFileText` com chevron. Lixeira só exclui; inativar e cancelar usam `IconBan`. Receber e pagar usam `IconCash` e `IconCashBanknoteOff`, nunca polegares. Tabela completa em `design/openspec/design/sistema-visual.md` §4.5.
+- **Acessibilidade:** ícone ao lado de texto é decorativo (`aria-hidden`); botão só com ícone leva o nome no botão (`aria-label` ou tooltip do `ActionButton`), nunca no SVG.
+- **Ícone de destaque (`FeaturedIcon`):** círculo claro com o ícone no tom, em três tamanhos (32, 40 e 48 px, com ícone de 16, 20 e 24) e seis tons (brand, neutral, success, warning, error, info). Só em estado vazio, confirmação (`AlertDialog`) e onboarding. Cabeçalho de diálogo comum fica só com título e descrição, e card de KPI usa o ícone em 20 px e cinza, sem círculo. O Figma desenha o destaque como quadrado de raio 10 com borda Gray/200 nos modais; o sistema adotou o círculo único. Fonte do Figma: Allan › Base de Custos; Jul/26 › Clientes (modal).
+- **Ícones de setores e serviços** (conjunto próprio, `src/assets/icons/pictogramas`): Serralheria, CNC, Impressão, Acabamento, Criação, Instalação, Tempo, Pintura, Marcenaria, Entrega, Cliente retira, Frota, Confecção, Administração, Almoxarifado, Produção, Terceirizados, Comercial, Locação, Gráfica rápida, Patrimônio, Serigrafia, além da Receita Federal. Seguem o contrato do Tabler (`size`, cor pelo `currentColor`). Fonte: Jul/26 › Orçamentos (seção "Ícones de setores / serviços").
+- **Logos** (`src/assets/logos`): bancos, meios de pagamento e o próprio Atrupe. Não são ícones: mantêm as cores da marca e têm nome para leitor de tela.
+- **Outros conjuntos do kit:** ícones de país, redes sociais e integrações. Integrações inclui um grupo "Fiscal" próprio. Fonte: Allan › Icons.
+- **Vitrine:** `/sandbox/icones` mostra os três tamanhos em cada contexto, o dicionário com o nome de cada gesto, os tons do ícone de destaque, os pictogramas e os logos.
 
 ---
 
@@ -297,7 +301,7 @@ Fonte: Allan › Datepicker.
 - **Tipos:** Default (data única, 193 px de largura de referência) e Range (período, 240 px).
 - **Estados:** Default, Filled, Open/focused, Disabled; com ou sem rótulo.
 - **Medidas:** padding 10 × 14, raio 8, texto Text md Regular 16 px Gray/900, ícone calendar-month de 20 px à direita. Foco igual ao input (Brand/300 + anel Gray/600).
-- **Menu de calendário:** "_Date picker menu" de 328 × 533. Fonte: Jul/26 › Agenda de Entrega.
+- **Menu de calendário:** "\_Date picker menu" de 328 × 533. Fonte: Jul/26 › Agenda de Entrega.
 
 ### 3.5 Badge
 
@@ -311,13 +315,13 @@ Fonte: Allan › Badges.
 
 **Status por cor nas listagens** (Fonte: Jul/26 › Orçamentos, Clientes, Agenda):
 
-| Status | Cor |
-|---|---|
-| Digitação, Inativo, Sem lançamento | Gray |
-| Aguardando, Aberta | Blue |
-| Regularizado, Finalizado, Realizado | Success |
+| Status                                                    | Cor              |
+| --------------------------------------------------------- | ---------------- |
+| Digitação, Inativo, Sem lançamento                        | Gray             |
+| Aguardando, Aberta                                        | Blue             |
+| Regularizado, Finalizado, Realizado                       | Success          |
 | Pré-cadastro, Vencido, Fechada, Não realizado, Em revisão | Warning / Orange |
-| Rejeitado, Inconsistência | Error |
+| Rejeitado, Inconsistência                                 | Error            |
 
 Etiquetas de status secundário com fundo sólido (ex.: "Proposta enviada" em Pink, "Em desenvolvimento" em azul-petróleo, "Cliente não encontrado" em vermelho). Fonte: Jul/26 › Orçamentos.
 
@@ -329,12 +333,12 @@ Fonte: Allan › Alert.
 
 - **Alerta em linha:** tipos Neutral, Success, Warning, Error. Padding 12 × 14, gap 12, raio 8, borda 1 px. Ícone de 20 px, título Text sm Semibold e texto de apoio Text sm Regular Gray/500.
 
-| Tipo | Fundo | Borda | Título |
-|---|---|---|---|
-| Neutral | Gray/50 | Gray/200 | Gray/600 |
+| Tipo    | Fundo      | Borda       | Título      |
+| ------- | ---------- | ----------- | ----------- |
+| Neutral | Gray/50    | Gray/200    | Gray/600    |
 | Success | Success/50 | Success/200 | Success/600 |
 | Warning | Warning/50 | Warning/200 | Warning/600 |
-| Error | Error/50 | Error/200 | Error/600 |
+| Error   | Error/50   | Error/200   | Error/600   |
 
 - **Faixa de assinatura** (largura total, topo da tela): "Teste em andamento" e "Pagamento atrasado" em Warning; "Teste expirado" e "Conta bloqueada" em Error. Ícone de 32 px, título e texto centralizados e botão Primary ("Contratar" ou "Pagar agora"). Bordas só em cima e embaixo.
 
@@ -467,6 +471,7 @@ Telas de análise usam abas segmentadas por tema, linha de KPIs, gráficos em ca
 ### 5.1 Acesso e contratação
 
 **Sign-up, Login, Recuperação de senha.** Fonte: Jul/26 › Sign-up + Login + Planos.
+
 - **Objetivo:** criar conta (teste grátis de 7 dias), entrar e recuperar senha.
 - **Layout:** card centralizado sobre fundo cinza, dividido em imagem à esquerda (foto e frases "Criado por especialistas." / "Desenvolvido para transformar sua gestão!" em laranja) e formulário à direita com logo.
 - **Componentes:** inputs com rótulo, reCAPTCHA, botão Primary largo ("Avançar →", desabilitado até completar), links em verde ("Entre agora!", "Termos de Uso", "Aviso de Privacidade").
@@ -475,6 +480,7 @@ Telas de análise usam abas segmentadas por tema, linha de KPIs, gráficos em ca
 ### 5.2 Dashboard
 
 Fonte: Jul/26 › Dashboard.
+
 - **Objetivo:** visão geral de vendas e financeiro do período.
 - **Componentes:** saudação "Olá, [Nome do Usuário]", filtros (Origem, Período, Período personalizado), 6 KPIs (Aprovadas, Aguardando, Não aprovadas, Ticket médio O.S, Comissão, Aprovação média), gráfico de linha "Evolução de vendas do período", barras "Aprovadas x Não aprovadas", roscas "Origens dos orçamentos/OS" (WhatsApp, Balcão, Instagram, Site, Outros), barras horizontais "Produtos mais vendidos" e "Melhores clientes".
 - **Comportamento:** cada gráfico tem imprimir e expandir. Imprimir abre menu PDF / Excel. Existe versão Financeiro (Receitas).
@@ -482,38 +488,46 @@ Fonte: Jul/26 › Dashboard.
 ### 5.3 Vendas
 
 **Orçamentos (listagem).** Fonte: Jul/26 › Orçamentos.
+
 - **Objetivo:** acompanhar orçamentos por fase.
 - **Componentes:** abas Digitação, Aguardando, Vencidos, Rejeitados, Todos; filtros Concluído até, Série, Vendedor, Buscar; colunas Referência, Valor, Fase atual, Status, Concluído em, Válido até; ações imprimir e editar.
 - **Comportamento:** agrupamento por data. Fase com badge de ponto e status comercial com etiqueta sólida. Estado vazio com menu de ajuda.
 
 **Orçamento (detalhe).** Fonte: Jul/26 › Orçamentos (Orçamento normal).
+
 - **Objetivo:** montar e concluir o orçamento.
 - **Componentes:** cards de ação (Prévia da proposta, Rejeitar orçamento, Concluir orçamento); seções Resumo, Itens, Entrega, Condições de pagamento.
 - **Comportamento:** itens com ações por linha (observação, imagem, duplicar, editar, preço, excluir). Ponto laranja e tooltip "Valor editado" quando o valor foi alterado. Item composto expande mostrando produto e composições. Fluxos documentados por status: Digitação (vazio, adicionando itens, preenchido), Aguardando, Vencido, Cancelado; comissão e duplicação.
 - **Modais:** Novo orçamento, Categorias de itens, Itens, Detalhes do item simples, Detalhes do item composto, Desconto para item, Edição de entrega, Opções de impressão, Observações internas, Imagem, Duplicar orçamento.
 
 **Detalhes do item composto (modal).** Fonte: Jul/26 › Orçamentos.
+
 - Imagem à esquerda ("Alterar imagem" e lixeira) e campos à direita: Descrição do serviço, Quantidade, uma seção por etapa/setor (Quantidade, Valor Unitário, Valor) e Descritivo técnico. Rodapé com "Valor Final" à esquerda e Voltar / Salvar.
 
 **Venda rápida.** Fonte: Jul/26 › Orçamentos (Venda rápida).
+
 - Tela de orçamento simplificada (1440 px), com modais de categorias e itens. Inclusão de itens por unidade de medida em seção própria.
 
 **Ordens de Serviço.** Fonte: Jul/26 › Ordens de Serviço.
+
 - **Listagem** igual à de orçamentos, com estado vazio.
 - **Detalhe:** status "Em produção"; ações Via de produção, Via do cliente e Cancelar venda (Danger); seções Resumo (com datas de conclusão e aprovação), Itens (somente leitura), Entrega (status "Aguardando"), Condições de pagamento e Financeiro (parcelas, comissão e entrega, com status Realizado / Não realizado).
 
 ### 5.4 Financeiro
 
 **Movimentações a receber.** Fonte: Jul/26 › A receber.
+
 - **Componentes:** filtros Vencimento até e Buscar; colunas Referência, parcela (1/4), Valor, Forma de pagamento; ações ver, renegociar, observações, histórico e baixa (polegar).
 - **Comportamento:** agrupamento por data com pílula "Previsto" e total. Ponto colorido sinaliza pendência. Modais: Observações parcela, Histórico, Editar parcelas, Nova receita, Detalhes, edição e cancelamento.
 
 **Fluxo Financeiro.** Fonte: Jul/26 › Fluxo financeiro.
+
 - **Componentes:** etiqueta do critério de data no título ("Data de vencimento"); ações ordenar, calendário, ocultar valores, imprimir, Nova despesa (Danger) e Nova receita (Success); filtros Período, Conta, Situação, Forma de pagamento, Buscar; resumo "Não realizado / Realizado" com A receber, A pagar e Saldo.
 - **Comportamento:** grupos por data com receita e despesa previstas e realizadas. Polegar verde/laranja/vermelho indica situação. Tooltip mostra valor líquido.
 - Inclui modelo de recibo A4.
 
 **Folha de pagamento.** Fonte: Allan › Folha de pagamento.
+
 - **Listagem:** mês de referência com setas, busca, colunas Colaborador, Salário total, Saldo, Status (Sem lançamento, Aberta, Fechada), ação + (lançar) ou lápis (editar).
 - **Aberta:** "Folha de pagamento 11/24 · Nome do colaborador · Aberta". Ações Imprimir e Fechar folha. Seção Itens com total "Salário a pagar" e tipos Acréscimo / Desconto / Adiantamento; botões "Adicionar item" e "Adiantamento de salário". Seção Movimentação do salário.
 - **Fechada** e **estado vazio** ("Sem folha de pagamento cadastrada" · "Criar folha de pagamento").
@@ -522,12 +536,14 @@ Fonte: Jul/26 › Dashboard.
 ### 5.5 Produção
 
 **Agenda de Entrega.** Fonte: Jul/26 › Agenda de Entrega.
+
 - **Componentes:** abas Produção, Entrega, Todos os ativos, Finalizados; filtros Série, Vendedor, Buscar; colunas Referência, Produção (ícones das etapas), Financeiro (ícones de pagamento e nota).
 - **Comportamento:** cada etapa é um ícone de setor com estado por cor. O clique abre Iniciar / Adicionar pendência / Cancelar / Finalizar. Quando todas as etapas terminam, aparece o botão "Finalizar serviço". Modal "Andamento produção".
 
 ### 5.6 Cadastros
 
 **Clientes.** Fonte: Jul/26 › Clientes.
+
 - **Listagem:** abas Pré-cadastros, Regularizados, Inativos, Todos; ações duplicar, imprimir, importar, consulta e "Novo pré-cadastro"; colunas Cliente, PF/PJ, Categoria, Contato, Status.
 - **Detalhe (PF e PJ):** status, ações Atualizar cadastro automaticamente, transferir, editar e Inativar cadastro; abas Cadastro, Orçamentos, Ordens de serviço, Financeiro; seções Resumo, Responsável, Endereço Principal, Endereço Cobrança.
 - **Modais:** Novo cliente / Editar cliente (696 px), Categorias de Clientes, Erros de importação. "Consulta de CNPJ/CPF" está marcada como ainda em definição.
@@ -535,16 +551,19 @@ Fonte: Jul/26 › Dashboard.
 ### 5.7 Configurações
 
 **Produtos.** Fonte: Jul/26 › Produtos.
+
 - **Listagem:** abas Ativos e Inativos; botões Grupos de produtos e Novo produto; filtros Setor, Grupo de produtos, Unidade, Buscar; colunas Produto (nome e código), Setor (badge), Custo, P.V.; agrupamento por grupo de produtos.
 - **Novo produto (modal 855 px):** Setor, Grupo de produtos, Nome, Código, Unidade comercial, Valor de venda, "Adicionar composição", upload de imagem, Descritivo técnico, Etapas de produção (sequência e toggle por setor), toggles "Permitir editar valor" e "Permite editar descrição", checkbox "Inserir outro depois deste".
 - Variante **Produtos + Nota Fiscal** com modal "Configurações de Nota Fiscal do produto".
 
 **Empresa e sistema · Patrimônios.** Fonte: Allan › Empresas e Sistemas e Configurações › Empresa e Sistema.
+
 - **Listagem de patrimônios:** ícone do tipo em círculo verde, Patrimônio, Setor, Quantidade; botão "Novo patrimônio".
 - **Detalhe do patrimônio:** Excluir (Danger); seções Resumo (aquisição, valor, vida útil, residual, depreciação), Centro de custos (Custos fixos, Custos variáveis da máquina, por categoria), Categorias (com P.V. e custo por m²) e Utilização em serviços.
 - **Modais:** Novo/editar patrimônio, Novo custo, Nova/editar categoria, Novo serviço composto, Editar precificação (preço variável ou fixo, com resumo e estimativa do mês) e confirmação de exclusão.
 
 **Base de Custos.** Fonte: Allan › Base de Custos.
+
 - **Objetivo:** consolidar o custo mensal de referência da empresa.
 - **Abas:** Resumo, Despesas Adm., Mão de obra, Comparativo, Patrimônios, Distribuição, Por setor.
 - **Resumo:** 4 cards de categoria (Despesas Administrativas, Custos dos Setores Produtivos, Mão de Obra, Patrimônio e Depreciação) com % do total, card "Custo mensal de referência" com realizado e diferença, rosca de composição e barras de evolução.
@@ -553,12 +572,14 @@ Fonte: Jul/26 › Dashboard.
 - **Modal de detalhamento do patrimônio:** informações gerais, depreciação, alertas e decisão ("O patrimônio não existe mais" / "continua em uso").
 
 **Precificação.** Fonte: Allan › Precificação.
+
 - **Objetivo:** definir parâmetros de preço e acompanhar o que falta precificar.
 - **Abas:** Resumo, Mão de obra, Máquinas, Materiais, Produtos.
 - **Resumo:** card "Parâmetros de referência" (Tributação, Comissão, Custo financeiro, Margem desejada) com barra de composição do preço sugerido, card "Markup de referência" (ex.: 1,68 · 68,1% sobre o custo) e "Precificação por grupo" com 4 cards e total de pendentes.
 - **Modal:** edição dos parâmetros.
 
 **Configurações › Financeiro.** Fonte: Pro › Configurações › Financeiro.
+
 - **Folha de pagamento:** itens de custo por colaborador (Salário base, INSS, FGTS, 13º, Férias, Ajuda de custo, Horas extras, Hora falta, Vale transporte) com colunas Acréscimo, Desconto e Custo final; filtros Setores, Colaborador, Tipos de custos; botão "Novo item de custo".
 - **Precificação:** tela e modais "Precificar" e "itens". O screenshot não foi obtido por limite de cota.
 
@@ -579,33 +600,33 @@ Páginas a ler quando o arquivo for duplicado: Dashboard e Orçamentos.
 
 Registradas sem decisão.
 
-| ID | Tema | O que diverge | Onde |
-|---|---|---|---|
-| D-01 | Gray/200 | Duas variáveis com valores diferentes: "Gray/200" = #EAECF0 e "Gray / 200" = #E4E7EC (borda do ícone no cabeçalho de modal). | Allan › Colors × Jul/26 › Clientes (modal) |
-| D-02 | Altura e texto de campo | Input field Atrupe: 40 px e texto 12 px. Datepicker e input dropdown: 44 px e texto 16 px. | Allan › Inputs × Datepicker, Dropdowns |
-| D-03 | Altura de botão | Conjunto Atrupe: md = 44 px. Conjunto do kit: md = 40 px. Rodapé de modal (Jul/26) usa 40 px; confirmação (Allan) usa 44 px; navbar usa 40 px; card de precificação usa 32 px. | Allan › Buttons, Empresas e Sistemas, Base de Custos; Jul/26 › Clientes |
-| D-04 | Anel de foco | Input usa anel Gray/600 de 4 px. O mesmo campo traz o efeito do kit "Shadow/xs focused 4px primary-100" com #F4EBFF (roxo do Untitled, não verde). | Allan › Inputs |
-| D-05 | Valores fora da escala | Precificação e Base de Custos usam tamanhos 10; 11,5; 12,5; 13; 15 e 17 px, raios 11 e 14 e cores #FAFBFC, #F0F1F4, #16A34A, #EAF4FF e #E7F6EC, que não existem nos tokens. | Allan › Precificação, Base de Custos |
-| D-06 | Título de modal | Cabeçalho de modal usa 17 px Semibold; a escala tem 16 (Text md) ou 18 (Text lg). | Jul/26 › Clientes |
-| D-07 | Nome da variável de 12 px | O mesmo valor 12 aparece como "spacing-sm" no Alert e como "spacing-md" nas abas. | Allan › Alert, Base de Custos |
-| D-08 | Ações da folha aberta | Pro: "Imprimir" e "Fechar folha" como cards grandes (cerca de 56 px). Allan: botões compactos. | Pro × Allan › Folha de pagamento |
-| D-09 | Submenu Configurações | Allan: Empresa e sistema, Custos e precificação, Financeiro, Nota Fiscal, Vendas. Jul/26 e Pro: Empresa e sistema, Produtos, Financeiro, Nota Fiscal, Vendas. | Allan › Empresas e Sistemas × Jul/26 › Produtos; Pro › Financeiro |
-| D-10 | Largura de frame | Telas novas do Allan em 1500 px (conteúdo 1204). Demais em 1440 px (conteúdo 1144). A sidebar é 296 px nas duas. | Allan › Base de Custos, Precificação × Jul/26 |
-| D-11 | Páginas duplicadas no Allan | "Empresas e Sistemas" e "Configurações › Empresa e Sistema" têm as mesmas telas, com modais 16 px mais altos na primeira (ex.: 472/478 × 462/472; 388 × 372). | Allan |
-| D-12 | Cor de "Nova receita" | Ação primária de receita usa verde de sucesso, diferente do Brand/500 das demais ações primárias. | Jul/26 › A receber, Fluxo financeiro |
-| D-13 | Rótulo de KPI | Cards de KPI usam rótulo de 10 px, abaixo do menor estilo da escala (Text xs 12). | Allan › Base de Custos |
+| ID   | Tema                        | O que diverge                                                                                                                                                                  | Onde                                                                    |
+| ---- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| D-01 | Gray/200                    | Duas variáveis com valores diferentes: "Gray/200" = #EAECF0 e "Gray / 200" = #E4E7EC (borda do ícone no cabeçalho de modal).                                                   | Allan › Colors × Jul/26 › Clientes (modal)                              |
+| D-02 | Altura e texto de campo     | Input field Atrupe: 40 px e texto 12 px. Datepicker e input dropdown: 44 px e texto 16 px.                                                                                     | Allan › Inputs × Datepicker, Dropdowns                                  |
+| D-03 | Altura de botão             | Conjunto Atrupe: md = 44 px. Conjunto do kit: md = 40 px. Rodapé de modal (Jul/26) usa 40 px; confirmação (Allan) usa 44 px; navbar usa 40 px; card de precificação usa 32 px. | Allan › Buttons, Empresas e Sistemas, Base de Custos; Jul/26 › Clientes |
+| D-04 | Anel de foco                | Input usa anel Gray/600 de 4 px. O mesmo campo traz o efeito do kit "Shadow/xs focused 4px primary-100" com #F4EBFF (roxo do Untitled, não verde).                             | Allan › Inputs                                                          |
+| D-05 | Valores fora da escala      | Precificação e Base de Custos usam tamanhos 10; 11,5; 12,5; 13; 15 e 17 px, raios 11 e 14 e cores #FAFBFC, #F0F1F4, #16A34A, #EAF4FF e #E7F6EC, que não existem nos tokens.    | Allan › Precificação, Base de Custos                                    |
+| D-06 | Título de modal             | Cabeçalho de modal usa 17 px Semibold; a escala tem 16 (Text md) ou 18 (Text lg).                                                                                              | Jul/26 › Clientes                                                       |
+| D-07 | Nome da variável de 12 px   | O mesmo valor 12 aparece como "spacing-sm" no Alert e como "spacing-md" nas abas.                                                                                              | Allan › Alert, Base de Custos                                           |
+| D-08 | Ações da folha aberta       | Pro: "Imprimir" e "Fechar folha" como cards grandes (cerca de 56 px). Allan: botões compactos.                                                                                 | Pro × Allan › Folha de pagamento                                        |
+| D-09 | Submenu Configurações       | Allan: Empresa e sistema, Custos e precificação, Financeiro, Nota Fiscal, Vendas. Jul/26 e Pro: Empresa e sistema, Produtos, Financeiro, Nota Fiscal, Vendas.                  | Allan › Empresas e Sistemas × Jul/26 › Produtos; Pro › Financeiro       |
+| D-10 | Largura de frame            | Telas novas do Allan em 1500 px (conteúdo 1204). Demais em 1440 px (conteúdo 1144). A sidebar é 296 px nas duas.                                                               | Allan › Base de Custos, Precificação × Jul/26                           |
+| D-11 | Páginas duplicadas no Allan | "Empresas e Sistemas" e "Configurações › Empresa e Sistema" têm as mesmas telas, com modais 16 px mais altos na primeira (ex.: 472/478 × 462/472; 388 × 372).                  | Allan                                                                   |
+| D-12 | Cor de "Nova receita"       | Ação primária de receita usa verde de sucesso, diferente do Brand/500 das demais ações primárias.                                                                              | Jul/26 › A receber, Fluxo financeiro                                    |
+| D-13 | Rótulo de KPI               | Cards de KPI usam rótulo de 10 px, abaixo do menor estilo da escala (Text xs 12).                                                                                              | Allan › Base de Custos                                                  |
 
 ---
 
 ## 8. Índice de fontes
 
-| Arquivo | Páginas lidas | O que foi aproveitado | Situação |
-|---|---|---|---|
-| **Allan** (sslRuRZekIjtdO3oyhI9U1) | Colors, Typography, Icons, Shadows & blurs, Grids & spacing, Buttons, Inputs, Dropdowns, Tables, Modals, Badges, Status Tag, Datepicker, Alert, Empresas e Sistemas, Base de Custos, Precificação, Configurações › Empresa e Sistema, Financeiro › Folha de pagamento | Todos os tokens, componentes Atrupe, layout da aplicação e telas novas | Lido |
-| **Jul/26** (8BRU08x8QxVhIg7GyZGsdK) | Header navigation, Dashboard, Orçamentos, Ordens de Serviço, A receber, Fluxo financeiro, Clientes, Agenda de Entrega, Produtos, Sign-up + Login + Planos | Padrões de listagem, detalhe e modal; telas do sistema atual; ícones de setores | Lido |
-| **Pro** (YSjDEZtT8MakeJC2Yx3GMB) | Folha de pagamento, Empresa e sistema, Configurações › Financeiro | Comparação com Allan (D-08, D-09) e Configurações › Financeiro | Parcial: cota esgotada antes do screenshot de Precificação |
-| **Mobile** (3puViNWfugxw65SZbcs7Qm) | Dashboard, Orçamentos | Nada | Bloqueado: cota do time esgotada |
-| **Novas telas** (dQU8LUjoXEp64nZF6r3urE) | Gerenciador de tarefas | Nada | Bloqueado: cota do time esgotada |
-| **DS** (Fy4q4mZd91Ah5eQgtknB7c) | Colors, Typography, Bancos e Contas, Formas de pagamento | Nada | Não consultado; só serviria para lacunas |
+| Arquivo                                  | Páginas lidas                                                                                                                                                                                                                                                         | O que foi aproveitado                                                           | Situação                                                   |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| **Allan** (sslRuRZekIjtdO3oyhI9U1)       | Colors, Typography, Icons, Shadows & blurs, Grids & spacing, Buttons, Inputs, Dropdowns, Tables, Modals, Badges, Status Tag, Datepicker, Alert, Empresas e Sistemas, Base de Custos, Precificação, Configurações › Empresa e Sistema, Financeiro › Folha de pagamento | Todos os tokens, componentes Atrupe, layout da aplicação e telas novas          | Lido                                                       |
+| **Jul/26** (8BRU08x8QxVhIg7GyZGsdK)      | Header navigation, Dashboard, Orçamentos, Ordens de Serviço, A receber, Fluxo financeiro, Clientes, Agenda de Entrega, Produtos, Sign-up + Login + Planos                                                                                                             | Padrões de listagem, detalhe e modal; telas do sistema atual; ícones de setores | Lido                                                       |
+| **Pro** (YSjDEZtT8MakeJC2Yx3GMB)         | Folha de pagamento, Empresa e sistema, Configurações › Financeiro                                                                                                                                                                                                     | Comparação com Allan (D-08, D-09) e Configurações › Financeiro                  | Parcial: cota esgotada antes do screenshot de Precificação |
+| **Mobile** (3puViNWfugxw65SZbcs7Qm)      | Dashboard, Orçamentos                                                                                                                                                                                                                                                 | Nada                                                                            | Bloqueado: cota do time esgotada                           |
+| **Novas telas** (dQU8LUjoXEp64nZF6r3urE) | Gerenciador de tarefas                                                                                                                                                                                                                                                | Nada                                                                            | Bloqueado: cota do time esgotada                           |
+| **DS** (Fy4q4mZd91Ah5eQgtknB7c)          | Colors, Typography, Bancos e Contas, Formas de pagamento                                                                                                                                                                                                              | Nada                                                                            | Não consultado; só serviria para lacunas                   |
 
 Não lidas por não estarem na lista de links: Allan › Configurações › Folha de pagamento; Jul/26 › Super Admin, PDFs, Academy, Perfil, Nota Fiscal, Relatórios e A pagar. A seção BACKUPS / TRASH foi ignorada.

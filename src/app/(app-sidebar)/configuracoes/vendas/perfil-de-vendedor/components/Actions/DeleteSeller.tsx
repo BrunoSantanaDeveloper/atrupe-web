@@ -72,10 +72,9 @@ export function DeleteSellerDialog(props: Props) {
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconAlertTriangle}
-            rounded
             size="lg"
-            variant="warningBorderedLight"
-            className="mx-auto mb-2"
+            tone="warning"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>Deseja remover vendedor?</AlertDialogTitle>
           <AlertDialogDescription className="sr-only"></AlertDialogDescription>

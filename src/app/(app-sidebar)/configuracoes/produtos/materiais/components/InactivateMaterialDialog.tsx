@@ -9,7 +9,6 @@ import { useState } from 'react'
 // UI
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -32,7 +31,6 @@ import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconCircleOff, IconRestore } from '@tabler/icons-react'
 
 interface Props {
   material: Material
@@ -84,10 +82,6 @@ export function InactivateMaterialDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={inactivating ? IconCircleOff : IconRestore}
-            />
             <DialogTitle>
               {inactivating
                 ? `Inativar ${material.name}?`
