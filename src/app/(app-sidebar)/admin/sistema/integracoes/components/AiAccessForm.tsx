@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { Bot, Save } from 'lucide-react'
 import { toast } from 'sonner'
 

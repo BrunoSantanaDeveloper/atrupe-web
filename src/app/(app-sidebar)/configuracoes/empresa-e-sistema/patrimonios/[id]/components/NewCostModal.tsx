@@ -245,7 +245,7 @@ export function NewCostModal({ asset }: Props) {
             disabled={!name || !unitCost || (isSetup && !setupId)}
             onClick={() => mutate()}
           >
-            {isPending ? 'Lançando...' : 'Lançar custo'}
+            Lançar custo
           </Button>
         </DialogFooter>
       </DialogContent>

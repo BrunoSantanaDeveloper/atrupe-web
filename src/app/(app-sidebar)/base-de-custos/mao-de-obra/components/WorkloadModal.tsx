@@ -192,7 +192,7 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
               disabled={!sector?.collaborators.length}
               onClick={() => mutate()}
             >
-              {isPending ? 'Salvando...' : 'Salvar carga'}
+              Salvar carga
             </Button>
           </PermissionGate>
         </DialogFooter>

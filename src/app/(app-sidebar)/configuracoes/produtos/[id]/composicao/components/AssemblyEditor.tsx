@@ -9,7 +9,8 @@ import Image from 'next/image'
 
 // React
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {
@@ -134,6 +135,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 
 // Hooks / Store / Consts
 import { useSector } from '@/hooks/queries/useSector'
+import { usePending } from '@/hooks/usePending'
 import { usePermissions } from '@/hooks/usePermissions'
 import { SectorIcon } from '@/components/common/SectorIcon'
 import {
@@ -321,6 +323,54 @@ type EditorProps = {
   topbar?: { title: string; supportText?: string; previousPage?: string }
 }
 
+// Primeira carga: o Topbar aparece já (o título tem esqueleto próprio) e,
+// embaixo, o cartão do produto e as etapas do fluxo no formato da tela
+export function AssemblyEditorSkeleton({
+  embedded = false,
+  topbar,
+}: Pick<EditorProps, 'embedded' | 'topbar'>) {
+  return (
+    <div className="flex flex-col gap-5">
+      {!embedded && topbar && (
+        <Topbar
+          review="new"
+          title={topbar.title}
+          supportText={topbar.supportText}
+          previousPage={topbar.previousPage}
+        />
+      )}
+      {!embedded && (
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="flex flex-col gap-5 px-6 pb-5 pt-1 md:flex-row">
+            <Skeleton className="h-[180px] w-full shrink-0 rounded-xl md:w-[240px]" />
+            <div className="grid flex-1 grid-cols-2 gap-4 lg:grid-cols-4">
+              {Array.from({ length: 4 }, (_, index) => (
+                <div key={index} className="space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-40" />
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-4 px-6 pb-6">
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-24 w-56 rounded-xl" />
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
 function AssemblyEditorBody({
   productId,
   embedded = false,
@@ -370,6 +420,7 @@ function AssemblyEditorBody({
 
   // A variação vista fica na URL (design.md §8): ?variacao=
   const router = useRouter()
+  const { pending: savingComposition, track } = usePending()
   const params = useSearchParams()
   const variationId = params.get('variacao')
   const [description, setDescription] = useState('')
@@ -493,7 +544,7 @@ function AssemblyEditorBody({
   }, [assembly, canEdit, catalogFetched, companySectors, ownSector])
 
   if (isLoading || !assembly || !measure) {
-    return <Skeleton className="h-[480px] w-full" />
+    return <AssemblyEditorSkeleton embedded={embedded} topbar={topbar} />
   }
 
   const saved = assembly.measure
@@ -572,17 +623,18 @@ function AssemblyEditorBody({
   // descritivo técnico, que tem campo livre; o resto grava por ação
   const PRODUCTS_PATH = '/configuracoes/produtos'
   const pendingDescription = description !== assembly.technicalDescription
-  const saveComposition = async () => {
-    if (pendingDescription) {
-      const res = await updateAssembly({
-        productId,
-        values: { technicalDescription: description },
-      })
-      if (!res.success) return toast.error(res.message)
-    }
-    toast.success('Composição salva')
-    router.push(PRODUCTS_PATH)
-  }
+  const saveComposition = () =>
+    track('save', async () => {
+      if (pendingDescription) {
+        const res = await updateAssembly({
+          productId,
+          values: { technicalDescription: description },
+        })
+        if (!res.success) return toast.error(res.message)
+      }
+      toast.success('Composição salva')
+      router.push(PRODUCTS_PATH)
+    })
   const closeComposition = () => {
     if (!pendingDescription) return router.push(PRODUCTS_PATH)
     alertDialog.open({
@@ -2172,6 +2224,7 @@ function AssemblyEditorBody({
                   type="button"
                   RightIcon={IconCircleCheck}
                   onClick={saveComposition}
+                  isLoading={!!savingComposition}
                 >
                   Salvar
                 </Button>

@@ -132,6 +132,7 @@ export function NewClientForm() {
             className="gap-2"
             form="new-client"
             RightIcon={IconArrowRight}
+            isLoading={form.formState.isSubmitting}
             // disabled={Object.keys(form.formState.errors).length > 0}
             // disabled={!form.formState.isValid}
           >

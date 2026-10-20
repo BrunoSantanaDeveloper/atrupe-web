@@ -17,6 +17,7 @@ import {
 import { DepreciationData } from './DepreciationData'
 import { LoadError } from '../../components/LoadError'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { DepreciationSummaryCards } from './DepreciationSummaryCards'
 import {
   FilteredDataEmpty,
@@ -35,7 +36,7 @@ import { getAssets, getAssetQuantity } from '@/actions/asset'
 import { assetStatusTabs } from '@/consts/cost-base'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconBuildingWarehouse } from '@tabler/icons-react'
@@ -64,14 +65,16 @@ export function Depreciation({ searchParams }: SearchParamsType) {
 
   // A lista e as contagens são as do cadastro de patrimônios (P-23). As
   // chaves começam por `assets` para o cadastro invalidar junto ao gravar
-  const { data: counts } = useQuery({
+  const { data: counts, isLoading: isLoadingCounts } = useQuery({
     staleTime: Infinity,
     queryKey: ['assets', 'quantity'],
     queryFn: () => getAssetQuantity(),
   })
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Trocar a situação mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['assets', 'cost-base', status],
     queryFn: () => getAssets({ filters: { status } }),
   })
@@ -112,7 +115,9 @@ export function Depreciation({ searchParams }: SearchParamsType) {
             </TabsList>
           </Tabs>
         </CardHeader>
-        {isLoading || isLoadingTotals ? (
+        {/* As contagens também decidem se há patrimônio: sem elas, quem só
+            tem bem inativo veria o vazio antes da lista */}
+        {isLoadingTotals || isLoadingCounts ? (
           <TableSkeleton cols={9} rows={8} />
         ) : failed ? (
           <LoadError message={failed.message} />
@@ -122,10 +127,14 @@ export function Depreciation({ searchParams }: SearchParamsType) {
             title="Nenhum patrimônio cadastrado"
             description="Cadastre máquinas, móveis e veículos para acompanhar a depreciação."
           />
-        ) : assets.length ? (
-          <DepreciationData assets={assets} />
         ) : (
-          <FilteredDataEmpty description="Nenhum patrimônio nesta situação." />
+          <FetchingRegion isFetching={isPlaceholderData}>
+            {isLoading || assets.length ? (
+              <DepreciationData assets={assets} isLoading={isLoading} />
+            ) : (
+              <FilteredDataEmpty description="Nenhum patrimônio nesta situação." />
+            )}
+          </FetchingRegion>
         )}
       </Card>
     </div>

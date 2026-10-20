@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -17,7 +17,8 @@ import {
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { Topbar } from '@/components/common/Topbar'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePaginationControlled } from '@/components/common/TablePaginationControlled'
 import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -63,18 +64,25 @@ export function Main({ searchParams }: SearchParamsType) {
   const [detailsOpen, setDetailsOpen] = useState(false)
 
   const page = Number(searchParams.page || 1)
-  const { accessSessions, total, lastPage, isLoading, isRefetching, refetch } =
-    useAccessSessions({
-      page,
-      limit: 10,
-      search: searchParams.search,
-      method: searchParams.method,
-      status: searchParams.status,
-      companyId: searchParams.companyId,
-      userId: searchParams.userId,
-      startDate: searchParams.startDate,
-      endDate: searchParams.endDate,
-    })
+  const {
+    accessSessions,
+    total,
+    lastPage,
+    isLoading,
+    isPlaceholderData,
+    isRefetching,
+    refetch,
+  } = useAccessSessions({
+    page,
+    limit: 10,
+    search: searchParams.search,
+    method: searchParams.method,
+    status: searchParams.status,
+    companyId: searchParams.companyId,
+    userId: searchParams.userId,
+    startDate: searchParams.startDate,
+    endDate: searchParams.endDate,
+  })
   const { summary } = useAccessSummary(30, searchParams.companyId)
 
   const handlePageChange = (nextPage: number) => {
@@ -112,7 +120,8 @@ export function Main({ searchParams }: SearchParamsType) {
             variant="neutralLight"
             onClick={() => refetch()}
             RightIcon={IconRefresh}
-            isLoading={isRefetching}
+            // Troca de página tem a própria barra (FetchingRegion)
+            isLoading={isRefetching && !isPlaceholderData}
           />
         }
       />
@@ -181,13 +190,14 @@ export function Main({ searchParams }: SearchParamsType) {
         </TableFiltersHeader>
 
         <CardContent>
-          {isLoading ? (
-            <TableSkeleton cols={8} rows={8} />
-          ) : accessSessions.length === 0 ? (
+          {!isLoading && accessSessions.length === 0 ? (
             <ListDataStatusEmpty title="Nenhum acesso encontrado" />
           ) : (
             <>
-              <div className="rounded-lg border border-gray-200">
+              <FetchingRegion
+                isFetching={isPlaceholderData}
+                className="rounded-lg border border-gray-200"
+              >
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
@@ -202,81 +212,91 @@ export function Main({ searchParams }: SearchParamsType) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {accessSessions.map((session) => (
-                      <TableRow key={session.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <Avatar
-                              url={session.avatar || ''}
-                              name={session.userName}
-                              size="sm"
-                              variant="default"
-                            />
-                            <div>
-                              <p className="font-medium text-gray-800">
-                                {session.userName}
-                              </p>
-                              <p className="text-xs text-gray-600">
-                                {session.email}
-                              </p>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={8} />
+                    ) : (
+                      accessSessions.map((session) => (
+                        <TableRow key={session.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar
+                                url={session.avatar || ''}
+                                name={session.userName}
+                                size="sm"
+                                variant="default"
+                              />
+                              <div>
+                                <p className="font-medium text-gray-800">
+                                  {session.userName}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                  {session.email}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>{session.companyName || '-'}</TableCell>
-                        <TableCell>
-                          <Badge
-                            status
-                            variant={
-                              session.isActive ? 'successLight' : 'neutralLight'
-                            }
-                          >
-                            {session.isActive ? 'Ativa' : 'Encerrada'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="blueLight">
-                            {session.method || '-'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="max-w-80 break-all">
-                          {session.endpoint || '-'}
-                        </TableCell>
-                        <TableCell>{session.eventsCount}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-sm text-gray-800">
-                              {formatToLocaleDateTime(session.lastActive)}
-                            </span>
-                            <span className="font-mono text-xs text-gray-500">
-                              {session.ipAddress || '-'}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <TooltipProvider>
-                            <ActionButton
-                              Icon={IconEye}
-                              tooltip="Ver detalhes"
-                              onClick={() => handleViewDetails(session)}
-                            />
-                          </TooltipProvider>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                          </TableCell>
+                          <TableCell>{session.companyName || '-'}</TableCell>
+                          <TableCell>
+                            <Badge
+                              status
+                              variant={
+                                session.isActive
+                                  ? 'successLight'
+                                  : 'neutralLight'
+                              }
+                            >
+                              {session.isActive ? 'Ativa' : 'Encerrada'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="blueLight">
+                              {session.method || '-'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="max-w-80 break-all">
+                            {session.endpoint || '-'}
+                          </TableCell>
+                          <TableCell>{session.eventsCount}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-sm text-gray-800">
+                                {formatToLocaleDateTime(session.lastActive)}
+                              </span>
+                              <span className="font-mono text-xs text-gray-500">
+                                {session.ipAddress || '-'}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <TooltipProvider>
+                              <ActionButton
+                                Icon={IconEye}
+                                tooltip="Ver detalhes"
+                                onClick={() => handleViewDetails(session)}
+                              />
+                            </TooltipProvider>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
-              </div>
+              </FetchingRegion>
 
-              <div className="flex items-center justify-between">
-                <p className="px-5 pt-5 text-sm text-gray-600">
-                  {total} registros
-                </p>
-              </div>
-              <TablePaginationControlled
-                page={page}
-                lastPage={lastPage}
-                setPage={handlePageChange}
-              />
+              {isLoading ? null : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <p className="px-5 pt-5 text-sm text-gray-600">
+                      {total} registros
+                    </p>
+                  </div>
+                  <TablePaginationControlled
+                    page={page}
+                    lastPage={lastPage}
+                    setPage={handlePageChange}
+                  />
+                </>
+              )}
             </>
           )}
         </CardContent>

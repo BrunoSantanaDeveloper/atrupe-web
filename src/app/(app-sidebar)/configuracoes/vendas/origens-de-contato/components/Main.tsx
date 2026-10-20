@@ -22,7 +22,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
 import { DeleteAlertDialog } from './Actions/Delete'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 
 // Icons
 import { IconTrash, IconPencil, IconPlus } from '@tabler/icons-react'
@@ -86,69 +86,71 @@ export function Main() {
       />
 
       <Card>
-        {isLoading ? (
-          <TableSkeleton cols={2} />
-        ) : (
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead>Nome</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {global.length > 0 && (
-                  <TableRow className="bg-gray-100">
-                    <TableCell
-                      colSpan={2}
-                      className="text-gray font-medium text-xs py-1"
-                    >
-                      Padrões do sistema
-                    </TableCell>
-                  </TableRow>
-                )}
-                {global.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium text-muted-foreground">
-                      {item.name}
-                    </TableCell>
-                    <TableCell>
-                      <ActionButtons item={item} />
-                    </TableCell>
-                  </TableRow>
-                ))}
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>Nome</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableSkeletonRows cols={2} />
+              ) : (
+                <>
+                  {global.length > 0 && (
+                    <TableRow className="bg-gray-100">
+                      <TableCell
+                        colSpan={2}
+                        className="text-gray font-medium text-xs py-1"
+                      >
+                        Padrões do sistema
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {global.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium text-muted-foreground">
+                        {item.name}
+                      </TableCell>
+                      <TableCell>
+                        <ActionButtons item={item} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
-                {companyOwned.length > 0 && (
-                  <TableRow className="bg-gray-100">
-                    <TableCell
-                      colSpan={2}
-                      className="text-gray font-medium text-xs py-1"
-                    >
-                      Personalizadas
-                    </TableCell>
-                  </TableRow>
-                )}
-                {companyOwned.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell>
-                      <ActionButtons item={item} />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                  {companyOwned.length > 0 && (
+                    <TableRow className="bg-gray-100">
+                      <TableCell
+                        colSpan={2}
+                        className="text-gray font-medium text-xs py-1"
+                      >
+                        Personalizadas
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {companyOwned.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.name}</TableCell>
+                      <TableCell>
+                        <ActionButtons item={item} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
 
-                {companyOwned.length === 0 && global.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={2} className="text-gray text-center">
-                      Nenhuma origem cadastrada
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        )}
+                  {companyOwned.length === 0 && global.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={2} className="text-gray text-center">
+                        Nenhuma origem cadastrada
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
       </Card>
 
       <NewItemDialog open={openDialog === 'new'} setOpen={setOpenDialog} />

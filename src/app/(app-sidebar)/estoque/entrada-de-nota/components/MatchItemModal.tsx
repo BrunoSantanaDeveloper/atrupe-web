@@ -169,7 +169,7 @@ export function MatchItemModal({ invoiceId, item, open, onOpenChange }: Props) {
             disabled={!materialId || !factor}
             onClick={() => mutate()}
           >
-            {isPending ? 'Vinculando...' : 'Vincular item'}
+            Vincular item
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -131,7 +131,40 @@ export function AssetDetail({ id }: Props) {
   const asset = data?.data
 
   if (isLoading) {
-    return <Skeleton className="h-[calc(100vh-150px)]" />
+    // O Topbar aparece já (o título tem esqueleto próprio) e, embaixo, os
+    // cartões de resumo e de custos no formato da tela
+    return (
+      <div className="space-y-5">
+        <Topbar
+          review="new"
+          title=""
+          previousPage="/configuracoes/empresa-e-sistema/patrimonios"
+        />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-24" />
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 px-6 pb-6 md:grid-cols-3 lg:grid-cols-5">
+            {Array.from({ length: 5 }, (_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-40" />
+          </CardHeader>
+          <CardContent className="space-y-3 px-6 pb-6">
+            {Array.from({ length: 3 }, (_, index) => (
+              <Skeleton key={index} className="h-10 w-full" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   if (!asset) {

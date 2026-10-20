@@ -4,7 +4,8 @@
 import { PropsWithChildren, useState } from 'react'
 
 // Next Imports
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI component Imports
 import { Label } from '@/components/ui/label'

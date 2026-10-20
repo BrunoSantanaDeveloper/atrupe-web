@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,7 +26,7 @@ import { CfopFormModal } from './CfopFormModal'
 import { NaturezaListClient } from './NaturezaListClient'
 
 // Icons
-import { IconArrowsSplit, IconPlus, IconLoader2 } from '@tabler/icons-react'
+import { IconArrowsSplit, IconPlus } from '@tabler/icons-react'
 
 // Actions
 import {
@@ -198,9 +199,11 @@ export function CfopListClient() {
 
         {/* CFOP List */}
         {isLoading ? (
-          <div className="flex items-center justify-center p-8">
-            <IconLoader2 className="w-6 h-6 animate-spin text-gray-400" />
-            <span className="ml-2 text-gray-500">Carregando dados...</span>
+          // Linhas no lugar da tabela, para a seção não mudar de altura
+          <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-10 w-full" />
+            ))}
           </div>
         ) : cfops.length === 0 ? (
           <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">

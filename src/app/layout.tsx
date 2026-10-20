@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/sonner'
 // import { TailwindIndicator } from '@/components/TailwindIndicator'
 import { DevEnvAlert } from '@/components/DevEnvAlert'
 import { GlobalAlertDialog } from '@/components/common/GlobalAlertDialog'
+import { NavigationProgress } from '@/components/layout/NavigationProgress'
 
 // Config
 import { TRACKING } from '@/config/tracking'
@@ -78,6 +79,7 @@ export default async function RootLayout({
           }}
         />
         <Providers session={session}>
+          <NavigationProgress />
           <DevEnvAlert />
           {children}
           <Toaster />

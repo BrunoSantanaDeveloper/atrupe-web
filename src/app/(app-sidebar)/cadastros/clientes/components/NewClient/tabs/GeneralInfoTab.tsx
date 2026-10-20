@@ -261,11 +261,10 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
             size="sm"
             onClick={handleRefreshOfficialData}
             disabled={isRefreshing}
+            isLoading={isRefreshing}
+            LeftIcon={IconRefresh}
           >
-            <IconRefresh
-              className={`h-4 w-4 mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`}
-            />
-            {isRefreshing ? 'Atualizando...' : 'Atualizar dados oficiais'}
+            Atualizar dados oficiais
           </Button>
         </div>
       )}

@@ -43,6 +43,7 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 import {
   StepsDialog,
   UsersDialog,
@@ -125,6 +126,14 @@ const tabs: { value: Tab; label: string }[] = [
   { value: 'expediente', label: 'Expediente' },
 ]
 
+// Colunas da tabela de cada aba, para o esqueleto da primeira carga
+const skeletonCols: { [key in Exclude<Tab, 'expediente'>]: number } = {
+  gerenciadores: 6,
+  tipos: 5,
+  colaboradores: 3,
+  veiculos: 4,
+}
+
 export function ProductionSettings() {
   const params = useSearchParams()
   const queryClient = useQueryClient()
@@ -157,7 +166,72 @@ export function ProductionSettings() {
     return true
   }
 
-  if (isLoading || !config) return <Skeleton className="h-[480px] w-full" />
+  const newLabel: { [key in Tab]: string } = {
+    gerenciadores: 'Novo gerenciador',
+    tipos: 'Novo tipo de tarefa',
+    colaboradores: '',
+    veiculos: 'Novo veículo',
+    expediente: '',
+  }
+
+  // O Topbar não depende da configuração: aparece já, também na carga
+  const topbar = (
+    <Topbar
+      review="new"
+      title="Produção"
+      supportText="Gerenciadores, tipos de tarefa, colaboradores e veículos do gerenciador de produção"
+      paramName="aba"
+      activeTab={tab}
+      tabs={tabs.map((item) => ({
+        value: item.value,
+        tab: item.value,
+        label: item.label,
+      }))}
+      primaryCta={
+        newLabel[tab] ? (
+          <PermissionGate permissions={PRODUCTION_MANAGE}>
+            <Button
+              LeftIcon={IconPlus}
+              onClick={() =>
+                setDialog(
+                  tab === 'tipos'
+                    ? { kind: 'type' }
+                    : tab === 'veiculos'
+                      ? { kind: 'vehicle' }
+                      : { kind: 'manager' },
+                )
+              }
+            >
+              {newLabel[tab]}
+            </Button>
+          </PermissionGate>
+        ) : undefined
+      }
+    />
+  )
+
+  if (isLoading || !config)
+    return (
+      <div className="space-y-5">
+        {topbar}
+        <Card>
+          <CardContent>
+            {tab === 'expediente' ? (
+              <div className="space-y-6">
+                {Array.from({ length: 3 }, (_, index) => (
+                  <div key={index} className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-10 w-full max-w-md" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <TableSkeleton cols={skeletonCols[tab]} />
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    )
 
   const { flows, managers, taskTypes, collaborators, vehicles } = config
   const managerOf = (id: string) => managers.find((item) => item.id === id)
@@ -168,49 +242,10 @@ export function ProductionSettings() {
         .map((item) => `${type.name} › ${item.name}`),
     )
 
-  const newLabel: { [key in Tab]: string } = {
-    gerenciadores: 'Novo gerenciador',
-    tipos: 'Novo tipo de tarefa',
-    colaboradores: '',
-    veiculos: 'Novo veículo',
-    expediente: '',
-  }
-
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <Topbar
-          review="new"
-          title="Produção"
-          supportText="Gerenciadores, tipos de tarefa, colaboradores e veículos do gerenciador de produção"
-          paramName="aba"
-          activeTab={tab}
-          tabs={tabs.map((item) => ({
-            value: item.value,
-            tab: item.value,
-            label: item.label,
-          }))}
-          primaryCta={
-            newLabel[tab] ? (
-              <PermissionGate permissions={PRODUCTION_MANAGE}>
-                <Button
-                  LeftIcon={IconPlus}
-                  onClick={() =>
-                    setDialog(
-                      tab === 'tipos'
-                        ? { kind: 'type' }
-                        : tab === 'veiculos'
-                          ? { kind: 'vehicle' }
-                          : { kind: 'manager' },
-                    )
-                  }
-                >
-                  {newLabel[tab]}
-                </Button>
-              </PermissionGate>
-            ) : undefined
-          }
-        />
+        {topbar}
 
         {tab === 'gerenciadores' && (
           <Card>

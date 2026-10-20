@@ -1,6 +1,7 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import type { DateRange } from 'react-day-picker'
 
 // Components

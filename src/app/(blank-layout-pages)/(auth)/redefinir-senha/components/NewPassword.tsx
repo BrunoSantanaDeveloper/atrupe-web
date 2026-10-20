@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import { Form } from '@/components/ui/form'

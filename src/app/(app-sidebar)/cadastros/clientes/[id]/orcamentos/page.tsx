@@ -3,7 +3,8 @@ import { Suspense } from 'react'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
-import { IconLoader2 } from '@tabler/icons-react'
+import { CardContent } from '@/components/ui/card'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 interface Props {
   params: {
@@ -32,7 +33,11 @@ export default function ClientQuotationsPage({ params }: Props) {
       >
         <div className="rounded-lg my-6 bg-white overflow-hidden">
           <Suspense
-            fallback={<IconLoader2 className="size-16 animate-spin p-8" />}
+            fallback={
+              <CardContent>
+                <TableSkeleton cols={6} />
+              </CardContent>
+            }
           >
             <QuotationsData
               searchParams={{ clientId: params.id }}

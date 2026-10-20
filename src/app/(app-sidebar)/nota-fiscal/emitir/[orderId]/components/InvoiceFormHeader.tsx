@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useState } from 'react'
 
 // UI
@@ -122,7 +122,7 @@ export function InvoiceFormHeader({
         <div className="flex justify-between items-center">
           <CustomButton
             icon={IconX}
-            title={isCanceling ? 'Cancelando...' : 'Cancelar digitação'}
+            title="Cancelar digitação"
             iconVariant="errorLight"
             onClick={handleCancel}
             disabled={isCanceling || isEmitting}
@@ -132,7 +132,7 @@ export function InvoiceFormHeader({
             {onPreview && (
               <CustomButton
                 icon={IconFileTypePdf}
-                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                title="Pré-visualizar"
                 iconVariant="neutralOutline"
                 onClick={onPreview}
                 disabled={isEmitting || isCanceling || isPreviewing}
@@ -141,7 +141,7 @@ export function InvoiceFormHeader({
             )}
             <CustomButton
               icon={IconSend}
-              title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
+              title="Emitir NF-e"
               iconVariant="light"
               onClick={onEmit}
               disabled={isEmitting || isCanceling}

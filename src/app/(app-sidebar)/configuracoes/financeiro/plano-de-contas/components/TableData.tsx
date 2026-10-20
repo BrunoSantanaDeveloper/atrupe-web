@@ -7,7 +7,8 @@ import { Fragment, useEffect, useState } from 'react'
 import { NewCategoryDialog } from './NewCategoryDialog'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { NewSubcategoryDialog } from './Actions/NewSubcategoryDialog'
 import { EditSubcategoryDialog } from './Actions/EditSubcategoryDialog'
 
@@ -35,7 +36,7 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getDataOld } from '@/actions/_cruds'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconPlus } from '@tabler/icons-react'
@@ -66,8 +67,10 @@ export function TableData({ tabs, searchParams }: Props) {
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
   const filters = { ...searchParams, status }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['accounts-plan-list', searchParams],
     queryFn: () =>
       getDataOld({ route: 'accountsPlanRoute', filters, perPage: '9999' }),
@@ -79,170 +82,179 @@ export function TableData({ tabs, searchParams }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton cols={3} />
-        ) : (
+        <FetchingRegion isFetching={isPlaceholderData}>
           <>
             <Table>
               <TableBody>
-                {accountsPlanArray.map((accountPlan, index) => (
-                  <Fragment key={accountPlan.code + index}>
-                    {/* Header da categoria principal */}
-                    <TableGroupRow>{accountPlan.name}</TableGroupRow>
+                {isLoading ? (
+                  <TableSkeletonRows cols={3} />
+                ) : (
+                  accountsPlanArray.map((accountPlan, index) => (
+                    <Fragment key={accountPlan.code + index}>
+                      {/* Header da categoria principal */}
+                      <TableGroupRow>{accountPlan.name}</TableGroupRow>
 
-                    {/* Renderiza os níveis 2 */}
-                    {accountPlan.level2 && accountPlan.level2.length > 0 ? (
-                      accountPlan.level2.map((level2Item, level2Index) => (
-                        <Fragment
-                          key={`level2-${level2Item.code}-${level2Index}`}
-                        >
-                          {/* Header do nível 2 */}
-                          <TableRow className="hover:bg-transparent">
-                            <TableCell colSpan={3} className="type-body-strong">
-                              {`${level2Item.code} - ${level2Item.name}`}
-                            </TableCell>
-                          </TableRow>
+                      {/* Renderiza os níveis 2 */}
+                      {accountPlan.level2 && accountPlan.level2.length > 0 ? (
+                        accountPlan.level2.map((level2Item, level2Index) => (
+                          <Fragment
+                            key={`level2-${level2Item.code}-${level2Index}`}
+                          >
+                            {/* Header do nível 2 */}
+                            <TableRow className="hover:bg-transparent">
+                              <TableCell
+                                colSpan={3}
+                                className="type-body-strong"
+                              >
+                                {`${level2Item.code} - ${level2Item.name}`}
+                              </TableCell>
+                            </TableRow>
 
-                          {/* Naturezas e suas subcategorias */}
-                          {level2Item.natures &&
-                          level2Item.natures.length > 0 ? (
-                            level2Item.natures.map((nature, natureIndex) => {
-                              const combinedCode = `${nature.level1}.${nature.level2}.${nature.code}`
+                            {/* Naturezas e suas subcategorias */}
+                            {level2Item.natures &&
+                            level2Item.natures.length > 0 ? (
+                              level2Item.natures.map((nature, natureIndex) => {
+                                const combinedCode = `${nature.level1}.${nature.level2}.${nature.code}`
 
-                              return (
-                                <Fragment
-                                  key={`nature-${nature.id}-${natureIndex}`}
-                                >
-                                  {/* Header da natureza */}
-                                  <TableRow>
-                                    <TableCell
-                                      colSpan={2}
-                                      className="type-body-strong pl-10"
-                                    >
-                                      {`${combinedCode} - ${nature.description || 'Sem descrição'}`}
-                                    </TableCell>
-                                    <TableCell className="text-right w-[100px] py-0">
-                                      <div className="flex justify-end gap-0.5">
-                                        <TooltipProvider>
-                                          {!isInactiveTab ? (
-                                            <PermissionGate
-                                              permissions={[
-                                                'financial_settings:chart_accounts:create',
-                                              ]}
-                                            >
-                                              <ActionButton
-                                                Icon={IconPlus}
-                                                tooltip="Adicionar subcategoria"
-                                                onClick={() => {
-                                                  setOpenDialog('create')
-                                                  setCategoryRowData(nature)
-                                                  setCombinedCode(combinedCode)
-                                                }}
-                                              />
-                                            </PermissionGate>
-                                          ) : null}
-                                          <PermissionGate
-                                            permissions={[
-                                              'financial_settings:chart_accounts:edit',
-                                            ]}
-                                          >
-                                            <ActionButton
-                                              Icon={IconPencil}
-                                              tooltip="Editar categoria"
-                                              onClick={() => {
-                                                setOpenDialog('editCategory')
-                                                setCategoryRowData(nature)
-                                              }}
-                                            />
-                                          </PermissionGate>
-                                        </TooltipProvider>
-                                      </div>
-                                    </TableCell>
-                                  </TableRow>
-
-                                  {/* Subcategorias da natureza */}
-                                  {nature.subCategories &&
-                                  nature.subCategories.length > 0 ? (
-                                    nature.subCategories.map((subCategory) => (
-                                      <TableRow
-                                        key={`subcat-${nature.code}-${subCategory.id}`}
+                                return (
+                                  <Fragment
+                                    key={`nature-${nature.id}-${natureIndex}`}
+                                  >
+                                    {/* Header da natureza */}
+                                    <TableRow>
+                                      <TableCell
+                                        colSpan={2}
+                                        className="type-body-strong pl-10"
                                       >
-                                        <TableCell className="w-[140px] pl-14">
-                                          <div className="flex items-center gap-2">
-                                            {`${nature.level1}.${nature.level2}.${nature.code}.${subCategory.code}`}
-                                          </div>
-                                        </TableCell>
-                                        <TableCell>
-                                          {subCategory.description ||
-                                            'Sem descrição'}
-                                        </TableCell>
-                                        <TableCell>
-                                          <div className="flex justify-end gap-1">
-                                            <TooltipProvider>
+                                        {`${combinedCode} - ${nature.description || 'Sem descrição'}`}
+                                      </TableCell>
+                                      <TableCell className="text-right w-[100px] py-0">
+                                        <div className="flex justify-end gap-0.5">
+                                          <TooltipProvider>
+                                            {!isInactiveTab ? (
                                               <PermissionGate
                                                 permissions={[
-                                                  'financial_settings:chart_accounts:edit',
+                                                  'financial_settings:chart_accounts:create',
                                                 ]}
                                               >
                                                 <ActionButton
-                                                  Icon={IconPencil}
-                                                  tooltip="Editar subcategoria"
+                                                  Icon={IconPlus}
+                                                  tooltip="Adicionar subcategoria"
                                                   onClick={() => {
-                                                    setOpenDialog('edit')
-                                                    setSubCategoryRowData(
-                                                      subCategory,
-                                                    )
+                                                    setOpenDialog('create')
+                                                    setCategoryRowData(nature)
                                                     setCombinedCode(
                                                       combinedCode,
                                                     )
                                                   }}
                                                 />
                                               </PermissionGate>
-                                            </TooltipProvider>
-                                          </div>
-                                        </TableCell>
-                                      </TableRow>
-                                    ))
-                                  ) : (
-                                    <TableRow>
-                                      <TableCell
-                                        colSpan={3}
-                                        className="text-gray-400 text-center pl-10"
-                                      >
-                                        Nenhuma subcategoria cadastrada ou{' '}
-                                        {isInactiveTab ? 'inativa' : 'ativa'}
+                                            ) : null}
+                                            <PermissionGate
+                                              permissions={[
+                                                'financial_settings:chart_accounts:edit',
+                                              ]}
+                                            >
+                                              <ActionButton
+                                                Icon={IconPencil}
+                                                tooltip="Editar categoria"
+                                                onClick={() => {
+                                                  setOpenDialog('editCategory')
+                                                  setCategoryRowData(nature)
+                                                }}
+                                              />
+                                            </PermissionGate>
+                                          </TooltipProvider>
+                                        </div>
                                       </TableCell>
                                     </TableRow>
-                                  )}
-                                </Fragment>
-                              )
-                            })
-                          ) : (
-                            <TableRow>
-                              <TableCell
-                                colSpan={3}
-                                className="text-gray-400 text-center pl-8"
-                              >
-                                Nenhuma categoria cadastrada ou{' '}
-                                {isInactiveTab ? 'inativa' : 'ativa'}
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </Fragment>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          colSpan={3}
-                          className="text-gray-400 text-center"
-                        >
-                          Nenhuma categoria cadastrada ou{' '}
-                          {isInactiveTab ? 'inativa' : 'ativa'}
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </Fragment>
-                ))}
+
+                                    {/* Subcategorias da natureza */}
+                                    {nature.subCategories &&
+                                    nature.subCategories.length > 0 ? (
+                                      nature.subCategories.map(
+                                        (subCategory) => (
+                                          <TableRow
+                                            key={`subcat-${nature.code}-${subCategory.id}`}
+                                          >
+                                            <TableCell className="w-[140px] pl-14">
+                                              <div className="flex items-center gap-2">
+                                                {`${nature.level1}.${nature.level2}.${nature.code}.${subCategory.code}`}
+                                              </div>
+                                            </TableCell>
+                                            <TableCell>
+                                              {subCategory.description ||
+                                                'Sem descrição'}
+                                            </TableCell>
+                                            <TableCell>
+                                              <div className="flex justify-end gap-1">
+                                                <TooltipProvider>
+                                                  <PermissionGate
+                                                    permissions={[
+                                                      'financial_settings:chart_accounts:edit',
+                                                    ]}
+                                                  >
+                                                    <ActionButton
+                                                      Icon={IconPencil}
+                                                      tooltip="Editar subcategoria"
+                                                      onClick={() => {
+                                                        setOpenDialog('edit')
+                                                        setSubCategoryRowData(
+                                                          subCategory,
+                                                        )
+                                                        setCombinedCode(
+                                                          combinedCode,
+                                                        )
+                                                      }}
+                                                    />
+                                                  </PermissionGate>
+                                                </TooltipProvider>
+                                              </div>
+                                            </TableCell>
+                                          </TableRow>
+                                        ),
+                                      )
+                                    ) : (
+                                      <TableRow>
+                                        <TableCell
+                                          colSpan={3}
+                                          className="text-gray-400 text-center pl-10"
+                                        >
+                                          Nenhuma subcategoria cadastrada ou{' '}
+                                          {isInactiveTab ? 'inativa' : 'ativa'}
+                                        </TableCell>
+                                      </TableRow>
+                                    )}
+                                  </Fragment>
+                                )
+                              })
+                            ) : (
+                              <TableRow>
+                                <TableCell
+                                  colSpan={3}
+                                  className="text-gray-400 text-center pl-8"
+                                >
+                                  Nenhuma categoria cadastrada ou{' '}
+                                  {isInactiveTab ? 'inativa' : 'ativa'}
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </Fragment>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell
+                            colSpan={3}
+                            className="text-gray-400 text-center"
+                          >
+                            Nenhuma categoria cadastrada ou{' '}
+                            {isInactiveTab ? 'inativa' : 'ativa'}
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </Fragment>
+                  ))
+                )}
               </TableBody>
             </Table>
 
@@ -273,7 +285,7 @@ export function TableData({ tabs, searchParams }: Props) {
               combinedCode={combinedCode}
             />
           </>
-        )}
+        </FetchingRegion>
       </CardContent>
       {/* {isLoading || hasData ? (
         <CardFooter>

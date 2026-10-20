@@ -30,6 +30,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { MatchItemModal } from './MatchItemModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Types
 import type { InvoiceItem } from '../../types'
@@ -101,8 +102,6 @@ export function InvoiceEntry() {
     onError: () => toast.error('Erro ao confirmar a entrada'),
   })
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
-
   const invoices = data?.data || []
 
   return (
@@ -136,6 +135,19 @@ export function InvoiceEntry() {
             </PermissionGate>
           }
         />
+
+        {/* Topbar já na tela; a nota carrega no formato final */}
+        {isLoading && (
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-64" />
+              <Skeleton className="h-4 w-48" />
+            </CardHeader>
+            <CardContent>
+              <TableSkeleton cols={6} rows={4} />
+            </CardContent>
+          </Card>
+        )}
 
         {invoices.map((invoice) => {
           const pending = invoice.items.filter((item) => !item.materialId)
@@ -244,7 +256,7 @@ export function InvoiceEntry() {
                     disabled={pending.length > 0}
                     onClick={() => confirm(invoice.id)}
                   >
-                    {isPending ? 'Confirmando...' : 'Confirmar entrada'}
+                    Confirmar entrada
                   </Button>
                 </PermissionGate>
               </CardFooter>
@@ -252,7 +264,7 @@ export function InvoiceEntry() {
           )
         })}
 
-        {!invoices.length && (
+        {!isLoading && !invoices.length && (
           <Card>
             <CardContent className="py-8 px-6">
               <p className="text-sm text-gray text-center">

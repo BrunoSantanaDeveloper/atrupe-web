@@ -5,7 +5,6 @@ import { useState } from 'react'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import {
@@ -24,6 +23,7 @@ import { NewClientModal } from '../../orcamentos/components/NewClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -269,6 +269,7 @@ export function Orders({ searchParams }: SearchParamsType) {
           tabs={tabs}
           activeTab={status}
           paramName="status"
+          countsLoading={isLoading}
           primaryCta={
             <TooltipProvider>
               <div className="flex gap-3">
@@ -291,7 +292,7 @@ export function Orders({ searchParams }: SearchParamsType) {
         <div>
           <Card>
             {isLoading ? (
-              <Skeleton className="h-[calc(100vh-150px)]" />
+              <ListSkeleton cols={5} filters={2} />
             ) : totals?.todas && totals?.todas > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty

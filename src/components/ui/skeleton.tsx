@@ -1,15 +1,17 @@
 import { cn } from '@/lib/utils'
 
+// `bg-gray-200` se distingue do fundo da página (`gray-100`) e do cartão, sem
+// `mix-blend-multiply`, que escurece demais sobre fundos escuros. A animação
+// atrasa a entrada para que cargas rápidas não pisquem
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 2)
 function Skeleton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn(
-        'animate-pulse rounded-md mix-blend-multiply dark:mix-blend-normal bg-gray-100',
-        className,
-      )}
+      aria-hidden="true"
+      className={cn('animate-skeleton rounded-md bg-gray-200', className)}
       {...props}
     />
   )

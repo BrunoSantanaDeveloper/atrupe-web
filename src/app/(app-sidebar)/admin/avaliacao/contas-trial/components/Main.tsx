@@ -2,7 +2,6 @@
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { Data } from './Table/Data'
@@ -13,6 +12,7 @@ import {
 } from '@/components/common/TableEmptyState'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -75,13 +75,14 @@ export function Main({ searchParams }: SearchParamsType) {
         tabs={tabs}
         activeTab={status}
         paramName="status"
+        countsLoading={isLoading}
         label="Super Admin"
         classNames={{ title: 'text-white', label: 'bg-[#FF4201]' }}
       />
       <div>
         <Card>
           {isLoading ? (
-            <Skeleton className="h-[calc(100vh-150px)]" />
+            <ListSkeleton cols={5} filters={1} />
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty

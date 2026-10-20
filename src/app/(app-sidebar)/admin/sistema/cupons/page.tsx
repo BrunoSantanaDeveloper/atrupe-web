@@ -11,7 +11,6 @@ import {
   IconCheck,
   IconX,
   IconCalendar,
-  IconLoader,
   IconTrash,
 } from '@tabler/icons-react'
 
@@ -738,15 +737,8 @@ export default function AdminCouponsPage() {
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving ? (
-                  <span className="flex items-center gap-1">
-                    <IconLoader size={16} className="animate-spin" />
-                    Salvando...
-                  </span>
-                ) : (
-                  'Salvar Cupom'
-                )}
+              <Button type="submit" disabled={isSaving} isLoading={isSaving}>
+                Salvar Cupom
               </Button>
             </DialogFooter>
           </form>

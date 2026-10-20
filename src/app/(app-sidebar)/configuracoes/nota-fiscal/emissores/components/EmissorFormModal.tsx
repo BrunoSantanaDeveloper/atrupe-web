@@ -14,9 +14,6 @@ import { Button } from '@/components/ui/button'
 import { Form } from '@/components/ui/form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-// Icons
-import { IconDeviceFloppy } from '@tabler/icons-react'
-
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -484,12 +481,9 @@ export function EmissorFormModal({
           <Button
             type="submit"
             form={formId}
-            disabled={isSubmitting}
+            isLoading={isSubmitting}
             className="bg-brand hover:bg-brand-600 text-white"
           >
-            {isSubmitting && (
-              <IconDeviceFloppy className="w-4 h-4 mr-2 animate-spin" />
-            )}
             Salvar
           </Button>
         </DialogFooter>

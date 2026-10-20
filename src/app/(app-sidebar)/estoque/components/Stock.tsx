@@ -27,7 +27,8 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
@@ -44,7 +45,11 @@ import { stockMovementObj } from '@/consts/stock'
 import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 import { useState } from 'react'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -79,13 +84,15 @@ export function Stock({ searchParams }: SearchParamsType) {
     mode: 'minimum' | 'adjustment'
   }>()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Trocar a situação mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['stock-items', searchParams],
     queryFn: () => getStockItems({ filters: searchParams }),
   })
 
-  const { data: movementsData } = useQuery({
+  const { data: movementsData, isLoading: isLoadingMovements } = useQuery({
     staleTime: Infinity,
     queryKey: ['stock-movements'],
     queryFn: () => getStockMovements(),
@@ -125,131 +132,140 @@ export function Stock({ searchParams }: SearchParamsType) {
               </TabsList>
             </Tabs>
           </CardHeader>
-          {isLoading ? (
-            <TableSkeleton cols={6} rows={5} />
-          ) : !items.length ? (
-            <ListDataTotalEmpty
-              icon={IconBoxSeam}
-              title="Nenhum material em estoque"
-              description="O saldo aparece aqui depois da primeira entrada de nota."
-            />
-          ) : (
-            <>
-              <CardContent>
-                <Table className="min-w-[880px]">
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="w-[30%] min-w-[200px]">
-                        Material
-                      </TableHead>
-                      <TableHead numeric className="w-[14%]">
-                        Saldo
-                      </TableHead>
-                      <TableHead numeric className="w-[12%]">
-                        Mínimo
-                      </TableHead>
-                      <TableHead numeric className="w-[14%]">
-                        Custo médio
-                      </TableHead>
-                      <TableHead className="w-[14%] text-right">
-                        Última entrada
-                      </TableHead>
-                      <TableHead className="w-[16%]">Status</TableHead>
-                      <TableHead />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {items.map((item) => {
-                      const below = item.quantity < item.minimum
+          <FetchingRegion isFetching={isPlaceholderData}>
+            {!isLoading && !items.length ? (
+              <ListDataTotalEmpty
+                icon={IconBoxSeam}
+                title="Nenhum material em estoque"
+                description="O saldo aparece aqui depois da primeira entrada de nota."
+              />
+            ) : (
+              <>
+                <CardContent>
+                  <Table className="min-w-[880px]">
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="w-[30%] min-w-[200px]">
+                          Material
+                        </TableHead>
+                        <TableHead numeric className="w-[14%]">
+                          Saldo
+                        </TableHead>
+                        <TableHead numeric className="w-[12%]">
+                          Mínimo
+                        </TableHead>
+                        <TableHead numeric className="w-[14%]">
+                          Custo médio
+                        </TableHead>
+                        <TableHead className="w-[14%] text-right">
+                          Última entrada
+                        </TableHead>
+                        <TableHead className="w-[16%]">Status</TableHead>
+                        <TableHead />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {isLoading ? (
+                        <TableSkeletonRows cols={7} rows={5} />
+                      ) : (
+                        items.map((item) => {
+                          const below = item.quantity < item.minimum
 
-                      return (
-                        <TableRow key={item.id}>
-                          <TableCell>
-                            <p className="font-medium">{item.name}</p>
-                            {item.variation && (
-                              <p className="text-sm text-gray">
-                                {item.variation}
-                              </p>
-                            )}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              'text-right font-medium',
-                              below && 'text-error-700',
-                            )}
-                          >
-                            {item.quantity} {item.unit}
-                          </TableCell>
-                          <TableCell className="text-right text-gray">
-                            {item.minimum} {item.unit}
-                          </TableCell>
-                          <TableCell numeric>
-                            {money(item.averageCost)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {item.lastEntryCost === null ? (
-                              <span className="text-sm text-gray">
-                                sem entrada
-                              </span>
-                            ) : (
-                              <>
-                                {money(item.lastEntryCost)}
-                                <span className="block text-xs text-gray">
-                                  {formatDate(item.lastEntryDate)}
-                                </span>
-                              </>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {item.quantity === 0 ? (
-                              <Badge status variant="errorLight">
-                                Zerado
-                              </Badge>
-                            ) : below ? (
-                              <Badge status variant="warningLight">
-                                Abaixo do mínimo
-                              </Badge>
-                            ) : (
-                              <Badge status variant="successLight">
-                                Normal
-                              </Badge>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <PermissionGate permissions={['stock:stock:edit']}>
-                              <div className="flex justify-end gap-1">
-                                <ActionButton
-                                  Icon={IconTarget}
-                                  variant="neutralGhost"
-                                  tooltip="Estoque mínimo"
-                                  onClick={() =>
-                                    setEditing({ item, mode: 'minimum' })
-                                  }
-                                />
-                                <ActionButton
-                                  Icon={IconAdjustments}
-                                  variant="neutralGhost"
-                                  tooltip="Ajuste de inventário"
-                                  onClick={() =>
-                                    setEditing({ item, mode: 'adjustment' })
-                                  }
-                                />
-                              </div>
-                            </PermissionGate>
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter className="text-sm text-gray">
-                O custo médio alimenta a composição; quando a última entrada
-                fica acima dele, o custo dos produtos ainda não reflete a
-                compra.
-              </CardFooter>
-            </>
-          )}
+                          return (
+                            <TableRow key={item.id}>
+                              <TableCell>
+                                <p className="font-medium">{item.name}</p>
+                                {item.variation && (
+                                  <p className="text-sm text-gray">
+                                    {item.variation}
+                                  </p>
+                                )}
+                              </TableCell>
+                              <TableCell
+                                className={cn(
+                                  'text-right font-medium',
+                                  below && 'text-error-700',
+                                )}
+                              >
+                                {item.quantity} {item.unit}
+                              </TableCell>
+                              <TableCell className="text-right text-gray">
+                                {item.minimum} {item.unit}
+                              </TableCell>
+                              <TableCell numeric>
+                                {money(item.averageCost)}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {item.lastEntryCost === null ? (
+                                  <span className="text-sm text-gray">
+                                    sem entrada
+                                  </span>
+                                ) : (
+                                  <>
+                                    {money(item.lastEntryCost)}
+                                    <span className="block text-xs text-gray">
+                                      {formatDate(item.lastEntryDate)}
+                                    </span>
+                                  </>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {item.quantity === 0 ? (
+                                  <Badge status variant="errorLight">
+                                    Zerado
+                                  </Badge>
+                                ) : below ? (
+                                  <Badge status variant="warningLight">
+                                    Abaixo do mínimo
+                                  </Badge>
+                                ) : (
+                                  <Badge status variant="successLight">
+                                    Normal
+                                  </Badge>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <PermissionGate
+                                  permissions={['stock:stock:edit']}
+                                >
+                                  <div className="flex justify-end gap-1">
+                                    <ActionButton
+                                      Icon={IconTarget}
+                                      variant="neutralGhost"
+                                      tooltip="Estoque mínimo"
+                                      onClick={() =>
+                                        setEditing({ item, mode: 'minimum' })
+                                      }
+                                    />
+                                    <ActionButton
+                                      Icon={IconAdjustments}
+                                      variant="neutralGhost"
+                                      tooltip="Ajuste de inventário"
+                                      onClick={() =>
+                                        setEditing({
+                                          item,
+                                          mode: 'adjustment',
+                                        })
+                                      }
+                                    />
+                                  </div>
+                                </PermissionGate>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+                <CardFooter className="text-sm text-gray">
+                  O custo médio alimenta a composição; quando a última entrada
+                  fica acima dele, o custo dos produtos ainda não reflete a
+                  compra.
+                </CardFooter>
+              </>
+            )}
+          </FetchingRegion>
         </Card>
 
         <Card>
@@ -273,31 +289,37 @@ export function Stock({ searchParams }: SearchParamsType) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {movements.map((movement) => (
-                  <TableRow key={movement.id}>
-                    <TableCell className="text-sm">
-                      {formatDate(movement.date)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={stockMovementObj[movement.kind].variant}>
-                        {stockMovementObj[movement.kind].text}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">{movement.name}</TableCell>
-                    <TableCell
-                      className={cn(
-                        'text-right font-medium',
-                        movement.quantity < 0 && 'text-gray-900',
-                      )}
-                    >
-                      {movement.quantity > 0 ? '+' : ''}
-                      {movement.quantity} {movement.unit}
-                    </TableCell>
-                    <TableCell className="text-sm text-gray">
-                      {movement.origin}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {isLoadingMovements ? (
+                  <TableSkeletonRows cols={5} rows={5} />
+                ) : (
+                  movements.map((movement) => (
+                    <TableRow key={movement.id}>
+                      <TableCell className="text-sm">
+                        {formatDate(movement.date)}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={stockMovementObj[movement.kind].variant}
+                        >
+                          {stockMovementObj[movement.kind].text}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">{movement.name}</TableCell>
+                      <TableCell
+                        className={cn(
+                          'text-right font-medium',
+                          movement.quantity < 0 && 'text-gray-900',
+                        )}
+                      >
+                        {movement.quantity > 0 ? '+' : ''}
+                        {movement.quantity} {movement.unit}
+                      </TableCell>
+                      <TableCell className="text-sm text-gray">
+                        {movement.origin}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>

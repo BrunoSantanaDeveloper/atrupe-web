@@ -26,6 +26,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Components
@@ -125,7 +126,7 @@ export function AddToItem({
 
   /* ----------------------------- processos ----------------------------- */
 
-  const { data: listRes } = useQuery({
+  const { data: listRes, isLoading: loadingProcesses } = useQuery({
     queryKey: ['process-list', 'ativos'],
     queryFn: () => getActiveProcesses(),
   })
@@ -139,7 +140,7 @@ export function AddToItem({
 
   /* ------------------------- produtos do catálogo ---------------------- */
 
-  const { data: apiProducts } = useProducts()
+  const { data: apiProducts, isLoading: loadingProducts } = useProducts()
   const { data: apiSectors } = useSectorWithProducts()
   const catalog = useMemo<CatalogProduct[]>(() => {
     const sectorName = (id: string) =>
@@ -186,6 +187,8 @@ export function AddToItem({
       (sector === 'todos' || option.sector === sector) &&
       (!term || normalize(option.name).includes(term)),
   )
+  // A lista do modo ainda chegando: o vazio seria falso
+  const loadingList = mode === 'catalog' ? loadingProducts : loadingProcesses
 
   /* ------------------------------ medida ------------------------------- */
 
@@ -705,13 +708,18 @@ export function AddToItem({
                 </p>
               </button>
             ))}
-            {!visible.length && (
-              <p className="text-sm text-gray">
-                {mode === 'catalog'
-                  ? 'Nenhum produto com esse nome.'
-                  : 'Nenhum processo com esse nome.'}
-              </p>
-            )}
+            {/* Sem a lista ainda, o vazio seria falso: forma dos cartões */}
+            {loadingList
+              ? Array.from({ length: 3 }, (_, index) => (
+                  <Skeleton key={index} className="h-[66px] w-full" />
+                ))
+              : !visible.length && (
+                  <p className="text-sm text-gray">
+                    {mode === 'catalog'
+                      ? 'Nenhum produto com esse nome.'
+                      : 'Nenhum processo com esse nome.'}
+                  </p>
+                )}
           </div>
         </>
       )}

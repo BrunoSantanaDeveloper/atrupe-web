@@ -9,7 +9,8 @@ import { Topbar } from '@/components/common/Topbar'
 import { DeleteAlertDialog } from './Actions/Delete'
 import { UserPermissionsDialog } from './Actions/Permissions'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
@@ -43,7 +44,7 @@ import {
 import { getDataOld } from '@/actions/_cruds'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 interface Props extends SearchParamsType {}
 
@@ -51,8 +52,10 @@ export function Main({ searchParams }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<RoleType>()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['role-list', searchParams],
     queryFn: () => getDataOld({ route: 'roleRoute', filters: searchParams }),
   })
@@ -74,9 +77,7 @@ export function Main({ searchParams }: Props) {
         />
         <div className="space-y-2">
           <Card>
-            {isLoading ? (
-              <TableSkeleton cols={3} />
-            ) : !hasData ? (
+            {!isLoading && !hasData ? (
               <ListDataTotalEmpty
                 icon={IconSearch}
                 title="Nenhum cargo cadastrado"
@@ -95,100 +96,107 @@ export function Main({ searchParams }: Props) {
                   {/* <RoleFilter searchParams={searchParams} /> */}
                 </TableFiltersHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50">
-                        <TableHead>Cargo</TableHead>
-                        <TableHead>Colaboradores</TableHead>
-                        <TableHead></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {rolesArray.map((group) => (
-                        <Fragment key={group.sector.id}>
-                          <TableRow className="bg-gray-100">
-                            <TableCell
-                              colSpan={6}
-                              className="text-gray font-medium text-xs "
-                            >
-                              {group?.sector?.name}
-                            </TableCell>
-                          </TableRow>
-                          {group?.roles?.length
-                            ? group?.roles.map((item) => {
-                                return (
-                                  <TableRow key={item?.id}>
-                                    <TableCell className="font-medium">
-                                      {item?.name}
-                                    </TableCell>
-                                    <TableCell className="text-gray-600">
-                                      {item?.employees?.length || '0'}
-                                    </TableCell>
-                                    <TableCell>
-                                      <div className="flex justify-end gap-1">
-                                        <TooltipProvider>
-                                          <PermissionGate
-                                            permissions={[
-                                              'company_settings:roles:edit',
-                                            ]}
-                                          >
-                                            <ActionButton
-                                              Icon={IconPencil}
-                                              tooltip="Editar"
-                                              onClick={() => {
-                                                setRowData(item)
-                                                setOpenDialog('edit')
-                                              }}
-                                              disabled={item?.isAdmin}
-                                            />
-                                          </PermissionGate>
-                                          <PermissionGate
-                                            permissions={[
-                                              'company_settings:roles:edit',
-                                            ]}
-                                          >
-                                            <ActionButton
-                                              Icon={IconShieldLock}
-                                              tooltip="Permissões do cargo"
-                                              onClick={() => {
-                                                setRowData(item)
-                                                setOpenDialog('permissions')
-                                              }}
-                                              disabled={item?.isAdmin}
-                                            />
-                                          </PermissionGate>
-                                          <PermissionGate
-                                            permissions={[
-                                              'company_settings:roles:delete',
-                                            ]}
-                                          >
-                                            <ActionButton
-                                              Icon={IconTrash}
-                                              tooltip="Excluir"
-                                              onClick={() => {
-                                                setRowData(item)
-                                                setOpenDialog('delete')
-                                              }}
-                                              disabled={item?.isAdmin}
-                                            />
-                                          </PermissionGate>
-                                        </TooltipProvider>
-                                      </div>
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              })
-                            : null}
-                        </Fragment>
-                      ))}
-                    </TableBody>
-                  </Table>
+                  <FetchingRegion isFetching={isPlaceholderData}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-50">
+                          <TableHead>Cargo</TableHead>
+                          <TableHead>Colaboradores</TableHead>
+                          <TableHead></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {isLoading ? (
+                          <TableSkeletonRows cols={3} />
+                        ) : (
+                          rolesArray.map((group) => (
+                            <Fragment key={group.sector.id}>
+                              <TableRow className="bg-gray-100">
+                                <TableCell
+                                  colSpan={6}
+                                  className="text-gray font-medium text-xs "
+                                >
+                                  {group?.sector?.name}
+                                </TableCell>
+                              </TableRow>
+                              {group?.roles?.length
+                                ? group?.roles.map((item) => {
+                                    return (
+                                      <TableRow key={item?.id}>
+                                        <TableCell className="font-medium">
+                                          {item?.name}
+                                        </TableCell>
+                                        <TableCell className="text-gray-600">
+                                          {item?.employees?.length || '0'}
+                                        </TableCell>
+                                        <TableCell>
+                                          <div className="flex justify-end gap-1">
+                                            <TooltipProvider>
+                                              <PermissionGate
+                                                permissions={[
+                                                  'company_settings:roles:edit',
+                                                ]}
+                                              >
+                                                <ActionButton
+                                                  Icon={IconPencil}
+                                                  tooltip="Editar"
+                                                  onClick={() => {
+                                                    setRowData(item)
+                                                    setOpenDialog('edit')
+                                                  }}
+                                                  disabled={item?.isAdmin}
+                                                />
+                                              </PermissionGate>
+                                              <PermissionGate
+                                                permissions={[
+                                                  'company_settings:roles:edit',
+                                                ]}
+                                              >
+                                                <ActionButton
+                                                  Icon={IconShieldLock}
+                                                  tooltip="Permissões do cargo"
+                                                  onClick={() => {
+                                                    setRowData(item)
+                                                    setOpenDialog('permissions')
+                                                  }}
+                                                  disabled={item?.isAdmin}
+                                                />
+                                              </PermissionGate>
+                                              <PermissionGate
+                                                permissions={[
+                                                  'company_settings:roles:delete',
+                                                ]}
+                                              >
+                                                <ActionButton
+                                                  Icon={IconTrash}
+                                                  tooltip="Excluir"
+                                                  onClick={() => {
+                                                    setRowData(item)
+                                                    setOpenDialog('delete')
+                                                  }}
+                                                  disabled={item?.isAdmin}
+                                                />
+                                              </PermissionGate>
+                                            </TooltipProvider>
+                                          </div>
+                                        </TableCell>
+                                      </TableRow>
+                                    )
+                                  })
+                                : null}
+                            </Fragment>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </FetchingRegion>
                 </CardContent>
                 {isLoading || hasData ? (
                   <CardFooter>
                     <TablePagination
                       searchParams={searchParams}
                       lastPage={data?.lastPage}
+                      isLoading={isLoading}
                     />
                   </CardFooter>
                 ) : null}

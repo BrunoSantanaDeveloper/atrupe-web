@@ -28,7 +28,8 @@ import {
 // Components
 import { LoadError } from '../../components/LoadError'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
@@ -44,7 +45,7 @@ import { formatReferenceMonth } from '../../reference-month'
 import { comparisonPeriods, comparisonStatuses } from '@/consts/cost-base'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import {
@@ -68,8 +69,10 @@ export function Comparison({ searchParams }: SearchParamsType) {
       next.status || status
     }`
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Situação e período mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['cost-comparison', searchParams],
     queryFn: () => getCostComparison({ filters: searchParams }),
   })
@@ -136,169 +139,180 @@ export function Comparison({ searchParams }: SearchParamsType) {
             </Tabs>
           </div>
         </CardHeader>
-        {isLoading ? (
-          <TableSkeleton cols={5} rows={6} />
-        ) : data && !data.success ? (
-          <LoadError message={data.message} />
-        ) : !accounts.length ? (
-          <ListDataTotalEmpty
-            icon={IconScale}
-            title={
-              status === 'sem-previsao'
-                ? 'Todas as contas têm previsão'
-                : 'Nada para comparar ainda'
-            }
-            description={
-              status === 'sem-previsao'
-                ? 'Todo o resto do plano de contas já tem estimativa vinda dos cadastros.'
-                : 'As contas vêm do plano de contas, fora as despesas administrativas, que ficam na aba própria.'
-            }
-          />
-        ) : (
-          <>
-            <CardContent>
-              <Table className="min-w-[900px]">
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-[6%]" />
-                    <TableHead className="w-[34%] min-w-[220px]">
-                      Conta
-                    </TableHead>
-                    <TableHead numeric className="w-[18%]">
-                      Previsto no período
-                    </TableHead>
-                    <TableHead numeric className="w-[18%]">
-                      Realizado no período
-                    </TableHead>
-                    <TableHead numeric className="w-[24%]">
-                      Diferença
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {accounts.map((account) => {
-                    const isExpanded = expanded.includes(account.id)
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {data && !data.success ? (
+            <LoadError message={data.message} />
+          ) : !isLoading && !accounts.length ? (
+            <ListDataTotalEmpty
+              icon={IconScale}
+              title={
+                status === 'sem-previsao'
+                  ? 'Todas as contas têm previsão'
+                  : 'Nada para comparar ainda'
+              }
+              description={
+                status === 'sem-previsao'
+                  ? 'Todo o resto do plano de contas já tem estimativa vinda dos cadastros.'
+                  : 'As contas vêm do plano de contas, fora as despesas administrativas, que ficam na aba própria.'
+              }
+            />
+          ) : (
+            <>
+              <CardContent>
+                <Table className="min-w-[900px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-[6%]" />
+                      <TableHead className="w-[34%] min-w-[220px]">
+                        Conta
+                      </TableHead>
+                      <TableHead numeric className="w-[18%]">
+                        Previsto no período
+                      </TableHead>
+                      <TableHead numeric className="w-[18%]">
+                        Realizado no período
+                      </TableHead>
+                      <TableHead numeric className="w-[24%]">
+                        Diferença
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={5} rows={6} />
+                    ) : (
+                      accounts.map((account) => {
+                        const isExpanded = expanded.includes(account.id)
 
-                    return (
-                      <Fragment key={account.id}>
-                        <TableRow>
-                          <TableCell>
-                            <ActionButton
-                              Icon={
-                                isExpanded ? IconChevronDown : IconChevronRight
-                              }
-                              tooltip={
-                                isExpanded
-                                  ? `Recolher ${account.name}`
-                                  : `Detalhar ${account.name}`
-                              }
-                              onClick={() => toggle(account.id)}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="font-medium">{account.name}</p>
-                              {account.estimated === null && (
-                                <Badge variant="warningLight">
-                                  sem previsão
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm text-gray">
-                              {account.chartAccount}
-                            </p>
-                          </TableCell>
-                          <TableCell numeric>
-                            {formatValue(account.estimated)}
-                          </TableCell>
-                          <TableCell numeric>
-                            {formatValue(account.actual)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {account.difference === null ? (
-                              <span className="text-sm text-gray">
-                                sem comparação
-                              </span>
-                            ) : (
-                              <div className="flex items-center justify-end gap-2">
-                                <span>
-                                  {formatCurrencyToBrl(
-                                    Math.abs(account.difference),
+                        return (
+                          <Fragment key={account.id}>
+                            <TableRow>
+                              <TableCell>
+                                <ActionButton
+                                  Icon={
+                                    isExpanded
+                                      ? IconChevronDown
+                                      : IconChevronRight
+                                  }
+                                  tooltip={
+                                    isExpanded
+                                      ? `Recolher ${account.name}`
+                                      : `Detalhar ${account.name}`
+                                  }
+                                  onClick={() => toggle(account.id)}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="font-medium">{account.name}</p>
+                                  {account.estimated === null && (
+                                    <Badge variant="warningLight">
+                                      sem previsão
+                                    </Badge>
                                   )}
-                                </span>
-                                <Badge variant="neutralLight">
-                                  {account.difference >= 0
-                                    ? 'abaixo do previsto'
-                                    : 'acima do previsto'}
-                                  {account.differencePercent !== null &&
-                                    ` · ${Math.abs(account.differencePercent)
-                                      .toString()
-                                      .replace('.', ',')}%`}
-                                </Badge>
-                              </div>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                        {isExpanded &&
-                          (account.sources.length ? (
-                            account.sources.map((source) => (
-                              <TableRow key={source.id} className="bg-gray-50">
-                                <TableCell />
-                                <TableCell colSpan={2}>
-                                  <p className="text-sm font-medium">
-                                    {source.name}
-                                  </p>
-                                  <p className="text-sm text-gray">
-                                    {source.detail}
-                                  </p>
-                                </TableCell>
-                                <TableCell numeric colSpan={2}>
-                                  {formatCurrencyToBrl(source.value)}
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          ) : (
-                            <TableRow className="bg-gray-50">
-                              <TableCell />
-                              <TableCell
-                                colSpan={4}
-                                className="text-sm text-gray"
-                              >
-                                Nenhuma estimativa nos cadastros aponta para
-                                esta conta. Ela é candidata a virar custo de
-                                cadastro.
+                                </div>
+                                <p className="text-sm text-gray">
+                                  {account.chartAccount}
+                                </p>
+                              </TableCell>
+                              <TableCell numeric>
+                                {formatValue(account.estimated)}
+                              </TableCell>
+                              <TableCell numeric>
+                                {formatValue(account.actual)}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                {account.difference === null ? (
+                                  <span className="text-sm text-gray">
+                                    sem comparação
+                                  </span>
+                                ) : (
+                                  <div className="flex items-center justify-end gap-2">
+                                    <span>
+                                      {formatCurrencyToBrl(
+                                        Math.abs(account.difference),
+                                      )}
+                                    </span>
+                                    <Badge variant="neutralLight">
+                                      {account.difference >= 0
+                                        ? 'abaixo do previsto'
+                                        : 'acima do previsto'}
+                                      {account.differencePercent !== null &&
+                                        ` · ${Math.abs(
+                                          account.differencePercent,
+                                        )
+                                          .toString()
+                                          .replace('.', ',')}%`}
+                                    </Badge>
+                                  </div>
+                                )}
                               </TableCell>
                             </TableRow>
-                          ))}
-                      </Fragment>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter className="flex-col items-stretch gap-4">
-              {/* O previsto que a API calcula ainda não tem os outros volumes
-                  (km rodados, m² vendidos, custo financeiro, material das
-                  composições): por isso o aviso discreto no rodapé */}
-              <p className="text-sm text-gray">
-                {periodLabel}
-                {coverage
-                  ? `${coverage.withEstimate} de ${coverage.total} contas já têm previsão no sistema. `
-                  : ''}
-                Por enquanto, o previsto vem só dos custos cadastrados nos
-                patrimônios. Períodos maiores são mais precisos: a compra não
-                acontece no mesmo mês do consumo. A depreciação não aparece
-                aqui, porque não tem lançamento financeiro correspondente.
-              </p>
-              {lastPage > 1 ? (
-                <TablePagination
-                  searchParams={searchParams}
-                  lastPage={lastPage}
-                />
-              ) : null}
-            </CardFooter>
-          </>
-        )}
+                            {isExpanded &&
+                              (account.sources.length ? (
+                                account.sources.map((source) => (
+                                  <TableRow
+                                    key={source.id}
+                                    className="bg-gray-50"
+                                  >
+                                    <TableCell />
+                                    <TableCell colSpan={2}>
+                                      <p className="text-sm font-medium">
+                                        {source.name}
+                                      </p>
+                                      <p className="text-sm text-gray">
+                                        {source.detail}
+                                      </p>
+                                    </TableCell>
+                                    <TableCell numeric colSpan={2}>
+                                      {formatCurrencyToBrl(source.value)}
+                                    </TableCell>
+                                  </TableRow>
+                                ))
+                              ) : (
+                                <TableRow className="bg-gray-50">
+                                  <TableCell />
+                                  <TableCell
+                                    colSpan={4}
+                                    className="text-sm text-gray"
+                                  >
+                                    Nenhuma estimativa nos cadastros aponta para
+                                    esta conta. Ela é candidata a virar custo de
+                                    cadastro.
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                          </Fragment>
+                        )
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+              <CardFooter className="flex-col items-stretch gap-4">
+                {/* O previsto que a API calcula ainda não tem os outros volumes
+                    (km rodados, m² vendidos, custo financeiro, material das
+                    composições): por isso o aviso discreto no rodapé */}
+                <p className="text-sm text-gray">
+                  {periodLabel}
+                  {coverage
+                    ? `${coverage.withEstimate} de ${coverage.total} contas já têm previsão no sistema. `
+                    : ''}
+                  Por enquanto, o previsto vem só dos custos cadastrados nos
+                  patrimônios. Períodos maiores são mais precisos: a compra não
+                  acontece no mesmo mês do consumo. A depreciação não aparece
+                  aqui, porque não tem lançamento financeiro correspondente.
+                </p>
+                {lastPage > 1 ? (
+                  <TablePagination
+                    searchParams={searchParams}
+                    lastPage={lastPage}
+                  />
+                ) : null}
+              </CardFooter>
+            </>
+          )}
+        </FetchingRegion>
       </Card>
     </TooltipProvider>
   )

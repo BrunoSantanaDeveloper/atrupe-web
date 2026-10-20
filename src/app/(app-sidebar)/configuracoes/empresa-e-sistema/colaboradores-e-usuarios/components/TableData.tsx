@@ -10,7 +10,8 @@ import { UserHistoryDialog } from './Actions/History'
 import { UserInfo } from '@/components/common/UserInfo'
 import { EditEmployeeDialog } from './Actions/EditEmployee'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -47,7 +48,7 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getDataOld } from '@/actions/_cruds'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconHistory, IconUserPlus } from '@tabler/icons-react'
@@ -77,7 +78,9 @@ export function TableData({ tabs, searchParams, usersQuota }: Props) {
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
   const filters = { ...searchParams, status }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
     queryKey: ['employee-list', searchParams],
     queryFn: () => getDataOld({ route: 'employeeRoute', filters }),
@@ -105,215 +108,224 @@ export function TableData({ tabs, searchParams, usersQuota }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton cols={6} />
-        ) : hasData ? (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead>Colaborador</TableHead>
-                  <TableHead>Usuário</TableHead>
-                  <TableHead>Status colaborador</TableHead>
-                  <TableHead>Status usuário</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {employeeArray.map((group) => (
-                  <Fragment key={group.sector.id}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={6}
-                        className="text-gray font-medium text-xs "
-                      >
-                        {group?.sector?.name}
-                      </TableCell>
-                    </TableRow>
-                    {group?.employees?.length
-                      ? group?.employees.map((item) => {
-                          return (
-                            <TableRow key={item?.id}>
-                              <TableCell className="flex items-center gap-3">
-                                <UserInfo
-                                  name={item?.name || ''}
-                                  description={item?.role?.name || ''}
-                                  imageUrl={item?.avatarUrl || ''}
-                                />
-                                {/* O Administrador Principal da Conta (contrato 1.1, 4.1). */}
-                                {item?.isOwner && (
-                                  <Badge
-                                    variant="light"
-                                    title="Administrador principal da conta"
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Colaborador</TableHead>
+                    <TableHead>Usuário</TableHead>
+                    <TableHead>Status colaborador</TableHead>
+                    <TableHead>Status usuário</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={5} />
+                  ) : (
+                    employeeArray.map((group) => (
+                      <Fragment key={group.sector.id}>
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={6}
+                            className="text-gray font-medium text-xs "
+                          >
+                            {group?.sector?.name}
+                          </TableCell>
+                        </TableRow>
+                        {group?.employees?.length
+                          ? group?.employees.map((item) => {
+                              return (
+                                <TableRow key={item?.id}>
+                                  <TableCell className="flex items-center gap-3">
+                                    <UserInfo
+                                      name={item?.name || ''}
+                                      description={item?.role?.name || ''}
+                                      imageUrl={item?.avatarUrl || ''}
+                                    />
+                                    {/* O Administrador Principal da Conta (contrato 1.1, 4.1). */}
+                                    {item?.isOwner && (
+                                      <Badge
+                                        variant="light"
+                                        title="Administrador principal da conta"
+                                      >
+                                        Usuário nº 1
+                                      </Badge>
+                                    )}
+                                  </TableCell>
+                                  <TableCell
+                                    className={cn(
+                                      item?.user?.name
+                                        ? 'text-gray-600'
+                                        : 'text-gray-300',
+                                    )}
                                   >
-                                    Usuário nº 1
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell
-                                className={cn(
-                                  item?.user?.name
-                                    ? 'text-gray-600'
-                                    : 'text-gray-300',
-                                )}
-                              >
-                                <p>{item?.user?.name || 'Sem usuário'}</p>
-                                <p className="text-xs">
-                                  {item?.user?.email || ''}
-                                </p>
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  status
-                                  variant={
-                                    item?.isActive
-                                      ? 'successLight'
-                                      : 'neutralLight'
-                                  }
-                                >
-                                  {item?.isActive ? 'Ativo' : 'Inativo'}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                {item?.user ? (
-                                  <Badge
-                                    status
-                                    variant={
-                                      item?.user?.isActive
-                                        ? 'successLight'
-                                        : 'neutralLight'
-                                    }
-                                  >
-                                    {item?.user?.isActive ? 'Ativo' : 'Inativo'}
-                                  </Badge>
-                                ) : (
-                                  '-'
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={[
-                                        'company_settings:users:edit',
-                                      ]}
+                                    <p>{item?.user?.name || 'Sem usuário'}</p>
+                                    <p className="text-xs">
+                                      {item?.user?.email || ''}
+                                    </p>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      status
+                                      variant={
+                                        item?.isActive
+                                          ? 'successLight'
+                                          : 'neutralLight'
+                                      }
                                     >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        tooltip="Editar colaborador"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog('edit-employee')
-                                        }}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={[
-                                        !item?.user
-                                          ? 'company_settings:users:create'
-                                          : 'company_settings:users:edit',
-                                      ]}
-                                    >
-                                      {!item?.user && usersQuotaFull ? (
-                                        // Botão desabilitado não dispara o
-                                        // tooltip: o motivo fica no span.
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <span
-                                              className="inline-flex"
-                                              tabIndex={0}
-                                            >
-                                              <Button
-                                                type="button"
-                                                size="icon"
-                                                variant="neutralGhost"
-                                                aria-label="Novo usuário"
-                                                RightIcon={IconUserPlus}
-                                                disabled
-                                              />
-                                            </span>
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            <p>{usersQuotaReason}</p>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      ) : (
-                                        <ActionButton
-                                          Icon={
-                                            item?.user
-                                              ? IconPencil
-                                              : IconUserPlus
-                                          }
-                                          tooltip={
-                                            item?.user
-                                              ? 'Editar usuário'
-                                              : 'Novo usuário'
-                                          }
-                                          onClick={() => handleCreateUser(item)}
-                                        />
-                                      )}
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={[
-                                        'company_settings:users:view',
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={IconHistory}
-                                        tooltip="Histórico"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog('history')
-                                        }}
-                                      />
-                                    </PermissionGate>
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-            <EditEmployeeDialog
-              open={openDialog === 'edit-employee'}
-              setOpen={setOpenDialog}
-              rowData={rowData}
-              searchParams={searchParams}
+                                      {item?.isActive ? 'Ativo' : 'Inativo'}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    {item?.user ? (
+                                      <Badge
+                                        status
+                                        variant={
+                                          item?.user?.isActive
+                                            ? 'successLight'
+                                            : 'neutralLight'
+                                        }
+                                      >
+                                        {item?.user?.isActive
+                                          ? 'Ativo'
+                                          : 'Inativo'}
+                                      </Badge>
+                                    ) : (
+                                      '-'
+                                    )}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex justify-end gap-1">
+                                      <TooltipProvider>
+                                        <PermissionGate
+                                          permissions={[
+                                            'company_settings:users:edit',
+                                          ]}
+                                        >
+                                          <ActionButton
+                                            Icon={IconPencil}
+                                            tooltip="Editar colaborador"
+                                            onClick={() => {
+                                              setRowData(item)
+                                              setOpenDialog('edit-employee')
+                                            }}
+                                          />
+                                        </PermissionGate>
+                                        <PermissionGate
+                                          permissions={[
+                                            !item?.user
+                                              ? 'company_settings:users:create'
+                                              : 'company_settings:users:edit',
+                                          ]}
+                                        >
+                                          {!item?.user && usersQuotaFull ? (
+                                            // Botão desabilitado não dispara o
+                                            // tooltip: o motivo fica no span.
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <span
+                                                  className="inline-flex"
+                                                  tabIndex={0}
+                                                >
+                                                  <Button
+                                                    type="button"
+                                                    size="icon"
+                                                    variant="neutralGhost"
+                                                    aria-label="Novo usuário"
+                                                    RightIcon={IconUserPlus}
+                                                    disabled
+                                                  />
+                                                </span>
+                                              </TooltipTrigger>
+                                              <TooltipContent>
+                                                <p>{usersQuotaReason}</p>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          ) : (
+                                            <ActionButton
+                                              Icon={
+                                                item?.user
+                                                  ? IconPencil
+                                                  : IconUserPlus
+                                              }
+                                              tooltip={
+                                                item?.user
+                                                  ? 'Editar usuário'
+                                                  : 'Novo usuário'
+                                              }
+                                              onClick={() =>
+                                                handleCreateUser(item)
+                                              }
+                                            />
+                                          )}
+                                        </PermissionGate>
+                                        <PermissionGate
+                                          permissions={[
+                                            'company_settings:users:view',
+                                          ]}
+                                        >
+                                          <ActionButton
+                                            Icon={IconHistory}
+                                            tooltip="Histórico"
+                                            onClick={() => {
+                                              setRowData(item)
+                                              setOpenDialog('history')
+                                            }}
+                                          />
+                                        </PermissionGate>
+                                      </TooltipProvider>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          : null}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              <EditEmployeeDialog
+                open={openDialog === 'edit-employee'}
+                setOpen={setOpenDialog}
+                rowData={rowData}
+                searchParams={searchParams}
+              />
+              <NewUserDialog
+                open={openDialog === 'new-user'}
+                setOpen={setOpenDialog}
+                rowData={rowData}
+                editMode={editUser}
+                searchParams={searchParams}
+              />
+              <UserHistoryDialog
+                open={openDialog === 'history'}
+                setOpen={setOpenDialog}
+                rowData={rowData}
+              />
+            </>
+          ) : (
+            <FilteredDataEmpty
+              title="Colaborador não encontrado"
+              description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo colaborador."
+              cta={
+                <PermissionGate permissions={['company_settings:users:create']}>
+                  <NewEmployeeDialog />
+                </PermissionGate>
+              }
             />
-            <NewUserDialog
-              open={openDialog === 'new-user'}
-              setOpen={setOpenDialog}
-              rowData={rowData}
-              editMode={editUser}
-              searchParams={searchParams}
-            />
-            <UserHistoryDialog
-              open={openDialog === 'history'}
-              setOpen={setOpenDialog}
-              rowData={rowData}
-            />
-          </>
-        ) : (
-          <FilteredDataEmpty
-            title="Colaborador não encontrado"
-            description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo colaborador."
-            cta={
-              <PermissionGate permissions={['company_settings:users:create']}>
-                <NewEmployeeDialog />
-              </PermissionGate>
-            }
-          />
-        )}
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.lastPage}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

@@ -30,6 +30,7 @@ import { CompensateDialog } from '../Compensate'
 import { ViewPaymentDialog } from '../ViewPayment'
 import { CancelAlertDialog } from './CancelTransaction/Alert'
 import { ActionButton } from '@/components/common/ActionButton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { EditTransactionData } from './EditTransaction/EditData'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -188,11 +189,7 @@ export function TransactionDetailsDialog({
               </TableHeader>
               <TableBody className="bg-white">
                 {isLoadingInstallment ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      <p>Carregando...</p>
-                    </TableCell>
-                  </TableRow>
+                  <TableSkeletonRows cols={5} rows={3} />
                 ) : (
                   data?.installments?.map((item) => {
                     const isCurrent =

@@ -149,7 +149,7 @@ const TabsTrigger = React.forwardRef<
 
         // === VARIANT: PILL ===
         variant === 'pill' && [
-          'group inline-flex items-center justify-center whitespace-nowrap rounded px-3 transition-all',
+          'group inline-flex items-center justify-center whitespace-nowrap rounded px-3 transition-[color,background-color,border-color,box-shadow,opacity]',
           'text-sm font-medium text-gray',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1',
           'disabled:pointer-events-none disabled:opacity-50 hover:text-gray-700',
@@ -234,7 +234,7 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      'mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2',
+      'mt-4 ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2 data-[state=active]:animate-in data-[state=active]:fade-in-0 data-[state=active]:duration-base',
       className,
     )}
     {...props}

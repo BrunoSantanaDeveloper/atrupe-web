@@ -28,7 +28,7 @@ import {
 import { Topbar } from '@/components/common/Topbar'
 import { NewGroupModal } from './NewGroup'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Hooks / Store
@@ -89,7 +89,7 @@ export function AssetGroups() {
       },
     })
 
-  const { mutate: rename } = useMutation({
+  const { mutate: rename, isPending: renaming } = useMutation({
     mutationFn: () => renameAssetGroup({ id: editing || '', name }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
@@ -126,31 +126,31 @@ export function AssetGroups() {
               a uma: o grupo é opcional.
             </CardDescription>
           </CardHeader>
-          {isLoading ? (
-            <TableSkeleton cols={5} rows={3} />
-          ) : (
-            <>
-              <CardContent>
-                <Table className="min-w-[760px]">
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="w-[32%] min-w-[200px]">
-                        Grupo
-                      </TableHead>
-                      <TableHead className="w-[14%]">Setor</TableHead>
-                      <TableHead className="w-[12%]">Unidade</TableHead>
-                      <TableHead className="w-[12%] text-right">Bens</TableHead>
-                      <TableHead numeric className="w-[16%]">
-                        Custo médio
-                      </TableHead>
-                      <TableHead className="w-[16%] text-right">
-                        Produtividade somada
-                      </TableHead>
-                      <TableHead className="w-[6%]" />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {groups.map((group) => (
+          <>
+            <CardContent>
+              <Table className="min-w-[760px]">
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[32%] min-w-[200px]">
+                      Grupo
+                    </TableHead>
+                    <TableHead className="w-[14%]">Setor</TableHead>
+                    <TableHead className="w-[12%]">Unidade</TableHead>
+                    <TableHead className="w-[12%] text-right">Bens</TableHead>
+                    <TableHead numeric className="w-[16%]">
+                      Custo médio
+                    </TableHead>
+                    <TableHead className="w-[16%] text-right">
+                      Produtividade somada
+                    </TableHead>
+                    <TableHead className="w-[6%]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={7} rows={3} />
+                  ) : (
+                    groups.map((group) => (
                       <TableRow key={group.id}>
                         <TableCell>
                           {editing === group.id ? (
@@ -165,6 +165,7 @@ export function AssetGroups() {
                               <Button
                                 size="sm"
                                 LeftIcon={IconCheck}
+                                isLoading={renaming}
                                 onClick={() => rename()}
                               >
                                 Salvar
@@ -215,16 +216,16 @@ export function AssetGroups() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter className="text-sm text-gray">
-                Grupo sem nenhum bem não gera custo: as composições que
-                dependerem dele ficam sem o custo da máquina.
-              </CardFooter>
-            </>
-          )}
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+            <CardFooter className="text-sm text-gray">
+              Grupo sem nenhum bem não gera custo: as composições que dependerem
+              dele ficam sem o custo da máquina.
+            </CardFooter>
+          </>
         </Card>
       </div>
     </TooltipProvider>

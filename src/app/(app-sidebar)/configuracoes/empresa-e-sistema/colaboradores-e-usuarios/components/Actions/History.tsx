@@ -11,9 +11,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // Icon Imports
-import { IconHistory, IconLoader2 } from '@tabler/icons-react'
+import { IconHistory } from '@tabler/icons-react'
 
 // Type Imports
 import { Timeline } from '@/components/common/Timeline'
@@ -59,8 +60,17 @@ export function UserHistoryDialog(props: Props) {
         </DialogHeader>
         <DialogBody>
           {isLoading ? (
-            <div className="flex items-center justify-center py-10">
-              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+            // Eventos da linha do tempo ainda chegando
+            <div className="space-y-5 py-2">
+              {Array.from({ length: 3 }, (_, index) => (
+                <div key={index} className="flex gap-3">
+                  <Skeleton className="size-8 shrink-0 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-3 w-1/3" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : events.length > 0 ? (
             <Timeline events={events} />

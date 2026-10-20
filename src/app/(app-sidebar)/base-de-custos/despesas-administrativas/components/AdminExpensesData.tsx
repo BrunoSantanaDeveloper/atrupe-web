@@ -18,7 +18,9 @@ import {
 } from '@/components/ui/tooltip'
 
 // Components
+import { Skeleton } from '@/components/ui/skeleton'
 import { ActionButton } from '@/components/common/ActionButton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
@@ -37,6 +39,7 @@ import {
 
 interface Props {
   accounts: AdminExpenseAccount[]
+  isLoading?: boolean
   onEdit: (account: AdminExpenseAccount) => void
   onAllocate: (account: AdminExpenseAccount) => void
 }
@@ -64,7 +67,12 @@ const sumAllocated = (accounts: AdminExpenseAccount[]) =>
 
 // Lista plana, sem divisão por grupo: a divisão repetia a hierarquia do plano
 // de contas, que já aparece na própria linha (decisão do time em 22/09/2026)
-export function AdminExpensesData({ accounts, onEdit, onAllocate }: Props) {
+export function AdminExpensesData({
+  accounts,
+  isLoading,
+  onEdit,
+  onAllocate,
+}: Props) {
   const allocated = sumAllocated(accounts)
 
   return (
@@ -110,110 +118,123 @@ export function AdminExpensesData({ accounts, onEdit, onAllocate }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {accounts.map((account) => (
-              <TableRow key={account.id}>
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{account.name}</span>
-                    <span className="text-sm text-gray">
-                      {account.chartAccount}
-                    </span>
-                  </div>
-                </TableCell>
-                {valueColumns.map((column) => (
-                  <TableCell
-                    key={column.key}
-                    className={cn(
-                      'px-3 text-right whitespace-nowrap',
-                      account.criterion === column.criterion
-                        ? 'text-gray-900 font-medium'
-                        : 'text-gray',
-                    )}
-                  >
-                    {formatValue(account[column.key])}
-                  </TableCell>
-                ))}
-                <TableCell>
-                  <Badge
-                    variant={costCriterionObj[account.criterion].variant}
-                    className="whitespace-nowrap"
-                  >
-                    {costCriterionObj[account.criterion].text}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-gray-900">
-                      {formatValue(account.referenceValue)}
-                    </span>
-                    {account.criterion === 'MANUAL' ? (
-                      <span className="text-xs text-gray">
-                        Informado manualmente
+            {isLoading ? (
+              <TableSkeletonRows cols={8} />
+            ) : (
+              accounts.map((account) => (
+                <TableRow key={account.id}>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{account.name}</span>
+                      <span className="text-sm text-gray">
+                        {account.chartAccount}
                       </span>
-                    ) : null}
-                    {/* Rateio por item (BC-8): a parte de cada setor e o que
-                        sobra no administrativo */}
-                    {account.allocations.length ? (
-                      <>
+                    </div>
+                  </TableCell>
+                  {valueColumns.map((column) => (
+                    <TableCell
+                      key={column.key}
+                      className={cn(
+                        'px-3 text-right whitespace-nowrap',
+                        account.criterion === column.criterion
+                          ? 'text-gray-900 font-medium'
+                          : 'text-gray',
+                      )}
+                    >
+                      {formatValue(account[column.key])}
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    <Badge
+                      variant={costCriterionObj[account.criterion].variant}
+                      className="whitespace-nowrap"
+                    >
+                      {costCriterionObj[account.criterion].text}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-900">
+                        {formatValue(account.referenceValue)}
+                      </span>
+                      {account.criterion === 'MANUAL' ? (
                         <span className="text-xs text-gray">
-                          {account.allocations
-                            .map(
-                              (share) =>
-                                `${share.sectorName} ${share.percentage.toLocaleString('pt-BR')}%`,
-                            )
-                            .join(' · ')}
+                          Informado manualmente
                         </span>
-                        <span className="text-xs text-gray">
-                          {formatValue(account.remainder)} fica no
-                          administrativo · acompanha o custo de referência
-                        </span>
-                      </>
-                    ) : null}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-1">
-                    <ActionButton
-                      tooltip={
-                        account.allocations.length
-                          ? 'Rateio entre os setores'
-                          : 'Ratear entre os setores'
-                      }
-                      Icon={IconArrowsSplit2}
-                      onClick={() => onAllocate(account)}
-                      disabled={!account.referenceValue}
-                    />
-                    <PermissionGate permissions={['cost:base:edit']}>
+                      ) : null}
+                      {/* Rateio por item (BC-8): a parte de cada setor e o que
+                          sobra no administrativo */}
+                      {account.allocations.length ? (
+                        <>
+                          <span className="text-xs text-gray">
+                            {account.allocations
+                              .map(
+                                (share) =>
+                                  `${share.sectorName} ${share.percentage.toLocaleString('pt-BR')}%`,
+                              )
+                              .join(' · ')}
+                          </span>
+                          <span className="text-xs text-gray">
+                            {formatValue(account.remainder)} fica no
+                            administrativo · acompanha o custo de referência
+                          </span>
+                        </>
+                      ) : null}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-1">
                       <ActionButton
-                        tooltip="Editar critério"
-                        Icon={IconPencil}
-                        onClick={() => onEdit(account)}
+                        tooltip={
+                          account.allocations.length
+                            ? 'Rateio entre os setores'
+                            : 'Ratear entre os setores'
+                        }
+                        Icon={IconArrowsSplit2}
+                        onClick={() => onAllocate(account)}
+                        disabled={!account.referenceValue}
                       />
-                    </PermissionGate>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
+                      <PermissionGate permissions={['cost:base:edit']}>
+                        <ActionButton
+                          tooltip="Editar critério"
+                          Icon={IconPencil}
+                          onClick={() => onEdit(account)}
+                        />
+                      </PermissionGate>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>
       <CardFooter className="justify-between text-sm text-gray">
-        <span>
-          {accounts.length} {accounts.length === 1 ? 'conta' : 'contas'}
-        </span>
-        <span className="text-right">
-          Total:{' '}
-          <span className="font-semibold text-gray-900">
-            {formatCurrencyToBrl(sumReference(accounts))}
-          </span>
-          {allocated ? (
-            <span className="block text-xs">
-              {formatCurrencyToBrl(allocated)} rateados por item ·{' '}
-              {formatCurrencyToBrl(sumReference(accounts) - allocated)} no
-              administrativo
+        {isLoading ? (
+          <>
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-32" />
+          </>
+        ) : (
+          <>
+            <span>
+              {accounts.length} {accounts.length === 1 ? 'conta' : 'contas'}
             </span>
-          ) : null}
-        </span>
+            <span className="text-right">
+              Total:{' '}
+              <span className="font-semibold text-gray-900">
+                {formatCurrencyToBrl(sumReference(accounts))}
+              </span>
+              {allocated ? (
+                <span className="block text-xs">
+                  {formatCurrencyToBrl(allocated)} rateados por item ·{' '}
+                  {formatCurrencyToBrl(sumReference(accounts) - allocated)} no
+                  administrativo
+                </span>
+              ) : null}
+            </span>
+          </>
+        )}
       </CardFooter>
     </>
   )

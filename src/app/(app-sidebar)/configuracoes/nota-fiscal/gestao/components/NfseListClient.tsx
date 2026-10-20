@@ -29,7 +29,8 @@ import {
 } from '@/components/ui/tooltip'
 
 // Components
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
@@ -37,7 +38,11 @@ import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReaso
 import { IconExternalLink, IconX, IconRefresh } from '@tabler/icons-react'
 
 // Hooks
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 
 // Actions
 import { getDataOld } from '@/actions/_cruds'
@@ -162,7 +167,13 @@ export function NfseListClient() {
 
   const queryClient = useQueryClient()
 
-  const { data: nfseList = [], isLoading } = useQuery({
+  const {
+    data: nfseList = [],
+    isLoading,
+    isPlaceholderData,
+  } = useQuery({
+    // Trocar o filtro de status mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['nfse-list', statusFilter],
     queryFn: () => fetchNfseList(statusFilter),
   })
@@ -183,10 +194,6 @@ export function NfseListClient() {
   }
 
   const hasData = nfseList.length > 0
-
-  if (isLoading) {
-    return <TableSkeleton />
-  }
 
   return (
     <>
@@ -218,125 +225,133 @@ export function NfseListClient() {
       </div>
 
       {/* Table */}
-      {hasData ? (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Número/Série</TableHead>
-              <TableHead>RPS</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Ambiente</TableHead>
-              <TableHead>Tomador</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Data</TableHead>
-              <TableHead className="text-right">Acoes</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {nfseList.map((nfse: NfseItem) => {
-              const status = statusConfig[nfse.status] || {
-                variant: 'neutral' as const,
-                label: nfse.status,
-              }
-              const canCancel =
-                nfse.status === 'AUTHORIZED' || nfse.status === 'AUTORIZADA'
-              const isRejected =
-                nfse.status === 'REJECTED' || nfse.status === 'REJEITADA'
+      <FetchingRegion isFetching={isPlaceholderData}>
+        {isLoading || hasData ? (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Número/Série</TableHead>
+                <TableHead>RPS</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Ambiente</TableHead>
+                <TableHead>Tomador</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead className="text-right">Acoes</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableSkeletonRows cols={8} />
+              ) : (
+                nfseList.map((nfse: NfseItem) => {
+                  const status = statusConfig[nfse.status] || {
+                    variant: 'neutral' as const,
+                    label: nfse.status,
+                  }
+                  const canCancel =
+                    nfse.status === 'AUTHORIZED' || nfse.status === 'AUTORIZADA'
+                  const isRejected =
+                    nfse.status === 'REJECTED' || nfse.status === 'REJEITADA'
 
-              return (
-                <TableRow key={nfse.id}>
-                  <TableCell>
-                    <div className="font-medium">
-                      {nfse.number}/{nfse.series}
-                    </div>
-                    {nfse.order?.quotation?.quotationNumber && (
-                      <div className="text-xs text-gray-500">
-                        Pedido #{nfse.order.quotation.quotationNumber}
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-gray-600">
-                      {nfse.rpsNumber}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={status.variant}>{status.label}</Badge>
-                      {isRejected && (
-                        <RejectionReasonAction reason={nfse.rejectionReason} />
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        nfse.environment === 'PRODUCAO'
-                          ? 'successLight'
-                          : 'warningLight'
-                      }
-                    >
-                      {nfse.environment === 'PRODUCAO'
-                        ? 'Produção'
-                        : 'Homologação'}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{nfse.recipientName}</div>
-                    <div className="text-xs text-gray-500">
-                      {nfse.recipientDocument}
-                    </div>
-                  </TableCell>
-                  <TableCell>{formatCurrency(nfse.totalNfse)}</TableCell>
-                  <TableCell>{formatDate(nfse.createdAt)}</TableCell>
-                  <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <TooltipProvider>
-                        {nfse.pdfUrl && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="neutralGhost"
-                                size="icon"
-                                onClick={() => handleOpenPdf(nfse.pdfUrl!)}
-                              >
-                                <IconExternalLink className="size-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Ver PDF</TooltipContent>
-                          </Tooltip>
+                  return (
+                    <TableRow key={nfse.id}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {nfse.number}/{nfse.series}
+                        </div>
+                        {nfse.order?.quotation?.quotationNumber && (
+                          <div className="text-xs text-gray-500">
+                            Pedido #{nfse.order.quotation.quotationNumber}
+                          </div>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-gray-600">
+                          {nfse.rpsNumber}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={status.variant}>{status.label}</Badge>
+                          {isRejected && (
+                            <RejectionReasonAction
+                              reason={nfse.rejectionReason}
+                            />
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            nfse.environment === 'PRODUCAO'
+                              ? 'successLight'
+                              : 'warningLight'
+                          }
+                        >
+                          {nfse.environment === 'PRODUCAO'
+                            ? 'Produção'
+                            : 'Homologação'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{nfse.recipientName}</div>
+                        <div className="text-xs text-gray-500">
+                          {nfse.recipientDocument}
+                        </div>
+                      </TableCell>
+                      <TableCell>{formatCurrency(nfse.totalNfse)}</TableCell>
+                      <TableCell>{formatDate(nfse.createdAt)}</TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            {nfse.pdfUrl && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    variant="neutralGhost"
+                                    size="icon"
+                                    onClick={() => handleOpenPdf(nfse.pdfUrl!)}
+                                  >
+                                    <IconExternalLink className="size-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Ver PDF</TooltipContent>
+                              </Tooltip>
+                            )}
 
-                        {canCancel && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="neutralGhost"
-                                size="icon"
-                                disabled
-                              >
-                                <IconX className="size-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Cancelar NFS-e</TooltipContent>
-                          </Tooltip>
-                        )}
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
-      ) : (
-        <FilteredDataEmpty
-          title="Nenhuma NFS-e encontrada"
-          description="Não há notas fiscais de serviço emitidas com os filtros selecionados"
-        />
-      )}
+                            {canCancel && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    variant="neutralGhost"
+                                    size="icon"
+                                    disabled
+                                  >
+                                    <IconX className="size-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Cancelar NFS-e</TooltipContent>
+                              </Tooltip>
+                            )}
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
+            </TableBody>
+          </Table>
+        ) : (
+          <FilteredDataEmpty
+            title="Nenhuma NFS-e encontrada"
+            description="Não há notas fiscais de serviço emitidas com os filtros selecionados"
+          />
+        )}
+      </FetchingRegion>
     </>
   )
 }

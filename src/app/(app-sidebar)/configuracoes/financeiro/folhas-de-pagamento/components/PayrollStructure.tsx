@@ -36,6 +36,7 @@ import { Avatar } from '@/components/AvatarComponent'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Types
 import {
@@ -352,7 +353,27 @@ export function PayrollStructure() {
         />
 
         {isLoading ? (
-          <Skeleton className="h-[calc(100vh-150px)]" />
+          // Mesmo formato do cartão final: pessoa e filtros, depois a tabela
+          <Card>
+            <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-5">
+              <div className="flex items-center gap-4">
+                <Skeleton className="size-16 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-48" />
+                  <Skeleton className="h-4 w-64" />
+                </div>
+              </div>
+              <div className="flex flex-wrap items-end gap-3">
+                {Array.from({ length: 4 }, (_, index) => (
+                  <div key={index} className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-10 w-48" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+            <TableSkeleton cols={5} />
+          </Card>
         ) : data && !data.success ? (
           <Card>
             <CardContent className="px-6 py-10 text-center text-sm text-gray">

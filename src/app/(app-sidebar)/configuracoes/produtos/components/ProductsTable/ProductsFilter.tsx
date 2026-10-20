@@ -1,7 +1,8 @@
 'use client'
 
 // Next
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'

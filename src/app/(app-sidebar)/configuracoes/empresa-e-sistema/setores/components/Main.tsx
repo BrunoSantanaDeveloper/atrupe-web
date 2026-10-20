@@ -7,7 +7,7 @@ import { useState } from 'react'
 import { EditItemDialog } from './Actions/Edit'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -99,9 +99,7 @@ export function Main({ searchParams }: Props) {
       />
       <div className="space-y-2">
         <Card>
-          {isLoading ? (
-            <TableSkeleton cols={2} rows={16} />
-          ) : !hasData ? (
+          {!isLoading && !hasData ? (
             <ListDataTotalEmpty
               icon={IconSettingsOff}
               title="Nenhum setor encontrado"
@@ -120,63 +118,63 @@ export function Main({ searchParams }: Props) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sectorsArray?.length
-                      ? sectorsArray.map((item) => {
-                          return (
-                            <TableRow key={item?.id}>
-                              <TableCell className="flex items-center gap-3">
-                                {/* O setor com a cor dele (área 9 §4.14) */}
-                                <SectorIcon
-                                  size="lg"
-                                  sectorId={item?.id}
-                                  name={item?.name}
-                                  icon={item?.icon}
-                                  state={item?.isActive ? 'default' : 'muted'}
-                                  className="[&_path]:stroke-[3px]"
+                    {isLoading ? (
+                      <TableSkeletonRows cols={2} rows={16} />
+                    ) : sectorsArray?.length ? (
+                      sectorsArray.map((item) => {
+                        return (
+                          <TableRow key={item?.id}>
+                            <TableCell className="flex items-center gap-3">
+                              {/* O setor com a cor dele (área 9 §4.14) */}
+                              <SectorIcon
+                                size="lg"
+                                sectorId={item?.id}
+                                name={item?.name}
+                                icon={item?.icon}
+                                state={item?.isActive ? 'default' : 'muted'}
+                                className="[&_path]:stroke-[3px]"
+                              />
+                              <p className="font-medium">{item?.name || '-'}</p>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex justify-end items-center gap-4">
+                                <Switch
+                                  id="isActive"
+                                  checked={item?.isActive}
+                                  onCheckedChange={(value) =>
+                                    handleSwitchChange(
+                                      item?.id,
+                                      value,
+                                      item?.kind,
+                                    )
+                                  }
+                                  disabled={
+                                    isSwitching.includes(item.id) ||
+                                    item?.kind === 'ADMINISTRATIVE'
+                                  }
                                 />
-                                <p className="font-medium">
-                                  {item?.name || '-'}
-                                </p>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end items-center gap-4">
-                                  <Switch
-                                    id="isActive"
-                                    checked={item?.isActive}
-                                    onCheckedChange={(value) =>
-                                      handleSwitchChange(
-                                        item?.id,
-                                        value,
-                                        item?.kind,
-                                      )
-                                    }
-                                    disabled={
-                                      isSwitching.includes(item.id) ||
-                                      item?.kind === 'ADMINISTRATIVE'
-                                    }
-                                  />
-                                  <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={[
-                                        'company_settings:sectors:edit',
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        tooltip="Editar"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog('edit')
-                                        }}
-                                      />
-                                    </PermissionGate>
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
+                                <TooltipProvider>
+                                  <PermissionGate
+                                    permissions={[
+                                      'company_settings:sectors:edit',
+                                    ]}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setOpenDialog('edit')
+                                      }}
+                                    />
+                                  </PermissionGate>
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })
+                    ) : null}
                   </TableBody>
                 </Table>
               </CardContent>

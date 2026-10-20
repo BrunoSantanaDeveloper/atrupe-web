@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog'
 
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
@@ -105,7 +106,14 @@ export function CompanyInfo() {
           </DialogHeader>
           <DialogBody className="max-h-[calc(100vh-200px)]">
             <CompanySettingsList settings={[{ items: companies }]} />
-            {isLoading && <div>Carregando...</div>}
+            {isLoading && (
+              // Itens da lista de empresas ainda chegando
+              <div className="space-y-2">
+                {Array.from({ length: 2 }, (_, index) => (
+                  <Skeleton key={index} className="h-14 w-full rounded-lg" />
+                ))}
+              </div>
+            )}
             <div className="w-full flex justify-center mt-6">
               <NewCompanyTriggerButton
                 onOpenChange={() => {

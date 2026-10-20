@@ -31,7 +31,8 @@ import { ApplySuggestedDialog } from './ApplySuggestedDialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
@@ -59,7 +60,11 @@ import {
 import { formatReferenceMonth } from '@/app/(app-sidebar)/base-de-custos/reference-month'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 
 // Icons
 import { IconCurrencyReal, IconWand } from '@tabler/icons-react'
@@ -107,8 +112,10 @@ export function PricingList({
   const status = (searchParams?.status as string) || 'todos'
   const search = searchParams?.search || ''
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Trocar a situação mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['pricing-items', group, searchParams],
     queryFn: () => getPricingItems({ group, filters: searchParams }),
   })
@@ -203,152 +210,162 @@ export function PricingList({
             </TabsList>
           </Tabs>
         </TableFiltersHeader>
-        {isLoading ? (
-          <TableSkeleton cols={8} rows={6} />
-        ) : data && !data.success ? (
-          <LoadError message={data.message} />
-        ) : !items.length ? (
-          status === 'todos' && !search ? (
-            <ListDataTotalEmpty
-              icon={IconCurrencyReal}
-              title={`Nenhum ${itemLabel} para precificar`}
-              description={`O custo vem ${originLabel}.`}
-            />
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {data && !data.success ? (
+            <LoadError message={data.message} />
+          ) : !isLoading && !items.length ? (
+            status === 'todos' && !search ? (
+              <ListDataTotalEmpty
+                icon={IconCurrencyReal}
+                title={`Nenhum ${itemLabel} para precificar`}
+                description={`O custo vem ${originLabel}.`}
+              />
+            ) : (
+              <FilteredDataEmpty description="Nenhum item atende à situação e à busca escolhidas." />
+            )
           ) : (
-            <FilteredDataEmpty description="Nenhum item atende à situação e à busca escolhidas." />
-          )
-        ) : (
-          <>
-            <CardContent>
-              <Table className="min-w-[1000px]">
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    {canApply ? (
-                      <TableHead className="w-[40px]">
-                        <Checkbox
-                          aria-label="Marcar os itens da página"
-                          checked={allSelected}
-                          onCheckedChange={togglePage}
-                        />
-                      </TableHead>
-                    ) : null}
-                    <TableHead className="w-[24%] min-w-[200px]">
-                      {itemLabel === 'setor' ? 'Setor' : 'Item'}
-                    </TableHead>
-                    <TableHead className="w-[12%]">Unidade</TableHead>
-                    <TableHead numeric className="w-[12%]">
-                      Custo atual
-                    </TableHead>
-                    <TableHead className="w-[12%]">
-                      Custo atualizado em
-                    </TableHead>
-                    <TableHead className="w-[10%]">Tipo de preço</TableHead>
-                    <TableHead numeric className="w-[12%]">
-                      Preço praticado
-                    </TableHead>
-                    <TableHead numeric className="w-[10%]">
-                      Margem atual
-                    </TableHead>
-                    <TableHead className="w-[14%]">Status</TableHead>
-                    <TableHead className="w-[6%]" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((item) => (
-                    <TableRow key={item.id}>
+            <>
+              <CardContent>
+                <Table className="min-w-[1000px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
                       {canApply ? (
-                        <TableCell>
+                        <TableHead className="w-[40px]">
                           <Checkbox
-                            aria-label={`Marcar ${item.name}`}
-                            checked={selected.includes(item.id)}
-                            onCheckedChange={() => toggle(item.id)}
+                            aria-label="Marcar os itens da página"
+                            checked={allSelected}
+                            onCheckedChange={togglePage}
                           />
-                        </TableCell>
+                        </TableHead>
                       ) : null}
-                      <TableCell>
-                        <p className="font-medium">{item.name}</p>
-                        {/* Código e setor podem vir nulos (o grupo de bens
-                            não tem código) */}
-                        <p className="text-sm text-gray">
-                          {[item.code, item.sector]
-                            .filter(Boolean)
-                            .join(' · ') || '-'}
-                        </p>
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {item.unit || '-'}
-                      </TableCell>
-                      <TableCell numeric>{formatValue(item.cost)}</TableCell>
-                      <TableCell className="text-sm text-gray">
-                        {formatDate(item.costUpdatedAt)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={priceRuleObj[item.rule].variant}>
-                          {priceRuleObj[item.rule].text}
-                        </Badge>
-                      </TableCell>
-                      <TableCell numeric>{formatValue(item.price)}</TableCell>
-                      <TableCell
-                        className={cn(
-                          'text-right font-medium',
-                          item.margin !== null &&
-                            item.margin < 0 &&
-                            'text-error-700',
-                        )}
-                      >
-                        {formatMargin(item.margin)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          status
-                          variant={pricingStatusObj[item.status]?.variant}
-                        >
-                          {pricingStatusObj[item.status]?.text || '-'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-1">
-                          <PermissionGate permissions={['cost:pricing:edit']}>
-                            {group === 'products' ? (
-                              // Só leitura nesta etapa. Não é `disabled`
-                              // porque o botão desabilitado não mostra a dica
-                              <ActionButton
-                                Icon={IconCurrencyReal}
-                                tooltip="O preço do produto é definido no cadastro do produto"
-                                aria-disabled
-                                className="cursor-not-allowed opacity-40"
-                              />
-                            ) : (
-                              <ActionButton
-                                Icon={IconCurrencyReal}
-                                tooltip={`Precificar ${item.name}`}
-                                onClick={() => setEditing(item)}
-                              />
-                            )}
-                          </PermissionGate>
-                        </div>
-                      </TableCell>
+                      <TableHead className="w-[24%] min-w-[200px]">
+                        {itemLabel === 'setor' ? 'Setor' : 'Item'}
+                      </TableHead>
+                      <TableHead className="w-[12%]">Unidade</TableHead>
+                      <TableHead numeric className="w-[12%]">
+                        Custo atual
+                      </TableHead>
+                      <TableHead className="w-[12%]">
+                        Custo atualizado em
+                      </TableHead>
+                      <TableHead className="w-[10%]">Tipo de preço</TableHead>
+                      <TableHead numeric className="w-[12%]">
+                        Preço praticado
+                      </TableHead>
+                      <TableHead numeric className="w-[10%]">
+                        Margem atual
+                      </TableHead>
+                      <TableHead className="w-[14%]">Status</TableHead>
+                      <TableHead className="w-[6%]" />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter className="flex-col items-stretch gap-4">
-              <p className="text-sm text-gray">
-                O custo vem {originLabel} e não é editado aqui.{' '}
-                {group === 'products'
-                  ? 'O preço é o do cadastro do produto: a margem mostra o resultado.'
-                  : 'Preço praticado é livre: a margem mostra o resultado.'}
-              </p>
-              {lastPage > 1 ? (
-                <TablePagination
-                  searchParams={searchParams}
-                  lastPage={lastPage}
-                />
-              ) : null}
-            </CardFooter>
-          </>
-        )}
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={canApply ? 10 : 9} rows={6} />
+                    ) : (
+                      items.map((item) => (
+                        <TableRow key={item.id}>
+                          {canApply ? (
+                            <TableCell>
+                              <Checkbox
+                                aria-label={`Marcar ${item.name}`}
+                                checked={selected.includes(item.id)}
+                                onCheckedChange={() => toggle(item.id)}
+                              />
+                            </TableCell>
+                          ) : null}
+                          <TableCell>
+                            <p className="font-medium">{item.name}</p>
+                            {/* Código e setor podem vir nulos (o grupo de bens
+                                não tem código) */}
+                            <p className="text-sm text-gray">
+                              {[item.code, item.sector]
+                                .filter(Boolean)
+                                .join(' · ') || '-'}
+                            </p>
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {item.unit || '-'}
+                          </TableCell>
+                          <TableCell numeric>
+                            {formatValue(item.cost)}
+                          </TableCell>
+                          <TableCell className="text-sm text-gray">
+                            {formatDate(item.costUpdatedAt)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={priceRuleObj[item.rule].variant}>
+                              {priceRuleObj[item.rule].text}
+                            </Badge>
+                          </TableCell>
+                          <TableCell numeric>
+                            {formatValue(item.price)}
+                          </TableCell>
+                          <TableCell
+                            className={cn(
+                              'text-right font-medium',
+                              item.margin !== null &&
+                                item.margin < 0 &&
+                                'text-error-700',
+                            )}
+                          >
+                            {formatMargin(item.margin)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              status
+                              variant={pricingStatusObj[item.status]?.variant}
+                            >
+                              {pricingStatusObj[item.status]?.text || '-'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <PermissionGate
+                                permissions={['cost:pricing:edit']}
+                              >
+                                {group === 'products' ? (
+                                  // Só leitura nesta etapa. Não é `disabled`
+                                  // porque o botão desabilitado não mostra a dica
+                                  <ActionButton
+                                    Icon={IconCurrencyReal}
+                                    tooltip="O preço do produto é definido no cadastro do produto"
+                                    aria-disabled
+                                    className="cursor-not-allowed opacity-40"
+                                  />
+                                ) : (
+                                  <ActionButton
+                                    Icon={IconCurrencyReal}
+                                    tooltip={`Precificar ${item.name}`}
+                                    onClick={() => setEditing(item)}
+                                  />
+                                )}
+                              </PermissionGate>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+              <CardFooter className="flex-col items-stretch gap-4">
+                <p className="text-sm text-gray">
+                  O custo vem {originLabel} e não é editado aqui.{' '}
+                  {group === 'products'
+                    ? 'O preço é o do cadastro do produto: a margem mostra o resultado.'
+                    : 'Preço praticado é livre: a margem mostra o resultado.'}
+                </p>
+                {lastPage > 1 ? (
+                  <TablePagination
+                    searchParams={searchParams}
+                    lastPage={lastPage}
+                  />
+                ) : null}
+              </CardFooter>
+            </>
+          )}
+        </FetchingRegion>
       </Card>
       {canApply ? (
         <ApplySuggestedDialog

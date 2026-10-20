@@ -29,11 +29,16 @@ export function GlobalAlertDialog() {
     Icon,
     iconVariant,
     confirmVariant,
+    isConfirming,
     close,
   } = useAlertDialog()
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={close}>
+    // Enquanto confirma, o diálogo não fecha (Esc, Voltar): só ao terminar
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(open) => !open && !isConfirming && close()}
+    >
       <AlertDialogContent>
         <AlertDialogHeader>
           {Icon && (
@@ -52,13 +57,18 @@ export function GlobalAlertDialog() {
         </AlertDialogHeader>
         <AlertDialogFooter>
           {cancelLabel && (
-            <AlertDialogCancel onClick={onCancel}>
+            <AlertDialogCancel onClick={onCancel} disabled={isConfirming}>
               {cancelLabel}
             </AlertDialogCancel>
           )}
           {confirmLabel && (
             <AlertDialogAction
-              onClick={onConfirm}
+              onClick={(event) => {
+                // A ação do Radix fecha no clique; quem fecha é o fim do onConfirm
+                event.preventDefault()
+                onConfirm?.()
+              }}
+              isLoading={isConfirming}
               className={buttonVariants({
                 variant: confirmVariant,
               })}

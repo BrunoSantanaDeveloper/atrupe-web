@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { toast } from 'sonner'
 import { useDropzone } from 'react-dropzone'
 import { useForm, FormProvider } from 'react-hook-form'

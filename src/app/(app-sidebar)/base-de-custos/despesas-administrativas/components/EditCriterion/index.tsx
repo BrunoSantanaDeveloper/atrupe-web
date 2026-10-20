@@ -174,8 +174,9 @@ export function EditCriterionModal({ account, open, onOpenChange }: Props) {
             type="submit"
             form="edit-criterion-form"
             disabled={isSubmitting}
+            isLoading={isSubmitting}
           >
-            {isSubmitting ? 'Salvando...' : 'Salvar critério'}
+            Salvar critério
           </Button>
         </DialogFooter>
       </DialogContent>

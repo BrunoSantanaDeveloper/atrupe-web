@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { CardContent } from '@/components/ui/card'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 
 // Types
 import type {
@@ -28,6 +29,7 @@ import { assetKindObj, assetLifeStatusObj } from '@/consts/assets'
 interface Props {
   // Os bens do cadastro de patrimônios, como a API de /asset devolve (P-23)
   assets: AssetItem[]
+  isLoading?: boolean
 }
 
 // Sem depreciação calculada (vida útil ou residual faltando) mostra `-`,
@@ -37,7 +39,7 @@ const formatValue = (value: number | null) =>
 
 const kindOrder: AssetKind[] = ['MACHINES', 'FURNITURE', 'VEHICLES']
 
-export function DepreciationData({ assets }: Props) {
+export function DepreciationData({ assets, isLoading }: Props) {
   const groups = kindOrder
     .map((kind) => ({
       kind,
@@ -70,80 +72,86 @@ export function DepreciationData({ assets }: Props) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {groups.map(({ kind, assets: kindAssets }) => (
-            <Fragment key={kind}>
-              <TableRow className="bg-gray-50 hover:bg-gray-50">
-                <TableCell colSpan={9}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{assetKindObj[kind]}</span>
-                    <Badge variant="neutralLight">{kindAssets.length}</Badge>
-                  </div>
-                </TableCell>
-              </TableRow>
-              {kindAssets.map((asset) => {
-                // Sem vida útil não há o que medir (bem inconsistente, P-26)
-                const progress = asset.usefulLifeMonths
-                  ? Math.min(
-                      Math.round(
-                        (asset.elapsedMonths / asset.usefulLifeMonths) * 100,
-                      ),
-                      100,
-                    )
-                  : null
+          {isLoading ? (
+            <TableSkeletonRows cols={9} />
+          ) : (
+            groups.map(({ kind, assets: kindAssets }) => (
+              <Fragment key={kind}>
+                <TableRow className="bg-gray-50 hover:bg-gray-50">
+                  <TableCell colSpan={9}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{assetKindObj[kind]}</span>
+                      <Badge variant="neutralLight">{kindAssets.length}</Badge>
+                    </div>
+                  </TableCell>
+                </TableRow>
+                {kindAssets.map((asset) => {
+                  // Sem vida útil não há o que medir (bem inconsistente, P-26)
+                  const progress = asset.usefulLifeMonths
+                    ? Math.min(
+                        Math.round(
+                          (asset.elapsedMonths / asset.usefulLifeMonths) * 100,
+                        ),
+                        100,
+                      )
+                    : null
 
-                return (
-                  <TableRow key={asset.id}>
-                    <TableCell className="font-medium">{asset.name}</TableCell>
-                    <TableCell>{asset.sector || '-'}</TableCell>
-                    <TableCell numeric>
-                      {formatCurrencyToBrl(asset.acquisitionValue)}
-                    </TableCell>
-                    <TableCell numeric>
-                      {formatValue(asset.depreciableValue)}
-                    </TableCell>
-                    <TableCell numeric>
-                      {formatValue(asset.monthlyDepreciation)}
-                    </TableCell>
-                    <TableCell numeric>
-                      {formatValue(asset.depreciatedValue)}
-                    </TableCell>
-                    <TableCell numeric>
-                      {formatValue(asset.remainingValue)}
-                    </TableCell>
-                    <TableCell>
-                      {progress === null ? (
-                        <p className="text-sm text-gray">Não calculada</p>
-                      ) : (
-                        <>
-                          <p className="text-sm text-gray">
-                            {asset.usefulLifeMonths} meses · {progress}%
-                          </p>
-                          <div
-                            role="img"
-                            aria-label={`Vida útil de ${asset.name}: ${progress}%`}
-                            className="mt-1 h-1.5 w-full max-w-[120px] rounded-full bg-gray-100"
-                          >
+                  return (
+                    <TableRow key={asset.id}>
+                      <TableCell className="font-medium">
+                        {asset.name}
+                      </TableCell>
+                      <TableCell>{asset.sector || '-'}</TableCell>
+                      <TableCell numeric>
+                        {formatCurrencyToBrl(asset.acquisitionValue)}
+                      </TableCell>
+                      <TableCell numeric>
+                        {formatValue(asset.depreciableValue)}
+                      </TableCell>
+                      <TableCell numeric>
+                        {formatValue(asset.monthlyDepreciation)}
+                      </TableCell>
+                      <TableCell numeric>
+                        {formatValue(asset.depreciatedValue)}
+                      </TableCell>
+                      <TableCell numeric>
+                        {formatValue(asset.remainingValue)}
+                      </TableCell>
+                      <TableCell>
+                        {progress === null ? (
+                          <p className="text-sm text-gray">Não calculada</p>
+                        ) : (
+                          <>
+                            <p className="text-sm text-gray">
+                              {asset.usefulLifeMonths} meses · {progress}%
+                            </p>
                             <div
-                              className="h-1.5 rounded-full bg-brand"
-                              style={{ width: `${progress}%` }}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        status
-                        variant={assetLifeStatusObj[asset.status].variant}
-                      >
-                        {assetLifeStatusObj[asset.status].text}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </Fragment>
-          ))}
+                              role="img"
+                              aria-label={`Vida útil de ${asset.name}: ${progress}%`}
+                              className="mt-1 h-1.5 w-full max-w-[120px] rounded-full bg-gray-100"
+                            >
+                              <div
+                                className="h-1.5 rounded-full bg-brand"
+                                style={{ width: `${progress}%` }}
+                              />
+                            </div>
+                          </>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          status
+                          variant={assetLifeStatusObj[asset.status].variant}
+                        >
+                          {assetLifeStatusObj[asset.status].text}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </Fragment>
+            ))
+          )}
         </TableBody>
       </Table>
     </CardContent>

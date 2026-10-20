@@ -221,6 +221,7 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="reset-password"
             disabled={form.formState.isSubmitting}
+            isLoading={form.formState.isSubmitting}
             RightIcon={IconMailForward}
           >
             Enviar link

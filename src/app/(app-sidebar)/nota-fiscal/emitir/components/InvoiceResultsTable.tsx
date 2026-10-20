@@ -8,7 +8,8 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { toast } from 'sonner'
 
 // UI
@@ -22,7 +23,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Tooltip,
@@ -34,6 +34,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { InvoiceFilter } from './InvoiceFilter'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -892,25 +893,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     </div>
   )
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <Card className="h-full flex flex-col">
-        <TableFiltersHeader searchParams={activeParams}>
-          <InvoiceFilter searchParams={activeParams} />
-        </TableFiltersHeader>
-        {docTypeTabs}
-        <CardContent className="flex-1 p-4 space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <Skeleton key={i} className="h-16 w-full" />
-          ))}
-        </CardContent>
-      </Card>
-    )
-  }
-
-  // Empty state
-  if (orderGroups.length === 0) {
+  // Empty state. Carregando, segue para a tabela real com linhas de esqueleto
+  // (cabeçalho e paginação no lugar), em vez de blocos soltos
+  if (!isLoading && orderGroups.length === 0) {
     return (
       <Card className="h-full flex flex-col">
         <TableFiltersHeader searchParams={activeParams}>
@@ -997,570 +982,592 @@ export function InvoiceResultsTable({ searchParams }: Props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {orderGroups.map((group) => (
-                <Fragment key={group.date}>
-                  <TableRow className="bg-gray-100">
-                    <TableCell
-                      colSpan={7}
-                      className="text-gray font-medium text-xs py-3"
-                    >
-                      {formatDate(group.date)}
-                    </TableCell>
-                  </TableRow>
-                  {group.items.map((item) => {
-                    const statusProps = getEnvironmentAwareStatusProps(
-                      item,
-                      activeEnvironment,
-                    )
-                    const rejected = isRejectedInvoiceInActiveEnvironment(
-                      item,
-                      activeEnvironment,
-                    )
-                    const rejectionReason = getEnvironmentAwareRejectionReason(
-                      item,
-                      activeEnvironment,
-                    )
-                    const reissueHref = getEnvironmentAwareReissueHref(
-                      item,
-                      activeEnvironment,
-                    )
-                    const itemEnvironments = getItemEnvironments(item)
+              {isLoading ? (
+                <TableSkeletonRows cols={7} rows={5} />
+              ) : (
+                orderGroups.map((group) => (
+                  <Fragment key={group.date}>
+                    <TableRow className="bg-gray-100">
+                      <TableCell
+                        colSpan={7}
+                        className="text-gray font-medium text-xs py-3"
+                      >
+                        {formatDate(group.date)}
+                      </TableCell>
+                    </TableRow>
+                    {group.items.map((item) => {
+                      const statusProps = getEnvironmentAwareStatusProps(
+                        item,
+                        activeEnvironment,
+                      )
+                      const rejected = isRejectedInvoiceInActiveEnvironment(
+                        item,
+                        activeEnvironment,
+                      )
+                      const rejectionReason =
+                        getEnvironmentAwareRejectionReason(
+                          item,
+                          activeEnvironment,
+                        )
+                      const reissueHref = getEnvironmentAwareReissueHref(
+                        item,
+                        activeEnvironment,
+                      )
+                      const itemEnvironments = getItemEnvironments(item)
 
-                    return (
-                      <TableRow key={item.id} className="hover:bg-gray-50">
-                        <TableCell className="px-4">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex">
-                                  <Checkbox
-                                    id={`check-${item.id}`}
-                                    disabled={
-                                      !canSelectForConsolidationInActiveEnvironment(
-                                        item,
-                                        activeEnvironment,
-                                      )
-                                    }
-                                    checked={selectedOrderIds.has(item.id)}
-                                    onCheckedChange={(checked) =>
-                                      toggleOrderSelection(
-                                        item,
-                                        checked === true,
-                                      )
-                                    }
-                                  />
-                                </span>
-                              </TooltipTrigger>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1">
-                            {item.type === 'ORDER' ? (
-                              <Badge variant="blueLight" className="w-fit">
-                                Pedido de Venda
-                              </Badge>
-                            ) : item.type === 'NFE_AVULSA' ? (
-                              <Badge variant="purpleLight" className="w-fit">
-                                {item.finalidade === 2
-                                  ? 'NF-e Complementar'
-                                  : item.finalidade === 4
-                                    ? 'NF-e de Devolução'
-                                    : 'NF-e Avulsa'}
-                              </Badge>
-                            ) : item.type === 'NFSE_AVULSA' ? (
-                              <Badge variant="orangeLight" className="w-fit">
-                                NFS-e Avulsa
-                              </Badge>
-                            ) : (
-                              <Badge variant="successLight" className="w-fit">
-                                NFC-e Avulsa
-                              </Badge>
-                            )}
-                            <p className="font-medium text-gray-800">
-                              {item.reference}
-                            </p>
-                            {/* O ambiente saiu daqui para a coluna própria:
-                                repetido em toda linha, poluía a referência. */}
-                            {(() => {
-                              if (item.type === 'ORDER') {
-                                const authorizedNfe = findActiveNfe(
-                                  item,
-                                  activeEnvironment,
-                                  ['AUTHORIZED', 'CORRECTION_SENT'],
-                                )
-                                const draftNfe = findActiveNfe(
-                                  item,
-                                  activeEnvironment,
-                                  ['DRAFT'],
-                                )
-                                if (authorizedNfe) {
-                                  return (
-                                    <span className="text-xs text-success-700 font-medium">
-                                      NF-e nº {authorizedNfe.numero} (Série{' '}
-                                      {authorizedNfe.serie})
-                                    </span>
-                                  )
-                                }
-                                if (draftNfe) {
-                                  return (
-                                    <span className="text-xs text-blue-700 font-medium">
-                                      Rascunho NF-e nº {draftNfe.numero} (Série{' '}
-                                      {draftNfe.serie})
-                                    </span>
-                                  )
-                                }
-                              }
-                              return null
-                            })()}
-                            <span className="text-xs text-gray-500 font-mono hidden md:inline">
-                              ID: {item.id.slice(0, 8)}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-sm font-medium text-gray-700">
-                            {item.clientName}
-                          </p>
-                        </TableCell>
-                        <TableCell className="font-semibold text-success-600">
-                          {formatCurrency(item.totalValue)}
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {itemEnvironments.length === 0 ? (
-                            <span className="text-sm text-gray-400">—</span>
-                          ) : (
-                            <div className="flex flex-wrap gap-1">
-                              {itemEnvironments.map((ambiente) => (
-                                <Badge
-                                  key={ambiente}
-                                  variant={getDocumentEnvironmentVariant(
-                                    ambiente,
-                                  )}
-                                  className="w-fit"
-                                >
-                                  {getDocumentEnvironmentLabel(ambiente)}
-                                </Badge>
-                              ))}
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Badge variant={statusProps.variant} status>
-                              {statusProps.label}
-                            </Badge>
-                            {rejected && (
-                              <RejectionReasonAction
-                                reason={rejectionReason}
-                                reissueHref={reissueHref}
-                              />
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
+                      return (
+                        <TableRow key={item.id} className="hover:bg-gray-50">
+                          <TableCell className="px-4">
                             <TooltipProvider>
-                              {(() => {
-                                if (item.type === 'NFSE_AVULSA') {
-                                  const nfse = item.nfse
-
-                                  // O dropdown cobre todos os status: quando a
-                                  // nota não está autorizada ele mantém apenas
-                                  // "Consultar status", que é o caminho para
-                                  // destravar as que ficaram em processamento.
-                                  // Antes, esses casos caíam num push para
-                                  // /nota-fiscal/emitir-nfse/avulsa/<id>, rota
-                                  // que nunca existiu — sempre 404.
-                                  if (!nfse?.id) return null
-
-                                  return (
-                                    <NfseActionsDropdown
-                                      nfse={{
-                                        id: nfse.id,
-                                        numero: nfse.numero ?? 0,
-                                        serie: String(nfse.serie ?? ''),
-                                        status: nfse.status ?? item.status,
-                                        pdfUrl: nfse.pdfUrl,
-                                        createdAt: nfse.createdAt,
-                                        invoicyConfigId: nfse.invoicyConfigId,
-                                      }}
-                                      onRefetch={fetchOrders}
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-flex">
+                                    <Checkbox
+                                      id={`check-${item.id}`}
+                                      disabled={
+                                        !canSelectForConsolidationInActiveEnvironment(
+                                          item,
+                                          activeEnvironment,
+                                        )
+                                      }
+                                      checked={selectedOrderIds.has(item.id)}
+                                      onCheckedChange={(checked) =>
+                                        toggleOrderSelection(
+                                          item,
+                                          checked === true,
+                                        )
+                                      }
                                     />
+                                  </span>
+                                </TooltipTrigger>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-col gap-1">
+                              {item.type === 'ORDER' ? (
+                                <Badge variant="blueLight" className="w-fit">
+                                  Pedido de Venda
+                                </Badge>
+                              ) : item.type === 'NFE_AVULSA' ? (
+                                <Badge variant="purpleLight" className="w-fit">
+                                  {item.finalidade === 2
+                                    ? 'NF-e Complementar'
+                                    : item.finalidade === 4
+                                      ? 'NF-e de Devolução'
+                                      : 'NF-e Avulsa'}
+                                </Badge>
+                              ) : item.type === 'NFSE_AVULSA' ? (
+                                <Badge variant="orangeLight" className="w-fit">
+                                  NFS-e Avulsa
+                                </Badge>
+                              ) : (
+                                <Badge variant="successLight" className="w-fit">
+                                  NFC-e Avulsa
+                                </Badge>
+                              )}
+                              <p className="font-medium text-gray-800">
+                                {item.reference}
+                              </p>
+                              {/* O ambiente saiu daqui para a coluna própria:
+                                repetido em toda linha, poluía a referência. */}
+                              {(() => {
+                                if (item.type === 'ORDER') {
+                                  const authorizedNfe = findActiveNfe(
+                                    item,
+                                    activeEnvironment,
+                                    ['AUTHORIZED', 'CORRECTION_SENT'],
                                   )
-                                }
-
-                                if (item.type === 'NFCE_AVULSA') {
-                                  const nfce = item.nfce
-                                  // Do CNPJ anterior a uma transferência:
-                                  // ver e baixar, sem imprimir no nome novo,
-                                  // consultar, reprocessar nem cancelar.
-                                  const historical = isHistorical(nfce)
-                                  const isAuthorized =
-                                    nfce?.status === 'AUTHORIZED'
-                                  const isContingency =
-                                    nfce?.status === 'CONTINGENCY'
-                                  const canReprocess =
-                                    !historical &&
-                                    (nfce?.status === 'UNKNOWN' ||
-                                      nfce?.status === 'PROCESSING')
-
-                                  const handleReprocess = async () => {
-                                    if (!nfce?.id) return
-                                    toast.loading('Reprocessando NFC-e...', {
-                                      id: 'reprocess-nfce',
-                                    })
-                                    try {
-                                      const result = await createItemNew({
-                                        route: `/fiscal/nfce/${nfce.id}/reprocess`,
-                                        data: {},
-                                      })
-                                      if (result.success) {
-                                        toast.success('NFC-e reprocessada', {
-                                          id: 'reprocess-nfce',
-                                        })
-                                      } else {
-                                        toast.error(
-                                          result.message ||
-                                            'Erro ao reprocessar',
-                                          { id: 'reprocess-nfce' },
-                                        )
-                                      }
-                                      fetchOrders()
-                                    } catch {
-                                      toast.error('Erro ao reprocessar NFC-e', {
-                                        id: 'reprocess-nfce',
-                                      })
-                                    }
-                                  }
-
-                                  const handleDownloadXml = () => {
-                                    if (!nfce?.xmlAutorizado) {
-                                      toast.error(
-                                        'XML não disponível para download',
-                                      )
-                                      return
-                                    }
-                                    const blob = new Blob(
-                                      [nfce.xmlAutorizado],
-                                      { type: 'application/xml' },
-                                    )
-                                    const url = window.URL.createObjectURL(blob)
-                                    const a = document.createElement('a')
-                                    a.href = url
-                                    a.download = `NFCe_${nfce.chaveAcesso || nfce.numero}.xml`
-                                    document.body.appendChild(a)
-                                    a.click()
-                                    window.URL.revokeObjectURL(url)
-                                    document.body.removeChild(a)
-                                  }
-
-                                  const handleConsultarStatus = async () => {
-                                    toast.loading(
-                                      'Consultando status SEFAZ...',
-                                      { id: 'consult-nfce' },
-                                    )
-                                    try {
-                                      const result = await getData({
-                                        route: `/fiscal/nfce/${nfce?.id}/status`,
-                                      })
-                                      if (result.success) {
-                                        toast.success('Consulta realizada', {
-                                          id: 'consult-nfce',
-                                        })
-                                        fetchOrders()
-                                      } else {
-                                        toast.error(
-                                          result.message ||
-                                            'Erro ao consultar status',
-                                          { id: 'consult-nfce' },
-                                        )
-                                      }
-                                    } catch {
-                                      toast.error('Erro ao consultar status', {
-                                        id: 'consult-nfce',
-                                      })
-                                    }
-                                  }
-
-                                  return (
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          variant="ghost"
-                                          size="iconSm"
-                                          aria-label="Ações da NFC-e"
-                                        >
-                                          <IconDotsVertical
-                                            size={18}
-                                            className="text-gray-500"
-                                          />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent
-                                        align="end"
-                                        className="w-56"
-                                      >
-                                        <DropdownMenuLabel>
-                                          NFC-e nº {nfce?.numero}/{nfce?.serie}
-                                        </DropdownMenuLabel>
-                                        <DropdownMenuSeparator />
-
-                                        {nfce?.danfeUrl && (
-                                          <DropdownMenuItem
-                                            onClick={() =>
-                                              window.open(
-                                                nfce.danfeUrl!,
-                                                '_blank',
-                                              )
-                                            }
-                                          >
-                                            <IconFileCheck className="mr-2 h-4 w-4" />
-                                            <span>Ver DANFE</span>
-                                          </DropdownMenuItem>
-                                        )}
-
-                                        {(isAuthorized || isContingency) &&
-                                          !historical &&
-                                          nfce?.id && (
-                                            <DropdownMenuItem
-                                              onClick={() =>
-                                                window.open(
-                                                  `/api/fiscal/nfce/${nfce.id}/thermal`,
-                                                  '_blank',
-                                                )
-                                              }
-                                            >
-                                              <IconPrinter className="mr-2 h-4 w-4" />
-                                              <span>
-                                                Imprimir DANFE térmico
-                                              </span>
-                                            </DropdownMenuItem>
-                                          )}
-
-                                        {nfce?.qrCodeUrl && (
-                                          <DropdownMenuItem
-                                            onClick={() =>
-                                              window.open(
-                                                nfce.qrCodeUrl!,
-                                                '_blank',
-                                              )
-                                            }
-                                          >
-                                            <IconQrcode className="mr-2 h-4 w-4" />
-                                            <span>Visualizar QR Code</span>
-                                          </DropdownMenuItem>
-                                        )}
-
-                                        {nfce?.xmlAutorizado && (
-                                          <DropdownMenuItem
-                                            onClick={handleDownloadXml}
-                                          >
-                                            <IconDownload className="mr-2 h-4 w-4" />
-                                            <span>Baixar XML</span>
-                                          </DropdownMenuItem>
-                                        )}
-
-                                        {historical && historicalReason && (
-                                          <>
-                                            <DropdownMenuSeparator />
-                                            <HistoricalDocumentNotice
-                                              reason={historicalReason}
-                                            />
-                                          </>
-                                        )}
-
-                                        {!historical &&
-                                          (isAuthorized ||
-                                            isContingency ||
-                                            nfce?.status === 'REJECTED' ||
-                                            nfce?.status === 'UNKNOWN') && (
-                                            <>
-                                              <DropdownMenuSeparator />
-                                              <DropdownMenuItem
-                                                onClick={handleConsultarStatus}
-                                              >
-                                                <IconRefresh className="mr-2 h-4 w-4" />
-                                                <span>Consultar SEFAZ</span>
-                                              </DropdownMenuItem>
-                                            </>
-                                          )}
-
-                                        {canReprocess && (
-                                          <>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                              onClick={handleReprocess}
-                                            >
-                                              <IconRefresh className="mr-2 h-4 w-4" />
-                                              <span>Reprocessar NFC-e</span>
-                                            </DropdownMenuItem>
-                                          </>
-                                        )}
-
-                                        {isAuthorized && !historical && (
-                                          <>
-                                            <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                              className="text-error-600 focus:bg-error-50 focus:text-error-600"
-                                              onClick={() =>
-                                                setCancelNfce({
-                                                  id: nfce.id,
-                                                  numero: nfce.numero,
-                                                  serie: nfce.serie,
-                                                })
-                                              }
-                                            >
-                                              <IconBan className="mr-2 h-4 w-4" />
-                                              <span>Cancelar NFC-e</span>
-                                            </DropdownMenuItem>
-                                          </>
-                                        )}
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
+                                  const draftNfe = findActiveNfe(
+                                    item,
+                                    activeEnvironment,
+                                    ['DRAFT'],
                                   )
-                                }
-
-                                if (item.type === 'NFE_AVULSA') {
-                                  const n = item.nfes?.[0]
-                                  // Toda nota que ja' foi transmitida — inclusive
-                                  // cancelada — e' um documento fechado e mostra
-                                  // as acoes de consulta. So' rascunho continua
-                                  // a emissao.
-                                  if (n && n.status !== 'DRAFT') {
+                                  if (authorizedNfe) {
                                     return (
-                                      <NfeActionsDropdown
-                                        nfe={n}
+                                      <span className="text-xs text-success-700 font-medium">
+                                        NF-e nº {authorizedNfe.numero} (Série{' '}
+                                        {authorizedNfe.serie})
+                                      </span>
+                                    )
+                                  }
+                                  if (draftNfe) {
+                                    return (
+                                      <span className="text-xs text-blue-700 font-medium">
+                                        Rascunho NF-e nº {draftNfe.numero}{' '}
+                                        (Série {draftNfe.serie})
+                                      </span>
+                                    )
+                                  }
+                                }
+                                return null
+                              })()}
+                              <span className="text-xs text-gray-500 font-mono hidden md:inline">
+                                ID: {item.id.slice(0, 8)}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <p className="text-sm font-medium text-gray-700">
+                              {item.clientName}
+                            </p>
+                          </TableCell>
+                          <TableCell className="font-semibold text-success-600">
+                            {formatCurrency(item.totalValue)}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {itemEnvironments.length === 0 ? (
+                              <span className="text-sm text-gray-400">—</span>
+                            ) : (
+                              <div className="flex flex-wrap gap-1">
+                                {itemEnvironments.map((ambiente) => (
+                                  <Badge
+                                    key={ambiente}
+                                    variant={getDocumentEnvironmentVariant(
+                                      ambiente,
+                                    )}
+                                    className="w-fit"
+                                  >
+                                    {getDocumentEnvironmentLabel(ambiente)}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <Badge variant={statusProps.variant} status>
+                                {statusProps.label}
+                              </Badge>
+                              {rejected && (
+                                <RejectionReasonAction
+                                  reason={rejectionReason}
+                                  reissueHref={reissueHref}
+                                />
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <TooltipProvider>
+                                {(() => {
+                                  if (item.type === 'NFSE_AVULSA') {
+                                    const nfse = item.nfse
+
+                                    // O dropdown cobre todos os status: quando a
+                                    // nota não está autorizada ele mantém apenas
+                                    // "Consultar status", que é o caminho para
+                                    // destravar as que ficaram em processamento.
+                                    // Antes, esses casos caíam num push para
+                                    // /nota-fiscal/emitir-nfse/avulsa/<id>, rota
+                                    // que nunca existiu — sempre 404.
+                                    if (!nfse?.id) return null
+
+                                    return (
+                                      <NfseActionsDropdown
+                                        nfse={{
+                                          id: nfse.id,
+                                          numero: nfse.numero ?? 0,
+                                          serie: String(nfse.serie ?? ''),
+                                          status: nfse.status ?? item.status,
+                                          pdfUrl: nfse.pdfUrl,
+                                          createdAt: nfse.createdAt,
+                                          invoicyConfigId: nfse.invoicyConfigId,
+                                        }}
                                         onRefetch={fetchOrders}
                                       />
                                     )
                                   }
-                                  // Retomar rascunho de nota avulsa nunca
-                                  // existiu: a pagina de emissao avulsa e'
-                                  // estatica e nao carrega rascunho. O botao
-                                  // "Continuar emissao" apontava para uma rota
-                                  // inexistente e so' dava 404, entao aqui a
-                                  // unica acao honesta e' descartar.
-                                  return (
-                                    <ActionButton
-                                      Icon={IconTrash}
-                                      tooltip="Excluir rascunho"
-                                      variant="errorGhost"
-                                      disabled={cancelingDraftId === item.id}
-                                      onClick={() => handleCancelDraft(item.id)}
-                                    />
-                                  )
-                                }
 
-                                // Type ORDER
-                                const authorizedNfe = findActiveNfe(
-                                  item,
-                                  activeEnvironment,
-                                  ['AUTHORIZED', 'CORRECTION_SENT'],
-                                )
-                                const draftNfe = findActiveNfe(
-                                  item,
-                                  activeEnvironment,
-                                  ['DRAFT'],
-                                )
-                                const authorizedNfse = findActiveNfse(
-                                  item,
-                                  activeEnvironment,
-                                  ['AUTHORIZED'],
-                                )
-                                const isCancelingThis =
-                                  cancelingDraftId === draftNfe?.id
+                                  if (item.type === 'NFCE_AVULSA') {
+                                    const nfce = item.nfce
+                                    // Do CNPJ anterior a uma transferência:
+                                    // ver e baixar, sem imprimir no nome novo,
+                                    // consultar, reprocessar nem cancelar.
+                                    const historical = isHistorical(nfce)
+                                    const isAuthorized =
+                                      nfce?.status === 'AUTHORIZED'
+                                    const isContingency =
+                                      nfce?.status === 'CONTINGENCY'
+                                    const canReprocess =
+                                      !historical &&
+                                      (nfce?.status === 'UNKNOWN' ||
+                                        nfce?.status === 'PROCESSING')
 
-                                if (authorizedNfe) {
-                                  return (
-                                    <NfeActionsDropdown
-                                      nfe={authorizedNfe}
-                                      onRefetch={fetchOrders}
-                                    />
-                                  )
-                                }
-
-                                if (authorizedNfse?.id) {
-                                  return (
-                                    <NfseActionsDropdown
-                                      nfse={{
-                                        id: authorizedNfse.id,
-                                        numero: authorizedNfse.numero ?? 0,
-                                        serie: String(
-                                          authorizedNfse.serie ?? '',
-                                        ),
-                                        status:
-                                          authorizedNfse.status ?? 'AUTHORIZED',
-                                        pdfUrl: authorizedNfse.pdfUrl,
-                                        createdAt: authorizedNfse.createdAt,
-                                        invoicyConfigId:
-                                          authorizedNfse.invoicyConfigId,
-                                      }}
-                                      onRefetch={fetchOrders}
-                                    />
-                                  )
-                                }
-
-                                // Precede o rascunho: ordem cancelada nao volta
-                                // para a emissao, mas o rascunho orfao ainda
-                                // precisa poder ser excluido.
-                                if (item.status?.toUpperCase() === 'CANCELED') {
-                                  return draftNfe ? (
-                                    <ActionButton
-                                      Icon={IconTrash}
-                                      tooltip="Excluir rascunho (ordem cancelada)"
-                                      variant="errorGhost"
-                                      disabled={isCancelingThis}
-                                      onClick={() =>
-                                        handleCancelDraft(draftNfe.id)
+                                    const handleReprocess = async () => {
+                                      if (!nfce?.id) return
+                                      toast.loading('Reprocessando NFC-e...', {
+                                        id: 'reprocess-nfce',
+                                      })
+                                      try {
+                                        const result = await createItemNew({
+                                          route: `/fiscal/nfce/${nfce.id}/reprocess`,
+                                          data: {},
+                                        })
+                                        if (result.success) {
+                                          toast.success('NFC-e reprocessada', {
+                                            id: 'reprocess-nfce',
+                                          })
+                                        } else {
+                                          toast.error(
+                                            result.message ||
+                                              'Erro ao reprocessar',
+                                            { id: 'reprocess-nfce' },
+                                          )
+                                        }
+                                        fetchOrders()
+                                      } catch {
+                                        toast.error(
+                                          'Erro ao reprocessar NFC-e',
+                                          {
+                                            id: 'reprocess-nfce',
+                                          },
+                                        )
                                       }
-                                    />
-                                  ) : (
-                                    <ActionButton
-                                      Icon={IconBan}
-                                      tooltip="Ordem cancelada"
-                                      disabled
-                                    />
-                                  )
-                                }
+                                    }
 
-                                if (draftNfe) {
-                                  return (
-                                    <>
-                                      <ActionButton
-                                        Icon={IconReceipt}
-                                        tooltip="Continuar emissão"
-                                        onClick={() => setModalOrderId(item.id)}
-                                      />
+                                    const handleDownloadXml = () => {
+                                      if (!nfce?.xmlAutorizado) {
+                                        toast.error(
+                                          'XML não disponível para download',
+                                        )
+                                        return
+                                      }
+                                      const blob = new Blob(
+                                        [nfce.xmlAutorizado],
+                                        { type: 'application/xml' },
+                                      )
+                                      const url =
+                                        window.URL.createObjectURL(blob)
+                                      const a = document.createElement('a')
+                                      a.href = url
+                                      a.download = `NFCe_${nfce.chaveAcesso || nfce.numero}.xml`
+                                      document.body.appendChild(a)
+                                      a.click()
+                                      window.URL.revokeObjectURL(url)
+                                      document.body.removeChild(a)
+                                    }
+
+                                    const handleConsultarStatus = async () => {
+                                      toast.loading(
+                                        'Consultando status SEFAZ...',
+                                        { id: 'consult-nfce' },
+                                      )
+                                      try {
+                                        const result = await getData({
+                                          route: `/fiscal/nfce/${nfce?.id}/status`,
+                                        })
+                                        if (result.success) {
+                                          toast.success('Consulta realizada', {
+                                            id: 'consult-nfce',
+                                          })
+                                          fetchOrders()
+                                        } else {
+                                          toast.error(
+                                            result.message ||
+                                              'Erro ao consultar status',
+                                            { id: 'consult-nfce' },
+                                          )
+                                        }
+                                      } catch {
+                                        toast.error(
+                                          'Erro ao consultar status',
+                                          {
+                                            id: 'consult-nfce',
+                                          },
+                                        )
+                                      }
+                                    }
+
+                                    return (
+                                      <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                          <Button
+                                            variant="ghost"
+                                            size="iconSm"
+                                            aria-label="Ações da NFC-e"
+                                          >
+                                            <IconDotsVertical
+                                              size={18}
+                                              className="text-gray-500"
+                                            />
+                                          </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent
+                                          align="end"
+                                          className="w-56"
+                                        >
+                                          <DropdownMenuLabel>
+                                            NFC-e nº {nfce?.numero}/
+                                            {nfce?.serie}
+                                          </DropdownMenuLabel>
+                                          <DropdownMenuSeparator />
+
+                                          {nfce?.danfeUrl && (
+                                            <DropdownMenuItem
+                                              onClick={() =>
+                                                window.open(
+                                                  nfce.danfeUrl!,
+                                                  '_blank',
+                                                )
+                                              }
+                                            >
+                                              <IconFileCheck className="mr-2 h-4 w-4" />
+                                              <span>Ver DANFE</span>
+                                            </DropdownMenuItem>
+                                          )}
+
+                                          {(isAuthorized || isContingency) &&
+                                            !historical &&
+                                            nfce?.id && (
+                                              <DropdownMenuItem
+                                                onClick={() =>
+                                                  window.open(
+                                                    `/api/fiscal/nfce/${nfce.id}/thermal`,
+                                                    '_blank',
+                                                  )
+                                                }
+                                              >
+                                                <IconPrinter className="mr-2 h-4 w-4" />
+                                                <span>
+                                                  Imprimir DANFE térmico
+                                                </span>
+                                              </DropdownMenuItem>
+                                            )}
+
+                                          {nfce?.qrCodeUrl && (
+                                            <DropdownMenuItem
+                                              onClick={() =>
+                                                window.open(
+                                                  nfce.qrCodeUrl!,
+                                                  '_blank',
+                                                )
+                                              }
+                                            >
+                                              <IconQrcode className="mr-2 h-4 w-4" />
+                                              <span>Visualizar QR Code</span>
+                                            </DropdownMenuItem>
+                                          )}
+
+                                          {nfce?.xmlAutorizado && (
+                                            <DropdownMenuItem
+                                              onClick={handleDownloadXml}
+                                            >
+                                              <IconDownload className="mr-2 h-4 w-4" />
+                                              <span>Baixar XML</span>
+                                            </DropdownMenuItem>
+                                          )}
+
+                                          {historical && historicalReason && (
+                                            <>
+                                              <DropdownMenuSeparator />
+                                              <HistoricalDocumentNotice
+                                                reason={historicalReason}
+                                              />
+                                            </>
+                                          )}
+
+                                          {!historical &&
+                                            (isAuthorized ||
+                                              isContingency ||
+                                              nfce?.status === 'REJECTED' ||
+                                              nfce?.status === 'UNKNOWN') && (
+                                              <>
+                                                <DropdownMenuSeparator />
+                                                <DropdownMenuItem
+                                                  onClick={
+                                                    handleConsultarStatus
+                                                  }
+                                                >
+                                                  <IconRefresh className="mr-2 h-4 w-4" />
+                                                  <span>Consultar SEFAZ</span>
+                                                </DropdownMenuItem>
+                                              </>
+                                            )}
+
+                                          {canReprocess && (
+                                            <>
+                                              <DropdownMenuSeparator />
+                                              <DropdownMenuItem
+                                                onClick={handleReprocess}
+                                              >
+                                                <IconRefresh className="mr-2 h-4 w-4" />
+                                                <span>Reprocessar NFC-e</span>
+                                              </DropdownMenuItem>
+                                            </>
+                                          )}
+
+                                          {isAuthorized && !historical && (
+                                            <>
+                                              <DropdownMenuSeparator />
+                                              <DropdownMenuItem
+                                                className="text-error-600 focus:bg-error-50 focus:text-error-600"
+                                                onClick={() =>
+                                                  setCancelNfce({
+                                                    id: nfce.id,
+                                                    numero: nfce.numero,
+                                                    serie: nfce.serie,
+                                                  })
+                                                }
+                                              >
+                                                <IconBan className="mr-2 h-4 w-4" />
+                                                <span>Cancelar NFC-e</span>
+                                              </DropdownMenuItem>
+                                            </>
+                                          )}
+                                        </DropdownMenuContent>
+                                      </DropdownMenu>
+                                    )
+                                  }
+
+                                  if (item.type === 'NFE_AVULSA') {
+                                    const n = item.nfes?.[0]
+                                    // Toda nota que ja' foi transmitida — inclusive
+                                    // cancelada — e' um documento fechado e mostra
+                                    // as acoes de consulta. So' rascunho continua
+                                    // a emissao.
+                                    if (n && n.status !== 'DRAFT') {
+                                      return (
+                                        <NfeActionsDropdown
+                                          nfe={n}
+                                          onRefetch={fetchOrders}
+                                        />
+                                      )
+                                    }
+                                    // Retomar rascunho de nota avulsa nunca
+                                    // existiu: a pagina de emissao avulsa e'
+                                    // estatica e nao carrega rascunho. O botao
+                                    // "Continuar emissao" apontava para uma rota
+                                    // inexistente e so' dava 404, entao aqui a
+                                    // unica acao honesta e' descartar.
+                                    return (
                                       <ActionButton
                                         Icon={IconTrash}
                                         tooltip="Excluir rascunho"
+                                        variant="errorGhost"
+                                        disabled={cancelingDraftId === item.id}
+                                        onClick={() =>
+                                          handleCancelDraft(item.id)
+                                        }
+                                      />
+                                    )
+                                  }
+
+                                  // Type ORDER
+                                  const authorizedNfe = findActiveNfe(
+                                    item,
+                                    activeEnvironment,
+                                    ['AUTHORIZED', 'CORRECTION_SENT'],
+                                  )
+                                  const draftNfe = findActiveNfe(
+                                    item,
+                                    activeEnvironment,
+                                    ['DRAFT'],
+                                  )
+                                  const authorizedNfse = findActiveNfse(
+                                    item,
+                                    activeEnvironment,
+                                    ['AUTHORIZED'],
+                                  )
+                                  const isCancelingThis =
+                                    cancelingDraftId === draftNfe?.id
+
+                                  if (authorizedNfe) {
+                                    return (
+                                      <NfeActionsDropdown
+                                        nfe={authorizedNfe}
+                                        onRefetch={fetchOrders}
+                                      />
+                                    )
+                                  }
+
+                                  if (authorizedNfse?.id) {
+                                    return (
+                                      <NfseActionsDropdown
+                                        nfse={{
+                                          id: authorizedNfse.id,
+                                          numero: authorizedNfse.numero ?? 0,
+                                          serie: String(
+                                            authorizedNfse.serie ?? '',
+                                          ),
+                                          status:
+                                            authorizedNfse.status ??
+                                            'AUTHORIZED',
+                                          pdfUrl: authorizedNfse.pdfUrl,
+                                          createdAt: authorizedNfse.createdAt,
+                                          invoicyConfigId:
+                                            authorizedNfse.invoicyConfigId,
+                                        }}
+                                        onRefetch={fetchOrders}
+                                      />
+                                    )
+                                  }
+
+                                  // Precede o rascunho: ordem cancelada nao volta
+                                  // para a emissao, mas o rascunho orfao ainda
+                                  // precisa poder ser excluido.
+                                  if (
+                                    item.status?.toUpperCase() === 'CANCELED'
+                                  ) {
+                                    return draftNfe ? (
+                                      <ActionButton
+                                        Icon={IconTrash}
+                                        tooltip="Excluir rascunho (ordem cancelada)"
                                         variant="errorGhost"
                                         disabled={isCancelingThis}
                                         onClick={() =>
                                           handleCancelDraft(draftNfe.id)
                                         }
                                       />
-                                    </>
-                                  )
-                                }
+                                    ) : (
+                                      <ActionButton
+                                        Icon={IconBan}
+                                        tooltip="Ordem cancelada"
+                                        disabled
+                                      />
+                                    )
+                                  }
 
-                                return (
-                                  <ActionButton
-                                    Icon={IconReceipt}
-                                    tooltip="Emitir Nota Fiscal"
-                                    onClick={() => setModalOrderId(item.id)}
-                                  />
-                                )
-                              })()}
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </Fragment>
-              ))}
+                                  if (draftNfe) {
+                                    return (
+                                      <>
+                                        <ActionButton
+                                          Icon={IconReceipt}
+                                          tooltip="Continuar emissão"
+                                          onClick={() =>
+                                            setModalOrderId(item.id)
+                                          }
+                                        />
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          tooltip="Excluir rascunho"
+                                          variant="errorGhost"
+                                          disabled={isCancelingThis}
+                                          onClick={() =>
+                                            handleCancelDraft(draftNfe.id)
+                                          }
+                                        />
+                                      </>
+                                    )
+                                  }
+
+                                  return (
+                                    <ActionButton
+                                      Icon={IconReceipt}
+                                      tooltip="Emitir Nota Fiscal"
+                                      onClick={() => setModalOrderId(item.id)}
+                                    />
+                                  )
+                                })()}
+                              </TooltipProvider>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
+                  </Fragment>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -1597,6 +1604,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
             searchParams={activeParams}
             lastPage={totalPages}
             activeVariant="success"
+            isLoading={isLoading}
           />
         </CardFooter>
 

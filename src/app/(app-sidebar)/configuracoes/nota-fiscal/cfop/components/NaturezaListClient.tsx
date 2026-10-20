@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +25,7 @@ import { NaturezaFormModal } from './NaturezaFormModal'
 import { CfopData } from './CfopRow'
 
 // Icons
-import { IconCategory, IconPlus, IconLoader2 } from '@tabler/icons-react'
+import { IconCategory, IconPlus } from '@tabler/icons-react'
 
 // Actions
 import {
@@ -215,9 +216,11 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
 
       {/* List */}
       {isLoading ? (
-        <div className="flex items-center justify-center p-8 bg-white border border-gray-200 rounded-xl">
-          <IconLoader2 className="w-6 h-6 animate-spin text-gray-400" />
-          <span className="ml-2 text-gray-500">Carregando Naturezas...</span>
+        // Linhas no lugar da tabela, para a seção não mudar de altura
+        <div className="space-y-3 rounded-xl border border-gray-200 bg-white p-4">
+          {Array.from({ length: 4 }, (_, index) => (
+            <Skeleton key={index} className="h-10 w-full" />
+          ))}
         </div>
       ) : natures.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">

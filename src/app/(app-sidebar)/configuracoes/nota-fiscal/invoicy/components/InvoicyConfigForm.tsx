@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -147,9 +148,29 @@ export function InvoicyConfigForm() {
   }
 
   if (isLoading) {
+    // Cabeçalho e seções no formato do formulário, sem texto solto
     return (
-      <div className="flex items-center justify-center p-8">
-        <p className="text-gray-500">Carregando configurações...</p>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-12 rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-48" />
+            <Skeleton className="h-4 w-80" />
+          </div>
+        </div>
+        {Array.from({ length: 3 }, (_, section) => (
+          <div key={section} className="space-y-4 rounded-lg bg-white p-6">
+            <Skeleton className="h-5 w-40" />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {Array.from({ length: 2 }, (_, field) => (
+                <div key={field} className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     )
   }
@@ -348,13 +369,9 @@ export function InvoicyConfigForm() {
             <Button
               type="submit"
               RightIcon={IconDeviceFloppy}
-              disabled={form.formState.isSubmitting}
+              isLoading={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting
-                ? 'Salvando...'
-                : configData
-                  ? 'Salvar'
-                  : 'Salvar'}
+              Salvar
             </Button>
           </div>
         </form>

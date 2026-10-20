@@ -16,7 +16,6 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Card,
@@ -30,6 +29,7 @@ import {
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { SectorIcon } from '@/components/common/SectorIcon'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { duration } from '../../gerenciador/components/TaskDetailDialog'
 
 // Actions
@@ -54,8 +54,8 @@ export function Productivity() {
     queryFn: () => getProductivity(),
   })
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
-
+  // Sem retorno antecipado: Topbar e cartões já na tela, e as tabelas com
+  // linhas de esqueleto enquanto os números chegam
   const bySector = data?.data?.bySector || []
   const perPerson = !!data?.data?.people
   const people = data?.data?.people || []
@@ -95,39 +95,47 @@ export function Productivity() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bySector.map((sector) => (
-                <TableRow key={sector.sector}>
-                  <TableCell>
-                    <span className="flex items-center gap-2 font-medium">
-                      <SectorIcon name={sector.sector} size="sm" />
-                      {sector.sector}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">{sector.tasks}</TableCell>
-                  <TableCell className="text-right">
-                    {sector.sold ? duration(sector.sold) : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {sector.worked ? duration(sector.worked) : '-'}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      'text-right font-medium',
-                      sector.productivity !== null &&
-                        sector.productivity < 100 &&
-                        'text-error-700',
-                    )}
-                  >
-                    {percent(sector.productivity)}
-                  </TableCell>
-                </TableRow>
-              ))}
-              {!bySector.length && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-sm text-gray">
-                    Nenhuma tarefa finalizada ainda.
-                  </TableCell>
-                </TableRow>
+              {isLoading ? (
+                <TableSkeletonRows cols={5} rows={4} />
+              ) : (
+                <>
+                  {bySector.map((sector) => (
+                    <TableRow key={sector.sector}>
+                      <TableCell>
+                        <span className="flex items-center gap-2 font-medium">
+                          <SectorIcon name={sector.sector} size="sm" />
+                          {sector.sector}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {sector.tasks}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {sector.sold ? duration(sector.sold) : '-'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {sector.worked ? duration(sector.worked) : '-'}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          'text-right font-medium',
+                          sector.productivity !== null &&
+                            sector.productivity < 100 &&
+                            'text-error-700',
+                        )}
+                      >
+                        {percent(sector.productivity)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {!bySector.length && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-sm text-gray">
+                        Nenhuma tarefa finalizada ainda.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </>
               )}
             </TableBody>
           </Table>
@@ -140,7 +148,9 @@ export function Productivity() {
         </CardFooter>
       </Card>
 
-      {perPerson ? (
+      {/* Enquanto carrega não se sabe se o servidor manda o por pessoa
+          (PCP-3): nem o cartão nem o aviso aparecem antes dos dados */}
+      {isLoading ? null : perPerson ? (
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">

@@ -159,16 +159,16 @@ export function MeasureDefaultsDialog() {
           {isLoading ? (
             <div className="flex flex-wrap gap-5">
               <div className="flex-[1_0_190px] space-y-2">
-                <Skeleton className="bg-gray-300 h-4 w-20" />
-                <Skeleton className="bg-gray-300 h-10 w-full" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full" />
               </div>
               <div className="flex-[1_0_190px] space-y-2">
-                <Skeleton className="bg-gray-300 h-4 w-20" />
-                <Skeleton className="bg-gray-300 h-10 w-full" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full" />
               </div>
               <div className="flex-[1_0_190px] space-y-2">
-                <Skeleton className="bg-gray-300 h-4 w-20" />
-                <Skeleton className="bg-gray-300 h-10 w-full" />
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-10 w-full" />
               </div>
             </div>
           ) : (

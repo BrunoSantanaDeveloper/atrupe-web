@@ -8,7 +8,8 @@
 
 // React / Next
 import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {
@@ -34,7 +35,8 @@ import {
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
@@ -49,7 +51,7 @@ import { projectStatusObj } from '@/consts/productionManager'
 import { updateFilterParam } from '@/lib/filter-utils'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import {
@@ -87,11 +89,13 @@ export function Projects() {
     return () => clearTimeout(timer)
   }, [text, search, router, params])
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     queryKey: ['production-projects', status, page, search],
     queryFn: () => getProjects({ status, page, search }),
+    // Aba, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
   })
-  const { data: quantityRes } = useQuery({
+  const { data: quantityRes, isLoading: quantityLoading } = useQuery({
     queryKey: ['production-projects', 'quantity'],
     queryFn: () => getProjectQuantity(),
   })
@@ -113,6 +117,7 @@ export function Projects() {
             label: tab.label,
             count: quantity?.[tab.value] ?? 0,
           }))}
+          countsLoading={quantityLoading}
         />
 
         <Card>
@@ -136,111 +141,116 @@ export function Projects() {
               onChange={(event) => setText(event.target.value)}
             />
           </CardHeader>
-          {isLoading ? (
-            <TableSkeleton cols={6} rows={4} />
-          ) : !projects.length ? (
-            <ListDataTotalEmpty
-              icon={IconListCheck}
-              title={
-                search
-                  ? `Nenhum projeto encontrado para "${search}"`
-                  : `Nenhum projeto para o status: ${tabs.find((tab) => tab.value === status)?.label}`
-              }
-              description="O projeto nasce quando a venda é aprovada."
-            />
-          ) : (
-            <CardContent>
-              <Table className="min-w-[860px]">
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-[12%]">Venda</TableHead>
-                    <TableHead className="w-[26%]">Cliente</TableHead>
-                    <TableHead className="w-[14%]">Aprovação</TableHead>
-                    <TableHead className="w-[18%]">Entrega</TableHead>
-                    <TableHead className="w-[24%]">Tarefas</TableHead>
-                    <TableHead className="w-[6%]" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {projects.map((project) => (
-                    <TableRow key={project.id}>
-                      <TableCell className="font-medium">
-                        {project.number}
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-gray-800">
-                          {project.client}
-                        </p>
-                        <p className="text-xs text-gray">
-                          {project.deliveryType}
-                        </p>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-700">
-                        {date(project.approvedAt)}
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-gray-800">
-                          {date(project.due)}
-                        </p>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {project.late && (
-                            <Badge variant="errorLight">Em atraso</Badge>
-                          )}
-                          {!project.late && project.risk && (
-                            <Badge variant="warningLight">
-                              Entrega em risco
-                            </Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-100">
-                            <div
-                              className="h-full bg-success-500"
-                              style={{
-                                width: `${project.total ? (project.done / project.total) * 100 : 0}%`,
-                              }}
-                            />
-                          </div>
-                          <span className="text-sm text-gray-700">
-                            {project.done} / {project.total}
-                          </span>
-                          {project.alerts > 0 && (
-                            <span className="flex items-center gap-1 text-xs text-error-700">
-                              <IconAlertTriangle className="size-3.5" />
-                              {project.alerts}
-                            </span>
-                          )}
-                        </div>
-                        <Badge
-                          variant={projectStatusObj[project.status].variant}
-                          className="mt-1"
-                        >
-                          {projectStatusObj[project.status].text}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end">
-                          <ActionButton
-                            Icon={IconSearch}
-                            tooltip={`Abrir ${project.number}`}
-                            link={`/producao/projetos/${project.id}`}
-                          />
-                        </div>
-                      </TableCell>
+          <FetchingRegion isFetching={isPlaceholderData}>
+            {/* Carregando, a tabela real fica com linhas de esqueleto */}
+            {!isLoading && !projects.length ? (
+              <ListDataTotalEmpty
+                icon={IconListCheck}
+                title={
+                  search
+                    ? `Nenhum projeto encontrado para "${search}"`
+                    : `Nenhum projeto para o status: ${tabs.find((tab) => tab.value === status)?.label}`
+                }
+                description="O projeto nasce quando a venda é aprovada."
+              />
+            ) : (
+              <CardContent>
+                <Table className="min-w-[860px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-[12%]">Venda</TableHead>
+                      <TableHead className="w-[26%]">Cliente</TableHead>
+                      <TableHead className="w-[14%]">Aprovação</TableHead>
+                      <TableHead className="w-[18%]">Entrega</TableHead>
+                      <TableHead className="w-[24%]">Tarefas</TableHead>
+                      <TableHead className="w-[6%]" />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              {(data?.data?.lastPage ?? 1) > 1 && (
-                <TablePagination
-                  searchParams={Object.fromEntries(params.entries())}
-                  lastPage={data?.data?.lastPage}
-                />
-              )}
-            </CardContent>
-          )}
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={6} rows={4} />
+                    ) : (
+                      projects.map((project) => (
+                        <TableRow key={project.id}>
+                          <TableCell className="font-medium">
+                            {project.number}
+                          </TableCell>
+                          <TableCell>
+                            <p className="text-sm text-gray-800">
+                              {project.client}
+                            </p>
+                            <p className="text-xs text-gray">
+                              {project.deliveryType}
+                            </p>
+                          </TableCell>
+                          <TableCell className="text-sm text-gray-700">
+                            {date(project.approvedAt)}
+                          </TableCell>
+                          <TableCell>
+                            <p className="text-sm text-gray-800">
+                              {date(project.due)}
+                            </p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {project.late && (
+                                <Badge variant="errorLight">Em atraso</Badge>
+                              )}
+                              {!project.late && project.risk && (
+                                <Badge variant="warningLight">
+                                  Entrega em risco
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-100">
+                                <div
+                                  className="h-full bg-success-500"
+                                  style={{
+                                    width: `${project.total ? (project.done / project.total) * 100 : 0}%`,
+                                  }}
+                                />
+                              </div>
+                              <span className="text-sm text-gray-700">
+                                {project.done} / {project.total}
+                              </span>
+                              {project.alerts > 0 && (
+                                <span className="flex items-center gap-1 text-xs text-error-700">
+                                  <IconAlertTriangle className="size-3.5" />
+                                  {project.alerts}
+                                </span>
+                              )}
+                            </div>
+                            <Badge
+                              variant={projectStatusObj[project.status].variant}
+                              className="mt-1"
+                            >
+                              {projectStatusObj[project.status].text}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end">
+                              <ActionButton
+                                Icon={IconSearch}
+                                tooltip={`Abrir ${project.number}`}
+                                link={`/producao/projetos/${project.id}`}
+                              />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+                {(data?.data?.lastPage ?? 1) > 1 && (
+                  <TablePagination
+                    searchParams={Object.fromEntries(params.entries())}
+                    lastPage={data?.data?.lastPage}
+                  />
+                )}
+              </CardContent>
+            )}
+          </FetchingRegion>
         </Card>
       </div>
     </TooltipProvider>

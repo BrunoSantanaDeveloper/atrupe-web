@@ -17,7 +17,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { Avatar } from '@/components/AvatarComponent'
 import { SessionDetailsDialog } from './SessionDetailsDialog'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -132,9 +132,7 @@ export function Main() {
           <CardTitle>Usuários Online</CardTitle>
         </CardHeader>
         <CardContent>
-          {isLoading ? (
-            <TableSkeleton cols={5} rows={5} />
-          ) : sessions.length === 0 ? (
+          {!isLoading && sessions.length === 0 ? (
             <ListDataStatusEmpty title="Nenhum usuário online" />
           ) : (
             <Table>
@@ -150,75 +148,79 @@ export function Main() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sessions.map((user) => {
-                  const primarySession = user.sessions[0]
-                  return (
-                    <TableRow key={user.userId}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar
-                            url={user.avatar || ''}
-                            name={user.userName}
-                            size="sm"
-                            variant="default"
-                          />
-                          <div>
-                            <p className="font-medium text-gray-700">
-                              {user.userName}
-                            </p>
-                            <p className="text-xs text-gray-600">
-                              {user.email}
-                            </p>
+                {isLoading ? (
+                  <TableSkeletonRows cols={7} rows={5} />
+                ) : (
+                  sessions.map((user) => {
+                    const primarySession = user.sessions[0]
+                    return (
+                      <TableRow key={user.userId}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar
+                              url={user.avatar || ''}
+                              name={user.userName}
+                              size="sm"
+                              variant="default"
+                            />
+                            <div>
+                              <p className="font-medium text-gray-700">
+                                {user.userName}
+                              </p>
+                              <p className="text-xs text-gray-600">
+                                {user.email}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-gray-700">
-                          {user.companyName}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="blueLight">
-                          {user.sessions.length}{' '}
-                          {user.sessions.length === 1 ? 'sessão' : 'sessões'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {primarySession?.endpoint ? (
-                          <Badge variant="neutralLight">
-                            {primarySession.endpoint}
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-700">
+                            {user.companyName}
+                          </p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="blueLight">
+                            {user.sessions.length}{' '}
+                            {user.sessions.length === 1 ? 'sessão' : 'sessões'}
                           </Badge>
-                        ) : (
-                          <span className="text-gray-500 text-sm">-</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <span className="font-mono text-xs text-gray-600">
-                          {primarySession?.ipAddress || '-'}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-0.5">
-                          <span className="text-sm text-gray-700">
-                            {getTimeAgo(user.lastActive)}
+                        </TableCell>
+                        <TableCell>
+                          {primarySession?.endpoint ? (
+                            <Badge variant="neutralLight">
+                              {primarySession.endpoint}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-500 text-sm">-</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-mono text-xs text-gray-600">
+                            {primarySession?.ipAddress || '-'}
                           </span>
-                          <span className="text-xs text-gray-500">
-                            {formatToLocaleDateTime(user.lastActive)}
-                          </span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <TooltipProvider>
-                          <ActionButton
-                            Icon={IconEye}
-                            tooltip="Ver detalhes"
-                            onClick={() => handleViewDetails(user)}
-                          />
-                        </TooltipProvider>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-sm text-gray-700">
+                              {getTimeAgo(user.lastActive)}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {formatToLocaleDateTime(user.lastActive)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <TooltipProvider>
+                            <ActionButton
+                              Icon={IconEye}
+                              tooltip="Ver detalhes"
+                              onClick={() => handleViewDetails(user)}
+                            />
+                          </TooltipProvider>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
+                )}
               </TableBody>
             </Table>
           )}

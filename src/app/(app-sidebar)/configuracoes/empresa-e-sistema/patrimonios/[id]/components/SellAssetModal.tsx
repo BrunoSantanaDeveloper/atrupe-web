@@ -270,7 +270,7 @@ export function SellAssetModal({ asset, open, onOpenChange }: Props) {
                 disabled={!financialNatureId || !date}
                 onClick={() => mutate()}
               >
-                {isPending ? 'Registrando...' : 'Registrar venda'}
+                Registrar venda
               </Button>
             </DialogFooter>
           </>

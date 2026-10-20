@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 // Icons
-import { IconPrinter, IconLoader2 } from '@tabler/icons-react'
+import { IconPrinter } from '@tabler/icons-react'
 
 // Components
 
@@ -83,9 +83,8 @@ export function DfcReportPrintButton() {
         <Button
           variant="neutralOutline"
           size="iconMd"
-          RightIcon={isLoading ? IconLoader2 : IconPrinter}
-          disabled={isLoading}
-          className={isLoading ? '[&_svg]:animate-spin' : ''}
+          isLoading={isLoading}
+          RightIcon={IconPrinter}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

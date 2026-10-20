@@ -31,14 +31,14 @@ function CalendarHeader() {
     <header className="flex w-full items-center gap-1 pb-1">
       <Button
         slot="previous"
-        className="flex size-9 items-center justify-center rounded-md text-gray-500 transition-all duration-200 ease-in-out outline-none hover:bg-gray-100 hover:text-gray-950 focus-visible:ring-1 focus-visible:ring-brand"
+        className="flex size-9 items-center justify-center rounded-md text-gray-500 transition-[color,background-color,border-color,box-shadow,opacity] duration-200 ease-in-out outline-none hover:bg-gray-100 hover:text-gray-950 focus-visible:ring-1 focus-visible:ring-brand"
       >
         <ChevronLeftIcon size={16} />
       </Button>
       <HeadingRac className="grow text-center text-sm font-medium" />
       <Button
         slot="next"
-        className="flex size-9 items-center justify-center rounded-md text-gray-500 transition-all duration-200 ease-in-out outline-none hover:bg-gray-100 hover:text-gray-950 focus-visible:ring-1 focus-visible:ring-brand"
+        className="flex size-9 items-center justify-center rounded-md text-gray-500 transition-[color,background-color,border-color,box-shadow,opacity] duration-200 ease-in-out outline-none hover:bg-gray-100 hover:text-gray-950 focus-visible:ring-1 focus-visible:ring-brand"
       >
         <ChevronRightIcon size={16} />
       </Button>
@@ -63,7 +63,7 @@ function CalendarGridComponent({ isRange = false }: { isRange?: boolean }) {
           <CalendarCellRac
             date={date}
             className={cn(
-              'relative flex size-9 items-center justify-center rounded-md p-0 text-sm font-normal whitespace-nowrap transition-all duration-200 ease-in-out outline-none text-gray-950 hover:bg-gray-100 hover:text-gray-950 data-[selected]:bg-brand-600 data-[selected]:text-gray-50 dark:data-[selected]:text-on-primary data-[hovered]:bg-gray-100 data-[hovered]:text-gray-950 data-[selected]:hover:bg-brand-700 focus-visible:z-10 focus-visible:ring-1 focus-visible:ring-brand data-[disabled]:pointer-events-none data-[disabled]:opacity-30 data-[unavailable]:pointer-events-none data-[unavailable]:line-through data-[unavailable]:opacity-30',
+              'relative flex size-9 items-center justify-center rounded-md p-0 text-sm font-normal whitespace-nowrap transition-[color,background-color,border-color,box-shadow,opacity] duration-200 ease-in-out outline-none text-gray-950 hover:bg-gray-100 hover:text-gray-950 data-[selected]:bg-brand-600 data-[selected]:text-gray-50 dark:data-[selected]:text-on-primary data-[hovered]:bg-gray-100 data-[hovered]:text-gray-950 data-[selected]:hover:bg-brand-700 focus-visible:z-10 focus-visible:ring-1 focus-visible:ring-brand data-[disabled]:pointer-events-none data-[disabled]:opacity-30 data-[unavailable]:pointer-events-none data-[unavailable]:line-through data-[unavailable]:opacity-30',
               // Range-specific styles
               isRange &&
                 'data-[selected]:bg-gray-100 data-[selected]:text-gray-950 data-[invalid]:data-[selection-end]:bg-error data-[invalid]:data-[selection-start]:bg-error data-[selection-end]:bg-brand-600 data-[selection-start]:bg-brand-600 data-[selection-end]:text-gray-50 data-[selection-start]:text-gray-50 dark:data-[selection-end]:text-on-primary dark:data-[selection-start]:text-on-primary data-[invalid]:bg-error/10 data-[selected]:rounded-none data-[selection-end]:rounded-e-md data-[invalid]:data-[selection-end]:text-white data-[selection-start]:rounded-s-md data-[invalid]:data-[selection-start]:text-white',

@@ -179,7 +179,7 @@ export function NewSetupModal({ asset }: Props) {
             disabled={!name || !productivity}
             onClick={() => mutate()}
           >
-            {isPending ? 'Cadastrando...' : 'Cadastrar configuração'}
+            Cadastrar configuração
           </Button>
         </DialogFooter>
       </DialogContent>

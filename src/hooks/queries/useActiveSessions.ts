@@ -6,7 +6,7 @@ import type {
   SessionUser,
   CompanyStatistics,
 } from '@/types/admin/sessions'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 interface UseActiveSessionsOptions {
   companyId?: string
@@ -106,26 +106,29 @@ export function useAccessSessions(options: UseAccessSessionsOptions = {}) {
     endDate: options.endDate,
   }
 
-  const { data, isLoading, error, refetch, isRefetching } = useQuery({
-    queryKey: ['access-sessions', filters],
-    queryFn: async () => {
-      const response = await getData({
-        route: '/activity-monitor/access-sessions',
-        filters,
-      })
-      if (!response.success) {
-        throw new Error(response.message || 'Erro ao buscar acessos')
-      }
-      return {
-        data: response.data as AccessSession[],
-        total: response.total || 0,
-        page: response.page || options.page || 1,
-        limit: options.limit || 10,
-        lastPage: response.lastPage || 1,
-      }
-    },
-    staleTime: 1000 * 60,
-  })
+  const { data, isLoading, isPlaceholderData, error, refetch, isRefetching } =
+    useQuery({
+      queryKey: ['access-sessions', filters],
+      queryFn: async () => {
+        const response = await getData({
+          route: '/activity-monitor/access-sessions',
+          filters,
+        })
+        if (!response.success) {
+          throw new Error(response.message || 'Erro ao buscar acessos')
+        }
+        return {
+          data: response.data as AccessSession[],
+          total: response.total || 0,
+          page: response.page || options.page || 1,
+          limit: options.limit || 10,
+          lastPage: response.lastPage || 1,
+        }
+      },
+      // Filtro e página mantêm a lista anterior até a nova chegar
+      placeholderData: keepPreviousData,
+      staleTime: 1000 * 60,
+    })
 
   return {
     accessSessions: data?.data || [],
@@ -133,6 +136,7 @@ export function useAccessSessions(options: UseAccessSessionsOptions = {}) {
     page: data?.page || options.page || 1,
     lastPage: data?.lastPage || 1,
     isLoading,
+    isPlaceholderData,
     isRefetching,
     error,
     refetch,
@@ -174,25 +178,32 @@ export function useAccessSessionDetails(
 ) {
   const { limit = 20, offset = 0, enabled = true } = options
 
-  const { data, isLoading, error, refetch, isRefetching } = useQuery({
-    queryKey: ['access-session-details', sessionId, limit, offset],
-    queryFn: async () => {
-      const response = await getData({
-        route: `/activity-monitor/sessions/${sessionId}`,
-        filters: { limit: String(limit), offset: String(offset) },
-      })
-      if (!response.success) {
-        throw new Error(response.message || 'Erro ao buscar detalhe da sessao')
-      }
-      return response.data as AccessSessionDetails
-    },
-    enabled: enabled && !!sessionId,
-    staleTime: 1000 * 60,
-  })
+  const { data, isLoading, isPlaceholderData, error, refetch, isRefetching } =
+    useQuery({
+      queryKey: ['access-session-details', sessionId, limit, offset],
+      queryFn: async () => {
+        const response = await getData({
+          route: `/activity-monitor/sessions/${sessionId}`,
+          filters: { limit: String(limit), offset: String(offset) },
+        })
+        if (!response.success) {
+          throw new Error(
+            response.message || 'Erro ao buscar detalhe da sessao',
+          )
+        }
+        return response.data as AccessSessionDetails
+      },
+      enabled: enabled && !!sessionId,
+      // Paginação do histórico mantém a página anterior; outra sessão, não
+      placeholderData: (previous, previousQuery) =>
+        previousQuery?.queryKey[1] === sessionId ? previous : undefined,
+      staleTime: 1000 * 60,
+    })
 
   return {
     details: data,
     isLoading,
+    isPlaceholderData,
     isRefetching,
     error,
     refetch,

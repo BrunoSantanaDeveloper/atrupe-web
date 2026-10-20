@@ -3,7 +3,6 @@
 // UI
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { TableData } from './TableData'
@@ -16,6 +15,7 @@ import { UsersQuotaNotice } from './UsersQuotaNotice'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -100,6 +100,7 @@ export function Main({ searchParams }: SearchParamsType) {
           previousPage="/configuracoes/empresa-e-sistema"
           activeTab={searchParams?.status || 'todos'}
           paramName="status"
+          countsLoading={isLoading}
           primaryCta={
             <PermissionGate permissions={['company_settings:users:create']}>
               <NewEmployeeDialog />
@@ -124,7 +125,7 @@ export function Main({ searchParams }: SearchParamsType) {
         <div>
           <Card>
             {isLoading ? (
-              <Skeleton className="h-[calc(100vh-150px)]" />
+              <ListSkeleton cols={5} filters={0} />
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty

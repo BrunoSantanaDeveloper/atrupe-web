@@ -14,7 +14,8 @@
 
 // React / Next
 import { useMemo, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -117,6 +118,49 @@ const inPeriod = (task: TaskView, period: Period) => {
   return task.schedule.date >= today() && task.schedule.date <= addDays(7)
 }
 
+// Forma do quadro (a linha do gerenciador e as seis colunas da GP-28)
+// enquanto carrega
+function BoardSkeleton() {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-5 w-64" />
+      <div className="flex gap-3 overflow-hidden pb-2">
+        {TASK_STATUS_ORDER.map((status) => (
+          <div
+            key={status}
+            className="w-[290px] shrink-0 space-y-2 rounded-xl bg-gray-50 p-3"
+          >
+            <Skeleton className="h-5 w-24 rounded-full" />
+            <Skeleton className="h-24 w-full rounded-lg" />
+            <Skeleton className="h-24 w-full rounded-lg" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// Forma da agenda e dos veículos (um cartão por dia ou por veículo)
+// enquanto carrega
+function AgendaSkeleton() {
+  return (
+    <div className="space-y-4">
+      {Array.from({ length: 2 }, (_, index) => (
+        <Card key={index}>
+          <CardHeader>
+            <Skeleton className="h-5 w-48" />
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-3 px-6 pb-6 md:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 3 }, (_, item) => (
+              <Skeleton key={item} className="h-24 w-full rounded-lg" />
+            ))}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
 export function ManagerBoard() {
   const router = useRouter()
   const params = useSearchParams()
@@ -205,7 +249,41 @@ export function ManagerBoard() {
   const task = allTasks.find((item) => item.id === taskId) || null
   const collective = board?.manager.timeMode === 'DRAG_DROP'
 
-  if (loadingSummary) return <Skeleton className="h-[480px] w-full" />
+  // O Topbar não depende do resumo: aparece já, também na carga
+  const topbar = (
+    <Topbar
+      review="new"
+      title="Gerenciador de produção"
+      supportText={
+        viewer.manager
+          ? 'Todos os setores: você vê tudo'
+          : viewer.name
+            ? `Olá, ${viewer.name}: as tarefas do seu setor ou atribuídas a você`
+            : 'Seu usuário não está ligado a um colaborador da produção'
+      }
+      paramName="gerenciador"
+      activeTab={managerId}
+      tabs={summary.map((item) => ({
+        value: item.id,
+        tab: item.id,
+        label: item.name,
+        count: item.open,
+      }))}
+    />
+  )
+
+  // Abaixo do Topbar, a forma das abas dos gerenciadores, das visões, dos
+  // filtros e do quadro (ou da agenda) até o resumo chegar
+  if (loadingSummary)
+    return (
+      <div className="space-y-5">
+        {topbar}
+        <Skeleton className="h-[42px] w-full max-w-[480px] rounded-lg" />
+        <Skeleton className="h-[42px] w-[340px] max-w-full rounded-lg" />
+        <Skeleton className="h-[74px] w-full rounded-xl" />
+        {view === 'quadro' ? <BoardSkeleton /> : <AgendaSkeleton />}
+      </div>
+    )
 
   const dropOn = async (target: TaskView) => {
     if (!dragging) return
@@ -369,25 +447,7 @@ export function ManagerBoard() {
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <Topbar
-          review="new"
-          title="Gerenciador de produção"
-          supportText={
-            viewer.manager
-              ? 'Todos os setores: você vê tudo'
-              : viewer.name
-                ? `Olá, ${viewer.name}: as tarefas do seu setor ou atribuídas a você`
-                : 'Seu usuário não está ligado a um colaborador da produção'
-          }
-          paramName="gerenciador"
-          activeTab={managerId}
-          tabs={summary.map((item) => ({
-            value: item.id,
-            tab: item.id,
-            label: item.name,
-            count: item.open,
-          }))}
-        />
+        {topbar}
 
         {/* As três visões (abas segmentadas, não cartões-botão) */}
         <Tabs
@@ -408,7 +468,7 @@ export function ManagerBoard() {
 
         {view === 'quadro' ? (
           loadingBoard || !board ? (
-            <Skeleton className="h-[360px] w-full" />
+            <BoardSkeleton />
           ) : (
             <div
               className={cn(
@@ -550,7 +610,7 @@ export function ManagerBoard() {
             </div>
           )
         ) : loadingAgenda || !agenda ? (
-          <Skeleton className="h-[360px] w-full" />
+          <AgendaSkeleton />
         ) : view === 'agenda' ? (
           <AgendaView
             scheduled={agenda.scheduled.filter(matches)}

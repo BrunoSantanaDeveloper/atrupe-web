@@ -8,7 +8,8 @@
 
 // React
 import { Fragment, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Next
 import Link from 'next/link'
@@ -24,7 +25,6 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -33,6 +33,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import {
   OpenDayDialog,
   CloseDayDialog,
@@ -353,8 +354,6 @@ export function CashControl(_: SearchParamsType) {
     )
   }
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
-
   return (
     <PermissionGate
       permissions={['financial:cash_control:view']}
@@ -365,11 +364,14 @@ export function CashControl(_: SearchParamsType) {
           <Topbar
             review="new"
             title="Controle de caixa"
-            supportText={`Hoje, ${longDate(today)}`}
+            // Topbar e cabeçalhos das tabelas já aparecem na carga; só as
+            // linhas ficam em skeleton (microinteracoes)
+            supportText={today ? `Hoje, ${longDate(today)}` : undefined}
             // As abas do histórico ficam no cabeçalho, com o estado na URL
             // (design.md §5.1)
             paramName="status"
             activeTab={tab === 'ALL' ? 'all' : tab}
+            countsLoading={isLoading}
             tabs={[
               { value: 'all', tab: 'all', label: 'Todos', count: days.length },
               {
@@ -418,21 +420,23 @@ export function CashControl(_: SearchParamsType) {
           />
 
           {/* No fim do expediente, quem está com caixa aberto é avisado
-              antes do bloqueio do dia seguinte (CX-3) */}
+              antes do bloqueio do dia seguinte (CX-3). Também chega depois
+              da Topbar e das tabelas: entra com fade */}
           {nearWorkdayEnd(data?.data?.workdayEnd) &&
             days.some((day) => day.date === today && day.status === 'OPEN') && (
-              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+              <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 animate-in fade-in-0 duration-base">
                 O expediente termina às {data?.data?.workdayEnd}: confira e
                 feche os caixas abertos de hoje. Aberto, o caixa trava o dia
                 seguinte da conta.
               </div>
             )}
 
-          {/* O aviso antes do bloqueio (FC-14) */}
+          {/* O aviso antes do bloqueio (FC-14). Chega depois da Topbar e das
+              tabelas, então entra com fade em vez de saltar */}
           {stuck.map((day) => (
             <div
               key={day.id}
-              className="flex flex-col gap-3 rounded-xl border border-warning-300 bg-warning-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-3 rounded-xl border border-warning-300 bg-warning-50 p-4 sm:flex-row sm:items-center sm:justify-between animate-in fade-in-0 duration-base"
             >
               <div className="flex items-start gap-3">
                 <IconAlertTriangle className="mt-0.5 shrink-0 text-warning-600" />
@@ -474,7 +478,13 @@ export function CashControl(_: SearchParamsType) {
                   <TableHead />
                 </TableRow>
               </TableHeader>
-              <TableBody>{accounts.map(todayRow)}</TableBody>
+              <TableBody>
+                {isLoading ? (
+                  <TableSkeletonRows cols={showTotals ? 5 : 3} rows={3} />
+                ) : (
+                  accounts.map(todayRow)
+                )}
+              </TableBody>
             </Table>
           </Card>
 
@@ -533,153 +543,157 @@ export function CashControl(_: SearchParamsType) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {dates.map((date) => (
-                    <Fragment key={date}>
-                      <TableRow className="bg-gray-50 hover:bg-gray-50">
-                        <TableCell
-                          colSpan={7}
-                          className="py-2 text-sm font-medium text-gray"
-                        >
-                          {date === today
-                            ? 'Hoje'
-                            : longDate(date).replace(/^./, (c) =>
-                                c.toUpperCase(),
-                              )}
-                        </TableCell>
-                      </TableRow>
-                      {filtered
-                        .filter((day) => day.date === date)
-                        .map((day) => {
-                          const account = accountOf(day.accountId)
-                          const totals = cashDayTotals(day)
+                  {isLoading ? (
+                    <TableSkeletonRows cols={7} rows={5} />
+                  ) : (
+                    dates.map((date) => (
+                      <Fragment key={date}>
+                        <TableRow className="bg-gray-50 hover:bg-gray-50">
+                          <TableCell
+                            colSpan={7}
+                            className="py-2 text-sm font-medium text-gray"
+                          >
+                            {date === today
+                              ? 'Hoje'
+                              : longDate(date).replace(/^./, (c) =>
+                                  c.toUpperCase(),
+                                )}
+                          </TableCell>
+                        </TableRow>
+                        {filtered
+                          .filter((day) => day.date === date)
+                          .map((day) => {
+                            const account = accountOf(day.accountId)
+                            const totals = cashDayTotals(day)
 
-                          return (
-                            <TableRow key={day.id}>
-                              <TableCell>
-                                <div className="flex items-center gap-2">
-                                  <AccountIcon icon={account?.bankIcon} />
-                                  <span className="whitespace-nowrap font-medium text-gray-800">
-                                    {account?.name}
-                                  </span>
-                                  <span className="whitespace-nowrap text-xs text-gray">
-                                    nº {day.number}
-                                  </span>
-                                  <Badge
-                                    variant={
-                                      cashControlStatusObj[day.status].variant
-                                    }
-                                  >
-                                    {cashControlStatusObj[day.status].text}
-                                  </Badge>
-                                  {day.reopenings.length > 0 && (
+                            return (
+                              <TableRow key={day.id}>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <AccountIcon icon={account?.bankIcon} />
+                                    <span className="whitespace-nowrap font-medium text-gray-800">
+                                      {account?.name}
+                                    </span>
+                                    <span className="whitespace-nowrap text-xs text-gray">
+                                      nº {day.number}
+                                    </span>
                                     <Badge
                                       variant={
-                                        cashTodayStatusObj.REOPENED.variant
+                                        cashControlStatusObj[day.status].variant
                                       }
                                     >
-                                      {cashTodayStatusObj.REOPENED.text}
+                                      {cashControlStatusObj[day.status].text}
                                     </Badge>
+                                    {day.reopenings.length > 0 && (
+                                      <Badge
+                                        variant={
+                                          cashTodayStatusObj.REOPENED.variant
+                                        }
+                                      >
+                                        {cashTodayStatusObj.REOPENED.text}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap text-right text-gray">
+                                  {money(day.opening)}
+                                </TableCell>
+                                <TableCell
+                                  numeric
+                                  className="whitespace-nowrap text-success-700"
+                                >
+                                  {money(totals.entries)}
+                                </TableCell>
+                                <TableCell
+                                  numeric
+                                  className="whitespace-nowrap text-error-600"
+                                >
+                                  {totals.exits
+                                    ? `− ${money(totals.exits)}`
+                                    : money(0)}
+                                </TableCell>
+                                <TableCell
+                                  numeric
+                                  className="whitespace-nowrap text-gray"
+                                >
+                                  {totals.retroactive
+                                    ? money(totals.retroactive)
+                                    : '—'}
+                                </TableCell>
+                                <TableCell
+                                  className={cn(
+                                    'whitespace-nowrap text-right font-semibold',
+                                    totals.balance < 0
+                                      ? 'text-error-600'
+                                      : 'text-gray-900',
                                   )}
-                                </div>
-                              </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-gray">
-                                {money(day.opening)}
-                              </TableCell>
-                              <TableCell
-                                numeric
-                                className="whitespace-nowrap text-success-700"
-                              >
-                                {money(totals.entries)}
-                              </TableCell>
-                              <TableCell
-                                numeric
-                                className="whitespace-nowrap text-error-600"
-                              >
-                                {totals.exits
-                                  ? `− ${money(totals.exits)}`
-                                  : money(0)}
-                              </TableCell>
-                              <TableCell
-                                numeric
-                                className="whitespace-nowrap text-gray"
-                              >
-                                {totals.retroactive
-                                  ? money(totals.retroactive)
-                                  : '—'}
-                              </TableCell>
-                              <TableCell
-                                className={cn(
-                                  'whitespace-nowrap text-right font-semibold',
-                                  totals.balance < 0
-                                    ? 'text-error-600'
-                                    : 'text-gray-900',
-                                )}
-                              >
-                                {money(totals.balance)}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <ActionButton
-                                    Icon={IconSearch}
-                                    variant="neutralGhost"
-                                    tooltip="Visualizar"
-                                    onClick={() =>
-                                      setDialog({ kind: 'detail', day })
-                                    }
-                                  />
-                                  <ActionButton
-                                    Icon={IconPrinter}
-                                    variant="neutralGhost"
-                                    tooltip="Imprimir"
-                                    onClick={() => {
-                                      // Abre o relatório do dia e imprime
-                                      setDialog({ kind: 'detail', day })
-                                      setTimeout(() => window.print(), 400)
-                                    }}
-                                  />
-                                  {day.status === 'OPEN' ? (
-                                    <PermissionGate
-                                      permissions={[
-                                        'financial:cash_control:edit',
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        variant="neutralGhost"
-                                        tooltip="Lançar ajuste"
-                                        onClick={() =>
-                                          setDialog({ kind: 'adjust', day })
-                                        }
-                                      />
-                                      <ActionButton
-                                        Icon={IconCircleCheck}
-                                        variant="neutralGhost"
-                                        tooltip="Fechar caixa"
-                                        onClick={() =>
-                                          setDialog({ kind: 'close', day })
-                                        }
-                                      />
-                                    </PermissionGate>
-                                  ) : (
-                                    isAdmin && (
-                                      <ActionButton
-                                        Icon={IconArrowBackUp}
-                                        variant="neutralGhost"
-                                        tooltip="Reabrir caixa"
-                                        onClick={() =>
-                                          setDialog({ kind: 'reopen', day })
-                                        }
-                                      />
-                                    )
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })}
-                    </Fragment>
-                  ))}
-                  {!dates.length && (
+                                >
+                                  {money(totals.balance)}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex justify-end gap-1">
+                                    <ActionButton
+                                      Icon={IconSearch}
+                                      variant="neutralGhost"
+                                      tooltip="Visualizar"
+                                      onClick={() =>
+                                        setDialog({ kind: 'detail', day })
+                                      }
+                                    />
+                                    <ActionButton
+                                      Icon={IconPrinter}
+                                      variant="neutralGhost"
+                                      tooltip="Imprimir"
+                                      onClick={() => {
+                                        // Abre o relatório do dia e imprime
+                                        setDialog({ kind: 'detail', day })
+                                        setTimeout(() => window.print(), 400)
+                                      }}
+                                    />
+                                    {day.status === 'OPEN' ? (
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:cash_control:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconPencil}
+                                          variant="neutralGhost"
+                                          tooltip="Lançar ajuste"
+                                          onClick={() =>
+                                            setDialog({ kind: 'adjust', day })
+                                          }
+                                        />
+                                        <ActionButton
+                                          Icon={IconCircleCheck}
+                                          variant="neutralGhost"
+                                          tooltip="Fechar caixa"
+                                          onClick={() =>
+                                            setDialog({ kind: 'close', day })
+                                          }
+                                        />
+                                      </PermissionGate>
+                                    ) : (
+                                      isAdmin && (
+                                        <ActionButton
+                                          Icon={IconArrowBackUp}
+                                          variant="neutralGhost"
+                                          tooltip="Reabrir caixa"
+                                          onClick={() =>
+                                            setDialog({ kind: 'reopen', day })
+                                          }
+                                        />
+                                      )
+                                    )}
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })}
+                      </Fragment>
+                    ))
+                  )}
+                  {!isLoading && !dates.length && (
                     <TableRow>
                       <TableCell
                         colSpan={7}

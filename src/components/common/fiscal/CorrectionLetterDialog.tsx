@@ -422,9 +422,10 @@ export function CorrectionLetterDialog({
           </Button>
           <Button
             onClick={handleSend}
-            disabled={isSending || blocked || correctionText.trim().length < 15}
+            isLoading={isSending}
+            disabled={blocked || correctionText.trim().length < 15}
           >
-            {isSending ? 'Enviando...' : 'Enviar Carta de Correção'}
+            Enviar Carta de Correção
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -2,7 +2,6 @@
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import {
@@ -12,6 +11,7 @@ import {
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { DeliveryScheduleData } from './DeliveryScheduleTable/DeliveryScheduleData'
 import { DeliveryScheduleFilter } from './DeliveryScheduleTable/DeliveryScheduleFilter'
 
@@ -108,6 +108,7 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
         tabs={filteredTabs}
         activeTab={activeTab}
         paramName="status"
+        countsLoading={isLoading}
       />
       <div className="space-y-2">
         <ReviewTodo rule="PCP-7" title="A agenda como quadro de gestão à vista">
@@ -118,7 +119,7 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
         </ReviewTodo>
         <Card>
           {isLoading ? (
-            <Skeleton className="h-[calc(100vh-150px)]" />
+            <ListSkeleton cols={4} filters={2} />
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty

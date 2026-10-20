@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 
 // UI
@@ -401,15 +401,15 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       <TooltipProvider>
         <div className="space-y-6 pb-10">
           <div className="space-y-4">
-            <Skeleton className="h-16 w-full animate-pulse" />
+            <Skeleton className="h-16 w-full" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
-                <Skeleton className="h-32 w-full animate-pulse" />
-                <Skeleton className="h-64 w-full animate-pulse" />
-                <Skeleton className="h-48 w-full animate-pulse" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-48 w-full" />
               </div>
               <div className="space-y-4">
-                <Skeleton className="h-64 w-full animate-pulse" />
+                <Skeleton className="h-64 w-full" />
               </div>
             </div>
           </div>
@@ -462,7 +462,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
-                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                title="Pré-visualizar"
                 iconVariant="neutralOutline"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing}
@@ -470,7 +470,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               />
               <CustomButton
                 icon={IconCircleCheck}
-                title={isEmitting ? 'Emitindo...' : 'Emitir NFC-e'}
+                title="Emitir NFC-e"
                 iconVariant="successLight"
                 onClick={handleEmit}
                 disabled={isEmitting}

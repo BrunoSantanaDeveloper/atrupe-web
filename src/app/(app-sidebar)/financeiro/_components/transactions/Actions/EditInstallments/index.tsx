@@ -24,6 +24,7 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
@@ -206,8 +207,17 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
               <div className="flex flex-wrap">
                 <DialogBody className="w-full">
                   {isLoading ? (
+                    // Saldo a repassar e linhas de parcela no formato final
                     <div className="bg-white rounded-xl border border-gray-300 space-y-6 p-6">
-                      <p className="text-center text-gray-500">Carregando...</p>
+                      <Skeleton className="h-12 w-full" />
+                      {Array.from({ length: 3 }, (_, index) => (
+                        <div key={index} className="flex flex-wrap gap-3">
+                          <Skeleton className="h-10 flex-[1_0_130px]" />
+                          <Skeleton className="h-10 flex-[1_0_200px]" />
+                          <Skeleton className="h-10 flex-[1_0_130px]" />
+                          <Skeleton className="h-10 flex-[1_0_130px]" />
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <div className="bg-white rounded-xl border border-gray-300 space-y-6 p-6">

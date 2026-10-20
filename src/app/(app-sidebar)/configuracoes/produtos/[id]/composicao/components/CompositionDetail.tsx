@@ -1,11 +1,10 @@
 'use client'
 
 // UI
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
-import { AssemblyEditor } from './AssemblyEditor'
+import { AssemblyEditor, AssemblyEditorSkeleton } from './AssemblyEditor'
 import { FeatureGate } from '@/components/common/FeatureGate'
 
 // Actions
@@ -46,7 +45,13 @@ export function CompositionDetail({ id }: Props) {
     unitKind ? `vendido por ${unitSymbol[unitKind]}` : null,
   ]
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
+  // O Topbar não espera a composição: o título entra quando chegar
+  if (isLoading)
+    return (
+      <AssemblyEditorSkeleton
+        topbar={{ title: title || '', previousPage: '/configuracoes/produtos' }}
+      />
+    )
 
   if (!product) return <div className="p-4">Produto não encontrado.</div>
 

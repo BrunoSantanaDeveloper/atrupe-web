@@ -36,6 +36,9 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
+// Hooks
+import { usePending } from '@/hooks/usePending'
+
 // Components
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
@@ -168,6 +171,7 @@ export function TaskDetailDialog({
     minutes: 60,
   })
   const [worker, setWorker] = useState('')
+  const { pending, track } = usePending()
   const [pendencyOpen, setPendencyOpen] = useState(false)
   const [pendencyText, setPendencyText] = useState('')
   const [releaseOpen, setReleaseOpen] = useState(false)
@@ -179,7 +183,6 @@ export function TaskDetailDialog({
   const [attachName, setAttachName] = useState('')
   const [attachKind, setAttachKind] = useState<AttachmentKind>('ART')
   const [attachFile, setAttachFile] = useState<File | null>(null)
-  const [sending, setSending] = useState(false)
   const { data: session } = useSession()
   // Correção de apontamento
   const [correcting, setCorrecting] = useState<string | 'new' | null>(null)
@@ -211,21 +214,30 @@ export function TaskDetailDialog({
 
   if (!task) return null
 
-  const run = async (
-    action: Promise<{ success: boolean; message: string; data?: unknown }>,
+  // `key` diz qual botão fica em progresso enquanto a ação grava
+  const run = (
+    key: string,
+    action: () => Promise<{
+      success: boolean
+      message: string
+      data?: unknown
+    }>,
     success?: string,
-  ) => {
-    const res = await action
-    if (!res.success) {
-      toast.error(res.message)
-      return false
-    }
-    toast.success(
-      typeof res.data === 'string' ? res.data : success || 'Tarefa atualizada',
-    )
-    onChanged()
-    return true
-  }
+  ) =>
+    track(key, async () => {
+      const res = await action()
+      if (!res.success) {
+        toast.error(res.message)
+        return false
+      }
+      toast.success(
+        typeof res.data === 'string'
+          ? res.data
+          : success || 'Tarefa atualizada',
+      )
+      onChanged()
+      return true
+    })
 
   const badge = taskStatusBadge(task)
   const open = task.status !== 'DONE' && task.status !== 'CANCELED'
@@ -240,7 +252,7 @@ export function TaskDetailDialog({
   const myWork = task.workers.find((person) => person.id === worker)
 
   const act = (action: TaskAction) =>
-    run(
+    run(`act-${action}`, () =>
       actOnTask({
         id: task.id,
         action,
@@ -255,19 +267,19 @@ export function TaskDetailDialog({
   // privado; a tela recebe o link assinado (GP-27)
   const sendAttachment = async () => {
     if (!attachFile) return
-    setSending(true)
     const saved = await run(
-      uploadProductionAttachment({
-        token: session?.accessToken,
-        taskId: task.id,
-        attachmentId: attachOpen === 'new' ? null : attachOpen,
-        name: attachName,
-        kind: attachKind,
-        file: attachFile,
-      }),
+      'attachment',
+      () =>
+        uploadProductionAttachment({
+          token: session?.accessToken,
+          taskId: task.id,
+          attachmentId: attachOpen === 'new' ? null : attachOpen,
+          name: attachName,
+          kind: attachKind,
+          file: attachFile,
+        }),
       'Anexo guardado',
     )
-    setSending(false)
     if (saved) {
       setAttachOpen(null)
       setAttachName('')
@@ -363,6 +375,7 @@ export function TaskDetailDialog({
               {actions.map((action) => (
                 <Button
                   key={action}
+                  isLoading={pending === `act-${action}`}
                   type="button"
                   size="sm"
                   variant={
@@ -417,16 +430,19 @@ export function TaskDetailDialog({
                 />
                 <div className="flex gap-2">
                   <Button
+                    isLoading={pending === 'pendency'}
                     type="button"
                     size="sm"
                     disabled={!pendencyText.trim()}
                     onClick={async () => {
                       if (
                         await run(
-                          addPendency({
-                            id: task.id,
-                            text: pendencyText,
-                          }),
+                          'pendency',
+                          () =>
+                            addPendency({
+                              id: task.id,
+                              text: pendencyText,
+                            }),
                           'Pendência registrada',
                         )
                       ) {
@@ -472,11 +488,12 @@ export function TaskDetailDialog({
                     />
                   </div>
                   <Button
+                    isLoading={pending === 'release'}
                     type="button"
                     size="sm"
                     onClick={async () => {
                       if (
-                        await run(
+                        await run('release', () =>
                           releaseNext({
                             id: task.id,
                             quantity: Number(releaseQty) || null,
@@ -665,11 +682,13 @@ export function TaskDetailDialog({
                                   className="text-brand-700 hover:underline"
                                   onClick={() =>
                                     run(
-                                      setCurrentVersion({
-                                        id: task.id,
-                                        attachmentId: attachment.id,
-                                        version: version.version,
-                                      }),
+                                      'version',
+                                      () =>
+                                        setCurrentVersion({
+                                          id: task.id,
+                                          attachmentId: attachment.id,
+                                          version: version.version,
+                                        }),
                                       'Versão válida alterada',
                                     )
                                   }
@@ -737,7 +756,7 @@ export function TaskDetailDialog({
                   <Button
                     type="button"
                     size="sm"
-                    isLoading={sending}
+                    isLoading={pending === 'attachment'}
                     disabled={
                       !attachFile ||
                       (attachOpen === 'new' && !attachName.trim())
@@ -817,13 +836,15 @@ export function TaskDetailDialog({
                 )}
                 <div className="flex flex-wrap gap-2">
                   <Button
+                    isLoading={pending === 'schedule'}
                     type="button"
                     size="sm"
                     variant="neutralOutline"
                     disabled={!schedule.date || !schedule.minutes}
                     onClick={() =>
                       run(
-                        scheduleTask({ id: task.id, schedule }),
+                        'schedule',
+                        () => scheduleTask({ id: task.id, schedule }),
                         'Tarefa agendada',
                       )
                     }
@@ -832,15 +853,18 @@ export function TaskDetailDialog({
                   </Button>
                   {task.schedule && (
                     <Button
+                      isLoading={pending === 'unschedule'}
                       type="button"
                       size="sm"
                       variant="link"
                       onClick={() =>
                         run(
-                          scheduleTask({
-                            id: task.id,
-                            schedule: null,
-                          }),
+                          'unschedule',
+                          () =>
+                            scheduleTask({
+                              id: task.id,
+                              schedule: null,
+                            }),
                           'Agendamento removido',
                         )
                       }
@@ -881,16 +905,19 @@ export function TaskDetailDialog({
                       </div>
                     </div>
                     <Button
+                      isLoading={pending === 'vehicle'}
                       type="button"
                       size="sm"
                       variant="neutralOutline"
                       onClick={() =>
                         run(
-                          setTaskVehicle({
-                            id: task.id,
-                            vehicleId: vehicleId || null,
-                            km: Number(km) || null,
-                          }),
+                          'vehicle',
+                          () =>
+                            setTaskVehicle({
+                              id: task.id,
+                              vehicleId: vehicleId || null,
+                              km: Number(km) || null,
+                            }),
                           'Veículo reservado',
                         )
                       }
@@ -918,16 +945,19 @@ export function TaskDetailDialog({
                 />
                 <div className="flex flex-wrap gap-2">
                   <Button
+                    isLoading={pending === 'assign'}
                     type="button"
                     size="sm"
                     variant="neutralOutline"
                     disabled={!worker}
                     onClick={() =>
                       run(
-                        assignTask({
-                          id: task.id,
-                          collaboratorId: worker,
-                        }),
+                        'assign',
+                        () =>
+                          assignTask({
+                            id: task.id,
+                            collaboratorId: worker,
+                          }),
                         'Tarefa atribuída',
                       )
                     }
@@ -936,6 +966,7 @@ export function TaskDetailDialog({
                   </Button>
                   {task.taskType.timeControl && open && !myWork && (
                     <Button
+                      isLoading={pending === 'start-work'}
                       type="button"
                       size="sm"
                       variant="neutralOutline"
@@ -943,7 +974,9 @@ export function TaskDetailDialog({
                       disabled={!worker || task.blocked}
                       onClick={() =>
                         run(
-                          startWork({ id: task.id, collaboratorId: worker }),
+                          'start-work',
+                          () =>
+                            startWork({ id: task.id, collaboratorId: worker }),
                           'Relógio iniciado',
                         )
                       }
@@ -960,13 +993,19 @@ export function TaskDetailDialog({
                     {person.name} está na tarefa desde{' '}
                     {clock(person.working!.since)}
                     <Button
+                      isLoading={pending === `stop-${person.id}`}
                       type="button"
                       size="sm"
                       variant="errorGhost"
                       LeftIcon={IconPlayerStop}
                       onClick={() =>
                         run(
-                          stopWork({ id: task.id, collaboratorId: person.id }),
+                          `stop-${person.id}`,
+                          () =>
+                            stopWork({
+                              id: task.id,
+                              collaboratorId: person.id,
+                            }),
                           'Relógio parado',
                         )
                       }
@@ -1114,25 +1153,28 @@ export function TaskDetailDialog({
                   </div>
                   <div className="flex gap-2">
                     <Button
+                      isLoading={pending === 'time-entry'}
                       type="button"
                       size="sm"
                       disabled={!correctNote.trim() || !correctWho}
                       onClick={async () => {
                         const saved = await run(
-                          correcting === 'new'
-                            ? addTimeEntry({
-                                id: task.id,
-                                collaboratorId: correctWho,
-                                minutes: Number(correctMinutes) || 0,
-                                note: correctNote,
-                              })
-                            : correctTimeEntry({
-                                id: task.id,
-                                entryId: correcting,
-                                minutes: Number(correctMinutes) || 0,
-                                collaboratorId: correctWho,
-                                note: correctNote,
-                              }),
+                          'time-entry',
+                          () =>
+                            correcting === 'new'
+                              ? addTimeEntry({
+                                  id: task.id,
+                                  collaboratorId: correctWho,
+                                  minutes: Number(correctMinutes) || 0,
+                                  note: correctNote,
+                                })
+                              : correctTimeEntry({
+                                  id: task.id,
+                                  entryId: correcting,
+                                  minutes: Number(correctMinutes) || 0,
+                                  collaboratorId: correctWho,
+                                  note: correctNote,
+                                }),
                           'Apontamento corrigido',
                         )
                         if (saved) setCorrecting(null)

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import { EmptyState } from '@/components/ui/empty-state'

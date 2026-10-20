@@ -40,6 +40,8 @@ const createTimeoutPromise = (timeout: number) =>
   )
 
 type AlertDialogStore = BaseAlertDialog & {
+  // `onConfirm` em andamento: o diálogo fica aberto com o botão em progresso
+  isConfirming: boolean
   open: (props: Omit<BaseAlertDialog, 'isOpen'>) => Promise<boolean>
   close: () => void
   confirm: () => Promise<boolean>
@@ -64,9 +66,11 @@ const DIALOG_DEFAULTS = {
 
 export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
   isOpen: false,
+  isConfirming: false,
   ...DIALOG_DEFAULTS,
   open: (props) => {
-    set({ ...DIALOG_DEFAULTS, isOpen: true, ...props })
+    // Um diálogo aberto de dentro de outra confirmação começa parado
+    set({ ...DIALOG_DEFAULTS, isOpen: true, isConfirming: false, ...props })
     return get().confirm()
   },
   close: () => set({ isOpen: false }),
@@ -75,13 +79,13 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
       const { onConfirm, toastMsg, timeout = DEFAULT_TIMEOUT } = get()
 
       const timeoutId = setTimeout(() => {
-        set({ isOpen: false })
+        set({ isOpen: false, isConfirming: false })
         reject(new Error('Dialog confirmation timed out'))
       }, timeout)
 
       const cleanup = () => {
         clearTimeout(timeoutId)
-        set({ isOpen: false })
+        set({ isOpen: false, isConfirming: false })
       }
 
       const handleConfirm = async () => {
@@ -91,20 +95,24 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
           return
         }
 
+        // O diálogo fica aberto com o botão em progresso até a ação terminar
+        // (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 4). `toast.promise`
+        // devolve o id do aviso, não a promessa: a ação é aguardada à parte
+        set({ isConfirming: true })
         try {
+          const task = Promise.race([
+            onConfirm(),
+            createTimeoutPromise(timeout),
+          ])
           if (toastMsg) {
-            await toast.promise(
-              Promise.race([onConfirm(), createTimeoutPromise(timeout)]),
-              {
-                loading: toastMsg.loading ?? DEFAULT_MESSAGES.loading,
-                success: toastMsg.success ?? DEFAULT_MESSAGES.success,
-                error: (error: Error) =>
-                  error.message || toastMsg.error || DEFAULT_MESSAGES.error,
-              },
-            )
-          } else {
-            await Promise.race([onConfirm(), createTimeoutPromise(timeout)])
+            toast.promise(task, {
+              loading: toastMsg.loading ?? DEFAULT_MESSAGES.loading,
+              success: toastMsg.success ?? DEFAULT_MESSAGES.success,
+              error: (error: Error) =>
+                error.message || toastMsg.error || DEFAULT_MESSAGES.error,
+            })
           }
+          await task
           cleanup()
           resolve(true)
         } catch (error) {

@@ -121,7 +121,7 @@ export function NewGroupModal() {
             disabled={!name || !sectorId}
             onClick={() => mutate()}
           >
-            {isPending ? 'Cadastrando...' : 'Cadastrar grupo'}
+            Cadastrar grupo
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'

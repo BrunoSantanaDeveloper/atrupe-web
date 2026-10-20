@@ -343,11 +343,7 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
             disabled={uploading}
             onClick={() => mutate()}
           >
-            {isPending
-              ? 'Salvando...'
-              : conflict
-                ? 'Confirmar e salvar'
-                : 'Salvar'}
+            {conflict ? 'Confirmar e salvar' : 'Salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

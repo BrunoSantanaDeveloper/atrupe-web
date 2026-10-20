@@ -7,7 +7,8 @@ import { Fragment, useState } from 'react'
 // Components
 import { QuotationTagDropdown } from './QuotationTagDropdown'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
@@ -46,7 +47,11 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 // Store
@@ -69,6 +74,7 @@ import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useNotifyPlanErrorOnce } from '@/hooks/usePlanErrorToast'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -94,6 +100,8 @@ export function QuotationsData({
   // quotation_status_column no painel não mudava a lista.
   const showStatusColumn = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
   const isAllTab = searchParams?.status === 'todos'
+  const { hasAllPermissions } = usePermissions()
+  const canViewValues = hasAllPermissions(['values:values:view'])
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   // `novo` é da tela, não da consulta: ele liga a venda rápida (ALT-22). A API
@@ -101,8 +109,10 @@ export function QuotationsData({
   const { novo: _novo, ...listParams } = searchParams
   const filters = { ...listParams, status }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['quotation-list', searchParams],
     queryFn: () => getData({ route: '/sale/quotation', filters }),
   })
@@ -114,6 +124,9 @@ export function QuotationsData({
 
   const quotationArray: ListQuotationsDataType[] = data?.data || []
   const hasData = quotationArray.length
+  // Mesmas colunas condicionais do cabeçalho real
+  const skeletonCols =
+    5 + Number(canViewValues) + Number(isAllTab) + Number(showStatusColumn)
 
   const openQuotations = quotationArray
     .flatMap((group) => group.quotations || [])
@@ -186,268 +199,281 @@ export function QuotationsData({
             </Button>
           </div>
         )}
-        {isLoading ? (
-          <TableSkeleton cols={6} />
-        ) : hasData ? (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-[4%] pr-0">
-                    <Checkbox
-                      checked={isAllOpenSelected}
-                      onCheckedChange={handleToggleSelectAll}
-                      disabled={openQuotations.length === 0}
-                      aria-label="Selecionar todos os orçamentos em digitação"
-                    />
-                  </TableHead>
-                  <TableHead>Referência</TableHead>
-                  <PermissionGate permissions={['values:values:view']}>
-                    <TableHead>Valor</TableHead>
-                  </PermissionGate>
-                  {isAllTab && <TableHead>Fase atual</TableHead>}
-                  {showStatusColumn && <TableHead>Status</TableHead>}
-                  <TableHead>Concluído em</TableHead>
-                  <TableHead>Válido até</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {quotationArray.map((group) => (
-                  <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={showStatusColumn ? 8 : 7}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {formatToWeekDate(group?.date)}
-                      </TableCell>
-                    </TableRow>
-                    {group?.quotations?.length
-                      ? group?.quotations.map((quotation) => {
-                          const link = `/vendas/orcamentos/${quotation?.id}`
-                          const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[4%] pr-0">
+                      <Checkbox
+                        checked={isAllOpenSelected}
+                        onCheckedChange={handleToggleSelectAll}
+                        disabled={openQuotations.length === 0}
+                        aria-label="Selecionar todos os orçamentos em digitação"
+                      />
+                    </TableHead>
+                    <TableHead>Referência</TableHead>
+                    <PermissionGate permissions={['values:values:view']}>
+                      <TableHead>Valor</TableHead>
+                    </PermissionGate>
+                    {isAllTab && <TableHead>Fase atual</TableHead>}
+                    {showStatusColumn && <TableHead>Status</TableHead>}
+                    <TableHead>Concluído em</TableHead>
+                    <TableHead>Válido até</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={skeletonCols} />
+                  ) : (
+                    quotationArray.map((group) => (
+                      <Fragment key={group.date}>
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={showStatusColumn ? 8 : 7}
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {formatToWeekDate(group?.date)}
+                          </TableCell>
+                        </TableRow>
+                        {group?.quotations?.length
+                          ? group?.quotations.map((quotation) => {
+                              const link = `/vendas/orcamentos/${quotation?.id}`
+                              const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
 
-                          return (
-                            <TableRow
-                              key={quotation?.id}
-                              data-state={
-                                selectedQuotations.includes(quotation?.id)
-                                  ? 'selected'
-                                  : undefined
-                              }
-                            >
-                              <TableCell className="pr-0">
-                                {quotation?.status === 'OPEN' ? (
-                                  <Checkbox
-                                    checked={selectedQuotations.includes(
-                                      quotation.id,
-                                    )}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setSelectedQuotations([
-                                          ...selectedQuotations,
-                                          quotation.id,
-                                        ])
-                                      } else {
-                                        setSelectedQuotations(
-                                          selectedQuotations.filter(
-                                            (id) => id !== quotation.id,
-                                          ),
-                                        )
-                                      }
-                                    }}
-                                    aria-label={`Selecionar orçamento ${description}`}
-                                  />
-                                ) : null}
-                              </TableCell>
-                              <TableCell>
-                                <p className="font-medium">
-                                  {quotation?.client?.name ||
-                                    'Cliente não informado'}
-                                </p>
-
-                                <PermissionGate
-                                  permissions={['sale:quotation:edit']}
-                                  fallback={
-                                    <p className="text-gray truncate">
-                                      {description}{' '}
-                                      {quotation?.quickSale && '⚡'}
-                                    </p>
+                              return (
+                                <TableRow
+                                  key={quotation?.id}
+                                  data-state={
+                                    selectedQuotations.includes(quotation?.id)
+                                      ? 'selected'
+                                      : undefined
                                   }
                                 >
-                                  <Link
-                                    href={link}
-                                    className="text-gray hover:opacity-80 active:opacity-95 transition-opacity truncate"
-                                  >
-                                    {description} {quotation?.quickSale && '⚡'}
-                                  </Link>
-                                </PermissionGate>
-                              </TableCell>
-                              <PermissionGate
-                                permissions={['values:values:view']}
-                              >
-                                <TableCell className="text-success-700 text-nowrap">
-                                  {formatCurrencyToBrl(
-                                    (() => {
-                                      // Cálculo igual ao PaymentConditions.tsx
-                                      const itemsValue =
-                                        quotation?.totalValue || 0
-                                      const deliveryValue =
-                                        quotation?.deliveryInfo?.value ?? 0
-                                      const payment =
-                                        quotation?.quotationPayment
-                                      const commissionValue =
-                                        payment?.commission?.type === 'ADD'
-                                          ? (payment?.commission
-                                              ?.totalCommission ?? 0)
-                                          : 0
-                                      const installmentsAdditionalFee =
-                                        payment?.quotationInstallment?.reduce(
-                                          (acc, inst) =>
-                                            acc + (inst?.additionalFee ?? 0),
-                                          0,
-                                        ) ?? 0
-                                      const downPaymentAdditionalFee =
-                                        payment?.downPaymentAdditionalFee ?? 0
-                                      const totalAdditionalFee =
-                                        installmentsAdditionalFee +
-                                        downPaymentAdditionalFee
-                                      const discountTotal =
-                                        payment?.discountTotal ?? 0
-
-                                      return (
-                                        itemsValue +
-                                        deliveryValue +
-                                        commissionValue +
-                                        totalAdditionalFee -
-                                        discountTotal
-                                      )
-                                    })(),
-                                  )}
-                                </TableCell>
-                              </PermissionGate>
-                              {isAllTab && (
-                                <TableCell>
-                                  {quotation?.status ? (
-                                    <Badge
-                                      status
-                                      variant={
-                                        quotationsStatusObj[quotation?.status]
-                                          ?.variant || 'neutralLight'
-                                      }
-                                    >
-                                      {quotationsStatusObj[quotation?.status]
-                                        ?.text || 'Desconhecido'}
-                                    </Badge>
-                                  ) : (
-                                    '-'
-                                  )}
-                                </TableCell>
-                              )}
-                              {showStatusColumn && (
-                                <TableCell>
-                                  <QuotationTagDropdown
-                                    quotation={quotation}
-                                    tagsList={tagsList || []}
-                                  />
-                                </TableCell>
-                              )}
-                              <TableCell className="text-gray-600">
-                                {formatToLocaleDate(quotation?.finishedAt)}
-                              </TableCell>
-                              <TableCell className="text-gray-600">
-                                {formatToLocaleDate(quotation?.dueDate)}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <ActionButton
-                                      Icon={IconPrinter}
-                                      tooltip="Imprimir"
-                                      onClick={() => {
-                                        setRowData(quotation)
-                                        setOpenPrintDialog(true)
-                                      }}
-                                    />
-                                    <PermissionGate
-                                      permissions={['sale:quotation:create']}
-                                    >
-                                      <DuplicateQuotationButton
-                                        quotationId={quotation?.id}
-                                        clientId={quotation?.client?.id}
-                                        clientName={quotation?.client?.name}
-                                        description={quotation?.description}
+                                  <TableCell className="pr-0">
+                                    {quotation?.status === 'OPEN' ? (
+                                      <Checkbox
+                                        checked={selectedQuotations.includes(
+                                          quotation.id,
+                                        )}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setSelectedQuotations([
+                                              ...selectedQuotations,
+                                              quotation.id,
+                                            ])
+                                          } else {
+                                            setSelectedQuotations(
+                                              selectedQuotations.filter(
+                                                (id) => id !== quotation.id,
+                                              ),
+                                            )
+                                          }
+                                        }}
+                                        aria-label={`Selecionar orçamento ${description}`}
                                       />
-                                    </PermissionGate>
-                                    <ActionButton
-                                      Icon={IconHistory}
-                                      tooltip="Histórico"
-                                      onClick={() => {
-                                        setRowData(quotation)
-                                        setOpenHistoryDialog(true)
-                                      }}
-                                    />
+                                    ) : null}
+                                  </TableCell>
+                                  <TableCell>
+                                    <p className="font-medium">
+                                      {quotation?.client?.name ||
+                                        'Cliente não informado'}
+                                    </p>
+
                                     <PermissionGate
                                       permissions={['sale:quotation:edit']}
+                                      fallback={
+                                        <p className="text-gray truncate">
+                                          {description}{' '}
+                                          {quotation?.quickSale && '⚡'}
+                                        </p>
+                                      }
                                     >
-                                      <ActionButton
-                                        link={link}
-                                        Icon={IconPencil}
-                                        tooltip="Editar"
-                                      />
-                                    </PermissionGate>
-                                    {quotation?.status === 'OPEN' && (
-                                      <PermissionGate
-                                        permissions={['sale:quotation:delete']}
+                                      <Link
+                                        href={link}
+                                        className="text-gray hover:opacity-80 active:opacity-95 transition-opacity truncate"
                                       >
-                                        <ActionButton
-                                          Icon={IconTrash}
-                                          tooltip="Excluir"
-                                          variant="errorGhost"
-                                          onClick={() =>
-                                            handleDelete([quotation.id])
+                                        {description}{' '}
+                                        {quotation?.quickSale && '⚡'}
+                                      </Link>
+                                    </PermissionGate>
+                                  </TableCell>
+                                  <PermissionGate
+                                    permissions={['values:values:view']}
+                                  >
+                                    <TableCell className="text-success-700 text-nowrap">
+                                      {formatCurrencyToBrl(
+                                        (() => {
+                                          // Cálculo igual ao PaymentConditions.tsx
+                                          const itemsValue =
+                                            quotation?.totalValue || 0
+                                          const deliveryValue =
+                                            quotation?.deliveryInfo?.value ?? 0
+                                          const payment =
+                                            quotation?.quotationPayment
+                                          const commissionValue =
+                                            payment?.commission?.type === 'ADD'
+                                              ? (payment?.commission
+                                                  ?.totalCommission ?? 0)
+                                              : 0
+                                          const installmentsAdditionalFee =
+                                            payment?.quotationInstallment?.reduce(
+                                              (acc, inst) =>
+                                                acc +
+                                                (inst?.additionalFee ?? 0),
+                                              0,
+                                            ) ?? 0
+                                          const downPaymentAdditionalFee =
+                                            payment?.downPaymentAdditionalFee ??
+                                            0
+                                          const totalAdditionalFee =
+                                            installmentsAdditionalFee +
+                                            downPaymentAdditionalFee
+                                          const discountTotal =
+                                            payment?.discountTotal ?? 0
+
+                                          return (
+                                            itemsValue +
+                                            deliveryValue +
+                                            commissionValue +
+                                            totalAdditionalFee -
+                                            discountTotal
+                                          )
+                                        })(),
+                                      )}
+                                    </TableCell>
+                                  </PermissionGate>
+                                  {isAllTab && (
+                                    <TableCell>
+                                      {quotation?.status ? (
+                                        <Badge
+                                          status
+                                          variant={
+                                            quotationsStatusObj[
+                                              quotation?.status
+                                            ]?.variant || 'neutralLight'
                                           }
+                                        >
+                                          {quotationsStatusObj[
+                                            quotation?.status
+                                          ]?.text || 'Desconhecido'}
+                                        </Badge>
+                                      ) : (
+                                        '-'
+                                      )}
+                                    </TableCell>
+                                  )}
+                                  {showStatusColumn && (
+                                    <TableCell>
+                                      <QuotationTagDropdown
+                                        quotation={quotation}
+                                        tagsList={tagsList || []}
+                                      />
+                                    </TableCell>
+                                  )}
+                                  <TableCell className="text-gray-600">
+                                    {formatToLocaleDate(quotation?.finishedAt)}
+                                  </TableCell>
+                                  <TableCell className="text-gray-600">
+                                    {formatToLocaleDate(quotation?.dueDate)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex justify-end gap-1">
+                                      <TooltipProvider>
+                                        <ActionButton
+                                          Icon={IconPrinter}
+                                          tooltip="Imprimir"
+                                          onClick={() => {
+                                            setRowData(quotation)
+                                            setOpenPrintDialog(true)
+                                          }}
                                         />
-                                      </PermissionGate>
-                                    )}
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-            {rowData && (
-              <>
-                <PrintQuotationDialog
-                  type="quotation"
-                  quotationId={rowData?.id}
-                  open={openPrintDialog}
-                  onOpenChange={setOpenPrintDialog}
-                />
-                <QuotationHistoryDialog
-                  open={openHistoryDialog}
-                  setOpen={setOpenHistoryDialog}
-                  quotation={rowData}
-                />
-              </>
-            )}
-          </>
-        ) : (
-          <FilteredDataEmpty
-            title="Orçamento não encontrado"
-            description={
-              searchDescription ||
-              'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo orçamento'
-            }
-            cta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
-          />
-        )}
+                                        <PermissionGate
+                                          permissions={[
+                                            'sale:quotation:create',
+                                          ]}
+                                        >
+                                          <DuplicateQuotationButton
+                                            quotationId={quotation?.id}
+                                            clientId={quotation?.client?.id}
+                                            clientName={quotation?.client?.name}
+                                            description={quotation?.description}
+                                          />
+                                        </PermissionGate>
+                                        <ActionButton
+                                          Icon={IconHistory}
+                                          tooltip="Histórico"
+                                          onClick={() => {
+                                            setRowData(quotation)
+                                            setOpenHistoryDialog(true)
+                                          }}
+                                        />
+                                        <PermissionGate
+                                          permissions={['sale:quotation:edit']}
+                                        >
+                                          <ActionButton
+                                            link={link}
+                                            Icon={IconPencil}
+                                            tooltip="Editar"
+                                          />
+                                        </PermissionGate>
+                                        {quotation?.status === 'OPEN' && (
+                                          <PermissionGate
+                                            permissions={[
+                                              'sale:quotation:delete',
+                                            ]}
+                                          >
+                                            <ActionButton
+                                              Icon={IconTrash}
+                                              tooltip="Excluir"
+                                              variant="errorGhost"
+                                              onClick={() =>
+                                                handleDelete([quotation.id])
+                                              }
+                                            />
+                                          </PermissionGate>
+                                        )}
+                                      </TooltipProvider>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          : null}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              {rowData && (
+                <>
+                  <PrintQuotationDialog
+                    type="quotation"
+                    quotationId={rowData?.id}
+                    open={openPrintDialog}
+                    onOpenChange={setOpenPrintDialog}
+                  />
+                  <QuotationHistoryDialog
+                    open={openHistoryDialog}
+                    setOpen={setOpenHistoryDialog}
+                    quotation={rowData}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <FilteredDataEmpty
+              title="Orçamento não encontrado"
+              description={
+                searchDescription ||
+                'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo orçamento'
+              }
+              cta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
@@ -455,6 +481,7 @@ export function QuotationsData({
             searchParams={searchParams}
             // lastPage={data?.lastPage}
             lastPage={data?.total ? Math.ceil(data.total / 10) : 1}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

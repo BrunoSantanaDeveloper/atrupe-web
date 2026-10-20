@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 
 // Components
 import { Form } from '@/components/ui/form'
@@ -37,7 +38,6 @@ import {
   IconBoxOff,
   IconPuzzle,
   IconSearch,
-  IconLoader2,
   IconQuestionMark,
   IconLayoutGridAdd,
 } from '@tabler/icons-react'
@@ -334,10 +334,14 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
           </Tabs>
 
           <div className="rounded-xl border border-gray-200 bg-white h-[calc(50vh-100px)] min-h-[220px] overflow-y-auto">
+            {/* Sem a lista ainda, "Nada encontrado" seria falso: a forma da
+                tabela no lugar */}
             {loading ? (
-              <div className="flex h-full items-center justify-center py-8">
-                <IconLoader2 className="text-gray size-6 animate-spin" />
-              </div>
+              <Table className="table-fixed">
+                <TableBody>
+                  <TableSkeletonRows cols={4} rows={6} />
+                </TableBody>
+              </Table>
             ) : empty ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">

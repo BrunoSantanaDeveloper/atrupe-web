@@ -40,6 +40,7 @@ import type {
 } from '@/app/(app-sidebar)/producao/gerenciador/manager'
 
 // Hooks / Store / Consts
+import { usePending } from '@/hooks/usePending'
 import { useCompanySectors } from '@/hooks/queries/useCompanySectors'
 import { timeModeObj, releaseRuleObj } from '@/consts/productionManager'
 
@@ -84,9 +85,10 @@ export function ManagerDialog({
   manager?: ProductionManager
   flows: ProductionFlow[]
   onOpenChange: (open: boolean) => void
-  onSave: (values: ManagerValues) => void
+  onSave: (values: ManagerValues) => void | Promise<unknown>
 }) {
   const { sectors } = useCompanySectors()
+  const { pending, track } = usePending()
   const [values, setValues] = useState<ManagerValues>({
     name: '',
     sector: '',
@@ -244,7 +246,8 @@ export function ManagerDialog({
           <Button
             type="button"
             disabled={!values.name.trim() || !values.sector || !values.flowId}
-            onClick={() => onSave(values)}
+            isLoading={!!pending}
+            onClick={() => track('save', () => onSave(values))}
           >
             Salvar
           </Button>
@@ -435,8 +438,9 @@ export function TaskTypeDialog({
   taskType?: TaskType
   managers: ProductionManager[]
   onOpenChange: (open: boolean) => void
-  onSave: (values: TaskTypeValues) => void
+  onSave: (values: TaskTypeValues) => void | Promise<unknown>
 }) {
+  const { pending, track } = usePending()
   const [values, setValues] = useState<TaskTypeValues>({
     name: '',
     release: 'WITH_BASE',
@@ -562,7 +566,8 @@ export function TaskTypeDialog({
           <Button
             type="button"
             disabled={!values.name.trim() || (!taskType && !values.managerId)}
-            onClick={() => onSave(values)}
+            isLoading={!!pending}
+            onClick={() => track('save', () => onSave(values))}
           >
             Salvar
           </Button>
@@ -598,6 +603,7 @@ export function StepsDialog({
   const [editing, setEditing] = useState<string | null>(null)
   const [name, setName] = useState('')
   const [managerId, setManagerId] = useState('')
+  const { pending, track } = usePending()
   const active = managers.filter((item) => item.active)
 
   useEffect(() => {
@@ -683,11 +689,13 @@ export function StepsDialog({
             className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4"
             onSubmit={async (event) => {
               event.preventDefault()
-              const saved = await onSave({
-                stepId: editing || undefined,
-                name,
-                managerId,
-              })
+              const saved = await track('step', () =>
+                onSave({
+                  stepId: editing || undefined,
+                  name,
+                  managerId,
+                }),
+              )
               if (saved) {
                 setEditing(null)
                 setName('')
@@ -724,6 +732,7 @@ export function StepsDialog({
                 variant="neutralOutline"
                 LeftIcon={editing ? IconPencil : IconPlus}
                 disabled={!name.trim() || !managerId}
+                isLoading={!!pending}
               >
                 {editing ? 'Salvar etapa' : 'Adicionar etapa'}
               </Button>
@@ -766,8 +775,9 @@ export function VehicleDialog({
   open: boolean
   vehicle?: Vehicle
   onOpenChange: (open: boolean) => void
-  onSave: (values: { name: string; plate: string }) => void
+  onSave: (values: { name: string; plate: string }) => void | Promise<unknown>
 }) {
+  const { pending, track } = usePending()
   const [name, setName] = useState('')
   const [plate, setPlate] = useState('')
 
@@ -826,7 +836,8 @@ export function VehicleDialog({
           <Button
             type="button"
             disabled={!name.trim()}
-            onClick={() => onSave({ name, plate })}
+            isLoading={!!pending}
+            onClick={() => track('save', () => onSave({ name, plate }))}
           >
             {vehicle ? 'Salvar' : 'Cadastrar veículo'}
           </Button>

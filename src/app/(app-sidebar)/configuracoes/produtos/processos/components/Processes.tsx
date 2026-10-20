@@ -24,7 +24,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Topbar, type TabNavType } from '@/components/common/Topbar'
 import { ProcessDialog, NewProcessTriggerButton } from './NewProcess'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
@@ -90,6 +90,7 @@ export function Processes({ searchParams }: SearchParamsType) {
           tabs={tabs}
           activeTab={status}
           paramName="status"
+          countsLoading={isLoading}
           supportText="Etapas produtivas de cada setor, com os recursos e o tempo que usam"
           primaryCta={
             <PermissionGate permissions={['product_settings:composition:edit']}>
@@ -101,9 +102,7 @@ export function Processes({ searchParams }: SearchParamsType) {
         />
 
         <Card>
-          {isLoading ? (
-            <TableSkeleton cols={6} rows={6} />
-          ) : !processes.length ? (
+          {!isLoading && !processes.length ? (
             <ListDataTotalEmpty
               icon={IconListCheck}
               title={
@@ -132,107 +131,116 @@ export function Processes({ searchParams }: SearchParamsType) {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sectors.map((sector) => (
-                      <Fragment key={sector}>
-                        <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableCell colSpan={6}>
-                            <span className="flex items-center gap-2 font-medium">
-                              <SectorIcon name={sector} size="sm" />
-                              {sector}
-                            </span>
-                          </TableCell>
-                        </TableRow>
-                        {processes
-                          .filter((item) => item.sector === sector)
-                          .map((process) => (
-                            <TableRow key={process.id}>
-                              <TableCell>
-                                <p className="font-medium">{process.name}</p>
-                                <p className="text-sm text-gray">
-                                  {process.category}
-                                </p>
-                                {process.incomplete && (
-                                  <Badge
-                                    variant="warningLight"
-                                    className="mt-1"
-                                  >
-                                    Há linhas sem recurso
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray-700">
-                                {quantityModeObj[process.rules.quantityMode]}
-                                <span className="block text-gray">
-                                  {process.rules.followsBase
-                                    ? 'acompanha a quantidade da base'
-                                    : 'uma vez por pedido'}
-                                  {process.rules.extraField !== 'NONE'
-                                    ? ` · ${process.rules.extraFieldName}`
-                                    : ''}
-                                </span>
-                              </TableCell>
-                              <TableCell>
-                                {process.kinds.length ? (
-                                  <div className="flex flex-wrap gap-1">
-                                    {process.kinds.map((kind) => (
-                                      <Badge key={kind} variant="neutralLight">
-                                        <ResourceKindLabel
-                                          kind={kind}
-                                          label={resourceKindObj[kind]}
-                                        />
-                                      </Badge>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  <span className="text-sm text-gray">
-                                    sem recursos
+                    {isLoading ? (
+                      <TableSkeletonRows cols={6} rows={6} />
+                    ) : (
+                      sectors.map((sector) => (
+                        <Fragment key={sector}>
+                          <TableRow className="bg-gray-50 hover:bg-gray-50">
+                            <TableCell colSpan={6}>
+                              <span className="flex items-center gap-2 font-medium">
+                                <SectorIcon name={sector} size="sm" />
+                                {sector}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                          {processes
+                            .filter((item) => item.sector === sector)
+                            .map((process) => (
+                              <TableRow key={process.id}>
+                                <TableCell>
+                                  <p className="font-medium">{process.name}</p>
+                                  <p className="text-sm text-gray">
+                                    {process.category}
+                                  </p>
+                                  {process.incomplete && (
+                                    <Badge
+                                      variant="warningLight"
+                                      className="mt-1"
+                                    >
+                                      Há linhas sem recurso
+                                    </Badge>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm text-gray-700">
+                                  {quantityModeObj[process.rules.quantityMode]}
+                                  <span className="block text-gray">
+                                    {process.rules.followsBase
+                                      ? 'acompanha a quantidade da base'
+                                      : 'uma vez por pedido'}
+                                    {process.rules.extraField !== 'NONE'
+                                      ? ` · ${process.rules.extraFieldName}`
+                                      : ''}
                                   </span>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray-700">
-                                {process.taskType}
-                              </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-sm text-gray-700">
-                                {process.usedIn
-                                  ? `${process.usedIn} ${process.usedIn === 1 ? 'produto' : 'produtos'}`
-                                  : '-'}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  {/* Como na linha do produto: a página
+                                </TableCell>
+                                <TableCell>
+                                  {process.kinds.length ? (
+                                    <div className="flex flex-wrap gap-1">
+                                      {process.kinds.map((kind) => (
+                                        <Badge
+                                          key={kind}
+                                          variant="neutralLight"
+                                        >
+                                          <ResourceKindLabel
+                                            kind={kind}
+                                            label={resourceKindObj[kind]}
+                                          />
+                                        </Badge>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <span className="text-sm text-gray">
+                                      sem recursos
+                                    </span>
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm text-gray-700">
+                                  {process.taskType}
+                                </TableCell>
+                                <TableCell className="whitespace-nowrap text-right text-sm text-gray-700">
+                                  {process.usedIn
+                                    ? `${process.usedIn} ${process.usedIn === 1 ? 'produto' : 'produtos'}`
+                                    : '-'}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex justify-end gap-1">
+                                    {/* Como na linha do produto: a página
                                       da composição e o lápis do diálogo */}
-                                  <ActionButton
-                                    Icon={IconStack2}
-                                    tooltip={`Composição de ${process.name}`}
-                                    link={`/configuracoes/produtos/processos/${process.id}`}
-                                  />
-                                  <PermissionGate
-                                    permissions={[
-                                      'product_settings:composition:edit',
-                                    ]}
-                                  >
-                                    <NewProcessTriggerButton
-                                      editMode
-                                      onOpenChange={() => {
-                                        setSelectedId(process.id)
-                                        setOpenDialog('edit-process')
-                                      }}
+                                    <ActionButton
+                                      Icon={IconStack2}
+                                      tooltip={`Composição de ${process.name}`}
+                                      link={`/configuracoes/produtos/processos/${process.id}`}
                                     />
-                                  </PermissionGate>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                      </Fragment>
-                    ))}
+                                    <PermissionGate
+                                      permissions={[
+                                        'product_settings:composition:edit',
+                                      ]}
+                                    >
+                                      <NewProcessTriggerButton
+                                        editMode
+                                        onOpenChange={() => {
+                                          setSelectedId(process.id)
+                                          setOpenDialog('edit-process')
+                                        }}
+                                      />
+                                    </PermissionGate>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </Fragment>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>
-              <CardFooter className="text-sm text-gray">
-                {processes.length}{' '}
-                {processes.length === 1 ? 'processo' : 'processos'} · o produto
-                acompanha o processo e pode ajustar só para ele
-              </CardFooter>
+              {!isLoading && (
+                <CardFooter className="text-sm text-gray">
+                  {processes.length}{' '}
+                  {processes.length === 1 ? 'processo' : 'processos'} · o
+                  produto acompanha o processo e pode ajustar só para ele
+                </CardFooter>
+              )}
             </>
           )}
         </Card>

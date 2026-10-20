@@ -64,6 +64,7 @@ import {
 
 // Hooks / Store / Consts
 import { useAlertDialog } from '@/store/useAlertDialog'
+import { usePending } from '@/hooks/usePending'
 import { projectStatusObj, PRODUCTION_MANAGE } from '@/consts/productionManager'
 
 // Third-party
@@ -93,6 +94,7 @@ export function ProjectDetail({ id }: { id: string }) {
   const [taskId, setTaskId] = useState<string | null>(null)
   const [deliveryOpen, setDeliveryOpen] = useState(false)
   const [due, setDue] = useState('')
+  const { pending: savingDelivery, track } = usePending()
 
   const { data, isLoading } = useQuery({
     queryKey: ['production-project', id],
@@ -118,7 +120,45 @@ export function ProjectDetail({ id }: { id: string }) {
       queryClient.invalidateQueries({ queryKey: ['production-board'] }),
     ])
 
-  if (isLoading || !detail) return <Skeleton className="h-[480px] w-full" />
+  // Topbar já na tela (o título vem com os dados); abaixo, a forma dos cartões
+  if (isLoading || !detail)
+    return (
+      <div className="space-y-5">
+        <Topbar title="" previousPage="/producao/projetos" />
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+            </CardHeader>
+            <CardContent className="space-y-3 px-6 pb-6">
+              {Array.from({ length: 3 }, (_, index) => (
+                <Skeleton key={index} className="h-4 w-full" />
+              ))}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4 px-6 pb-6">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-4 w-2/3" />
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="space-y-3 px-6 pb-6">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-10 w-full" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
 
   const { project, tasks, late, risk } = detail
   const items = Array.from(new Set(tasks.map((task) => task.itemName)))
@@ -442,13 +482,16 @@ export function ProjectDetail({ id }: { id: string }) {
             <Button
               type="button"
               disabled={!due}
-              onClick={async () => {
-                const res = await changeDelivery({ id, due })
-                if (!res.success) return toast.error(res.message)
-                toast.success(res.data || 'Entrega alterada')
-                setDeliveryOpen(false)
-                await refresh()
-              }}
+              isLoading={!!savingDelivery}
+              onClick={() =>
+                track('delivery', async () => {
+                  const res = await changeDelivery({ id, due })
+                  if (!res.success) return toast.error(res.message)
+                  toast.success(res.data || 'Entrega alterada')
+                  setDeliveryOpen(false)
+                  await refresh()
+                })
+              }
             >
               Salvar
             </Button>

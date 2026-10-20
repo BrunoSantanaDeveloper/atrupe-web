@@ -22,7 +22,8 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
 import { Avatar } from '@/components/AvatarComponent'
 import { useAccessSessionDetails } from '@/hooks/queries/useActiveSessions'
@@ -38,11 +39,14 @@ interface Props {
 export function AccessDetailsDialog({ session, open, onOpenChange }: Props) {
   const [page, setPage] = useState(0)
   const limit = 20
-  const { details, isLoading } = useAccessSessionDetails(session?.sessionId, {
-    limit,
-    offset: page * limit,
-    enabled: open,
-  })
+  const { details, isLoading, isPlaceholderData } = useAccessSessionDetails(
+    session?.sessionId,
+    {
+      limit,
+      offset: page * limit,
+      enabled: open,
+    },
+  )
 
   const selectedSession = details?.session || session
   const totalPages = details ? Math.ceil(details.events.total / limit) : 0
@@ -144,13 +148,14 @@ export function AccessDetailsDialog({ session, open, onOpenChange }: Props) {
             </TabsContent>
 
             <TabsContent value="events" className="space-y-4">
-              {isLoading ? (
-                <TableSkeleton cols={5} rows={6} />
-              ) : !details?.events.data.length ? (
+              {!isLoading && !details?.events.data.length ? (
                 <ListDataStatusEmpty title="Nenhum evento encontrado" />
               ) : (
                 <>
-                  <div className="rounded-lg border border-gray-200">
+                  <FetchingRegion
+                    isFetching={isPlaceholderData}
+                    className="rounded-lg border border-gray-200"
+                  >
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-gray-50">
@@ -162,30 +167,34 @@ export function AccessDetailsDialog({ session, open, onOpenChange }: Props) {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {details.events.data.map((event) => (
-                          <TableRow key={event.id}>
-                            <TableCell>
-                              {formatToLocaleDateTime(event.createdAt)}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="neutralLight">
-                                {event.method || '-'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="max-w-72 break-all">
-                              {event.endpoint || '-'}
-                            </TableCell>
-                            <TableCell className="font-mono text-xs">
-                              {event.ipAddress || '-'}
-                            </TableCell>
-                            <TableCell className="max-w-80 break-all text-xs">
-                              {event.userAgent || '-'}
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                        {isLoading || !details ? (
+                          <TableSkeletonRows cols={5} rows={6} />
+                        ) : (
+                          details.events.data.map((event) => (
+                            <TableRow key={event.id}>
+                              <TableCell>
+                                {formatToLocaleDateTime(event.createdAt)}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="neutralLight">
+                                  {event.method || '-'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="max-w-72 break-all">
+                                {event.endpoint || '-'}
+                              </TableCell>
+                              <TableCell className="font-mono text-xs">
+                                {event.ipAddress || '-'}
+                              </TableCell>
+                              <TableCell className="max-w-80 break-all text-xs">
+                                {event.userAgent || '-'}
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
                       </TableBody>
                     </Table>
-                  </div>
+                  </FetchingRegion>
                   {totalPages > 1 ? (
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-600">

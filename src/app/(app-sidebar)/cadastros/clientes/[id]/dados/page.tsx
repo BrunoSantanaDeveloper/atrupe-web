@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { ClientData } from './components/ClientData'
 import { useClientById } from '@/hooks/queries/useClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { IconLoader2 } from '@tabler/icons-react'
+import { DetailCardSkeleton } from '../components/DetailCardSkeleton'
 
 interface Props {
   params: {
@@ -24,7 +24,7 @@ export default function ClientDataPage({ params }: Props) {
         </div>
       }
     >
-      <Suspense fallback={<IconLoader2 className="size-16 animate-spin p-8" />}>
+      <Suspense fallback={<DetailCardSkeleton />}>
         <ClientData data={data} />
       </Suspense>
     </PermissionGate>

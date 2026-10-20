@@ -6,6 +6,7 @@ import { IconPlus, IconTrash, IconPencil, IconX } from '@tabler/icons-react'
 
 import { deleteItemNew, getData, putItemNew } from '@/actions/_cruds'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
@@ -282,7 +283,11 @@ export function ProductStRules({ productId }: { productId: string }) {
       )}
 
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">Carregando regras…</p>
+        <div className="space-y-2">
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-8 w-full" />
+          ))}
+        </div>
       ) : isError ? (
         <p className="text-sm text-red-600">
           {(error as Error)?.message ??

@@ -4,11 +4,11 @@ import {
   IconCircleCheckFilled,
   IconCircleXFilled,
   IconClock,
-  IconLoader2,
   IconAlertTriangle,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 import {
   readinessLabel,
@@ -60,9 +60,15 @@ export function ReadinessChecklist({
 }: ReadinessChecklistProps) {
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 py-6 text-gray-500">
-        <IconLoader2 className="h-4 w-4 animate-spin" />
-        <span className="text-sm">Avaliando prontidão…</span>
+      // Mesmo formato do resultado: o resumo e as linhas da lista
+      <div className="space-y-2">
+        <Skeleton className="h-11 w-full rounded-lg" />
+        {Array.from({ length: 4 }, (_, index) => (
+          <div key={index} className="flex items-center gap-3 py-2">
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        ))}
       </div>
     )
   }

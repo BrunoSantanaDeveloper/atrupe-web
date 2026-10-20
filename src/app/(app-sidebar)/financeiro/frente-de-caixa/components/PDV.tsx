@@ -5,7 +5,8 @@
 
 // React / Next
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {
@@ -18,7 +19,6 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardFooter } from '@/components/ui/card'
 
@@ -27,6 +27,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 import {
   OpenCashDialog,
   CloseCashDialog,
@@ -192,18 +193,20 @@ export function PDV() {
     await refresh()
   }
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
-
   return (
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
           review="new"
           title="Frente de caixa"
+          // Topbar já aparece na carga; sessão e ações só depois de saber se
+          // há caixa aberto (microinteracoes)
           supportText={
-            session
-              ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
-              : 'Nenhum caixa aberto'
+            isLoading
+              ? undefined
+              : session
+                ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
+                : 'Nenhum caixa aberto'
           }
           // As abas ficam na URL (design.md §5.1), com a contagem de cada uma
           paramName="aba"
@@ -233,7 +236,7 @@ export function PDV() {
               : undefined
           }
           primaryCta={
-            isOpen ? (
+            isLoading ? undefined : isOpen ? (
               <PermissionGate permissions={['financial:pdv:edit']}>
                 <Button
                   type="button"
@@ -314,15 +317,17 @@ export function PDV() {
           }
         />
 
+        {/* Os avisos chegam com os dados, depois da Topbar: entram com fade
+            em vez de saltar (microinteracoes) */}
         {canOperate && nearWorkdayEnd(data?.data?.workdayEnd) && (
-          <Card className="border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+          <Card className="border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 animate-in fade-in-0 duration-base">
             O expediente termina às {data?.data?.workdayEnd}: feche o caixa
             antes de sair. Aberto, amanhã ele não recebe nem lança nada.
           </Card>
         )}
 
         {stale && session && (
-          <Card className="border-warning-300 bg-warning-50 p-4 text-sm text-warning-800">
+          <Card className="border-warning-300 bg-warning-50 p-4 text-sm text-warning-800 animate-in fade-in-0 duration-base">
             O caixa nº {session.number} foi aberto em{' '}
             {new Date(session.openedAt).toLocaleDateString('pt-BR')} e ficou
             aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se
@@ -332,7 +337,7 @@ export function PDV() {
 
         {forgotten.length > 0 && (
           <PermissionGate permissions={['financial:pdv:edit']}>
-            <Card className="p-4">
+            <Card className="p-4 animate-in fade-in-0 duration-base">
               <p className="mb-2 text-sm font-medium">
                 Caixas esquecidos abertos
               </p>
@@ -361,7 +366,11 @@ export function PDV() {
           </PermissionGate>
         )}
 
-        {!session ? (
+        {isLoading ? (
+          <Card>
+            <TableSkeleton cols={6} rows={5} />
+          </Card>
+        ) : !session ? (
           <Card>
             <ListDataTotalEmpty
               icon={IconDeviceImacCancel}

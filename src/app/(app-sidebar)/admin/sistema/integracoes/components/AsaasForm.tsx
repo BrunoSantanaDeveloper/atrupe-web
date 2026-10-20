@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import {
   Card,
   CardHeader,
@@ -210,6 +210,7 @@ export function AsaasForm({
                 type="submit"
                 form="asaas-form"
                 disabled={isSubmitting}
+                isLoading={isSubmitting}
                 RightIcon={IconCircleCheck}
               >
                 Salvar Configurações

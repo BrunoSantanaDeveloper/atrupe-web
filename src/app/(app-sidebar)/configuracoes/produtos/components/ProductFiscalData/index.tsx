@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -175,8 +176,14 @@ export function ProductFiscalDataDialog({
         </DialogHeader>
         <DialogBody className="max-h-[70vh] overflow-y-auto">
           {isLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <p className="text-gray-500">Carregando...</p>
+            // Campos do formulário fiscal ainda chegando
+            <div className="space-y-6">
+              {Array.from({ length: 4 }, (_, index) => (
+                <div key={index} className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
             </div>
           ) : (
             <Form {...form}>
