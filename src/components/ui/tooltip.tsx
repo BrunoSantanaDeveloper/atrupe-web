@@ -19,7 +19,7 @@ const tooltipVariants = cva(
     variants: {
       intent: {
         dark: 'bg-gray-900 text-white',
-        light: 'bg-white text-gray-700',
+        light: 'bg-white dark:bg-surface-raised text-gray-700',
       },
     },
     defaultVariants: {

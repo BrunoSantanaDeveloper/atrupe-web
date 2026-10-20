@@ -1,4 +1,4 @@
-import { test, type Page } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 // Capturas para conferência visual do tema claro/escuro
 // (design/openspec/changes/tema-claro-escuro, tarefas 6.3 e 6.4).
@@ -6,7 +6,7 @@ import { test, type Page } from '@playwright/test'
 // Usa a sessão da conta de teste (global-setup), exceto no login.
 
 const STORAGE_KEY = 'atrupe-tema'
-const OUT = 'test-results/tema'
+const OUT = process.env.THEME_SHOTS_DIR ?? 'test-results/tema'
 
 const PAGES = [
   { name: 'vitrine', path: '/sandbox/tema' },
@@ -50,14 +50,23 @@ test.describe('Capturas de tema @mock', () => {
     await page.evaluate((key) => localStorage.setItem(key, 'dark'), STORAGE_KEY)
     await page.reload({ waitUntil: 'networkidle' })
 
+    // Espera a animação de abertura terminar antes de cada captura
+    const settle = () => page.waitForTimeout(500)
+
     await page.getByRole('button', { name: 'Aviso de sucesso' }).click()
+    await expect(page.getByText('Orçamento salvo')).toBeVisible()
+    await settle()
     await page.screenshot({ path: `${OUT}/vitrine-aviso-dark.png` })
 
     await page.getByRole('button', { name: 'Abrir menu' }).click()
+    await expect(page.getByRole('menu')).toBeVisible()
+    await settle()
     await page.screenshot({ path: `${OUT}/vitrine-menu-dark.png` })
     await page.keyboard.press('Escape')
 
     await page.getByRole('button', { name: 'Abrir modal' }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await settle()
     await page.screenshot({ path: `${OUT}/vitrine-modal-dark.png` })
   })
 })

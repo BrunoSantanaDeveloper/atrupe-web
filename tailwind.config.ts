@@ -108,6 +108,12 @@ const config = {
       // tema escuro. Como cor de texto (`text-white`) continua branco.
       backgroundColor: {
         white: 'var(--surface)',
+        // Camada sobreposta (menu, modal, aviso): no escuro, mais clara que o cartão
+        'surface-raised': 'var(--surface-raised)',
+        // gray-200/300 como fundo (trilho, base de aba) é recuado: no escuro fica
+        // abaixo da página; como borda segue a escala comum
+        'gray-200': 'var(--gray-200-bg, var(--gray-200))',
+        'gray-300': 'var(--gray-300-bg, var(--gray-300))',
         ...solidFills,
       },
       borderColor: {
@@ -121,6 +127,8 @@ const config = {
       gradientColorStops: { white: 'var(--surface)', ...solidFills },
       colors: {
         ...tailwindPaletteColors,
+        // Tinta sobre a primária: branca no claro, escura sobre a primária iluminada do escuro
+        'on-primary': 'var(--on-primary)',
         black: 'var(--black)',
         'blue-100': 'var(--blue-100)',
         'blue-200': 'var(--blue-200)',

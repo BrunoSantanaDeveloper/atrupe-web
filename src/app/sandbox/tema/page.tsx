@@ -2,6 +2,7 @@
 
 // Vitrine do tema claro/escuro — design/openspec/changes/tema-claro-escuro
 import { useState } from 'react'
+import { Bar, BarChart, CartesianGrid, Line, LineChart, XAxis } from 'recharts'
 import { toast } from 'sonner'
 
 // UI
@@ -16,6 +17,14 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Dialog,
@@ -152,6 +161,22 @@ const BADGE_VARIANTS = [
   'errorLight',
   'neutralLight',
 ] as const
+
+// Dados fixos com as cores de série dos gráficos do painel e dos relatórios
+const CHART_DATA = [
+  { month: 'Mai', approved: 18, rejected: 6, expired: 3 },
+  { month: 'Jun', approved: 24, rejected: 9, expired: 4 },
+  { month: 'Jul', approved: 21, rejected: 5, expired: 6 },
+  { month: 'Ago', approved: 30, rejected: 8, expired: 2 },
+  { month: 'Set', approved: 27, rejected: 11, expired: 5 },
+  { month: 'Out', approved: 34, rejected: 7, expired: 3 },
+]
+
+const CHART_CONFIG = {
+  approved: { label: 'Aprovadas', color: 'var(--chart-brand)' },
+  rejected: { label: 'Rejeitadas', color: '#F97066' },
+  expired: { label: 'Vencidas', color: '#FDB022' },
+} satisfies ChartConfig
 
 function Section({
   title,
@@ -329,6 +354,61 @@ export default function TemaSandbox() {
             </TableBody>
           </Table>
         </Card>
+      </Section>
+
+      <Section title="Gráficos">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Linha</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={CHART_CONFIG}
+                className="h-[240px] w-full"
+              >
+                <LineChart data={CHART_DATA} margin={{ left: 12, right: 12 }}>
+                  <CartesianGrid vertical={false} strokeDasharray="3 3" />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  <Line
+                    dataKey="approved"
+                    type="monotone"
+                    stroke="var(--color-approved)"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Barras</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={CHART_CONFIG}
+                className="h-[240px] w-full"
+              >
+                <BarChart data={CHART_DATA}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartLegend content={<ChartLegendContent />} />
+                  {Object.keys(CHART_CONFIG).map((key) => (
+                    <Bar
+                      key={key}
+                      dataKey={key}
+                      fill={`var(--color-${key})`}
+                      radius={4}
+                    />
+                  ))}
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
       </Section>
 
       <Section title="Camadas">

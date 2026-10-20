@@ -394,7 +394,7 @@ export function UploadedFilesCard({
                   {sizeText}
                 </p>
               )}
-              <div className="flex justify-start items-start flex-grow-0 flex-shrink-0 mix-blend-multiply">
+              <div className="flex justify-start items-start flex-grow-0 flex-shrink-0 mix-blend-multiply dark:mix-blend-normal">
                 <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 relative gap-1 pl-3 pr-2.5 py-1 rounded-2xl bg-success-50">
                   <svg
                     width={12}

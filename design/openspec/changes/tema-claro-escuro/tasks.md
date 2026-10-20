@@ -12,6 +12,7 @@
 - [x] 2.5 `tailwind.config.ts`: `white` → `--surface` em fundo/borda/anel/divisória/gradiente; tons 600–900 de fundo e de gradiente → `-fill` com fallback (Decisão 3)
 - [x] 2.6 Paletas padrão do Tailwind em uso viram variáveis (em canais RGB, para manter as classes com opacidade) com os valores padrão no claro e a regra da Decisão 2 no escuro
 - [x] 2.7 Primária própria do tema escuro (`--brand-primary*`) nas variáveis `-fill` da marca; `bg-brand` e `bg-gray` como preenchimento; `dark:border-transparent` nos botões `default` e `primary` (Decisão 3a)
+- [x] 2.8 Refazer o escuro pelo modelo de iluminação (revisão do usuário): página mais escura que cartões, cartões mais escuros que menus/modais (`--surface-raised` nos componentes sobrepostos), tintas coloridas como luz sobre o cartão, primária iluminada com tinta escura (`--on-primary`), regra global de tinta sobre fundos de marca e `bg-gray-200/300` recuados abaixo da página (`--gray-200-bg`/`--gray-300-bg`) (Decisões 2 e 3a)
 
 ## 3. Bibliotecas com tema próprio
 
@@ -34,8 +35,8 @@
 
 ## 6. Verificação
 
-- [ ] 6.1 Teste e2e (Playwright) na página de login, sem sessão: padrão segue o sistema; escolha salva sobrevive ao recarregar; **Sistema** acompanha a troca do sistema; carregamento já com a classe certa no primeiro quadro — escrito (`e2e/theme/tema.spec.ts`); falta rodar
-- [ ] 6.2 Teste e2e de contraste: no escuro, lê os tokens calculados e confere os mínimos da spec *Legibilidade* — escrito; falta rodar
+- [x] 6.1 Teste e2e (Playwright) na página de login, sem sessão: padrão segue o sistema; escolha salva sobrevive ao recarregar; **Sistema** acompanha a troca do sistema; carregamento já com a classe certa no primeiro quadro — 8/8 passam com o modelo de iluminação
+- [x] 6.2 Teste e2e de contraste: no escuro, lê os tokens calculados e confere os mínimos da spec *Legibilidade*, a ordem de elevação e a primária iluminada
 - [ ] 6.3 Capturas antes/depois no tema claro das telas principais e da vitrine; nenhuma diferença — comparação do CSS compilado feita (1.808 classes e 573 trocas com o mesmo valor final no claro); faltam as capturas
-- [ ] 6.4 Capturas no tema escuro: login, painel, listagem de orçamentos, orçamento aberto, modal, menu, calendário, aviso, gráfico; corrigir o que aparecer
+- [ ] 6.4 Capturas no tema escuro: login, painel, listagem de orçamentos, orçamento aberto, modal, menu, calendário, aviso, gráfico; corrigir o que aparecer — todas conferidas e corrigidas, menos gráfico (ver 3.2)
 - [x] 6.5 `npx tsc --noEmit -p .` sem erros novos e `npx eslint` nos arquivos alterados

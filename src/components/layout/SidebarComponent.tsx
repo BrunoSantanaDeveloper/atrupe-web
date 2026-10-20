@@ -30,6 +30,7 @@ import { UserDropdown } from './UserDropdown'
 // Assets
 import favicon from '@public/logo/logo.png'
 import logo from '@public/logo/logo-text.png'
+import logoLight from '@public/logo/logo-text-light.png'
 
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
@@ -189,8 +190,23 @@ export function SidebarComponent(props: Props) {
                   className={cn(
                     'min-w-[145px] max-h-28 h-full transition-all ease-in-out duration-500 object-contain',
                     collapsed ? '-ml-44 opacity-0' : 'ml-0',
+                    // Sem logo da empresa, o da Atrupe troca para a versão de
+                    // letras claras no tema escuro
+                    !companyLogo && 'dark:hidden',
                   )}
                 />
+                {!companyLogo && (
+                  <Image
+                    src={logoLight}
+                    alt="logo empresa"
+                    width={145}
+                    height={35}
+                    className={cn(
+                      'hidden dark:block min-w-[145px] max-h-28 h-full transition-all ease-in-out duration-500 object-contain',
+                      collapsed ? '-ml-44 opacity-0' : 'ml-0',
+                    )}
+                  />
+                )}
                 <Image
                   src={companyFavicon || favicon}
                   alt="logo empresa"
