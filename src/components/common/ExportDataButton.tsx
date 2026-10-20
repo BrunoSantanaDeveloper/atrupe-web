@@ -122,6 +122,7 @@ export function ExportDataButton<T>({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
+        {/* Só o ícone: o nome do botão vem do aria-label */}
         <Button
           type="button"
           size={size}
@@ -129,6 +130,7 @@ export function ExportDataButton<T>({
           RightIcon={IconDownload}
           isLoading={isLoading}
           disabled={disabled}
+          aria-label={label}
         ></Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-32">
