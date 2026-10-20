@@ -21,11 +21,14 @@ export const GUEST_ROUTES = [
 
 /**
  * Rotas compartilhadas (acessíveis por todos, com ou sem sessão). O convite de
- * transferência é aberto por quem ainda não tem conta.
+ * transferência é aberto por quem ainda não tem conta. A saída, por quem já
+ * perdeu a sessão: sem isso, /logout virava /login?to=/logout e o login
+ * seguinte saía de novo.
  */
 export const SHARED_ROUTES = [
   'shared-route',
   'convite-de-transferencia',
+  'logout',
 ] as const
 
 /** Rotas permitidas quando a empresa está bloqueada (FULL ou PARTIAL) */

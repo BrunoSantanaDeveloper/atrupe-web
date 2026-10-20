@@ -16,10 +16,19 @@ import { Label } from '@/components/ui/label'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
+/**
+ * Os valores sao os que `/fiscal/nfe/unified` entende. "Cancelada" ficou de
+ * fora quando a gestao de notas foi integrada a tela de emissao: a tela antiga
+ * tinha o filtro, a unificada nasceu sem ele, e o backend sempre soube
+ * responder por esse status. Qualquer valor novo aqui precisa de um branch
+ * correspondente em `findUnified`, senao a lista volta sem filtro nenhum.
+ */
 const NFE_STATUS_OPTIONS = [
   { value: 'NAO_EMITIDA', label: 'Não emitida' },
   { value: 'EM_DIGITACAO', label: 'Em digitação' },
   { value: 'EMITIDA', label: 'Emitida' },
+  { value: 'REJEITADA', label: 'Rejeitada' },
+  { value: 'CANCELADA', label: 'Cancelada' },
   { value: 'TODOS', label: 'Todos' },
 ]
 

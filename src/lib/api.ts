@@ -35,6 +35,7 @@ const shouldEndSession = (error: AxiosError | Error): boolean => {
     // Se for um endpoint que valida senha de admin, não fazer logout
     if (
       url.includes('delete-account') ||
+      url.includes('data-reset') ||
       url.includes('extend-trial') ||
       url.includes('assign-manual') ||
       PASSWORD_ERROR_CODES.includes(code) ||
