@@ -1,7 +1,9 @@
 import { test, expect, type Page } from '@playwright/test'
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
 
 test.describe('Invoice item value editing', () => {
   test.beforeEach(async ({ page }) => {
+    await skipUnlessFiscalReady(page)
     await page.goto('/nota-fiscal/emitir')
   })
 
@@ -15,13 +17,17 @@ test.describe('Invoice item value editing', () => {
       page.getByRole('table').or(page.getByText('Nenhuma ordem encontrada')),
     ).toBeVisible({ timeout: 15_000 })
 
-    const emitButtons = page.getByRole('button', { name: /emitir nota fiscal/i })
+    const emitButtons = page.getByRole('button', {
+      name: /emitir nota fiscal/i,
+    })
     const count = await emitButtons.count()
     if (count === 0) return false
 
     await emitButtons.first().click()
 
-    const dialog = page.getByRole('dialog', { name: /selecionar tipo de nota fiscal/i })
+    const dialog = page.getByRole('dialog', {
+      name: /selecionar tipo de nota fiscal/i,
+    })
     await expect(dialog).toBeVisible()
 
     await dialog.getByRole('button', { name: /nf-e \(produto\)/i }).click()

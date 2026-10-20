@@ -29,7 +29,11 @@ test.describe('Composição do produto (PRO)', () => {
     await page.waitForLoadState('networkidle')
 
     await expect(page.getByRole('tab', { name: 'Composições' })).toHaveCount(0)
-    await expect(page.getByLabel('Composição')).toBeVisible()
+    // O filtro "Composição" e a ação "Composição de <produto>" de cada linha
+    await expect(page.getByLabel('Composição', { exact: true })).toBeVisible()
+    await expect(
+      page.getByRole('link', { name: /^Composição de / }).first(),
+    ).toBeVisible()
   })
 
   test('o filtro "Com composição" lista só os compostos', async ({ page }) => {

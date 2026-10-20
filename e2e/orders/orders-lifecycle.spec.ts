@@ -43,37 +43,27 @@ test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
     await page.waitForLoadState('domcontentloaded')
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 3. Adicionar um Item ao orçamento (fluxo de 3 passos)
+    // 3. Adicionar um Item ao orçamento
     //    Passo A: clicar "Adicionar item"
-    //    Passo B: selecionar um TIPO de item (Criação, Impressão, etc.)
-    //    Passo C: selecionar um PRODUTO da tabela
+    //    Passo B: o dialog abre com a busca e a lista de produtos
+    //    Passo C: selecionar um PRODUTO da lista
     //    Passo D: o dialog exibe um FORMULÁRIO com detalhes do item; clicar "Salvar"
     // ─────────────────────────────────────────────────────────────────────────
     const addItemBtn = page.getByRole('button', { name: 'Adicionar item' })
     await expect(addItemBtn).toBeVisible({ timeout: 10000 })
     await addItemBtn.click()
 
-    // Passo B: Dialog "Qual item deseja adicionar?" — clicar no primeiro tipo
+    // Passo B (ORC-1, revisto em 06/10/2026): o dialog "Qual item deseja
+    // adicionar?" já abre com a lista de produtos, com a busca e os setores
+    // como filtro. "Composição", o último botão, é o item montado (ORC-11).
     const itemTypeDialog = page.getByRole('dialog', {
       name: /qual item deseja adicionar/i,
     })
     await expect(itemTypeDialog).toBeVisible({ timeout: 8000 })
 
-    const firstItemTypeBtn = itemTypeDialog
-      .getByRole('button')
-      .filter({ hasNot: page.getByText(/fechar/i) })
-      .first()
-    await expect(firstItemTypeBtn).toBeVisible({ timeout: 5000 })
-    await firstItemTypeBtn.click()
-    await page.waitForTimeout(2000)
-
-    // Passo C: O dialog transforma — tabela de produtos aparece
-    // Clicar na primeira linha-produto (que é um botão)
-    const productRowBtn = itemTypeDialog
-      .getByRole('button')
-      .filter({ hasNot: page.getByText(/fechar/i) })
-      .first()
-    await expect(productRowBtn).toBeVisible({ timeout: 5000 })
+    // Passo C: clicar na primeira linha-produto (a linha é um botão)
+    const productRowBtn = itemTypeDialog.locator('tr[role="button"]').first()
+    await expect(productRowBtn).toBeVisible({ timeout: 15000 })
     await productRowBtn.click()
     await page.waitForTimeout(2000)
 

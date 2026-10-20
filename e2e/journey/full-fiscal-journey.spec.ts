@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
+import { readFiscalGate } from '../helpers/fiscal-gate'
 
 // =====================================================================
 // Dados de pagamento para ambiente de sandbox/homologação
@@ -260,6 +261,13 @@ async function createFreshUser(page: Page, emailSuffix: string) {
 // SUITE 1: Fluxo de contratação de PLANO + MÓDULO FISCAL (com mock)
 // =====================================================================
 test.describe('Contratação: Plano + Módulo Fiscal', () => {
+  // O roteiro é o da assinatura antiga (maio/2026): desde setembro a
+  // /assinatura é a trilha de contratação em três etapas, também em produção
+  test.fixme(
+    true,
+    'Roteiro da assinatura antiga: falta o da trilha de contratação (setembro/2026).',
+  )
+
   // Usa estado limpo (não autenticado) para simular novo cliente
   test.use({ storageState: { cookies: [], origins: [] } })
 
@@ -444,6 +452,13 @@ test.describe('Contratação: Plano + Módulo Fiscal', () => {
 // SUITE 2: Pagamento com cartão inválido deve mostrar erro
 // =====================================================================
 test.describe('Contratação: Cartão de crédito inválido deve exibir erro', () => {
+  // O roteiro é o da assinatura antiga (maio/2026): desde setembro a
+  // /assinatura é a trilha de contratação em três etapas, também em produção
+  test.fixme(
+    true,
+    'Roteiro da assinatura antiga: falta o da trilha de contratação (setembro/2026).',
+  )
+
   test.use({ storageState: { cookies: [], origins: [] } })
 
   test('deve exibir mensagem de erro ao usar cartão de crédito recusado', async ({
@@ -497,6 +512,15 @@ test.describe('Emissão de NF-e: bloqueio sem emissor configurado', () => {
   test('deve exibir tela de verificação quando o emissor fiscal não está configurado', async ({
     page,
   }) => {
+    // O caso é o da conta com o módulo e sem o emissor
+    const gate = await readFiscalGate(page)
+    test.skip(
+      gate !== 'sem-emissor',
+      gate === 'sem-modulo'
+        ? 'A conta do e2e não tem o módulo Nota Fiscal.'
+        : 'O emissor fiscal da conta do e2e já está configurado.',
+    )
+
     await page.goto('/nota-fiscal/emitir/avulsa/nfe')
     await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/avulsa\/nfe/, {
       timeout: 15_000,

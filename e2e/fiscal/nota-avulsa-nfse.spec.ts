@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test'
 
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
+
 test.describe('Nota Avulsa - NFS-e (/nota-fiscal/emitir/avulsa/nfse)', () => {
+  test.beforeEach(async ({ page }) => {
+    await skipUnlessFiscalReady(page)
+  })
+
   test('should navigate to NFS-e form', async ({ page }) => {
     await page.goto('/nota-fiscal/emitir/avulsa')
 
@@ -17,7 +23,9 @@ test.describe('Nota Avulsa - NFS-e (/nota-fiscal/emitir/avulsa/nfse)', () => {
     })
   })
 
-  test('should display NFS-e standalone form with key sections', async ({ page }) => {
+  test('should display NFS-e standalone form with key sections', async ({
+    page,
+  }) => {
     await page.goto('/nota-fiscal/emitir/avulsa/nfse')
 
     await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/avulsa\/nfse/, {
@@ -25,7 +33,9 @@ test.describe('Nota Avulsa - NFS-e (/nota-fiscal/emitir/avulsa/nfse)', () => {
     })
 
     // The page should not show a 404 / error state
-    await expect(page.getByText(/página não encontrada|not found/i)).not.toBeVisible()
+    await expect(
+      page.getByText(/página não encontrada|not found/i),
+    ).not.toBeVisible()
 
     // Client selection component should be visible
     const clientArea = page
@@ -38,8 +48,14 @@ test.describe('Nota Avulsa - NFS-e (/nota-fiscal/emitir/avulsa/nfse)', () => {
 
     // Service description textarea should exist
     const discriminacaoArea = page
-      .getByRole('textbox', { name: /discriminação|descrição do serviço|serviço/i })
-      .or(page.locator('textarea[name*="discriminacao"], textarea[placeholder*="discrimina"]'))
+      .getByRole('textbox', {
+        name: /discriminação|descrição do serviço|serviço/i,
+      })
+      .or(
+        page.locator(
+          'textarea[name*="discriminacao"], textarea[placeholder*="discrimina"]',
+        ),
+      )
       .or(page.getByPlaceholder(/discriminação|descrição do serviço/i))
       .first()
 
@@ -53,9 +69,7 @@ test.describe('Nota Avulsa - NFS-e (/nota-fiscal/emitir/avulsa/nfse)', () => {
     await expect(fiscalSection).toBeVisible({ timeout: 15_000 })
 
     // Emit button should exist
-    const emitButton = page
-      .getByRole('button', { name: /emitir/i })
-      .first()
+    const emitButton = page.getByRole('button', { name: /emitir/i }).first()
 
     await expect(emitButton).toBeVisible({ timeout: 15_000 })
   })

@@ -1,9 +1,22 @@
 import { test, expect } from '@playwright/test'
 
+import { hasTestCredentials, planStorageState } from '../helpers/credentials'
+
 test.describe('Validação E2E: Upgrade Wall (Licenciamento/Planos)', () => {
   test('Deve exibir o Upgrade Wall ao acessar módulo bloqueado (Contas a Pagar)', async ({
-    page,
+    browser,
   }) => {
+    // Contas a pagar (accounts_payable) vem do LITE: a parede é a do START.
+    // A sessão padrão é a do FULL, que tem a tela.
+    test.skip(
+      !hasTestCredentials('START'),
+      'Sem credencial do plano START (E2E_START_EMAIL/PASSWORD).',
+    )
+    const context = await browser.newContext({
+      storageState: planStorageState('START'),
+    })
+    const page = await context.newPage()
+
     // Acessa diretamente a rota que não faz parte do plano atual
     await page.goto('/financeiro/a-pagar')
     await page.waitForLoadState('domcontentloaded')
@@ -31,6 +44,8 @@ test.describe('Validação E2E: Upgrade Wall (Licenciamento/Planos)', () => {
     // Opcional: Clica e verifica para onde redireciona (geralmente /configuracoes/assinatura ou algo similar)
     // await upgradeButton.click();
     // await expect(page).toHaveURL(/assinatura|planos|upgrade/i, { timeout: 10000 });
+
+    await context.close()
   })
 
   test('Usuário anônimo deve ser barrado antes de bater no Upgrade Wall', async ({

@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
 import {
   createFiscalApiClient,
   createEmissor,
@@ -15,6 +16,7 @@ import {
 test.describe('NFC-e - fluxos de emissao (Plano 5)', () => {
   test.describe('[P0] Modal de tipo de nota fiscal', () => {
     test.beforeEach(async ({ page }) => {
+      await skipUnlessFiscalReady(page)
       await page.goto('/nota-fiscal/emitir')
       await expect(page).toHaveURL(/\/nota-fiscal\/emitir/, { timeout: 15_000 })
     })
@@ -28,6 +30,7 @@ test.describe('NFC-e - fluxos de emissao (Plano 5)', () => {
     test('banner "Ordem de Servico" aparece quando orderId esta na URL', async ({
       page,
     }) => {
+      await skipUnlessFiscalReady(page)
       const fakeOrderId = '12345678-abcd-ef00-0000-000000000000'
       await page.goto(`/nota-fiscal/emitir/avulsa/nfce?orderId=${fakeOrderId}`)
 

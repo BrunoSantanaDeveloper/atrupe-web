@@ -6,25 +6,27 @@ async function mockSessionPermissions(
   permissions: string[],
   isAdmin: boolean = false,
 ) {
-  // O NextAuth consulta /api/auth/session repetidamente ou no carregamento
-  await page.route('**/api/auth/session', (route) => {
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        user: {
-          name: 'Test User',
-          email: 'test@example.com',
-          permissions,
-          isAdmin,
-        },
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString(),
-      }),
+  // O NextAuth consulta /api/auth/session repetidamente ou no carregamento.
+  // Parte da sessão real e troca só as permissões: uma sessão inventada sem a
+  // empresa derruba o layout (session.company.logo), e os testes de "esconder"
+  // passariam com a página quebrada.
+  await page.route('**/api/auth/session', async (route) => {
+    const response = await route.fetch()
+    const session = await response.json()
+    await route.fulfill({
+      response,
+      json: { ...session, user: { ...session.user, permissions, isAdmin } },
     })
   })
 }
 
 test.describe('PermissionGate (Guard Front-end)', () => {
+  // A sessão pode estar em voo quando o teste acaba: sem soltar a rota, o
+  // route.fetch falha e o erro imprime os cabeçalhos, cookie de sessão junto
+  test.afterEach(async ({ page }) => {
+    await page.unrouteAll({ behavior: 'ignoreErrors' })
+  })
+
   test('deve exibir elementos protegidos se o usuário possuir a ROLE SystemAdmin (isAdmin: true)', async ({
     page,
   }) => {

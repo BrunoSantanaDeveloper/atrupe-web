@@ -39,10 +39,9 @@ test.describe('Materiais (PRO)', () => {
   test('ativos e inativos são abas, como em Produtos', async ({ page }) => {
     await openMaterials(page)
 
-    await expect(page.getByRole('tab', { name: 'Ativos' })).toHaveAttribute(
-      'data-state',
-      'active',
-    )
+    await expect(
+      page.getByRole('tab', { name: 'Ativos', exact: true }),
+    ).toHaveAttribute('data-state', 'active')
     await expect(page.getByRole('tab', { name: 'Inativos' })).toBeVisible()
   })
 
@@ -53,7 +52,7 @@ test.describe('Materiais (PRO)', () => {
     await page.getByRole('button', { name: 'Novo material' }).click()
 
     const dialog = page.getByRole('dialog')
-    await expect(dialog.getByText('Unidade')).toBeVisible()
+    await expect(dialog.getByText('Unidade', { exact: true })).toBeVisible()
     await expect(
       dialog.getByText(/Espessuras e tamanhos diferentes são materiais/),
     ).toBeVisible()

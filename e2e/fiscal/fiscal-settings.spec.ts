@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
+
 test.describe('Fiscal Settings page (/configuracoes/nota-fiscal)', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/configuracoes/nota-fiscal')
@@ -59,6 +61,7 @@ test.describe('Fiscal Settings page (/configuracoes/nota-fiscal)', () => {
   test('clicking "Dados do Emissor" should navigate to emissores page', async ({
     page,
   }) => {
+    await skipUnlessFiscalReady(page)
     await page.goto('/configuracoes/nota-fiscal')
     await expect(page.getByText('Dados do Emissor')).toBeVisible({
       timeout: 15_000,

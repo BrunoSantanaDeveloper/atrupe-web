@@ -30,6 +30,10 @@ export default defineConfig({
     // Salva vídeo apenas em falha para debug visual
     video: 'retain-on-failure',
     navigationTimeout: 60_000,
+    // Sem a barra da Vercel dos deploys de preview: com o user agent do Chrome
+    // desktop ela abre um iframe e deixa um OPTIONS pendurado, e o
+    // 'networkidle' nunca chega
+    extraHTTPHeaders: { 'x-vercel-skip-toolbar': '1' },
   },
   projects: [
     {

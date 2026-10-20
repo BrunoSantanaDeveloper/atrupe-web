@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test'
 
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
+
 test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
+  test.beforeEach(async ({ page }) => {
+    await skipUnlessFiscalReady(page)
+  })
+
   test('should navigate to Nota Avulsa from emission page', async ({
     page,
   }) => {

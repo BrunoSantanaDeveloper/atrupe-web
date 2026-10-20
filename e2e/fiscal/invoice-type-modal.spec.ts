@@ -1,21 +1,25 @@
 import { test, expect } from '@playwright/test'
 
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
+
 test.describe('InvoiceTypeSelectModal', () => {
   test.beforeEach(async ({ page }) => {
+    await skipUnlessFiscalReady(page)
     await page.goto('/nota-fiscal/emitir')
   })
 
   test('should display the invoice type modal when clicking emit button on an order', async ({
     page,
   }) => {
-
     // Wait for the orders table to finish loading (skeletons disappear)
     await expect(
       page.getByRole('table').or(page.getByText('Nenhuma ordem encontrada')),
     ).toBeVisible({ timeout: 15_000 })
 
     // Skip if no orders are available
-    const emitButtons = page.getByRole('button', { name: /emitir nota fiscal/i })
+    const emitButtons = page.getByRole('button', {
+      name: /emitir nota fiscal/i,
+    })
     const count = await emitButtons.count()
     test.skip(count === 0, 'No orders available to test with')
 
@@ -35,13 +39,17 @@ test.describe('InvoiceTypeSelectModal', () => {
       page.getByRole('table').or(page.getByText('Nenhuma ordem encontrada')),
     ).toBeVisible({ timeout: 15_000 })
 
-    const emitButtons = page.getByRole('button', { name: /emitir nota fiscal/i })
+    const emitButtons = page.getByRole('button', {
+      name: /emitir nota fiscal/i,
+    })
     const count = await emitButtons.count()
     test.skip(count === 0, 'No orders available to test with')
 
     await emitButtons.first().click()
 
-    const dialog = page.getByRole('dialog', { name: /selecionar tipo de nota fiscal/i })
+    const dialog = page.getByRole('dialog', {
+      name: /selecionar tipo de nota fiscal/i,
+    })
     await expect(dialog).toBeVisible()
 
     // All three option labels should be visible
@@ -57,13 +65,17 @@ test.describe('InvoiceTypeSelectModal', () => {
       page.getByRole('table').or(page.getByText('Nenhuma ordem encontrada')),
     ).toBeVisible({ timeout: 15_000 })
 
-    const emitButtons = page.getByRole('button', { name: /emitir nota fiscal/i })
+    const emitButtons = page.getByRole('button', {
+      name: /emitir nota fiscal/i,
+    })
     const count = await emitButtons.count()
     test.skip(count === 0, 'No orders available to test with')
 
     await emitButtons.first().click()
 
-    const dialog = page.getByRole('dialog', { name: /selecionar tipo de nota fiscal/i })
+    const dialog = page.getByRole('dialog', {
+      name: /selecionar tipo de nota fiscal/i,
+    })
     await expect(dialog).toBeVisible()
 
     // Locate the NFC-e button — it should be disabled
@@ -74,7 +86,9 @@ test.describe('InvoiceTypeSelectModal', () => {
     await expect(dialog.getByText('Em breve')).toBeVisible()
   })
 
-  test('clicking NF-e should navigate to the emission form', async ({ page }) => {
+  test('clicking NF-e should navigate to the emission form', async ({
+    page,
+  }) => {
     await expect(
       page.getByRole('table').or(page.getByText('Nenhuma ordem encontrada')),
     ).toBeVisible({ timeout: 15_000 })
@@ -86,13 +100,17 @@ test.describe('InvoiceTypeSelectModal', () => {
 
     await tableRows.first().click()
 
-    const dialog = page.getByRole('dialog', { name: /selecionar tipo de nota fiscal/i })
+    const dialog = page.getByRole('dialog', {
+      name: /selecionar tipo de nota fiscal/i,
+    })
     await expect(dialog).toBeVisible()
 
     await dialog.getByRole('button', { name: /nf-e \(produto\)/i }).click()
 
     // Modal should close and navigate to the emission form
     await expect(dialog).not.toBeVisible()
-    await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/.+/, { timeout: 15_000 })
+    await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/.+/, {
+      timeout: 15_000,
+    })
   })
 })

@@ -1,4 +1,5 @@
 import { test, expect, type Page, type TestInfo } from '@playwright/test'
+import { skipUnlessFiscalReady } from '../helpers/fiscal-gate'
 
 /**
  * Teste VISUAL para emissão de NFs listadas como "Em digitação".
@@ -44,6 +45,7 @@ async function selectEmDigitacaoFilter(page: Page) {
 
 test.describe('NF "Em digitação" — Visual', () => {
   test.beforeEach(async ({ page }) => {
+    await skipUnlessFiscalReady(page)
     await page.goto('/nota-fiscal/emitir')
     await expect(page).toHaveURL(/\/nota-fiscal\/emitir/, { timeout: 15_000 })
   })
