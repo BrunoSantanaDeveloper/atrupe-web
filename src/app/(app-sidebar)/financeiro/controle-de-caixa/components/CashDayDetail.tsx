@@ -125,11 +125,15 @@ export function CashDayDetail({
   account,
   onOpenChange,
   onApprove,
+  onCloseDay,
 }: {
   day?: CashDay
   account?: BankAccount
   onOpenChange: (open: boolean) => void
   onApprove?: (movement: Movement) => void
+  // Fechar o dia daqui: é o fim do "Aprovar e fechar" do caixa de um dia
+  // anterior, depois de aprovar o que veio da frente de caixa
+  onCloseDay?: () => void
 }) {
   if (!day || !account) return null
 
@@ -140,6 +144,7 @@ export function CashDayDetail({
   // Esperado, contado e diferença, mesmo quando a quebra não foi lançada por
   // estar dentro da tolerância (4.1)
   const count = isClosed ? countDifference(day) : null
+  const awaitingApproval = day.movements.some((item) => item.awaitingApproval)
 
   const summary = [
     ['Abertura', day.opening],
@@ -282,6 +287,17 @@ export function CashDayDetail({
           >
             Imprimir
           </Button>
+          {day.status === 'OPEN' && onCloseDay && (
+            <Button
+              type="button"
+              variant="neutralOutline"
+              // Os valores aguardando aprovação, em "Previstas", vêm antes
+              disabled={awaitingApproval}
+              onClick={onCloseDay}
+            >
+              Fechar caixa
+            </Button>
+          )}
           <Button type="button" onClick={() => onOpenChange(false)}>
             Fechar
           </Button>

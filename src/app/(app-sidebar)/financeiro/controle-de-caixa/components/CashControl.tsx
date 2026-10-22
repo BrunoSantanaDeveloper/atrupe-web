@@ -59,7 +59,7 @@ import { approveMovement, getCashControl } from '@/actions/cash-accounts'
 
 // Third-party
 import { toast } from 'sonner'
-import { useSession } from 'next-auth/react'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
@@ -110,9 +110,11 @@ type Tab = 'OPEN' | 'CLOSED' | 'ALL'
 
 export function CashControl(_: SearchParamsType) {
   const queryClient = useQueryClient()
-  const { data: session } = useSession()
-  // Reabrir um dia fechado é do administrador (ALT-7)
-  const isAdmin = !!session?.user?.isAdmin
+  // Reabrir um dia fechado pede permissão própria (CX-3, ALT-7): a chave
+  // "Reabrir caixa" do cargo. O administrador passa por ela
+  const { hasPermission } = usePermissions()
+  const canReopen = hasPermission('financial:cash_control_reopen:edit')
+  const canEdit = hasPermission('financial:cash_control:edit')
 
   const [dialog, setDialog] = useState<Dialog>(null)
   // Os saldos ficam escondidos até alguém pedir, como no Fluxo financeiro:
@@ -319,21 +321,23 @@ export function CashControl(_: SearchParamsType) {
                 Ver o dia
               </Button>
             ) : blockedBy ? (
-              <Button
-                type="button"
-                size="sm"
-                onClick={() =>
-                  setDialog(
-                    awaiting(blockedBy).length
-                      ? { kind: 'detail', day: blockedBy }
-                      : { kind: 'close', day: blockedBy },
-                  )
-                }
-              >
-                {awaiting(blockedBy).length
-                  ? `Aprovar e fechar ${brDate(blockedBy.date)}`
-                  : `Fechar ${brDate(blockedBy.date)}`}
-              </Button>
+              <PermissionGate permissions={['financial:cash_control:edit']}>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() =>
+                    setDialog(
+                      awaiting(blockedBy).length
+                        ? { kind: 'detail', day: blockedBy }
+                        : { kind: 'close', day: blockedBy },
+                    )
+                  }
+                >
+                  {awaiting(blockedBy).length
+                    ? `Aprovar e fechar ${brDate(blockedBy.date)}`
+                    : `Fechar ${brDate(blockedBy.date)}`}
+                </Button>
+              </PermissionGate>
             ) : (
               <PermissionGate permissions={['financial:cash_control:create']}>
                 <Button
@@ -454,14 +458,16 @@ export function CashControl(_: SearchParamsType) {
                     : ''}
                 </p>
               </div>
-              <Button
-                type="button"
-                size="sm"
-                className="shrink-0"
-                onClick={() => setDialog({ kind: 'close', day })}
-              >
-                Fechar agora
-              </Button>
+              <PermissionGate permissions={['financial:cash_control:edit']}>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => setDialog({ kind: 'close', day })}
+                >
+                  Fechar agora
+                </Button>
+              </PermissionGate>
             </div>
           ))}
 
@@ -675,7 +681,7 @@ export function CashControl(_: SearchParamsType) {
                                         />
                                       </PermissionGate>
                                     ) : (
-                                      isAdmin && (
+                                      canReopen && (
                                         <ActionButton
                                           Icon={IconArrowBackUp}
                                           variant="neutralGhost"
@@ -747,7 +753,18 @@ export function CashControl(_: SearchParamsType) {
             day={dialog?.kind === 'detail' ? dialogDay : undefined}
             account={dialogAccount}
             onOpenChange={() => setDialog(null)}
-            onApprove={(movement) => dialogDay && approve(dialogDay, movement)}
+            // Aprovar e fechar pedem a edição do controle de caixa, como os
+            // botões da lista
+            onApprove={
+              canEdit
+                ? (movement) => dialogDay && approve(dialogDay, movement)
+                : undefined
+            }
+            onCloseDay={
+              canEdit && dialogDay
+                ? () => setDialog({ kind: 'close', day: dialogDay })
+                : undefined
+            }
           />
         </div>
       </TooltipProvider>
