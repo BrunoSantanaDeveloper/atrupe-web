@@ -137,6 +137,10 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
  */
 const PERMISSION_FEATURES: Record<string, string[]> = {
   'financial.cash_control': ['cash_control'],
+  // A receber e A pagar são do LITE: o menu já pedia a chave, e no START a
+  // permissão aparecia sem tela para usar
+  'financial.payable': ['accounts_payable'],
+  'financial.receivable': ['accounts_receivable'],
   'register.credit_limit': ['credit_limit_configuration'],
   'financial_settings.credit_limits': ['credit_limit_configuration'],
   // A Agenda de entrega não pede recurso: abre do Start em diante (PO,
