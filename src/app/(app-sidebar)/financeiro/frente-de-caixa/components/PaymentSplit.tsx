@@ -23,6 +23,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
@@ -356,36 +357,41 @@ function PartRow({
 // Os campos, na mesma ordem da baixa do Fluxo financeiro. Renderizar dentro
 // de <Form {...receipt.form}>
 export function CashReceiptFields({ receipt }: { receipt: CashReceipt }) {
+  // As dicas dos botões de cada forma precisam de um TooltipProvider. A
+  // frente de caixa tem o dela, mas a venda rápida (Cobrar) não tinha, e a
+  // tela caía em "Algo deu errado!": o formulário traz o seu
   return (
-    <div className="flex flex-wrap gap-4">
-      <FormBrlInput<ReceiptValues>
-        name="totalValue"
-        placeholder="0,00"
-        label="Valor"
-        startAdornment={<>R$</>}
-        width="flex-[1_0_250px]"
-        disabled
-      />
-      {receipt.fields.fields.map((field, index) => (
-        <PartRow
-          key={field.id}
-          index={index}
-          receipt={receipt}
-          canRemove={receipt.fields.fields.length > 1}
+    <TooltipProvider>
+      <div className="flex flex-wrap gap-4">
+        <FormBrlInput<ReceiptValues>
+          name="totalValue"
+          placeholder="0,00"
+          label="Valor"
+          startAdornment={<>R$</>}
+          width="flex-[1_0_250px]"
+          disabled
         />
-      ))}
-      {/* Pagamento misto (FC-9): mais de uma forma no mesmo recebimento,
+        {receipt.fields.fields.map((field, index) => (
+          <PartRow
+            key={field.id}
+            index={index}
+            receipt={receipt}
+            canRemove={receipt.fields.fields.length > 1}
+          />
+        ))}
+        {/* Pagamento misto (FC-9): mais de uma forma no mesmo recebimento,
           cada parte indo para a sua conta */}
-      <Button
-        type="button"
-        size="sm"
-        variant="neutralOutline"
-        LeftIcon={IconPlus}
-        onClick={receipt.addPart}
-      >
-        Dividir em outra forma
-      </Button>
-    </div>
+        <Button
+          type="button"
+          size="sm"
+          variant="neutralOutline"
+          LeftIcon={IconPlus}
+          onClick={receipt.addPart}
+        >
+          Dividir em outra forma
+        </Button>
+      </div>
+    </TooltipProvider>
   )
 }
 
