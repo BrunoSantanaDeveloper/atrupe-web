@@ -631,16 +631,24 @@ export function QuotationComposeModal({
             )}
           </DialogBody>
           <DialogFooter className="flex-wrap gap-3 sm:justify-between">
-            <Button
-              type="button"
-              size="sm"
-              variant="link"
-              className="px-0 text-gray"
-              disabled={!stages.length}
-              onClick={saveAsProduct}
+            {/* Salvar como produto cria um cadastro: pede a permissão de
+                criar produto, como manda o contrato (o vazio segura o
+                rodapé à direita) */}
+            <PermissionGate
+              permissions={['product_settings:products:create']}
+              fallback={<span />}
             >
-              Salvar como produto
-            </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="link"
+                className="px-0 text-gray"
+                disabled={!stages.length}
+                onClick={saveAsProduct}
+              >
+                Salvar como produto
+              </Button>
+            </PermissionGate>
             <div className="space-x-2">
               <Button type="button" variant="neutralOutline" onClick={close}>
                 Cancelar
