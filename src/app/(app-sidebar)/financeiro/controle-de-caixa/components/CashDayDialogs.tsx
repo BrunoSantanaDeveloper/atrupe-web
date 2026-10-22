@@ -51,10 +51,12 @@ import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { todayLocalIso } from '@/lib/formatDate'
 
 const money = (value: number) => formatCurrencyToBrl(value)
 const brDate = (iso: string) => iso.split('-').reverse().join('/')
-const today = () => new Date().toISOString().slice(0, 10)
+// A data local: em UTC, depois das 21h o padrão já vinha com amanhã
+const today = () => todayLocalIso()
 
 type Base = {
   open: boolean

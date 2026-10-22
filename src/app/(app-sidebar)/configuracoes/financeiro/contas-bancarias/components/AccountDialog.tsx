@@ -55,6 +55,7 @@ import { useMoney } from '@/hooks/useMoney'
 
 // Utils
 import { cn } from '@/lib/utils'
+import { todayLocalIso } from '@/lib/formatDate'
 
 const banks = [
   { value: '000', label: 'Empresa (dinheiro)' },
@@ -111,7 +112,7 @@ const empty = (methods: { id: string; name: string }[]): Draft => ({
   blindCount: false,
   shortageTolerance: null,
   openingBalance: 0,
-  openingDate: new Date().toISOString().slice(0, 10),
+  openingDate: todayLocalIso(),
   rules: methods.map((method) => ({
     methodId: method.id,
     methodName: method.name,

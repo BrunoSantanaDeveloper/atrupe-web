@@ -189,3 +189,14 @@ export function formatToWeekDate(date: string) {
 
   return `${dayOfWeek}, ${day} de ${month} de ${year}`
 }
+
+/**
+ * A data de hoje no fuso do navegador, em AAAA-MM-DD. `toISOString()` dá a
+ * data em UTC: no Brasil, depois das 21h, ela já é o dia seguinte.
+ */
+export function todayLocalIso(now = new Date()): string {
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
