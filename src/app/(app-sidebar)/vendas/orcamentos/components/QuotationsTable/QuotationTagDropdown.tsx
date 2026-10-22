@@ -25,6 +25,7 @@ import { QuotationType } from '@/types/sales/quotation'
 
 // Actions
 import { updateItem } from '@/actions/_cruds'
+import { usePermissions } from '@/hooks/usePermissions'
 
 // Libs
 import { cn } from '@/lib/utils'
@@ -39,8 +40,12 @@ interface Props {
 }
 
 function QuotationTag({ quotation, tagsList }: Props) {
+  // Trocar a etiqueta mexe no orçamento: pede a permissão de editar, como os
+  // outros gestos do orçamento
+  const { hasPermission } = usePermissions()
   const allowChangeStatus =
-    quotation?.status === 'OPEN' || quotation?.status === 'OVERDUE'
+    (quotation?.status === 'OPEN' || quotation?.status === 'OVERDUE') &&
+    hasPermission('sale:quotation:edit')
 
   const queryClient = useQueryClient()
 
