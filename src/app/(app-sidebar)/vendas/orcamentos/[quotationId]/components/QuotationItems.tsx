@@ -177,8 +177,9 @@ export function QuotationItems({ data }: Props) {
       name: item.description,
       description: item.technicalDescription || '',
       quantity: item.product?.quantity || 1,
-      width: (item.draft?.width ?? 1000) / 1000,
-      height: (item.draft?.height ?? 1000) / 1000,
+      // Sem medida no rascunho, 0: a linha mostra "-" em vez de 1 × 1 m
+      width: (item.draft?.width ?? 0) / 1000,
+      height: (item.draft?.height ?? 0) / 1000,
       stages: item.draft?.stages ?? 0,
       sectors: [],
       price: item.finalValue,
@@ -782,7 +783,12 @@ export function QuotationItems({ data }: Props) {
                           {item.attention
                             ? 'Sem nenhuma etapa. O orçamento segue, mas monte as etapas depois para ter custo e produção.'
                             : item.description ||
-                              `${item.stages} ${item.stages === 1 ? 'etapa' : 'etapas'} · ${item.sectors.join(', ')}`}
+                              [
+                                `${item.stages} ${item.stages === 1 ? 'etapa' : 'etapas'}`,
+                                item.sectors.join(', '),
+                              ]
+                                .filter(Boolean)
+                                .join(' · ')}
                         </p>
                       </TableCell>
                       <TableCell className="py-4 text-sm text-gray">

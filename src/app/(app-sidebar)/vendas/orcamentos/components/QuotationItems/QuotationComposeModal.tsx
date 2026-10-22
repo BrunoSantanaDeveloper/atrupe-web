@@ -181,8 +181,10 @@ export function QuotationComposeModal({
       setName(editing.name)
       setDescription(editing.description)
       setQuantity(String(editing.quantity))
-      setWidth(String(editing.width))
-      setHeight(String(editing.height))
+      // Rascunho sem medida chega com 0: o editor abre no 1 × 1 m de um
+      // item novo, mas a lista não inventa a medida
+      setWidth(String(editing.width || 1))
+      setHeight(String(editing.height || 1))
       return
     }
     setName('')
