@@ -241,7 +241,7 @@ export function CancelOrder({ data }: Props) {
               className={buttonVariants({ variant: 'error' })}
               disabled={!reason}
             >
-              Cancelar
+              Cancelar venda
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
