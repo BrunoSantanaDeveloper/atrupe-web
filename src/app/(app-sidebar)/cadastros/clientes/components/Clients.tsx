@@ -36,10 +36,6 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import { IconFolders, IconUserOff } from '@tabler/icons-react'
 
-import {
-  SearchClientModal,
-  SearchClientTriggerButton,
-} from './SearchClient/SearchClientModal'
 import { clientStatusObj } from '@/consts/client'
 
 const CLIENT_EXPORT_COLUMNS: ExportColumn<ListClientsDataType>[] = [
@@ -193,11 +189,6 @@ export function Clients({ searchParams }: SearchParamsType) {
               />
             </PermissionGate>
             <PermissionGate permissions={['register:client:create']}>
-              <SearchClientTriggerButton
-                onOpenChange={() => {
-                  setOpenDialog('search-client')
-                }}
-              />
               <NewClientTriggerButton
                 onOpenChange={() => {
                   setOpenDialog('new-client')
@@ -254,10 +245,6 @@ export function Clients({ searchParams }: SearchParamsType) {
       </PermissionGate>
       <NewClientModal
         open={openDialog === 'new-client'}
-        onOpenChange={() => setOpenDialog('')}
-      />
-      <SearchClientModal
-        open={openDialog === 'search-client'}
         onOpenChange={() => setOpenDialog('')}
       />
     </div>
