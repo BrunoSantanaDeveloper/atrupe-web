@@ -248,6 +248,9 @@ export type QuotationType = {
     id: string
     name: string
     maxDiscount?: number | null
+    // "Somente enviar ao caixa" do perfil do vendedor (FC-12.1): a venda
+    // rápida dele vai sempre para a frente de caixa
+    onlySendToCash?: boolean
   }
   company: {
     id: string

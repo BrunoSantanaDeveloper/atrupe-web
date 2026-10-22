@@ -120,8 +120,14 @@ export function useQuickSale(data: QuotationType) {
     refetchInterval: 15000,
   })
 
-  const settings = settingsRes?.data
-  const path = settings?.payment ?? 'POS'
+  // Leitura que falhou devolve o padrão vazio da action, que é "cobrar na
+  // hora": aí vale o caminho seguro, a frente de caixa
+  const settings = settingsRes?.success ? settingsRes.data : undefined
+  // O vendedor com "Somente enviar ao caixa" no perfil (FC-12.1) não cobra:
+  // a venda vai sempre para a frente de caixa. O campo vem no vendedor do
+  // orçamento; enquanto a API não manda, vale a configuração da venda rápida
+  const onlySendToCash = !!data?.seller?.onlySendToCash
+  const path = onlySendToCash ? 'POS' : (settings?.payment ?? 'POS')
   const methods = (settings?.cashMethods ?? [])
     .map((method) => settingsMethod[method])
     .filter(Boolean)
