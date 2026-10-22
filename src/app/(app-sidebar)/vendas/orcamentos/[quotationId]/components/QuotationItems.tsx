@@ -840,11 +840,37 @@ export function QuotationItems({ data }: Props) {
                                 disabled={actionDisabled('edit', status)}
                               />
                             </PermissionGate>
+                            {/* Os mesmos valores, desconto e acréscimo do item
+                                do catálogo: o diálogo trabalha sobre o item da
+                                API, que é o mesmo registro */}
+                            <PermissionGate
+                              permissions={[
+                                'sale:quotation:edit',
+                                'values:values:view',
+                              ]}
+                              requireAll
+                            >
+                              <ActionButton
+                                Icon={IconCurrencyReal}
+                                tooltip="Valores, desconto e acréscimo"
+                                onClick={() => {
+                                  const apiItem = data?.quotationItems?.find(
+                                    (quotationItem) =>
+                                      quotationItem.id === item.id,
+                                  )
+                                  if (!apiItem) return
+                                  setRowData(apiItem)
+                                  setOpenDialog('values')
+                                }}
+                                disabled={actionDisabled('values', status)}
+                              />
+                            </PermissionGate>
                             <PermissionGate
                               permissions={['sale:quotation:edit']}
                             >
                               <ActionButton
                                 Icon={IconTrash}
+                                variant="errorGhost"
                                 tooltip="Excluir item"
                                 onClick={() => removeComposed(item)}
                                 disabled={actionDisabled('delete', status)}
