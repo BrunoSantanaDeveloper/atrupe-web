@@ -48,6 +48,7 @@ import { useCancelReason } from '@/hooks/queries/useCancelReason'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
+import { toast } from 'sonner'
 
 interface Props {
   data: QuotationType
@@ -81,8 +82,11 @@ export function RejectQuotation({ data }: Props) {
     if (!res.success) {
       // Rejeitar com motivo é recurso de plano: o servidor recusa sem ele.
       notifyActionError(res)
+      return
     }
 
+    toast.success('Orçamento rejeitado')
+    setOpen(false)
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
