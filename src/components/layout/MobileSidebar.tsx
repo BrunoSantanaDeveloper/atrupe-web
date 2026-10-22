@@ -48,6 +48,7 @@ import { cn, getFirstAndLastName } from '@/lib/utils'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
 import { DEMO_DATA } from '@/lib/demo'
 import { navPermissionAllowed, openNavGroupPath } from './navAccess'
+import { useQuickSaleEnabled } from '@/hooks/queries/useQuickSaleEnabled'
 
 // Types
 import type { IconProps } from '@tabler/icons-react'
@@ -83,6 +84,8 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
 
   const { hasAnyPermission, hasAllPermissions } = usePermissions()
   const { hasFeature, hasAnyFeature } = usePlanFeatures()
+  // "Usar venda rápida" desligado em Configurações › Vendas tira o item
+  const quickSaleEnabled = useQuickSaleEnabled()
   const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
     useFiscalOnboardingStatus()
 
@@ -114,6 +117,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   const checkItemAccess = (item: NavigationItem): boolean => {
     // Tela de demonstração (dados de exemplo): só com a flag
     if (item.demo && !DEMO_DATA) return false
+
+    if (item.path?.includes('novo=venda-rapida') && !quickSaleEnabled) {
+      return false
+    }
 
     if (!checkPermission(item)) {
       return false

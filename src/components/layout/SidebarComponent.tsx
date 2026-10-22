@@ -37,6 +37,7 @@ import { cn, getFirstAndLastName } from '@/lib/utils'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
 import { DEMO_DATA } from '@/lib/demo'
 import { navPermissionAllowed, openNavGroupPath } from './navAccess'
+import { useQuickSaleEnabled } from '@/hooks/queries/useQuickSaleEnabled'
 
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
@@ -91,6 +92,8 @@ export function SidebarComponent(props: Props) {
 
   const { hasAnyPermission, hasAllPermissions } = usePermissions()
   const { hasFeature, hasAnyFeature } = usePlanFeatures()
+  // "Usar venda rápida" desligado em Configurações › Vendas tira o item
+  const quickSaleEnabled = useQuickSaleEnabled()
   const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
     useFiscalOnboardingStatus()
 
@@ -112,6 +115,10 @@ export function SidebarComponent(props: Props) {
   const checkItemAccess = (item: MainNavigationType): boolean => {
     // Tela de demonstração (dados de exemplo): só com a flag
     if (item.demo && !DEMO_DATA) return false
+
+    if (item.path?.includes('novo=venda-rapida') && !quickSaleEnabled) {
+      return false
+    }
 
     // Primeiro verifica permissões
     if (!checkPermission(item)) {

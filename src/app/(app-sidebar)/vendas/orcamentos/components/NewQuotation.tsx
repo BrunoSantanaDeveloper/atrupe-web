@@ -40,6 +40,7 @@ import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
 import { useCompany } from '@/hooks/queries/useCompany'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useQuickSaleEnabled } from '@/hooks/queries/useQuickSaleEnabled'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { useNewClientStore } from '../store/useNewClientStore'
 import { useContactSources } from '@/hooks/queries/useContactSources'
@@ -376,8 +377,9 @@ export function NewQuickSaleTriggerButton({
 }: {
   onOpenChange: (open: boolean) => void
 }) {
-  const { canCreateQuickSale } = usePlanFeatures()
-  if (!canCreateQuickSale()) return null
+  // O plano e a opção "Usar venda rápida" da configuração
+  const quickSaleEnabled = useQuickSaleEnabled()
+  if (!quickSaleEnabled) return null
   return (
     <PermissionGate permissions={['sale:quotation:create']}>
       <Button
