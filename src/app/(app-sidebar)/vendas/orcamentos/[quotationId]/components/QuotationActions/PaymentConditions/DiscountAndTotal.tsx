@@ -52,10 +52,16 @@ export function DiscountAndTotal({
       0,
     ) || 0
 
-  // Calcular o desconto total dos itens (soma das diferenças entre totalValue e finalValue)
+  // Calcular o desconto total dos itens. O acréscimo e as linhas do item já
+  // estão no finalValue e não são desconto (ALT-25, ORC-5): a conta é a mesma
+  // da janela Valores, senão um item com linhas acrescentadas some do limite
   const itemsDiscountTotal =
     quotationData?.quotationItems?.reduce((sum, item) => {
-      const itemDiscount = (item?.totalValue || 0) - (item?.finalValue || 0)
+      const itemDiscount =
+        (item?.totalValue || 0) +
+        (item?.addition || 0) +
+        (item?.linesTotal || 0) -
+        (item?.finalValue || 0)
       return sum + Math.max(itemDiscount, 0)
     }, 0) || 0
 
