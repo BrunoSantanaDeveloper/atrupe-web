@@ -38,6 +38,7 @@ import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 // Lib
 import { cn } from '@/lib/utils'
 import { StagePendingDialog } from './StagePendingDialog'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props extends SearchParamsType, PropsWithChildren {
   rowData: DeliveryScheduleType['productionStages'][0]
@@ -62,7 +63,24 @@ export function StageStatusDropdown({
   canChangeStatus: planAllows = true,
   managedByProduction = false,
 }: Props) {
-  const canChangeStatus = planAllows && !managedByProduction
+  // Trocar a situação da etapa mexe na agenda: pede a permissão de editar
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission('production:delivery_schedule:edit')
+  const canChangeStatus = planAllows && !managedByProduction && canEdit
+  // O motivo do menu travado, do mais forte para o mais fraco (um objeto de
+  // mensagens, para a extração de textos achar cada uma)
+  const locked = {
+    production: {
+      message: 'Esta etapa segue as tarefas do Gerenciador de produção.',
+    },
+    plan: { message: 'Trocar o status da etapa não faz parte do seu plano.' },
+    role: { message: 'Seu cargo não pode trocar o status da etapa.' },
+  }
+  const lockedReason = managedByProduction
+    ? locked.production.message
+    : planAllows
+      ? locked.role.message
+      : locked.plan.message
   const [open, setOpen] = useState(false)
 
   const queryClient = useQueryClient()
@@ -110,9 +128,7 @@ export function StageStatusDropdown({
         <DropdownMenuContent className="min-w-48" align="start">
           {!canChangeStatus && (
             <DropdownMenuLabel className="max-w-60 text-xs font-normal text-gray-600">
-              {managedByProduction
-                ? 'Esta etapa segue as tarefas do Gerenciador de produção.'
-                : 'Trocar o status da etapa não faz parte do seu plano.'}
+              {lockedReason}
             </DropdownMenuLabel>
           )}
           <DropdownMenuGroup>

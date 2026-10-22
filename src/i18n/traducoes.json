@@ -5095,6 +5095,10 @@
   "es": "Al continuar, estoy de acuerdo con los",
   "en": "By continuing, I agree to the"
  },
+ "5517df4a95": {
+  "es": "Su cargo no puede cambiar el estado de la etapa.",
+  "en": "Your role can’t change the step status."
+ },
  "552af144e1": {
   "es": "azul · {new}",
   "en": "blue · {new}"
@@ -8022,6 +8026,10 @@
  "82f021e8b1": {
   "es": "Tipo de tarea",
   "en": "Task type"
+ },
+ "83151ba439": {
+  "es": "Describa el pendiente",
+  "en": "Describe the issue"
  },
  "834024bbb3": {
   "es": "· por debajo de él, el material aparece en \"Debajo del mínimo\".",
@@ -14298,6 +14306,10 @@
  "ee00aa7c47": {
   "es": "Usted no tiene permiso para ver el informe financiero.",
   "en": "You don't have permission to view the financial report."
+ },
+ "ee0fadedaa": {
+  "es": "Servicio finalizado",
+  "en": "Service finished"
  },
  "ee23f37ce2": {
   "es": "01 - Administrativo",

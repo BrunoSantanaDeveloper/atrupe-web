@@ -49,7 +49,7 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
     },
   })
 
-  const { handleSubmit, reset } = form
+  const { handleSubmit, reset, setError } = form
 
   const queryClient = useQueryClient()
   const { notifyActionError } = usePlanErrorToast()
@@ -85,6 +85,11 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
   })
 
   const onSubmit = async (data: StagePendingType) => {
+    // Pendência nova precisa dizer o que falta; remover não pede texto
+    if (rowData?.status !== 'PENDING' && !data.pendingDescription?.trim()) {
+      setError('pendingDescription', { message: 'Descreva a pendência' })
+      return
+    }
     await mutation.mutateAsync(data).catch(() => notifyActionError(null))
   }
 

@@ -133,9 +133,11 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
     mutationFn: (id: string) =>
       updateItem('deliveryScheduleFinishRoute', id, {}),
     onSuccess: () => {
+      toast.success('Serviço finalizado')
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
     },
+    onError: () => toast.error('Ocorreu um erro'),
   })
 
   const handleFinishService = (id: string) => {
@@ -350,20 +352,26 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                               : 'w-0',
                                           )}
                                         >
-                                          <Button
-                                            type="button"
-                                            variant="success"
-                                            size="md"
-                                            LeftIcon={IconCircleCheck}
-                                            className="whitespace-nowrap"
-                                            onClick={() =>
-                                              handleFinishService(
-                                                deliverySchedule?.id,
-                                              )
-                                            }
+                                          <PermissionGate
+                                            permissions={[
+                                              'production:delivery_schedule:edit',
+                                            ]}
                                           >
-                                            Finalizar serviço
-                                          </Button>
+                                            <Button
+                                              type="button"
+                                              variant="success"
+                                              size="md"
+                                              LeftIcon={IconCircleCheck}
+                                              className="whitespace-nowrap"
+                                              onClick={() =>
+                                                handleFinishService(
+                                                  deliverySchedule?.id,
+                                                )
+                                              }
+                                            >
+                                              Finalizar serviço
+                                            </Button>
+                                          </PermissionGate>
                                         </div>
                                       </div>
                                     )}
