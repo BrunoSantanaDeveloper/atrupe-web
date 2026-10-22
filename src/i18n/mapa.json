@@ -12403,16 +12403,16 @@
    "src/consts/orders.ts:10 (propriedade:text)"
   ]
  },
- "comum.consts.completed": {
-  "pt": "Concluida",
-  "usos": [
-   "src/consts/orders.ts:9 (propriedade:text)"
-  ]
- },
  "comum.consts.completedTransaction": {
   "pt": "Movimentação realizada",
   "usos": [
    "src/consts/receivables.ts:43 (propriedade:tooltip)"
+  ]
+ },
+ "comum.consts.concluida": {
+  "pt": "Concluida",
+  "usos": [
+   "src/consts/orders.ts:9 (propriedade:text)"
   ]
  },
  "comum.consts.control": {
@@ -18749,7 +18749,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/OwnershipSection.tsx:322 (jsx)"
   ]
  },
- "configuracoes.empresaESistema.icon": {
+ "configuracoes.empresaESistema.icone": {
   "pt": "Icone",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:232 (atributo:label)"
@@ -20668,6 +20668,12 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:194 (propriedade:label)"
   ]
  },
+ "configuracoes.financeiro.aoSelecionarAsOpcoesAbaixo": {
+  "pt": "Ao selecionar as opções abaixo, o limites de crédito personalizados de todos os clientes serão alterados para o novo padrão.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:353 (jsx)"
+  ]
+ },
  "configuracoes.financeiro.applyMaximumSaleAmountTo": {
   "pt": "Aplicar valor máximo para venda a todos os clientes",
   "usos": [
@@ -20747,12 +20753,6 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:356 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:366 (atributo:aria-label)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:194 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.bySelectingTheOptionsBelow": {
-  "pt": "Ao selecionar as opções abaixo, o limites de crédito personalizados de todos os clientes serão alterados para o novo padrão.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:353 (jsx)"
   ]
  },
  "configuracoes.financeiro.cannotBeNegative": {

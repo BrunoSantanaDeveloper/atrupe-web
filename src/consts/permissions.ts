@@ -22,11 +22,11 @@ export const permissionsData = [
         key: 'sales',
       },
       {
-        name: 'Orcamentos',
+        name: 'Orçamentos',
         key: 'quotations',
       },
       {
-        name: 'Evolucao e rankings',
+        name: 'Evolução e rankings',
         key: 'rankings',
       },
     ],
@@ -168,7 +168,7 @@ export const permissionsData = [
     ],
   },
   {
-    section: 'Relatorios',
+    section: 'Relatórios',
     key: 'reports',
     items: [
       {
@@ -176,11 +176,11 @@ export const permissionsData = [
         key: 'sector_result',
       },
       {
-        name: 'Relatorio de vendas',
+        name: 'Relatório de vendas',
         key: 'sales',
       },
       {
-        name: 'Relatorio financeiro',
+        name: 'Relatório financeiro',
         key: 'financial',
       },
       {
@@ -188,7 +188,7 @@ export const permissionsData = [
         key: 'dfc',
       },
       {
-        name: 'Comissoes',
+        name: 'Comissões',
         key: 'commission',
       },
     ],

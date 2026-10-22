@@ -229,7 +229,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
             >
               <FormSelect<FormType>
                 name="icon"
-                label="Icone"
+                label="Ícone"
                 options={iconOptions}
                 width="flex-[1_0_190px]"
               />

@@ -531,10 +531,6 @@
   "es": "Base",
   "en": "Base"
  },
- "0793f02610": {
-  "es": "Ícono",
-  "en": "Icon"
- },
  "079b4054cf": {
   "es": "Cambie o quite el ítem en Ítems para aprobar. Una vez aprobada, la cotización se convertiría en una orden de trabajo con un producto que la empresa ya no vende.",
   "en": "Replace or remove the item in Items to approve. Once approved, the quote would become a work order with a product the company no longer sells."
@@ -850,6 +846,10 @@
  "0dae3d130c": {
   "es": "El comportamiento decide dónde entra el ítem: la provisión cuesta en el mes y no aparece en la nómina por pagar.",
   "en": "The behavior decides where the item goes: a provision costs in the month and doesn't show in the payroll payable."
+ },
+ "0dcfeee61b": {
+  "es": "Editar estado",
+  "en": "Edit status"
  },
  "0ddb2e809b": {
   "es": "Aún no hay procesos registrados.",
@@ -5719,6 +5719,10 @@
   "es": "Opcional · fuera del costo estándar",
   "en": "Optional · outside the standard cost"
  },
+ "5f019bb4f8": {
+  "es": "Ícono",
+  "en": "Icon"
+ },
  "5f032a3638": {
   "es": "Lo que usa el sector de {valor} en esta etapa, y cómo se calcula la cantidad a partir de la medida vendida.",
   "en": "What the {valor} department uses in this step, and how the quantity is calculated from the size sold."
@@ -7055,10 +7059,6 @@
   "es": "en {parent}",
   "en": "in {parent}"
  },
- "748e650ea5": {
-  "es": "Concluida",
-  "en": "Completed"
- },
  "74990bb36f": {
   "es": "El ítem entra en la nómina de todos los colaboradores con el valor estándar. El valor de cada uno se ajusta después, en su línea.",
   "en": "The item goes into the payroll of all team members at the default value. Each person's value can be adjusted later, on their row."
@@ -7294,6 +7294,10 @@
  "77dedc0475": {
   "es": "Orden de trabajo",
   "en": "Work order"
+ },
+ "77e0c2795a": {
+  "es": "Al seleccionar las opciones de abajo, los límites de crédito personalizados de todos los clientes se cambiarán al nuevo estándar.",
+  "en": "By selecting the options below, the custom credit limits of all customers will be changed to the new default."
  },
  "77f0183a30": {
   "es": "Activar control",
@@ -7710,6 +7714,10 @@
  "7de01f7c66": {
   "es": "Preparación: {valor}, una vez por pedido",
   "en": "Setup: {valor}, once per order"
+ },
+ "7de444b8f0": {
+  "es": "Fecha del saldo",
+  "en": "Balance date"
  },
  "7e09e29b5a": {
   "es": "Revisar antes de importar",
@@ -13254,10 +13262,6 @@
  "daac3bf468": {
   "es": "Error al {valor} producto: {valor2}",
   "en": "Error trying to {valor} product: {valor2}"
- },
- "dad05fccc6": {
-  "es": "Al seleccionar las opciones de abajo, los límites de crédito personalizados de todos los clientes se cambiarán al nuevo estándar.",
-  "en": "By selecting the options below, the custom credit limits of all customers will be changed to the new default."
  },
  "db04c51a49": {
   "es": "Mínimo ({unit})",

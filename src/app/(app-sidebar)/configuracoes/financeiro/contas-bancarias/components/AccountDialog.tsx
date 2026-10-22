@@ -292,7 +292,7 @@ export function AccountDialog({
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="account-opening-date">Em</Label>
+                  <Label htmlFor="account-opening-date">Data do saldo</Label>
                   <Input
                     id="account-opening-date"
                     type="date"

@@ -112,7 +112,7 @@ export function Main() {
                                   >
                                     <ActionButton
                                       Icon={IconPencil}
-                                      tooltip="Editar motivo"
+                                      tooltip="Editar status"
                                       onClick={() => {
                                         setOpenDialog('edit')
                                         setRowData(item)

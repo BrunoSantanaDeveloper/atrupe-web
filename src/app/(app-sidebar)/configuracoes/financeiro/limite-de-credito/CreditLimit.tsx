@@ -350,7 +350,7 @@ export function CreditLimit() {
                               </AlertTitle>
 
                               <AlertDescription className="text-sm font-normal text-gray-500">
-                                Ao selecionar as opções abaixo, o limites de
+                                Ao selecionar as opções abaixo, os limites de
                                 crédito personalizados de todos os clientes
                                 serão alterados para o novo padrão.
                               </AlertDescription>
