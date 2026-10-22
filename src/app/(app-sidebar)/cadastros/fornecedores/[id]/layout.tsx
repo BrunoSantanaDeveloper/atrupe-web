@@ -2,6 +2,7 @@
 
 // Next
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 // UI
 
@@ -32,6 +33,10 @@ interface Props {
 }
 
 export default function SupplierDetailLayout({ children, params }: Props) {
+  // A aba ativa vem do último segmento do caminho (dados, orcamentos…): o
+  // layout fica em [id] e não recebe o segmento da aba em params
+  const pathname = usePathname()
+  const activeTab = pathname?.split('/').filter(Boolean).at(-1) ?? 'dados'
   const { data, isLoading } = useSupplierById({ id: params.id })
   const { canManageSuppliers } = usePlanFeatures()
   const { hasAllPermissions } = usePermissions()
@@ -40,7 +45,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
 
   // A aba Financeiro só aparece se o usuário tiver permissão do fluxo/valores.
   const canViewTab: Record<string, boolean> = {
-    cadastro: true,
+    dados: true,
     financeiro: hasAllPermissions([
       'financial:flow:view',
       'values:values:view',
@@ -53,7 +58,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
   const allTabs: TabNavType[] = [
     {
       value: 'REGISTER',
-      tab: 'cadastro',
+      tab: 'dados',
       label: 'Cadastro',
     },
     {
@@ -64,7 +69,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
   ]
 
   const tabs = (
-    showAdvancedTabs ? allTabs : allTabs.filter((tab) => tab.tab === 'cadastro')
+    showAdvancedTabs ? allTabs : allTabs.filter((tab) => tab.tab === 'dados')
   ).filter((tab) => canViewTab[tab.tab] ?? true)
 
   return (
@@ -92,7 +97,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
             <ClientActions params={params} data={data} entityType="supplier" />
           }
         />
-        <Tabs value={params.tab} defaultValue="cadastro" variant="pill">
+        <Tabs value={activeTab} defaultValue="dados" variant="pill">
           {tabs.length > 1 && (
             <TabsList>
               {tabs.map((tab) => (
@@ -104,7 +109,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
                     {tab?.count && tab?.count > 0 ? (
                       <Badge
                         variant={
-                          params.tab === tab.tab ? 'light' : 'neutralLight'
+                          activeTab === tab.tab ? 'light' : 'neutralLight'
                         }
                         className="ml-2"
                       >

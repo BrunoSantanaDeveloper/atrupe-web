@@ -2,6 +2,7 @@
 
 // Next
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -30,13 +31,17 @@ interface Props {
 }
 
 export default function ClientDetailLayout({ children, params }: Props) {
+  // A aba ativa vem do último segmento do caminho (dados, orcamentos…): o
+  // layout fica em [id] e não recebe o segmento da aba em params
+  const pathname = usePathname()
+  const activeTab = pathname?.split('/').filter(Boolean).at(-1) ?? 'dados'
   const { data, isLoading } = useClientById({ id: params.id })
   const { canManageClients } = usePlanFeatures()
   const { hasPermission, hasAllPermissions } = usePermissions()
 
   // Cada aba avançada só aparece se o usuário tiver a permissão do seu conteúdo.
   const canViewTab: Record<string, boolean> = {
-    cadastro: true,
+    dados: true,
     orcamentos: hasPermission('sale:quotation:view'),
     ordens: hasPermission('sale:order:view'),
     financeiro: hasAllPermissions([
@@ -55,7 +60,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
   const allTabs: TabNavType[] = [
     {
       value: 'REGISTER',
-      tab: 'cadastro',
+      tab: 'dados',
       label: 'Cadastro',
     },
     {
@@ -78,7 +83,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
   ]
 
   const tabs = (
-    showAdvancedTabs ? allTabs : allTabs.filter((tab) => tab.tab === 'cadastro')
+    showAdvancedTabs ? allTabs : allTabs.filter((tab) => tab.tab === 'dados')
   ).filter((tab) => canViewTab[tab.tab] ?? true)
 
   return (
@@ -106,7 +111,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
             <ClientActions params={params} data={data} entityType="client" />
           }
         />
-        <Tabs value={params.tab} defaultValue="cadastro" variant="pill">
+        <Tabs value={activeTab} defaultValue="dados" variant="pill">
           {tabs.length > 1 && (
             <TabsList>
               {tabs.map((tab) => (
@@ -116,7 +121,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
                     {tab?.count && tab?.count > 0 ? (
                       <Badge
                         variant={
-                          params.tab === tab.tab ? 'light' : 'neutralLight'
+                          activeTab === tab.tab ? 'light' : 'neutralLight'
                         }
                         className="ml-2"
                       >
