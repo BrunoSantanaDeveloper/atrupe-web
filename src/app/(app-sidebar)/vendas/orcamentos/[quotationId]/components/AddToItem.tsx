@@ -637,7 +637,10 @@ export function AddToItem({
               size="sm"
               type="button"
               isLoading={saving}
-              disabled={!description.trim() || !costCents}
+              // Enquanto a prévia do novo custo não volta, o preço na tela é
+              // o do custo anterior (keepPreviousData): gravar agora levaria
+              // o preço errado
+              disabled={!description.trim() || !costCents || isFetching}
               onClick={addLoose}
             >
               Acrescentar ao item
