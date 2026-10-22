@@ -319,8 +319,11 @@ export function Quotations({ searchParams }: SearchParamsType) {
                 emptyMessage="Nenhum orçamento disponível para exportação"
               />
             </PermissionGate>
+            {/* O mesmo caminho do menu: a venda rápida nasce com os padrões e
+                abre direto na escolha do item. O formulário "Nova venda
+                rápida" fica só para quando falta configuração */}
             <NewQuickSaleTriggerButton
-              onOpenChange={() => setOpenDialog('quick-sale')}
+              onOpenChange={() => router.push(`${pathname}?novo=venda-rapida`)}
             />
             <NewQuotationTriggerButton
               onOpenChange={() => {
