@@ -243,7 +243,12 @@ export function QuotationsData({
                         {group?.quotations?.length
                           ? group?.quotations.map((quotation) => {
                               const link = `/vendas/orcamentos/${quotation?.id}`
-                              const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
+                              // Sem descrição (a venda rápida pode não ter), só a referência: antes
+                              // aparecia "6-T1 - null"
+                              const reference = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''}`
+                              const description = quotation?.description
+                                ? `${reference} - ${quotation.description}`
+                                : reference
 
                               return (
                                 <TableRow
