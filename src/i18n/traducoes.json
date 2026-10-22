@@ -4939,6 +4939,10 @@
   "es": "Elija un sector activo",
   "en": "Choose an active department"
  },
+ "523871aadf": {
+  "es": "La caja n.º {number} se abrió el {valor} y quedó abierta. Ciérrela, revisando el cajón, para volver a cobrar: no se registra nada al día siguiente con la caja anterior abierta.",
+  "en": "Register no. {number} was opened on {valor} and left open. Close it, checking the drawer, to take payments again: nothing can be posted the next day while the previous register is open."
+ },
  "52420a2157": {
   "es": "Activos",
   "en": "Active"
@@ -8682,10 +8686,6 @@
  "8d6d8d8c74": {
   "es": "Finalizar de todos modos",
   "en": "Finish anyway"
- },
- "8d7d062a1d": {
-  "es": "La caja n.º {number} se abrió el {valor} y quedó abierta. Ciérrela, revisando el cajón, para volver a cobrar: no se registra nada al día siguiente con la caja anterior abierta (FC-14).",
-  "en": "Register no. {number} was opened on {valor} and left open. Close it, checking the drawer, to take payments again: nothing can be posted the next day while the previous register is open (FC-14)."
  },
  "8d89536d0a": {
   "es": "Mejore su plan para acceder a esta funcionalidad.",

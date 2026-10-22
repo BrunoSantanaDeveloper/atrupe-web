@@ -427,7 +427,6 @@
     "registerActivity": "Movimiento de la caja",
     "awaitingPickup2": "Esperando retiro",
     "theWorkdayEndsAtClose": "La jornada termina a las {workdayEnd}: cierre la caja antes de salir. Si queda abierta, mañana no podrá cobrar ni registrar nada.",
-    "registerNoWasOpenedOn": "La caja n.º {number} se abrió el {valor} y quedó abierta. Ciérrela, revisando el cajón, para volver a cobrar: no se registra nada al día siguiente con la caja anterior abierta (FC-14).",
     "registersLeftOpen": "Cajas olvidadas abiertas",
     "noOpenedOn": "{name} n.º {number} · {operator} · abierta el {valor}",
     "closeWithJustification": "Cerrar con justificación",

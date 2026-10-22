@@ -431,7 +431,7 @@
     "registerActivity": "Movimento do caixa",
     "awaitingPickup2": "Aguardando retirada",
     "theWorkdayEndsAtClose": "O expediente termina às {workdayEnd}: feche o caixa antes de sair. Aberto, amanhã ele não recebe nem lança nada.",
-    "registerNoWasOpenedOn": "O caixa nº {number} foi aberto em {valor} e ficou aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se lança nada no dia seguinte com o caixa anterior aberto (FC-14).",
+    "oCaixaNFoiAberto": "O caixa nº {number} foi aberto em {valor} e ficou aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se lança nada no dia seguinte com o caixa anterior aberto (FC-14).",
     "registersLeftOpen": "Caixas esquecidos abertos",
     "noOpenedOn": "{name} nº {number} · {operator} · aberto em {valor}",
     "closeWithJustification": "Fechar com justificativa",

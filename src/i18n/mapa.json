@@ -36540,6 +36540,16 @@
    "src/app/(app-sidebar)/financeiro/_components/transactions/NewTransaction/index.tsx:289 (atributo:label)"
   ]
  },
+ "financeiro.frenteDeCaixa.oCaixaNFoiAberto": {
+  "pt": "O caixa nº {number} foi aberto em {valor} e ficou aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se lança nada no dia seguinte com o caixa anterior aberto (FC-14).",
+  "vars": [
+   "number",
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:327 (frase)"
+  ]
+ },
  "financeiro.frenteDeCaixa.onlyCustomersWithAnApproved": {
   "pt": "Só cliente com cadastro aprovado e liberado para a forma escolhida pode ser faturado. Pré-cadastro não fatura: complete o cadastro em Cadastros antes.",
   "usos": [
@@ -36666,16 +36676,6 @@
   "pt": "Gaveta do caixa · vai para a conta Caixa no fechamento",
   "usos": [
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit.tsx:289 (jsx)"
-  ]
- },
- "financeiro.frenteDeCaixa.registerNoWasOpenedOn": {
-  "pt": "O caixa nº {number} foi aberto em {valor} e ficou aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se lança nada no dia seguinte com o caixa anterior aberto (FC-14).",
-  "vars": [
-   "number",
-   "valor"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:327 (frase)"
   ]
  },
  "financeiro.frenteDeCaixa.registerOpenedBy": {

@@ -427,7 +427,6 @@
     "registerActivity": "Register activity",
     "awaitingPickup2": "Awaiting pickup",
     "theWorkdayEndsAtClose": "The workday ends at {workdayEnd}: close the register before you leave. If it stays open, it can't take payments or post anything tomorrow.",
-    "registerNoWasOpenedOn": "Register no. {number} was opened on {valor} and left open. Close it, checking the drawer, to take payments again: nothing can be posted the next day while the previous register is open (FC-14).",
     "registersLeftOpen": "Registers left open",
     "noOpenedOn": "{name} no. {number} · {operator} · opened on {valor}",
     "closeWithJustification": "Close with justification",

@@ -251,8 +251,10 @@ export function PDV() {
               </PermissionGate>
             )
           }
+          // A engrenagem fica de fora da sessão: a frente (gaveta, contas do
+          // PIX e do cartão) é configurada antes de abrir o primeiro caixa
           secondaryCta={
-            session ? (
+            isLoading ? undefined : (
               <div className="flex items-center gap-2">
                 <PermissionGate permissions={['financial:pdv_settings:edit']}>
                   <ActionButton
@@ -264,7 +266,7 @@ export function PDV() {
                   />
                 </PermissionGate>
                 {/* Ordem da fila, com o mesmo botão do Fluxo financeiro */}
-                {aba === 'receber' && (
+                {session && aba === 'receber' && (
                   <ActionButton
                     size="iconMd"
                     variant="neutralOutline"
@@ -310,7 +312,7 @@ export function PDV() {
                   </PermissionGate>
                 )}
               </div>
-            ) : undefined
+            )
           }
         />
 
@@ -328,7 +330,7 @@ export function PDV() {
             O caixa nº {session.number} foi aberto em{' '}
             {new Date(session.openedAt).toLocaleDateString('pt-BR')} e ficou
             aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se
-            lança nada no dia seguinte com o caixa anterior aberto (FC-14).
+            lança nada no dia seguinte com o caixa anterior aberto.
           </Card>
         )}
 
