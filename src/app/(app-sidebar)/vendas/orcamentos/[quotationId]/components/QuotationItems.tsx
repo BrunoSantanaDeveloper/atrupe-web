@@ -1,7 +1,6 @@
 // React
 import { useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {
@@ -110,7 +109,6 @@ export function QuotationItems({ data }: Props) {
   // VR-4: a venda rápida chega aqui com ?adicionar=1 e o primeiro gesto da
   // venda é escolher o que está sendo vendido — o modal já vem aberto. O
   // parâmetro sai da URL para o modal não reabrir ao recarregar a página
-  const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const shouldOpenAdd = searchParams?.get('adicionar') === '1'
@@ -119,7 +117,9 @@ export function QuotationItems({ data }: Props) {
     if (!shouldOpenAdd || actionDisabled('addItem', status)) return
 
     openChangeModal(true, 'productsList')
-    router.replace(pathname, { scroll: false })
+    // Tira o parâmetro sem navegar: o router.replace refazia a página, a tela
+    // remontava com o contexto zerado e o modal fechava logo depois de abrir
+    window.history.replaceState(window.history.state, '', pathname)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldOpenAdd, status])
 
