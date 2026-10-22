@@ -24,6 +24,7 @@ import {
   QuickSaleCheckoutCard,
   QuickSaleCheckoutButton,
 } from './QuickSaleCheckout'
+import { useDiscardEmptyQuickSale } from './useDiscardEmptyQuickSale'
 
 // Contexts
 import { QuotationProvider } from '@/contexts/quotationContext'
@@ -46,6 +47,8 @@ interface Props {
 export function QuickSaleQuotation({ data, previousUrl }: Props) {
   const sale = useQuickSale(data)
   const { checkout } = sale
+  // Sair sem lançar nenhum item não deixa registro vazio na lista
+  useDiscardEmptyQuickSale(data)
 
   // Enviar é aprovar (FC-12): para a tela, a venda que saiu é uma venda
   // aprovada, e os itens ficam só para leitura, pelas mesmas regras que já
