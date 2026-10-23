@@ -357,7 +357,6 @@ export function BankAccounts(_: SearchParamsType) {
           <AccountDialog
             open={dialogOpen}
             account={editing}
-            accounts={accounts}
             methods={methods}
             onOpenChange={setDialogOpen}
             onSaved={refresh}

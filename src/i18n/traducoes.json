@@ -7687,6 +7687,10 @@
   "es": "No calculado",
   "en": "Not calculated"
  },
+ "7d4aef75ae": {
+  "es": "Lo que esta cuenta cobra y paga. La cuenta nueva viene con todo desmarcado: marque las formas que usa.",
+  "en": "What this account receives and pays. A new account starts with everything unchecked: check the methods it uses."
+ },
  "7d4c67405c": {
   "es": "Error al eliminar el grupo",
   "en": "Error deleting group"
