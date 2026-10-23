@@ -1,10 +1,10 @@
-// O modal "Qual item deseja adicionar?" (ORC-1, revisto em 06/10/2026): a
-// busca pelo nome é o caminho principal e os setores viram filtro, em abas
-// segmentadas, em vez de uma grade de setores como primeiro passo. Com
-// centenas de produtos por setor, procurar pelo nome é o que o vendedor faz
-// todo dia. "Composição" continua como o último botão, tracejado, para o
-// que não existe pronto (ORC-11). Os materiais de venda direta aparecem na
-// mesma busca, marcados como material (ORG-1).
+// O modal "Qual item deseja adicionar?". O primeiro passo é a grade de
+// setores (decisão do dono do produto, 23/10/2026, que volta atrás no ORC-1
+// de 06/10): o vendedor escolhe o setor e cai na lista dele, com a busca pelo
+// nome e os setores em abas para trocar sem voltar. "Composição" é o último
+// botão da grade, tracejado, para o que não existe pronto (ORC-11). Os
+// materiais de venda direta aparecem na busca, marcados como material
+// (ORG-1).
 
 // React
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -38,7 +38,9 @@ import {
   IconBoxOff,
   IconPuzzle,
   IconSearch,
+  IconArrowLeft,
   IconQuestionMark,
+  IconLayoutGridAdd,
 } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
@@ -145,13 +147,16 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
 
   const [search, setSearch] = useState('')
   const [sectorId, setSectorId] = useState(ALL)
+  // Primeiro a grade de setores; escolhido o setor, a lista dele
+  const [step, setStep] = useState<'sectors' | 'list'>('sectors')
 
-  // Revalida a lista de produtos e limpa a busca sempre que o modal abrir
+  // Revalida a lista de produtos e volta à grade sempre que o modal abrir
   useEffect(() => {
     if (open) {
       refetch()
       setSearch('')
       setSectorId(ALL)
+      setStep('sectors')
     }
   }, [open, refetch])
 
@@ -257,6 +262,81 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
       }
     },
   })
+
+  // A grade conta o botão "Composição" quando o plano tem a composição
+  const tiles = sectors.length + 1
+  const gridCols =
+    tiles <= 1
+      ? 'grid-cols-1'
+      : tiles === 2
+        ? 'grid-cols-2'
+        : tiles === 3
+          ? 'grid-cols-3'
+          : 'grid-cols-2 sm:grid-cols-4'
+
+  if (step === 'sectors') {
+    return (
+      <Dialog open={open} onOpenChange={openChangeModal}>
+        <DialogContent className="sm:max-w-fit">
+          <DialogHeader className="border-0 bg-transparent pb-0">
+            <DialogTitle className="flex flex-col items-center justify-center gap-4">
+              <FeaturedIcon tone="brand" Icon={IconLayoutGridAdd} size="lg" />
+              <span className="w-full text-center text-lg font-semibold text-gray-900">
+                Qual item deseja adicionar?
+              </span>
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Escolha o setor do item
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            {loadingSectors ? (
+              <div className="flex justify-center py-8">
+                <span className="size-6 animate-spin rounded-full border-2 border-gray-300 border-t-transparent" />
+              </div>
+            ) : (
+              <div className={cn('grid gap-3', gridCols)}>
+                {sectors.map((sector) => (
+                  <Button
+                    key={sector.id}
+                    type="button"
+                    variant="neutralOutline"
+                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border-none p-2 text-gray-600 shadow-sm"
+                    onClick={() => {
+                      setSectorId(sector.id)
+                      form.setValue('categoryId', '')
+                      setStep('list')
+                    }}
+                  >
+                    <Icon
+                      icon={sectorIcons[sector.icon]?.icon || IconQuestionMark}
+                      size="lg"
+                      className="mb-2"
+                    />
+                    <span className="text-wrap text-xs">{sector.name}</span>
+                  </Button>
+                ))}
+                {/* Composição é o último botão, e é a exceção (ORC-11): para
+                    quando o produto não existe pronto */}
+                <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border border-dashed border-gray-300 bg-gray-50 p-2 text-gray-600 shadow-none"
+                    title="Montar um item que não existe pronto"
+                    onClick={() => openChangeModal(true, 'composeItem')}
+                  >
+                    <Icon icon={IconPuzzle} size="lg" className="mb-2" />
+                    <span className="text-wrap text-xs">Composição</span>
+                  </Button>
+                </FeatureGate>
+              </div>
+            )}
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
+    )
+  }
 
   return (
     <Dialog open={open} onOpenChange={openChangeModal}>
@@ -451,7 +531,18 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
               quando o produto não existe pronto. Tracejado, para não
               disputar atenção com a busca. O item montado vai para a API
               desde a Fase 4.5 */}
-          <div>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="neutralOutline"
+              LeftIcon={IconArrowLeft}
+              onClick={() => {
+                setSearch('')
+                setStep('sectors')
+              }}
+            >
+              Voltar
+            </Button>
             <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
               <Button
                 type="button"

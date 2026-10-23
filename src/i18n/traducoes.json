@@ -1399,6 +1399,10 @@
   "es": "¿Reactivar {name}?",
   "en": "Reactivate {name}?"
  },
+ "17fe69b134": {
+  "es": "Elija el sector del ítem",
+  "en": "Choose the item’s department"
+ },
  "18021cc58e": {
   "es": "Entiendo que perderé el acceso a este entorno por completo.",
   "en": "I understand that I will completely lose access to this environment."
