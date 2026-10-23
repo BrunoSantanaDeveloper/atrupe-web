@@ -301,32 +301,43 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                     key={sector.id}
                     type="button"
                     variant="neutralOutline"
-                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border-none p-2 text-gray-600 shadow-sm"
+                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border-none p-2 text-gray-600 shadow-sm [&_svg]:!size-10"
                     onClick={() => {
                       setSectorId(sector.id)
                       form.setValue('categoryId', '')
                       setStep('list')
                     }}
                   >
+                    {/* 40 px, o tamanho da grade em produção: o botão é uma
+                        ilustração de 120 px, fora da escala sm/md/lg. O
+                        Button força o SVG a 20 px; o [&_svg]:!size-10 do
+                        botão vence (com !, porque a regra do Button vem depois no CSS) */}
                     <Icon
                       icon={sectorIcons[sector.icon]?.icon || IconQuestionMark}
                       size="lg"
-                      className="mb-2"
+                      className="mb-2 size-10"
                     />
                     <span className="text-wrap text-xs">{sector.name}</span>
                   </Button>
                 ))}
                 {/* Composição é o último botão, e é a exceção (ORC-11): para
-                    quando o produto não existe pronto */}
-                <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+                    quando o produto não existe pronto. É do PRO: monta o item
+                    com processos e materiais, cadastros do PRO (decisão do
+                    dono do produto, 23/10/2026). Nas cores do ícone do modal,
+                    para se distinguir dos setores */}
+                <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
                   <Button
                     type="button"
                     variant="neutralOutline"
-                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border border-dashed border-gray-300 bg-gray-50 p-2 text-gray-600 shadow-none"
+                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border border-dashed border-brand-200 bg-brand-50 p-2 text-brand-600 shadow-none hover:bg-brand-100 [&_svg]:!size-10"
                     title="Montar um item que não existe pronto"
                     onClick={() => openChangeModal(true, 'composeItem')}
                   >
-                    <Icon icon={IconPuzzle} size="lg" className="mb-2" />
+                    <Icon
+                      icon={IconPuzzle}
+                      size="lg"
+                      className="mb-2 size-10"
+                    />
                     <span className="text-wrap text-xs">Composição</span>
                   </Button>
                 </FeatureGate>
@@ -543,13 +554,13 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
             >
               Voltar
             </Button>
-            <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+            <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
               <Button
                 type="button"
                 variant="neutralOutline"
                 LeftIcon={IconPuzzle}
                 className={cn(
-                  'border-dashed border-gray-300 bg-gray-50 text-gray-600 shadow-none',
+                  'border-dashed border-brand-200 bg-brand-50 text-brand-600 shadow-none hover:bg-brand-100',
                 )}
                 title="Montar um item que não existe pronto"
                 onClick={() => openChangeModal(true, 'composeItem')}
