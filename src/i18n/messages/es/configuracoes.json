@@ -501,7 +501,6 @@
     "chooseTheBank": "Elija el banco",
     "openingBalance": "Saldo inicial",
     "itIsTheOnlyBalance": "Es el único saldo digitado. De ahí en adelante el saldo siempre se calcula con los movimientos.",
-    "openingBalanceOfOnIt": "Saldo inicial de {openingBalance} en {valor}. No se modifica después de creada: el saldo se calcula con los movimientos.",
     "noClosing": "Sin cierre",
     "theProcessorDoesnTOpen": "El operador no abre ni cierra caja: el día muestra solo el total que ingresó, por el valor total. La revisión ocurre en la liquidación, cuando el dinero llega al banco con la tasa ya descontada.",
     "offReceivesAndPaysWithout": "Desactivado: cobra y paga sin abrir ni cerrar caja. El saldo y el historial siguen registrados.",

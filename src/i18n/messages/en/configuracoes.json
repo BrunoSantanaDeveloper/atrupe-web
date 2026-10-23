@@ -501,7 +501,6 @@
     "chooseTheBank": "Choose the bank",
     "openingBalance": "Opening balance",
     "itIsTheOnlyBalance": "It is the only balance typed in. From then on the balance is always calculated from the entries.",
-    "openingBalanceOfOnIt": "Opening balance of {openingBalance} on {valor}. It can't be changed after the account is created: the balance is calculated from the entries.",
     "noClosing": "No closing",
     "theProcessorDoesnTOpen": "The processor doesn't open or close a register: the day shows only the total that came in, at full value. Checking happens at settlement, when the money lands in the bank with the fee already deducted.",
     "offReceivesAndPaysWithout": "Off: receives and pays without opening or closing the register. The balance and history are still recorded.",

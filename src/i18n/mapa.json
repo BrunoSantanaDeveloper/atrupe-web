@@ -21629,16 +21629,6 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:279 (jsx)"
   ]
  },
- "configuracoes.financeiro.openingBalanceOfOnIt": {
-  "pt": "Saldo inicial de {openingBalance} em {valor}. Não se altera depois de criada: o saldo é calculado pelos lançamentos.",
-  "vars": [
-   "openingBalance",
-   "valor"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:309 (frase)"
-  ]
- },
  "configuracoes.financeiro.operating": {
   "pt": "Operacional",
   "usos": [
@@ -21857,6 +21847,16 @@
   "pt": "Se repete",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:230 (atributo:label)"
+  ]
+ },
+ "configuracoes.financeiro.saldoInicialDeEmNao": {
+  "pt": "Saldo inicial de {openingBalance} em {valor}. Não se altera depois de criada: o saldo é calculado pelos lançamentos.",
+  "vars": [
+   "openingBalance",
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:309 (frase)"
   ]
  },
  "configuracoes.financeiro.searchBy": {

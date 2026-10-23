@@ -151,6 +151,11 @@ export function AccountDialog({
   }, [open, account, methods])
 
   const isNew = !draft.id
+  // O saldo inicial e a data dele se corrigem enquanto a conta não tem
+  // nenhum lançamento (regra de 23/10/2026; a API só trava a data depois do
+  // histórico, CX-2). Com lançamento, a correção é uma ação própria, com
+  // permissão e justificativa, no servidor
+  const canEditOpening = isNew || !account?.hasHistory
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) =>
     setDraft((current) => ({ ...current, [key]: value }))
@@ -274,7 +279,7 @@ export function AccountDialog({
               )}
             </div>
 
-            {isNew ? (
+            {canEditOpening ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="account-opening">Saldo inicial</Label>
@@ -309,8 +314,9 @@ export function AccountDialog({
             ) : (
               <p className="text-sm text-gray">
                 Saldo inicial de {money(draft.openingBalance)} em{' '}
-                {draft.openingDate.split('-').reverse().join('/')}. Não se
-                altera depois de criada: o saldo é calculado pelos lançamentos.
+                {draft.openingDate.split('-').reverse().join('/')}. A conta já
+                tem lançamentos, então o saldo inicial não se altera por aqui: o
+                saldo é calculado pelos lançamentos.
               </p>
             )}
           </section>

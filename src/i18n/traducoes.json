@@ -675,10 +675,6 @@
   "es": "12 meses anteriores",
   "en": "Previous 12 months"
  },
- "0af58486cf": {
-  "es": "Saldo inicial de {openingBalance} en {valor}. No se modifica después de creada: el saldo se calcula con los movimientos.",
-  "en": "Opening balance of {openingBalance} on {valor}. It can't be changed after the account is created: the balance is calculated from the entries."
- },
  "0b0993e9a4": {
   "es": "· {valor}: {valor2}",
   "en": "· {valor}: {valor2}"
@@ -4150,6 +4146,10 @@
  "45cf8e8b23": {
   "es": "Busque el cliente de la venta de mostrador",
   "en": "Search for the counter-sale customer"
+ },
+ "45d1e09024": {
+  "es": "Saldo inicial de {openingBalance} el {valor}. La cuenta ya tiene movimientos, así que el saldo inicial no se cambia aquí: el saldo se calcula por los movimientos.",
+  "en": "Opening balance of {openingBalance} on {valor}. The account already has entries, so the opening balance can’t be changed here: the balance is calculated from the entries."
  },
  "45ddf96a4f": {
   "es": "rechazo",

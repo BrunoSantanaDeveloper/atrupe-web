@@ -510,7 +510,7 @@
     "openingBalance": "Saldo inicial",
     "em": "Em",
     "itIsTheOnlyBalance": "É o único saldo digitado. Daí em diante o saldo é sempre calculado pelos lançamentos.",
-    "openingBalanceOfOnIt": "Saldo inicial de {openingBalance} em {valor}. Não se altera depois de criada: o saldo é calculado pelos lançamentos.",
+    "saldoInicialDeEmNao": "Saldo inicial de {openingBalance} em {valor}. Não se altera depois de criada: o saldo é calculado pelos lançamentos.",
     "noClosing": "Sem fechamento",
     "theProcessorDoesnTOpen": "A operadora não abre nem fecha caixa: o dia mostra só o total que entrou, pelo valor cheio. A conferência acontece na liquidação, quando o dinheiro cai no banco já com a taxa descontada.",
     "offReceivesAndPaysWithout": "Desligado: recebe e paga sem abrir nem fechar caixa. O saldo e o histórico continuam registrados.",
