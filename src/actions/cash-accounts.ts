@@ -73,6 +73,7 @@ const toAccount = (row: Raw): BankAccount => ({
   blindCount: !!row.blindCount,
   shortageTolerance: row.shortageTolerance ?? null,
   isActive: row.isActive ?? true,
+  createdAt: row.createdAt ?? undefined,
   hasHistory: !!row.hasHistory,
   openingBalance: row.openingBalance ?? 0,
   openingDate: row.openingDate ?? '',

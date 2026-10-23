@@ -1555,6 +1555,10 @@
   "es": "Complete la pestaña Producto y guarde. El producto se reabre en esta pestaña para que usted arme las etapas, con los procesos, materiales y tiempos de cada una.",
   "en": "Fill in the Product tab and save. The product reopens on this tab so you can set up the steps, with the processes, materials and times of each."
  },
+ "1b28493661": {
+  "es": "Ninguna cuenta paga con esta forma",
+  "en": "No account pays with this method"
+ },
  "1b53e1b79c": {
   "es": "Eliminar grupo",
   "en": "Delete group"
@@ -2410,6 +2414,10 @@
  "2a76d7d6f6": {
   "es": "Importaciones",
   "en": "Imports"
+ },
+ "2a79ad9e5d": {
+  "es": "Ninguna cuenta cobra con esta forma",
+  "en": "No account receives with this method"
  },
  "2a8cdd7eb6": {
   "es": "Ningún registro",
@@ -9438,6 +9446,10 @@
  "99b89ab21b": {
   "es": "Saldo previsto",
   "en": "Projected balance"
+ },
+ "99d104e8db": {
+  "es": "Elija la forma de pago",
+  "en": "Choose the payment method"
  },
  "99e7fcbd52": {
   "es": "¿No tiene una cuenta?",
