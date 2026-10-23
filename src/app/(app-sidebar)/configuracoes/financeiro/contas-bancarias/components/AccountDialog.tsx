@@ -313,10 +313,13 @@ export function AccountDialog({
               </div>
             ) : (
               <p className="text-sm text-gray">
-                Saldo inicial de {money(draft.openingBalance)} em{' '}
-                {draft.openingDate.split('-').reverse().join('/')}. A conta já
-                tem lançamentos, então o saldo inicial não se altera por aqui: o
-                saldo é calculado pelos lançamentos.
+                {/* A conta criada no cadastro da empresa vem sem data */}
+                Saldo inicial de {money(draft.openingBalance)}
+                {draft.openingDate
+                  ? ` em ${draft.openingDate.split('-').reverse().join('/')}`
+                  : ''}
+                . A conta já tem lançamentos, então o saldo inicial não se
+                altera por aqui: o saldo é calculado pelos lançamentos.
               </p>
             )}
           </section>

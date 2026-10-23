@@ -10427,6 +10427,10 @@
   "es": "Vista previa de la propuesta",
   "en": "Preview proposal"
  },
+ "a9054372a7": {
+  "es": "Saldo inicial de",
+  "en": "Opening balance of"
+ },
  "a918a4ad65": {
   "es": "Elija un sector que tenga colaboradores para ver la nómina.",
   "en": "Choose a department that has team members to see the payroll."
@@ -12022,6 +12026,10 @@
  "c3ea0c7bb4": {
   "es": "Facturación",
   "en": "Billing"
+ },
+ "c3ee6dbd2e": {
+  "es": ". La cuenta ya tiene movimientos, así que el saldo inicial no se cambia aquí: el saldo se calcula a partir de los movimientos.",
+  "en": ". The account already has entries, so the opening balance cannot be changed here: the balance is calculated from the entries."
  },
  "c40a2ef4b6": {
   "es": "Se crearán {combinations} combinaciones ({valor} marcas × {valor2} colores).",
@@ -15326,6 +15334,10 @@
  "fea3bde0c1": {
   "es": "Ningún cliente disponible para exportar",
   "en": "No customers available for export"
+ },
+ "fec6ebe80a": {
+  "es": "el {valor}",
+  "en": "on {valor}"
  },
  "fec96e36b7": {
   "es": "Ocultar observaciones para la producción",
