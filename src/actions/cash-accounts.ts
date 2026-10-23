@@ -66,7 +66,12 @@ const toAccount = (row: Raw): BankAccount => ({
   id: row.id,
   name: row.name,
   kind: (row.kind ?? 'BANK') as AccountKind,
-  bankName: row.bank?.name ?? '',
+  // Na operadora de cartão, o nome dela (a conta fica no banco genérico)
+  bankName:
+    row.kind === 'CARD'
+      ? (row.operator ?? (row.bank?.code === 'CARD' ? '' : row.bank?.name)) ||
+        ''
+      : (row.bank?.name ?? ''),
   bankCode: row.bank?.code ?? '',
   bankIcon: row.bank?.icon || iconByCode[row.bank?.code] || '',
   cashControl: !!row.cashControl,
@@ -123,12 +128,18 @@ export const saveBankAccount = async (
     id?: string
   },
 ) => {
-  // A gaveta é sempre do "banco" da empresa (código 000)
-  const bankId = await bankIdOf(input.kind === 'CASH' ? '000' : input.bankCode)
-  if (!bankId) return fail('Escolha o banco da conta', null)
+  // A gaveta é sempre do "banco" da empresa (código 000). A operadora de
+  // cartão não escolhe banco: a API a põe no banco genérico e guarda o nome
+  // dela, o do campo "Operadora" (revisão de 23/10/2026)
+  const card = input.kind === 'CARD'
+  const bankId = card
+    ? undefined
+    : await bankIdOf(input.kind === 'CASH' ? '000' : input.bankCode)
+  if (!card && !bankId) return fail('Escolha o banco da conta', null)
   const data = {
     name: input.name,
-    bankId,
+    ...(bankId ? { bankId } : {}),
+    ...(card ? { operator: input.bankName.trim() || null } : {}),
     kind: input.kind,
     cashControl: input.cashControl,
     blindCount: input.blindCount,
