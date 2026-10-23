@@ -248,9 +248,9 @@ export function NewClientModal({
     const { responsibilities, ...dataWithoutResponsibilities } = data
     let formData = {
       ...dataWithoutResponsibilities,
-      // responsibleId vazio ('') não é UUID válido; envia undefined para omitir
-      // do payload e evitar erro de validação (mantém "Sem Responsável").
-      responsibleId: dataWithoutResponsibilities.responsibleId || undefined,
+      // "Sem responsável" vai como null: a API limpa o campo. Omitido, a
+      // edição mantinha o responsável anterior (revisão de 23/10/2026)
+      responsibleId: dataWithoutResponsibilities.responsibleId || null,
       contacts: responsibilities || [],
     }
 
