@@ -160,6 +160,15 @@ export function PaymentDialog({
     })
   }, [accountsRes, accountOptions, bankAccountId, setValue])
 
+  // O banco só acompanha a conta escolhida: um banco pode ter mais de uma
+  // conta, então ele aparece travado, para manter o desenho de sempre
+  const chosenBank =
+    accountOptions.find((account) => account.id === bankAccountId)?.bankName ??
+    ''
+  useEffect(() => {
+    setValue('bankId', chosenBank)
+  }, [chosenBank, setValue])
+
   // Limpa a categoria quando a natureza é alterada
   useEffect(() => {
     setValue('differenceCategoryId', '')
@@ -293,6 +302,16 @@ export function PaymentDialog({
                 width="flex-[1_0_250px]"
                 type={type}
               />
+              <FormSelect
+                name="bankId"
+                label="Banco"
+                width="flex-[1_0_250px]"
+                placeholder="—"
+                options={
+                  chosenBank ? [{ value: chosenBank, label: chosenBank }] : []
+                }
+                disabled
+              />
               {/* Uma conta só aceita a forma: ela já vem e o campo fica travado */}
               <FormSelect
                 name="bankAccountId"
@@ -312,10 +331,7 @@ export function PaymentDialog({
                 }
                 options={accountOptions.map((account) => ({
                   value: account.id,
-                  label:
-                    account.bankName && account.bankName !== account.name
-                      ? `${account.name} · ${account.bankName}`
-                      : account.name,
+                  label: account.name,
                 }))}
                 disabled={accountOptions.length <= 1}
               />
