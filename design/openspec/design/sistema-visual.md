@@ -671,7 +671,7 @@ Dicionário (um glifo, um gesto; `consts/icones.ts`):
 | exportar / importar                              | `IconDownload` / `IconUpload`                                                                  |
 | emitir NF                                        | `IconSend`; ver NF `IconFileInvoice`; consultar status `IconRefresh`; reprocessar `IconRepeat` |
 | navegar para ficha/documento                     | `IconFileText` + chevron                                                                       |
-| receber / pagar                                  | `IconCash` / `IconCashBanknoteOff`; nunca polegares                                            |
+| receber / pagar                                  | no financeiro, polegar para cima / para baixo (a "mãozinha" do legado, decisão do produto de 23/10/2026); no PDV, `IconCash` |
 | faturar                                          | `IconReceipt`; editar parcelas `IconCalendarDollar`                                            |
 | menu de linha                                    | `IconDotsVertical`                                                                             |
 | novo                                             | `IconPlus`                                                                                     |
