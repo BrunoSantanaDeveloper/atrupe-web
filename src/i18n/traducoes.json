@@ -5703,6 +5703,10 @@
   "es": "Límite de crédito actualizado",
   "en": "Credit limit updated"
  },
+ "5eb4e1cb47": {
+  "es": "es la cuenta que ya viene marcada al cobrar con esa forma — se puede cambiar en el momento. Cada forma tiene una sola cuenta predeterminada: marcarla aquí le quita la predeterminación a la otra cuenta.",
+  "en": "is the account preselected when receiving with that method — you can change it on the spot. Each method has only one default account: checking it here removes the default from the other account."
+ },
  "5ed7a3e737": {
   "es": "Extracto",
   "en": "Statement"
@@ -7478,6 +7482,10 @@
  "7a74260708": {
   "es": "Sugerencia",
   "en": "Suggested"
+ },
+ "7a970debb5": {
+  "es": "Límite de crédito predeterminado",
+  "en": "Default credit limit"
  },
  "7a971b02f1": {
   "es": "Desactivado, el activo entra solo con la depreciación en el costo del sector, sin unidad, productividad ni configuraciones.",
@@ -9958,6 +9966,10 @@
  "a24a86f871": {
   "es": "Longitud",
   "en": "Length"
+ },
+ "a2597faca6": {
+  "es": "Límite de crédito predeterminado actualizado",
+  "en": "Default credit limit updated"
  },
  "a26ec7feac": {
   "es": "Registrar ingreso de caja",

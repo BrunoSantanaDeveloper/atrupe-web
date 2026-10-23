@@ -150,7 +150,7 @@ export function CreditLimit() {
         queryKey: ['credit-limit'],
       })
 
-      toast.success('Limite de crédito atualizado')
+      toast.success('Limite de crédito padrão atualizado')
       setOpen(false)
       handleClose()
     } catch (error) {
@@ -187,7 +187,7 @@ export function CreditLimit() {
             aria-describedby="alert-dialog-description"
           >
             <DialogHeader>
-              <DialogTitle>Limite de crédito</DialogTitle>
+              <DialogTitle>Limite de crédito padrão</DialogTitle>
             </DialogHeader>
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <Tabs

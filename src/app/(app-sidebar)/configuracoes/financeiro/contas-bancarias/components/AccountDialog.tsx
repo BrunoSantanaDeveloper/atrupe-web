@@ -423,7 +423,8 @@ export function AccountDialog({
               <p className="text-sm text-gray">
                 O que esta conta recebe e paga. <strong>Padrão</strong> é a
                 conta que já vem marcada ao receber naquela forma — dá para
-                trocar na hora.
+                trocar na hora. Cada forma tem uma conta padrão só: marcar aqui
+                tira o padrão da outra conta.
               </p>
             </div>
             <div className="overflow-x-auto rounded-lg border border-gray-200">
@@ -488,10 +489,10 @@ export function AccountDialog({
                               <span className="text-gray">
                                 {rule.isDefault
                                   ? other
-                                    ? `sai de ${other.name}`
+                                    ? `No lugar de ${other.name}`
                                     : 'padrão'
                                   : other
-                                    ? `hoje: ${other.name}`
+                                    ? `Padrão hoje: ${other.name}`
                                     : '—'}
                               </span>
                             </label>

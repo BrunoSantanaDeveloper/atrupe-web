@@ -38,7 +38,7 @@ export function FinanceSettingsClient() {
           review: 'todo',
         },
         {
-          title: 'Pagamentos',
+          title: 'Condições de pagamento',
           icon: IconCreditCardPay,
           description: 'Cadastre as condições de pagamento da sua empresa',
           link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
@@ -67,7 +67,7 @@ export function FinanceSettingsClient() {
         ...(hasFinancialModule('credit_limit')
           ? [
               {
-                title: 'Limite de crédito',
+                title: 'Limite de crédito padrão',
                 icon: IconFoldUp,
                 description:
                   'Defina o padrão de limite de crédito para os clientes',
