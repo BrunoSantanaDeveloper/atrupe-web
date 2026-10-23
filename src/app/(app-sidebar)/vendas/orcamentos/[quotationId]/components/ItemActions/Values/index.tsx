@@ -1,5 +1,5 @@
 // React
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -39,6 +39,7 @@ import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
 // Libs
 import { cn, parseCurrencyToBrl } from '@/lib/utils'
+import { discountOverBase } from '@/lib/discountLimit'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 interface Props {
@@ -67,66 +68,18 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
 
   const isFirstRender = useRef(true)
 
-  // Calcular o desconto atual do item em valor absoluto
-  const currentItemDiscount = useMemo(() => {
-    if (discountType === 'VALUE') {
-      return discount
-    } else if (discountType === 'PERCENT') {
-      return (discount / 100) * baseValue
-    }
-    return 0
-  }, [discount, discountType, baseValue])
+  // Desconto geral das condições de pagamento
+  const generalDiscount =
+    quotationData?.paymentConditions?.discount?.discountTotal || 0
 
-  // Calcular o valor original total sem nenhum desconto (soma dos totalValue dos produtos).
-  // A base no preço do cadastro (EC-2) volta quando a API devolver o preço base
-  // na escala do item (ALT-8): o originalValue de hoje é o preço do cadastro na
-  // medida padrão e acusava desconto que não existe (CV-1).
-  const originalValue = useMemo(() => {
-    return (
-      quotationData?.quotationItems?.reduce(
-        (sum, item) => sum + (item?.totalValue || 0),
-        0,
-      ) || 0
-    )
-  }, [quotationData?.quotationItems])
-
-  // Calcular o desconto total dos outros itens (excluindo o item atual)
-  const otherItemsDiscount = useMemo(() => {
-    return (
-      quotationData?.quotationItems?.reduce((sum, item) => {
-        // Pular o item atual
-        if (item?.id === rowData?.id) return sum
-        // O acréscimo e as linhas do item não descontam o desconto dele
-        // (ALT-25, ORC-5)
-        const itemDiscount =
-          (item?.totalValue || 0) +
-          (item?.addition || 0) +
-          (item?.linesTotal || 0) -
-          (item?.finalValue || 0)
-        return sum + Math.max(itemDiscount, 0)
-      }, 0) || 0
-    )
-  }, [quotationData?.quotationItems, rowData?.id])
-
-  // Calcular o desconto geral das condições de pagamento
-  const generalDiscount = useMemo(() => {
-    return quotationData?.paymentConditions?.discount?.discountTotal || 0
-  }, [quotationData?.paymentConditions?.discount?.discountTotal])
-
-  // Desconto total combinado (item atual + outros itens + desconto geral)
-  const combinedDiscountTotal =
-    currentItemDiscount + otherItemsDiscount + generalDiscount
-
-  // Calcular o percentual de desconto total. Arredondado como nas condições
-  // de pagamento e no checkout do backend: sem isso, R$ 7,00 de R$ 100,00 vira
-  // 7.000000000000001% e um desconto exatamente no limite de 7% trava o Salvar
-  const totalDiscountPercentage =
-    originalValue > 0
-      ? Math.round(
-          ((combinedDiscountTotal / originalValue) * 100 + Number.EPSILON) *
-            100,
-        ) / 100
-      : 0
+  // O limite mede o orçamento inteiro contra o preço base do cadastro
+  // (ALT-8): este item entra com o valor que está sendo editado, sem o
+  // acréscimo (subir o valor aqui é acréscimo, fora do limite, ALT-25)
+  const { percentage: totalDiscountPercentage } = discountOverBase(
+    quotationData?.quotationItems ?? [],
+    generalDiscount,
+    { id: rowData?.id, effective: Math.min(finalValue, baseValue) },
+  )
 
   // Limite máximo de desconto do vendedor
   const maxDiscount = quotationData?.seller?.maxDiscount

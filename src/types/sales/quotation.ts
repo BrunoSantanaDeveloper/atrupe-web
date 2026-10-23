@@ -24,6 +24,9 @@ export type QuotationItemType = {
   discount: number
   // Acréscimo em centavos, fora do desconto (ALT-25)
   addition?: number
+  // Preço base do cadastro na medida e na quantidade do item, em centavos;
+  // nulo sem referência (preço R$ 0,00). Mede o limite de desconto (ALT-8)
+  basePrice?: number | null
   origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL'
   // O item montado na hora (ORC-11): o rascunho, a medida em mm e as
   // etapas; sem etapa, "Exige atenção" (MS-12)
