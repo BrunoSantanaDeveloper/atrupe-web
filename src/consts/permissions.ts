@@ -237,10 +237,6 @@ export const permissionsData = [
         name: 'Setores',
         key: 'sectors',
       },
-      {
-        name: 'Assinatura',
-        key: 'subscription',
-      },
     ],
   },
   {

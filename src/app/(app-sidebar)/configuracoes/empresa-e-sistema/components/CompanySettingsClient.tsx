@@ -1,5 +1,7 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
+
 // Components
 import { CompanyInfo } from '../components/CompanyInfo'
 
@@ -26,6 +28,8 @@ const defaultPath = 'empresa-e-sistema'
 
 export function CompanySettingsClient() {
   const { canManageSectors, hasFeature } = usePlanFeatures()
+  const { data: session } = useSession()
+  const isAdmin = !!session?.user?.isAdmin
 
   const settings: CompanySettingsType[] = [
     {
@@ -39,14 +43,19 @@ export function CompanySettingsClient() {
           cta: <CompanyInfo />,
           permission: 'company_settings:company:edit',
         },
-        {
-          title: 'Assinatura',
-          icon: IconFileDollar,
-          description:
-            'Gerencie a assinatura do seu plano, usuários adicionais e faturas.',
-          link: `${defaultPath}/assinatura`,
-          permission: 'company_settings:subscription:view',
-        },
+        // Assinatura é só do administrador (troca de plano, cancelamento e
+        // contrato): não se concede pela tela de cargos
+        ...(isAdmin
+          ? [
+              {
+                title: 'Assinatura',
+                icon: IconFileDollar,
+                description:
+                  'Gerencie a assinatura do seu plano, usuários adicionais e faturas.',
+                link: `${defaultPath}/assinatura`,
+              },
+            ]
+          : []),
         // Setores é recurso de plano (configurado pelo superadmin).
         ...(canManageSectors()
           ? [
