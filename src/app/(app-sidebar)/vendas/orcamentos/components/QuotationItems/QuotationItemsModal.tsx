@@ -56,6 +56,7 @@ import { useSectorWithProducts } from '@/hooks/queries/useSectorWithProducts'
 import { useQuotation } from '@/contexts/quotationContext'
 import { sectorIcons } from '@/consts/sectors'
 import { FEATURES } from '@/consts/features'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Actions
 import { getDirectSaleMaterials } from '@/actions/material-item'
@@ -149,6 +150,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
   const [sectorId, setSectorId] = useState(ALL)
   // Primeiro a grade de setores; escolhido o setor, a lista dele
   const [step, setStep] = useState<'sectors' | 'list'>('sectors')
+  const { hasFeature } = usePlanFeatures()
 
   // Revalida a lista de produtos e volta à grade sempre que o modal abrir
   useEffect(() => {
@@ -263,16 +265,15 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
     },
   })
 
-  // A grade conta o botão "Composição" quando o plano tem a composição
-  const tiles = sectors.length + 1
-  const gridCols =
-    tiles <= 1
-      ? 'grid-cols-1'
-      : tiles === 2
-        ? 'grid-cols-2'
-        : tiles === 3
-          ? 'grid-cols-3'
-          : 'grid-cols-2 sm:grid-cols-4'
+  // Grade equilibrada: no máximo 4 por linha, e as linhas com o mesmo
+  // número de botões (6 → 3 + 3, 7 → 4 + 3, 5 → 3 + 2). A última linha fica
+  // centralizada. Conta o botão "Composição" só quando o plano o mostra
+  const TILE_PX = 120
+  const GAP_PX = 12
+  const tiles = sectors.length + (hasFeature(FEATURES.COSTS.COST_BASE) ? 1 : 0)
+  const rows = Math.max(1, Math.ceil(tiles / 4))
+  const perRow = Math.max(1, Math.ceil(tiles / rows))
+  const gridMaxWidth = perRow * TILE_PX + (perRow - 1) * GAP_PX
 
   if (step === 'sectors') {
     return (
@@ -295,7 +296,10 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                 <span className="size-6 animate-spin rounded-full border-2 border-gray-300 border-t-transparent" />
               </div>
             ) : (
-              <div className={cn('grid gap-3', gridCols)}>
+              <div
+                className="mx-auto flex flex-wrap justify-center gap-3"
+                style={{ maxWidth: gridMaxWidth }}
+              >
                 {sectors.map((sector) => (
                   <Button
                     key={sector.id}
