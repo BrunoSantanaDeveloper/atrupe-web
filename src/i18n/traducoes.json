@@ -399,6 +399,10 @@
   "es": "Ver ranking completo",
   "en": "View full ranking"
  },
+ "05b0a7150d": {
+  "es": "Registro activado.",
+  "en": "Registration activated."
+ },
  "05bc65c4e7": {
   "es": "Sin un medio seleccionado, la venta rápida no se puede cerrar.",
   "en": "With no method selected, a quick sale can't be closed."
@@ -2246,6 +2250,10 @@
  "27662f6399": {
   "es": "logo atrupe",
   "en": "Atrupe logo"
+ },
+ "276b874aa1": {
+  "es": "Marque al menos una forma de pago para activar",
+  "en": "Check at least one payment method to activate"
  },
  "277c605264": {
   "es": "Costo y precio de las variantes de {name}",
@@ -5278,6 +5286,10 @@
  "573db02a41": {
   "es": "Emparejada con:",
   "en": "Matched with:"
+ },
+ "573f1dfdb7": {
+  "es": "Ninguna forma de pago registrada. Registre las condiciones de pago en Configuración › Financiero.",
+  "en": "No payment method registered. Register the payment terms in Settings › Finance."
  },
  "57565e0a11": {
   "es": "Efectivo (depósito o retiro)",
@@ -12682,6 +12694,10 @@
  "ce7794caa4": {
   "es": "Grupo eliminado con éxito.",
   "en": "Group deleted successfully."
+ },
+ "ce7df96547": {
+  "es": "Marque las formas de pago que este cliente puede usar. El registro solo se activa con al menos una.",
+  "en": "Check the payment methods this customer can use. The registration is only activated with at least one."
  },
  "ceb4f4b448": {
   "es": "Error al registrar la venta",
