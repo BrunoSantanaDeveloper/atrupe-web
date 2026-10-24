@@ -39,10 +39,15 @@ import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
-import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import {
+  UnitCostInput,
+  convertRawToUnitCost,
+  convertUnitCostToRaw,
+} from '@/components/common/form/global-inputs/products/UnitCostInput'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 import { InactivateProductDialog } from './InactivateProductDialog'
+import { OutsourcedProductFields } from './OutsourcedProductFields'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -62,6 +67,7 @@ import {
 import {
   IconPackage,
   IconPlus,
+  IconTruckDelivery,
   IconCircleCheck,
   IconPencil,
   IconReceiptTax,
@@ -255,6 +261,17 @@ function NewProductModal({
       ? { ...defaultNewProductValues, ...initialValues }
       : {
           ...product,
+          // O custo do fornecedor vem na base da API (por mm², mm…) e a
+          // tela mostra por m², metro… (T-5)
+          isOutsourced: product?.isOutsourced ?? false,
+          outsourcedCost: product?.outsourcedCost
+            ? convertRawToUnitCost(
+                product?.items?.[0]?.unitKind || 'UNITY',
+                product.outsourcedCost,
+              )
+            : null,
+          suppliers: product?.suppliers ?? [],
+          supplierPick: null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items: product?.items?.map((item: any) => ({
             ...item,
@@ -293,7 +310,28 @@ function NewProductModal({
   }
 
   const onSubmit = async (data: NewProductsFormType) => {
+    // Produto terceirizado (T-5): fornecedor e custo são obrigatórios
+    if (data.isOutsourced) {
+      if (!data.suppliers?.length) {
+        toast.error('Informe pelo menos um fornecedor do terceirizado')
+        return
+      }
+      if (!(Number(data.outsourcedCost) > 0)) {
+        toast.error('Informe o custo do fornecedor')
+        return
+      }
+    }
     const body = {
+      isOutsourced: !!data.isOutsourced,
+      outsourcedCost: data.isOutsourced
+        ? convertUnitCostToRaw(
+            data.items?.[0]?.unitKind || 'UNITY',
+            Number(data.outsourcedCost) || 0,
+          )
+        : null,
+      supplierIds: data.isOutsourced
+        ? (data.suppliers || []).map((supplier) => supplier.id)
+        : [],
       name: data.name,
       code: data.code,
       categoryId: data.categoryId,
@@ -446,7 +484,15 @@ function NewProductModal({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <span>{editMode ? 'Editar produto' : 'Novo produto'}</span>
+                <span>
+                  {editMode
+                    ? watch('isOutsourced')
+                      ? 'Editar produto terceirizado'
+                      : 'Editar produto'
+                    : watch('isOutsourced')
+                      ? 'Novo produto terceirizado'
+                      : 'Novo produto'}
+                </span>
               </div>
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
@@ -697,6 +743,7 @@ function NewProductModal({
                           <AllowEditDescriptionHint />
                         </div>
                       </div>
+                      <OutsourcedProductFields />
                       {canShowProductionStages && !showCompositionTab && (
                         <ProductionStages />
                       )}
@@ -833,11 +880,27 @@ export const NewProduct = React.memo(NewProductModal)
 
 export function NewProductTriggerButton({
   editMode,
+  outsourced,
   onOpenChange,
 }: {
   editMode?: boolean
+  // O botão "Produto terceirizado" (T-5): o mesmo formulário, já com o
+  // bloco do terceirizado aberto
+  outsourced?: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  if (outsourced) {
+    return (
+      <Button
+        type="button"
+        variant="neutralOutline"
+        LeftIcon={IconTruckDelivery}
+        onClick={() => onOpenChange(true)}
+      >
+        Produto terceirizado
+      </Button>
+    )
+  }
   return (
     <Button
       type="button"

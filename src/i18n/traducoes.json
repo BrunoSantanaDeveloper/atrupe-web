@@ -655,6 +655,10 @@
   "es": "Ej.: el cliente trae el arte en PDF",
   "en": "E.g.: customer brings the artwork as a PDF"
  },
+ "0a506fa19d": {
+  "es": "Precio de venta sugerido por el recargo de",
+  "en": "Sale price suggested by the markup of"
+ },
  "0a67ad5411": {
   "es": "Error al guardar los estándares de medidas. Intente de nuevo.",
   "en": "Error saving size standards. Try again."
@@ -1599,6 +1603,10 @@
   "es": "Variante {valor} creada como copia",
   "en": "Variant {valor} created as a copy"
  },
+ "1be1f9d362": {
+  "es": "Elija al menos un proveedor.",
+  "en": "Choose at least one supplier."
+ },
  "1bf56289ea": {
   "es": "Inactivos",
   "en": "Inactive"
@@ -2154,6 +2162,10 @@
  "25232107ea": {
   "es": "Ver distribución",
   "en": "View distribution"
+ },
+ "253428d691": {
+  "es": "Costo del proveedor por {unit}",
+  "en": "Supplier cost per {unit}"
  },
  "256d914258": {
   "es": "En el camino hacia la excelencia, todo comienza con la organización y estructuración de la información. Este punto de partida crea las bases para que el negocio avance de forma ordenada y profesional.",
@@ -3523,6 +3535,10 @@
   "es": "Rechazada",
   "en": "Rejected"
  },
+ "3b345af822": {
+  "es": "Servicio contratado a un proveedor solo para esta venta",
+  "en": "Service hired from a supplier for this sale only"
+ },
  "3b353baef8": {
   "es": "Esta funcionalidad está en desarrollo y estará disponible pronto.",
   "en": "This feature is being developed and will be available soon."
@@ -4030,6 +4046,10 @@
  "431798be41": {
   "es": "Usa {quantity} u. · {width} × {height} m y se recalcula si el ítem cambia.",
   "en": "Uses {quantity} pc · {width} × {height} m and is recalculated if the item changes."
+ },
+ "43233dac06": {
+  "es": "Informe el costo del tercerizado",
+  "en": "Enter the outsourced cost"
  },
  "433fda1552": {
   "es": "Redes sociales",
@@ -4763,6 +4783,10 @@
   "es": "Repita la contraseña.",
   "en": "Repeat the password."
  },
+ "4e056156bd": {
+  "es": "Comprado a un proveedor y revendido: al aprobar la venta, el sistema genera la cuenta por pagar al proveedor con el costo informado aquí.",
+  "en": "Bought from a supplier and resold: when the sale is approved, the system creates the payable to the supplier with the cost entered here."
+ },
  "4e318c3c4f": {
   "es": "Ocurrió un error al actualizar el perfil",
   "en": "An error occurred while updating the profile"
@@ -5078,6 +5102,10 @@
  "5334dda15d": {
   "es": "Ver de dónde viene cada valor",
   "en": "See where each amount comes from"
+ },
+ "53459dd226": {
+  "es": "Informe el proveedor",
+  "en": "Enter the supplier"
  },
  "53504ca5d5": {
   "es": "{allocated} prorrateados por ítem · {allocated2} en lo administrativo",
@@ -5895,6 +5923,10 @@
   "es": "Fecha de vencimiento",
   "en": "Due date"
  },
+ "5fe7c80568": {
+  "es": "Precio de venta unitario",
+  "en": "Unit sale price"
+ },
  "5feb7d39e2": {
   "es": "Estado desconocido",
   "en": "Unknown status"
@@ -6194,6 +6226,10 @@
  "650b670984": {
   "es": "Por colaborador",
   "en": "By team member"
+ },
+ "6526bd3eca": {
+  "es": "Informe la cantidad",
+  "en": "Enter the quantity"
  },
  "652f6f84d2": {
   "es": "+ R$ {surcharge} ({valor}%) sobre el valor base. Queda incluido en el valor del ítem y no cuenta como descuento.",
@@ -7038,6 +7074,10 @@
  "71f11fa16f": {
   "es": "Comercio",
   "en": "Retail"
+ },
+ "722b98d468": {
+  "es": "Para cambiar, quítelo y regístrelo de nuevo",
+  "en": "To change it, remove and add it again"
  },
  "72720468ab": {
   "es": "Valor de la venta",
@@ -7959,6 +7999,10 @@
   "es": "Por cuota",
   "en": "Per installment"
  },
+ "7fb614d4ce": {
+  "es": "Informe el costo del proveedor",
+  "en": "Enter the supplier cost"
+ },
  "7fc3c3b443": {
   "es": "Detallar {name}",
   "en": "Show details for {name}"
@@ -8047,6 +8091,10 @@
   "es": "Cuánto recibe en reales — {name}",
   "en": "Amount received in reais — {name}"
  },
+ "8105167ef6": {
+  "es": "Total del ítem: {quantity}",
+  "en": "Item total: {quantity}"
+ },
  "812405127f": {
   "es": "Error al guardar la carga horaria",
   "en": "Error saving the workload"
@@ -8082,6 +8130,10 @@
  "81bb965113": {
   "es": "Registre a su primer colaborador",
   "en": "Add your first team member"
+ },
+ "81ce9f4068": {
+  "es": "Un servicio contratado a un proveedor solo para esta venta. Al aprobar el presupuesto, se genera la cuenta por pagar al proveedor con el costo informado. El costo no aparece en el presupuesto.",
+  "en": "A service hired from a supplier for this sale only. When the quotation is approved, the payable to the supplier is created with the cost entered. The cost does not show on the quotation."
  },
  "81d7594875": {
   "es": "Valores actualizados",
@@ -8787,6 +8839,10 @@
   "es": "Al aprobar, este trabajo cambiará de estado y quedará disponible en la pestaña Órdenes de trabajo.",
   "en": "Once approved, this job will change status and become available in the Work orders tab."
  },
+ "8bc2d92b0f": {
+  "es": "Recargo de {markup} % sobre el costo = {suggested}",
+  "en": "{markup}% markup on cost = {suggested}"
+ },
  "8bc7096925": {
   "es": "No hay datos disponibles para exportar",
   "en": "No data available to export"
@@ -9034,6 +9090,10 @@
  "8fc39eabb2": {
   "es": "Adelanto",
   "en": "Advance"
+ },
+ "8fc7552f01": {
+  "es": "Servicio",
+  "en": "Service"
  },
  "8fcf34fee8": {
   "es": "Ver flujo",
@@ -10807,6 +10867,10 @@
   "es": "Ningún cargo registrado",
   "en": "No positions yet"
  },
+ "acbffe5c4b": {
+  "es": "% sobre el costo:",
+  "en": "% on cost:"
+ },
  "acc9195bb1": {
   "es": "Campo eliminado",
   "en": "Field removed"
@@ -11575,6 +11639,10 @@
   "es": "Continuar",
   "en": "Continue"
  },
+ "b8cd6beb87": {
+  "es": "Producto tercerizado",
+  "en": "Outsourced product"
+ },
  "b8e878f909": {
   "es": "Transferir",
   "en": "Transfer"
@@ -11915,6 +11983,10 @@
   "es": "Por pagar",
   "en": "Payable"
  },
+ "be1add5f4e": {
+  "es": "Informe al menos un proveedor del tercerizado",
+  "en": "Enter at least one supplier for the outsourced product"
+ },
  "be23743ead": {
   "es": "Ninguna cotización con el estado: {valor}",
   "en": "No quotes with status: {valor}"
@@ -11934,6 +12006,10 @@
  "be96ed4d00": {
   "es": "Cajón de la caja · va a la cuenta Caja en el cierre",
   "en": "Register drawer · goes to the Cash account at closing"
+ },
+ "be9fd3ec7a": {
+  "es": "Ej.: instalación de la fachada",
+  "en": "E.g. storefront installation"
  },
  "beaa96c735": {
   "es": "Fecha de pago",
@@ -13123,6 +13199,10 @@
   "es": "Video: {title}",
   "en": "Video: {title}"
  },
+ "d3c1f89af7": {
+  "es": "Registrar en el presupuesto",
+  "en": "Add to quotation"
+ },
  "d3d4a49322": {
   "es": "Exportar PDF",
   "en": "Export PDF"
@@ -13190,6 +13270,10 @@
  "d4a9b82b9c": {
   "es": "El ancho debe ser un número",
   "en": "Width must be a number"
+ },
+ "d4c37f370c": {
+  "es": "Costo unitario",
+  "en": "Unit cost"
  },
  "d4cde61999": {
   "es": "En unos instantes recibirá en su correo electrónico las instrucciones para cambiar la contraseña.",
@@ -13374,6 +13458,10 @@
  "d7ca621d69": {
   "es": "Usted no tiene permiso para ver el informe de comisiones.",
   "en": "You don't have permission to view the commissions report."
+ },
+ "d7e44daa75": {
+  "es": "Tercerizado registrado.",
+  "en": "Outsourced service added."
  },
  "d7f8909c63": {
   "es": "Nada esperando a la caja",
@@ -13762,6 +13850,10 @@
  "de4df82ec8": {
   "es": "Ocupa {machine} por {occupies}: preparación de {setupMinutes} más la producción.",
   "en": "Occupies {machine} for {occupies}: {setupMinutes} of setup plus production."
+ },
+ "de73849017": {
+  "es": "Informe el nombre del servicio",
+  "en": "Enter the service name"
  },
  "de79ff7051": {
   "es": "Reglas propias",

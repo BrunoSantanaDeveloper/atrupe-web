@@ -8,6 +8,8 @@ export type ModalType =
   | 'composeItem'
   // O material de venda direta escolhido na busca (ORG-1)
   | 'materialItem'
+  // O serviço terceirizado avulso como item (T-6)
+  | 'outsourcedItem'
   | null
 
 interface QuotationData {

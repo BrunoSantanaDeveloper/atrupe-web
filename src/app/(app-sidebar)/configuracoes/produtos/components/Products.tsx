@@ -248,6 +248,12 @@ export function Products({ searchParams }: SearchParamsType) {
                 permissions={['product_settings:products:create']}
               >
                 <NewProductTriggerButton
+                  outsourced
+                  onOpenChange={() => {
+                    setOpenDialog('new-outsourced')
+                  }}
+                />
+                <NewProductTriggerButton
                   onOpenChange={() => {
                     setOpenDialog('new-product')
                   }}
@@ -298,6 +304,18 @@ export function Products({ searchParams }: SearchParamsType) {
         </div>
         <NewProduct
           open={openDialog === 'new-product'}
+          onOpenChange={() => setOpenDialog('')}
+          onSuccess={(product) => {
+            if (canCompose || canConfigureProductFiscalData) {
+              openAfterCreate(product)
+            }
+          }}
+        />
+        {/* O produto terceirizado (T-5): o mesmo formulário com o bloco
+            do terceirizado aberto */}
+        <NewProduct
+          open={openDialog === 'new-outsourced'}
+          initialValues={{ isOutsourced: true }}
           onOpenChange={() => setOpenDialog('')}
           onSuccess={(product) => {
             if (canCompose || canConfigureProductFiscalData) {

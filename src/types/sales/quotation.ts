@@ -27,7 +27,7 @@ export type QuotationItemType = {
   // Preço base do cadastro na medida e na quantidade do item, em centavos;
   // nulo sem referência (preço R$ 0,00). Mede o limite de desconto (ALT-8)
   basePrice?: number | null
-  origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL'
+  origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL' | 'OUTSOURCED'
   // O item montado na hora (ORC-11): o rascunho, a medida em mm e as
   // etapas; sem etapa, "Exige atenção" (MS-12)
   draft?: {
@@ -74,6 +74,8 @@ export type QuotationItemType = {
     // Produto inativado depois de lançado (PAD-7)
     isActive?: boolean
     hasComposition?: boolean
+    // A marca discreta do produto terceirizado (T-3, T-5)
+    isOutsourced?: boolean
     quantity: number
     unitValue: number
     finalValue: number

@@ -134,7 +134,8 @@ export type ComposedItemSummary = {
   // De onde o item veio: montado na hora (ORC-11) ou um material de venda
   // direta escolhido na busca (ORG-1, 06/10/2026). Os dois ficam no mesmo
   // registro porque a API só aceita produto no item
-  origin: 'COMPOSED' | 'MATERIAL'
+  // 'OUTSOURCED' é o serviço terceirizado lançado como item (T-6)
+  origin: 'COMPOSED' | 'MATERIAL' | 'OUTSOURCED'
   // O produto técnico onde o fluxo do item foi montado (product-assembly).
   // Vazio no item de material
   draftId: string

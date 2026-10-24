@@ -74,6 +74,7 @@ import {
 import { createItem, deleteItemNew } from '@/actions/_cruds'
 import { removeItemLine } from '@/actions/quotation-lines'
 import { AddToItem } from './AddToItem'
+import { QuotationOutsourcedModal } from '../../components/QuotationItems/QuotationOutsourcedModal'
 import { CompositionReport, type ReportTarget } from './CompositionReport'
 import type { ComposedItemSummary } from '../composicao/types'
 import { draftHostOf } from '@/lib/composed-draft'
@@ -185,7 +186,25 @@ export function QuotationItems({ data }: Props) {
       price: item.finalValue,
       attention: !!item.attention,
     }))
-  const composed = [...materialRows, ...composedRows]
+  // O serviço terceirizado lançado como item (T-6): nome, fornecedor e o
+  // valor na linha avulsa; sem medida. Para alterar, retira e lança de novo
+  const outsourcedRows: ComposedItemSummary[] = (data?.quotationItems ?? [])
+    .filter((item) => item.origin === 'OUTSOURCED')
+    .map((item) => ({
+      id: item.id,
+      origin: 'OUTSOURCED',
+      draftId: '',
+      name: item.description,
+      description: item.lines?.[0]?.sector || 'Terceirizado',
+      quantity: item.product?.quantity || 1,
+      width: 0,
+      height: 0,
+      stages: 0,
+      sectors: [],
+      price: item.linesTotal ?? item.finalValue,
+      attention: false,
+    }))
+  const composed = [...materialRows, ...composedRows, ...outsourcedRows]
 
   // O que foi acrescentado dentro de cada item (ORC-5): vem no item, do
   // detalhe do orçamento, sem custo (ORC-7)
@@ -382,6 +401,12 @@ export function QuotationItems({ data }: Props) {
                               aria-hidden="true"
                             />
                             <span>{item?.description || '-'}</span>
+                            {/* Marca discreta do produto terceirizado (T-3) */}
+                            {item.product?.isOutsourced ? (
+                              <Badge status variant="warningLight">
+                                Terceirizado
+                              </Badge>
+                            ) : null}
                             {isItemInactive(item) && (
                               <Badge status variant="warningLight">
                                 Produto inativo
@@ -771,6 +796,8 @@ export function QuotationItems({ data }: Props) {
                           <span>{item.name}</span>
                           {item.origin === 'MATERIAL' ? (
                             <Badge variant="warningLight">Material</Badge>
+                          ) : item.origin === 'OUTSOURCED' ? (
+                            <Badge variant="warningLight">Terceirizado</Badge>
                           ) : (
                             <Badge variant="blueLight">Composição</Badge>
                           )}
@@ -828,8 +855,13 @@ export function QuotationItems({ data }: Props) {
                             >
                               <ActionButton
                                 Icon={IconPencil}
-                                tooltip="Editar item"
+                                tooltip={
+                                  item.origin === 'OUTSOURCED'
+                                    ? 'Para alterar, retire e lance de novo'
+                                    : 'Editar item'
+                                }
                                 onClick={() => {
+                                  if (item.origin === 'OUTSOURCED') return
                                   if (item.origin === 'MATERIAL') {
                                     setMaterialTarget(item)
                                     openChangeModal(true, 'materialItem')
@@ -963,6 +995,12 @@ export function QuotationItems({ data }: Props) {
           openChangeModal(false)
           setComposeTarget(null)
         }}
+      />
+      {/* O serviço terceirizado como item (T-6) */}
+      <QuotationOutsourcedModal
+        open={modalType === 'outsourcedItem'}
+        quotationId={String(data?.id)}
+        onClose={() => openChangeModal(false)}
       />
       <CompositionReport item={report} onOpenChange={() => setReport(null)} />
     </>

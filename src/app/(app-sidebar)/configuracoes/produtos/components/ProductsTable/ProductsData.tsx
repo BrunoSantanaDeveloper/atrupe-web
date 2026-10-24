@@ -303,6 +303,14 @@ export function ProductsData({ searchParams, tabs }: Props) {
                               Com composição
                             </Badge>
                           )}
+                          {product?.isOutsourced && (
+                            <Badge
+                              variant="warningLight"
+                              className="ml-2 align-middle"
+                            >
+                              Terceirizado
+                            </Badge>
+                          )}
                         </p>
                         {/* O produto salvo do item montado nasce sem código: ele sai
                             ao liberar a composição para venda (ORC-11) */}
