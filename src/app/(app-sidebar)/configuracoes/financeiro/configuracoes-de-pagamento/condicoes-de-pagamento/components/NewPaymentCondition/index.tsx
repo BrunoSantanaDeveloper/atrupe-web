@@ -179,7 +179,25 @@ export function NewPaymentCondition({
     return () => clearTimeout(handler)
   }, [maxInstallments])
 
-  const onSubmit = async (data: FormType) => {
+  const onSubmit = async (form: FormType) => {
+    // Em R$ por parcela, a condição guarda o mesmo valor em todas as linhas:
+    // quem lê a linha N (orçamento, caixa) continua achando a taxa
+    const data =
+      form.costType === 'VALUE'
+        ? {
+            ...form,
+            installments: Array.from(
+              {
+                length: form.acceptInstallments ? form.maxInstallments || 1 : 1,
+              },
+              () => ({
+                operatorFeeRate: form.installments?.[0]?.operatorFeeRate ?? 0,
+                operatorFeeTransfer:
+                  form.installments?.[0]?.operatorFeeTransfer ?? 0,
+              }),
+            ),
+          }
+        : form
     const result = editMode
       ? await updateItemNew({
           route: `/payment-condition/${rowData?.id}`,
@@ -271,10 +289,14 @@ export function NewPaymentCondition({
               {canManageTaxInput && (
                 <FormSelect
                   name="costType"
-                  label="Tipo do custo"
+                  label="Como a taxa é cobrada"
+                  width="w-full"
                   options={[
-                    { value: 'PERCENT', label: '% - Percentual' },
-                    { value: 'VALUE', label: 'R$ - Fixo' },
+                    {
+                      value: 'PERCENT',
+                      label: '% sobre a venda (cartão, link de pagamento)',
+                    },
+                    { value: 'VALUE', label: 'R$ por parcela (boleto)' },
                   ]}
                 />
               )}
@@ -307,107 +329,106 @@ export function NewPaymentCondition({
                     }}
                   />
 
-                  {canManageTaxInput
-                    ? Array.from({ length: maxInstallmentsLength }).map(
+                  {canManageTaxInput && costType === 'PERCENT' ? (
+                    <>
+                      <p className="w-full text-sm text-gray">
+                        A operadora cobra pela quantidade de parcelas da venda:
+                        a linha 3x vale para a venda parcelada em 3 vezes, sobre
+                        o total pago nesta forma.
+                      </p>
+                      {Array.from({ length: maxInstallmentsLength }).map(
                         (_, index) => (
                           <div key={index} className="w-full">
                             <div className="flex flex-wrap gap-4">
                               <p className="text-sm font-medium flex-[1_0_100px] mt-6">
-                                Parcela {index + 1}
+                                {index + 1}x
                               </p>
-                              {costType === 'VALUE' ? (
-                                <>
-                                  <FormBrlInput
-                                    key={'operatorFeeRate' + (index + 1)}
-                                    name={`installments.${index}.operatorFeeRate`}
-                                    label="Taxa operadora"
-                                    width="flex-[1_0_100px]"
-                                    startAdornment={<>R$</>}
-                                    disabled={!canManageTaxInput}
-                                  />
-                                  <FormBrlInput
-                                    key={'operatorFeeTransfer' + (index + 1)}
-                                    name={`installments.${index}.operatorFeeTransfer`}
-                                    label="Repasse da taxa"
-                                    width="flex-[1_0_100px]"
-                                    startAdornment={<>R$</>}
-                                    disabled={!canManageTaxInput}
-                                  />
-                                </>
-                              ) : (
-                                <>
-                                  <FormInput
-                                    key={'operatorFeeRate' + (index + 1)}
-                                    type="number"
-                                    name={`installments.${index}.operatorFeeRate`}
-                                    label="Taxa operadora"
-                                    width="flex-[1_0_100px]"
-                                    endAdornment={<>%</>}
-                                    disabled={!canManageTaxInput}
-                                  />
-
-                                  <FormInput
-                                    key={'operatorFeeTransfer' + (index + 1)}
-                                    type="number"
-                                    name={`installments.${index}.operatorFeeTransfer`}
-                                    label="Repasse da taxa"
-                                    width="flex-[1_0_100px]"
-                                    endAdornment={<>%</>}
-                                    disabled={!canManageTaxInput}
-                                  />
-                                </>
-                              )}
+                              <FormInput
+                                key={'operatorFeeRate' + (index + 1)}
+                                type="number"
+                                name={`installments.${index}.operatorFeeRate`}
+                                label="Taxa da operadora (custo)"
+                                width="flex-[1_0_100px]"
+                                endAdornment={<>%</>}
+                              />
+                              <FormInput
+                                key={'operatorFeeTransfer' + (index + 1)}
+                                type="number"
+                                name={`installments.${index}.operatorFeeTransfer`}
+                                label="Repasse ao cliente"
+                                width="flex-[1_0_100px]"
+                                endAdornment={<>%</>}
+                              />
                             </div>
                           </div>
                         ),
-                      )
-                    : null}
+                      )}
+                    </>
+                  ) : null}
                 </>
-              ) : costType === 'VALUE' ? (
-                canManageTaxInput && (
-                  <>
-                    <FormBrlInput
-                      key="operatorFeeRate1"
-                      name={`installments.0.operatorFeeRate`}
-                      label="Taxa operadora"
-                      width="flex-[1_0_100px]"
-                      startAdornment={<>R$</>}
-                      disabled={!canManageTaxInput}
-                    />
-                    <FormBrlInput
-                      key="operatorFeeTransfer1"
-                      name={`installments.0.operatorFeeTransfer`}
-                      label="Repasse da taxa"
-                      width="flex-[1_0_100px]"
-                      startAdornment={<>R$</>}
-                      disabled={!canManageTaxInput}
-                    />
-                  </>
-                )
-              ) : (
-                canManageTaxInput && (
-                  <>
-                    <FormInput
-                      key="operatorFeeRate1"
-                      type="number"
-                      name={`installments.0.operatorFeeRate`}
-                      label="Taxa operadora"
-                      width="flex-[1_0_100px]"
-                      endAdornment={<>%</>}
-                      disabled={!canManageTaxInput}
-                    />
+              ) : null}
 
-                    <FormInput
-                      key="operatorFeeTransfer1"
-                      type="number"
-                      name={`installments.0.operatorFeeTransfer`}
-                      label="Repasse da taxa"
-                      width="flex-[1_0_100px]"
-                      endAdornment={<>%</>}
-                      disabled={!canManageTaxInput}
-                    />
-                  </>
-                )
+              {/* Em R$, um valor por parcela, com ou sem parcelamento; em %
+                  à vista, uma taxa só */}
+              {canManageTaxInput &&
+                (costType === 'VALUE' || !acceptInstallments) && (
+                  <div className="w-full">
+                    <p className="text-sm text-gray">
+                      {costType === 'VALUE'
+                        ? 'Cobrada em cada parcela (cada boleto): em 3 parcelas, 3 vezes o valor.'
+                        : 'Sobre o total pago nesta forma.'}
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      <p className="text-sm font-medium flex-[1_0_100px] mt-6">
+                        {costType === 'VALUE' ? 'Por parcela' : 'À vista'}
+                      </p>
+                      {costType === 'VALUE' ? (
+                        <>
+                          <FormBrlInput
+                            key="operatorFeeRate1"
+                            name={`installments.0.operatorFeeRate`}
+                            label="Taxa da operadora (custo)"
+                            width="flex-[1_0_100px]"
+                            startAdornment={<>R$</>}
+                          />
+                          <FormBrlInput
+                            key="operatorFeeTransfer1"
+                            name={`installments.0.operatorFeeTransfer`}
+                            label="Repasse ao cliente"
+                            width="flex-[1_0_100px]"
+                            startAdornment={<>R$</>}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <FormInput
+                            key="operatorFeeRate1"
+                            type="number"
+                            name={`installments.0.operatorFeeRate`}
+                            label="Taxa da operadora (custo)"
+                            width="flex-[1_0_100px]"
+                            endAdornment={<>%</>}
+                          />
+                          <FormInput
+                            key="operatorFeeTransfer1"
+                            type="number"
+                            name={`installments.0.operatorFeeTransfer`}
+                            label="Repasse ao cliente"
+                            width="flex-[1_0_100px]"
+                            endAdornment={<>%</>}
+                          />
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+              {canManageTaxInput && (
+                <p className="w-full text-sm text-gray">
+                  A taxa da operadora é o seu custo: fica guardada para o
+                  cálculo de custos (PRO). O repasse é o que o cliente paga a
+                  mais, somado ao orçamento como acréscimo.
+                </p>
               )}
 
               {hasFiscalModule && (

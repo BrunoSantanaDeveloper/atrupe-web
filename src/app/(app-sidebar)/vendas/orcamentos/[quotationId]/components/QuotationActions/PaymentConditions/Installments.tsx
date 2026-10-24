@@ -5,12 +5,12 @@ import { Separator } from '@/components/ui/separator'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
-import { getItem } from '@/actions/_cruds'
 
 import { QuotationPaymentConditionsType } from './schema'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { toast } from 'sonner'
+
+import { loadCondition, withFees } from './fees'
 
 export function Installments() {
   const form = useFormContext<QuotationPaymentConditionsType>()
@@ -21,41 +21,30 @@ export function Installments() {
   const totalValue = watch('totalValue') || 0
   const hasDownPayment = watch('hasDownPayment')
   const downPaymentAmount = watch('downPayment.amount') || 0
+  const mainConditionId = watch('paymentConditionId')
+
+  // Recalcula o acréscimo de todas as parcelas: em %, ele depende do valor de
+  // cada uma e da quantidade total; em R$, é por parcela (lib/paymentFee)
+  const applyFees = async (rows: typeof installments) => {
+    const { rows: withF, total } = await withFees(rows, mainConditionId)
+    setValue('installments', withF)
+    setValue('mainAdditionalFee', total)
+  }
 
   const handleChangePaymentCondition = async (
     paymentConditionId: string,
     currentIndex: number,
   ) => {
-    const res = await getItem({
-      route: `/payment-condition/${paymentConditionId}`,
-    })
-
-    if (!res.success) {
-      toast.error(res.message)
-      return
-    }
-
-    const data: PaymentConditionsType = res.data
-    const additionalFee =
-      data?.installments[currentIndex]?.operatorFeeTransfer ||
-      data?.installments[0]?.operatorFeeTransfer ||
-      0
-
-    setValue(`installments.${currentIndex}.additionalFee`, additionalFee)
-    setValue(
-      'mainAdditionalFee',
-      installments.reduce((total, installment, index) => {
-        const installmentAdditionalFee =
-          index === currentIndex
-            ? additionalFee
-            : Number(installment?.additionalFee) || 0
-
-        return total + installmentAdditionalFee
-      }, 0),
+    const data = await loadCondition(paymentConditionId)
+    if (!data) return
+    await applyFees(
+      installments.map((row, index) =>
+        index === currentIndex ? { ...row, paymentConditionId } : row,
+      ),
     )
   }
 
-  const handleInstallmentAmountChange = (
+  const handleInstallmentAmountChange = async (
     value: number | null,
     currentIndex: number,
   ) => {
@@ -81,7 +70,8 @@ export function Installments() {
 
     const lastInstallmentAmount = totalAvailable - sumExceptLast
 
-    if (lastInstallmentAmount < 0.01) {
+    // Valores em centavos: a última parcela precisa de pelo menos 1 centavo
+    if (lastInstallmentAmount < 1) {
       toast.error(
         'O valor inserido ultrapassa o total disponível. A última parcela não pode ficar negativa.',
       )
@@ -93,7 +83,7 @@ export function Installments() {
           if (idx === lastIndex || idx === currentIndex) return sum
           return sum + (Number(inst?.amount) || 0)
         }, 0) -
-        0.01
+        1
       setValue(
         `installments.${currentIndex}.amount`,
         Math.max(maxAllowed, previousAmount),
@@ -101,7 +91,15 @@ export function Installments() {
       return
     }
 
-    setValue(`installments.${lastIndex}.amount`, lastInstallmentAmount)
+    await applyFees(
+      installments.map((row, index) =>
+        index === currentIndex
+          ? { ...row, amount: currentAmount }
+          : index === lastIndex
+            ? { ...row, amount: lastInstallmentAmount }
+            : row,
+      ),
+    )
   }
 
   const lastIndex = installments.length - 1

@@ -1447,6 +1447,10 @@
   "es": "Estado de flujo de caja (DFC)",
   "en": "Cash flow statement (DFC)"
  },
+ "196c0269de": {
+  "es": "% sobre la venta (tarjeta, link de pago)",
+  "en": "% of the sale (card, payment link)"
+ },
  "197c44cf34": {
   "es": "Valores, descuento y recargo",
   "en": "Values, discount and markup"
@@ -6271,6 +6275,10 @@
   "es": "¡Contraseña restablecida con éxito!",
   "en": "Password reset successfully!"
  },
+ "67da893e27": {
+  "es": "Tasa de la operadora (costo)",
+  "en": "Acquirer fee (cost)"
+ },
  "67e6b952ea": {
   "es": "El proyecto nace cuando se aprueba la venta.",
   "en": "The project is created when the sale is approved."
@@ -7843,6 +7851,10 @@
   "es": "Traiga sus ingresos y gastos al control financiero.",
   "en": "Bring your income and expenses into financial control."
  },
+ "7f8d4b234a": {
+  "es": "Por cuota",
+  "en": "Per installment"
+ },
  "7fc3c3b443": {
   "es": "Detallar {name}",
   "en": "Show details for {name}"
@@ -8298,6 +8310,10 @@
  "86abf9e429": {
   "es": "Sin recurso: complete o elimine",
   "en": "No resource: complete or remove"
+ },
+ "86c56ec16f": {
+  "es": "Cobrada en cada cuota (cada boleto): en 3 cuotas, 3 veces el valor.",
+  "en": "Charged on each installment (each boleto): in 3 installments, 3 times the amount."
  },
  "86c9b65ade": {
   "es": "Sin vendedor",
@@ -9603,6 +9619,10 @@
   "es": "Video de ayuda",
   "en": "Help video"
  },
+ "9c66e73d1c": {
+  "es": "La operadora cobra según la cantidad de cuotas de la venta: la línea 3x vale para la venta en 3 cuotas, sobre el total pagado con esta forma.",
+  "en": "The acquirer charges by the number of installments of the sale: the 3x line applies to a sale split in 3, over the total paid with this method."
+ },
  "9c740d4df4": {
   "es": "El costo y el precio de cada combinación están en el R$ de la lista.",
   "en": "Cost and price of each combination are set at the R$ in the list."
@@ -9762,6 +9782,10 @@
  "9e474e1d5a": {
   "es": "Confirmar pago",
   "en": "Confirm payment"
+ },
+ "9e9392a458": {
+  "es": "La tasa de la operadora es su costo: queda guardada para el cálculo de costos (PRO). El traslado es lo que el cliente paga de más, sumado a la cotización como recargo.",
+  "en": "The acquirer fee is your cost: it is kept for the cost calculation (PRO). The pass-through is what the customer pays extra, added to the quote as a surcharge."
  },
  "9ea3b555d2": {
   "es": "Repita la contraseña *",
@@ -13199,6 +13223,10 @@
   "es": "por hoja ·",
   "en": "per sheet ·"
  },
+ "d8fde351ac": {
+  "es": "Cómo se cobra la tasa",
+  "en": "How the fee is charged"
+ },
  "d90190874e": {
   "es": "La venta rápida sigue siendo una cotización común, marcada como rápida: sigue el mismo camino de aprobación, orden de trabajo y finanzas.",
   "en": "A quick sale is still a regular quote, marked as quick: it follows the same path to approval, work order and finance."
@@ -13811,6 +13839,10 @@
   "es": "Cree el primer perfil",
   "en": "Create the first role"
  },
+ "e420285af1": {
+  "es": "Traslado al cliente",
+  "en": "Passed on to the customer"
+ },
  "e43154d427": {
   "es": ". La venta se cierra y lo que no fue pagado,",
   "en": ". The sale is closed and what was not paid,"
@@ -13930,6 +13962,10 @@
  "e6b55cf9e1": {
   "es": "Error al descargar la plantilla",
   "en": "Error downloading template"
+ },
+ "e6e0c8f1da": {
+  "es": "Sobre el total pagado con esta forma.",
+  "en": "Over the total paid with this method."
  },
  "e6ee04a6b9": {
   "es": "Regla",
@@ -14878,6 +14914,10 @@
  "f6b21ca62b": {
   "es": "Sector actualizado",
   "en": "Department updated"
+ },
+ "f6bcd5db1c": {
+  "es": "R$ por cuota (boleto)",
+  "en": "R$ per installment (boleto)"
  },
  "f6bf185637": {
   "es": "Desactivar {name}",

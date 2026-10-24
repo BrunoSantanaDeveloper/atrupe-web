@@ -1,6 +1,7 @@
 import { useEffect, useState, type ComponentProps } from 'react'
 
 // UI
+import { forgetConditions } from './fees'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -117,6 +118,9 @@ export function PaymentConditionsDialog({
   // Resetar valores do formulário ao abrir o modal
   useEffect(() => {
     if (!open || !quotationData) return
+
+    // As condições podem ter mudado no cadastro desde a última abertura
+    forgetConditions()
 
     // Resetar o formulário com os valores padrão
     const initialValues = defaultValues(quotationData)
