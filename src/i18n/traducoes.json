@@ -3303,6 +3303,10 @@
   "es": "Error al registrar la nómina. Verifique si el colaborador tiene la configuración de salario definida",
   "en": "Error posting payroll. Check whether the team member has salary settings defined"
  },
+ "38a6a07cb5": {
+  "es": "Se puede armar una cotización para este cliente, pero ninguna cotización se aprueba, se convierte en orden de servicio ni genera cobro mientras esté bloqueado. El desbloqueo está en la pestaña Límite de crédito del registro.",
+  "en": "You can build a quote for this customer, but no quote is approved, becomes a service order or generates a charge while they are blocked. Unblock them in the Credit limit tab of the registration."
+ },
  "38b35c5a94": {
   "es": "Precios",
   "en": "Pricing"
@@ -6991,6 +6995,10 @@
   "es": "Su búsqueda no encontró ningún resultado. Intente de nuevo o registre un nuevo gasto fijo",
   "en": "Your search found no results. Try again or add a new fixed expense"
  },
+ "72c1b4c001": {
+  "es": "Cliente bloqueado",
+  "en": "Customer blocked"
+ },
  "72c310a45c": {
   "es": "Su búsqueda no arrojó resultados. Intente nuevamente o registre un nuevo grupo de productos",
   "en": "Your search returned no results. Try again or add a new product group"
@@ -7110,6 +7118,10 @@
  "743fa8d945": {
   "es": "Ingrese a su cuenta",
   "en": "Log in to your account"
+ },
+ "744c48a52f": {
+  "es": "Las condiciones se pueden definir, pero esta cotización no se aprueba ni genera cobro mientras el cliente esté bloqueado en el registro.",
+  "en": "The terms can be set, but this quote is not approved and generates no charge while the customer is blocked in the registration."
  },
  "74512d97cd": {
   "es": "Precio por cantidad",
@@ -9511,6 +9523,10 @@
   "es": "Saldo previsto",
   "en": "Projected balance"
  },
+ "99c1b43ea2": {
+  "es": "Bloqueado",
+  "en": "Blocked"
+ },
  "99d104e8db": {
   "es": "Elija la forma de pago",
   "en": "Choose the payment method"
@@ -10622,6 +10638,10 @@
  "ab3451d727": {
   "es": "Marca y color se agregan después del registro, como variantes, al editar el material. Espesores y tamaños distintos son materiales distintos.",
   "en": "Brand and color are added after saving, as variants, when editing the material. Different thicknesses and sizes are different materials."
+ },
+ "ab54e7ea78": {
+  "es": "Cliente bloqueado en el registro: esta venta no se puede cobrar ni enviar a la caja.",
+  "en": "Customer blocked in the registration: this sale cannot be charged or sent to the register."
  },
  "ab55b5edd1": {
   "es": "Ej.: cobro del día registrado en la cuenta equivocada",
@@ -14507,6 +14527,10 @@
   "es": "Tareas finalizadas. Lo vendido viene de la composición; lo registrado, del reloj. Productividad = vendido ÷ registrado.",
   "en": "Completed tasks. Sold time comes from the build-up; logged time, from the clock. Productivity = sold ÷ logged."
  },
+ "ee9d88b6cf": {
+  "es": "Este cliente está bloqueado en el registro: no genera cobro",
+  "en": "This customer is blocked in the registration: no charge is generated"
+ },
  "eebe69fa05": {
   "es": "Equivalencia guardada",
   "en": "Mapping saved"
@@ -15298,6 +15322,10 @@
  "fc2c74003c": {
   "es": "Inicio",
   "en": "Start"
+ },
+ "fc436f0991": {
+  "es": "Este cliente está bloqueado en el registro: el servicio no se puede facturar hasta el desbloqueo, en la pestaña Límite de crédito del cliente.",
+  "en": "This customer is blocked in the registration: the service cannot be billed until unblocked, in the customer's Credit limit tab."
  },
  "fc45480037": {
   "es": "Hasta",

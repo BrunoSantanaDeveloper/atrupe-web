@@ -1,6 +1,8 @@
 'use client'
 
 // Next
+import { AlertBanner } from '@/components/ui/alert-banner'
+import { IconAlertTriangle } from '@tabler/icons-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -111,6 +113,17 @@ export default function ClientDetailLayout({ children, params }: Props) {
             <ClientActions params={params} data={data} entityType="client" />
           }
         />
+        {/* Bloqueado no limite de crédito (decisão de 24/10/2026): o aviso
+            fica em toda aba do cliente */}
+        {data?.creditLimit?.blockClient && (
+          <AlertBanner
+            variant="error"
+            icon={IconAlertTriangle}
+            className="rounded-lg border"
+            title="Cliente bloqueado"
+            description="Dá para montar orçamento para este cliente, mas nenhum orçamento é aprovado, vira ordem de serviço nem gera cobrança enquanto ele estiver bloqueado. O desbloqueio é na aba Limite de crédito do cadastro."
+          />
+        )}
         <Tabs value={activeTab} defaultValue="dados" variant="pill">
           {tabs.length > 1 && (
             <TabsList>

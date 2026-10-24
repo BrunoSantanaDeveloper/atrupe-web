@@ -5,6 +5,8 @@ type CompanyDetails = {
 }
 
 export type ListClientsDataType = {
+  // Bloqueado no limite de crédito (vem na lista)
+  blockClient?: boolean
   id: string
   createdAt: string
   updatedAt: string

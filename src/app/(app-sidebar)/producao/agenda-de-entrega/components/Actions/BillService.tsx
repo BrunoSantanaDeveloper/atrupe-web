@@ -1,6 +1,7 @@
 'use client'
 
 // Icon Imports
+import { useQuotationCredit } from '@/hooks/queries/useQuotationCredit'
 import { IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
 
 // UI component Imports
@@ -34,9 +35,20 @@ interface Props extends SearchParamsType {
 }
 export function BillServiceDialog({ open, rowData, setOpen }: Props) {
   const queryClient = useQueryClient()
+  const quotationId = rowData?.order?.quotation?.id
+  // Cliente bloqueado no limite de crédito não gera cobrança (24/10/2026)
+  const { data: credit } = useQuotationCredit(
+    quotationId,
+    open && !!quotationId,
+    'bill',
+  )
+  const blocked = !!credit?.applies && !!credit?.blockClient
 
   const handleBill = async () => {
-    const quotationId = rowData?.order?.quotation?.id
+    if (blocked) {
+      toast.error('Este cliente está bloqueado no cadastro: não gera cobrança')
+      return
+    }
 
     const res = await createItemNew({
       route: `/sale/quotation/${quotationId}/bill`,
@@ -71,13 +83,19 @@ export function BillServiceDialog({ open, rowData, setOpen }: Props) {
             <AlertDialogTitle>
               Realizar faturamento deste serviço?
             </AlertDialogTitle>
-            <AlertDialogDescription className="sr-only">
-              Confirme se deseja realizar faturamento deste serviço.
+            <AlertDialogDescription className={blocked ? '' : 'sr-only'}>
+              {blocked
+                ? 'Este cliente está bloqueado no cadastro: o serviço não pode ser faturado até o desbloqueio, na aba Limite de crédito do cliente.'
+                : 'Confirme se deseja realizar faturamento deste serviço.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBill} RightIcon={IconCircleCheck}>
+            <AlertDialogAction
+              onClick={handleBill}
+              RightIcon={IconCircleCheck}
+              disabled={blocked}
+            >
               Faturar
             </AlertDialogAction>
           </AlertDialogFooter>

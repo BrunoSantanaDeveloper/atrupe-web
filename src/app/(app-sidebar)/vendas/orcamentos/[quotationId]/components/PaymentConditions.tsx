@@ -15,6 +15,7 @@ import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 // Components
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
+import { useClientBlocked } from './useClientBlocked'
 import { PaymentConditionsDialog } from './QuotationActions/PaymentConditions'
 
 // Icons
@@ -40,6 +41,7 @@ interface Props {
 export function QuotationPaymentConditions({ quotationData }: Props) {
   // Accordion deve estar aberto por padrão se existe pelo menos um item no orçamento
   const quotationHasItems = !!quotationData.quotationItems.length
+  const blocked = useClientBlocked(quotationData)
 
   const [accordionValue, setAccordionValue] = useState<string | undefined>(
     quotationHasItems ? 'item-1' : undefined,
@@ -139,6 +141,17 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                     supporting="Pagamento"
                     text={data?.paymentCondition?.name}
                   />
+                  {/* Bloqueado no limite de crédito: monta, mas não aprova nem
+                      cobra (decisão de 24/10/2026) */}
+                  {blocked && (
+                    <Badge
+                      status
+                      variant="errorLight"
+                      className="mt-1 text-nowrap"
+                    >
+                      Cliente bloqueado
+                    </Badge>
+                  )}
                   {data?.paymentCondition?.generateInvoice &&
                     data?.paymentCondition?.invoiceType && (
                       <Badge
