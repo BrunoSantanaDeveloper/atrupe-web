@@ -51,6 +51,10 @@
   "es": "Gestor de destino de las etapas",
   "en": "Destination board for the steps"
  },
+ "0021eeba83": {
+  "es": "Recordatorio",
+  "en": "Reminder"
+ },
  "0022a099fb": {
   "es": "Cada ítem de la factura se convierte en material interno, con la conversión de la unidad de compra.",
   "en": "Each invoice item becomes an internal material, converted from the purchase unit."
@@ -470,6 +474,10 @@
  "068d5a8a76": {
   "es": "Estado modificado.",
   "en": "Status changed."
+ },
+ "069576dff8": {
+  "es": "Cancelada: {reason}",
+  "en": "Cancelled: {reason}"
  },
  "06a26fe059": {
   "es": "Productividad de referencia ({unit}/mes)",
@@ -1042,6 +1050,10 @@
  "1182cc212f": {
   "es": "Por ancho × {campo}",
   "en": "By width × {campo}"
+ },
+ "119a219b57": {
+  "es": "Quitar próximo contacto",
+  "en": "Clear next contact"
  },
  "11a3abf130": {
   "es": "Cantidad y variante del material",
@@ -2523,6 +2535,10 @@
   "es": "finalizada por {completedBy}",
   "en": "finished by {completedBy}"
  },
+ "2b5be1552e": {
+  "es": "para cancelar.",
+  "en": "to cancel."
+ },
  "2b6bc3eee0": {
   "es": "Aceptar transferencia",
   "en": "Accept transfer"
@@ -3006,6 +3022,10 @@
  "32da250799": {
   "es": "Regla base. El equipo más caro recibe más. Todo activo tiene valor de adquisición, por lo que el prorrateo nunca queda sin criterio.",
   "en": "Base rule. The most expensive equipment gets more. Every asset has a purchase value, so the allocation is never left without a criterion."
+ },
+ "32f0ef36c8": {
+  "es": "Ej.: llamar después de que el cliente hable con su socio",
+  "en": "E.g. call after the customer talks to their partner"
  },
  "32f6484f2d": {
   "es": "No fue posible consultar el CNPJ ahora. Complete la razón social.",
@@ -4026,6 +4046,10 @@
  "437be75f9d": {
   "es": "Ej.: Tinta, mantenimiento preventivo",
   "en": "E.g., Ink, preventive maintenance"
+ },
+ "438115a438": {
+  "es": "Informe por qué el cliente no cerró. El motivo aparece en el presupuesto y en el informe de pérdidas.",
+  "en": "Say why the customer did not close. The reason shows on the quotation and in the losses report."
  },
  "4383a94559": {
   "es": "{reference} esperando retiro",
@@ -5254,6 +5278,10 @@
  "56d5309923": {
   "es": "prorrateados por ítem en Gastos administrativos, que pasaron a ser costo propio de los sectores.",
   "en": "allocated by item in Overhead, which became the departments' own cost."
+ },
+ "5708dcdea4": {
+  "es": "Fecha del contacto",
+  "en": "Contact date"
  },
  "571d35af04": {
   "es": "valor total",
@@ -6859,6 +6887,10 @@
   "es": "El costo por hora sale del costo del sector dividido por la carga horaria de los colaboradores. El margen muestra el resultado del precio aplicado sobre ese costo.",
   "en": "The hourly cost comes from the department cost divided by the team members' workload hours. The margin shows the result of the price charged over that cost."
  },
+ "704b5d6c9e": {
+  "es": "Ventas canceladas por motivo",
+  "en": "Cancelled sales by reason"
+ },
  "704fe728c4": {
   "es": "Venta cancelada en caja",
   "en": "Sale canceled at the register"
@@ -6914,6 +6946,10 @@
  "70dd215544": {
   "es": "Venta cancelada",
   "en": "Sale canceled"
+ },
+ "70eb20006e": {
+  "es": "para rechazar.",
+  "en": "to reject."
  },
  "70ee583a0d": {
   "es": "Seleccionar solo los {valor} de esta página",
@@ -8071,6 +8107,10 @@
   "es": "Nuevo costo del activo",
   "en": "New asset cost"
  },
+ "82695585e4": {
+  "es": "Informe la fecha del contacto",
+  "en": "Enter the contact date"
+ },
  "82809f1e43": {
   "es": "Mínimo de 1 número",
   "en": "At least 1 number"
@@ -8603,6 +8643,10 @@
   "es": "Este activo aún no se usa en ningún proceso.",
   "en": "This asset isn't used in any process yet."
  },
+ "8a18cce7f8": {
+  "es": "Próximo contacto guardado.",
+  "en": "Next contact saved."
+ },
  "8a1de968d5": {
   "es": "Indique el saldo del extracto al final del día. Si no coincide con el sistema, explique la diferencia.",
   "en": "Enter the statement balance at the end of the day. If it doesn't match the system, explain the difference."
@@ -8987,6 +9031,14 @@
   "es": "Valor del anticipo",
   "en": "Down payment amount"
  },
+ "9078fd7b75": {
+  "es": "Ningún presupuesto para retomar hoy",
+  "en": "No quotation to follow up today"
+ },
+ "90869caa1d": {
+  "es": "Ningún motivo registrado.",
+  "en": "No reason registered."
+ },
  "908c47af10": {
   "es": "Seleccione una unidad de peso",
   "en": "Select a weight unit"
@@ -9294,6 +9346,10 @@
  "961848f0e0": {
   "es": "Ver",
   "en": "View"
+ },
+ "961e344691": {
+  "es": "Para retomar",
+  "en": "To follow up"
  },
  "9621ad062d": {
   "es": "{path}",
@@ -9850,6 +9906,10 @@
  "9ea3b555d2": {
   "es": "Repita la contraseña *",
   "en": "Repeat the password *"
+ },
+ "9eadfdabbd": {
+  "es": "Seguimiento",
+  "en": "Follow-up"
  },
  "9ef2259422": {
   "es": "Fórmulas del proceso",
@@ -11431,9 +11491,17 @@
   "es": "{valor} valor(es) en campos opcionales se ajustarán. Las filas se importarán normalmente:",
   "en": "{valor} value(s) in optional fields will be adjusted. The rows will be imported as usual:"
  },
+ "b7d66d1a41": {
+  "es": "Sin acordar",
+  "en": "Not scheduled"
+ },
  "b7e28f5752": {
   "es": "Mostrar medidas",
   "en": "Show sizes"
+ },
+ "b80670d8fe": {
+  "es": "Acordar próximo contacto",
+  "en": "Schedule next contact"
  },
  "b81e8edb4d": {
   "es": "Todo lo que el sistema tiene en el período está en el extracto.",
@@ -11687,6 +11755,10 @@
   "es": "Agregar usuarios",
   "en": "Add users"
  },
+ "bc491540bd": {
+  "es": "Máximo 500 caracteres",
+  "en": "At most 500 characters"
+ },
  "bc51a0a8b4": {
   "es": "Nueva versión",
   "en": "New version"
@@ -11830,6 +11902,10 @@
  "be768d6e15": {
   "es": "Entrega en riesgo",
   "en": "Delivery at risk"
+ },
+ "be822cc53b": {
+  "es": "Cambiar próximo contacto",
+  "en": "Change next contact"
  },
  "be96ed4d00": {
   "es": "Cajón de la caja · va a la cuenta Caja en el cierre",
@@ -12247,6 +12323,10 @@
   "es": "Revisión simple (predeterminada)",
   "en": "Simple check (default)"
  },
+ "c5f602219e": {
+  "es": "Registre los motivos de cancelación",
+  "en": "Register the cancellation reasons"
+ },
  "c5f80cd9a3": {
   "es": "Salud",
   "en": "Healthcare"
@@ -12627,6 +12707,10 @@
   "es": "Se aplicará en el menú lateral de la plataforma, en las cotizaciones y en los informes.",
   "en": "It will be applied to the platform's side menu, quotes and reports."
  },
+ "cd1d2c4fdc": {
+  "es": "Presupuestos rechazados por motivo",
+  "en": "Rejected quotations by reason"
+ },
  "cd26a4c8e8": {
   "es": "La pestaña Finanzas reúne en el registro el saldo, las cuentas y los movimientos del proveedor.",
   "en": "The Finance tab brings the supplier's balance, accounts and transactions into their record."
@@ -12798,6 +12882,10 @@
  "cf9f0e6b88": {
   "es": "Costo propio",
   "en": "Own cost"
+ },
+ "cfa4dab9b0": {
+  "es": "Próximo contacto quitado.",
+  "en": "Next contact removed."
  },
  "cfb1259745": {
   "es": "Sin registro",
@@ -13835,6 +13923,10 @@
   "es": "FECHA COBRO",
   "en": "RECEIVED DATE"
  },
+ "e2164df187": {
+  "es": "Informe el motivo. Aparece en la orden de servicio y en el informe de pérdidas.",
+  "en": "Enter the reason. It shows on the service order and in the losses report."
+ },
  "e2250bcdd1": {
   "es": "Marcar los ítems de la página",
   "en": "Select the items on this page"
@@ -14387,6 +14479,10 @@
   "es": "{total} registro(s) creado(s)",
   "en": "{total} record(s) created"
  },
+ "ec82be95b3": {
+  "es": "Cómo aparece",
+  "en": "How it looks"
+ },
  "eca1cad3d7": {
   "es": "Cambiar el armado cambia 1 producto",
   "en": "Changing the setup changes 1 product"
@@ -14691,6 +14787,10 @@
   "es": "Vista previa",
   "en": "Preview"
  },
+ "f205491fc9": {
+  "es": "Cuándo retomar la conversación con el cliente y qué quedó acordado. El presupuesto aparece en \"Para retomar\" ese día.",
+  "en": "When to resume the conversation with the customer and what was agreed. The quotation shows under \"To follow up\" on that day."
+ },
  "f2128af52e": {
   "es": "CONTRAPARTE",
   "en": "COUNTERPARTY"
@@ -14714,6 +14814,10 @@
  "f25a0a2865": {
   "es": "Nace finalizada",
   "en": "Starts as done"
+ },
+ "f26fed49b7": {
+  "es": "Próximo contacto",
+  "en": "Next contact"
  },
  "f2787df35f": {
   "es": "margen {valor} %",
@@ -14858,6 +14962,10 @@
  "f43a3c583c": {
   "es": "Seleccione un motivo",
   "en": "Select a reason"
+ },
+ "f43ad0d5ff": {
+  "es": "Motivo: {reason}",
+  "en": "Reason: {reason}"
  },
  "f43c6b553a": {
   "es": "Caja olvidada cerrada",
@@ -15267,6 +15375,10 @@
   "es": "Recursos",
   "en": "Resources"
  },
+ "fb7f748e62": {
+  "es": "Registre los motivos de rechazo",
+  "en": "Register the rejection reasons"
+ },
  "fb87c51063": {
   "es": "La caja sigue en el mismo lugar del flujo, con las mismas conexiones. Lo que cambia son los recursos y el tiempo.",
   "en": "The box stays in the same place in the flow, with the same connections. What changes are the resources and the time."
@@ -15523,6 +15635,10 @@
   "es": "Boleto",
   "en": "Boleto"
  },
+ "ff043bea26": {
+  "es": "Marcadores para acompañar la negociación: en qué punto está cada presupuesto mientras el cliente no decide (ej.: propuesta enviada, en negociación). La lista de presupuestos filtra por ellos. El avance del presupuesto (digitación, en espera, vencido, rechazado, aprobado) lo controla el sistema solo.",
+  "en": "Markers to track the negotiation: where each quotation stands while the customer has not decided (e.g. proposal sent, negotiating). The quotation list filters by them. The quotation progress (drafting, waiting, expired, rejected, approved) is handled by the system."
+ },
  "ff0c8a88ef": {
   "es": "Error al cargar Academy",
   "en": "Error loading Academy"
@@ -15574,6 +15690,10 @@
  "ffd45f6e22": {
   "es": "Sin agrupar",
   "en": "No grouping"
+ },
+ "ffea02bc87": {
+  "es": "Rechazado: {reason}",
+  "en": "Rejected: {reason}"
  },
  "fff4e0e137": {
   "es": "La pestaña Órdenes de trabajo reúne en el registro las órdenes de trabajo del cliente.",

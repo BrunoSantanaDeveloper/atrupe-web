@@ -43,6 +43,7 @@ import { createItemNew } from '@/actions/_cruds'
 // Icons
 import { IconX, IconAlertCircle } from '@tabler/icons-react'
 import { useCancelReason } from '@/hooks/queries/useCancelReason'
+import Link from 'next/link'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -122,8 +123,11 @@ export function RejectQuotation({ data }: Props) {
             className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>Rejeitar orçamento</AlertDialogTitle>
-          <AlertDialogDescription className="sr-only">
-            Selecione um motivo e confirme se deseja rejeitar o orçamento
+          {/* O motivo é obrigatório a partir do LITE (24/10/2026): é ele que
+              alimenta o relatório de perdas por motivo */}
+          <AlertDialogDescription>
+            Informe por que o cliente não fechou. O motivo aparece no orçamento
+            e no relatório de perdas.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-1">
@@ -148,6 +152,18 @@ export function RejectQuotation({ data }: Props) {
               </SelectGroup>
             </SelectContent>
           </Select>
+          {reasonList && !options.length ? (
+            <p className="text-sm text-gray pt-1">
+              Nenhum motivo cadastrado.{' '}
+              <Link
+                href="/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento"
+                className="text-brand-700 underline"
+              >
+                Cadastre os motivos de rejeição
+              </Link>{' '}
+              para rejeitar.
+            </p>
+          ) : null}
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={() => setReason('')}>

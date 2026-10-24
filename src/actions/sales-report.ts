@@ -11,6 +11,7 @@ import type {
   SalesTableData,
   SalesOrderBy,
   SalesPeriodBy,
+  LossesByReasonData,
 } from '@/app/(app-sidebar)/relatorios/vendas/types'
 
 interface SalesReportFilters {
@@ -82,6 +83,22 @@ export async function getQuotationsOrigin(
   } catch (error) {
     console.error('Error fetching quotations origin:', error)
     return []
+  }
+}
+
+// Perdas por motivo (CRM fase 1): rejeições e cancelamentos do período
+export async function getLossesByReason(
+  filters?: SalesReportFilters,
+): Promise<LossesByReasonData> {
+  const api = await apiInstance()
+  try {
+    const res = await api.get(`${BASE_ROUTE}/losses-by-reason`, {
+      params: filters,
+    })
+    return res.data
+  } catch (error) {
+    console.error('Error fetching losses by reason:', error)
+    return { rejections: [], cancellations: [] }
   }
 }
 

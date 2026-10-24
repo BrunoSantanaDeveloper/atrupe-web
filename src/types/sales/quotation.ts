@@ -240,6 +240,10 @@ export type QuotationType = {
     text: string
     color: string
   }
+  // CRM fase 1 (24/10/2026): motivo da rejeição e próximo contato combinado
+  rejectionReason?: { id: string; reason: string } | null
+  nextContactAt?: string | null
+  nextContactNote?: string | null
   quickSale: boolean
   serie: {
     id: string

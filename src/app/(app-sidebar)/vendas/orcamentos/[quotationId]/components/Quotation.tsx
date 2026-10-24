@@ -17,6 +17,8 @@ import { QuotationItems } from './QuotationItems'
 import { Topbar } from '@/components/common/Topbar'
 import { QuotationActions } from './QuotationActions'
 import { CreditBanner } from './CreditBanner'
+import { FollowUp } from './FollowUp'
+import { AlertBanner } from '@/components/ui/alert-banner'
 import { QuickSaleQuotation } from './QuickSaleQuotation'
 import { QuotationPaymentConditions } from './PaymentConditions'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
@@ -36,7 +38,11 @@ import { getItemOld } from '@/actions/_cruds'
 
 // Icons
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { IconReportMoney, IconExternalLink } from '@tabler/icons-react'
+import {
+  IconReportMoney,
+  IconExternalLink,
+  IconMessageCircleOff,
+} from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
@@ -228,8 +234,18 @@ export function Quotation({ id }: Props) {
           label={data?.quickSale ? 'Venda rápida' : ''}
         />
         <div className="space-y-3">
+          {/* O motivo da rejeição fica à vista (CRM fase 1) */}
+          {data?.status === 'REJECTED' && data?.rejectionReason ? (
+            <AlertBanner
+              variant="error"
+              icon={IconMessageCircleOff}
+              className="rounded-lg border"
+              title={`Rejeitado: ${data.rejectionReason.reason}`}
+            />
+          ) : null}
           <CreditBanner data={data} />
           <QuotationActions data={data} />
+          <FollowUp data={data} />
           <QuotationSummary data={data} />
           <QuotationProvider>
             <QuotationItems data={data} />

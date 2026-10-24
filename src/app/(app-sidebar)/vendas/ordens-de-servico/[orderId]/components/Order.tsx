@@ -38,6 +38,8 @@ import { getItemOld } from '@/actions/_cruds'
 import { ordersStatusObj } from '@/consts/orders'
 
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { AlertBanner } from '@/components/ui/alert-banner'
+import { IconMessageCircleOff } from '@tabler/icons-react'
 
 interface Props {
   id: string
@@ -135,6 +137,15 @@ export function Order({ id }: Props) {
           badge={ordersStatusObj[data?.status]}
         />
         <div className="space-y-3">
+          {/* O motivo do cancelamento fica à vista (CRM fase 1) */}
+          {data?.status === 'CANCELED' && data?.cancelReason ? (
+            <AlertBanner
+              variant="error"
+              icon={IconMessageCircleOff}
+              className="rounded-lg border"
+              title={`Cancelada: ${data.cancelReason.reason}`}
+            />
+          ) : null}
           <OrderActions data={data} />
           <QuotationSummary
             data={data?.quotation}

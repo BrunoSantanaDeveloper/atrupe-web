@@ -41,6 +41,7 @@ import { OrderType } from '@/types/sales/order'
 
 // Icons
 import { IconX, IconAlertCircle } from '@tabler/icons-react'
+import Link from 'next/link'
 
 // Actions
 import { createItemNew } from '@/actions/_cruds'
@@ -205,8 +206,9 @@ export function CancelOrder({ data }: Props) {
               className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Cancelar ordem de serviço</AlertDialogTitle>
-            <AlertDialogDescription className="sr-only">
-              Selecione um motivo e confirme se deseja cancelar o venda
+            <AlertDialogDescription>
+              Informe o motivo. Ele aparece na ordem de serviço e no relatório
+              de perdas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="space-y-1">
@@ -231,6 +233,18 @@ export function CancelOrder({ data }: Props) {
                 </SelectGroup>
               </SelectContent>
             </Select>
+            {reasonList && !options.length ? (
+              <p className="text-sm text-gray pt-1">
+                Nenhum motivo cadastrado.{' '}
+                <Link
+                  href="/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento"
+                  className="text-brand-700 underline"
+                >
+                  Cadastre os motivos de cancelamento
+                </Link>{' '}
+                para cancelar.
+              </p>
+            ) : null}
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setReason('')}>

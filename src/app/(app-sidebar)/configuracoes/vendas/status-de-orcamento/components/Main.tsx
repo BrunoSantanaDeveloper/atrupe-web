@@ -61,6 +61,16 @@ export function Main() {
         previousPage="/configuracoes/vendas"
         primaryCta={<NewItemDialog />}
       />
+      {/* O andamento (digitação, aguardando, vencido, rejeitado, aprovado) o
+          sistema controla sozinho; estes são marcadores de acompanhamento da
+          negociação (CRM fase 1, 24/10/2026) */}
+      <p className="text-sm text-gray">
+        Marcadores para acompanhar a negociação: em que pé está cada orçamento
+        enquanto o cliente não decide (ex.: proposta enviada, em negociação). A
+        lista de orçamentos filtra por eles. O andamento do orçamento
+        (digitação, aguardando, vencido, rejeitado, aprovado) o sistema controla
+        sozinho.
+      </p>
       <div className="space-y-2">
         <Card>
           {!isLoading && !hasData ? (
@@ -77,13 +87,14 @@ export function Main() {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead>Referência</TableHead>
-                      <TableHead>Preview</TableHead>
+                      <TableHead>Como aparece</TableHead>
+                      <TableHead>Orçamentos</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableSkeletonRows cols={3} />
+                      <TableSkeletonRows cols={4} />
                     ) : (
                       statuses.map((item) => (
                         <Fragment key={item.id}>
@@ -101,6 +112,9 @@ export function Main() {
                               >
                                 {item?.title}
                               </Badge>
+                            </TableCell>
+                            <TableCell className="text-gray-600">
+                              {item?.quotations ?? '-'}
                             </TableCell>
                             <TableCell>
                               <div className="flex justify-end gap-1">
