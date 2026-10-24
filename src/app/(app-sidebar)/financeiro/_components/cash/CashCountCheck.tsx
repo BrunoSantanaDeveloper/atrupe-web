@@ -6,7 +6,7 @@
 // existe, deixa a diferença à vista sem lançá-la como quebra.
 
 // UI
-import { Input } from '@/components/ui/input'
+import { BrlInput } from '@/components/common/BrlInput'
 import { Label } from '@/components/ui/label'
 
 // Utils
@@ -31,18 +31,12 @@ export function MoneyInput({
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <Input
+      <BrlInput
         id={id}
-        type="number"
-        min={0}
-        step="0.01"
         autoFocus={autoFocus}
-        startAdornment={<span className="text-sm">R$</span>}
-        value={value ? (value / 100).toFixed(2) : ''}
+        value={value}
         placeholder="0,00"
-        onChange={(event) =>
-          onChange(Math.round(Number(event.target.value || 0) * 100))
-        }
+        onChange={onChange}
       />
     </div>
   )

@@ -29,6 +29,15 @@ export function FinanceSettingsClient() {
     {
       category: 'Financeiro',
       items: [
+        // As formas vêm antes das contas: a conta marca o que recebe e paga
+        // entre as formas já cadastradas (decisão de 24/10/2026)
+        {
+          title: 'Condições de pagamento',
+          icon: IconCreditCardPay,
+          description: 'Cadastre as condições de pagamento da sua empresa',
+          link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
+          permission: 'financial_settings:payment_methods:view',
+        },
         {
           title: 'Bancos e contas',
           icon: IconBuildingBank,
@@ -36,13 +45,6 @@ export function FinanceSettingsClient() {
           link: `${defaultPath}/contas-bancarias`,
           permission: 'financial_settings:bank_accounts:view',
           review: 'todo',
-        },
-        {
-          title: 'Condições de pagamento',
-          icon: IconCreditCardPay,
-          description: 'Cadastre as condições de pagamento da sua empresa',
-          link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
-          permission: 'financial_settings:payment_methods:view',
         },
         {
           title: 'Plano de contas',

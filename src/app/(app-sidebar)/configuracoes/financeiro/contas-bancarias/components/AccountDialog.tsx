@@ -25,6 +25,7 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
+import { BrlInput } from '@/components/common/BrlInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -253,7 +254,10 @@ export function AccountDialog({
                   name="account-bank"
                   label="Banco"
                   placeholder="Escolha o banco"
-                  options={banks.filter((bank) => bank.value !== '000')}
+                  // A gaveta (000) e a operadora de cartão (CARD) não são banco
+                  options={banks.filter(
+                    (bank) => bank.value !== '000' && bank.value !== 'CARD',
+                  )}
                   value={draft.bankCode}
                   onChange={(value) =>
                     setDraft((current) => ({
@@ -271,18 +275,10 @@ export function AccountDialog({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="account-opening">Saldo inicial</Label>
-                  <Input
+                  <BrlInput
                     id="account-opening"
-                    type="number"
-                    step="0.01"
-                    startAdornment={<span className="text-sm">R$</span>}
-                    value={(draft.openingBalance / 100).toFixed(2)}
-                    onChange={(event) =>
-                      set(
-                        'openingBalance',
-                        Math.round(Number(event.target.value || 0) * 100),
-                      )
-                    }
+                    value={draft.openingBalance}
+                    onChange={(cents) => set('openingBalance', cents)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -386,19 +382,10 @@ export function AccountDialog({
                   {draft.shortageTolerance !== null && (
                     <div className="max-w-[220px] space-y-2">
                       <Label htmlFor="account-tolerance">Até</Label>
-                      <Input
+                      <BrlInput
                         id="account-tolerance"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        startAdornment={<span className="text-sm">R$</span>}
-                        value={(draft.shortageTolerance / 100).toFixed(2)}
-                        onChange={(event) =>
-                          set(
-                            'shortageTolerance',
-                            Math.round(Number(event.target.value || 0) * 100),
-                          )
-                        }
+                        value={draft.shortageTolerance}
+                        onChange={(cents) => set('shortageTolerance', cents)}
                       />
                     </div>
                   )}
