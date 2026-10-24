@@ -135,6 +135,10 @@
   "es": "Foto del activo",
   "en": "Asset photo"
  },
+ "013ea5c341": {
+  "es": "Recargo del tercerizado actualizado",
+  "en": "Outsourced markup updated"
+ },
  "013f33200e": {
   "es": "{base}:edit",
   "en": "{base}:edit"
@@ -1438,6 +1442,10 @@
  "18c657fa2c": {
   "es": "Dialog confirmation timed out",
   "en": "Dialog confirmation timed out"
+ },
+ "18c84e5d6d": {
+  "es": "Defina el recargo sobre el costo del tercerizado registrado en el momento.",
+  "en": "Set the markup on cost for outsourced work added on the spot."
  },
  "18ceca14d8": {
   "es": "Seleccione un tipo de comisión válido",
@@ -6067,6 +6075,10 @@
   "es": "Esperando una caja",
   "en": "Waiting for a register"
  },
+ "62f5a9b0f5": {
+  "es": "Informe el costo para ver el precio sugerido por el recargo de la empresa.",
+  "en": "Enter the cost to see the price suggested by the company markup."
+ },
  "62fb985e18": {
   "es": "Agregar responsable",
   "en": "Add contact"
@@ -6754,6 +6766,10 @@
  "6db02992ab": {
   "es": "Costos y precios",
   "en": "Costs and pricing"
+ },
+ "6db7d67dc8": {
+  "es": "En el presupuesto, el vendedor informa el costo del proveedor y el sistema propone el precio de venta: costo + este porcentaje. El porcentaje aparece junto al precio y el vendedor puede cambiar el valor en el momento. El tercerizado no recibe prorrateo ni costo de estructura: el precio es solo el costo más el recargo.",
+  "en": "In the quotation, the seller enters the supplier cost and the system suggests the sale price: cost + this percentage. The percentage shows next to the price and the seller can change the value on the spot. Outsourced work gets no overhead allocation: the price is just the cost plus the markup."
  },
  "6dbca7a9f4": {
   "es": "Ingrese la nomenclatura",
@@ -10519,6 +10535,10 @@
   "es": "Cierre PV n.º",
   "en": "POS closing no."
  },
+ "a7d00beee7": {
+  "es": "Recargo sobre el costo del tercerizado",
+  "en": "Markup on the outsourced cost"
+ },
  "a7e4aa3b4b": {
   "es": "La orden de trabajo ya fue creada para esta venta.",
   "en": "The work order has already been created for this sale."
@@ -11490,6 +11510,10 @@
  "b78db7efc1": {
   "es": "{valor} valor(es) en campos opcionales se ajustarán. Las filas se importarán normalmente:",
   "en": "{valor} value(s) in optional fields will be adjusted. The rows will be imported as usual:"
+ },
+ "b7c90b7eca": {
+  "es": "Recargo de {markup} % sobre el costo = {suggestedPrice}",
+  "en": "{markup}% markup on cost = {suggestedPrice}"
  },
  "b7d66d1a41": {
   "es": "Sin acordar",
@@ -12706,6 +12730,10 @@
  "cce4b9fec4": {
   "es": "Se aplicará en el menú lateral de la plataforma, en las cotizaciones y en los informes.",
   "en": "It will be applied to the platform's side menu, quotes and reports."
+ },
+ "cd032b94c5": {
+  "es": "Informe un porcentaje entre 0 % y 1000 %.",
+  "en": "Enter a percentage between 0% and 1000%."
  },
  "cd1d2c4fdc": {
   "es": "Presupuestos rechazados por motivo",
@@ -15054,6 +15082,10 @@
  "f5a3da2c32": {
   "es": "useChart must be used within a <ChartContainer />",
   "en": "useChart must be used within a <ChartContainer />"
+ },
+ "f5bf131a5e": {
+  "es": "Recargo sobre el costo",
+  "en": "Markup on cost"
  },
  "f5e6d95c5d": {
   "es": "Ingresar el valor mensual",

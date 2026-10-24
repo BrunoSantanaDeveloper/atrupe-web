@@ -33,7 +33,8 @@ export const updateSalesSettings = async (values: Partial<SalesSettings>) => {
       success: false,
       data: null,
       message:
-        res.message || 'O markup precisa ser um percentual entre 0 % e 99 %',
+        res.message ||
+        'O acréscimo precisa ser um percentual entre 0 % e 1000 %',
     }
   }
   return { success: true, data: res.data as SalesSettings, message: '' }

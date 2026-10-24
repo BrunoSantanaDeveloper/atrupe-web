@@ -26,6 +26,8 @@ export const FEATURES = {
     SERVICE_ORDER_CANCELLATION_REASON: 'service_order_cancellation_reason',
     SERVICE_ORDER_CURRENT_PHASE: 'service_order_current_phase',
     CAN_BILL_ON_DELIVERY_AND_CHECKOUT: 'can_bill_on_delivery_and_checkout',
+    // Terceirizado avulso dentro do item, já no START (T-5, 24/10/2026)
+    OUTSOURCED_ITEM: 'outsourced_item',
   },
 
   // Produtos e Produção

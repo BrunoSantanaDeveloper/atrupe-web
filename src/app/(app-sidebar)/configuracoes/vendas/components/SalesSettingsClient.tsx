@@ -54,6 +54,20 @@ export function SalesSettingsClient() {
           link: `${defaultPath}/origens-de-contato`,
           permission: 'sales_settings:contact_sources:view',
         },
+        // O acréscimo sobre o custo do terceirizado avulso (MS-16, T-4),
+        // já no START (T-5), junto do "Acrescentar a este item"
+        ...(hasFeature(FEATURES.SALES.OUTSOURCED_ITEM)
+          ? [
+              {
+                title: 'Terceirizado avulso',
+                icon: IconTruckDelivery,
+                description:
+                  'Defina o acréscimo sobre o custo do terceirizado lançado na hora.',
+                link: `${defaultPath}/terceirizados`,
+                permission: 'sales_settings:series:view',
+              },
+            ]
+          : []),
         // Recurso do LITE: a venda de balcão, sem cadastro (área 12, VR-4)
         ...(hasFeature(FEATURES.SALES.QUOTATION_QUICK_SALE)
           ? [
@@ -87,20 +101,6 @@ export function SalesSettingsClient() {
                   'Defina motivos para mapear rejeições e cancelamentos.',
                 link: `${defaultPath}/motivos-de-rejeicao-e-cancelamento`,
                 permission: 'sales_settings:rejection_reasons:view',
-              },
-            ]
-          : []),
-        // O markup padrão do terceirizado avulso (MS-16, T-4), do LITE em
-        // diante, junto do "Acrescentar a este item" (API desde a Fase 4.2)
-        ...(hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
-          ? [
-              {
-                title: 'Terceirizado avulso',
-                icon: IconTruckDelivery,
-                description:
-                  'Defina o markup padrão aplicado ao custo do terceirizado lançado na hora.',
-                link: `${defaultPath}/terceirizados`,
-                permission: 'sales_settings:series:view',
               },
             ]
           : []),

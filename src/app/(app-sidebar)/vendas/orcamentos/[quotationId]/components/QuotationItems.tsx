@@ -639,6 +639,7 @@ export function QuotationItems({ data }: Props) {
                                   <FeatureGate
                                     features={[
                                       FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+                                      FEATURES.SALES.OUTSOURCED_ITEM,
                                     ]}
                                   >
                                     <Button

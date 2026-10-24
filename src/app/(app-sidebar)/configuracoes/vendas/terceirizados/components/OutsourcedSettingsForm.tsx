@@ -1,10 +1,11 @@
 'use client'
 
-// O markup padrão do terceirizado avulso (MS-16, T-4, decisão de
-// 05/10/2026). O legado aplicava 45 % sem mostrar (R$ 200 de custo viravam
-// R$ 444,44); aqui o percentual é da empresa, aparece no painel
-// "Acrescentar a este item" e o vendedor pode alterar o preço na hora.
-// Provisório: fica em memória até a API guardar (backend-pendente.md).
+// O acréscimo sobre o custo do terceirizado avulso (MS-16, T-4; nome e
+// conta decididos em 24/10/2026, T-5). O legado aplicava 45 % sem mostrar;
+// aqui o percentual é da empresa, aparece no painel "Acrescentar a este
+// item" e o vendedor pode alterar o preço na hora. "Markup" fica só na
+// Precificação (PRO), que é outra conta. A API ainda chama o campo de
+// outsourcedMarkup.
 
 // React
 import { useEffect, useState } from 'react'
@@ -56,13 +57,13 @@ export function OutsourcedSettingsForm() {
   }, [settings])
 
   const markupNumber = Number(markup.replace(',', '.')) || 0
-  const valid = markupNumber >= 0 && markupNumber < 100
+  const valid = markupNumber >= 0 && markupNumber <= 1000
 
   const { mutate: save, isPending } = useMutation({
     mutationFn: () => updateSalesSettings({ outsourcedMarkup: markupNumber }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
-      toast.success('Markup do terceirizado atualizado')
+      toast.success('Acréscimo do terceirizado atualizado')
       queryClient.invalidateQueries({ queryKey: ['sales-settings'] })
     },
     onError: () => toast.error('Erro ao salvar'),
@@ -80,13 +81,13 @@ export function OutsourcedSettingsForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Markup padrão do terceirizado</CardTitle>
+          <CardTitle>Acréscimo sobre o custo do terceirizado</CardTitle>
           <CardDescription>
             No orçamento, o vendedor informa o custo do fornecedor e o sistema
-            propõe o preço de venda: custo ÷ (1 − markup). O percentual aparece
-            ao lado do preço e o vendedor pode alterar o valor na hora. O
-            terceirizado não recebe rateio nem custo de estrutura: o preço é só
-            custo mais esta margem.
+            propõe o preço de venda: custo + este percentual. O percentual
+            aparece ao lado do preço e o vendedor pode alterar o valor na hora.
+            O terceirizado não recebe rateio nem custo de estrutura: o preço é
+            só o custo mais o acréscimo.
           </CardDescription>
         </CardHeader>
         <CardContent className="px-6 pb-6">
@@ -96,13 +97,13 @@ export function OutsourcedSettingsForm() {
                 htmlFor="outsourced-markup"
                 className="text-sm font-medium text-gray-700"
               >
-                Markup padrão
+                Acréscimo sobre o custo
               </label>
               <Input
                 id="outsourced-markup"
                 type="number"
                 min={0}
-                max={99}
+                max={1000}
                 step={1}
                 inputMode="decimal"
                 endAdornment={<span className="text-sm">%</span>}
@@ -111,7 +112,7 @@ export function OutsourcedSettingsForm() {
               />
               {!valid && (
                 <p className="text-xs text-error">
-                  Informe um percentual entre 0 % e 99 %.
+                  Informe um percentual entre 0 % e 1000 %.
                 </p>
               )}
             </div>
