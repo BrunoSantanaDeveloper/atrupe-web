@@ -30,6 +30,8 @@ import { toast } from 'sonner'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { extractConditions } from '@/app/(app-sidebar)/cadastros/clientes/components/NewClient/utils/ExtractConditions'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { FormRadio } from '@/components/common/form/FormRadio'
+import { RiskHint } from '@/components/common/RiskHint'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 export function metadata() {
   return {
@@ -56,6 +58,8 @@ const baseFields = z.object({
   applyMinValueToAll: z.boolean().optional(),
   applyMaxValueToAll: z.boolean().optional(),
   applyPaymentMethodsToAll: z.boolean().optional(),
+  // A quem o "aplicar" vale (decisão de 24/10/2026)
+  applyTo: z.enum(['PROSPECT', 'ACTIVE', 'ALL']).optional(),
 })
 const creditLimitSchema = z.object({
   person: baseFields,
@@ -83,11 +87,13 @@ export function CreditLimit() {
       ...creditLimit?.person,
       minValue: creditLimit?.person.minValue || 0,
       maxValue: creditLimit?.person.maxValue || 0,
+      applyTo: 'ALL' as const,
     },
     company: {
       ...creditLimit?.company,
       minValue: creditLimit?.company.minValue || 0,
       maxValue: creditLimit?.company.maxValue || 0,
+      applyTo: 'ALL' as const,
     },
   }
 
@@ -115,15 +121,23 @@ export function CreditLimit() {
 
   const onSubmit = async (data: CreditLimitFormType) => {
     try {
+      // "Todos" é o que a API faz sem o campo: só manda o escopo quando ele
+      // restringe, para a tela continuar salvando numa API sem o campo
+      const scopeOf = (tab: typeof data.person) =>
+        tab.applyTo && tab.applyTo !== 'ALL' ? { applyTo: tab.applyTo } : {}
       const newData = {
         ...data,
         person: {
           ...data.person,
+          applyTo: undefined,
+          ...scopeOf(data.person),
           conditions: extractConditions(data?.person?.paymentMethods),
           paymentMethods: undefined,
         },
         company: {
           ...data.company,
+          applyTo: undefined,
+          ...scopeOf(data.company),
           conditions: extractConditions(data?.company?.paymentMethods),
           paymentMethods: undefined,
         },
@@ -146,9 +160,9 @@ export function CreditLimit() {
         return
       }
 
-      queryClient.invalidateQueries({
-        queryKey: ['credit-limit'],
-      })
+      // O padrão e, com o "aplicar", os clientes: a tela do cliente mostrava
+      // o limite guardado antes da mudança
+      queryClient.invalidateQueries()
 
       toast.success('Limite de crédito padrão atualizado')
       setOpen(false)
@@ -187,7 +201,19 @@ export function CreditLimit() {
             aria-describedby="alert-dialog-description"
           >
             <DialogHeader>
-              <DialogTitle>Limite de crédito padrão</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                Limite de crédito padrão
+                <RiskHint title="Limite de crédito padrão">
+                  <p>
+                    O limite cadastrado aqui é o que cada cliente novo recebe ao
+                    ser cadastrado, conforme o tipo: pessoa física ou jurídica.
+                  </p>
+                  <p>
+                    Os clientes que já existem não mudam, a não ser pelas opções
+                    avançadas, que aplicam o padrão aos clientes escolhidos.
+                  </p>
+                </RiskHint>
+              </DialogTitle>
             </DialogHeader>
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <Tabs
@@ -350,12 +376,36 @@ export function CreditLimit() {
                               </AlertTitle>
 
                               <AlertDescription className="text-sm font-normal text-gray-500">
-                                Ao selecionar as opções abaixo, os limites de
-                                crédito personalizados de todos os clientes
-                                serão alterados para o novo padrão.
+                                Ao marcar as opções abaixo, o limite dos
+                                clientes escolhidos, do tipo desta aba, é
+                                trocado pelo novo padrão, inclusive os limites
+                                personalizados.
                               </AlertDescription>
                             </Alert>
                             <div className="space-y-4">
+                              <div className="space-y-2">
+                                <p className="text-sm font-medium text-gray-700">
+                                  Aplicar a
+                                </p>
+                                <FormRadio
+                                  name={`${activeTab}.applyTo`}
+                                  className="w-full"
+                                  items={[
+                                    {
+                                      value: 'PROSPECT',
+                                      label: 'Pré-cadastros',
+                                    },
+                                    {
+                                      value: 'ACTIVE',
+                                      label: 'Cadastros aprovados',
+                                    },
+                                    {
+                                      value: 'ALL',
+                                      label: 'Todos (inclusive inativos)',
+                                    },
+                                  ]}
+                                />
+                              </div>
                               <div className="flex items-center space-x-2">
                                 <Checkbox
                                   id="minValue"
@@ -370,8 +420,8 @@ export function CreditLimit() {
                                   }
                                 />
                                 <label htmlFor="minValue" className="text-sm">
-                                  Aplicar valor mínimo para venda a todos os
-                                  clientes
+                                  Aplicar o valor mínimo para venda aos clientes
+                                  escolhidos
                                 </label>
                               </div>
 
@@ -389,8 +439,8 @@ export function CreditLimit() {
                                   }
                                 />
                                 <label htmlFor="maxValue" className="text-sm">
-                                  Aplicar valor máximo para venda a todos os
-                                  clientes
+                                  Aplicar o valor máximo para venda aos clientes
+                                  escolhidos
                                 </label>
                               </div>
 
@@ -411,8 +461,8 @@ export function CreditLimit() {
                                   htmlFor="paymentMethods"
                                   className="text-sm"
                                 >
-                                  Aplicar formas de pagamento a todos os
-                                  clientes
+                                  Aplicar as formas de pagamento aos clientes
+                                  escolhidos
                                 </label>
                               </div>
                             </div>

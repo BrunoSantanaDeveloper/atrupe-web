@@ -2055,6 +2055,10 @@
   "es": "Por debajo de {valor} rige el valor de venta del producto.",
   "en": "Below {valor}, the product's selling price applies."
  },
+ "242cdd3d43": {
+  "es": "Aplicar el valor mínimo de venta a los clientes elegidos",
+  "en": "Apply the minimum sale amount to the chosen customers"
+ },
  "24337e4d50": {
   "es": "Series de venta",
   "en": "Sales series"
@@ -2766,6 +2770,10 @@
  "2ee27e2e0f": {
   "es": "Todas las tareas",
   "en": "All tasks"
+ },
+ "2eea101c93": {
+  "es": "Registros aprobados",
+  "en": "Approved registrations"
  },
  "2f31672fd7": {
   "es": "Informe de depreciación",
@@ -4535,6 +4543,10 @@
   "es": "Usted no tiene permiso para configurar el tercerizado puntual.",
   "en": "You don't have permission to configure one-off outsourced work."
  },
+ "4bafd8a904": {
+  "es": "El límite registrado aquí es el que recibe cada cliente nuevo al registrarse, según el tipo: persona física o jurídica.",
+  "en": "The limit set here is what each new customer gets when registered, by type: individual or company."
+ },
  "4bce4fb308": {
   "es": "Movimiento cancelado",
   "en": "Transaction canceled"
@@ -5339,6 +5351,10 @@
   "es": "Ningún pago encontrado",
   "en": "No payments found"
  },
+ "588956a9c8": {
+  "es": "Aplicar las formas de pago a los clientes elegidos",
+  "en": "Apply the payment methods to the chosen customers"
+ },
  "58a18342d2": {
   "es": "Video de presentación del {name}",
   "en": "{name} overview video"
@@ -5938,6 +5954,10 @@
  "61e7453cf7": {
   "es": "Valor restante por depreciar",
   "en": "Remaining amount to depreciate"
+ },
+ "61eb121339": {
+  "es": "Aplicar el valor máximo de venta a los clientes elegidos",
+  "en": "Apply the maximum sale amount to the chosen customers"
  },
  "61ecae6a5b": {
   "es": "Cuentas de las fuentes",
@@ -6758,6 +6778,10 @@
  "6ede09ae7b": {
   "es": "Cotización finalizada",
   "en": "Quote finished"
+ },
+ "6ef326a75d": {
+  "es": "Al marcar las opciones de abajo, el límite de los clientes elegidos, del tipo de esta pestaña, se reemplaza por el nuevo predeterminado, incluidos los límites personalizados.",
+  "en": "When you check the options below, the limit of the chosen customers, of this tab type, is replaced by the new default, including customized limits."
  },
  "6efbfef167": {
   "es": "Error al verificar el estado",
@@ -8166,6 +8190,10 @@
  "8454583765": {
   "es": "Error al generar la hoja de producción",
   "en": "Error generating the job ticket"
+ },
+ "84615852e2": {
+  "es": "Todos (incluidos los inactivos)",
+  "en": "All (including inactive)"
  },
  "8462d52b09": {
   "es": "¡Algo salió mal!",
@@ -12019,6 +12047,10 @@
   "es": "movido en el período",
   "en": "moved in the period"
  },
+ "c3179d7124": {
+  "es": "Aplicar a",
+  "en": "Apply to"
+ },
  "c31a7aefe0": {
   "es": "Mano de obra por sector",
   "en": "Labor by department"
@@ -13118,6 +13150,10 @@
  "d689da93d0": {
   "es": "Saldo del extracto",
   "en": "Statement balance"
+ },
+ "d69ce4164c": {
+  "es": "Los clientes que ya existen no cambian, salvo por las opciones avanzadas, que aplican el predeterminado a los clientes elegidos.",
+  "en": "Existing customers do not change, except through the advanced options, which apply the default to the chosen customers."
  },
  "d6a3192829": {
   "es": "Horario de entrega",
