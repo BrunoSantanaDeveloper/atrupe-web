@@ -337,7 +337,6 @@ export function AssemblyEditorSkeleton({
     <div className="flex flex-col gap-5">
       {!embedded && topbar && (
         <Topbar
-          review="new"
           title={topbar.title}
           supportText={topbar.supportText}
           previousPage={topbar.previousPage}
@@ -1531,7 +1530,6 @@ function AssemblyEditorBody({
           unidade comercial, valor de venda e padrão de medidas */}
       {!embedded && topbar && (
         <Topbar
-          review="new"
           title={topbar.title}
           supportText={topbar.supportText}
           previousPage={topbar.previousPage}

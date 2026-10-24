@@ -341,11 +341,7 @@ export function ProcessEditor({
     return (
       <div className="space-y-5">
         {!embedded && (
-          <Topbar
-            review="new"
-            title=""
-            previousPage="/configuracoes/produtos/processos"
-          />
+          <Topbar title="" previousPage="/configuracoes/produtos/processos" />
         )}
         <div
           className={cn(
@@ -555,7 +551,6 @@ export function ProcessEditor({
       <div className="space-y-5">
         {!embedded && (
           <Topbar
-            review="new"
             title={block.name}
             previousPage="/configuracoes/produtos/processos"
             supportText={`${detail.category} · ${block.sector}${

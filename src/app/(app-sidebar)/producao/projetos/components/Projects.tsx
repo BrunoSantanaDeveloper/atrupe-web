@@ -107,7 +107,6 @@ export function Projects() {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title="Projetos"
           supportText="As vendas em produção, com as tarefas de cada item"
           paramName="status"

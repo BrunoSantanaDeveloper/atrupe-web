@@ -337,7 +337,6 @@ export function PayrollStructure() {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title="Folha de pagamento"
           previousPage="/configuracoes/financeiro"
           secondaryCta={

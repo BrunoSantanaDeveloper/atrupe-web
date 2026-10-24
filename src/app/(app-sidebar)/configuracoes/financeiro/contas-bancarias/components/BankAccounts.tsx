@@ -258,7 +258,6 @@ export function BankAccounts(_: SearchParamsType) {
       <TooltipProvider>
         <div className="space-y-5">
           <Topbar
-            review="new"
             title="Contas bancárias"
             supportText="Onde o dinheiro da empresa fica"
             previousPage="/configuracoes/financeiro"

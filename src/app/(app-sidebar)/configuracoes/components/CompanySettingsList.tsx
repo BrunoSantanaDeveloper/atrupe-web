@@ -15,8 +15,6 @@ import type { IconProps } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { reviewTextClass } from '@/consts/revisao'
-import type { ReviewMarkKind } from '@/consts/revisao'
 import { DEMO_DATA } from '@/lib/demo'
 
 export type CompanySettingsType = {
@@ -32,7 +30,6 @@ export type CompanySettingsType = {
     isInactive?: boolean
     permission?: string | string[]
     // Marcação temporária da revisão (src/consts/revisao.ts)
-    review?: ReviewMarkKind
     // Leva a uma tela de demonstração (dados de exemplo): o cartão só
     // aparece com a flag (src/lib/demo.ts)
     demo?: boolean
@@ -89,7 +86,6 @@ export function CompanySettingsList({
                     <p
                       className={cn(
                         'font-semibold mb-2 relative pr-20 sm:pr-0',
-                        reviewTextClass(item.review),
                       )}
                     >
                       {item.title}

@@ -128,7 +128,6 @@ export function QuickSaleSettingsForm() {
 
   const topbar = (
     <Topbar
-      review="new"
       title="Venda rápida"
       previousPage="/configuracoes/vendas"
       supportText="A venda de balcão, sem cadastro e sem perguntas"

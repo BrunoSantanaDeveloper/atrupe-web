@@ -73,7 +73,6 @@ export function OutsourcedSettingsForm() {
   return (
     <div className="space-y-5">
       <Topbar
-        review="new"
         title="Terceirizado avulso"
         previousPage="/configuracoes/vendas"
         supportText="Como o preço do terceirizado lançado na hora é formado"

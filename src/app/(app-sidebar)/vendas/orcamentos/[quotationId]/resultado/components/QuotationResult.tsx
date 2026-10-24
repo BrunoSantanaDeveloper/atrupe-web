@@ -144,7 +144,6 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title={`Resultado previsto · ${result.reference}`}
           previousPage={`/vendas/orcamentos/${quotationId}`}
           supportText={result.client || undefined}

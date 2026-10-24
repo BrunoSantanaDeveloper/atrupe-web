@@ -20,7 +20,6 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 // Components
 import { Topbar, type TabNavType } from '@/components/common/Topbar'
-import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { NewMaterialModal } from './NewMaterial'
 import { VariationsModal } from './VariationsModal'
 import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
@@ -140,7 +139,6 @@ export function Materials({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title="Materiais"
           supportText="Insumos usados na composição dos produtos e na revenda"
           tabs={tabs}
@@ -407,12 +405,7 @@ export function Materials({ searchParams }: SearchParamsType) {
             )}
           </FetchingRegion>
         </Card>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <ReviewTodo rule="ALT-20" title="Entrada automática de notas">
-            A nota do fornecedor chega pela Migrate e vira entrada de material,
-            fornecedor e conta a pagar, sem digitação.
-          </ReviewTodo>
-        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
 
         {/* O diálogo lê o material da lista atual, para ver o custo e o
             preço recém-gravados sem fechar */}

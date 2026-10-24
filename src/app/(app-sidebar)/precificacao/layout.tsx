@@ -44,7 +44,6 @@ export default function PricingLayout({ children }: Props) {
       >
         <div className="space-y-5">
           <Topbar
-            review="new"
             title="Precificação"
             supportText="Custo, preço praticado e margem de cada recurso"
           />
