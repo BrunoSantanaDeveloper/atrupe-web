@@ -55,8 +55,10 @@ export function SalesSettingsClient() {
           permission: 'sales_settings:contact_sources:view',
         },
         // O acréscimo sobre o custo do terceirizado avulso (MS-16, T-4),
-        // já no START (T-5), junto do "Acrescentar a este item"
-        ...(hasFeature(FEATURES.SALES.OUTSOURCED_ITEM)
+        // já no START (T-5), junto do "Acrescentar a este item". A
+        // composição também o tem (LITE antes da chave nova na API)
+        ...(hasFeature(FEATURES.SALES.OUTSOURCED_ITEM) ||
+        hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
           ? [
               {
                 title: 'Terceirizado avulso',
