@@ -23,8 +23,10 @@ export const newProductsSchema = z.object({
     .min(2, { message: 'Mínimo de 2 caracteres' })
     .trim(),
   technicalDescription: z.string().optional().nullable(),
-  allowEditValues: z.boolean().default(true),
-  allowEditDescription: z.boolean().default(true),
+  // Produto novo nasce sem as liberações (decisão de 24/10/2026): editar
+  // valor e descrição é para o Produto base e os de preço variável (ALT-8)
+  allowEditValues: z.boolean().default(false),
+  allowEditDescription: z.boolean().default(false),
   imageUrl: z.string().optional().nullable(),
   imageSize: z.string().optional().nullable(),
   items: z.array(
@@ -146,8 +148,8 @@ export const defaultNewProductValues: NewProductsFormType = {
   categoryId: '',
   sectorId: '',
   technicalDescription: null,
-  allowEditValues: true,
-  allowEditDescription: true,
+  allowEditValues: false,
+  allowEditDescription: false,
   imageUrl: null,
   imageSize: 'small',
   items: [

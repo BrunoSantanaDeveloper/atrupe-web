@@ -14,6 +14,10 @@ import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {
+  AllowEditValueHint,
+  AllowEditDescriptionHint,
+} from '@/components/common/RiskHint'
+import {
   Table,
   TableRow,
   TableBody,
@@ -1798,6 +1802,12 @@ function AssemblyEditorBody({
                               aria-label={label}
                             />
                             {label}
+                            {key === 'allowEditValues' && (
+                              <AllowEditValueHint />
+                            )}
+                            {key === 'allowEditDescription' && (
+                              <AllowEditDescriptionHint />
+                            )}
                           </label>
                         ))}
                       </div>

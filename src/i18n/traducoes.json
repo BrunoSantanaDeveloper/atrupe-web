@@ -7347,6 +7347,10 @@
   "es": "Vendedor: {seller}",
   "en": "Salesperson: {seller}"
  },
+ "785f04371c": {
+  "es": "El vendedor puede cambiar el nombre de este producto en la propuesta, pero para el sistema sigue siendo este producto.",
+  "en": "The seller can rename this product in the proposal, but for the system it is still this product."
+ },
  "7880e7bfc1": {
   "es": "¡Éxito!",
   "en": "Success!"
@@ -9863,6 +9867,10 @@
   "es": "Nuevo material",
   "en": "New material"
  },
+ "a061209523": {
+  "es": "Vender otro artículo con el nombre cambiado distorsiona los informes de ventas, la producción y el inventario. Para algo que no está registrado, use el Producto base del sector.",
+  "en": "Selling another item under a changed name distorts sales reports, production and stock. For something not registered, use the sector Base product."
+ },
  "a06fca4324": {
   "es": "Transferencia aceptada. Inicie sesión con el correo electrónico de la invitación y la contraseña que creó.",
   "en": "Transfer accepted. Sign in with the invite email and the password you created."
@@ -10726,6 +10734,10 @@
  "ae64394780": {
   "es": "Costo promedio",
   "en": "Average cost"
+ },
+ "ae6934b585": {
+  "es": "Con este precio, el descuento de la cotización queda en {valor}% sobre el precio del catálogo, por encima del límite del vendedor ({maxDiscount}%). Suba el precio para guardar.",
+  "en": "At this price, the quote discount is {valor}% over the catalog price, above the seller limit ({maxDiscount}%). Raise the price to save."
  },
  "ae6d381887": {
   "es": "Para estimar el costo por hora de este sector se necesita al menos un colaborador registrado.",
@@ -11918,6 +11930,10 @@
  "c1d936273d": {
   "es": "Quitar el feriado del {day}",
   "en": "Remove the holiday on {day}"
+ },
+ "c1ef3896c2": {
+  "es": "Sobre: {title}",
+  "en": "About: {title}"
  },
  "c1fbafc776": {
   "es": "Cuentas por cobrar",
@@ -14291,6 +14307,10 @@
   "es": "¡Ítem de costo eliminado!",
   "en": "Cost item deleted!"
  },
+ "ed2d9377f7": {
+  "es": "El vendedor puede cambiar el precio de este producto en la cotización. Bajar el precio cuenta como descuento y respeta el límite del vendedor, medido sobre el precio del catálogo.",
+  "en": "The seller can change this product price in the quote. Lowering the price counts as a discount and respects the seller limit, measured against the catalog price."
+ },
  "ed3025abe8": {
   "es": "Al activar a {valor}, el colaborador se activará y podrá acceder al sistema.",
   "en": "When you activate {valor}, the team member will be activated and will be able to access the system."
@@ -14318,6 +14338,10 @@
  "edaae17df9": {
   "es": "Formato de correo electrónico inválido",
   "en": "Invalid email format"
+ },
+ "edb27bc2fd": {
+  "es": "Déjelo activado solo en los productos de precio variable. Para vender algo que no está registrado, use el Producto base del sector.",
+  "en": "Keep it on only for variable-price products. To sell something not registered, use the sector Base product."
  },
  "edb37a276e": {
   "es": "Condición de pago {valor} con éxito",

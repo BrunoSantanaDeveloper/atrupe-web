@@ -5,6 +5,10 @@ import React, { useEffect, useState } from 'react'
 
 // UI
 import {
+  AllowEditValueHint,
+  AllowEditDescriptionHint,
+} from '@/components/common/RiskHint'
+import {
   Dialog,
   DialogTitle,
   DialogFooter,
@@ -678,14 +682,20 @@ function NewProductModal({
                         placeholder="Digite aqui."
                       />
                       <div className="flex gap-6">
-                        <FormSwitch
-                          name="allowEditValues"
-                          label="Permitir editar valor"
-                        />
-                        <FormSwitch
-                          name="allowEditDescription"
-                          label="Permitir editar descrição"
-                        />
+                        <div className="flex items-center gap-1.5">
+                          <FormSwitch
+                            name="allowEditValues"
+                            label="Permitir editar valor"
+                          />
+                          <AllowEditValueHint />
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <FormSwitch
+                            name="allowEditDescription"
+                            label="Permitir editar descrição"
+                          />
+                          <AllowEditDescriptionHint />
+                        </div>
                       </div>
                       {canShowProductionStages && !showCompositionTab && (
                         <ProductionStages />
