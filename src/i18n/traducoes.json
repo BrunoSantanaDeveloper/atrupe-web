@@ -787,6 +787,10 @@
   "es": "Descripción de la subcategoría",
   "en": "Subcategory description"
  },
+ "0ca6b22fe5": {
+  "es": "Al marcar las opciones de abajo, el límite de los clientes elegidos se reemplaza por el predeterminado del tipo de cada uno, incluidos los límites personalizados. Los clientes inactivos no lo reciben.",
+  "en": "When you check the options below, the limit of the chosen customers is replaced by the default of each one's type, including customized limits. Inactive customers do not receive it."
+ },
  "0cae0fba61": {
   "es": "Incluido",
   "en": "Included"
