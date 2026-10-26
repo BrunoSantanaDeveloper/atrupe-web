@@ -109,6 +109,9 @@ export function QuickSaleQuotation({ data, previousUrl }: Props) {
           <QuotationActions
             data={data}
             primaryAction={<QuickSaleCheckoutButton sale={sale} />}
+            hidePrint={
+              !data?.client?.id || data.client.id === sale.defaultClientId
+            }
           />
           <QuotationSummary data={data} />
           <QuotationProvider>

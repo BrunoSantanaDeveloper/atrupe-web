@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useRouter } from '@/hooks/useRouter'
 
 // UI
@@ -35,7 +36,7 @@ import type { ExportColumn } from '@/lib/export-excel'
 import type { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { createItemNew, getData, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getData, getDataOld, getItem } from '@/actions/_cruds'
 
 // Third-party
 import { toast } from 'sonner'
@@ -164,6 +165,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
   const router = useRouter()
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   // "Venda rápida" no menu leva para cá com ?novo=venda-rapida (o link antigo,
   // ?venda-rapida=1, continua valendo)
@@ -186,6 +188,26 @@ export function Quotations({ searchParams }: SearchParamsType) {
     const createQuickSale = async () => {
       setCreatingQuickSale(true)
 
+      // Abrir o menu criava uma venda vazia a cada visita e a lista enchia
+      // de lixo (decisão do produto, 26/10/2026): a venda rápida vazia do
+      // mesmo usuário é reaproveitada enquanto estiver em digitação e sem
+      // item. A API ainda vai criar a venda só com o primeiro item (Bruno)
+      const emptyKey = `atrupe:venda-rapida-vazia:${session?.user?.userId || ''}`
+      const previous = window.localStorage.getItem(emptyKey)
+      if (previous) {
+        const current = await getItem({ route: `/sale/quotation/${previous}` })
+        const sale = current.success ? current.data : null
+        if (
+          sale?.quickSale &&
+          sale?.status === 'OPEN' &&
+          !(sale?.quotationItems?.length > 0)
+        ) {
+          window.location.href = `/vendas/orcamentos/${previous}?adicionar=1`
+          return
+        }
+        window.localStorage.removeItem(emptyKey)
+      }
+
       // A API cria com os padrões da configuração e o vendedor da sessão
       const res = await createItemNew({ route: '/sale/quotation/quick-sale' })
 
@@ -201,12 +223,13 @@ export function Quotations({ searchParams }: SearchParamsType) {
         return
       }
 
+      window.localStorage.setItem(emptyKey, res.data.id)
       // Já com o modal "Qual item deseja adicionar?" aberto (VR-4)
       window.location.href = `/vendas/orcamentos/${res.data.id}?adicionar=1`
     }
 
     createQuickSale()
-  }, [isQuickSale, creatingQuickSale, router, pathname])
+  }, [isQuickSale, creatingQuickSale, router, pathname, session?.user?.userId])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({

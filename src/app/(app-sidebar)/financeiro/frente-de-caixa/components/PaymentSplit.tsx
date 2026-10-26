@@ -148,6 +148,18 @@ export function useCashReceipt(
     conditionOptions.find((option) => option.value === id)?.label
 
   const parts = watch('parts') || []
+  // O balcão abre em Dinheiro (CX-2; decisão do produto, 26/10/2026): a
+  // primeira parte nasce na forma de dinheiro, sem banco nem conta a
+  // escolher; as outras formas já vêm com o primeiro banco e a primeira conta
+  const firstConditionId = parts[0]?.paymentConditionId
+  useEffect(() => {
+    if (firstConditionId || !conditionOptions.length) return
+    const cash =
+      conditionOptions.find(
+        (option) => methodOfCondition(option.label) === 'CASH',
+      ) ?? conditionOptions[0]
+    setValue('parts.0.paymentConditionId', cash.value)
+  }, [firstConditionId, conditionOptions, setValue])
   const totalValue = watch('totalValue') || 0
   const received = parts.reduce((total, part) => total + (part.amount || 0), 0)
   const change = Math.max(0, received - totalValue)

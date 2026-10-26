@@ -35,7 +35,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
+import { SaleReceiptDialog } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/SaleReceiptDialog'
 import {
   useCashReceipt,
   CashReceiptFields,
@@ -150,6 +150,9 @@ export function useQuickSale(data: QuotationType) {
 
   return {
     path,
+    // O cliente padrão da configuração: a venda com ele não tem "cliente
+    // informado", então não há proposta a mostrar (26/10/2026)
+    defaultClientId: settings?.clientId || null,
     // O arredondamento no balcão da frente padrão (FC-18)
     roundingLimit: roundingFor(
       settings?.roundingLimit,
@@ -640,8 +643,8 @@ export function QuickSaleStatusCard({
           </Button>
         </div>
       </CardContent>
-      <PrintQuotationDialog
-        type="quotation"
+      {/* A4 em duas vias ou térmica 80 mm (FC-16, 26/10/2026) */}
+      <SaleReceiptDialog
         quotationId={sale.origin.quotationId}
         open={openPrint}
         onOpenChange={setOpenPrint}

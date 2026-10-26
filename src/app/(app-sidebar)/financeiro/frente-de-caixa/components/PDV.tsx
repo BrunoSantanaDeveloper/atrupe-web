@@ -39,7 +39,7 @@ import { ReceiveSaleDialog } from './ReceiveSaleDialog'
 import { BillingDialog } from './BillingDialog'
 import { CashFrontSettingsDialog } from './CashFrontSettingsDialog'
 import { nearWorkdayEnd } from '@/lib/workday'
-import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
+import { SaleReceiptDialog } from './SaleReceiptDialog'
 
 // Types
 import {
@@ -794,8 +794,7 @@ export function PDV() {
             onOpenChange={(open) => !open && setClosingForgotten(undefined)}
           />
         )}
-        <PrintQuotationDialog
-          type="quotation"
+        <SaleReceiptDialog
           quotationId={printing || ''}
           open={!!printing}
           onOpenChange={(open) => !open && setPrinting(undefined)}

@@ -3147,6 +3147,10 @@
   "es": "Hasta (%)",
   "en": "Up to (%)"
  },
+ "3454eed443": {
+  "es": "Térmica 80 mm",
+  "en": "Thermal 80 mm"
+ },
  "345a09647b": {
   "es": "Todas las nóminas seleccionadas fueron abiertas",
   "en": "All selected payrolls were opened"
@@ -6807,6 +6811,10 @@
   "es": "Día de vencimiento",
   "en": "Due day"
  },
+ "6d510b3908": {
+  "es": "En A4 salen dos copias en la misma hoja, una para el cliente y otra para la empresa, con la línea de corte en el medio. En la térmica sale la copia del cliente, en 80 mm.",
+  "en": "On A4 two copies print on the same sheet, one for the customer and one for the company, with the cut line in the middle. On the thermal printer the customer copy prints, 80 mm wide."
+ },
  "6d5bdbc4f9": {
   "es": "Usted no tiene permiso para ver las finanzas del cliente.",
   "en": "You don't have permission to view the customer's finances."
@@ -7038,6 +7046,10 @@
  "70ee583a0d": {
   "es": "Seleccionar solo los {valor} de esta página",
   "en": "Select only the {valor} on this page"
+ },
+ "70fe9d961d": {
+  "es": "La venta todavía está cargando.",
+  "en": "The sale is still loading."
  },
  "7107f7721b": {
   "es": "Valor base",
@@ -8423,6 +8435,10 @@
   "es": "Opción agregada",
   "en": "Option added"
  },
+ "85326f8c19": {
+  "es": "A4 · dos copias",
+  "en": "A4 · two copies"
+ },
  "85466c9b4d": {
   "es": "Fila",
   "en": "Row"
@@ -8982,6 +8998,10 @@
  "8ddd79ee62": {
   "es": "Ningún proceso inactivo",
   "en": "No inactive processes"
+ },
+ "8de1d49e01": {
+  "es": "El navegador bloqueó la ventana del comprobante.",
+  "en": "The browser blocked the receipt window."
  },
  "8de8300ac7": {
   "es": "Estructura productiva",
