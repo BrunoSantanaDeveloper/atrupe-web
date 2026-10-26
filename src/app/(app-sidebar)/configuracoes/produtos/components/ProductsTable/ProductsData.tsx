@@ -303,6 +303,16 @@ export function ProductsData({ searchParams, tabs }: Props) {
                               Com composição
                             </Badge>
                           )}
+                          {/* O Produto base do setor (ALT-8): nome com "#" para
+                              ficar na frente; o selo diz o que ele é */}
+                          {/^#?\s*Produto base/i.test(product?.name || '') && (
+                            <Badge
+                              variant="neutralLight"
+                              className="ml-2 align-middle"
+                            >
+                              Base do setor
+                            </Badge>
+                          )}
                           {product?.isOutsourced && (
                             <Badge
                               variant="warningLight"

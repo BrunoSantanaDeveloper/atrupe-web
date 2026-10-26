@@ -48,6 +48,8 @@ import { SelectProductGroupWithSectorField } from '@/components/common/form/glob
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 import { InactivateProductDialog } from './InactivateProductDialog'
 import { OutsourcedProductFields } from './OutsourcedProductFields'
+import { NewGroupInline } from './NewGroupInline'
+import { ProductPriceTiers } from './ProductPriceTiers'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -550,12 +552,23 @@ function NewProductModal({
                         label="Setor"
                         width="flex-[1_0_190px]"
                       />
-                      <SelectProductGroupWithSectorField
-                        name="categoryId"
-                        label="Grupo de produtos"
-                        width="flex-[1_0_190px]"
-                        selectedSectorId={watch('sectorId')}
-                      />
+                      <div className="flex flex-[1_0_190px] gap-2">
+                        <SelectProductGroupWithSectorField
+                          name="categoryId"
+                          label="Grupo de produtos"
+                          width="flex-1"
+                          selectedSectorId={watch('sectorId')}
+                        />
+                        <NewGroupInline
+                          sectorId={watch('sectorId')}
+                          onCreated={(id) =>
+                            form.setValue('categoryId', id, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
+                          }
+                        />
+                      </div>
 
                       <FormInput
                         name="name"
@@ -635,6 +648,23 @@ function NewProductModal({
                               )}
                             </div>
                           )}
+                          {/* Faixas de quantidade já no LITE (FQ-1; decisão do
+                              produto, 26/10/2026). No PRO elas vivem na aba
+                              Composição, com custo e margem por faixa */}
+                          {showVariations && editMode && productId ? (
+                            <div className="w-full rounded-xl border border-gray-200 p-4">
+                              <ProductPriceTiers
+                                productId={productId}
+                                unitKind={watch('items.0.unitKind')}
+                                basePriceCents={Math.round(
+                                  convertRawToUnitCost(
+                                    watch('items.0.unitKind') || 'UNITY',
+                                    Number(watch('items.0.unitCost')) || 0,
+                                  ),
+                                )}
+                              />
+                            </div>
+                          ) : null}
                         </>
                       )}
                       {items?.fields?.length > 1 &&

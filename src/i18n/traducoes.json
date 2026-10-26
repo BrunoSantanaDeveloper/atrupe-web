@@ -3427,6 +3427,10 @@
   "es": "Informe avanzado",
   "en": "Advanced report"
  },
+ "39fbf6565c": {
+  "es": "Ej.: Adhesivos",
+  "en": "E.g. Stickers"
+ },
  "3a0e62f0e3": {
   "es": "Ningún activo en esta situación.",
   "en": "No assets in this status."
@@ -4162,6 +4166,10 @@
  "44d8adebf6": {
   "es": "Crear etapa",
   "en": "Create step"
+ },
+ "44df83ae69": {
+  "es": "Elija primero el sector",
+  "en": "Choose the sector first"
  },
  "451c7bd4f7": {
   "es": "Sector",
@@ -5422,6 +5430,10 @@
  "585a221072": {
   "es": "tarea: {valor}",
   "en": "task: {valor}"
+ },
+ "5868132660": {
+  "es": "Base del sector",
+  "en": "Sector base"
  },
  "586966d8e8": {
   "es": "¡Elija el mejor plan para su negocio y contrate ahora!",
@@ -7470,6 +7482,10 @@
  "77e0c2795a": {
   "es": "Al seleccionar las opciones de abajo, los límites de crédito personalizados de todos los clientes se cambiarán al nuevo estándar.",
   "en": "By selecting the options below, the custom credit limits of all customers will be changed to the new default."
+ },
+ "77e8740e31": {
+  "es": "Grupo creado.",
+  "en": "Group created."
  },
  "77f0183a30": {
   "es": "Activar control",
@@ -9675,6 +9691,10 @@
   "es": "Proceso inactivo",
   "en": "Inactive process"
  },
+ "9a10c95cbb": {
+  "es": "Crear grupo",
+  "en": "Create group"
+ },
  "9a1952248d": {
   "es": "Finalizar evolución",
   "en": "Finish upgrade"
@@ -11587,6 +11607,10 @@
   "es": "Mostrar medidas",
   "en": "Show sizes"
  },
+ "b7f15410d4": {
+  "es": "Nuevo grupo de productos",
+  "en": "New product group"
+ },
  "b80670d8fe": {
   "es": "Acordar próximo contacto",
   "en": "Schedule next contact"
@@ -12354,6 +12378,10 @@
  "c471400ad4": {
   "es": "Pestañas adicionales de cliente",
   "en": "Additional customer tabs"
+ },
+ "c48480ccb8": {
+  "es": "Nuevo grupo en este sector",
+  "en": "New group in this sector"
  },
  "c48f7845c2": {
   "es": "Resumen de precios",
@@ -14398,6 +14426,10 @@
  "e98029ef0a": {
   "es": "El cierre se registra en las cuentas de la caja principal",
   "en": "Closing posts to the main register's accounts"
+ },
+ "e9835ec47d": {
+  "es": "El grupo nace en el sector elegido y queda seleccionado en el producto.",
+  "en": "The group is created in the chosen sector and is selected on the product."
  },
  "e99a4e85f3": {
   "es": "Nuevo proveedor",
