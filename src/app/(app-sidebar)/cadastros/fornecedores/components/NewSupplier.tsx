@@ -27,6 +27,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   NewSupplierFormType,
   defaultPersonValues,
+  emptyPayment,
   newSupplierSchema,
 } from './NewSuppiler/schema'
 import { getItemOld, createItemNew, updateItemNew } from '@/actions/_cruds'
@@ -79,6 +80,15 @@ export function NewSupplier({
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',
         isBranch: apiData.general?.isBranch || false,
+      },
+      payment: {
+        ...emptyPayment,
+        pixKey: apiData.payment?.pixKey || '',
+        bankName: apiData.payment?.bankName || '',
+        bankAgency: apiData.payment?.bankAgency || '',
+        bankAccount: apiData.payment?.bankAccount || '',
+        accountHolder: apiData.payment?.accountHolder || '',
+        paymentTerms: apiData.payment?.paymentTerms || '',
       },
       addresses: apiData.addresses?.length
         ? apiData.addresses.map((address: any) => ({

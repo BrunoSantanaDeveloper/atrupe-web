@@ -8,7 +8,12 @@ import { formatToLocaleDateTime } from '@/lib/formatDate'
 import { ClientInfoType } from '@/types/cadastros/client'
 import { DetailCardRowItem } from '../../components/DetailCardRowItem'
 import { DetailCard } from '@/components/common/DetailCard'
-import { IconFileInvoice, IconMapPin, IconUserStar } from '@tabler/icons-react'
+import {
+  IconFileInvoice,
+  IconMapPin,
+  IconUserStar,
+  IconCreditCard,
+} from '@tabler/icons-react'
 
 interface Props {
   data?: ClientInfoType
@@ -59,6 +64,38 @@ export function SupplierSummary({ data }: Props) {
             supporting="Observações gerais"
             text={data?.general?.notes}
             containerClassName="col-span-2 md:col-span-3 lg:col-span-4"
+          />
+        </DetailCardRowItem>
+      </DetailCard>
+      {/* Dados de pagamento (26/10/2026) */}
+      <DetailCard title="Dados de pagamento" icon={IconCreditCard}>
+        <DetailCardRowItem>
+          <TextSupportingText
+            supporting="Chave Pix"
+            text={data?.payment?.pixKey || '-'}
+          />
+          <TextSupportingText
+            supporting="Banco"
+            text={data?.payment?.bankName || '-'}
+          />
+          <TextSupportingText
+            supporting="Agência"
+            text={data?.payment?.bankAgency || '-'}
+          />
+          <TextSupportingText
+            supporting="Conta"
+            text={data?.payment?.bankAccount || '-'}
+          />
+        </DetailCardRowItem>
+        <DetailCardRowItem showSeparator={false}>
+          <TextSupportingText
+            supporting="Titular da conta"
+            text={data?.payment?.accountHolder || '-'}
+          />
+          <TextSupportingText
+            supporting="Prazo e forma habitual"
+            text={data?.payment?.paymentTerms || '-'}
+            containerClassName="col-span-2 md:col-span-2 lg:col-span-3"
           />
         </DetailCardRowItem>
       </DetailCard>

@@ -22,6 +22,15 @@ type AddressType = {
 
 export type ClientInfoType = {
   id: string
+  // Dados de pagamento, só no fornecedor (26/10/2026)
+  payment?: {
+    pixKey?: string | null
+    bankName?: string | null
+    bankAgency?: string | null
+    bankAccount?: string | null
+    accountHolder?: string | null
+    paymentTerms?: string | null
+  } | null
   status: 'ACTIVE' | 'INACTIVE' | 'PROSPECT'
   type: 'PERSON' | 'COMPANY'
   general: {

@@ -583,6 +583,10 @@
   "es": "Sin detalles: nombre del ítem, descripción técnica y precio final. El detalle de los ítems forma parte de otro plan.",
   "en": "No details: item name, technical description and final price. Item details are part of another plan."
  },
+ "0848efda11": {
+  "es": "Clave Pix",
+  "en": "Pix key"
+ },
  "085c3c4bf2": {
   "es": "Distancia",
   "en": "Distance"
@@ -654,6 +658,10 @@
  "09e092a7df": {
   "es": "Ej.: el cliente trae el arte en PDF",
   "en": "E.g.: customer brings the artwork as a PDF"
+ },
+ "0a20bae834": {
+  "es": "Agencia",
+  "en": "Branch"
  },
  "0a506fa19d": {
   "es": "Precio de venta sugerido por el recargo de",
@@ -1683,6 +1691,10 @@
   "es": "Razón social *",
   "en": "Legal name *"
  },
+ "1dc2a4c73d": {
+  "es": "Plazo y forma habitual",
+  "en": "Usual term and method"
+ },
  "1deecb1f5d": {
   "es": "Proveedor",
   "en": "Supplier"
@@ -2538,6 +2550,10 @@
  "2b2baf23d7": {
   "es": "Este activo entra en el costo del sector solo por la depreciación. Para tener costo por unidad, configuraciones productivas y precio, detalle el registro en la edición.",
   "en": "This asset counts toward the department cost through depreciation only. To get cost per unit, production setups and a price, switch the record to detailed in the edit screen."
+ },
+ "2b31fe986c": {
+  "es": "CPF/CNPJ, correo, teléfono o clave aleatoria",
+  "en": "CPF/CNPJ, e-mail, phone or random key"
  },
  "2b3a2aa1bf": {
   "es": "Empresa (CNPJ)",
@@ -5739,6 +5755,10 @@
   "es": "Usted no tiene permiso para ver las series de venta.",
   "en": "You don't have permission to view sales series."
  },
+ "5d0d029412": {
+  "es": "Prerregistro",
+  "en": "Pre-registration"
+ },
  "5d12bd5355": {
   "es": "Play",
   "en": "Play"
@@ -7663,6 +7683,10 @@
   "es": "Sugerencia",
   "en": "Suggested"
  },
+ "7a74c14e02": {
+  "es": "Titular de la cuenta",
+  "en": "Account holder"
+ },
  "7a970debb5": {
   "es": "Límite de crédito predeterminado",
   "en": "Default credit limit"
@@ -7970,6 +7994,10 @@
  "7ee04f8a53": {
   "es": "Consultar datos del cliente",
   "en": "Look up customer data"
+ },
+ "7f1a91ea54": {
+  "es": "Ej.: 30 días, boleto",
+  "en": "E.g. 30 days, bank slip"
  },
  "7f2801cf89": {
   "es": "Error al renombrar el grupo",
@@ -11771,6 +11799,10 @@
   "es": "El plazo de entrega ya pasó.",
   "en": "The delivery deadline has passed."
  },
+ "bab1329c74": {
+  "es": "Teléfono o celular: al menos uno de los dos, para el cliente regularizado.",
+  "en": "Phone or mobile: at least one of them, for a regularized customer."
+ },
  "bac6e421b5": {
   "es": "Activar registro",
   "en": "Activate record"
@@ -12538,6 +12570,10 @@
  "c79db32197": {
   "es": "Clientes, proveedores, colaboradores y productos",
   "en": "Customers, suppliers, team members and products"
+ },
+ "c79f4438fc": {
+  "es": "Obligatorio para el cliente regularizado",
+  "en": "Required for a regularized customer"
  },
  "c7afc7781a": {
   "es": "Recontratar plan",
@@ -13514,6 +13550,10 @@
  "d872336003": {
   "es": "Cerrar con justificación",
   "en": "Close with justification"
+ },
+ "d87a40b43d": {
+  "es": "Cómo suele cobrar este proveedor. Aparece en sus cuentas por pagar para quien vaya a pagar.",
+  "en": "How this supplier usually gets paid. It shows on their payables for whoever pays."
  },
  "d8ac2761dd": {
   "es": "Carga horaria — {name}",
