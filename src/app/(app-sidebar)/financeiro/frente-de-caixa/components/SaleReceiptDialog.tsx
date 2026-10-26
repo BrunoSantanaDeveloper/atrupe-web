@@ -93,7 +93,7 @@ function viaHtml(
             `<tr class="line"><td colspan="3">&nbsp;&nbsp;+ ${esc(line.name)}</td><td class="r">${formatMoney(line.price ?? 0)}</td></tr>`,
         )
         .join('')
-      return `<tr><td class="r">${quantity}</td><td>${esc(item.description || '-')}</td><td class="r">${formatMoney(Math.round(total / quantity))}</td><td class="r">${formatMoney(total)}</td></tr>${lines}`
+      return `<tr><td class="r">${quantity}</td><td>${esc(item.description || item.product?.name || 'Item')}</td><td class="r">${formatMoney(Math.round(total / quantity))}</td><td class="r">${formatMoney(total)}</td></tr>${lines}`
     })
     .join('')
   const total = checkout?.total ?? quotation.totalValue ?? 0
