@@ -338,6 +338,17 @@ export function ActivationWizardModal({
                       estado.
                     </p>
                   )}
+                  <p className="text-blue-600 mt-1">
+                    Ao ativar, o Atrupe envia este CSC ao provedor fiscal
+                    (Invoicy), que o usa no QR Code do cupom.
+                  </p>
+                  <p className="text-blue-600 mt-1">
+                    Ter um CSC ativo no portal não basta: a empresa também
+                    precisa estar habilitada para NFC-e na SEFAZ. Se o portal
+                    mostrar &quot;Contribuinte não habilitado&quot;, peça a
+                    habilitação ao contador antes de emitir — sem ela a SEFAZ
+                    recusa o cupom.
+                  </p>
                 </div>
               </div>
 
@@ -346,7 +357,7 @@ export function ActivationWizardModal({
                 <Input
                   value={cscId}
                   onChange={(e) => setCscId(e.target.value)}
-                  placeholder="Ex: 000001"
+                  placeholder="Ex: 1 (o Identificador do portal)"
                 />
               </div>
               <div className="space-y-1">
