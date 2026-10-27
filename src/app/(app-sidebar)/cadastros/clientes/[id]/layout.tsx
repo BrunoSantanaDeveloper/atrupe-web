@@ -46,6 +46,8 @@ export default function ClientDetailLayout({ children, params }: Props) {
   const canViewTab: Record<string, boolean> = {
     dados: true,
     orcamentos: hasPermission('sale:quotation:view'),
+    // Acompanhamento comercial (CRM-4): os contatos de todos os orçamentos
+    contatos: hasPermission('sale:quotation:view'),
     ordens: hasPermission('sale:order:view'),
     financeiro: hasAllPermissions([
       'financial:flow:view',
@@ -71,6 +73,11 @@ export default function ClientDetailLayout({ children, params }: Props) {
       tab: 'orcamentos',
       label: 'Orçamentos',
       count: totals?.orcamentos,
+    },
+    {
+      value: 'CONTACTS',
+      tab: 'contatos',
+      label: 'Contatos',
     },
     {
       value: 'ORDERS',

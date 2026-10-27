@@ -55,6 +55,7 @@ import { ICON_SIZE } from '@/components/ui/icon'
 import type { Session } from 'next-auth'
 import type { MainNavigationType, SecondaryNavigationType } from '@/consts/nav'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useFollowUpSummary } from '@/hooks/queries/useFollowUp'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { usePendingPath } from '@/hooks/usePendingPath'
@@ -152,12 +153,25 @@ export function SidebarComponent(props: Props) {
     return true
   }
 
+  // O contador de "para retomar" no menu Orçamentos (CRM-3, 27/10/2026):
+  // contato até hoje ou proposta vencendo, no escopo do vendedor
+  const canSeeQuotations = hasAnyPermission(['sale:quotation:view'])
+  const { data: followUp } = useFollowUpSummary(canSeeQuotations)
+  const withCounter = <T extends { path?: string; counter?: number }>(
+    item: T,
+  ): T =>
+    item.path === '/vendas/orcamentos' && followUp?.due
+      ? { ...item, counter: followUp.due }
+      : item
+
   // Filtra os itens de navegação baseado nas permissões e features do plano
   const filteredNavigation = mainNavigation
     .map((item) => ({
-      ...item,
+      ...withCounter(item),
       hasOriginalChildren: !!item.children,
-      children: item.children?.filter((child) => checkItemAccess(child)),
+      children: item.children
+        ?.filter((child) => checkItemAccess(child))
+        .map((child) => withCounter(child)),
     }))
     .filter(
       (item) =>
@@ -365,7 +379,7 @@ export function SidebarComponent(props: Props) {
                                     collapsed && 'opacity-0',
                                   )}
                                 >
-                                  +{item?.counter}
+                                  {item?.counter}
                                 </Badge>
                               ) : null}
                             </Link>
@@ -527,7 +541,7 @@ export function SidebarComponent(props: Props) {
                                               collapsed && 'opacity-0',
                                             )}
                                           >
-                                            +{navChild?.counter}
+                                            {navChild?.counter}
                                           </Badge>
                                         ) : null}
                                       </Link>

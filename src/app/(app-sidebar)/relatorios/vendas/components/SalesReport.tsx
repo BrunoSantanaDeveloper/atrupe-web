@@ -9,6 +9,8 @@ import { SummaryCards } from './SummaryCards'
 import { Topbar } from '@/components/common/Topbar'
 import { TopClientsChart } from './TopClientsChart'
 import { LossesByReasonCharts } from './LossesByReasonChart'
+import { ConversionTables } from './ConversionTables'
+import { InactiveClientsTable } from './InactiveClientsTable'
 import { TopProductsChart } from './TopProductsChart'
 import { OrdersOriginChart } from './OrdersOriginChart'
 import { SalesEvolutionChart } from './SalesEvolutionChart'
@@ -77,6 +79,10 @@ export function SalesReport({ searchParams }: SearchParamsType) {
 
       {/* Perdas por motivo (CRM fase 1) */}
       <LossesByReasonCharts searchParams={effectiveSearchParams} />
+
+      {/* Acompanhamento comercial (CRM-6, CRM-4): conversão e recompra */}
+      <ConversionTables searchParams={effectiveSearchParams} />
+      <InactiveClientsTable />
 
       {/* Table */}
       <SalesTable searchParams={effectiveSearchParams} />

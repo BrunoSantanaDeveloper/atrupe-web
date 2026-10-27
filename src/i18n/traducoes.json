@@ -11,6 +11,10 @@
   "es": "Tercerizado puntual",
   "en": "One-off outsourced"
  },
+ "2145787003": {
+  "es": "Ningún contacto registrado. Los contactos se registran en el presupuesto, con el botón \"Registrar contacto\".",
+  "en": "No contact logged. Contacts are logged on the quote, with the \"Log contact\" button."
+ },
  "2457716835": {
   "es": "Error al crear el grupo",
   "en": "Error creating the group"
@@ -1016,8 +1020,8 @@
   "en": "Maximum sale value"
  },
  "10544396fa": {
-  "es": "Registrar venta",
-  "en": "Record sale"
+  "es": "Registrar",
+  "en": "Log"
  },
  "10780ba6a2": {
   "es": "Medida en la cotización",
@@ -3272,8 +3276,8 @@
   "en": "Relative to the base"
  },
  "365559a48e": {
-  "es": "Registrar lectura",
-  "en": "Save reading"
+  "es": "Registrar",
+  "en": "Log"
  },
  "365aadf0ba": {
   "es": "Agregar hora",
@@ -5836,8 +5840,8 @@
   "en": "Closing justification"
  },
  "5e2ac21052": {
-  "es": "Tasa del operador",
-  "en": "Processor fee"
+  "es": "Tasa",
+  "en": "Rate"
  },
  "5e3cfb18d8": {
   "es": "Elija la variante para el precio y el nombre del ítem.",
@@ -6448,8 +6452,8 @@
   "en": "Password reset successfully!"
  },
  "67da893e27": {
-  "es": "Tasa de la operadora (costo)",
-  "en": "Acquirer fee (cost)"
+  "es": "Tasa",
+  "en": "Rate"
  },
  "67e6b952ea": {
   "es": "El proyecto nace cuando se aprueba la venta.",
@@ -7556,8 +7560,8 @@
   "en": "No products available to export"
  },
  "78235f08cf": {
-  "es": "Registrar retiro de caja",
-  "en": "Record cash withdrawal"
+  "es": "Registrar",
+  "en": "Log"
  },
  "783269ab0e": {
   "es": "Nombre de la unidad de venta",
@@ -7636,8 +7640,8 @@
   "en": "Discount coupon"
  },
  "79ab9f709b": {
-  "es": "Tasa de tarjeta: {fee}",
-  "en": "Card fee: {fee}"
+  "es": "Tasa",
+  "en": "Rate"
  },
  "79abb09350": {
   "es": "Ningún módulo contratado por separado.",
@@ -10308,8 +10312,8 @@
   "en": "Default credit limit updated"
  },
  "a26ec7feac": {
-  "es": "Registrar ingreso de caja",
-  "en": "Record cash deposit"
+  "es": "Registrar",
+  "en": "Log"
  },
  "a279e9aa2b": {
   "es": "Llegan {valor} al destino; la tasa se registra como tarifa de tarjeta.",
@@ -14300,8 +14304,8 @@
   "en": "Difference shown but not posted as a shortage"
  },
  "e5626424c4": {
-  "es": "Valor aprobado y sumado al saldo",
-  "en": "Amount approved and added to the balance"
+  "es": "Valor aprobado",
+  "en": "Approved value"
  },
  "e5888922ce": {
   "es": "Imagen pequeña",
@@ -15288,8 +15292,8 @@
   "en": "I advance the installments"
  },
  "f55ef22ee2": {
-  "es": "Registrar pendiente",
-  "en": "Log issue"
+  "es": "Registrar",
+  "en": "Log"
  },
  "f58d889ad4": {
   "es": "Miércoles",
@@ -15982,5 +15986,313 @@
  "3a469a6766": {
   "es": "Rechazar la venta",
   "en": "Reject the sale"
+ },
+ "ed50a7c1dd": {
+  "es": "Última compra",
+  "en": "Last purchase"
+ },
+ "10072e870c": {
+  "es": "Nuevo presupuesto a partir del último pedido",
+  "en": "New quote from the last order"
+ },
+ "c27e42eb89": {
+  "es": "· hace {daysSince} {valor}",
+  "en": "· {daysSince} {valor} ago"
+ },
+ "7c01d47bd2": {
+  "es": "Pedido",
+  "en": "Order"
+ },
+ "4b5300968e": {
+  "es": "Pedido",
+  "en": "Order"
+ },
+ "0cf5af23b6": {
+  "es": "Pedido",
+  "en": "Order"
+ },
+ "284b65c525": {
+  "es": "Pedido",
+  "en": "Order"
+ },
+ "805fac6240": {
+  "es": "· {description}",
+  "en": "· {description}"
+ },
+ "310c5daaf6": {
+  "es": "En negociación",
+  "en": "In negotiation"
+ },
+ "8220e70d12": {
+  "es": "Este cliente aún no compró.",
+  "en": "This customer has not bought yet."
+ },
+ "72da7ed0e7": {
+  "es": "Hay {openNegotiations} {valor} en negociación.",
+  "en": "There are {openNegotiations} {valor} in negotiation."
+ },
+ "071c899b73": {
+  "es": "Contactos",
+  "en": "Contacts"
+ },
+ "749d293a9b": {
+  "es": "· {by}",
+  "en": "· {by}"
+ },
+ "4fba1b9d3f": {
+  "es": "No tiene permiso para ver los contactos.",
+  "en": "You do not have permission to view contacts."
+ },
+ "6f70cb83a3": {
+  "es": "La pestaña Contactos reúne en el registro el seguimiento comercial del cliente.",
+  "en": "The Contacts tab gathers the customer's sales follow-up in the record."
+ },
+ "67839e80b7": {
+  "es": "Propuesta enviada",
+  "en": "Proposal sent"
+ },
+ "e8fc62f9bb": {
+  "es": "Recordatorio de validez",
+  "en": "Validity reminder"
+ },
+ "dee747dd58": {
+  "es": "Retomada",
+  "en": "Follow-up"
+ },
+ "4bef939bf1": {
+  "es": "Seguimiento actualizado",
+  "en": "Follow-up updated"
+ },
+ "f21bcc7167": {
+  "es": "Seguimiento comercial",
+  "en": "Sales follow-up"
+ },
+ "7ed6761a49": {
+  "es": "Modelos de mensaje",
+  "en": "Message templates"
+ },
+ "7a7f3d96c1": {
+  "es": "Modelos de mensaje de WhatsApp, recordatorio por e-mail y clientes sin compra.",
+  "en": "WhatsApp message templates, e-mail reminder and customers without purchases."
+ },
+ "e6539eab94": {
+  "es": "El botón \"Llamar por WhatsApp\" y el e-mail usan estos textos. Entre llaves, lo que el sistema completa: {valor}.",
+  "en": "The \"Message on WhatsApp\" button and the e-mail use these texts. In braces, what the system fills in: {valor}."
+ },
+ "ef0cec3da9": {
+  "es": "Ejemplo: {sample}",
+  "en": "Example: {sample}"
+ },
+ "a65a7f4a3c": {
+  "es": "Recordatorio por e-mail",
+  "en": "E-mail reminder"
+ },
+ "bbbf919d2b": {
+  "es": "Cada día, a la hora elegida, cada vendedor recibe la lista de presupuestos para retomar: contacto marcado para hoy, atrasado o propuesta por vencer. Solo recibe quien tiene e-mail en el registro.",
+  "en": "Every day, at the chosen hour, each seller receives the list of quotes to follow up: contact due today, overdue, or proposal expiring. Only those with an e-mail on record receive it."
+ },
+ "5d76653259": {
+  "es": "Enviar el e-mail diario",
+  "en": "Send the daily e-mail"
+ },
+ "b35f77886f": {
+  "es": "Hora de envío",
+  "en": "Send time"
+ },
+ "bd74eb27db": {
+  "es": "Cliente sin compra",
+  "en": "Customer without purchases"
+ },
+ "d639b97a2f": {
+  "es": "Cuántos días sin comprar para que el cliente entre en el informe \"Clientes sin compra\", en Informes › Ventas.",
+  "en": "How many days without buying before the customer appears in the \"Customers without purchases\" report, in Reports › Sales."
+ },
+ "9cd837c750": {
+  "es": "Días sin compra",
+  "en": "Days without purchases"
+ },
+ "335a7499b7": {
+  "es": "No tiene permiso para ver esta configuración.",
+  "en": "You do not have permission to view this setting."
+ },
+ "e04096fe5c": {
+  "es": "Para retomar hoy",
+  "en": "To follow up today"
+ },
+ "8abf48378e": {
+  "es": "Atrasados",
+  "en": "Overdue"
+ },
+ "38a56ac48c": {
+  "es": "Propuestas por vencer",
+  "en": "Proposals expiring"
+ },
+ "967b8ca2c3": {
+  "es": "Sin próximo contacto",
+  "en": "No next contact"
+ },
+ "50cb7547ca": {
+  "es": "Seguimiento de hoy",
+  "en": "Today's follow-up"
+ },
+ "08a65c6290": {
+  "es": "Ver la lista del día",
+  "en": "See today's list"
+ },
+ "f8fd513f7b": {
+  "es": "Tasa",
+  "en": "Rate"
+ },
+ "9b194f1ca4": {
+  "es": "Valor aprobado",
+  "en": "Approved value"
+ },
+ "6d00b9e59d": {
+  "es": "Días hasta cerrar",
+  "en": "Days to close"
+ },
+ "100b6be6e3": {
+  "es": "Ningún presupuesto en el período.",
+  "en": "No quotes in the period."
+ },
+ "f113549996": {
+  "es": "Conversión por origen de contacto",
+  "en": "Conversion by contact source"
+ },
+ "79e5889ba8": {
+  "es": "Conversión por vendedor",
+  "en": "Conversion by seller"
+ },
+ "b6f76229de": {
+  "es": "Clientes sin compra hace {days} días",
+  "en": "Customers without purchases for {days} days"
+ },
+ "ca4521bf8b": {
+  "es": "{option} días",
+  "en": "{option} days"
+ },
+ "43a8028adc": {
+  "es": "Compras",
+  "en": "Purchases"
+ },
+ "265a870dc5": {
+  "es": "Total comprado",
+  "en": "Total bought"
+ },
+ "b33db264d2": {
+  "es": "· hace {daysSince} días",
+  "en": "· {daysSince} days ago"
+ },
+ "d96c5272e9": {
+  "es": "Ningún cliente sin compra hace {days} días.",
+  "en": "No customer without purchases for {days} days."
+ },
+ "d4d368d736": {
+  "es": "Registrar",
+  "en": "Log"
+ },
+ "60cf8de1ba": {
+  "es": "Mañana",
+  "en": "Tomorrow"
+ },
+ "a145686814": {
+  "es": "En 3 días",
+  "en": "In 3 days"
+ },
+ "3867104e8c": {
+  "es": "Próxima semana",
+  "en": "Next week"
+ },
+ "29a99ae49e": {
+  "es": "{clientName} · {reference}. Qué pasó y cuándo volver a hablar: el presupuesto aparece en \"Para retomar\" ese día.",
+  "en": "{clientName} · {reference}. What happened and when to talk again: the quote shows up under \"To follow up\" on that day."
+ },
+ "61f21e6ff9": {
+  "es": "Canal",
+  "en": "Channel"
+ },
+ "a74fa41b65": {
+  "es": "Qué pasó",
+  "en": "What happened"
+ },
+ "9e84999d3d": {
+  "es": "Observación (opcional)",
+  "en": "Note (optional)"
+ },
+ "76430e962c": {
+  "es": "Ej.: confirmará con el socio hasta el viernes",
+  "en": "E.g.: will confirm with the partner by Friday"
+ },
+ "c76a4d1196": {
+  "es": "Cuándo vuelvo a hablar",
+  "en": "When I talk again"
+ },
+ "19434e50bf": {
+  "es": "Recordatorio (ej.: llamar después del almuerzo)",
+  "en": "Reminder (e.g.: call after lunch)"
+ },
+ "8711446fa8": {
+  "es": "Sin fecha, el presupuesto queda sin próximo contacto y aparece así en la pestaña En espera.",
+  "en": "Without a date, the quote has no next contact and shows up that way in the Waiting tab."
+ },
+ "75e36d64da": {
+  "es": "Fase de la negociación",
+  "en": "Negotiation stage"
+ },
+ "bbc3bcf4cc": {
+  "es": "Sin marcador",
+  "en": "No tag"
+ },
+ "caacc66c89": {
+  "es": "Registrar",
+  "en": "Log"
+ },
+ "7c9ec5b003": {
+  "es": "Ningún contacto registrado aún. El primero cuenta: es el que guarda lo que dijo el cliente y cuándo volver a hablar.",
+  "en": "No contact logged yet. The first one counts: it keeps what the customer said and when to talk again."
+ },
+ "0a60d1a710": {
+  "es": "Línea de tiempo",
+  "en": "Timeline"
+ },
+ "83a490bceb": {
+  "es": "· {contacts} {valor}",
+  "en": "· {contacts} {valor}"
+ },
+ "f83a31bf7a": {
+  "es": "Ver menos",
+  "en": "Show less"
+ },
+ "e75eb28382": {
+  "es": "Ver todo ({valor})",
+  "en": "Show all ({valor})"
+ },
+ "8d85e8b205": {
+  "es": "Llamar por WhatsApp",
+  "en": "Message on WhatsApp"
+ },
+ "0608dc694a": {
+  "es": "Por vencer",
+  "en": "Expiring"
+ },
+ "8fcf2c9847": {
+  "es": "Foco de la pestaña En espera",
+  "en": "Focus of the Waiting tab"
+ },
+ "94b0355592": {
+  "es": "Último: {at} · {valor}",
+  "en": "Last: {at} · {valor}"
+ },
+ "2e0f5cd17d": {
+  "es": "nombre del cliente",
+  "en": "customer name"
+ },
+ "3f19e2bff5": {
+  "es": "número del presupuesto",
+  "en": "quote number"
+ },
+ "6d0ff32d2e": {
+  "es": "validez de la propuesta",
+  "en": "proposal validity"
  }
 }

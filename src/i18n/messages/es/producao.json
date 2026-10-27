@@ -86,7 +86,7 @@
     "addIssue": "Agregar pendiente",
     "releaseNextStep": "Liberar siguiente etapa",
     "whatIsBlockingThisStep": "Qué está impidiendo esta etapa",
-    "logIssue": "Registrar pendiente",
+    "log": "Registrar",
     "releasesTheNextStepSo": "Libera la etapa siguiente para que comience antes de que esta termine. Queda registrado quién la liberó y cuándo. Si lo desea, indique cuánto ya está listo; no es obligatorio.",
     "quantityDoneOptional": "Cantidad lista (opcional)",
     "of2": "de {quantity}",

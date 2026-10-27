@@ -172,3 +172,39 @@ export interface SalesReportApiResponse {
   success: boolean
   data: SalesReportData
 }
+
+// Conversão por origem e por vendedor (CRM-6, 27/10/2026)
+export interface ConversionRow {
+  id: string | null
+  name: string
+  quotations: number
+  approved: number
+  value: number
+  rate: number
+  averageDays: number | null
+}
+export interface ConversionData {
+  byOrigin: ConversionRow[]
+  bySeller: ConversionRow[]
+}
+
+// Clientes sem compra há N dias (CRM-4, 27/10/2026)
+export interface InactiveClientRow {
+  id: string
+  name: string
+  phone: string | null
+  purchases: number
+  total: number
+  lastPurchaseAt: string | null
+  daysSince: number | null
+  lastQuotation: {
+    id: string
+    reference: string
+    description: string | null
+    value: number
+  } | null
+}
+export interface InactiveClientsData {
+  days: number
+  clients: InactiveClientRow[]
+}

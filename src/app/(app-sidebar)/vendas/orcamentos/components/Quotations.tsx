@@ -25,6 +25,7 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { QuotationsData } from './QuotationsTable/QuotationsData'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
+import { AwaitingFocus, focusParam } from './QuotationsTable/AwaitingFocus'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
@@ -243,8 +244,10 @@ export function Quotations({ searchParams }: SearchParamsType) {
     concluido: data?.DONE,
     vencidos: data?.OVERDUE,
     rejeitados: data?.REJECTED,
-    // CRM fase 1: em negociação com próximo contato vencido ou para hoje
+    // Acompanhamento (CRM-2, 27/10/2026): os focos da aba Aguardando
     retomar: data?.retomar,
+    semContato: data?.semContato,
+    vencendo: data?.vencendo,
     todos: data?.TOTAL,
   }
 
@@ -278,13 +281,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
       label: 'Rejeitados',
       count: totals?.rejeitados,
     },
-    // Sem status: a consulta leva nextContact=due (QuotationsData)
-    {
-      value: '',
-      tab: 'retomar',
-      label: 'Para retomar',
-      count: totals?.retomar,
-    },
+    // "Para retomar" deixou de ser aba (CRM-2, 27/10/2026): é um foco da
+    // aba Aguardando, que virou a visão do dia do vendedor
     {
       value: '',
       tab: 'todos',
@@ -306,7 +304,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
     const filters = {
       ...exportParams,
       status: exportStatus,
-      ...(status === 'retomar' ? { nextContact: 'due' } : {}),
+      ...focusParam(searchParams?.foco),
     }
     const result = await getData({ route: '/sale/quotation/export', filters })
 
@@ -378,11 +376,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={
-                  status === 'retomar'
-                    ? 'Nenhum orçamento para retomar hoje'
-                    : `Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`
-                }
+                title={`Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`}
                 icon={IconReportOff}
               />
             ) : (
@@ -391,6 +385,18 @@ export function Quotations({ searchParams }: SearchParamsType) {
                 <TableFiltersHeader searchParams={searchParams}>
                   <QuotationsFilter searchParams={searchParams} />
                 </TableFiltersHeader>
+                {/* A visão do dia (CRM-2): os focos da aba Aguardando */}
+                {status === 'concluido' && (
+                  <AwaitingFocus
+                    searchParams={searchParams}
+                    counts={{
+                      retomar: totals?.retomar,
+                      semContato: totals?.semContato,
+                      vencendo: totals?.vencendo,
+                      todos: totals?.concluido,
+                    }}
+                  />
+                )}
                 {/* Table */}
                 <QuotationsData searchParams={searchParams} tabs={tabs} />
               </>

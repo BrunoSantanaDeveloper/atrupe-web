@@ -18841,6 +18841,18 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog.tsx:179 (atributo:label)"
   ]
  },
+ "configuracoes.empresaESistema.log": {
+  "pt": "Registrar leitura",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/AssetReadingsCard.tsx:163 (jsx)"
+  ]
+ },
+ "configuracoes.empresaESistema.log2": {
+  "pt": "Registrar venda",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/SellAssetModal.tsx:270 (jsx)"
+  ]
+ },
  "configuracoes.empresaESistema.logo": {
   "pt": "Logotipo",
   "usos": [
@@ -19597,12 +19609,6 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/NewCostModal.tsx:246 (jsx)"
   ]
  },
- "configuracoes.empresaESistema.recordSale": {
-  "pt": "Registrar venda",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/SellAssetModal.tsx:270 (jsx)"
-  ]
- },
  "configuracoes.empresaESistema.recordedBy": {
   "pt": "Registrada por",
   "usos": [
@@ -19774,12 +19780,6 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/SellAssetModal.tsx:177 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/SellAssetModal.tsx:245 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:157 (jsx)"
-  ]
- },
- "configuracoes.empresaESistema.saveReading": {
-  "pt": "Registrar leitura",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/[id]/components/AssetReadingsCard.tsx:163 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.scSantaCatarina": {
@@ -24855,6 +24855,19 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/tabs/ReformaTab.tsx:64 (jsx)"
   ]
  },
+ "configuracoes.notaFiscal.order": {
+  "pt": "Pedido #{quotationNumber}",
+  "vars": [
+   "quotationNumber"
+  ],
+  "marcas": [
+   "fiscal-br"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:274 (frase)",
+   "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfseListClient.tsx:265 (frase)"
+  ]
+ },
  "configuracoes.notaFiscal.osNumerosInutilizadosNaoVoltam": {
   "pt": "Os números inutilizados não voltam a ficar disponíveis. A inutilização é registrada na SEFAZ e vale para a série",
   "marcas": [
@@ -24939,19 +24952,6 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/ActivationWizardModal.tsx:238 (frase)"
-  ]
- },
- "configuracoes.notaFiscal.pedido": {
-  "pt": "Pedido #{quotationNumber}",
-  "vars": [
-   "quotationNumber"
-  ],
-  "marcas": [
-   "fiscal-br"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:274 (frase)",
-   "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfseListClient.tsx:265 (frase)"
   ]
  },
  "configuracoes.notaFiscal.pendenciaSBloqueanteS": {
@@ -34243,15 +34243,6 @@
    "src/consts/nav.ts:165 (propriedade:title)"
   ]
  },
- "financeiro.conciliacao.cardFee": {
-  "pt": "Taxa de cartão: {fee}",
-  "vars": [
-   "fee"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/conciliacao/components/ConciliationDialogs.tsx:326 (frase)"
-  ]
- },
  "financeiro.conciliacao.cardSalesSettledFee": {
   "pt": "Cartão liquidado · taxa de {fee}",
   "vars": [
@@ -34435,6 +34426,15 @@
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:88 (propriedade:text)"
   ]
  },
+ "financeiro.conciliacao.rate": {
+  "pt": "Taxa de cartão: {fee}",
+  "vars": [
+   "fee"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/conciliacao/components/ConciliationDialogs.tsx:326 (frase)"
+  ]
+ },
  "financeiro.conciliacao.receivable": {
   "pt": "{name} · {balance} a receber",
   "vars": [
@@ -34577,12 +34577,6 @@
    "src/consts/cost-base.ts:102 (propriedade:label)"
   ]
  },
- "financeiro.controleDeCaixa.amountApprovedAndAddedTo": {
-  "pt": "Valor aprovado e somado ao saldo",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:172 (aviso)"
-  ]
- },
  "financeiro.controleDeCaixa.approve": {
   "pt": "Aprovar",
   "usos": [
@@ -34607,6 +34601,12 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:84 (jsx)"
+  ]
+ },
+ "financeiro.controleDeCaixa.approvedValue": {
+  "pt": "Valor aprovado e somado ao saldo",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:172 (aviso)"
   ]
  },
  "financeiro.controleDeCaixa.ascendingOrder": {
@@ -34958,16 +34958,16 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:257 (atributo:hint)"
   ]
  },
- "financeiro.controleDeCaixa.processorFee": {
-  "pt": "Taxa da operadora",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:659 (atributo:label)"
-  ]
- },
  "financeiro.controleDeCaixa.provisionedOrAwaitingApprovalNot": {
   "pt": "provisionadas ou aguardando aprovação: não entram no saldo",
   "usos": [
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:251 (atributo:hint)"
+  ]
+ },
+ "financeiro.controleDeCaixa.rate": {
+  "pt": "Taxa da operadora",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:659 (atributo:label)"
   ]
  },
  "financeiro.controleDeCaixa.reachesTheDestinationTheFee": {
@@ -36480,6 +36480,18 @@
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:656 (jsx)"
   ]
  },
+ "financeiro.frenteDeCaixa.log": {
+  "pt": "Registrar sangria",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashDialogs.tsx:262 (jsx)"
+  ]
+ },
+ "financeiro.frenteDeCaixa.log2": {
+  "pt": "Registrar suprimento",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashDialogs.tsx:262 (jsx)"
+  ]
+ },
  "financeiro.frenteDeCaixa.minimumDeposit": {
   "pt": "Sinal mínimo: {downPayment} ( {downPaymentPercent}%)",
   "vars": [
@@ -36637,18 +36649,6 @@
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:489 (atributo:tooltip)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/ReceiveSaleDialog.tsx:241 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuickSaleCheckout.tsx:616 (jsx)"
-  ]
- },
- "financeiro.frenteDeCaixa.recordCashDeposit": {
-  "pt": "Registrar suprimento",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashDialogs.tsx:262 (jsx)"
-  ]
- },
- "financeiro.frenteDeCaixa.recordCashWithdrawal": {
-  "pt": "Registrar sangria",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashDialogs.tsx:262 (jsx)"
   ]
  },
  "financeiro.frenteDeCaixa.recordDirectSalesAtThe": {
@@ -39261,6 +39261,24 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceResultsTable.tsx:1572 (atributo:tooltip)"
   ]
  },
+ "notaFiscal.emitir.order": {
+  "pt": "Pedidos de Venda",
+  "marcas": [
+   "fiscal-br"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceFilter.tsx:110 (jsx)"
+  ]
+ },
+ "notaFiscal.emitir.order2": {
+  "pt": "Pedido de Venda",
+  "marcas": [
+   "fiscal-br"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceResultsTable.tsx:1068 (jsx)"
+  ]
+ },
  "notaFiscal.emitir.osItensVisiveisPertencemA": {
   "pt": "Os itens visíveis pertencem a clientes diferentes. Filtre por um único cliente na busca antes de selecionar todos.",
   "marcas": [
@@ -39326,24 +39344,6 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceRecipientEditDialog.tsx:631 (atributo:placeholder)"
-  ]
- },
- "notaFiscal.emitir.pedidoDeVenda": {
-  "pt": "Pedido de Venda",
-  "marcas": [
-   "fiscal-br"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceResultsTable.tsx:1068 (jsx)"
-  ]
- },
- "notaFiscal.emitir.pedidosDeVenda": {
-  "pt": "Pedidos de Venda",
-  "marcas": [
-   "fiscal-br"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceFilter.tsx:110 (jsx)"
   ]
  },
  "notaFiscal.emitir.personalizado": {
@@ -42567,7 +42567,7 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/ManagerBoard.tsx:478 (jsx)"
   ]
  },
- "producao.gerenciador.logIssue": {
+ "producao.gerenciador.log": {
   "pt": "Registrar pendência",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:455 (jsx)"

@@ -47,6 +47,10 @@ import { getData, deleteItemNew } from '@/actions/_cruds'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 import { nextContactLabel, nextContactState } from '@/lib/nextContact'
+import { contactOutcomeLabel } from '@/types/sales/followUp'
+import { focusParam } from './AwaitingFocus'
+import { ContactDialog } from '../FollowUp/ContactDialog'
+import { WhatsAppButton } from '../FollowUp/WhatsAppButton'
 
 // Third-party
 import {
@@ -70,6 +74,7 @@ import {
   IconHistory,
   IconTrash,
   IconBolt,
+  IconMessageCircle,
 } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
@@ -103,20 +108,24 @@ export function QuotationsData({
   // quotation_status_column no painel não mudava a lista.
   const showStatusColumn = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
   const isAllTab = searchParams?.status === 'todos'
-  // "Para retomar" (CRM fase 1): em negociação, com próximo contato para hoje
-  // ou atrasado. Mostra a fase e a data do contato no lugar da conclusão
-  const isResumeTab = searchParams?.status === 'retomar'
+  // A aba Aguardando é a visão do dia (CRM-2, 27/10/2026): mostra o próximo
+  // contato e o último registrado no lugar da conclusão, a validade com os
+  // dias que faltam, e as ações de registrar contato e chamar no WhatsApp.
+  // O foco (`foco=`) vira o parâmetro nextContact da API
+  const isAwaitingTab = searchParams?.status === 'concluido'
+  const isResumeTab = isAwaitingTab
+  const [contacting, setContacting] = useState<QuotationType | null>(null)
   const { hasAllPermissions } = usePermissions()
   const canViewValues = hasAllPermissions(['values:values:view'])
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   // `novo` é da tela, não da consulta: ele liga a venda rápida (ALT-22). A API
   // recusa propriedade que não conhece e devolve 400, derrubando a lista
-  const { novo: _novo, ...listParams } = searchParams
+  const { novo: _novo, foco, ...listParams } = searchParams
   const filters = {
     ...listParams,
     status,
-    ...(isResumeTab ? { nextContact: 'due' } : {}),
+    ...(isAwaitingTab ? focusParam(foco as string) : {}),
   }
 
   const { data, isLoading, isPlaceholderData } = useQuery({
@@ -427,11 +436,51 @@ export function QuotationsData({
                                     </TableCell>
                                   )}
                                   <TableCell className="text-gray-600">
-                                    {formatToLocaleDate(quotation?.dueDate)}
+                                    {isAwaitingTab ? (
+                                      <DueDateCell quotation={quotation} />
+                                    ) : (
+                                      formatToLocaleDate(quotation?.dueDate)
+                                    )}
                                   </TableCell>
                                   <TableCell>
                                     <div className="flex justify-end gap-1">
                                       <TooltipProvider>
+                                        {isAwaitingTab && (
+                                          <PermissionGate
+                                            permissions={[
+                                              'sale:quotation:edit',
+                                            ]}
+                                          >
+                                            <ActionButton
+                                              Icon={IconMessageCircle}
+                                              tooltip="Registrar contato"
+                                              onClick={() =>
+                                                setContacting(quotation)
+                                              }
+                                            />
+                                            <WhatsAppButton
+                                              phone={
+                                                quotation?.client?.phoneNumber
+                                              }
+                                              template={
+                                                dueSoon(quotation?.dueDate)
+                                                  ? 'validity'
+                                                  : 'resume'
+                                              }
+                                              vars={{
+                                                cliente:
+                                                  quotation?.client?.name,
+                                                numero: reference,
+                                                valor: formatCurrencyToBrl(
+                                                  quotation?.totalValue || 0,
+                                                ),
+                                                validade: formatToLocaleDate(
+                                                  quotation?.dueDate,
+                                                ),
+                                              }}
+                                            />
+                                          </PermissionGate>
+                                        )}
                                         <ActionButton
                                           Icon={IconPrinter}
                                           tooltip="Imprimir"
@@ -497,6 +546,23 @@ export function QuotationsData({
                   )}
                 </TableBody>
               </Table>
+              <ContactDialog
+                open={!!contacting}
+                onOpenChange={(open) => !open && setContacting(null)}
+                quotation={
+                  contacting
+                    ? {
+                        id: contacting.id,
+                        reference: `${contacting?.serie?.quotation || ''}-${contacting?.serie?.code || ''}`,
+                        clientName:
+                          contacting?.client?.name || 'Cliente não informado',
+                        nextContactAt: contacting.nextContactAt,
+                        nextContactNote: contacting.nextContactNote,
+                        tagId: contacting.tag?.id,
+                      }
+                    : null
+                }
+              />
               {rowData && (
                 <>
                   <PrintQuotationDialog
@@ -559,7 +625,18 @@ function QuickSaleBadge() {
 // em destaque, e o lembrete logo abaixo
 function NextContactCell({ quotation }: { quotation: QuotationType }) {
   const state = nextContactState(quotation?.nextContactAt)
-  if (!state) return <>-</>
+  if (!state)
+    return (
+      <div className="space-y-0.5">
+        <p className="text-warning-700">Sem próximo contato</p>
+        {quotation?.lastContact ? (
+          <p className="text-xs text-gray-500">
+            Último: {formatToLocaleDate(quotation.lastContact.at)} ·{' '}
+            {contactOutcomeLabel[quotation.lastContact.outcome]}
+          </p>
+        ) : null}
+      </div>
+    )
   return (
     <div className="space-y-0.5">
       <p
@@ -577,6 +654,56 @@ function NextContactCell({ quotation }: { quotation: QuotationType }) {
           {quotation.nextContactNote}
         </p>
       ) : null}
+      {quotation?.lastContact ? (
+        <p className="text-xs text-gray-500">
+          Último: {formatToLocaleDate(quotation.lastContact.at)} ·{' '}
+          {contactOutcomeLabel[quotation.lastContact.outcome]}
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+// Proposta vencendo em até 2 dias (CRM-2): a validade é um gatilho
+const EXPIRING_DAYS = 2
+function daysToDue(dueDate?: string | Date | null): number | null {
+  if (!dueDate) return null
+  const due = new Date(dueDate)
+  if (Number.isNaN(due.getTime())) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  due.setHours(0, 0, 0, 0)
+  return Math.round((due.getTime() - today.getTime()) / 86400000)
+}
+function dueSoon(dueDate?: string | Date | null) {
+  const days = daysToDue(dueDate)
+  return days !== null && days >= 0 && days <= EXPIRING_DAYS
+}
+
+// A validade com os dias que faltam: vermelho vencida, laranja vencendo
+function DueDateCell({ quotation }: { quotation: QuotationType }) {
+  const days = daysToDue(quotation?.dueDate)
+  if (days === null) return <>{formatToLocaleDate(quotation?.dueDate)}</>
+  const label =
+    days < 0
+      ? `vencida há ${-days} ${-days === 1 ? 'dia' : 'dias'}`
+      : days === 0
+        ? 'vence hoje'
+        : days <= EXPIRING_DAYS
+          ? `vence em ${days} ${days === 1 ? 'dia' : 'dias'}`
+          : null
+  return (
+    <div className="space-y-0.5">
+      <p
+        className={cn(
+          'text-nowrap',
+          days < 0 && 'text-error-700 font-medium',
+          days >= 0 && days <= EXPIRING_DAYS && 'text-warning-700 font-medium',
+        )}
+      >
+        {formatToLocaleDate(quotation?.dueDate)}
+      </p>
+      {label ? <p className="text-xs text-gray-500">{label}</p> : null}
     </div>
   )
 }
