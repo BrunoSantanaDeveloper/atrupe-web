@@ -121,9 +121,17 @@ export function SquareMeters<T extends FieldValues>({
                   <Input
                     disabled
                     placeholder={placeholder || label}
+                    // Sempre com casas: 0,3 × 0,3 m é 0,09 m², não "0 m²"
+                    // (corrigido em 27/10/2026)
                     value={
                       totalAreaInSquareMeters
-                        ? `${totalAreaInSquareMeters.toFixed(getDecimalPlaces(defaultUnit)).replace('.', ',')} m²`
+                        ? `${totalAreaInSquareMeters.toLocaleString('pt-BR', {
+                            minimumFractionDigits: Math.max(
+                              2,
+                              getDecimalPlaces(defaultUnit),
+                            ),
+                            maximumFractionDigits: 4,
+                          })} m²`
                         : ''
                     }
                     className={cn(

@@ -844,10 +844,15 @@ export function QuotationProdDetailModal({
                           {unitField}
                         </>
                       ) : showMeasure(index) ? (
+                        // Item por medida (27/10/2026): a unidade comercial
+                        // numa linha; quantidade, largura e altura na linha
+                        // seguinte, sem quebra entre elas
                         <>
-                          {unitField}
-                          {quantityField}
-                          {measureField}
+                          <div className="flex w-full gap-4">{unitField}</div>
+                          <div className="flex w-full flex-nowrap gap-4">
+                            {quantityField}
+                            {measureField}
+                          </div>
                         </>
                       ) : (
                         <div className="flex w-full flex-wrap gap-4">
