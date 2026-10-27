@@ -60,7 +60,9 @@ export function ClientContacts({ clientId }: { clientId: string }) {
     return (
       <Card>
         <CardContent className="p-6 text-sm text-gray">
-          {data?.message || 'Não foi possível carregar os contatos.'}
+          {data?.message && !/^Cannot (GET|POST)/.test(data.message)
+            ? data.message
+            : 'O acompanhamento comercial ainda não está disponível nesta versão da API.'}
         </CardContent>
       </Card>
     )

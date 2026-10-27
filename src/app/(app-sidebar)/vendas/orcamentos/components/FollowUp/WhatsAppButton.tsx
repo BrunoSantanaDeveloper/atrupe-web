@@ -9,7 +9,12 @@ import { IconBrandWhatsapp } from '@tabler/icons-react'
 import { ActionButton } from '@/components/common/ActionButton'
 import { Button } from '@/components/ui/button'
 import { useFollowUpSettings } from '@/hooks/queries/useFollowUp'
-import { fillTemplate, whatsappLink, type TemplateVars } from '@/lib/whatsapp'
+import {
+  DEFAULT_TEMPLATES,
+  fillTemplate,
+  whatsappLink,
+  type TemplateVars,
+} from '@/lib/whatsapp'
 import { useSession } from 'next-auth/react'
 
 export type WhatsAppTemplate = 'proposalSent' | 'validity' | 'resume'
@@ -30,20 +35,18 @@ export function WhatsAppButton({
 }: Props) {
   const { data: session } = useSession()
   const { data: settings } = useFollowUpSettings()
-  const text = fillTemplate(
-    settings?.[
-      template === 'proposalSent'
-        ? 'templateProposalSent'
-        : template === 'validity'
-          ? 'templateValidity'
-          : 'templateResume'
-    ] || 'Olá, {cliente}! Sobre a proposta {numero}: posso ajudar em algo?',
-    {
-      vendedor: session?.user?.name || '',
-      empresa: session?.company?.name || '',
-      ...vars,
-    },
-  )
+  const key =
+    template === 'proposalSent'
+      ? 'templateProposalSent'
+      : template === 'validity'
+        ? 'templateValidity'
+        : 'templateResume'
+  // Sem a configuração na API, valem os modelos padrão
+  const text = fillTemplate(settings?.[key] || DEFAULT_TEMPLATES[key], {
+    vendedor: session?.user?.name || '',
+    empresa: session?.company?.name || '',
+    ...vars,
+  })
   const link = whatsappLink(phone, text)
   const tooltip = link
     ? 'Chamar no WhatsApp'

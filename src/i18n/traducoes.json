@@ -16294,5 +16294,9 @@
  "6d0ff32d2e": {
   "es": "validez de la propuesta",
   "en": "proposal validity"
+ },
+ "e0c14a322f": {
+  "es": "El seguimiento comercial aún no está disponible en esta versión de la API.",
+  "en": "Sales follow-up is not available in this API version yet."
  }
 }

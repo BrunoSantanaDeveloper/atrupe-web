@@ -145,10 +145,7 @@ export function QuotationsData({
   const hasData = quotationArray.length
   // Mesmas colunas condicionais do cabeçalho real
   const skeletonCols =
-    5 +
-    Number(canViewValues) +
-    Number(isAllTab || isResumeTab) +
-    Number(showStatusColumn)
+    5 + Number(canViewValues) + Number(isAllTab) + Number(showStatusColumn)
 
   const openQuotations = quotationArray
     .flatMap((group) => group.quotations || [])
@@ -239,9 +236,7 @@ export function QuotationsData({
                     <PermissionGate permissions={['values:values:view']}>
                       <TableHead>Valor</TableHead>
                     </PermissionGate>
-                    {(isAllTab || isResumeTab) && (
-                      <TableHead>Fase atual</TableHead>
-                    )}
+                    {isAllTab && <TableHead>Fase atual</TableHead>}
                     {showStatusColumn && <TableHead>Status</TableHead>}
                     <TableHead>
                       {isResumeTab ? 'Próximo contato' : 'Concluído em'}
@@ -261,7 +256,7 @@ export function QuotationsData({
                             colSpan={
                               6 +
                               Number(canViewValues) +
-                              Number(isAllTab || isResumeTab) +
+                              Number(isAllTab) +
                               Number(showStatusColumn)
                             }
                             className="text-gray font-medium text-xs py-3"
@@ -396,7 +391,7 @@ export function QuotationsData({
                                       )}
                                     </TableCell>
                                   </PermissionGate>
-                                  {(isAllTab || isResumeTab) && (
+                                  {isAllTab && (
                                     <TableCell>
                                       {quotation?.status ? (
                                         <Badge

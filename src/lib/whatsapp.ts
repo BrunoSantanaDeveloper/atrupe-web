@@ -34,6 +34,16 @@ export function whatsappLink(
   return `https://wa.me/${number}?text=${encodeURIComponent(text)}`
 }
 
+/** Os modelos padrão, os mesmos do servidor: valem até a empresa editar. */
+export const DEFAULT_TEMPLATES = {
+  templateProposalSent:
+    'Olá, {cliente}! Segue a proposta {numero} no valor de {valor}, válida até {validade}. Qualquer dúvida, estou à disposição. {vendedor} · {empresa}',
+  templateValidity:
+    'Olá, {cliente}! A proposta {numero} vence em {validade}. Posso garantir o valor de {valor} se fecharmos até lá. {vendedor} · {empresa}',
+  templateResume:
+    'Olá, {cliente}! Passando para saber se conseguiu avaliar a proposta {numero}. Posso ajudar em algo? {vendedor} · {empresa}',
+}
+
 /** As variáveis que os modelos aceitam, para a tela de configuração. */
 export const TEMPLATE_VARS: { key: keyof TemplateVars; label: string }[] = [
   { key: 'cliente', label: 'nome do cliente' },

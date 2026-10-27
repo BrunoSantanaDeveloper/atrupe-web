@@ -30,7 +30,7 @@ import {
   updateFollowUpSettings,
 } from '@/actions/follow-up'
 import { FOLLOW_UP_SETTINGS_KEY } from '@/hooks/queries/useFollowUp'
-import { fillTemplate, TEMPLATE_VARS } from '@/lib/whatsapp'
+import { DEFAULT_TEMPLATES, fillTemplate, TEMPLATE_VARS } from '@/lib/whatsapp'
 import type { FollowUpSettings } from '@/types/sales/followUp'
 
 const templates: {
@@ -73,10 +73,9 @@ export function FollowUpSettingsForm() {
   })
   const settings = data?.success ? data.data : null
 
+  // Sem a configuração na API, a tela mostra os modelos padrão
   const [values, setValues] = useState<FollowUpSettings>({
-    templateProposalSent: '',
-    templateValidity: '',
-    templateResume: '',
+    ...DEFAULT_TEMPLATES,
     dailyEmail: false,
     dailyEmailHour: 8,
     inactiveDays: 90,
