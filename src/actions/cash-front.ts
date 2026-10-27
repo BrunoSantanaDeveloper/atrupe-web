@@ -126,6 +126,17 @@ export const receiveSale = async (
   return ok<PendingSale>(res.data)
 }
 
+// Rejeitar a venda da fila que não recebeu nada (FC-13.1): o cliente
+// desistiu no balcão. O motivo é o do cadastro de rejeição, quando o plano
+// o tem; sem estorno
+export const rejectSale = async (saleId: string, reasonId?: string) => {
+  const res: ApiResult = await createItemNew({
+    route: `/financial/pdv/sale/${saleId}/reject`,
+    data: reasonId ? { reasonId } : {},
+  })
+  return res.success ? ok(res.data) : fail(res.message, null)
+}
+
 // O estorno é o cancelamento da venda, com justificativa (FC-13)
 export const reverseSale = async (saleId: string, reason: string) => {
   const res: ApiResult = await createItemNew({

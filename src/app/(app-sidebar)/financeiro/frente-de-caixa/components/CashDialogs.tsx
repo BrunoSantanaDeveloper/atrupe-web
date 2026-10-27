@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 // UI
 import {
@@ -38,6 +38,7 @@ import {
 import {
   discardPickup,
   reverseSale,
+  rejectSale,
   openCashSession,
   addCashMovement,
   closeCashSession,
@@ -47,6 +48,16 @@ import { getBankAccounts } from '@/actions/cash-accounts'
 
 // Third-party
 import { toast } from 'sonner'
+import Link from 'next/link'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useCancelReason } from '@/hooks/queries/useCancelReason'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
@@ -599,6 +610,113 @@ export function ReverseSaleDialog({
             onClick={save}
           >
             Cancelar venda
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * Rejeitar a venda da fila (FC-13.1, 27/10/2026): o cliente desistiu antes
+ * de pagar. O orçamento volta a rejeitado, com o motivo do cadastro quando o
+ * plano tem motivos (a partir do LITE: é ele que alimenta o relatório de
+ * perdas); sem estorno, porque nada entrou
+ * ------------------------------------------------------------------------- */
+
+export function RejectSaleDialog({
+  sale,
+  onDone,
+  onOpenChange,
+}: {
+  sale?: PendingSale
+  onDone: () => void
+  onOpenChange: (open: boolean) => void
+}) {
+  const [reasonId, setReasonId] = useState('')
+  const [saving, setSaving] = useState(false)
+  const { canManageRejectionReasons } = usePlanFeatures()
+  const withReason = canManageRejectionReasons()
+  const { data: reasonList } = useCancelReason('REJECTION')
+  const options = useMemo(
+    () => reasonList?.find((item) => item.type === 'REJECTION')?.reasons ?? [],
+    [reasonList],
+  )
+
+  useEffect(() => {
+    if (sale) setReasonId('')
+  }, [sale])
+
+  const save = async () => {
+    if (!sale) return
+    setSaving(true)
+    const res = await rejectSale(sale.id, withReason ? reasonId : undefined)
+    setSaving(false)
+
+    if (!res.success) return toast.error(res.message)
+
+    toast.success('Venda rejeitada')
+    onDone()
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={!!sale} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Rejeitar {sale?.reference}?</DialogTitle>
+          <DialogDescription>
+            A venda sai da fila e o orçamento fica como rejeitado, com a ordem
+            de serviço cancelada. Nada foi recebido, então não há estorno.
+          </DialogDescription>
+        </DialogHeader>
+        {withReason && (
+          <DialogBody className="space-y-2">
+            <label htmlFor="reject-reason" className="text-sm font-medium">
+              Motivo
+            </label>
+            <Select value={reasonId} onValueChange={setReasonId}>
+              <SelectTrigger id="reject-reason" autoFocus>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {options.map((option) => (
+                  <SelectItem key={option.id} value={option.id}>
+                    {option.reason}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {reasonList && !options.length && (
+              <p className="text-sm text-gray">
+                Nenhum motivo cadastrado.{' '}
+                <Link
+                  href="/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento"
+                  className="text-brand-700 underline"
+                >
+                  Cadastre os motivos de rejeição
+                </Link>{' '}
+                para rejeitar.
+              </p>
+            )}
+          </DialogBody>
+        )}
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Voltar
+          </Button>
+          <Button
+            type="button"
+            variant="error"
+            isLoading={saving}
+            disabled={withReason && !reasonId}
+            onClick={save}
+          >
+            Rejeitar venda
           </Button>
         </DialogFooter>
       </DialogContent>

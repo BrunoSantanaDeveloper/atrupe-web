@@ -15962,5 +15962,25 @@
  "ffff2943cf": {
   "es": "Seleccione un archivo CSV para importar productos en lote",
   "en": "Select a CSV file to import products in bulk"
+ },
+ "1b59bba0d7": {
+  "es": "Venta rechazada",
+  "en": "Sale rejected"
+ },
+ "0f884463e3": {
+  "es": "¿Rechazar {reference}?",
+  "en": "Reject {reference}?"
+ },
+ "9fe0136682": {
+  "es": "La venta sale de la fila y el presupuesto queda como rechazado, con la orden de servicio cancelada. No se recibió nada, así que no hay devolución.",
+  "en": "The sale leaves the queue and the quote is marked as rejected, with the work order cancelled. Nothing was received, so there is no refund."
+ },
+ "cfbd271682": {
+  "es": "Rechazar venta",
+  "en": "Reject sale"
+ },
+ "3a469a6766": {
+  "es": "Rechazar la venta",
+  "en": "Reject the sale"
  }
 }

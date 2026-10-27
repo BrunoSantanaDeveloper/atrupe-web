@@ -33,6 +33,7 @@ import {
   CloseCashDialog,
   CashMovementDialog,
   ReverseSaleDialog,
+  RejectSaleDialog,
   DiscardPickupDialog,
 } from './CashDialogs'
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
@@ -79,6 +80,7 @@ import {
   IconSortAscending,
   IconSortDescending,
   IconDeviceImacCancel,
+  IconX,
 } from '@tabler/icons-react'
 
 // Consts
@@ -116,6 +118,7 @@ export function PDV() {
   const { hasPermission } = usePermissions()
   const canBill = hasPermission('financial:pdv_billing:edit')
   const [reversing, setReversing] = useState<PendingSale>()
+  const [rejecting, setRejecting] = useState<PendingSale>()
   const [dialog, setDialog] = useState('')
 
   const { data, isLoading } = useQuery({
@@ -500,18 +503,34 @@ export function PDV() {
                                 />
                               )}
                             </PermissionGate>
-                            {/* Cancelar a venda paga é restrito (FC-15):
-                                a permissão de excluir */}
-                            <PermissionGate
-                              permissions={['financial:pdv:delete']}
-                            >
-                              <ActionButton
-                                gesto="cancelar"
-                                variant="errorGhost"
-                                tooltip="Cancelar a venda"
-                                onClick={() => setReversing(sale)}
-                              />
-                            </PermissionGate>
+                            {/* Sem nada recebido, o cliente que desistiu é
+                                "rejeitar" (FC-13.1), com a permissão de
+                                operar o caixa; com valor recebido, cancelar
+                                a venda paga é restrito (FC-15): a permissão
+                                de excluir */}
+                            {sale.paid === 0 ? (
+                              <PermissionGate
+                                permissions={['financial:pdv:edit']}
+                              >
+                                <ActionButton
+                                  Icon={IconX}
+                                  variant="errorGhost"
+                                  tooltip="Rejeitar a venda"
+                                  onClick={() => setRejecting(sale)}
+                                />
+                              </PermissionGate>
+                            ) : (
+                              <PermissionGate
+                                permissions={['financial:pdv:delete']}
+                              >
+                                <ActionButton
+                                  gesto="cancelar"
+                                  variant="errorGhost"
+                                  tooltip="Cancelar a venda"
+                                  onClick={() => setReversing(sale)}
+                                />
+                              </PermissionGate>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -758,6 +777,11 @@ export function PDV() {
           sale={reversing}
           onDone={refresh}
           onOpenChange={(open) => !open && setReversing(undefined)}
+        />
+        <RejectSaleDialog
+          sale={rejecting}
+          onDone={refresh}
+          onOpenChange={(open) => !open && setRejecting(undefined)}
         />
         <DiscardPickupDialog
           pickup={discarding}
