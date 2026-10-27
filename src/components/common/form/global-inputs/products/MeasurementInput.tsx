@@ -18,6 +18,8 @@ interface MeasurementInputProps<T extends FieldValues>
   unitKind: string
   unitOfMeasureId?: string
   onHasChanged?: () => void
+  // Medida abaixo da quantidade mínima do produto: o total fica em vermelho
+  belowMinimum?: boolean
 }
 
 export function MeasurementInput<T extends FieldValues>({
@@ -26,6 +28,7 @@ export function MeasurementInput<T extends FieldValues>({
   unitOfMeasureId,
   unitKind,
   onHasChanged,
+  belowMinimum = false,
   ...props
 }: MeasurementInputProps<T>) {
   const { data: unitOfMeasure } = useUnitOfMeasure()
@@ -74,6 +77,7 @@ export function MeasurementInput<T extends FieldValues>({
             placeholder="Digite aqui"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
+            belowMinimum={belowMinimum}
             defaultUnit={companyDefaults?.LENGTH}
             getUnitAbbreviation={getUnitAbbreviation}
           />

@@ -16374,5 +16374,13 @@
  "acfb06667b": {
   "es": "La API aún no acepta: {valor}. El producto se guardó sin esos campos.",
   "en": "The API does not accept yet: {valor}. The product was saved without those fields."
+ },
+ "d486fc62ea": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 100,00 el m² con mínimo de 0,5 m², el ítem sale por R$ 50,00. La medida digitada permanece, y el total aparece en rojo señalando el mínimo. Por unidad, el ítem ya nace con esa cantidad.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 100.00 per m² with a 0.5 m² minimum, the item costs R$ 50.00. The typed measure stays, and the total shows in red pointing to the minimum. Per unit, the item starts with that quantity."
+ },
+ "6ae1eae595": {
+  "es": "Cantidad mínima ({valor})",
+  "en": "Minimum quantity ({valor})"
  }
 }

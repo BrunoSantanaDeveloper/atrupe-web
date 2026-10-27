@@ -182,9 +182,14 @@ function NewProductModal({
   // lugar da lista simples de etapas do LITE (ET-1). A composição lê a
   // API (contrato, módulo 1, parte A)
   const showCompositionTab = hasFeature(FEATURES.COSTS.COST_BASE)
-  // As variações simples ficam aqui; com a composição (PRO), elas vivem
-  // na aba Composição, como abas com composição própria
-  const showVariations = !showCompositionTab
+  // Variações, faixas de quantidade e quantidade mínima são do LITE em
+  // diante (chave product_composition; decisão de 27/10/2026). As variações
+  // simples e as faixas ficam aqui; com a composição (PRO), elas vivem na
+  // aba Composição. A quantidade mínima fica no produto em todos os planos a
+  // partir do LITE: no PRO ela é a base mínima dos materiais da composição
+  const hasLiteProducts = hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+  const showVariations = hasLiteProducts && !showCompositionTab
+  const showMinQuantity = hasLiteProducts
 
   useEffect(() => {
     if (open) setActiveTab(initialTab)
@@ -287,10 +292,6 @@ function NewProductModal({
           suppliers: product?.suppliers ?? [],
           supplierPick: null,
           minQuantity: product?.minQuantity ?? null,
-          minPrice:
-            product?.minPrice !== null && product?.minPrice !== undefined
-              ? product.minPrice / 100
-              : null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items: product?.items?.map((item: any) => ({
             ...item,
@@ -342,19 +343,13 @@ function NewProductModal({
         return
       }
     }
-    // Quantidade mínima e preço mínimo só quando preenchidos (no cadastro
-    // novo): a API sem o patch 13 recusa campo desconhecido
-    const minimums: { minQuantity?: number | null; minPrice?: number | null } =
-      {}
+    // Quantidade mínima só quando preenchida (no cadastro novo): a API sem
+    // o patch 13 recusa campo desconhecido
+    const minimums: { minQuantity?: number | null } = {}
     if (Number(data.minQuantity) > 0) {
       minimums.minQuantity = Number(data.minQuantity)
     } else if (editMode) {
       minimums.minQuantity = null
-    }
-    if (data.minPrice) {
-      minimums.minPrice = Math.round(data.minPrice * 100)
-    } else if (editMode) {
-      minimums.minPrice = null
     }
     const body = {
       isOutsourced: !!data.isOutsourced,
@@ -694,8 +689,9 @@ function NewProductModal({
                               </div>
                             )}
 
-                          {/* Variações já no START (PV-6, 05/10/2026). No PRO
-                              elas vivem na aba Composição */}
+                          {/* Variações do LITE em diante (PV-6, 05/10/2026;
+                              plano revisto em 27/10/2026). No PRO elas vivem
+                              na aba Composição */}
                           {showVariations && (
                             <div className="w-full rounded-xl border border-gray-200 p-4">
                               <ProductVariations
@@ -707,44 +703,44 @@ function NewProductModal({
                               />
                             </div>
                           )}
-                          {/* Faixas de quantidade já no LITE (FQ-1; decisão do
-                              produto, 26/10/2026). No PRO elas vivem na aba
-                              Composição, com custo e margem por faixa */}
-                          {showVariations && (
+                          {/* Quantidade mínima (27/10/2026), na unidade do
+                              produto, do LITE em diante: abaixo dela o item é
+                              cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).
+                              No PRO é também a base mínima dos materiais */}
+                          {showMinQuantity && (
                             <div className="w-full space-y-4 rounded-xl border border-gray-200 p-4">
-                              {/* Quantidade mínima e preço mínimo (27/10/2026):
-                                  o item nasce com eles no orçamento; o preço
-                                  mínimo é a base do limite de desconto */}
                               <div>
                                 <h4 className="type-card-title">
-                                  Quantidade mínima e preço mínimo
+                                  Quantidade mínima
                                 </h4>
                                 <p className="text-sm text-gray">
-                                  Ao adicionar o produto no orçamento, o item já
-                                  vem com esta quantidade e este preço. O preço
-                                  mínimo é a base para os descontos do vendedor.
-                                  Em branco, vale 1 e o valor de venda.
+                                  Abaixo dela, o item é cobrado pela quantidade
+                                  mínima: a R$ 100,00 o m² com mínimo de 0,5 m²,
+                                  o item sai por R$ 50,00. A medida digitada
+                                  permanece, e o total aparece em vermelho
+                                  apontando o mínimo. Por unidade, o item já
+                                  nasce com essa quantidade.
                                 </p>
                               </div>
-                              <div className="flex flex-wrap gap-3">
-                                <FormInput
-                                  name="minQuantity"
-                                  label="Quantidade mínima"
-                                  type="number"
-                                  width="flex-[1_0_160px]"
-                                />
-                                <FormBrlInput
-                                  name="minPrice"
-                                  label={`Preço mínimo por ${
-                                    unitSymbol[
-                                      (watch('items.0.unitKind') as UnitKind) ||
-                                        'UNITY'
-                                    ] || 'un'
-                                  }`}
-                                  startAdornment={<>R$</>}
-                                  width="flex-[1_0_160px]"
-                                />
-                              </div>
+                              <FormInput
+                                name="minQuantity"
+                                label={`Quantidade mínima (${
+                                  unitSymbol[
+                                    (watch('items.0.unitKind') as UnitKind) ||
+                                      'UNITY'
+                                  ] || 'un'
+                                })`}
+                                type="number"
+                                step="0.001"
+                                width="flex-[1_0_160px]"
+                              />
+                            </div>
+                          )}
+                          {/* Faixas de quantidade do LITE em diante (FQ-1;
+                              decisão do produto, 26/10/2026). No PRO elas vivem
+                              na aba Composição, com custo e margem por faixa */}
+                          {showVariations && (
+                            <div className="w-full rounded-xl border border-gray-200 p-4">
                               <ProductPriceTiers
                                 productId={
                                   editMode ? (productId ?? null) : null

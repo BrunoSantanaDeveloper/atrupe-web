@@ -37,6 +37,7 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
   defaultUnit?: string
   getUnitAbbreviation?: (code: string) => string
+  belowMinimum?: boolean
 }
 
 export function SquareMeters<T extends FieldValues>({
@@ -50,6 +51,7 @@ export function SquareMeters<T extends FieldValues>({
   onHasChanged,
   defaultUnit = 'MT',
   getUnitAbbreviation = (code) => code.toLowerCase(),
+  belowMinimum = false,
   ...props
 }: Props<T>) {
   const { watch } = useFormContext()
@@ -124,7 +126,12 @@ export function SquareMeters<T extends FieldValues>({
                         ? `${totalAreaInSquareMeters.toFixed(getDecimalPlaces(defaultUnit)).replace('.', ',')} m²`
                         : ''
                     }
-                    className={className}
+                    className={cn(
+                      className,
+                      belowMinimum &&
+                        'border-error-300 text-error-600 disabled:text-error-600',
+                    )}
+                    aria-invalid={belowMinimum || undefined}
                     onChange={onHasChanged}
                     inputMode="decimal"
                     {...props}

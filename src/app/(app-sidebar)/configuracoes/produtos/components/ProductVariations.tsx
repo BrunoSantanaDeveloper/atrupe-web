@@ -1,8 +1,8 @@
 'use client'
 
-// Variações do produto já no START (PV-6, decidido em 05/10/2026): o mesmo
-// produto em tamanhos ou cores (P, M, G; 4x0, 4x1, 4x4), cada um com o seu
-// preço. Sem isso, o mesmo produto acaba cadastrado várias vezes. Na venda, o
+// Variações do produto do LITE em diante (PV-6, decidido em 05/10/2026;
+// plano revisto em 27/10/2026): o mesmo produto em tamanhos ou cores (P, M,
+// G; 4x0, 4x1, 4x4), cada um com o seu preço. Sem isso, o mesmo produto acaba cadastrado várias vezes. Na venda, o
 // vendedor escolhe a variação. No PRO, a composição aprofunda as mesmas
 // variações.
 
