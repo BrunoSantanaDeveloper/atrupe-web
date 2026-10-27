@@ -126,18 +126,17 @@ export function useCashReceipt(
   const fields = useFieldArray({ control: form.control, name: 'parts' })
   const { data: conditions } = useAvailablePaymentConditions('receivable')
 
-  // Sem forma de pagamento cadastrada para receber (empresa nova, conta de
-  // teste), o caixa oferece as três do balcão: dinheiro, PIX e cartão
+  // A forma só existe se alguma conta a aceita (27/10/2026): sem nenhuma
+  // condição liberada para receber, o caixa oferece só dinheiro, que vai
+  // para a gaveta e, no fechamento, para a conta Caixa. PIX ou cartão sem
+  // conta não têm onde dar baixa
   const conditionOptions = useMemo(() => {
     const list = conditions?.length
       ? conditions.map((condition) => ({
           value: condition.id,
           label: condition.name,
         }))
-      : allPaymentMethods.map((method) => ({
-          value: method,
-          label: paymentMethodLabel[method],
-        }))
+      : [{ value: 'CASH', label: paymentMethodLabel.CASH }]
     if (!options.methods) return list
     return list.filter((option) =>
       options.methods!.includes(methodOfCondition(option.label)),
