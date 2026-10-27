@@ -1,7 +1,9 @@
 {
   "agendaDeEntrega": {
+    "thisCustomerIsBlockedIn": "This customer is blocked in the registration: no charge is generated",
     "serviceBilled": "Service billed",
     "billThisService": "Bill this service?",
+    "thisCustomerIsBlockedIn2": "This customer is blocked in the registration: the service cannot be billed until unblocked, in the customer's Credit limit tab.",
     "confirmWhetherYouWantTo": "Confirm whether you want to bill this service.",
     "bill": "Bill",
     "serviceNote": "Service note",
@@ -13,10 +15,9 @@
     "addTime": "Add time",
     "allActive": "All active",
     "closed": "Closed",
-    "theScheduleAsAnAt": "The schedule as an at-a-glance management board",
-    "whatHasBeenDecidedAnd": "What has been decided and doesn't exist yet: the job line showing the icons of all departments involved, the breakdown by item, the click that completes the step and the alert when a delay puts the delivery date at risk.",
     "noDeliveriesWithStatus": "No deliveries with status: {statusLabel}",
     "noDeliveriesScheduled": "No deliveries scheduled",
+    "serviceFinished": "Service finished",
     "finishService": "Finish service",
     "areYouSureYouWant": "Are you sure you want to finish the service?",
     "featureNotAvailableAtThe": "Feature not available at the moment.",
@@ -25,11 +26,13 @@
     "deliveryNotFound": "Delivery not found",
     "yourSearchFoundNoResults": "Your search found no results. Try again.",
     "statusChanged": "Status changed",
+    "describeTheIssue": "Describe the issue",
     "issue": "Issue",
     "issueDescription": "Issue description",
     "removeIssue": "Remove issue",
     "thisStepFollowsTheTasks": "This step follows the tasks in the Production board.",
     "changingTheStepStatusIsn": "Changing the step status isn't part of your plan.",
+    "yourRoleCanTChange": "Your role can’t change the step status.",
     "youDonTHavePermission": "You don't have permission to view the delivery schedule."
   },
   "gerenciador": {

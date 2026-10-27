@@ -1,7 +1,9 @@
 {
   "agendaDeEntrega": {
+    "thisCustomerIsBlockedIn": "Este cliente está bloqueado en el registro: no genera cobro",
     "serviceBilled": "Servicio facturado",
     "billThisService": "¿Facturar este servicio?",
+    "thisCustomerIsBlockedIn2": "Este cliente está bloqueado en el registro: el servicio no se puede facturar hasta el desbloqueo, en la pestaña Límite de crédito del cliente.",
     "confirmWhetherYouWantTo": "Confirme si desea facturar este servicio.",
     "bill": "Facturar",
     "serviceNote": "Observación del servicio",
@@ -13,10 +15,9 @@
     "addTime": "Agregar hora",
     "allActive": "Todos los activos",
     "closed": "Finalizados",
-    "theScheduleAsAnAt": "La agenda como tablero de gestión visual",
-    "whatHasBeenDecidedAnd": "Lo que se decidió y aún no existe: la línea del trabajo mostrando los íconos de todos los sectores involucrados, el detalle por ítem, el clic que finaliza la etapa y la alerta cuando el retraso compromete la fecha de entrega.",
     "noDeliveriesWithStatus": "Ninguna entrega con el estado: {statusLabel}",
     "noDeliveriesScheduled": "Ninguna entrega agendada",
+    "serviceFinished": "Servicio finalizado",
     "finishService": "Finalizar servicio",
     "areYouSureYouWant": "¿Está seguro de que desea finalizar el servicio?",
     "featureNotAvailableAtThe": "Recurso no disponible por el momento.",
@@ -25,11 +26,13 @@
     "deliveryNotFound": "Entrega no encontrada",
     "yourSearchFoundNoResults": "Su búsqueda no encontró ningún resultado. Intente nuevamente.",
     "statusChanged": "Estado modificado",
+    "describeTheIssue": "Describa el pendiente",
     "issue": "Pendiente",
     "issueDescription": "Descripción del pendiente",
     "removeIssue": "Quitar pendiente",
     "thisStepFollowsTheTasks": "Esta etapa sigue las tareas del Gestor de producción.",
     "changingTheStepStatusIsn": "Cambiar el estado de la etapa no forma parte de su plan.",
+    "yourRoleCanTChange": "Su cargo no puede cambiar el estado de la etapa.",
     "youDonTHavePermission": "Usted no tiene permiso para ver la agenda de entregas."
   },
   "gerenciador": {

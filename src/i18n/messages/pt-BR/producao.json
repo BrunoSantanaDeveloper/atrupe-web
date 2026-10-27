@@ -1,7 +1,9 @@
 {
   "agendaDeEntrega": {
+    "thisCustomerIsBlockedIn": "Este cliente está bloqueado no cadastro: não gera cobrança",
     "serviceBilled": "Serviço faturado",
     "billThisService": "Realizar faturamento deste serviço?",
+    "thisCustomerIsBlockedIn2": "Este cliente está bloqueado no cadastro: o serviço não pode ser faturado até o desbloqueio, na aba Limite de crédito do cliente.",
     "confirmWhetherYouWantTo": "Confirme se deseja realizar faturamento deste serviço.",
     "bill": "Faturar",
     "serviceNote": "Observação do serviço",
@@ -13,10 +15,9 @@
     "addTime": "Adicionar horário",
     "allActive": "Todos os ativos",
     "closed": "Finalizados",
-    "theScheduleAsAnAt": "A agenda como quadro de gestão à vista",
-    "whatHasBeenDecidedAnd": "O que foi decidido e não existe: a linha do trabalho mostrando os ícones de todos os setores envolvidos, o detalhamento por item, o clique que conclui a etapa e o alerta quando o atraso compromete a data de entrega.",
     "noDeliveriesWithStatus": "Nenhuma entrega para o status: {statusLabel}",
     "noDeliveriesScheduled": "Nenhuma entrega agendada",
+    "serviceFinished": "Serviço finalizado",
     "finishService": "Finalizar serviço",
     "areYouSureYouWant": "Tem certeza que deseja finalizar o serviço?",
     "featureNotAvailableAtThe": "Recurso indisponível no momento.",
@@ -25,11 +26,13 @@
     "deliveryNotFound": "Entrega não encontrada",
     "yourSearchFoundNoResults": "Sua busca não encontrou nenhum resultado. Tente novamente.",
     "statusChanged": "Status alterado",
+    "describeTheIssue": "Descreva a pendência",
     "issue": "Pendência",
     "issueDescription": "Descrição da pendência",
     "removeIssue": "Remover pendência",
     "thisStepFollowsTheTasks": "Esta etapa segue as tarefas do Gerenciador de produção.",
     "changingTheStepStatusIsn": "Trocar o status da etapa não faz parte do seu plano.",
+    "yourRoleCanTChange": "Seu cargo não pode trocar o status da etapa.",
     "youDonTHavePermission": "Você não tem permissão para visualizar a agenda de entrega."
   },
   "gerenciador": {
