@@ -4760,8 +4760,8 @@
   "en": "Select the status"
  },
  "4cd18c329d": {
-  "es": "Fase actual",
-  "en": "Current stage"
+  "es": "Fase",
+  "en": "Stage"
  },
  "4cee754759": {
   "es": "Ingrese la descripción de la subcategoría",
@@ -16236,8 +16236,8 @@
   "en": "Without a date, the quote has no next contact and shows up that way in the Waiting tab."
  },
  "75e36d64da": {
-  "es": "Fase de la negociación",
-  "en": "Negotiation stage"
+  "es": "Fase",
+  "en": "Stage"
  },
  "bbc3bcf4cc": {
   "es": "Sin marcador",
@@ -16306,5 +16306,9 @@
  "9d585df5b8": {
   "es": "Más antiguo primero",
   "en": "Oldest first"
+ },
+ "376f40395f": {
+  "es": "Fase",
+  "en": "Stage"
  }
 }

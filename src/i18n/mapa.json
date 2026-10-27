@@ -44524,15 +44524,6 @@
    "src/app/(app-sidebar)/relatorios/vendas/components/QuotationsOriginChart.tsx:27 (propriedade:label)"
   ]
  },
- "relatorios.vendas.currentStage": {
-  "pt": "Fase atual",
-  "usos": [
-   "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:241 (jsx)",
-   "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:298 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx:222 (jsx)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersData.tsx:187 (jsx)"
-  ]
- },
  "relatorios.vendas.customerTotal": {
   "pt": "Total do cliente",
   "usos": [
@@ -44660,6 +44651,15 @@
   "pt": "FASE",
   "usos": [
    "src/app/(app-sidebar)/relatorios/vendas/components/print/SalesReportPdf.tsx:247 (jsx)"
+  ]
+ },
+ "relatorios.vendas.stage2": {
+  "pt": "Fase atual",
+  "usos": [
+   "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:241 (jsx)",
+   "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:298 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx:222 (jsx)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersData.tsx:187 (jsx)"
   ]
  },
  "relatorios.vendas.total": {
