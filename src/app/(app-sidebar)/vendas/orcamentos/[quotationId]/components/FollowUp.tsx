@@ -142,7 +142,7 @@ export function FollowUp({ data }: { data: QuotationType }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6">
           {showTag ? (
             <div className="space-y-1">
-              <p className="text-sm text-gray">Status</p>
+              <p className="text-sm text-gray">Fase</p>
               <QuotationTagDropdown
                 quotation={data}
                 tagsList={tagsList || []}

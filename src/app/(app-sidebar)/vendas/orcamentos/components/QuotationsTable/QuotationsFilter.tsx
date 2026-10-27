@@ -132,7 +132,7 @@ export function QuotationsFilter({ searchParams }: SearchParamsType) {
       {showTagFilter ? (
         <SelectBasic
           name="tag"
-          label="Status"
+          label="Fase"
           className="w-full sm:w-[220px]"
           options={[{ value: 'all', label: 'Todos' }, ...tagOptions]}
           value={searchParams?.tagId || 'all'}
