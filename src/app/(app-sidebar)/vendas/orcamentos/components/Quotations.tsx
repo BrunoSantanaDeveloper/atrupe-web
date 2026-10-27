@@ -299,8 +299,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
   const getExportQuotations = async () => {
     const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
-    // mesmo cuidado da listagem: `novo` é da tela, a API recusa
-    const { novo: _novo, ...exportParams } = searchParams
+    // mesmo cuidado da listagem: `novo` e `foco` são da tela, a API recusa
+    const { novo: _novo, foco: _foco, ...exportParams } = searchParams
     const filters = {
       ...exportParams,
       status: exportStatus,

@@ -16298,5 +16298,13 @@
  "e0c14a322f": {
   "es": "El seguimiento comercial aún no está disponible en esta versión de la API.",
   "en": "Sales follow-up is not available in this API version yet."
+ },
+ "8b3d467133": {
+  "es": "Más nuevo primero",
+  "en": "Newest first"
+ },
+ "9d585df5b8": {
+  "es": "Más antiguo primero",
+  "en": "Oldest first"
  }
 }

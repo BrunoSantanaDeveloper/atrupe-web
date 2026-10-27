@@ -261,7 +261,9 @@ export function QuotationsData({
                             }
                             className="text-gray font-medium text-xs py-3"
                           >
-                            {formatToWeekDate(group?.date)}
+                            {group?.date === 'none'
+                              ? 'Sem próximo contato'
+                              : formatToWeekDate(group?.date)}
                           </TableCell>
                         </TableRow>
                         {group?.quotations?.length
