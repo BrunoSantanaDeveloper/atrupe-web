@@ -1679,6 +1679,10 @@
   "es": "Nómina {valor}/{valor2}",
   "en": "Payroll {valor}/{valor2}"
  },
+ "1d6661c77d": {
+  "es": "Vale para la venta enviada a la caja, cuando el cliente paga ahora y retira después. Dónde se recibe la venta lo define la serie de venta, en Configuración › Ventas › Series de venta.",
+  "en": "Applies to the sale sent to the cash register, when the customer pays now and picks up later. Where the sale is received is defined by the sales series, in Settings › Sales › Sales series."
+ },
  "1d79cbc635": {
   "es": "Elija cuánto del costo administrativo recibe cada sector productivo. Distribuir es opcional: según el método del costo puro, lo habitual es dejar lo administrativo fuera del costo de los sectores y cubrirlo con el resultado de las ventas.",
   "en": "Choose how much of the overhead cost each production department receives. Distributing is optional: under the pure cost method, the default is to leave overhead out of the departments' cost and cover it with sales results."
@@ -3603,6 +3607,10 @@
   "es": "Valor restante",
   "en": "Remaining value"
  },
+ "3be5bf8b7c": {
+  "es": "Cobre al contado ahora, por el total, o envíe a la caja: ahí la forma de pago la define la caja.",
+  "en": "Charge in full now, or send it to the cash register, where the cashier defines the payment method."
+ },
  "3bed897e69": {
   "es": "Salario base",
   "en": "Base salary"
@@ -4187,6 +4195,10 @@
   "es": "Crear etapa",
   "en": "Create step"
  },
+ "44df4cff11": {
+  "es": "{client} - {reference} · al contado, por el total. Para pagar en cuotas o cobrar después, envíe a la caja.",
+  "en": "{client} - {reference} · paid in full, now. To split or charge later, send it to the cash register."
+ },
  "44df83ae69": {
   "es": "Elija primero el sector",
   "en": "Choose the sector first"
@@ -4366,6 +4378,10 @@
  "470cc3e0c3": {
   "es": "{line}. Indique el valor de las ventas que paga este depósito: la diferencia va a la tasa de tarjeta.",
   "en": "{line}. Enter the sales amount this deposit pays for: the difference goes to the card fee."
+ },
+ "4721583cc1": {
+  "es": "{valor} #{valor2}-{valor3}",
+  "en": "{valor} #{valor2}-{valor3}"
  },
  "4725bd838e": {
   "es": "Permisos del cargo",
@@ -6162,6 +6178,10 @@
  "630ecb68dd": {
   "es": "· solo en este producto",
   "en": "· only in this product"
+ },
+ "63150db697": {
+  "es": "¿Cuotas o facturar al cliente? Envíe a la caja.",
+  "en": "Installments or bill the customer? Send it to the cash register."
  },
  "63172561ce": {
   "es": "Mi perfil",
@@ -8554,6 +8574,10 @@
  "86e810911e": {
   "es": "Pérdida (%)",
   "en": "Waste (%)"
+ },
+ "86e9ca23c3": {
+  "es": "¿Cuotas o facturar al cliente? Use una serie que factura en el pedido.",
+  "en": "Installments or bill the customer? Use a series that bills on the order."
  },
  "86f5020178": {
   "es": "Usted no tiene permiso para ver las cuentas por cobrar.",
@@ -11699,6 +11723,10 @@
   "es": "Duplicar cotización",
   "en": "Duplicate quote"
  },
+ "b89a178cc0": {
+  "es": "Cobro: ahora o en la caja",
+  "en": "Payment: now or at the cash register"
+ },
  "b8a565d7b8": {
   "es": "Haga clic para seleccionar el archivo .CSV",
   "en": "Click to select the .CSV file"
@@ -13646,6 +13674,10 @@
  "d9cd4b4245": {
   "es": "Usted no tiene permiso para ver la proyección de caja.",
   "en": "You don't have permission to view the cash projection."
+ },
+ "d9d2bca8d9": {
+  "es": "Seña en la retirada",
+  "en": "Deposit at pickup"
  },
  "d9d9d75a12": {
   "es": "¡Ingrese ahora!",

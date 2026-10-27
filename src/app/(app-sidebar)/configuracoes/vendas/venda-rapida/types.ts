@@ -2,14 +2,13 @@
 // A venda rápida pula o modal de novo orçamento: os valores que o vendedor
 // deixaria de preencher ficam definidos aqui, uma vez (VR-4).
 
-// O que acontece com o dinheiro da venda rápida (VR-5): ou ela é cobrada na
-// hora, só à vista, ou ela é enviada para a frente de caixa
+// Guardados pela API, sem efeito desde 26/10/2026: o recebimento é da série
+// de venda (VR-5), não da venda rápida
 export type QuickSalePayment = 'CASH_ONLY' | 'POS'
 
 export type QuickSaleSettings = {
-  payment: QuickSalePayment
-  // Meios aceitos quando a cobrança é na hora
-  cashMethods: string[]
+  payment?: QuickSalePayment
+  cashMethods?: string[]
   // Entrada obrigatória (sinal) quando o cliente paga agora e busca depois
   // (FC-6, FC-17): um recurso habilitável, com percentual da empresa. O
   // restante é cobrado na retirada, e quem tem permissão dispensa caso a caso

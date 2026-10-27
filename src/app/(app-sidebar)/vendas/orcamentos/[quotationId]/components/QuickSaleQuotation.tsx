@@ -1,9 +1,10 @@
 'use client'
 
-// O orçamento quando ele é uma venda rápida. É o mesmo orçamento (VR-3), com
-// duas diferenças: no lugar das condições de pagamento entra o recebimento
-// (FC-1, VR-5), e depois de enviada ou cobrada a venda trava (FC-11) e a tela
-// passa a mostrar onde ela está.
+// O orçamento cuja série fatura na frente de caixa (VR-5, revista em
+// 26/10/2026), venda rápida ou comum. É o mesmo orçamento (VR-3), com duas
+// diferenças: no lugar das condições de pagamento entra o recebimento (FC-1),
+// e depois de enviada ou cobrada a venda trava (FC-11) e a tela passa a
+// mostrar onde ela está.
 
 // Next
 import Link from 'next/link'
@@ -58,7 +59,7 @@ export function QuickSaleQuotation({ data, previousUrl }: Props) {
 
   const topbar = (
     <Topbar
-      title={`Venda rápida #${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`}
+      title={`${data?.quickSale ? 'Venda rápida' : 'Orçamento'} #${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`}
       supportText={data?.client?.name || ''}
       previousPage={previousUrl}
       badge={
@@ -67,7 +68,7 @@ export function QuickSaleQuotation({ data, previousUrl }: Props) {
           variant: 'neutralLight',
         }
       }
-      label="Venda rápida"
+      label={data?.quickSale ? 'Venda rápida' : ''}
       primaryCta={
         data?.orderId ? (
           <Button type="button" variant="neutralOutline" asChild>

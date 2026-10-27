@@ -491,16 +491,14 @@ export function PDV() {
                                   onClick={() => setPrinting(sale.quotationId)}
                                 />
                               )}
-                              {canBill &&
-                                sale.kind === 'QUICK' &&
-                                sale.paid === 0 && (
-                                  <ActionButton
-                                    gesto="faturar"
-                                    variant="neutralGhost"
-                                    tooltip="Faturar para o cliente"
-                                    onClick={() => setBillingSale(sale)}
-                                  />
-                                )}
+                              {canBill && sale.paid === 0 && (
+                                <ActionButton
+                                  gesto="faturar"
+                                  variant="neutralGhost"
+                                  tooltip="Faturar para o cliente"
+                                  onClick={() => setBillingSale(sale)}
+                                />
+                              )}
                             </PermissionGate>
                             {/* Cancelar a venda paga é restrito (FC-15):
                                 a permissão de excluir */}

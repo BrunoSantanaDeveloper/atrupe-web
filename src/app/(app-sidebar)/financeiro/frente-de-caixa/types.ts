@@ -62,9 +62,10 @@ export type CashMovement = {
   parts: PaymentPart[]
 }
 
-// A venda esperando o caixa. O tipo decide o caminho (FC-12.1): a venda
-// rápida sempre passa pelo caixa; o orçamento normal com forma de pagamento
-// definida vai direto ao fluxo financeiro e não passa por aqui
+// A venda esperando o caixa. Desde 26/10/2026 quem a manda para cá é a série
+// de venda ("Faturar na frente de caixa", VR-5): o tipo só diz se nasceu
+// como venda rápida ou como orçamento comum. O orçamento com série que
+// fatura no pedido vai direto ao fluxo financeiro e não passa por aqui
 export type SaleKind = 'QUICK' | 'QUOTATION'
 
 export type PendingSale = {
@@ -96,9 +97,9 @@ export type PendingSale = {
   phone?: string
 }
 
-// A venda rápida vista do lado do vendedor, depois de sair do orçamento.
-// Os dois caminhos da VR-5: cobrada na hora, pelo próprio vendedor, ou
-// enviada à frente de caixa, onde quem recebe é o caixa
+// A venda vista do lado do vendedor, depois de sair do orçamento. Os dois
+// caminhos da VR-5: cobrada na hora, pelo próprio vendedor, ou enviada à
+// frente de caixa, onde quem recebe é o caixa
 export type QuickSalePath = 'CASH_ONLY' | 'POS'
 
 export type QuickSaleCheckout = {
