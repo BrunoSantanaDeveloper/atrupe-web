@@ -714,12 +714,10 @@ function NewProductModal({
                                   Quantidade mínima
                                 </h4>
                                 <p className="text-sm text-gray">
-                                  Abaixo dela, o item é cobrado pela quantidade
-                                  mínima: a R$ 100,00 o m² com mínimo de 0,5 m²,
-                                  o item sai por R$ 50,00. A medida digitada
-                                  permanece, e o total aparece em vermelho
-                                  apontando o mínimo. Por unidade, o item já
-                                  nasce com essa quantidade.
+                                  {minimumExample(
+                                    (watch('items.0.unitKind') as UnitKind) ||
+                                      'UNITY',
+                                  )}
                                 </p>
                               </div>
                               <FormInput
@@ -998,6 +996,27 @@ function NewProductModal({
 }
 
 export const NewProduct = React.memo(NewProductModal)
+
+// O exemplo da quantidade mínima acompanha a unidade comercial (27/10/2026)
+const minimumExample = (unitKind: UnitKind) => {
+  switch (unitKind) {
+    case 'AREA':
+      return 'Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 100,00 o m² com mínimo de 0,5 m², o item sai por R$ 50,00 mesmo com 0,2 m² de arte. A medida digitada permanece, e a área total aparece em vermelho apontando o mínimo.'
+    case 'LENGTH':
+      return 'Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 20,00 o metro com mínimo de 0,5 m, o item sai por R$ 10,00 mesmo com 0,3 m. A medida digitada permanece, e o total aponta o mínimo em vermelho.'
+    case 'WEIGHT':
+      return 'Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 40,00 o quilo com mínimo de 0,5 kg, o item sai por R$ 20,00 mesmo com 0,2 kg. O peso digitado permanece, e o total aponta o mínimo em vermelho.'
+    case 'CAPACITY':
+      return 'Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 30,00 o litro com mínimo de 0,5 l, o item sai por R$ 15,00 mesmo com 0,2 l. A quantidade digitada permanece, e o total aponta o mínimo em vermelho.'
+    case 'DISTANCE':
+      return 'Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 5,00 o quilômetro com mínimo de 10 km, o item sai por R$ 50,00 mesmo com 4 km. A distância digitada permanece, e o total aponta o mínimo em vermelho.'
+    case 'DURATION':
+      return 'Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 80,00 a hora com mínimo de 1 h, o item sai por R$ 80,00 mesmo com 30 minutos. O tempo digitado permanece, e o total aponta o mínimo em vermelho.'
+    case 'UNITY':
+    default:
+      return 'O item já nasce com essa quantidade no orçamento e, abaixo dela, é cobrado pela quantidade mínima: a R$ 1,00 a unidade com mínimo de 100 un, o item sai por R$ 100,00 mesmo com 50 pedidas. A quantidade digitada permanece, e o total aponta o mínimo em vermelho.'
+  }
+}
 
 export function NewProductTriggerButton({
   editMode,
