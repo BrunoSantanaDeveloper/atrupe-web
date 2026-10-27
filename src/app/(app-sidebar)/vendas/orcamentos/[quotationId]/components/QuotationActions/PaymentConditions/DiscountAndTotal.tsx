@@ -13,6 +13,7 @@ import { calculatePercentCommission } from './utils'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
+import { discountOverBase } from '@/lib/discountLimit'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
@@ -43,41 +44,13 @@ export function DiscountAndTotal({
   const downPaymentAdditionalFee = watch('downPayment.additionalFee') || 0
 
   // Calcular o valor original sem nenhum desconto (soma dos totalValue dos produtos).
-  // A base no preço do cadastro (EC-2) volta quando a API devolver o preço base
-  // na escala do item (ALT-8): o originalValue de hoje é o preço do cadastro na
-  // medida padrão e acusava desconto que não existe (CV-1).
-  const originalValue =
-    quotationData?.quotationItems?.reduce(
-      (sum, item) => sum + (item?.totalValue || 0),
-      0,
-    ) || 0
-
-  // Calcular o desconto total dos itens. O acréscimo e as linhas do item já
-  // estão no finalValue e não são desconto (ALT-25, ORC-5): a conta é a mesma
-  // da janela Valores, senão um item com linhas acrescentadas some do limite
-  const itemsDiscountTotal =
-    quotationData?.quotationItems?.reduce((sum, item) => {
-      const itemDiscount =
-        (item?.totalValue || 0) +
-        (item?.addition || 0) +
-        (item?.linesTotal || 0) -
-        (item?.finalValue || 0)
-      return sum + Math.max(itemDiscount, 0)
-    }, 0) || 0
-
-  // Desconto total combinado (itens + desconto geral)
-  const combinedDiscountTotal = itemsDiscountTotal + discountTotal
-
-  // Calcular o percentual de desconto total.
-  // Arredondado como no checkout do backend: sem isso, 10% de 1.163,73 vira
-  // 10.000000000000002 e o aviso acusa estouro de um limite de exatos 10%.
-  const totalDiscountPercentage =
-    originalValue > 0
-      ? Math.round(
-          ((combinedDiscountTotal / originalValue) * 100 + Number.EPSILON) *
-            100,
-        ) / 100
-      : 0
+  // O limite mede o orçamento inteiro contra o preço base do cadastro
+  // (ALT-8, a mesma conta da janela Valores): os itens abaixo da base mais o
+  // desconto geral; o acréscimo e as linhas ficam fora (ALT-25, ORC-5)
+  const { percentage: totalDiscountPercentage } = discountOverBase(
+    quotationData?.quotationItems ?? [],
+    discountTotal,
+  )
 
   // Limite máximo de desconto do vendedor
   const maxDiscount = quotationData?.seller?.maxDiscount

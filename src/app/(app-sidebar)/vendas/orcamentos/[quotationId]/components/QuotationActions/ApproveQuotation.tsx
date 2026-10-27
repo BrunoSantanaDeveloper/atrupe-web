@@ -11,6 +11,7 @@
 // a recusa vem com o motivo (sem valores).
 
 // React
+import { useClientBlocked } from '../useClientBlocked'
 import { useState } from 'react'
 import { useRouter } from '@/hooks/useRouter'
 
@@ -82,6 +83,7 @@ export function ApproveQuotation({ data }: Props) {
   const { data: session } = useSession()
 
   const isAdmin = session?.user?.isAdmin
+  const blocked = useClientBlocked(data)
 
   const hasInstallments = data?.paymentConditions?.installmentQty > 0
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
@@ -99,6 +101,15 @@ export function ApproveQuotation({ data }: Props) {
       }))
 
   const handleTriggerClick = () => {
+    // Bloqueado no limite de crédito: nunca aprova (decisão de 24/10/2026),
+    // mesmo antes da data em que o servidor passa a recusar
+    if (blocked) {
+      setCreditMessage(
+        'Este cliente está bloqueado no cadastro. Quem pode desbloquear faz isso na aba Limite de crédito do cliente.',
+      )
+      setOpenBlocked('credit')
+      return
+    }
     setRefused([])
     if (inactiveItems.length) {
       setOpenBlocked('inactive')

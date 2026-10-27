@@ -42,7 +42,6 @@ import { useQuickSaleEnabled } from '@/hooks/queries/useQuickSaleEnabled'
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
 import { getMainNavigation, userRoleObj } from '@/consts/nav'
-import { reviewTextClass, REVIEW_LEGEND, REVIEW_MARKS } from '@/consts/revisao'
 
 // Third-party
 import { setCookie } from 'cookies-next'
@@ -338,7 +337,6 @@ export function SidebarComponent(props: Props) {
                                     currentPath.includes(`${item?.path}`) &&
                                       'text-brand',
                                     collapsed && 'opacity-0',
-                                    reviewTextClass(item?.review),
                                   )}
                                 >
                                   {item?.title}
@@ -420,7 +418,6 @@ export function SidebarComponent(props: Props) {
                                 className={cn(
                                   'text-gray-700 text-sm font-semibold transition-all ease-out duration-slow',
                                   collapsed && 'opacity-0',
-                                  reviewTextClass(item?.review),
                                 )}
                               >
                                 {item?.title}
@@ -498,7 +495,6 @@ export function SidebarComponent(props: Props) {
                                                 : 'mr-0',
                                               navChild?.action &&
                                                 'font-semibold text-gray-600',
-                                              reviewTextClass(navChild?.review),
                                             )}
                                           >
                                             {navChild?.title}
@@ -556,24 +552,12 @@ export function SidebarComponent(props: Props) {
             </nav>
           </ScrollArea>
 
-          {(process.env.NODE_ENV === 'development' || REVIEW_MARKS) && (
+          {process.env.NODE_ENV === 'development' && (
             <div className="border-t border-gray-200 p-4">
               {process.env.NODE_ENV === 'development' && (
                 <p className="text-xs text-gray-500">
                   Plano: {session.company.plan?.name}
                 </p>
-              )}
-              {/* Legenda da revisão: só com as marcas ligadas
-                  (NEXT_PUBLIC_REVIEW_MARKS, src/consts/revisao.ts) */}
-              {REVIEW_MARKS && !collapsed && (
-                <div className="mt-2 space-y-0.5">
-                  <p className="text-xs text-blue-600">
-                    azul · {REVIEW_LEGEND.new}
-                  </p>
-                  <p className="text-xs text-error-600">
-                    vermelho · {REVIEW_LEGEND.todo}
-                  </p>
-                </div>
               )}
             </div>
           )}

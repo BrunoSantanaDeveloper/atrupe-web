@@ -108,7 +108,6 @@ export function InvoiceEntry() {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title="Entrada de nota"
           previousPage="/estoque"
           supportText="Cada item da nota vira material interno, com a conversão da unidade"

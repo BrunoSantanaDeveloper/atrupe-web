@@ -31,6 +31,45 @@ export function SalesSettingsClient() {
     {
       category: 'Vendas',
       items: [
+        // Primeiro o que todo plano tem (START), do mais usado ao menos;
+        // depois o que entra no LITE (decisão do produto, 24/10/2026)
+        {
+          title: 'Séries de venda',
+          icon: IconTransactionDollar,
+          description: 'Defina os padrões básicos de vendas.',
+          link: `${defaultPath}/series-de-venda`,
+          permission: 'sales_settings:series:view',
+        },
+        {
+          title: 'Perfil de vendedor',
+          icon: IconUserCircle,
+          description: 'Gerencie os vendedores, suas comissões e permissões.',
+          link: `${defaultPath}/perfil-de-vendedor`,
+          permission: 'sales_settings:seller_profile:view',
+        },
+        {
+          title: 'Origens de contato',
+          icon: IconRoute,
+          description: 'Gerencie as origens de onde seus clientes chegam.',
+          link: `${defaultPath}/origens-de-contato`,
+          permission: 'sales_settings:contact_sources:view',
+        },
+        // O acréscimo sobre o custo do terceirizado avulso (MS-16, T-4),
+        // já no START (T-5), junto do "Acrescentar a este item". A
+        // composição também o tem (LITE antes da chave nova na API)
+        ...(hasFeature(FEATURES.SALES.OUTSOURCED_ITEM) ||
+        hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+          ? [
+              {
+                title: 'Terceirizado avulso',
+                icon: IconTruckDelivery,
+                description:
+                  'Defina o acréscimo sobre o custo do terceirizado lançado na hora.',
+                link: `${defaultPath}/terceirizados`,
+                permission: 'sales_settings:series:view',
+              },
+            ]
+          : []),
         // Recurso do LITE: a venda de balcão, sem cadastro (área 12, VR-4)
         ...(hasFeature(FEATURES.SALES.QUOTATION_QUICK_SALE)
           ? [
@@ -44,41 +83,17 @@ export function SalesSettingsClient() {
               },
             ]
           : []),
-        {
-          title: 'Séries de venda',
-          icon: IconTransactionDollar,
-          description: 'Defina os padrões básicos de vendas.',
-          link: `${defaultPath}/series-de-venda`,
-          permission: 'sales_settings:series:view',
-        },
-        // O markup padrão do terceirizado avulso (MS-16, T-4), do LITE em
-        // diante, junto do "Acrescentar a este item" (API desde a Fase 4.2)
-        ...(hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+        ...(canManageBudgetStatus()
           ? [
               {
-                title: 'Terceirizado avulso',
-                icon: IconTruckDelivery,
-                description:
-                  'Defina o markup padrão aplicado ao custo do terceirizado lançado na hora.',
-                link: `${defaultPath}/terceirizados`,
-                permission: 'sales_settings:series:view',
+                title: 'Status de orçamento',
+                icon: IconStatusChange,
+                description: 'Defina status para acompanhamento das propostas.',
+                link: `${defaultPath}/status-de-orcamento`,
+                permission: 'sales_settings:quotation_status:view',
               },
             ]
           : []),
-        {
-          title: 'Origens de contato',
-          icon: IconRoute,
-          description: 'Gerencie as origens de onde seus clientes chegam.',
-          link: `${defaultPath}/origens-de-contato`,
-          permission: 'sales_settings:contact_sources:view',
-        },
-        {
-          title: 'Perfil de vendedor',
-          icon: IconUserCircle,
-          description: 'Gerencie os vendedores, suas comissões e permissões.',
-          link: `${defaultPath}/perfil-de-vendedor`,
-          permission: 'sales_settings:seller_profile:view',
-        },
         ...(canManageRejectionReasons()
           ? [
               {
@@ -88,17 +103,6 @@ export function SalesSettingsClient() {
                   'Defina motivos para mapear rejeições e cancelamentos.',
                 link: `${defaultPath}/motivos-de-rejeicao-e-cancelamento`,
                 permission: 'sales_settings:rejection_reasons:view',
-              },
-            ]
-          : []),
-        ...(canManageBudgetStatus()
-          ? [
-              {
-                title: 'Status de orçamento',
-                icon: IconStatusChange,
-                description: 'Defina status para acompanhamento das propostas.',
-                link: `${defaultPath}/status-de-orcamento`,
-                permission: 'sales_settings:quotation_status:view',
               },
             ]
           : []),

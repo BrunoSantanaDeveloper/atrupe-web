@@ -258,7 +258,6 @@ export function BankAccounts(_: SearchParamsType) {
       <TooltipProvider>
         <div className="space-y-5">
           <Topbar
-            review="new"
             title="Contas bancárias"
             supportText="Onde o dinheiro da empresa fica"
             previousPage="/configuracoes/financeiro"
@@ -357,7 +356,6 @@ export function BankAccounts(_: SearchParamsType) {
           <AccountDialog
             open={dialogOpen}
             account={editing}
-            accounts={accounts}
             methods={methods}
             onOpenChange={setDialogOpen}
             onSaved={refresh}

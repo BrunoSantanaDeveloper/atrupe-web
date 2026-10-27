@@ -1,6 +1,6 @@
 // Components
 import { SubscriptionManagementClient } from './components/SubscriptionManagementClient'
-import { PermissionGate } from '@/components/common/PermissionGate'
+import { AdminGate } from '@/components/common/AdminGate'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -13,8 +13,8 @@ export function metadata() {
 
 export default function Page({ searchParams }: SearchParamsType) {
   return (
-    <PermissionGate
-      permissions={['company_settings:subscription:view']}
+    // Só o administrador da empresa: não se concede pela tela de cargos
+    <AdminGate
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar a assinatura.
@@ -22,6 +22,6 @@ export default function Page({ searchParams }: SearchParamsType) {
       }
     >
       <SubscriptionManagementClient searchParams={searchParams} />
-    </PermissionGate>
+    </AdminGate>
   )
 }

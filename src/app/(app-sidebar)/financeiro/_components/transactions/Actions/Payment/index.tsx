@@ -22,8 +22,7 @@ import { Separator } from '@/components/ui/separator'
 import { PrintReceiptButton } from '../PrintReceiptButton'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
-import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
-import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
+import { FormSelect } from '@/components/common/form/FormSelect'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
 import { AvailablePaymentConditionsSelectField } from '@/components/common/form/global-inputs/AvailablePaymentConditionsSelectField'
 import { SelectTransactionCategoryField } from '@/components/common/form/global-inputs/TransactionCategorySelectField'
@@ -34,7 +33,7 @@ import { schema, type FormType } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Third-party
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import { IconCircleCheck, IconCornerRightDown } from '@tabler/icons-react'
@@ -47,16 +46,16 @@ import type {
 
 // Actions
 import { updateItemNew } from '@/actions/_cruds'
+import { getBankAccounts } from '@/actions/cash-accounts'
 
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
-import { useBankAccount } from '@/hooks/queries/useBankAccount'
-import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
 // Lib
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { accountsForMethod } from '@/lib/accountsForMethod'
 
 interface Props {
   open: boolean
@@ -87,22 +86,31 @@ export function PaymentDialog({
 
   const alertDialog = useAlertDialog()
 
-  const { canCreatePaymentDifference, canCreateBankAccount } = usePlanFeatures()
+  const { canCreatePaymentDifference } = usePlanFeatures()
   const { notifyActionError } = usePlanErrorToast()
 
   const paymentConditionId = watch('paymentConditionId') || ''
-  const bankId = watch('bankId') || ''
   const bankAccountId = watch('bankAccountId') || ''
   const totalValue = watch('totalValue') || 0
   const amount = watch('amount') || 0
   const differenceNatureId = watch('differenceNatureId') || ''
 
-  const { data: banks } = useBankFilterCondition(paymentConditionId)
-
-  const { data: bankAccounts } = useBankAccount({
-    filters: { bankId },
-    isBankRequired: true,
+  // Depois da forma de pagamento, só as contas ativas que recebem (ou pagam)
+  // nela; a primeira vem escolhida (regra em lib/accountsForMethod)
+  const { data: accountsRes } = useQuery({
+    queryKey: ['bank-accounts-for-payment'],
+    queryFn: () => getBankAccounts(),
+    enabled: open,
   })
+  const accountOptions = useMemo(
+    () =>
+      accountsForMethod(
+        accountsRes?.data ?? [],
+        paymentConditionId,
+        type ?? 'receivable',
+      ),
+    [accountsRes, paymentConditionId, type],
+  )
 
   // Calcula a diferença entre valor pago e valor original
   const difference = useMemo(() => {
@@ -130,7 +138,6 @@ export function PaymentDialog({
       reset({
         paidDate: new Date(),
         paymentConditionId: rowData?.paymentCondition?.id || '',
-        bankId: rowData?.bank?.id || rowData?.bankAccount?.bank?.id,
         bankAccountId: rowData?.bankAccount?.id,
         totalValue: rowData?.value || 0,
         amount: rowData?.value || 0,
@@ -138,56 +145,29 @@ export function PaymentDialog({
         differenceCategoryId: '',
       })
 
-      // Sistema de retry para definir bankAccountId
-      const setBankAccountWithRetry = (delay: number) => {
-        setTimeout(() => {
-          const formBankAccountId = watch('bankAccountId')
-
-          if (!formBankAccountId && rowData?.bankAccount?.id) {
-            setValue('bankAccountId', rowData.bankAccount.id)
-            // Se ainda não definiu, tenta novamente após 200ms
-            setBankAccountWithRetry(200)
-          }
-        }, delay)
-      }
-
-      // Inicia com 100ms
-      setBankAccountWithRetry(100)
-
       // Reset do ref quando modal abre
       previousDifferenceTypeRef.current = null
     }
-  }, [open, rowData, reset, setValue, watch])
+  }, [open, rowData, reset])
 
-  // Só atribui o primeiro banco se NÃO havia valor inicial no rowData
+  // A conta acompanha a forma: a que já estava vale se a forma a aceita;
+  // senão entra a primeira da regra (ou nenhuma, se nenhuma conta aceita)
   useEffect(() => {
-    const initialBankId = rowData?.bank?.id || rowData?.bankAccount?.bank?.id
+    if (!accountsRes) return
+    if (accountOptions.some((account) => account.id === bankAccountId)) return
+    setValue('bankAccountId', accountOptions[0]?.id ?? '', {
+      shouldValidate: !!bankAccountId,
+    })
+  }, [accountsRes, accountOptions, bankAccountId, setValue])
 
-    if (
-      banks &&
-      banks.length > 0 &&
-      paymentConditionId &&
-      !bankId &&
-      !initialBankId
-    ) {
-      setValue('bankId', banks[0].id)
-    }
-  }, [banks, paymentConditionId, setValue, bankId, rowData])
-
-  // Só atribui a primeira conta se NÃO havia valor inicial no rowData
+  // O banco só acompanha a conta escolhida: um banco pode ter mais de uma
+  // conta, então ele aparece travado, para manter o desenho de sempre
+  const chosenBank =
+    accountOptions.find((account) => account.id === bankAccountId)?.bankName ??
+    ''
   useEffect(() => {
-    const initialBankAccountId = rowData?.bankAccount?.id
-
-    if (
-      bankAccounts &&
-      bankAccounts.length > 0 &&
-      bankId &&
-      !bankAccountId &&
-      !initialBankAccountId
-    ) {
-      setValue('bankAccountId', bankAccounts[0].id)
-    }
-  }, [bankAccounts, bankId, setValue, bankAccountId, rowData])
+    setValue('bankId', chosenBank)
+  }, [chosenBank, setValue])
 
   // Limpa a categoria quando a natureza é alterada
   useEffect(() => {
@@ -322,21 +302,38 @@ export function PaymentDialog({
                 width="flex-[1_0_250px]"
                 type={type}
               />
-              <SelectBankFilterConditionField
+              <FormSelect
                 name="bankId"
                 label="Banco"
                 width="flex-[1_0_250px]"
-                conditionId={watch('paymentConditionId')}
-                disabled={
-                  !watch('paymentConditionId') || !canCreateBankAccount()
+                placeholder="—"
+                options={
+                  chosenBank ? [{ value: chosenBank, label: chosenBank }] : []
                 }
+                disabled
               />
-              <SelectBankAccountField
+              {/* Uma conta só aceita a forma: ela já vem e o campo fica travado */}
+              <FormSelect
                 name="bankAccountId"
                 label="Conta"
                 width="flex-[1_0_250px]"
-                bankId={watch('bankId')}
-                disabled={!watch('bankId') || !canCreateBankAccount()}
+                placeholder={
+                  !paymentConditionId
+                    ? 'Escolha a forma de pagamento'
+                    : type === 'payable'
+                      ? 'Nenhuma conta paga nesta forma'
+                      : 'Nenhuma conta recebe nesta forma'
+                }
+                emptyMessage={
+                  type === 'payable'
+                    ? 'Nenhuma conta paga nesta forma'
+                    : 'Nenhuma conta recebe nesta forma'
+                }
+                options={accountOptions.map((account) => ({
+                  value: account.id,
+                  label: account.name,
+                }))}
+                disabled={accountOptions.length <= 1}
               />
               <FormBrlInput
                 name="totalValue"

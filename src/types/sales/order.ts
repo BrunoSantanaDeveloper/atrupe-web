@@ -45,6 +45,8 @@ export type NfseType = {
 export type OrderType = {
   id: string
   status: string
+  // Motivo do cancelamento, quando a venda foi cancelada com um (CRM fase 1)
+  cancelReason?: { id: string; reason: string } | null
   quotation: QuotationType
   nfes?: NfeType[]
   nfces?: NfceType[]

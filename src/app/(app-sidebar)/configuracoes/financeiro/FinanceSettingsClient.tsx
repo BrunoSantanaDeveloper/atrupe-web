@@ -29,20 +29,21 @@ export function FinanceSettingsClient() {
     {
       category: 'Financeiro',
       items: [
+        // As formas vêm antes das contas: a conta marca o que recebe e paga
+        // entre as formas já cadastradas (decisão de 24/10/2026)
+        {
+          title: 'Condições de pagamento',
+          icon: IconCreditCardPay,
+          description: 'Cadastre as condições de pagamento da sua empresa',
+          link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
+          permission: 'financial_settings:payment_methods:view',
+        },
         {
           title: 'Bancos e contas',
           icon: IconBuildingBank,
           description: 'Cadastre as contas bancárias da sua empresa',
           link: `${defaultPath}/contas-bancarias`,
           permission: 'financial_settings:bank_accounts:view',
-          review: 'todo',
-        },
-        {
-          title: 'Pagamentos',
-          icon: IconCreditCardPay,
-          description: 'Cadastre as condições de pagamento da sua empresa',
-          link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
-          permission: 'financial_settings:payment_methods:view',
         },
         {
           title: 'Plano de contas',
@@ -67,7 +68,7 @@ export function FinanceSettingsClient() {
         ...(hasFinancialModule('credit_limit')
           ? [
               {
-                title: 'Limite de crédito',
+                title: 'Limite de crédito padrão',
                 icon: IconFoldUp,
                 description:
                   'Defina o padrão de limite de crédito para os clientes',

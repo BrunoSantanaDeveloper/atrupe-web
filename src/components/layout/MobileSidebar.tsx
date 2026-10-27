@@ -30,7 +30,6 @@ import favicon from '@public/logo/logo.png'
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
 import { getMainNavigation, userRoleObj } from '@/consts/nav'
-import { reviewTextClass } from '@/consts/revisao'
 
 // Icons
 import { IconComponent } from '../common/Icon'
@@ -280,7 +279,6 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                             'text-sm font-semibold text-gray-700',
                             pathname.includes(`${item?.path}`) &&
                               'text-brand-600',
-                            reviewTextClass(item?.review),
                           )}
                         >
                           {item?.title}
@@ -327,10 +325,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                         className="text-gray-600"
                       />
                       <span
-                        className={cn(
-                          'text-sm font-semibold text-gray-700',
-                          reviewTextClass(item?.review),
-                        )}
+                        className={cn('text-sm font-semibold text-gray-700')}
                       >
                         {item?.title}
                       </span>
@@ -374,7 +369,6 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                                     'text-sm font-medium',
                                     navChild?.action &&
                                       'font-semibold text-gray-600',
-                                    reviewTextClass(navChild?.review),
                                   )}
                                 >
                                   {navChild?.title}

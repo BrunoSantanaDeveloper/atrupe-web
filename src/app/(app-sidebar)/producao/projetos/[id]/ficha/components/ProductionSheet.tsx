@@ -63,7 +63,6 @@ export function ProductionSheet({ id }: { id: string }) {
     <div className="space-y-5">
       <div className="print:hidden">
         <Topbar
-          review="new"
           title="Ficha de produção"
           previousPage={`/producao/projetos/${id}`}
           supportText={`${project.number} · ${project.client}`}

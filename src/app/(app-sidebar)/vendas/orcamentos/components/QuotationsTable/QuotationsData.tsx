@@ -44,8 +44,9 @@ import type {
 import { getData, deleteItemNew } from '@/actions/_cruds'
 
 // Libs
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
+import { nextContactLabel, nextContactState } from '@/lib/nextContact'
 
 // Third-party
 import {
@@ -102,6 +103,9 @@ export function QuotationsData({
   // quotation_status_column no painel não mudava a lista.
   const showStatusColumn = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
   const isAllTab = searchParams?.status === 'todos'
+  // "Para retomar" (CRM fase 1): em negociação, com próximo contato para hoje
+  // ou atrasado. Mostra a fase e a data do contato no lugar da conclusão
+  const isResumeTab = searchParams?.status === 'retomar'
   const { hasAllPermissions } = usePermissions()
   const canViewValues = hasAllPermissions(['values:values:view'])
 
@@ -109,7 +113,11 @@ export function QuotationsData({
   // `novo` é da tela, não da consulta: ele liga a venda rápida (ALT-22). A API
   // recusa propriedade que não conhece e devolve 400, derrubando a lista
   const { novo: _novo, ...listParams } = searchParams
-  const filters = { ...listParams, status }
+  const filters = {
+    ...listParams,
+    status,
+    ...(isResumeTab ? { nextContact: 'due' } : {}),
+  }
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
@@ -128,7 +136,10 @@ export function QuotationsData({
   const hasData = quotationArray.length
   // Mesmas colunas condicionais do cabeçalho real
   const skeletonCols =
-    5 + Number(canViewValues) + Number(isAllTab) + Number(showStatusColumn)
+    5 +
+    Number(canViewValues) +
+    Number(isAllTab || isResumeTab) +
+    Number(showStatusColumn)
 
   const openQuotations = quotationArray
     .flatMap((group) => group.quotations || [])
@@ -219,9 +230,13 @@ export function QuotationsData({
                     <PermissionGate permissions={['values:values:view']}>
                       <TableHead>Valor</TableHead>
                     </PermissionGate>
-                    {isAllTab && <TableHead>Fase atual</TableHead>}
+                    {(isAllTab || isResumeTab) && (
+                      <TableHead>Fase atual</TableHead>
+                    )}
                     {showStatusColumn && <TableHead>Status</TableHead>}
-                    <TableHead>Concluído em</TableHead>
+                    <TableHead>
+                      {isResumeTab ? 'Próximo contato' : 'Concluído em'}
+                    </TableHead>
                     <TableHead>Válido até</TableHead>
                     <TableHead></TableHead>
                   </TableRow>
@@ -234,7 +249,12 @@ export function QuotationsData({
                       <Fragment key={group.date}>
                         <TableRow className="bg-gray-100">
                           <TableCell
-                            colSpan={showStatusColumn ? 8 : 7}
+                            colSpan={
+                              6 +
+                              Number(canViewValues) +
+                              Number(isAllTab || isResumeTab) +
+                              Number(showStatusColumn)
+                            }
                             className="text-gray font-medium text-xs py-3"
                           >
                             {formatToWeekDate(group?.date)}
@@ -314,6 +334,13 @@ export function QuotationsData({
                                         )}
                                       </Link>
                                     </PermissionGate>
+                                    {quotation?.status === 'REJECTED' &&
+                                    quotation?.rejectionReason ? (
+                                      <p className="text-xs text-error-700">
+                                        Motivo:{' '}
+                                        {quotation.rejectionReason.reason}
+                                      </p>
+                                    ) : null}
                                   </TableCell>
                                   <PermissionGate
                                     permissions={['values:values:view']}
@@ -360,7 +387,7 @@ export function QuotationsData({
                                       )}
                                     </TableCell>
                                   </PermissionGate>
-                                  {isAllTab && (
+                                  {(isAllTab || isResumeTab) && (
                                     <TableCell>
                                       {quotation?.status ? (
                                         <Badge
@@ -388,9 +415,17 @@ export function QuotationsData({
                                       />
                                     </TableCell>
                                   )}
-                                  <TableCell className="text-gray-600">
-                                    {formatToLocaleDate(quotation?.finishedAt)}
-                                  </TableCell>
+                                  {isResumeTab ? (
+                                    <TableCell className="text-gray-600">
+                                      <NextContactCell quotation={quotation} />
+                                    </TableCell>
+                                  ) : (
+                                    <TableCell className="text-gray-600">
+                                      {formatToLocaleDate(
+                                        quotation?.finishedAt,
+                                      )}
+                                    </TableCell>
+                                  )}
                                   <TableCell className="text-gray-600">
                                     {formatToLocaleDate(quotation?.dueDate)}
                                   </TableCell>
@@ -517,5 +552,31 @@ function QuickSaleBadge() {
       <Icon icon={IconBolt} size="sm" />
       Venda rápida
     </Badge>
+  )
+}
+
+// Data do próximo contato na aba "Para retomar": atrasado em vermelho, hoje
+// em destaque, e o lembrete logo abaixo
+function NextContactCell({ quotation }: { quotation: QuotationType }) {
+  const state = nextContactState(quotation?.nextContactAt)
+  if (!state) return <>-</>
+  return (
+    <div className="space-y-0.5">
+      <p
+        className={cn(
+          'text-nowrap',
+          state === 'overdue' && 'text-error-700 font-medium',
+          state === 'today' && 'text-gray-900 font-medium',
+        )}
+      >
+        {formatToLocaleDate(quotation?.nextContactAt ?? undefined)}
+        {state !== 'upcoming' ? ` · ${nextContactLabel[state]}` : ''}
+      </p>
+      {quotation?.nextContactNote ? (
+        <p className="text-xs text-gray max-w-[260px] truncate">
+          {quotation.nextContactNote}
+        </p>
+      ) : null}
+    </div>
   )
 }

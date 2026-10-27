@@ -233,6 +233,17 @@ export function ClientsData({ searchParams, tabs }: Props) {
                         >
                           {clientStatusObj[client?.status]?.text}
                         </Badge>
+                        {/* Bloqueado no limite de crédito: não aprova venda
+                            nem gera cobrança (decisão de 24/10/2026) */}
+                        {client?.blockClient && (
+                          <Badge
+                            status
+                            variant="errorLight"
+                            className="ml-1 text-nowrap"
+                          >
+                            Bloqueado
+                          </Badge>
+                        )}
                         {showResponsible && (
                           <p className="mt-1 text-sm text-gray italic">
                             {client?.responsible?.name || 'Sem responsável'}

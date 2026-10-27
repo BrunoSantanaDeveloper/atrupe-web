@@ -27,8 +27,6 @@ import { HelpButton } from './HelpButton'
 import { useHelpData } from '@/hooks/queries/useHelpData'
 
 // Revisão (temporário)
-import { reviewTextClass } from '@/consts/revisao'
-import type { ReviewMarkKind } from '@/consts/revisao'
 
 export type TabNavType = {
   value: string
@@ -51,7 +49,6 @@ interface Props {
   classNames?: { title?: string; label?: string }
   // Marcação temporária da revisão: 'new' pinta o título de azul,
   // 'todo' de vermelho. Sai junto com src/consts/revisao.ts
-  review?: ReviewMarkKind
   // Contadores das abas ainda carregando: reserva o lugar do número
   countsLoading?: boolean
 }
@@ -68,7 +65,6 @@ export function Topbar({
   badge,
   supportText,
   classNames,
-  review,
   countsLoading,
 }: Props) {
   const { helpData } = useHelpData()
@@ -108,13 +104,7 @@ export function Topbar({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               {title ? (
-                <h1
-                  className={cn(
-                    'type-page-title',
-                    classNames?.title,
-                    reviewTextClass(review),
-                  )}
-                >
+                <h1 className={cn('type-page-title', classNames?.title)}>
                   {title}
                 </h1>
               ) : (

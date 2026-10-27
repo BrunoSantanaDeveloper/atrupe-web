@@ -55,6 +55,9 @@ function QuotationTag({ quotation, tagsList }: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
       queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+      // O card Acompanhamento do orçamento e as contagens do filtro
+      queryClient.invalidateQueries({ queryKey: ['quotation-data'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-status-select'] })
     },
   })
 

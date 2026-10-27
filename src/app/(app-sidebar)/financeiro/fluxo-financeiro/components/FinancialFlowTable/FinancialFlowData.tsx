@@ -344,6 +344,72 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                   <TableCell>
                                     <div className="flex justify-end gap-1">
                                       <TooltipProvider>
+                                        {/* A baixa é a ação mais usada: vem primeiro, para não
+                                            sair da tela quando a tabela é larga */}
+                                        <PermissionGate
+                                          permissions={[
+                                            'financial:flow:edit',
+                                            item?.type === 'receivable'
+                                              ? 'financial:receivable:edit'
+                                              : 'financial:payable:edit',
+                                          ]}
+                                        >
+                                          <ActionButton
+                                            Icon={
+                                              transactionStatus[
+                                                currentInstallment?.status ||
+                                                  'UNKNOWN'
+                                              ]?.icon
+                                            }
+                                            tooltip={
+                                              transactionStatus[
+                                                currentInstallment?.status ||
+                                                  'UNKNOWN'
+                                              ]?.tooltip
+                                            }
+                                            variant={
+                                              transactionStatus[
+                                                currentInstallment?.status ||
+                                                  'UNKNOWN'
+                                              ]?.button
+                                            }
+                                            onClick={() => {
+                                              if (
+                                                currentInstallment?.status ===
+                                                'CANCELED'
+                                              )
+                                                return
+
+                                              setRowData(item)
+                                              setInstallment(currentInstallment)
+
+                                              switch (
+                                                currentInstallment?.status
+                                              ) {
+                                                case 'PENDING':
+                                                  setOpenDialog('payment')
+                                                  break
+                                                case 'PROVISIONED':
+                                                  setOpenDialog('compensate')
+                                                  break
+                                                case 'PAID':
+                                                  setOpenDialog('view')
+                                                  break
+                                                case 'OVERDUE':
+                                                  setOpenDialog('payment')
+                                                  break
+                                                default:
+                                                  setOpenDialog('')
+                                                  break
+                                              }
+                                            }}
+                                            disabled={
+                                              item?.status === 'CANCELED'
+                                            }
+                                            isLoading={isLoadingPayment}
+                                          />
+                                        </PermissionGate>
+
                                         <PermissionGate
                                           permissions={['financial:flow:view']}
                                         >
@@ -413,70 +479,6 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                               setRowData(item)
                                               setOpenDialog('history')
                                             }}
-                                          />
-                                        </PermissionGate>
-
-                                        <PermissionGate
-                                          permissions={[
-                                            'financial:flow:edit',
-                                            item?.type === 'receivable'
-                                              ? 'financial:receivable:edit'
-                                              : 'financial:payable:edit',
-                                          ]}
-                                        >
-                                          <ActionButton
-                                            Icon={
-                                              transactionStatus[
-                                                currentInstallment?.status ||
-                                                  'UNKNOWN'
-                                              ]?.icon
-                                            }
-                                            tooltip={
-                                              transactionStatus[
-                                                currentInstallment?.status ||
-                                                  'UNKNOWN'
-                                              ]?.tooltip
-                                            }
-                                            variant={
-                                              transactionStatus[
-                                                currentInstallment?.status ||
-                                                  'UNKNOWN'
-                                              ]?.button
-                                            }
-                                            onClick={() => {
-                                              if (
-                                                currentInstallment?.status ===
-                                                'CANCELED'
-                                              )
-                                                return
-
-                                              setRowData(item)
-                                              setInstallment(currentInstallment)
-
-                                              switch (
-                                                currentInstallment?.status
-                                              ) {
-                                                case 'PENDING':
-                                                  setOpenDialog('payment')
-                                                  break
-                                                case 'PROVISIONED':
-                                                  setOpenDialog('compensate')
-                                                  break
-                                                case 'PAID':
-                                                  setOpenDialog('view')
-                                                  break
-                                                case 'OVERDUE':
-                                                  setOpenDialog('payment')
-                                                  break
-                                                default:
-                                                  setOpenDialog('')
-                                                  break
-                                              }
-                                            }}
-                                            disabled={
-                                              item?.status === 'CANCELED'
-                                            }
-                                            isLoading={isLoadingPayment}
                                           />
                                         </PermissionGate>
                                       </TooltipProvider>

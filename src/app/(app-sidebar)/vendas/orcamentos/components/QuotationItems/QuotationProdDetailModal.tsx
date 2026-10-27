@@ -2,6 +2,7 @@
 'use client'
 import React, { useCallback, useEffect } from 'react'
 // UI component Imports
+import { discountOverBase } from '@/lib/discountLimit'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -58,7 +59,7 @@ import { toast } from 'sonner'
 import { parseCurrencyToBrl, cn } from '@/lib/utils'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { QuotationItemType } from '@/types/sales/quotation'
+import type { QuotationItemType, QuotationType } from '@/types/sales/quotation'
 
 import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
 import { FeatureGate } from '@/components/common/FeatureGate'
@@ -397,6 +398,79 @@ export function QuotationProdDetailModal({
     setValue('items.0.measurementValue', measurementValue)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemQuantity, activeTier?.from, tiers.length])
+
+  // Limite de desconto já na janela do produto (ALT-8, decisão de
+  // 24/10/2026): com o preço editado abaixo do cadastro, o orçamento inteiro
+  // é medido contra o preço base, a mesma conta da janela Valores. O preço do
+  // cadastro é o do produto, o da variação escolhida ou o da faixa de
+  // quantidade. Na edição de item com variação o preço dela não está aqui:
+  // o aviso fica com a janela Valores
+  const formItems = watch('items') || []
+  const catalogUnitOf = (index: number): number | null => {
+    if (formItems.length === 1) {
+      if (itemVariationId) {
+        if (editMode) return null
+        const variation = variations.find((v) => v.id === itemVariationId)
+        if (variation?.unitPrice !== null && variation?.unitPrice !== undefined)
+          return convertUnitCostToRaw(itemUnitKind, variation.unitPrice)
+        return baseUnitCost
+      }
+      if (activeTier)
+        return convertUnitCostToRaw(itemUnitKind, activeTier.unitPrice)
+      return baseUnitCost
+    }
+    return product?.items?.[index]?.unitCost ?? null
+  }
+  let itemBase: number | null = 0
+  formItems.forEach((item, index) => {
+    if (itemBase === null) return
+    const unit = Number(item?.unitCost || 0)
+    const catalog = catalogUnitOf(index)
+    if (!unit || catalog === null || catalog === undefined) {
+      itemBase = null
+      return
+    }
+    const { measurementValue } = calculateSalesValue(index)
+    itemBase += (measurementValue / unit) * catalog
+  })
+  const typedTotal = calculateFinalValue()
+  // Na edição, o desconto que o item já tem continua valendo
+  const itemDiscount =
+    editMode && data
+      ? Math.max(
+          (data.totalValue || 0) +
+            (data.addition || 0) +
+            (data.linesTotal || 0) -
+            (data.finalValue || 0),
+          0,
+        )
+      : 0
+  // O orçamento aberto, do cache da tela (a mesma chave do detalhe)
+  const quotation = queryClient.getQueryData<QuotationType>([
+    'quotation-data',
+    quotationId,
+  ])
+  const maxDiscount = quotation?.seller?.maxDiscount
+  const baseOfItem = itemBase ?? 0
+  const priceLimit =
+    (product?.allowEditValues || data?.allowEditValues) &&
+    baseOfItem > 0 &&
+    typedTotal < baseOfItem &&
+    maxDiscount !== null &&
+    maxDiscount !== undefined
+      ? discountOverBase(
+          [
+            ...(quotation?.quotationItems ?? []).filter(
+              (item) => item.id !== data?.id,
+            ),
+            { id: '__item', basePrice: baseOfItem },
+          ],
+          quotation?.paymentConditions?.discount?.discountTotal || 0,
+          { id: '__item', effective: typedTotal - itemDiscount },
+        )
+      : null
+  const exceedsPriceLimit =
+    !!priceLimit && priceLimit.percentage > (maxDiscount ?? 0)
 
   if (!open) return null
 
@@ -755,6 +829,13 @@ export function QuotationProdDetailModal({
             </form>
           </Form>
         </DialogBody>
+        {exceedsPriceLimit && priceLimit && (
+          <p className="px-6 pb-2 text-sm text-error-600" role="alert">
+            Com este preço, o desconto do orçamento fica em{' '}
+            {priceLimit.percentage.toFixed(1)}% sobre o preço do cadastro, acima
+            do limite do vendedor ({maxDiscount}%). Suba o preço para salvar.
+          </p>
+        )}
         <DialogFooter className="sm:justify-between">
           <div className="flex flex-col">
             <PermissionGate permissions={['values:values:view']}>
@@ -806,7 +887,7 @@ export function QuotationProdDetailModal({
               className="gap-2"
               form="new-product"
               RightIcon={IconCircleCheck}
-              disabled={isLoading}
+              disabled={isLoading || exceedsPriceLimit}
               isLoading={isSubmitting}
             >
               Salvar

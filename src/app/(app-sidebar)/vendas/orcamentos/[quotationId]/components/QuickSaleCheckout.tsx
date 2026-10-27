@@ -11,6 +11,7 @@
 // enviar ao caixa passam por `src/actions/cash-front.ts`.
 
 // React
+import { useClientBlocked } from './useClientBlocked'
 import { useEffect, useState } from 'react'
 
 // Next
@@ -132,6 +133,9 @@ export function useQuickSale(data: QuotationType) {
     .map((method) => settingsMethod[method])
     .filter(Boolean)
 
+  // Cliente bloqueado no limite de crédito: nem cobra nem envia ao caixa
+  // (decisão de 24/10/2026)
+  const blocked = useClientBlocked(data)
   // Orçamento e frente de caixa trabalham em centavos
   const total = Math.round(calculatePaymentTotals(data).finalValue)
   const itemCount = data?.quotationItems?.length ?? 0
@@ -158,6 +162,7 @@ export function useQuickSale(data: QuotationType) {
     origin,
     checkout: checkoutRes?.data ?? null,
     isLoading,
+    blocked,
   }
 }
 
@@ -329,10 +334,16 @@ export function QuickSaleCheckoutButton({
 
   return (
     <PermissionGate permissions={['sale:order:create']}>
+      {sale.blocked && (
+        <p className="mb-2 text-sm text-error-600">
+          Cliente bloqueado no cadastro: esta venda não pode ser cobrada nem
+          enviada ao caixa.
+        </p>
+      )}
       <Button
         type="button"
         size={size}
-        disabled={empty}
+        disabled={empty || sale.blocked}
         title={empty ? 'Adicione um item para continuar' : undefined}
         RightIcon={sale.path === 'POS' ? IconCashRegister : IconCashBanknote}
         onClick={() => (sale.path === 'POS' ? sendToCash() : setCharging(true))}

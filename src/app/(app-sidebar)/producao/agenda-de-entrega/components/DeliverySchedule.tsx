@@ -9,7 +9,6 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
-import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { DeliveryScheduleData } from './DeliveryScheduleTable/DeliveryScheduleData'
@@ -103,7 +102,6 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
       <Topbar
-        review="todo"
         title="Agenda de entrega"
         tabs={filteredTabs}
         activeTab={activeTab}
@@ -111,12 +109,6 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
         countsLoading={isLoading}
       />
       <div className="space-y-2">
-        <ReviewTodo rule="PCP-7" title="A agenda como quadro de gestão à vista">
-          O que foi decidido e não existe: a linha do trabalho mostrando os
-          ícones de todos os setores envolvidos, o detalhamento por item, o
-          clique que conclui a etapa e o alerta quando o atraso compromete a
-          data de entrega.
-        </ReviewTodo>
         <Card>
           {isLoading ? (
             <ListSkeleton cols={4} filters={2} />

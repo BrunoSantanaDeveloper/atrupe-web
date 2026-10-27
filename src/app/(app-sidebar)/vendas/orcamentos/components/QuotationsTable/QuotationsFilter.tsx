@@ -6,14 +6,33 @@ import type { DateRange } from 'react-day-picker'
 
 // Components
 import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
+import { SelectBasic } from '@/components/common/form/FormSelect'
 import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
+
+// Hooks
+import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export function QuotationsFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
+
+  // Filtro por marcador de acompanhamento (CRM fase 1): só com o recurso dos
+  // marcadores. O número é quantos orçamentos em negociação têm cada um
+  const { hasFeature } = usePlanFeatures()
+  const showTagFilter = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
+  const { data: tags } = useQuotationTag()
+  const tagOptions = (tags || []).map((tag) => ({
+    value: tag.id,
+    label:
+      typeof tag.quotations === 'number'
+        ? `${tag.title} (${tag.quotations})`
+        : tag.title,
+  }))
 
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
@@ -96,6 +115,16 @@ export function QuotationsFilter({ searchParams }: SearchParamsType) {
         value={searchParams?.sellerId || 'all'}
         onChange={(value) => handleFilter('sellerId', value)}
       />
+      {showTagFilter ? (
+        <SelectBasic
+          name="tag"
+          label="Status"
+          className="w-full sm:w-[220px]"
+          options={[{ value: 'all', label: 'Todos' }, ...tagOptions]}
+          value={searchParams?.tagId || 'all'}
+          onChange={(value) => handleFilter('tagId', value)}
+        />
+      ) : null}
     </>
   )
 }

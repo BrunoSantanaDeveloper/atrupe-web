@@ -365,7 +365,6 @@ export function CashControl(_: SearchParamsType) {
       <TooltipProvider>
         <div className="space-y-5">
           <Topbar
-            review="new"
             title="Controle de caixa"
             // Topbar e cabeçalhos das tabelas já aparecem na carga; só as
             // linhas ficam em skeleton (microinteracoes)

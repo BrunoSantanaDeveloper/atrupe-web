@@ -220,10 +220,14 @@ export function Quotations({ searchParams }: SearchParamsType) {
     concluido: data?.DONE,
     vencidos: data?.OVERDUE,
     rejeitados: data?.REJECTED,
+    // CRM fase 1: em negociação com próximo contato vencido ou para hoje
+    retomar: data?.retomar,
     todos: data?.TOTAL,
   }
 
   const status = searchParams.status
+  // "Para retomar" vazia é um bom sinal: mostra o estado vazio próprio, não
+  // o "nenhum orçamento para o status"
   const statusEmpty = totals?.[status] === 0
 
   const tabs: TabNavType[] = [
@@ -251,6 +255,13 @@ export function Quotations({ searchParams }: SearchParamsType) {
       label: 'Rejeitados',
       count: totals?.rejeitados,
     },
+    // Sem status: a consulta leva nextContact=due (QuotationsData)
+    {
+      value: '',
+      tab: 'retomar',
+      label: 'Para retomar',
+      count: totals?.retomar,
+    },
     {
       value: '',
       tab: 'todos',
@@ -269,7 +280,11 @@ export function Quotations({ searchParams }: SearchParamsType) {
     const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
     // mesmo cuidado da listagem: `novo` é da tela, a API recusa
     const { novo: _novo, ...exportParams } = searchParams
-    const filters = { ...exportParams, status: exportStatus }
+    const filters = {
+      ...exportParams,
+      status: exportStatus,
+      ...(status === 'retomar' ? { nextContact: 'due' } : {}),
+    }
     const result = await getData({ route: '/sale/quotation/export', filters })
 
     if (!result.success) {
@@ -340,7 +355,11 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={`Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`}
+                title={
+                  status === 'retomar'
+                    ? 'Nenhum orçamento para retomar hoje'
+                    : `Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`
+                }
                 icon={IconReportOff}
               />
             ) : (

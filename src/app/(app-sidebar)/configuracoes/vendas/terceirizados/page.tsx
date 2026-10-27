@@ -19,10 +19,14 @@ export default function OutsourcedSettingsPage() {
         </div>
       }
     >
-      {/* O terceirizado avulso entra pelo "Acrescentar a este item", do LITE
-          em diante (T-2 continua em aberto para o START) */}
+      {/* O terceirizado avulso entra pelo "Acrescentar a este item", já no
+          START (T-5, 24/10/2026). A composição também o tem: assim a tela
+          não some do LITE enquanto a API não conhece a chave nova */}
       <FeatureGate
-        features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}
+        features={[
+          FEATURES.SALES.OUTSOURCED_ITEM,
+          FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+        ]}
         wall={{
           title: 'Terceirizado avulso',
           description: 'Lançar um terceirizado dentro do item do orçamento.',

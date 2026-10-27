@@ -3,12 +3,10 @@ import { useFormContext } from 'react-hook-form'
 
 import { QuotationPaymentConditionsType } from './schema'
 import { addDays } from 'date-fns'
-import { getItem } from '@/actions/_cruds'
-import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { useEffect, useRef } from 'react'
-import { toast } from 'sonner'
 
-const dueDate = new Date()
+import { splitCents } from '@/lib/paymentFee'
+import { withFees } from './fees'
 
 export function InstallmentQty() {
   const form = useFormContext<QuotationPaymentConditionsType>()
@@ -25,61 +23,34 @@ export function InstallmentQty() {
   const hasDownPayment = watch('hasDownPayment')
   const dayInterval = watch('dayInterval') ?? 30
 
-  // Função para recalcular os valores das parcelas
-  const recalculateInstallments = async (
-    qty: number,
-    additionalFee: number = 0,
-  ) => {
+  // Recalcula as parcelas: (total - entrada) dividido em centavos inteiros,
+  // a diferença na última, e o acréscimo de cada uma pela regra da condição
+  // (em %, pela linha "Nx"; em R$, por parcela). Preserva id, vencimento e a
+  // forma de pagamento já escolhida em cada parcela.
+  const recalculateInstallments = async (qty: number) => {
     if (!qty || qty <= 0) return
 
-    // Valor a ser dividido entre as parcelas (total - entrada)
     const valueToDistribute =
       totalValue - (hasDownPayment === 'true' ? downPaymentValue : 0)
 
-    // Valor de cada parcela
-    const installmentValue = valueToDistribute / qty
-
-    // Criar novas parcelas com valores atualizados
-    const newInstallments = Array.from({ length: qty }, (_, i) => ({
-      // Preservar o ID se existir
+    const draft = splitCents(valueToDistribute, qty).map((amount, i) => ({
       id: installments?.[i]?.id,
-      // Preservar a data de vencimento se existir, ou criar uma nova
       dueDate:
         installments?.[i]?.dueDate ||
-        addDays(new Date(dueDate), dayInterval * (i + 1)),
+        addDays(new Date(), dayInterval * (i + 1)),
       paymentConditionId:
         installments?.[i]?.paymentConditionId || paymentConditionId,
-      additionalFee: additionalFee / qty,
-      amount: installmentValue,
+      amount,
     }))
 
-    setValue('installments', newInstallments, { shouldValidate: true })
+    const { rows, total } = await withFees(draft, paymentConditionId)
+    setValue('installments', rows, { shouldValidate: true })
+    setValue('mainAdditionalFee', total)
   }
 
   const handleChangeInstallmentQty = async (value: string) => {
     if (!value) return
-
-    const qtyNumber = Number(value)
-
-    // Recalcular parcelas de acordo com número de parcelas selecionado
-    // Primeiro, pegar a taxa de acréscimo de acordo com a quantidade de parcelas
-    const res = await getItem({
-      route: `/payment-condition/${paymentConditionId}`,
-    })
-
-    if (!res.success) {
-      toast.error(res.message)
-    }
-
-    const data: PaymentConditionsType = res.data
-
-    const additionalFee =
-      data?.installments[qtyNumber - 1]?.operatorFeeTransfer || 0
-
-    setValue('mainAdditionalFee', additionalFee)
-
-    // Recalcular os valores das parcelas
-    recalculateInstallments(qtyNumber, additionalFee)
+    await recalculateInstallments(Number(value))
   }
 
   // Gerar parcelas automaticamente quando o dialog abre sem parcelas existentes
@@ -91,7 +62,6 @@ export function InstallmentQty() {
       Number(installmentQty) > 0 &&
       (!installments || installments.length === 0)
     ) {
-      // Gerar parcelas iniciais
       handleChangeInstallmentQty(installmentQty)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,11 +81,7 @@ export function InstallmentQty() {
       Number(installmentQty) > 0 &&
       installments?.length > 0
     ) {
-      const currentAdditionalFee = installments[0]?.additionalFee || 0
-      recalculateInstallments(
-        Number(installmentQty),
-        currentAdditionalFee * Number(installmentQty),
-      )
+      recalculateInstallments(Number(installmentQty))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalValue, downPaymentValue, hasDownPayment])

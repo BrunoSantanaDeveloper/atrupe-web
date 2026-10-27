@@ -13,13 +13,18 @@
 //   05/10/2026): a mesma busca do modal principal; entra como parte, com a
 //   medida e o preço do produto;
 // - terceirizado avulso (T-4, MS-16): o vendedor informa o custo e vê o
-//   preço de venda pelo markup padrão configurado em Configurações › Vendas,
-//   podendo alterar. O custo nunca aparece na tela depois (ORC-7).
+//   preço de venda pelo acréscimo sobre o custo configurado em Configurações
+//   › Vendas, podendo alterar. O custo nunca aparece na tela depois (ORC-7).
+//   É o único caminho no START (T-5): processo e produto do catálogo pedem
+//   a composição (LITE).
 //
 // O preço de cada caminho vem da prévia do servidor (POST …/line/preview,
 // contrato do módulo 2): a tela não calcula preço nem recebe custo.
 
 import { useEffect, useMemo, useState } from 'react'
+
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -101,7 +106,10 @@ export function AddToItem({
   const queryClient = useQueryClient()
   const canSeeValues = useCanSeeValues()
 
-  const [mode, setMode] = useState<Mode>('process')
+  // Sem a composição só existe o terceirizado avulso (START)
+  const { hasFeature } = usePlanFeatures()
+  const hasComposition = hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+  const [mode, setMode] = useState<Mode>(hasComposition ? 'process' : 'loose')
   const [search, setSearch] = useState('')
   const [sector, setSector] = useState('todos')
   const [picked, setPicked] = useState<{
@@ -443,7 +451,7 @@ export function AddToItem({
       </div>
 
       {/* O que acrescentar: processo, produto do catálogo ou terceirizado */}
-      {!picked && !pickedProduct && (
+      {!picked && !pickedProduct && hasComposition && (
         <Tabs
           value={mode}
           variant="pill"
@@ -595,9 +603,9 @@ export function AddToItem({
                 O custo não fica na tela do orçamento: só o preço de venda.
               </p>
             </div>
-            {/* O preço de venda pelo markup padrão, com o percentual escrito
-                ao lado; o vendedor pode alterar (MS-16, T-4). Só para quem
-                vê valores */}
+            {/* O preço de venda pelo acréscimo sobre o custo, com o percentual
+                escrito ao lado; o vendedor pode alterar (MS-16, T-4). Só para
+                quem vê valores */}
             <PermissionGate permissions={['values:values:view']}>
               <div className="space-y-1.5">
                 <label htmlFor="loose-price" className="text-sm font-medium">
@@ -615,8 +623,8 @@ export function AddToItem({
                 />
                 <p className="text-xs text-gray">
                   {markup === null
-                    ? 'Informe o custo para ver o preço sugerido pelo markup da empresa.'
-                    : `Markup padrão de ${num(markup)} %: custo ÷ (1 − ${num(markup)} %) = ${formatCurrencyToBrl(suggestedPrice)}`}
+                    ? 'Informe o custo para ver o preço sugerido pelo acréscimo da empresa.'
+                    : `Acréscimo de ${num(markup)} % sobre o custo = ${formatCurrencyToBrl(suggestedPrice)}`}
                   {priceEdited && costCents > 0 && (
                     <Button
                       type="button"

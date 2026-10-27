@@ -16,6 +16,8 @@ export type ProductListType = {
   salePrice: number
   // A composição (CP-17): etapas na composição padrão e a situação dela
   hasComposition?: boolean
+  // Produto terceirizado (T-5): comprado de fornecedor e revendido
+  isOutsourced?: boolean
   compositionStatus?: 'DRAFT' | 'RELEASED' | 'PART' | null
   hasVariations?: boolean
   fiscalData?: {

@@ -194,7 +194,6 @@ export function PDV() {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title="Frente de caixa"
           // Topbar já aparece na carga; sessão e ações só depois de saber se
           // há caixa aberto (microinteracoes)

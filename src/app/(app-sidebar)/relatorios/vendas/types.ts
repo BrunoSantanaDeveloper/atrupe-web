@@ -76,6 +76,19 @@ export interface OriginChartData {
   color: string
 }
 
+export interface LossByReasonData {
+  id: string | null
+  reason: string
+  count: number
+  /** Em centavos, como o resto do relatório */
+  value: number
+}
+
+export interface LossesByReasonData {
+  rejections: LossByReasonData[]
+  cancellations: LossByReasonData[]
+}
+
 export interface TopProductData {
   name: string
   type: string

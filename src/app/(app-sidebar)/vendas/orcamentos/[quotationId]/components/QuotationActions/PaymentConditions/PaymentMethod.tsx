@@ -3,14 +3,11 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 import { useFormContext } from 'react-hook-form'
 
 import { addDays } from 'date-fns'
-import { getItem } from '@/actions/_cruds'
 
 import { QuotationPaymentConditionsType } from './schema'
-import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { QuotationType } from '@/types/sales/quotation'
-import { toast } from 'sonner'
-
-const dueDate = new Date()
+import { installmentFee } from '@/lib/paymentFee'
+import { loadCondition } from './fees'
 
 interface Props {
   quotationData: QuotationType
@@ -24,36 +21,26 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   const totalValue = watch('totalValue') || 0
 
   // Ao alterar a condição de pagamento:
-  // - atualiza mínimo e máximo de parcelas, para limitar o preenchimento do campo Parcelas (installmentQty),
-  // - redefine a quantidade de parcelas inicial como 1x,
-  // - redefine o valor de acréscimo (taxa) referente à parcela máxima,
-  // - redefine o valor de cada parcela, sendo: (Valor Total - Valor da Entrada) / quantidade de parcelas.
-  // * O valor total esperado é Valor base - desconto + comissão.
+  // - atualiza mínimo e máximo de parcelas, para limitar o campo Parcelas,
+  // - volta a quantidade de parcelas para 1x,
+  // - calcula o acréscimo pela regra da condição (lib/paymentFee),
+  // - monta a parcela única com (Valor Total - Entrada).
   const handleChangePaymentCondition = async (paymentConditionId: string) => {
     clearErrors('paymentConditionId')
 
-    // Busca a condição de pagamento selecionada para obter o mínimo e máximo de parcelas
-    const res = await getItem({
-      route: `/payment-condition/${paymentConditionId}`,
-    })
+    const data = await loadCondition(paymentConditionId)
+    if (!data) return
 
-    if (!res.success) {
-      toast.error(res.message)
-    }
-
-    const data: PaymentConditionsType = res.data
-
-    const minInstallments = data?.minInstallments || 1
-    const maxInstallments = data?.maxInstallments || 1
-    const dayInterval = data?.dayInterval ?? 30
-
-    const additionalFee = data?.installments[0]?.operatorFeeTransfer || 0
-    const additionalFeeType = data?.costType
+    const minInstallments = data.minInstallments || 1
+    const maxInstallments = data.maxInstallments || 1
+    const dayInterval = data.dayInterval ?? 30
+    const amount = totalValue - downPaymentValue
+    const additionalFee = installmentFee(data, 1, amount)
 
     setValue('minInstallmentQty', minInstallments)
     setValue('maxInstallmentQty', maxInstallments)
     setValue('mainAdditionalFee', additionalFee)
-    setValue('additionalFeeType', additionalFeeType)
+    setValue('additionalFeeType', data.costType)
     setValue('dayInterval', dayInterval)
 
     // Setar o valor de installmentQty, com delay para evitar que valor seja setado antes de existir as opções de qtt de parcelas
@@ -61,14 +48,14 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
       setValue('installmentQty', '1')
     }, 100)
 
-    const newInstallments = Array.from({ length: 1 }, (_, i) => ({
-      dueDate: addDays(new Date(dueDate), dayInterval * (i + 1)),
-      paymentConditionId,
-      additionalFee,
-      amount: totalValue - downPaymentValue,
-    }))
-
-    setValue('installments', newInstallments)
+    setValue('installments', [
+      {
+        dueDate: addDays(new Date(), dayInterval),
+        paymentConditionId,
+        additionalFee,
+        amount,
+      },
+    ])
   }
 
   return (

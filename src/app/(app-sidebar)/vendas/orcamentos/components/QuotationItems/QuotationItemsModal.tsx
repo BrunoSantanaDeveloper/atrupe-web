@@ -41,6 +41,7 @@ import {
   IconArrowLeft,
   IconQuestionMark,
   IconLayoutGridAdd,
+  IconTruckDelivery,
 } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
@@ -270,7 +271,14 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
   // centralizada. Conta o botão "Composição" só quando o plano o mostra
   const TILE_PX = 120
   const GAP_PX = 12
-  const tiles = sectors.length + (hasFeature(FEATURES.COSTS.COST_BASE) ? 1 : 0)
+  // e o "Terceirizado" (T-6), que todo plano tem
+  const showOutsourced =
+    hasFeature(FEATURES.SALES.OUTSOURCED_ITEM) ||
+    hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+  const tiles =
+    sectors.length +
+    (hasFeature(FEATURES.COSTS.COST_BASE) ? 1 : 0) +
+    (showOutsourced ? 1 : 0)
   const rows = Math.max(1, Math.ceil(tiles / 4))
   const perRow = Math.max(1, Math.ceil(tiles / rows))
   const gridMaxWidth = perRow * TILE_PX + (perRow - 1) * GAP_PX
@@ -345,6 +353,24 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                     <span className="text-wrap text-xs">Composição</span>
                   </Button>
                 </FeatureGate>
+                {/* O serviço terceirizado avulso como item (T-6): como no
+                    legado, um botão ao lado dos setores; já no START */}
+                {showOutsourced ? (
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border border-dashed border-brand-200 bg-brand-50 p-2 text-brand-600 shadow-none hover:bg-brand-100 [&_svg]:!size-10"
+                    title="Serviço contratado de fornecedor só para esta venda"
+                    onClick={() => openChangeModal(true, 'outsourcedItem')}
+                  >
+                    <Icon
+                      icon={IconTruckDelivery}
+                      size="lg"
+                      className="mb-2 size-10"
+                    />
+                    <span className="text-wrap text-xs">Terceirizado</span>
+                  </Button>
+                ) : null}
               </div>
             )}
           </DialogBody>

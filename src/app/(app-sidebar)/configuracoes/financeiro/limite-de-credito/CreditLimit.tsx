@@ -30,6 +30,8 @@ import { toast } from 'sonner'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { extractConditions } from '@/app/(app-sidebar)/cadastros/clientes/components/NewClient/utils/ExtractConditions'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { FormRadio } from '@/components/common/form/FormRadio'
+import { RiskHint } from '@/components/common/RiskHint'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 export function metadata() {
   return {
@@ -53,13 +55,22 @@ const baseFields = z.object({
       ),
     }),
   ),
-  applyMinValueToAll: z.boolean().optional(),
-  applyMaxValueToAll: z.boolean().optional(),
-  applyPaymentMethodsToAll: z.boolean().optional(),
 })
+// O "aplicar aos clientes que já existem" é um só, fora das abas (decisão
+// de 24/10/2026): a quem vale e o que vale. Cada cliente recebe o padrão do
+// tipo dele; os inativos nunca recebem
+const APPLY_SCOPES = ['PROSPECT', 'ACTIVE', 'PERSON', 'COMPANY', 'ALL'] as const
+type ApplyScope = (typeof APPLY_SCOPES)[number]
+
 const creditLimitSchema = z.object({
   person: baseFields,
   company: baseFields,
+  apply: z.object({
+    scope: z.enum(APPLY_SCOPES),
+    minValue: z.boolean(),
+    maxValue: z.boolean(),
+    paymentMethods: z.boolean(),
+  }),
 })
 
 type CreditLimitFormType = z.infer<typeof creditLimitSchema>
@@ -89,6 +100,12 @@ export function CreditLimit() {
       minValue: creditLimit?.company.minValue || 0,
       maxValue: creditLimit?.company.maxValue || 0,
     },
+    apply: {
+      scope: 'ALL' as ApplyScope,
+      minValue: false,
+      maxValue: false,
+      paymentMethods: false,
+    },
   }
 
   const form = useForm<CreditLimitFormType>({
@@ -115,16 +132,38 @@ export function CreditLimit() {
 
   const onSubmit = async (data: CreditLimitFormType) => {
     try {
+      // Cada tipo recebe o seu padrão; a escolha diz quem entra. Pré-cadastros
+      // e aprovados vão à API como escopo (applyTo); os outros são "todos
+      // menos os inativos", que é o que a API faz sem o campo
+      const { apply, ...types } = data
+      const flagsFor = (type: 'PERSON' | 'COMPANY') => {
+        const included =
+          apply.scope === 'ALL' ||
+          apply.scope === 'PROSPECT' ||
+          apply.scope === 'ACTIVE' ||
+          apply.scope === type
+        if (!included) return {}
+        return {
+          applyMinValueToAll: apply.minValue,
+          applyMaxValueToAll: apply.maxValue,
+          applyPaymentMethodsToAll: apply.paymentMethods,
+          ...(apply.scope === 'PROSPECT' || apply.scope === 'ACTIVE'
+            ? { applyTo: apply.scope }
+            : {}),
+        }
+      }
       const newData = {
-        ...data,
+        ...types,
         person: {
-          ...data.person,
-          conditions: extractConditions(data?.person?.paymentMethods),
+          ...types.person,
+          ...flagsFor('PERSON'),
+          conditions: extractConditions(types.person?.paymentMethods),
           paymentMethods: undefined,
         },
         company: {
-          ...data.company,
-          conditions: extractConditions(data?.company?.paymentMethods),
+          ...types.company,
+          ...flagsFor('COMPANY'),
+          conditions: extractConditions(types.company?.paymentMethods),
           paymentMethods: undefined,
         },
       }
@@ -146,11 +185,11 @@ export function CreditLimit() {
         return
       }
 
-      queryClient.invalidateQueries({
-        queryKey: ['credit-limit'],
-      })
+      // O padrão e, com o "aplicar", os clientes: a tela do cliente mostrava
+      // o limite guardado antes da mudança
+      queryClient.invalidateQueries()
 
-      toast.success('Limite de crédito atualizado')
+      toast.success('Limite de crédito padrão atualizado')
       setOpen(false)
       handleClose()
     } catch (error) {
@@ -187,7 +226,19 @@ export function CreditLimit() {
             aria-describedby="alert-dialog-description"
           >
             <DialogHeader>
-              <DialogTitle>Limite de crédito</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                Limite de crédito padrão
+                <RiskHint title="Limite de crédito padrão">
+                  <p>
+                    O limite cadastrado aqui é o que cada cliente novo recebe ao
+                    ser cadastrado, conforme o tipo: pessoa física ou jurídica.
+                  </p>
+                  <p>
+                    Os clientes que já existem não mudam, a não ser pelas opções
+                    avançadas, que aplicam o padrão aos clientes escolhidos.
+                  </p>
+                </RiskHint>
+              </DialogTitle>
             </DialogHeader>
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <Tabs
@@ -315,114 +366,122 @@ export function CreditLimit() {
                         ),
                       )}
                   </div>
-
-                  <Card className="space-y-4">
-                    <Accordion type="single" collapsible>
-                      <AccordionItem
-                        value="item-1"
-                        className="p-0 m-0 border-0"
-                      >
-                        <CardHeader>
-                          <div className="flex justify-between">
-                            <CardTitle>Opções avançadas</CardTitle>
-                            <AccordionTrigger
-                              className={cn(
-                                buttonVariants({
-                                  variant: 'neutralLight',
-                                  size: 'icon',
-                                }),
-                                'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                              )}
-                            />
-                          </div>
-                        </CardHeader>
-                        <AccordionContent>
-                          <Separator />
-                          <CardContent className="p-6">
-                            <Alert className="bg-warning-50 border border-warning-50 mb-6">
-                              <Icon
-                                icon={IconAlertTriangle}
-                                size="md"
-                                className="stroke-warning-600"
-                              />
-                              <AlertTitle className="text-warning-600">
-                                Atenção
-                              </AlertTitle>
-
-                              <AlertDescription className="text-sm font-normal text-gray-500">
-                                Ao selecionar as opções abaixo, os limites de
-                                crédito personalizados de todos os clientes
-                                serão alterados para o novo padrão.
-                              </AlertDescription>
-                            </Alert>
-                            <div className="space-y-4">
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id="minValue"
-                                  checked={form.watch(
-                                    `${activeTab}.applyMinValueToAll`,
-                                  )}
-                                  onCheckedChange={(checked) =>
-                                    form.setValue(
-                                      `${activeTab}.applyMinValueToAll`,
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                                <label htmlFor="minValue" className="text-sm">
-                                  Aplicar valor mínimo para venda a todos os
-                                  clientes
-                                </label>
-                              </div>
-
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id="maxValue"
-                                  checked={form.watch(
-                                    `${activeTab}.applyMaxValueToAll`,
-                                  )}
-                                  onCheckedChange={(checked) =>
-                                    form.setValue(
-                                      `${activeTab}.applyMaxValueToAll`,
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                                <label htmlFor="maxValue" className="text-sm">
-                                  Aplicar valor máximo para venda a todos os
-                                  clientes
-                                </label>
-                              </div>
-
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id="paymentMethods"
-                                  checked={form.watch(
-                                    `${activeTab}.applyPaymentMethodsToAll`,
-                                  )}
-                                  onCheckedChange={(checked) =>
-                                    form.setValue(
-                                      `${activeTab}.applyPaymentMethodsToAll`,
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                                <label
-                                  htmlFor="paymentMethods"
-                                  className="text-sm"
-                                >
-                                  Aplicar formas de pagamento a todos os
-                                  clientes
-                                </label>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </Card>
                 </TabsContent>
               </Tabs>
+
+              <Card className="mt-6 space-y-4">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="item-1" className="p-0 m-0 border-0">
+                    <CardHeader>
+                      <div className="flex justify-between">
+                        <CardTitle>Opções avançadas</CardTitle>
+                        <AccordionTrigger
+                          className={cn(
+                            buttonVariants({
+                              variant: 'neutralLight',
+                              size: 'icon',
+                            }),
+                            'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                          )}
+                        />
+                      </div>
+                    </CardHeader>
+                    <AccordionContent>
+                      <Separator />
+                      <CardContent className="p-6">
+                        <Alert className="bg-warning-50 border border-warning-50 mb-6">
+                          <Icon
+                            icon={IconAlertTriangle}
+                            size="md"
+                            className="stroke-warning-600"
+                          />
+                          <AlertTitle className="text-warning-600">
+                            Atenção
+                          </AlertTitle>
+
+                          <AlertDescription className="text-sm font-normal text-gray-500">
+                            Ao marcar as opções abaixo, o limite dos clientes
+                            escolhidos é trocado pelo padrão do tipo de cada um,
+                            inclusive os limites personalizados. Clientes
+                            inativos não recebem.
+                          </AlertDescription>
+                        </Alert>
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <p className="text-sm font-medium text-gray-700">
+                              Aplicar a
+                            </p>
+                            <FormRadio
+                              name="apply.scope"
+                              className="w-full"
+                              items={[
+                                { value: 'PROSPECT', label: 'Pré-cadastros' },
+                                {
+                                  value: 'ACTIVE',
+                                  label: 'Cadastros aprovados',
+                                },
+                                { value: 'PERSON', label: 'Pessoa física' },
+                                { value: 'COMPANY', label: 'Pessoa jurídica' },
+                                { value: 'ALL', label: 'Todos' },
+                              ]}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="minValue"
+                              checked={form.watch('apply.minValue')}
+                              onCheckedChange={(checked) =>
+                                form.setValue(
+                                  'apply.minValue',
+                                  checked as boolean,
+                                )
+                              }
+                            />
+                            <label htmlFor="minValue" className="text-sm">
+                              Aplicar o valor mínimo para venda aos clientes
+                              escolhidos
+                            </label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="maxValue"
+                              checked={form.watch('apply.maxValue')}
+                              onCheckedChange={(checked) =>
+                                form.setValue(
+                                  'apply.maxValue',
+                                  checked as boolean,
+                                )
+                              }
+                            />
+                            <label htmlFor="maxValue" className="text-sm">
+                              Aplicar o valor máximo para venda aos clientes
+                              escolhidos
+                            </label>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="paymentMethods"
+                              checked={form.watch('apply.paymentMethods')}
+                              onCheckedChange={(checked) =>
+                                form.setValue(
+                                  'apply.paymentMethods',
+                                  checked as boolean,
+                                )
+                              }
+                            />
+                            <label htmlFor="paymentMethods" className="text-sm">
+                              Aplicar as formas de pagamento aos clientes
+                              escolhidos
+                            </label>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </Card>
             </div>
 
             <DialogFooter className="gap-2">

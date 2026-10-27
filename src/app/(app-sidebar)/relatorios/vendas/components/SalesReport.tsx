@@ -8,6 +8,7 @@ import { FiltersBar } from './FiltersBar'
 import { SummaryCards } from './SummaryCards'
 import { Topbar } from '@/components/common/Topbar'
 import { TopClientsChart } from './TopClientsChart'
+import { LossesByReasonCharts } from './LossesByReasonChart'
 import { TopProductsChart } from './TopProductsChart'
 import { OrdersOriginChart } from './OrdersOriginChart'
 import { SalesEvolutionChart } from './SalesEvolutionChart'
@@ -73,6 +74,9 @@ export function SalesReport({ searchParams }: SearchParamsType) {
         <TopProductsChart searchParams={effectiveSearchParams} />
         <TopClientsChart searchParams={effectiveSearchParams} />
       </div>
+
+      {/* Perdas por motivo (CRM fase 1) */}
+      <LossesByReasonCharts searchParams={effectiveSearchParams} />
 
       {/* Table */}
       <SalesTable searchParams={effectiveSearchParams} />

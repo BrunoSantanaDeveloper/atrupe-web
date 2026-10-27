@@ -24,7 +24,10 @@ export type QuotationItemType = {
   discount: number
   // Acréscimo em centavos, fora do desconto (ALT-25)
   addition?: number
-  origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL'
+  // Preço base do cadastro na medida e na quantidade do item, em centavos;
+  // nulo sem referência (preço R$ 0,00). Mede o limite de desconto (ALT-8)
+  basePrice?: number | null
+  origin?: 'PRODUCT' | 'COMPOSED' | 'MATERIAL' | 'OUTSOURCED'
   // O item montado na hora (ORC-11): o rascunho, a medida em mm e as
   // etapas; sem etapa, "Exige atenção" (MS-12)
   draft?: {
@@ -71,6 +74,8 @@ export type QuotationItemType = {
     // Produto inativado depois de lançado (PAD-7)
     isActive?: boolean
     hasComposition?: boolean
+    // A marca discreta do produto terceirizado (T-3, T-5)
+    isOutsourced?: boolean
     quantity: number
     unitValue: number
     finalValue: number
@@ -237,6 +242,10 @@ export type QuotationType = {
     text: string
     color: string
   }
+  // CRM fase 1 (24/10/2026): motivo da rejeição e próximo contato combinado
+  rejectionReason?: { id: string; reason: string } | null
+  nextContactAt?: string | null
+  nextContactNote?: string | null
   quickSale: boolean
   serie: {
     id: string

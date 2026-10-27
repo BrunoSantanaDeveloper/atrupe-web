@@ -275,6 +275,68 @@ export function TransactionsData({ type, searchParams }: Props) {
                                   <TableCell>
                                     <div className="flex justify-end gap-1">
                                       <TooltipProvider>
+                                        {/* A baixa é a ação mais usada: vem primeiro */}
+                                        <PermissionGate
+                                          permissions={[
+                                            type === 'receivable'
+                                              ? 'financial:receivable:edit'
+                                              : 'financial:payable:edit',
+                                          ]}
+                                        >
+                                          <ActionButton
+                                            Icon={
+                                              transactionStatus[
+                                                currentInstallment?.status ||
+                                                  'UNKNOWN'
+                                              ]?.icon
+                                            }
+                                            tooltip={
+                                              transactionStatus[
+                                                currentInstallment?.status ||
+                                                  'UNKNOWN'
+                                              ]?.tooltip
+                                            }
+                                            variant={
+                                              transactionStatus[
+                                                currentInstallment?.status ||
+                                                  'UNKNOWN'
+                                              ]?.button
+                                            }
+                                            onClick={() => {
+                                              if (
+                                                currentInstallment?.status ===
+                                                'CANCELED'
+                                              )
+                                                return
+
+                                              setRowData(item)
+                                              setInstallment(currentInstallment)
+
+                                              switch (
+                                                currentInstallment?.status
+                                              ) {
+                                                case 'PENDING':
+                                                  setOpenDialog('payment')
+                                                  break
+                                                case 'PROVISIONED':
+                                                  setOpenDialog('compensate')
+                                                  break
+                                                case 'PAID':
+                                                  setOpenDialog('view')
+                                                  break
+                                                case 'OVERDUE':
+                                                  setOpenDialog('payment')
+                                                  break
+                                                default:
+                                                  setOpenDialog('')
+                                                  break
+                                              }
+                                            }}
+                                            disabled={
+                                              item?.status === 'CANCELED'
+                                            }
+                                          />
+                                        </PermissionGate>
                                         <PermissionGate
                                           permissions={[
                                             type === 'receivable'
@@ -350,67 +412,6 @@ export function TransactionsData({ type, searchParams }: Props) {
                                               setRowData(item)
                                               setOpenDialog('history')
                                             }}
-                                          />
-                                        </PermissionGate>
-                                        <PermissionGate
-                                          permissions={[
-                                            type === 'receivable'
-                                              ? 'financial:receivable:edit'
-                                              : 'financial:payable:edit',
-                                          ]}
-                                        >
-                                          <ActionButton
-                                            Icon={
-                                              transactionStatus[
-                                                currentInstallment?.status ||
-                                                  'UNKNOWN'
-                                              ]?.icon
-                                            }
-                                            tooltip={
-                                              transactionStatus[
-                                                currentInstallment?.status ||
-                                                  'UNKNOWN'
-                                              ]?.tooltip
-                                            }
-                                            variant={
-                                              transactionStatus[
-                                                currentInstallment?.status ||
-                                                  'UNKNOWN'
-                                              ]?.button
-                                            }
-                                            onClick={() => {
-                                              if (
-                                                currentInstallment?.status ===
-                                                'CANCELED'
-                                              )
-                                                return
-
-                                              setRowData(item)
-                                              setInstallment(currentInstallment)
-
-                                              switch (
-                                                currentInstallment?.status
-                                              ) {
-                                                case 'PENDING':
-                                                  setOpenDialog('payment')
-                                                  break
-                                                case 'PROVISIONED':
-                                                  setOpenDialog('compensate')
-                                                  break
-                                                case 'PAID':
-                                                  setOpenDialog('view')
-                                                  break
-                                                case 'OVERDUE':
-                                                  setOpenDialog('payment')
-                                                  break
-                                                default:
-                                                  setOpenDialog('')
-                                                  break
-                                              }
-                                            }}
-                                            disabled={
-                                              item?.status === 'CANCELED'
-                                            }
                                           />
                                         </PermissionGate>
                                       </TooltipProvider>

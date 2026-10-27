@@ -5,6 +5,7 @@ interface QuotationStatusType {
   id: string
   title: string
   color: string
+  quotations?: number
 }
 
 const PER_PAGE = '999999'

@@ -204,7 +204,6 @@ export function ProjectDetail({ id }: { id: string }) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title={`Projeto ${project.number}`}
           previousPage="/producao/projetos"
           supportText={project.client}

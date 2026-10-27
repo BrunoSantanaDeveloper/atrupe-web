@@ -177,7 +177,6 @@ export function ProductionSettings() {
   // O Topbar não depende da configuração: aparece já, também na carga
   const topbar = (
     <Topbar
-      review="new"
       title="Produção"
       supportText="Gerenciadores, tipos de tarefa, colaboradores e veículos do gerenciador de produção"
       paramName="aba"

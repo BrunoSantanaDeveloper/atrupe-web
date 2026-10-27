@@ -25,10 +25,10 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
+import { BrlInput } from '@/components/common/BrlInput'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Checkbox } from '@/components/ui/checkbox'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
@@ -127,7 +127,6 @@ const empty = (methods: { id: string; name: string }[]): Draft => ({
 interface Props {
   open: boolean
   account?: BankAccount
-  accounts: BankAccount[]
   methods: { id: string; name: string }[]
   onOpenChange: (open: boolean) => void
   onSaved: () => void
@@ -136,7 +135,6 @@ interface Props {
 export function AccountDialog({
   open,
   account,
-  accounts,
   methods,
   onOpenChange,
   onSaved,
@@ -166,15 +164,6 @@ export function AccountDialog({
       draft.rules.map((rule) =>
         rule.methodId === methodId ? { ...rule, ...patch } : rule,
       ),
-    )
-
-  // Qual outra conta é a padrão hoje para esta forma: marcar aqui tira de lá
-  const currentDefault = (methodId: string) =>
-    accounts.find(
-      (item) =>
-        item.id !== draft.id &&
-        item.isActive &&
-        item.rules.some((rule) => rule.methodId === methodId && rule.isDefault),
     )
 
   const save = async () => {
@@ -265,7 +254,10 @@ export function AccountDialog({
                   name="account-bank"
                   label="Banco"
                   placeholder="Escolha o banco"
-                  options={banks.filter((bank) => bank.value !== '000')}
+                  // A gaveta (000) e a operadora de cartão (CARD) não são banco
+                  options={banks.filter(
+                    (bank) => bank.value !== '000' && bank.value !== 'CARD',
+                  )}
                   value={draft.bankCode}
                   onChange={(value) =>
                     setDraft((current) => ({
@@ -283,18 +275,10 @@ export function AccountDialog({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="account-opening">Saldo inicial</Label>
-                  <Input
+                  <BrlInput
                     id="account-opening"
-                    type="number"
-                    step="0.01"
-                    startAdornment={<span className="text-sm">R$</span>}
-                    value={(draft.openingBalance / 100).toFixed(2)}
-                    onChange={(event) =>
-                      set(
-                        'openingBalance',
-                        Math.round(Number(event.target.value || 0) * 100),
-                      )
-                    }
+                    value={draft.openingBalance}
+                    onChange={(cents) => set('openingBalance', cents)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -313,10 +297,13 @@ export function AccountDialog({
               </div>
             ) : (
               <p className="text-sm text-gray">
-                Saldo inicial de {money(draft.openingBalance)} em{' '}
-                {draft.openingDate.split('-').reverse().join('/')}. A conta já
-                tem lançamentos, então o saldo inicial não se altera por aqui: o
-                saldo é calculado pelos lançamentos.
+                {/* A conta criada no cadastro da empresa vem sem data */}
+                Saldo inicial de {money(draft.openingBalance)}
+                {draft.openingDate
+                  ? ` em ${draft.openingDate.split('-').reverse().join('/')}`
+                  : ''}
+                . A conta já tem lançamentos, então o saldo inicial não se
+                altera por aqui: o saldo é calculado pelos lançamentos.
               </p>
             )}
           </section>
@@ -395,19 +382,10 @@ export function AccountDialog({
                   {draft.shortageTolerance !== null && (
                     <div className="max-w-[220px] space-y-2">
                       <Label htmlFor="account-tolerance">Até</Label>
-                      <Input
+                      <BrlInput
                         id="account-tolerance"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        startAdornment={<span className="text-sm">R$</span>}
-                        value={(draft.shortageTolerance / 100).toFixed(2)}
-                        onChange={(event) =>
-                          set(
-                            'shortageTolerance',
-                            Math.round(Number(event.target.value || 0) * 100),
-                          )
-                        }
+                        value={draft.shortageTolerance}
+                        onChange={(cents) => set('shortageTolerance', cents)}
                       />
                     </div>
                   )}
@@ -421,9 +399,8 @@ export function AccountDialog({
             <div>
               <p className="font-semibold text-gray-800">Formas de pagamento</p>
               <p className="text-sm text-gray">
-                O que esta conta recebe e paga. <strong>Padrão</strong> é a
-                conta que já vem marcada ao receber naquela forma — dá para
-                trocar na hora.
+                O que esta conta recebe e paga. A conta nova vem com tudo
+                desmarcado: marque as formas que ela usa.
               </p>
             </div>
             <div className="overflow-x-auto rounded-lg border border-gray-200">
@@ -433,15 +410,12 @@ export function AccountDialog({
                     <TableHead>Forma</TableHead>
                     <TableHead className="text-success-700">Recebe</TableHead>
                     <TableHead />
-                    <TableHead>Padrão</TableHead>
                     <TableHead className="text-error-700">Paga</TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {draft.rules.map((rule) => {
-                    const other = currentDefault(rule.methodId)
-
                     return (
                       <TableRow key={rule.methodId}>
                         <TableCell className="font-medium text-gray-700">
@@ -472,29 +446,6 @@ export function AccountDialog({
                                 })
                               }
                             />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {rule.acceptIncomes && (
-                            <label className="flex items-center gap-2 text-sm">
-                              <Checkbox
-                                checked={rule.isDefault}
-                                onCheckedChange={(checked) =>
-                                  setRule(rule.methodId, {
-                                    isDefault: !!checked,
-                                  })
-                                }
-                              />
-                              <span className="text-gray">
-                                {rule.isDefault
-                                  ? other
-                                    ? `sai de ${other.name}`
-                                    : 'padrão'
-                                  : other
-                                    ? `hoje: ${other.name}`
-                                    : '—'}
-                              </span>
-                            </label>
                           )}
                         </TableCell>
                         <TableCell>

@@ -14,6 +14,10 @@ import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {
+  AllowEditValueHint,
+  AllowEditDescriptionHint,
+} from '@/components/common/RiskHint'
+import {
   Table,
   TableRow,
   TableBody,
@@ -333,7 +337,6 @@ export function AssemblyEditorSkeleton({
     <div className="flex flex-col gap-5">
       {!embedded && topbar && (
         <Topbar
-          review="new"
           title={topbar.title}
           supportText={topbar.supportText}
           previousPage={topbar.previousPage}
@@ -1527,7 +1530,6 @@ function AssemblyEditorBody({
           unidade comercial, valor de venda e padrão de medidas */}
       {!embedded && topbar && (
         <Topbar
-          review="new"
           title={topbar.title}
           supportText={topbar.supportText}
           previousPage={topbar.previousPage}
@@ -1798,6 +1800,12 @@ function AssemblyEditorBody({
                               aria-label={label}
                             />
                             {label}
+                            {key === 'allowEditValues' && (
+                              <AllowEditValueHint />
+                            )}
+                            {key === 'allowEditDescription' && (
+                              <AllowEditDescriptionHint />
+                            )}
                           </label>
                         ))}
                       </div>

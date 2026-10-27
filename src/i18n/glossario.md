@@ -26,9 +26,11 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Acrescentar a este item | Agregar a este ítem | Add to this item | |
 | Item pronto | Producto listo | Ready-made item | Produto do catálogo dentro de outro item. |
 | Terceirizado / terceirizado avulso | Tercerizado / tercerizado puntual | Outsourced / one-off outsourced | |
+| Acréscimo sobre o custo (do terceirizado) | Recargo sobre el costo | Markup on cost | Custo + %. Em português não se usa "markup" fora da Precificação (PRO), decisão de 24/10/2026. |
 | Desconto | Descuento | Discount | |
 | Valor agregado | Recargo | Markup over base price | O acréscimo sobre o preço base. "Valor agregado" em espanhol tem sentido fiscal (IVA), por isso "recargo". |
 | Preço base | Precio base | Base price | |
+| Produto base | Producto base | Base product | O produto genérico de cada setor, de preço R$ 0,00 e com a edição liberada, para vender o que não está cadastrado (24/10/2026). |
 | Preço de venda | Precio de venta | Selling price | |
 | Condição de pagamento | Condición de pago | Payment terms | |
 | Concluir orçamento | Finalizar cotización | Finish quote | |

@@ -85,7 +85,6 @@ export function Processes({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
-          review="new"
           title="Processos"
           tabs={tabs}
           activeTab={status}

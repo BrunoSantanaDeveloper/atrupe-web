@@ -253,7 +253,6 @@ export function ManagerBoard() {
   // O Topbar não depende do resumo: aparece já, também na carga
   const topbar = (
     <Topbar
-      review="new"
       title="Gerenciador de produção"
       supportText={
         viewer.manager

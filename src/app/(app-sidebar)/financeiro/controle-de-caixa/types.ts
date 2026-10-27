@@ -62,6 +62,9 @@ export type BankAccount = {
   // lançada (4.1, 30/09/2026)
   shortageTolerance: number | null
   isActive: boolean
+  // Quando a conta foi cadastrada: decide a conta que vem escolhida na
+  // baixa (a primeira cadastrada que recebe a forma)
+  createdAt?: string
   // Com histórico, "excluir" inativa (CX-2)
   hasHistory: boolean
   openingBalance: number

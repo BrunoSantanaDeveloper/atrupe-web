@@ -1,8 +1,11 @@
 'use client'
 
 // Components
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { ActivateClientDialog } from './ActivateClientDialog'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -30,6 +33,8 @@ export function ClientActions({ params, data, entityType }: Props) {
   const alertDialog = useAlertDialog()
 
   const queryClient = useQueryClient()
+  const { hasFinancialModule } = usePlanFeatures()
+  const [activateOpen, setActivateOpen] = useState(false)
 
   const status = data?.status
 
@@ -127,13 +132,26 @@ export function ClientActions({ params, data, entityType }: Props) {
             <Button
               variant="success"
               LeftIcon={IconRestore}
-              onClick={() => handleActiveToggle('active')}
+              onClick={() =>
+                // Cliente, com limite de crédito no plano: ativar exige
+                // definir as formas de pagamento permitidas (24/10/2026)
+                isClient && hasFinancialModule('credit_limit')
+                  ? setActivateOpen(true)
+                  : handleActiveToggle('active')
+              }
             >
               Ativar cadastro
             </Button>
           )}
         </PermissionGate>
       </div>
+      {isClient && (
+        <ActivateClientDialog
+          open={activateOpen}
+          onOpenChange={setActivateOpen}
+          clientId={params.id}
+        />
+      )}
     </PermissionGate>
   )
 }

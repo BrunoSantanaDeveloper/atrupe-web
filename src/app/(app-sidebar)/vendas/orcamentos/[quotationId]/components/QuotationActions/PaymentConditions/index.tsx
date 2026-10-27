@@ -1,6 +1,9 @@
 import { useEffect, useState, type ComponentProps } from 'react'
 
 // UI
+import { AlertBanner } from '@/components/ui/alert-banner'
+import { useClientBlocked } from '../../useClientBlocked'
+import { forgetConditions } from './fees'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -42,7 +45,11 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconCircleCheck,
+  IconAlertTriangle,
+} from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -117,6 +124,9 @@ export function PaymentConditionsDialog({
   // Resetar valores do formulário ao abrir o modal
   useEffect(() => {
     if (!open || !quotationData) return
+
+    // As condições podem ter mudado no cadastro desde a última abertura
+    forgetConditions()
 
     // Resetar o formulário com os valores padrão
     const initialValues = defaultValues(quotationData)
@@ -225,6 +235,7 @@ export function PaymentConditionsDialog({
   }
 
   // const isBusy = isSubmitting || isFetching > 0
+  const blocked = useClientBlocked(quotationData)
   const isBusy = isSubmitting
   const saveButtonLabel =
     submitLabel ?? (onFinish ? 'Salvar e concluir' : 'Salvar')
@@ -265,6 +276,15 @@ export function PaymentConditionsDialog({
             Configurar condições de pagamento do orçamento
           </DialogDescription>
         </DialogHeader>
+        {blocked && (
+          <AlertBanner
+            variant="error"
+            icon={IconAlertTriangle}
+            className="mx-6 mt-4 rounded-lg border"
+            title="Cliente bloqueado"
+            description="As condições podem ser definidas, mas este orçamento não é aprovado nem gera cobrança enquanto o cliente estiver bloqueado no cadastro."
+          />
+        )}
         <DialogBody>
           <Form {...form}>
             <form

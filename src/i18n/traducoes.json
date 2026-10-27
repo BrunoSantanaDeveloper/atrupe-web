@@ -51,6 +51,10 @@
   "es": "Gestor de destino de las etapas",
   "en": "Destination board for the steps"
  },
+ "0021eeba83": {
+  "es": "Recordatorio",
+  "en": "Reminder"
+ },
  "0022a099fb": {
   "es": "Cada ítem de la factura se convierte en material interno, con la conversión de la unidad de compra.",
   "en": "Each invoice item becomes an internal material, converted from the purchase unit."
@@ -130,6 +134,10 @@
  "0139ca2d9a": {
   "es": "Foto del activo",
   "en": "Asset photo"
+ },
+ "013ea5c341": {
+  "es": "Recargo del tercerizado actualizado",
+  "en": "Outsourced markup updated"
  },
  "013f33200e": {
   "es": "{base}:edit",
@@ -399,6 +407,10 @@
   "es": "Ver ranking completo",
   "en": "View full ranking"
  },
+ "05b0a7150d": {
+  "es": "Registro activado.",
+  "en": "Registration activated."
+ },
  "05bc65c4e7": {
   "es": "Sin un medio seleccionado, la venta rápida no se puede cerrar.",
   "en": "With no method selected, a quick sale can't be closed."
@@ -466,6 +478,10 @@
  "068d5a8a76": {
   "es": "Estado modificado.",
   "en": "Status changed."
+ },
+ "069576dff8": {
+  "es": "Cancelada: {reason}",
+  "en": "Cancelled: {reason}"
  },
  "06a26fe059": {
   "es": "Productividad de referencia ({unit}/mes)",
@@ -639,6 +655,10 @@
   "es": "Ej.: el cliente trae el arte en PDF",
   "en": "E.g.: customer brings the artwork as a PDF"
  },
+ "0a506fa19d": {
+  "es": "Precio de venta sugerido por el recargo de",
+  "en": "Sale price suggested by the markup of"
+ },
  "0a67ad5411": {
   "es": "Error al guardar los estándares de medidas. Intente de nuevo.",
   "en": "Error saving size standards. Try again."
@@ -786,6 +806,10 @@
  "0c9cde0f37": {
   "es": "Descripción de la subcategoría",
   "en": "Subcategory description"
+ },
+ "0ca6b22fe5": {
+  "es": "Al marcar las opciones de abajo, el límite de los clientes elegidos se reemplaza por el predeterminado del tipo de cada uno, incluidos los límites personalizados. Los clientes inactivos no lo reciben.",
+  "en": "When you check the options below, the limit of the chosen customers is replaced by the default of each one's type, including customized limits. Inactive customers do not receive it."
  },
  "0cae0fba61": {
   "es": "Incluido",
@@ -1034,6 +1058,10 @@
  "1182cc212f": {
   "es": "Por ancho × {campo}",
   "en": "By width × {campo}"
+ },
+ "119a219b57": {
+  "es": "Quitar próximo contacto",
+  "en": "Clear next contact"
  },
  "11a3abf130": {
   "es": "Cantidad y variante del material",
@@ -1419,6 +1447,10 @@
   "es": "Dialog confirmation timed out",
   "en": "Dialog confirmation timed out"
  },
+ "18c84e5d6d": {
+  "es": "Defina el recargo sobre el costo del tercerizado registrado en el momento.",
+  "en": "Set the markup on cost for outsourced work added on the spot."
+ },
  "18ceca14d8": {
   "es": "Seleccione un tipo de comisión válido",
   "en": "Select a valid commission type"
@@ -1446,6 +1478,10 @@
  "19633bea07": {
   "es": "Estado de flujo de caja (DFC)",
   "en": "Cash flow statement (DFC)"
+ },
+ "196c0269de": {
+  "es": "% sobre la venta (tarjeta, link de pago)",
+  "en": "% of the sale (card, payment link)"
  },
  "197c44cf34": {
   "es": "Valores, descuento y recargo",
@@ -1555,6 +1591,10 @@
   "es": "Complete la pestaña Producto y guarde. El producto se reabre en esta pestaña para que usted arme las etapas, con los procesos, materiales y tiempos de cada una.",
   "en": "Fill in the Product tab and save. The product reopens on this tab so you can set up the steps, with the processes, materials and times of each."
  },
+ "1b28493661": {
+  "es": "Ninguna cuenta paga con esta forma",
+  "en": "No account pays with this method"
+ },
  "1b53e1b79c": {
   "es": "Eliminar grupo",
   "en": "Delete group"
@@ -1562,6 +1602,10 @@
  "1ba6a54a93": {
   "es": "Variante {valor} creada como copia",
   "en": "Variant {valor} created as a copy"
+ },
+ "1be1f9d362": {
+  "es": "Elija al menos un proveedor.",
+  "en": "Choose at least one supplier."
  },
  "1bf56289ea": {
   "es": "Inactivos",
@@ -2047,6 +2091,10 @@
   "es": "Por debajo de {valor} rige el valor de venta del producto.",
   "en": "Below {valor}, the product's selling price applies."
  },
+ "242cdd3d43": {
+  "es": "Aplicar el valor mínimo de venta a los clientes elegidos",
+  "en": "Apply the minimum sale amount to the chosen customers"
+ },
  "24337e4d50": {
   "es": "Series de venta",
   "en": "Sales series"
@@ -2114,6 +2162,10 @@
  "25232107ea": {
   "es": "Ver distribución",
   "en": "View distribution"
+ },
+ "253428d691": {
+  "es": "Costo del proveedor por {unit}",
+  "en": "Supplier cost per {unit}"
  },
  "256d914258": {
   "es": "En el camino hacia la excelencia, todo comienza con la organización y estructuración de la información. Este punto de partida crea las bases para que el negocio avance de forma ordenada y profesional.",
@@ -2230,6 +2282,10 @@
  "27662f6399": {
   "es": "logo atrupe",
   "en": "Atrupe logo"
+ },
+ "276b874aa1": {
+  "es": "Marque al menos una forma de pago para activar",
+  "en": "Check at least one payment method to activate"
  },
  "277c605264": {
   "es": "Costo y precio de las variantes de {name}",
@@ -2411,6 +2467,10 @@
   "es": "Importaciones",
   "en": "Imports"
  },
+ "2a79ad9e5d": {
+  "es": "Ninguna cuenta cobra con esta forma",
+  "en": "No account receives with this method"
+ },
  "2a8cdd7eb6": {
   "es": "Ningún registro",
   "en": "No entries"
@@ -2494,6 +2554,10 @@
  "2b54ff7e46": {
   "es": "finalizada por {completedBy}",
   "en": "finished by {completedBy}"
+ },
+ "2b5be1552e": {
+  "es": "para cancelar.",
+  "en": "to cancel."
  },
  "2b6bc3eee0": {
   "es": "Aceptar transferencia",
@@ -2755,6 +2819,10 @@
   "es": "Todas las tareas",
   "en": "All tasks"
  },
+ "2eea101c93": {
+  "es": "Registros aprobados",
+  "en": "Approved registrations"
+ },
  "2f31672fd7": {
   "es": "Informe de depreciación",
   "en": "Depreciation report"
@@ -2974,6 +3042,10 @@
  "32da250799": {
   "es": "Regla base. El equipo más caro recibe más. Todo activo tiene valor de adquisición, por lo que el prorrateo nunca queda sin criterio.",
   "en": "Base rule. The most expensive equipment gets more. Every asset has a purchase value, so the allocation is never left without a criterion."
+ },
+ "32f0ef36c8": {
+  "es": "Ej.: llamar después de que el cliente hable con su socio",
+  "en": "E.g. call after the customer talks to their partner"
  },
  "32f6484f2d": {
   "es": "No fue posible consultar el CNPJ ahora. Complete la razón social.",
@@ -3271,6 +3343,10 @@
   "es": "Error al registrar la nómina. Verifique si el colaborador tiene la configuración de salario definida",
   "en": "Error posting payroll. Check whether the team member has salary settings defined"
  },
+ "38a6a07cb5": {
+  "es": "Se puede armar una cotización para este cliente, pero ninguna cotización se aprueba, se convierte en orden de servicio ni genera cobro mientras esté bloqueado. El desbloqueo está en la pestaña Límite de crédito del registro.",
+  "en": "You can build a quote for this customer, but no quote is approved, becomes a service order or generates a charge while they are blocked. Unblock them in the Credit limit tab of the registration."
+ },
  "38b35c5a94": {
   "es": "Precios",
   "en": "Pricing"
@@ -3458,6 +3534,10 @@
  "3b2d4f6a65": {
   "es": "Rechazada",
   "en": "Rejected"
+ },
+ "3b345af822": {
+  "es": "Servicio contratado a un proveedor solo para esta venta",
+  "en": "Service hired from a supplier for this sale only"
  },
  "3b353baef8": {
   "es": "Esta funcionalidad está en desarrollo y estará disponible pronto.",
@@ -3967,6 +4047,10 @@
   "es": "Usa {quantity} u. · {width} × {height} m y se recalcula si el ítem cambia.",
   "en": "Uses {quantity} pc · {width} × {height} m and is recalculated if the item changes."
  },
+ "43233dac06": {
+  "es": "Informe el costo del tercerizado",
+  "en": "Enter the outsourced cost"
+ },
  "433fda1552": {
   "es": "Redes sociales",
   "en": "Social media"
@@ -3990,6 +4074,10 @@
  "437be75f9d": {
   "es": "Ej.: Tinta, mantenimiento preventivo",
   "en": "E.g., Ink, preventive maintenance"
+ },
+ "438115a438": {
+  "es": "Informe por qué el cliente no cerró. El motivo aparece en el presupuesto y en el informe de pérdidas.",
+  "en": "Say why the customer did not close. The reason shows on the quotation and in the losses report."
  },
  "4383a94559": {
   "es": "{reference} esperando retiro",
@@ -4523,6 +4611,10 @@
   "es": "Usted no tiene permiso para configurar el tercerizado puntual.",
   "en": "You don't have permission to configure one-off outsourced work."
  },
+ "4bafd8a904": {
+  "es": "El límite registrado aquí es el que recibe cada cliente nuevo al registrarse, según el tipo: persona física o jurídica.",
+  "en": "The limit set here is what each new customer gets when registered, by type: individual or company."
+ },
  "4bce4fb308": {
   "es": "Movimiento cancelado",
   "en": "Transaction canceled"
@@ -4690,6 +4782,10 @@
  "4dfcafb448": {
   "es": "Repita la contraseña.",
   "en": "Repeat the password."
+ },
+ "4e056156bd": {
+  "es": "Comprado a un proveedor y revendido: al aprobar la venta, el sistema genera la cuenta por pagar al proveedor con el costo informado aquí.",
+  "en": "Bought from a supplier and resold: when the sale is approved, the system creates the payable to the supplier with the cost entered here."
  },
  "4e318c3c4f": {
   "es": "Ocurrió un error al actualizar el perfil",
@@ -5007,6 +5103,10 @@
   "es": "Ver de dónde viene cada valor",
   "en": "See where each amount comes from"
  },
+ "53459dd226": {
+  "es": "Informe el proveedor",
+  "en": "Enter the supplier"
+ },
  "53504ca5d5": {
   "es": "{allocated} prorrateados por ítem · {allocated2} en lo administrativo",
   "en": "{allocated} allocated by item · {allocated2} in overhead"
@@ -5215,6 +5315,10 @@
   "es": "prorrateados por ítem en Gastos administrativos, que pasaron a ser costo propio de los sectores.",
   "en": "allocated by item in Overhead, which became the departments' own cost."
  },
+ "5708dcdea4": {
+  "es": "Fecha del contacto",
+  "en": "Contact date"
+ },
  "571d35af04": {
   "es": "valor total",
   "en": "full amount"
@@ -5250,6 +5354,10 @@
  "573db02a41": {
   "es": "Emparejada con:",
   "en": "Matched with:"
+ },
+ "573f1dfdb7": {
+  "es": "Ninguna forma de pago registrada. Registre las condiciones de pago en Configuración › Financiero.",
+  "en": "No payment method registered. Register the payment terms in Settings › Finance."
  },
  "57565e0a11": {
   "es": "Efectivo (depósito o retiro)",
@@ -5326,6 +5434,10 @@
  "587836f3d3": {
   "es": "Ningún pago encontrado",
   "en": "No payments found"
+ },
+ "588956a9c8": {
+  "es": "Aplicar las formas de pago a los clientes elegidos",
+  "en": "Apply the payment methods to the chosen customers"
  },
  "58a18342d2": {
   "es": "Video de presentación del {name}",
@@ -5703,6 +5815,10 @@
   "es": "Límite de crédito actualizado",
   "en": "Credit limit updated"
  },
+ "5eb4e1cb47": {
+  "es": "es la cuenta que ya viene marcada al cobrar con esa forma — se puede cambiar en el momento. Cada forma tiene una sola cuenta predeterminada: marcarla aquí le quita la predeterminación a la otra cuenta.",
+  "en": "is the account preselected when receiving with that method — you can change it on the spot. Each method has only one default account: checking it here removes the default from the other account."
+ },
  "5ed7a3e737": {
   "es": "Extracto",
   "en": "Statement"
@@ -5806,6 +5922,10 @@
  "5fcea15ed5": {
   "es": "Fecha de vencimiento",
   "en": "Due date"
+ },
+ "5fe7c80568": {
+  "es": "Precio de venta unitario",
+  "en": "Unit sale price"
  },
  "5feb7d39e2": {
   "es": "Estado desconocido",
@@ -5923,6 +6043,10 @@
   "es": "Valor restante por depreciar",
   "en": "Remaining amount to depreciate"
  },
+ "61eb121339": {
+  "es": "Aplicar el valor máximo de venta a los clientes elegidos",
+  "en": "Apply the maximum sale amount to the chosen customers"
+ },
  "61ecae6a5b": {
   "es": "Cuentas de las fuentes",
   "en": "Source accounts"
@@ -5982,6 +6106,10 @@
  "62a4e485cb": {
   "es": "Esperando una caja",
   "en": "Waiting for a register"
+ },
+ "62f5a9b0f5": {
+  "es": "Informe el costo para ver el precio sugerido por el recargo de la empresa.",
+  "en": "Enter the cost to see the price suggested by the company markup."
  },
  "62fb985e18": {
   "es": "Agregar responsable",
@@ -6098,6 +6226,10 @@
  "650b670984": {
   "es": "Por colaborador",
   "en": "By team member"
+ },
+ "6526bd3eca": {
+  "es": "Informe la cantidad",
+  "en": "Enter the quantity"
  },
  "652f6f84d2": {
   "es": "+ R$ {surcharge} ({valor}%) sobre el valor base. Queda incluido en el valor del ítem y no cuenta como descuento.",
@@ -6258,6 +6390,10 @@
  "67c969f762": {
   "es": "¡Contraseña restablecida con éxito!",
   "en": "Password reset successfully!"
+ },
+ "67da893e27": {
+  "es": "Tasa de la operadora (costo)",
+  "en": "Acquirer fee (cost)"
  },
  "67e6b952ea": {
   "es": "El proyecto nace cuando se aprueba la venta.",
@@ -6667,6 +6803,10 @@
   "es": "Costos y precios",
   "en": "Costs and pricing"
  },
+ "6db7d67dc8": {
+  "es": "En el presupuesto, el vendedor informa el costo del proveedor y el sistema propone el precio de venta: costo + este porcentaje. El porcentaje aparece junto al precio y el vendedor puede cambiar el valor en el momento. El tercerizado no recibe prorrateo ni costo de estructura: el precio es solo el costo más el recargo.",
+  "en": "In the quotation, the seller enters the supplier cost and the system suggests the sale price: cost + this percentage. The percentage shows next to the price and the seller can change the value on the spot. Outsourced work gets no overhead allocation: the price is just the cost plus the markup."
+ },
  "6dbca7a9f4": {
   "es": "Ingrese la nomenclatura",
   "en": "Enter the naming"
@@ -6739,6 +6879,10 @@
   "es": "Cotización finalizada",
   "en": "Quote finished"
  },
+ "6ef326a75d": {
+  "es": "Al marcar las opciones de abajo, el límite de los clientes elegidos, del tipo de esta pestaña, se reemplaza por el nuevo predeterminado, incluidos los límites personalizados.",
+  "en": "When you check the options below, the limit of the chosen customers, of this tab type, is replaced by the new default, including customized limits."
+ },
  "6efbfef167": {
   "es": "Error al verificar el estado",
   "en": "Error checking status"
@@ -6795,6 +6939,10 @@
   "es": "El costo por hora sale del costo del sector dividido por la carga horaria de los colaboradores. El margen muestra el resultado del precio aplicado sobre ese costo.",
   "en": "The hourly cost comes from the department cost divided by the team members' workload hours. The margin shows the result of the price charged over that cost."
  },
+ "704b5d6c9e": {
+  "es": "Ventas canceladas por motivo",
+  "en": "Cancelled sales by reason"
+ },
  "704fe728c4": {
   "es": "Venta cancelada en caja",
   "en": "Sale canceled at the register"
@@ -6850,6 +6998,10 @@
  "70dd215544": {
   "es": "Venta cancelada",
   "en": "Sale canceled"
+ },
+ "70eb20006e": {
+  "es": "para rechazar.",
+  "en": "to reject."
  },
  "70ee583a0d": {
   "es": "Seleccionar solo los {valor} de esta página",
@@ -6923,6 +7075,10 @@
   "es": "Comercio",
   "en": "Retail"
  },
+ "722b98d468": {
+  "es": "Para cambiar, quítelo y regístrelo de nuevo",
+  "en": "To change it, remove and add it again"
+ },
  "72720468ab": {
   "es": "Valor de la venta",
   "en": "Sale amount"
@@ -6930,6 +7086,10 @@
  "727608c6bb": {
   "es": "Su búsqueda no encontró ningún resultado. Intente de nuevo o registre un nuevo gasto fijo",
   "en": "Your search found no results. Try again or add a new fixed expense"
+ },
+ "72c1b4c001": {
+  "es": "Cliente bloqueado",
+  "en": "Customer blocked"
  },
  "72c310a45c": {
   "es": "Su búsqueda no arrojó resultados. Intente nuevamente o registre un nuevo grupo de productos",
@@ -7050,6 +7210,10 @@
  "743fa8d945": {
   "es": "Ingrese a su cuenta",
   "en": "Log in to your account"
+ },
+ "744c48a52f": {
+  "es": "Las condiciones se pueden definir, pero esta cotización no se aprueba ni genera cobro mientras el cliente esté bloqueado en el registro.",
+  "en": "The terms can be set, but this quote is not approved and generates no charge while the customer is blocked in the registration."
  },
  "74512d97cd": {
   "es": "Precio por cantidad",
@@ -7335,6 +7499,10 @@
   "es": "Vendedor: {seller}",
   "en": "Salesperson: {seller}"
  },
+ "785f04371c": {
+  "es": "El vendedor puede cambiar el nombre de este producto en la propuesta, pero para el sistema sigue siendo este producto.",
+  "en": "The seller can rename this product in the proposal, but for the system it is still this product."
+ },
  "7880e7bfc1": {
   "es": "¡Éxito!",
   "en": "Success!"
@@ -7478,6 +7646,10 @@
  "7a74260708": {
   "es": "Sugerencia",
   "en": "Suggested"
+ },
+ "7a970debb5": {
+  "es": "Límite de crédito predeterminado",
+  "en": "Default credit limit"
  },
  "7a971b02f1": {
   "es": "Desactivado, el activo entra solo con la depreciación en el costo del sector, sin unidad, productividad ni configuraciones.",
@@ -7679,6 +7851,10 @@
   "es": "No calculado",
   "en": "Not calculated"
  },
+ "7d4aef75ae": {
+  "es": "Lo que esta cuenta cobra y paga. La cuenta nueva viene con todo desmarcado: marque las formas que usa.",
+  "en": "What this account receives and pays. A new account starts with everything unchecked: check the methods it uses."
+ },
  "7d4c67405c": {
   "es": "Error al eliminar el grupo",
   "en": "Error deleting group"
@@ -7819,6 +7995,14 @@
   "es": "Traiga sus ingresos y gastos al control financiero.",
   "en": "Bring your income and expenses into financial control."
  },
+ "7f8d4b234a": {
+  "es": "Por cuota",
+  "en": "Per installment"
+ },
+ "7fb614d4ce": {
+  "es": "Informe el costo del proveedor",
+  "en": "Enter the supplier cost"
+ },
  "7fc3c3b443": {
   "es": "Detallar {name}",
   "en": "Show details for {name}"
@@ -7907,6 +8091,10 @@
   "es": "Cuánto recibe en reales — {name}",
   "en": "Amount received in reais — {name}"
  },
+ "8105167ef6": {
+  "es": "Total del ítem: {quantity}",
+  "en": "Item total: {quantity}"
+ },
  "812405127f": {
   "es": "Error al guardar la carga horaria",
   "en": "Error saving the workload"
@@ -7942,6 +8130,10 @@
  "81bb965113": {
   "es": "Registre a su primer colaborador",
   "en": "Add your first team member"
+ },
+ "81ce9f4068": {
+  "es": "Un servicio contratado a un proveedor solo para esta venta. Al aprobar el presupuesto, se genera la cuenta por pagar al proveedor con el costo informado. El costo no aparece en el presupuesto.",
+  "en": "A service hired from a supplier for this sale only. When the quotation is approved, the payable to the supplier is created with the cost entered. The cost does not show on the quotation."
  },
  "81d7594875": {
   "es": "Valores actualizados",
@@ -7982,6 +8174,10 @@
  "8253e78eb6": {
   "es": "Nuevo costo del activo",
   "en": "New asset cost"
+ },
+ "82695585e4": {
+  "es": "Informe la fecha del contacto",
+  "en": "Enter the contact date"
  },
  "82809f1e43": {
   "es": "Mínimo de 1 número",
@@ -8131,6 +8327,10 @@
   "es": "Error al generar la hoja de producción",
   "en": "Error generating the job ticket"
  },
+ "84615852e2": {
+  "es": "Todos (incluidos los inactivos)",
+  "en": "All (including inactive)"
+ },
  "8462d52b09": {
   "es": "¡Algo salió mal!",
   "en": "Something went wrong!"
@@ -8274,6 +8474,10 @@
  "86abf9e429": {
   "es": "Sin recurso: complete o elimine",
   "en": "No resource: complete or remove"
+ },
+ "86c56ec16f": {
+  "es": "Cobrada en cada cuota (cada boleto): en 3 cuotas, 3 veces el valor.",
+  "en": "Charged on each installment (each boleto): in 3 installments, 3 times the amount."
  },
  "86c9b65ade": {
   "es": "Sin vendedor",
@@ -8507,6 +8711,10 @@
   "es": "Este activo aún no se usa en ningún proceso.",
   "en": "This asset isn't used in any process yet."
  },
+ "8a18cce7f8": {
+  "es": "Próximo contacto guardado.",
+  "en": "Next contact saved."
+ },
  "8a1de968d5": {
   "es": "Indique el saldo del extracto al final del día. Si no coincide con el sistema, explique la diferencia.",
   "en": "Enter the statement balance at the end of the day. If it doesn't match the system, explain the difference."
@@ -8630,6 +8838,10 @@
  "8bb3147e73": {
   "es": "Al aprobar, este trabajo cambiará de estado y quedará disponible en la pestaña Órdenes de trabajo.",
   "en": "Once approved, this job will change status and become available in the Work orders tab."
+ },
+ "8bc2d92b0f": {
+  "es": "Recargo de {markup} % sobre el costo = {suggested}",
+  "en": "{markup}% markup on cost = {suggested}"
  },
  "8bc7096925": {
   "es": "No hay datos disponibles para exportar",
@@ -8879,6 +9091,10 @@
   "es": "Adelanto",
   "en": "Advance"
  },
+ "8fc7552f01": {
+  "es": "Servicio",
+  "en": "Service"
+ },
  "8fcf34fee8": {
   "es": "Ver flujo",
   "en": "View cash flow"
@@ -8890,6 +9106,14 @@
  "902e944572": {
   "es": "Valor del anticipo",
   "en": "Down payment amount"
+ },
+ "9078fd7b75": {
+  "es": "Ningún presupuesto para retomar hoy",
+  "en": "No quotation to follow up today"
+ },
+ "90869caa1d": {
+  "es": "Ningún motivo registrado.",
+  "en": "No reason registered."
  },
  "908c47af10": {
   "es": "Seleccione una unidad de peso",
@@ -9199,6 +9423,10 @@
   "es": "Ver",
   "en": "View"
  },
+ "961e344691": {
+  "es": "Para retomar",
+  "en": "To follow up"
+ },
  "9621ad062d": {
   "es": "{path}",
   "en": "{path}"
@@ -9427,6 +9655,14 @@
   "es": "Saldo previsto",
   "en": "Projected balance"
  },
+ "99c1b43ea2": {
+  "es": "Bloqueado",
+  "en": "Blocked"
+ },
+ "99d104e8db": {
+  "es": "Elija la forma de pago",
+  "en": "Choose the payment method"
+ },
  "99e7fcbd52": {
   "es": "¿No tiene una cuenta?",
   "en": "Don't have an account?"
@@ -9574,6 +9810,10 @@
  "9c5cdc0954": {
   "es": "Video de ayuda",
   "en": "Help video"
+ },
+ "9c66e73d1c": {
+  "es": "La operadora cobra según la cantidad de cuotas de la venta: la línea 3x vale para la venta en 3 cuotas, sobre el total pagado con esta forma.",
+  "en": "The acquirer charges by the number of installments of the sale: the 3x line applies to a sale split in 3, over the total paid with this method."
  },
  "9c740d4df4": {
   "es": "El costo y el precio de cada combinación están en el R$ de la lista.",
@@ -9735,9 +9975,17 @@
   "es": "Confirmar pago",
   "en": "Confirm payment"
  },
+ "9e9392a458": {
+  "es": "La tasa de la operadora es su costo: queda guardada para el cálculo de costos (PRO). El traslado es lo que el cliente paga de más, sumado a la cotización como recargo.",
+  "en": "The acquirer fee is your cost: it is kept for the cost calculation (PRO). The pass-through is what the customer pays extra, added to the quote as a surcharge."
+ },
  "9ea3b555d2": {
   "es": "Repita la contraseña *",
   "en": "Repeat the password *"
+ },
+ "9eadfdabbd": {
+  "es": "Seguimiento",
+  "en": "Follow-up"
  },
  "9ef2259422": {
   "es": "Fórmulas del proceso",
@@ -9838,6 +10086,10 @@
  "a05cec3b10": {
   "es": "Nuevo material",
   "en": "New material"
+ },
+ "a061209523": {
+  "es": "Vender otro artículo con el nombre cambiado distorsiona los informes de ventas, la producción y el inventario. Para algo que no está registrado, use el Producto base del sector.",
+  "en": "Selling another item under a changed name distorts sales reports, production and stock. For something not registered, use the sector Base product."
  },
  "a06fca4324": {
   "es": "Transferencia aceptada. Inicie sesión con el correo electrónico de la invitación y la contraseña que creó.",
@@ -9958,6 +10210,10 @@
  "a24a86f871": {
   "es": "Longitud",
   "en": "Length"
+ },
+ "a2597faca6": {
+  "es": "Límite de crédito predeterminado actualizado",
+  "en": "Default credit limit updated"
  },
  "a26ec7feac": {
   "es": "Registrar ingreso de caja",
@@ -10339,6 +10595,10 @@
   "es": "Cierre PV n.º",
   "en": "POS closing no."
  },
+ "a7d00beee7": {
+  "es": "Recargo sobre el costo del tercerizado",
+  "en": "Markup on the outsourced cost"
+ },
  "a7e4aa3b4b": {
   "es": "La orden de trabajo ya fue creada para esta venta.",
   "en": "The work order has already been created for this sale."
@@ -10414,6 +10674,10 @@
  "a901512136": {
   "es": "Vista previa de la propuesta",
   "en": "Preview proposal"
+ },
+ "a9054372a7": {
+  "es": "Saldo inicial de",
+  "en": "Opening balance of"
  },
  "a918a4ad65": {
   "es": "Elija un sector que tenga colaboradores para ver la nómina.",
@@ -10515,6 +10779,10 @@
   "es": "Marca y color se agregan después del registro, como variantes, al editar el material. Espesores y tamaños distintos son materiales distintos.",
   "en": "Brand and color are added after saving, as variants, when editing the material. Different thicknesses and sizes are different materials."
  },
+ "ab54e7ea78": {
+  "es": "Cliente bloqueado en el registro: esta venta no se puede cobrar ni enviar a la caja.",
+  "en": "Customer blocked in the registration: this sale cannot be charged or sent to the register."
+ },
  "ab55b5edd1": {
   "es": "Ej.: cobro del día registrado en la cuenta equivocada",
   "en": "E.g.: the day's receipt was posted to the wrong account"
@@ -10598,6 +10866,10 @@
  "ac956590df": {
   "es": "Ningún cargo registrado",
   "en": "No positions yet"
+ },
+ "acbffe5c4b": {
+  "es": "% sobre el costo:",
+  "en": "% on cost:"
  },
  "acc9195bb1": {
   "es": "Campo eliminado",
@@ -10694,6 +10966,10 @@
  "ae64394780": {
   "es": "Costo promedio",
   "en": "Average cost"
+ },
+ "ae6934b585": {
+  "es": "Con este precio, el descuento de la cotización queda en {valor}% sobre el precio del catálogo, por encima del límite del vendedor ({maxDiscount}%). Suba el precio para guardar.",
+  "en": "At this price, the quote discount is {valor}% over the catalog price, above the seller limit ({maxDiscount}%). Raise the price to save."
  },
  "ae6d381887": {
   "es": "Para estimar el costo por hora de este sector se necesita al menos un colaborador registrado.",
@@ -11299,9 +11575,21 @@
   "es": "{valor} valor(es) en campos opcionales se ajustarán. Las filas se importarán normalmente:",
   "en": "{valor} value(s) in optional fields will be adjusted. The rows will be imported as usual:"
  },
+ "b7c90b7eca": {
+  "es": "Recargo de {markup} % sobre el costo = {suggestedPrice}",
+  "en": "{markup}% markup on cost = {suggestedPrice}"
+ },
+ "b7d66d1a41": {
+  "es": "Sin acordar",
+  "en": "Not scheduled"
+ },
  "b7e28f5752": {
   "es": "Mostrar medidas",
   "en": "Show sizes"
+ },
+ "b80670d8fe": {
+  "es": "Acordar próximo contacto",
+  "en": "Schedule next contact"
  },
  "b81e8edb4d": {
   "es": "Todo lo que el sistema tiene en el período está en el extracto.",
@@ -11350,6 +11638,10 @@
  "b8cb6f8bec": {
   "es": "Continuar",
   "en": "Continue"
+ },
+ "b8cd6beb87": {
+  "es": "Producto tercerizado",
+  "en": "Outsourced product"
  },
  "b8e878f909": {
   "es": "Transferir",
@@ -11555,6 +11847,10 @@
   "es": "Agregar usuarios",
   "en": "Add users"
  },
+ "bc491540bd": {
+  "es": "Máximo 500 caracteres",
+  "en": "At most 500 characters"
+ },
  "bc51a0a8b4": {
   "es": "Nueva versión",
   "en": "New version"
@@ -11687,6 +11983,10 @@
   "es": "Por pagar",
   "en": "Payable"
  },
+ "be1add5f4e": {
+  "es": "Informe al menos un proveedor del tercerizado",
+  "en": "Enter at least one supplier for the outsourced product"
+ },
  "be23743ead": {
   "es": "Ninguna cotización con el estado: {valor}",
   "en": "No quotes with status: {valor}"
@@ -11699,9 +11999,17 @@
   "es": "Entrega en riesgo",
   "en": "Delivery at risk"
  },
+ "be822cc53b": {
+  "es": "Cambiar próximo contacto",
+  "en": "Change next contact"
+ },
  "be96ed4d00": {
   "es": "Cajón de la caja · va a la cuenta Caja en el cierre",
   "en": "Register drawer · goes to the Cash account at closing"
+ },
+ "be9fd3ec7a": {
+  "es": "Ej.: instalación de la fachada",
+  "en": "E.g. storefront installation"
  },
  "beaa96c735": {
   "es": "Fecha de pago",
@@ -11887,6 +12195,10 @@
   "es": "Quitar el feriado del {day}",
   "en": "Remove the holiday on {day}"
  },
+ "c1ef3896c2": {
+  "es": "Sobre: {title}",
+  "en": "About: {title}"
+ },
  "c1fbafc776": {
   "es": "Cuentas por cobrar",
   "en": "Accounts receivable"
@@ -11946,6 +12258,10 @@
  "c3011bd6e4": {
   "es": "movido en el período",
   "en": "moved in the period"
+ },
+ "c3179d7124": {
+  "es": "Aplicar a",
+  "en": "Apply to"
  },
  "c31a7aefe0": {
   "es": "Mano de obra por sector",
@@ -12010,6 +12326,10 @@
  "c3ea0c7bb4": {
   "es": "Facturación",
   "en": "Billing"
+ },
+ "c3ee6dbd2e": {
+  "es": ". La cuenta ya tiene movimientos, así que el saldo inicial no se cambia aquí: el saldo se calcula a partir de los movimientos.",
+  "en": ". The account already has entries, so the opening balance cannot be changed here: the balance is calculated from the entries."
  },
  "c40a2ef4b6": {
   "es": "Se crearán {combinations} combinaciones ({valor} marcas × {valor2} colores).",
@@ -12102,6 +12422,10 @@
  "c5ecbc7699": {
   "es": "Revisión simple (predeterminada)",
   "en": "Simple check (default)"
+ },
+ "c5f602219e": {
+  "es": "Registre los motivos de cancelación",
+  "en": "Register the cancellation reasons"
  },
  "c5f80cd9a3": {
   "es": "Salud",
@@ -12483,6 +12807,14 @@
   "es": "Se aplicará en el menú lateral de la plataforma, en las cotizaciones y en los informes.",
   "en": "It will be applied to the platform's side menu, quotes and reports."
  },
+ "cd032b94c5": {
+  "es": "Informe un porcentaje entre 0 % y 1000 %.",
+  "en": "Enter a percentage between 0% and 1000%."
+ },
+ "cd1d2c4fdc": {
+  "es": "Presupuestos rechazados por motivo",
+  "en": "Rejected quotations by reason"
+ },
  "cd26a4c8e8": {
   "es": "La pestaña Finanzas reúne en el registro el saldo, las cuentas y los movimientos del proveedor.",
   "en": "The Finance tab brings the supplier's balance, accounts and transactions into their record."
@@ -12571,6 +12903,10 @@
   "es": "Grupo eliminado con éxito.",
   "en": "Group deleted successfully."
  },
+ "ce7df96547": {
+  "es": "Marque las formas de pago que este cliente puede usar. El registro solo se activa con al menos una.",
+  "en": "Check the payment methods this customer can use. The registration is only activated with at least one."
+ },
  "ceb4f4b448": {
   "es": "Error al registrar la venta",
   "en": "Error recording the sale"
@@ -12650,6 +12986,10 @@
  "cf9f0e6b88": {
   "es": "Costo propio",
   "en": "Own cost"
+ },
+ "cfa4dab9b0": {
+  "es": "Próximo contacto quitado.",
+  "en": "Next contact removed."
  },
  "cfb1259745": {
   "es": "Sin registro",
@@ -12859,6 +13199,10 @@
   "es": "Video: {title}",
   "en": "Video: {title}"
  },
+ "d3c1f89af7": {
+  "es": "Registrar en el presupuesto",
+  "en": "Add to quotation"
+ },
  "d3d4a49322": {
   "es": "Exportar PDF",
   "en": "Export PDF"
@@ -12926,6 +13270,10 @@
  "d4a9b82b9c": {
   "es": "El ancho debe ser un número",
   "en": "Width must be a number"
+ },
+ "d4c37f370c": {
+  "es": "Costo unitario",
+  "en": "Unit cost"
  },
  "d4cde61999": {
   "es": "En unos instantes recibirá en su correo electrónico las instrucciones para cambiar la contraseña.",
@@ -13043,6 +13391,10 @@
   "es": "Saldo del extracto",
   "en": "Statement balance"
  },
+ "d69ce4164c": {
+  "es": "Los clientes que ya existen no cambian, salvo por las opciones avanzadas, que aplican el predeterminado a los clientes elegidos.",
+  "en": "Existing customers do not change, except through the advanced options, which apply the default to the chosen customers."
+ },
  "d6a3192829": {
   "es": "Horario de entrega",
   "en": "Delivery time"
@@ -13107,6 +13459,10 @@
   "es": "Usted no tiene permiso para ver el informe de comisiones.",
   "en": "You don't have permission to view the commissions report."
  },
+ "d7e44daa75": {
+  "es": "Tercerizado registrado.",
+  "en": "Outsourced service added."
+ },
  "d7f8909c63": {
   "es": "Nada esperando a la caja",
   "en": "Nothing waiting for the register"
@@ -13146,6 +13502,10 @@
  "d8f976275c": {
   "es": "por hoja ·",
   "en": "per sheet ·"
+ },
+ "d8fde351ac": {
+  "es": "Cómo se cobra la tasa",
+  "en": "How the fee is charged"
  },
  "d90190874e": {
   "es": "La venta rápida sigue siendo una cotización común, marcada como rápida: sigue el mismo camino de aprobación, orden de trabajo y finanzas.",
@@ -13491,6 +13851,10 @@
   "es": "Ocupa {machine} por {occupies}: preparación de {setupMinutes} más la producción.",
   "en": "Occupies {machine} for {occupies}: {setupMinutes} of setup plus production."
  },
+ "de73849017": {
+  "es": "Informe el nombre del servicio",
+  "en": "Enter the service name"
+ },
  "de79ff7051": {
   "es": "Reglas propias",
   "en": "Own rules"
@@ -13679,6 +14043,10 @@
   "es": "FECHA COBRO",
   "en": "RECEIVED DATE"
  },
+ "e2164df187": {
+  "es": "Informe el motivo. Aparece en la orden de servicio y en el informe de pérdidas.",
+  "en": "Enter the reason. It shows on the service order and in the losses report."
+ },
  "e2250bcdd1": {
   "es": "Marcar los ítems de la página",
   "en": "Select the items on this page"
@@ -13758,6 +14126,10 @@
  "e40e8915c6": {
   "es": "Cree el primer perfil",
   "en": "Create the first role"
+ },
+ "e420285af1": {
+  "es": "Traslado al cliente",
+  "en": "Passed on to the customer"
  },
  "e43154d427": {
   "es": ". La venta se cierra y lo que no fue pagado,",
@@ -13878,6 +14250,10 @@
  "e6b55cf9e1": {
   "es": "Error al descargar la plantilla",
   "en": "Error downloading template"
+ },
+ "e6e0c8f1da": {
+  "es": "Sobre el total pagado con esta forma.",
+  "en": "Over the total paid with this method."
  },
  "e6ee04a6b9": {
   "es": "Regla",
@@ -14223,6 +14599,10 @@
   "es": "{total} registro(s) creado(s)",
   "en": "{total} record(s) created"
  },
+ "ec82be95b3": {
+  "es": "Cómo aparece",
+  "en": "How it looks"
+ },
  "eca1cad3d7": {
   "es": "Cambiar el armado cambia 1 producto",
   "en": "Changing the setup changes 1 product"
@@ -14255,6 +14635,10 @@
   "es": "¡Ítem de costo eliminado!",
   "en": "Cost item deleted!"
  },
+ "ed2d9377f7": {
+  "es": "El vendedor puede cambiar el precio de este producto en la cotización. Bajar el precio cuenta como descuento y respeta el límite del vendedor, medido sobre el precio del catálogo.",
+  "en": "The seller can change this product price in the quote. Lowering the price counts as a discount and respects the seller limit, measured against the catalog price."
+ },
  "ed3025abe8": {
   "es": "Al activar a {valor}, el colaborador se activará y podrá acceder al sistema.",
   "en": "When you activate {valor}, the team member will be activated and will be able to access the system."
@@ -14282,6 +14666,10 @@
  "edaae17df9": {
   "es": "Formato de correo electrónico inválido",
   "en": "Invalid email format"
+ },
+ "edb27bc2fd": {
+  "es": "Déjelo activado solo en los productos de precio variable. Para vender algo que no está registrado, use el Producto base del sector.",
+  "en": "Keep it on only for variable-price products. To sell something not registered, use the sector Base product."
  },
  "edb37a276e": {
   "es": "Condición de pago {valor} con éxito",
@@ -14354,6 +14742,10 @@
  "ee9468df82": {
   "es": "Tareas finalizadas. Lo vendido viene de la composición; lo registrado, del reloj. Productividad = vendido ÷ registrado.",
   "en": "Completed tasks. Sold time comes from the build-up; logged time, from the clock. Productivity = sold ÷ logged."
+ },
+ "ee9d88b6cf": {
+  "es": "Este cliente está bloqueado en el registro: no genera cobro",
+  "en": "This customer is blocked in the registration: no charge is generated"
  },
  "eebe69fa05": {
   "es": "Equivalencia guardada",
@@ -14515,6 +14907,10 @@
   "es": "Vista previa",
   "en": "Preview"
  },
+ "f205491fc9": {
+  "es": "Cuándo retomar la conversación con el cliente y qué quedó acordado. El presupuesto aparece en \"Para retomar\" ese día.",
+  "en": "When to resume the conversation with the customer and what was agreed. The quotation shows under \"To follow up\" on that day."
+ },
  "f2128af52e": {
   "es": "CONTRAPARTE",
   "en": "COUNTERPARTY"
@@ -14538,6 +14934,10 @@
  "f25a0a2865": {
   "es": "Nace finalizada",
   "en": "Starts as done"
+ },
+ "f26fed49b7": {
+  "es": "Próximo contacto",
+  "en": "Next contact"
  },
  "f2787df35f": {
   "es": "margen {valor} %",
@@ -14683,6 +15083,10 @@
   "es": "Seleccione un motivo",
   "en": "Select a reason"
  },
+ "f43ad0d5ff": {
+  "es": "Motivo: {reason}",
+  "en": "Reason: {reason}"
+ },
  "f43c6b553a": {
   "es": "Caja olvidada cerrada",
   "en": "Forgotten register closed"
@@ -14771,6 +15175,10 @@
   "es": "useChart must be used within a <ChartContainer />",
   "en": "useChart must be used within a <ChartContainer />"
  },
+ "f5bf131a5e": {
+  "es": "Recargo sobre el costo",
+  "en": "Markup on cost"
+ },
  "f5e6d95c5d": {
   "es": "Ingresar el valor mensual",
   "en": "Enter the monthly amount"
@@ -14818,6 +15226,10 @@
  "f6b21ca62b": {
   "es": "Sector actualizado",
   "en": "Department updated"
+ },
+ "f6bcd5db1c": {
+  "es": "R$ por cuota (boleto)",
+  "en": "R$ per installment (boleto)"
  },
  "f6bf185637": {
   "es": "Desactivar {name}",
@@ -15087,6 +15499,10 @@
   "es": "Recursos",
   "en": "Resources"
  },
+ "fb7f748e62": {
+  "es": "Registre los motivos de rechazo",
+  "en": "Register the rejection reasons"
+ },
  "fb87c51063": {
   "es": "La caja sigue en el mismo lugar del flujo, con las mismas conexiones. Lo que cambia son los recursos y el tiempo.",
   "en": "The box stays in the same place in the flow, with the same connections. What changes are the resources and the time."
@@ -15142,6 +15558,10 @@
  "fc2c74003c": {
   "es": "Inicio",
   "en": "Start"
+ },
+ "fc436f0991": {
+  "es": "Este cliente está bloqueado en el registro: el servicio no se puede facturar hasta el desbloqueo, en la pestaña Límite de crédito del cliente.",
+  "en": "This customer is blocked in the registration: the service cannot be billed until unblocked, in the customer's Credit limit tab."
  },
  "fc45480037": {
   "es": "Hasta",
@@ -15315,6 +15735,10 @@
   "es": "Ningún cliente disponible para exportar",
   "en": "No customers available for export"
  },
+ "fec6ebe80a": {
+  "es": "el {valor}",
+  "en": "on {valor}"
+ },
  "fec96e36b7": {
   "es": "Ocultar observaciones para la producción",
   "en": "Hide notes for production"
@@ -15334,6 +15758,10 @@
  "fef62a27db": {
   "es": "Boleto",
   "en": "Boleto"
+ },
+ "ff043bea26": {
+  "es": "Marcadores para acompañar la negociación: en qué punto está cada presupuesto mientras el cliente no decide (ej.: propuesta enviada, en negociación). La lista de presupuestos filtra por ellos. El avance del presupuesto (digitación, en espera, vencido, rechazado, aprobado) lo controla el sistema solo.",
+  "en": "Markers to track the negotiation: where each quotation stands while the customer has not decided (e.g. proposal sent, negotiating). The quotation list filters by them. The quotation progress (drafting, waiting, expired, rejected, approved) is handled by the system."
  },
  "ff0c8a88ef": {
   "es": "Error al cargar Academy",
@@ -15386,6 +15814,10 @@
  "ffd45f6e22": {
   "es": "Sin agrupar",
   "en": "No grouping"
+ },
+ "ffea02bc87": {
+  "es": "Rechazado: {reason}",
+  "en": "Rejected: {reason}"
  },
  "fff4e0e137": {
   "es": "La pestaña Órdenes de trabajo reúne en el registro las órdenes de trabajo del cliente.",
