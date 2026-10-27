@@ -330,6 +330,15 @@ export function QuotationProdDetailModal({
   const itemQuantity = Number(watch('items.0.quantity') || 1)
   // A unidade do item manda (fix da medida do item): sem ela, vale a unidade
   const itemUnitKind = watch('items.0.unitKind') ?? 'UNITY'
+  // Item por unidade com largura ou altura gravada (vem do legado ou do
+  // cadastro): só então a medida aparece; sem ela, o item é só quantidade
+  const hasUnitSize = (index: number) =>
+    (watch(`items.${index}.unitKind`) ?? 'UNITY') === 'UNITY' &&
+    (Number(watch(`items.${index}.width`)) > 0 ||
+      Number(watch(`items.${index}.height`)) > 0)
+  const showMeasure = (index: number) =>
+    (watch(`items.${index}.unitKind`) ?? 'UNITY') !== 'UNITY' ||
+    hasUnitSize(index)
   // Quantidade e medida do item para o aproveitamento de folha (AP-5): o
   // formulário guarda milímetros; a composição calcula em metros
   const compositionMeasure = {
@@ -689,6 +698,78 @@ export function QuotationProdDetailModal({
                 )}
 
                 {items?.fields?.map((item, index) => {
+                  // Os três campos entram em ordens diferentes conforme a
+                  // medida do item (abaixo); por isso ficam prontos aqui
+                  const unitField = (
+                    <UnitOfMeasureField
+                      name={`items.${index}.unitKind`}
+                      width="flex-[1_0_200px]"
+                      disabled
+                    />
+                  )
+                  const quantityField = (
+                    <FormInput<ProductsFormType>
+                      name={`items.${index}.quantity`}
+                      label="Quantidade"
+                      type="number"
+                      min={0}
+                      startAdornment={
+                        items?.fields?.length > 1 ? (
+                          <span className="text-gray-500 text-md">
+                            {Number(watch('quantity')) || 1}x
+                          </span>
+                        ) : undefined
+                      }
+                      endAdornment={
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger
+                              type="button"
+                              aria-label="Ajuda sobre a quantidade"
+                            >
+                              <IconHelpCircle
+                                aria-hidden
+                                size={ICON_SIZE.sm}
+                                className="text-gray-400"
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent className="w-[205px] text-center">
+                              <p>
+                                Esta quantidade é multiplicada pela quantidade
+                                do item
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                      width="flex-[1_0_130px]"
+                      additionalOnChange={() => {
+                        const { total, measurementValue } =
+                          calculateSalesValue(index)
+                        setValue(`items.${index}.salePrice`, total)
+                        setValue(
+                          `items.${index}.measurementValue`,
+                          measurementValue,
+                        )
+                      }}
+                    />
+                  )
+                  const measureField = (
+                    <MeasurementInput<ProductsFormType>
+                      control={control}
+                      index={index}
+                      unitKind={watch(`items.${index}.unitKind`) ?? 'UNITY'}
+                      onHasChanged={() => {
+                        const { total, measurementValue } =
+                          calculateSalesValue(index)
+                        setValue(`items.${index}.salePrice`, total)
+                        setValue(
+                          `items.${index}.measurementValue`,
+                          measurementValue,
+                        )
+                      }}
+                    />
+                  )
                   return (
                     <div
                       className="flex flex-wrap gap-4 relative"
@@ -697,70 +778,30 @@ export function QuotationProdDetailModal({
                       <span className="text-sm font-semibold text-gray-700 leading-4 w-[100%] my-2">
                         {item?.name}
                       </span>
-                      <UnitOfMeasureField
-                        name={`items.${index}.unitKind`}
-                        width="flex-[1_0_200px]"
-                        disabled
-                      />
-                      <FormInput<ProductsFormType>
-                        name={`items.${index}.quantity`}
-                        label="Quantidade"
-                        type="number"
-                        min={0}
-                        startAdornment={
-                          items?.fields?.length > 1 ? (
-                            <span className="text-gray-500 text-md">
-                              {Number(watch('quantity')) || 1}x
-                            </span>
-                          ) : undefined
-                        }
-                        endAdornment={
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger
-                                type="button"
-                                aria-label="Ajuda sobre a quantidade"
-                              >
-                                <IconHelpCircle
-                                  aria-hidden
-                                  size={ICON_SIZE.sm}
-                                  className="text-gray-400"
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent className="w-[205px] text-center">
-                                <p>
-                                  Esta quantidade é multiplicada pela quantidade
-                                  do item
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        }
-                        width="flex-[1_0_130px]"
-                        additionalOnChange={() => {
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                      />
-                      <MeasurementInput<ProductsFormType>
-                        control={control}
-                        index={index}
-                        unitKind={watch(`items.${index}.unitKind`) ?? 'UNITY'}
-                        onHasChanged={() => {
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                      />
+                      {/* Item por unidade (26/10/2026): com largura ou altura
+                          gravada, a medida fica na linha da quantidade e a
+                          unidade comercial desce para a linha dos preços; sem
+                          medida, os campos de medida não aparecem */}
+                      {hasUnitSize(index) ? (
+                        <>
+                          <div className="flex w-full flex-wrap gap-4">
+                            {quantityField}
+                            {measureField}
+                          </div>
+                          {unitField}
+                        </>
+                      ) : showMeasure(index) ? (
+                        <>
+                          {unitField}
+                          {quantityField}
+                          {measureField}
+                        </>
+                      ) : (
+                        <div className="flex w-full flex-wrap gap-4">
+                          {unitField}
+                          {quantityField}
+                        </div>
+                      )}
                       <PermissionGate permissions={['values:values:view']}>
                         <UnitCostInput
                           name={`items.${index}.unitCost`}
