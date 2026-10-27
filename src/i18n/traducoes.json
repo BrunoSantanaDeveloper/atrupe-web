@@ -16310,5 +16310,41 @@
  "376f40395f": {
   "es": "Fase",
   "en": "Stage"
+ },
+ "8b1b8e7297": {
+  "es": "Las formas de pago de este cliente se desactivaron al inactivarlo. Elija cómo vuelve a comprar: el registro solo se activa con al menos una forma.",
+  "en": "This client's payment methods were turned off when it was inactivated. Choose how it buys again: the record is only activated with at least one method."
+ },
+ "ce1591a604": {
+  "es": "Aplicar el estándar de la empresa.",
+  "en": "Apply the company default."
+ },
+ "ca666cb30c": {
+  "es": "Límite de",
+  "en": "Limit from"
+ },
+ "2a320e6e49": {
+  "es": "1 forma de pago",
+  "en": "1 payment method"
+ },
+ "e6b578702b": {
+  "es": "{valor} formas de pago",
+  "en": "{valor} payment methods"
+ },
+ "8c9b063fa1": {
+  "es": "El estándar de",
+  "en": "The default for"
+ },
+ "7e7a7a4d77": {
+  "es": "no tiene ninguna forma de pago marcada. Defínalo en Configuración › Finanzas › Límite de crédito.",
+  "en": "has no payment method selected. Set it in Settings › Finance › Credit limit."
+ },
+ "fbf6b0d6dd": {
+  "es": "Editar manualmente.",
+  "en": "Edit manually."
+ },
+ "269ee1944a": {
+  "es": "Marcar las formas de pago de este cliente una por una; el límite de crédito queda como está.",
+  "en": "Select this client's payment methods one by one; the credit limit stays as it is."
  }
 }
