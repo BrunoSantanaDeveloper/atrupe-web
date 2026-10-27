@@ -16410,5 +16410,45 @@
  "9d8460e52f": {
   "es": "El ítem ya nace con esa cantidad en el presupuesto y, por debajo de ella, se cobra por la cantidad mínima: a R$ 1,00 la unidad con mínimo de 100 un, el ítem sale por R$ 100,00 aunque se pidan 50. La cantidad digitada permanece, y el total señala el mínimo en rojo.",
   "en": "The item starts with that quantity in the quote and, below it, is charged by the minimum quantity: at R$ 1.00 per unit with a 100 un minimum, the item costs R$ 100.00 even when 50 are ordered. The typed quantity stays, and the total points to the minimum in red."
+ },
+ "01a97151e3": {
+  "es": "Venta mínima por ítem",
+  "en": "Minimum sale per item"
+ },
+ "e6248b2bdc": {
+  "es": "El menor valor que un ítem del presupuesto puede tener; por debajo, se cobra el mínimo.",
+  "en": "The lowest value a quote item can have; below it, the minimum is charged."
+ },
+ "4d23d470c2": {
+  "es": "Venta mínima actualizada",
+  "en": "Minimum sale updated"
+ },
+ "a5ff4e1181": {
+  "es": "Por debajo de este valor, el ítem se cobra por el mínimo y la pantalla avisa al vendedor. Vale junto con la cantidad mínima del producto: cuando el mínimo del producto da menos que la venta mínima, vale la venta mínima. En blanco o cero, no hay mínimo.",
+  "en": "Below this value, the item is charged at the minimum and the screen warns the salesperson. It works together with the product minimum quantity: when the product minimum comes to less than the minimum sale, the minimum sale applies. Blank or zero means no minimum."
+ },
+ "5c2fcbe964": {
+  "es": "Un adhesivo de 0,3 × 0,3 m a R$ 100,00 el m² da",
+  "en": "A 0.3 × 0.3 m sticker at R$ 100.00 per m² comes to"
+ },
+ "0d49cde78f": {
+  "es": ". Con la venta mínima de",
+  "en": ". With the minimum sale of"
+ },
+ "b000c2b191": {
+  "es": ", el ítem sale por",
+  "en": ", the item costs"
+ },
+ "a73725f36a": {
+  "es": "No tienes permiso para configurar la venta mínima.",
+  "en": "You do not have permission to set the minimum sale."
+ },
+ "202ae61039": {
+  "es": "El menor valor que un ítem del presupuesto puede tener.",
+  "en": "The lowest value a quote item can have."
+ },
+ "25b7f41633": {
+  "es": "Venta mínima de {minItemValue}: el ítem se cobra por {minItemValue2}.",
+  "en": "Minimum sale of {minItemValue}: the item is charged {minItemValue2}."
  }
 }
