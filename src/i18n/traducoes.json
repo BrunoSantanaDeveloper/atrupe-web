@@ -16382,5 +16382,33 @@
  "6ae1eae595": {
   "es": "Cantidad mínima ({valor})",
   "en": "Minimum quantity ({valor})"
+ },
+ "6a40d3256c": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 100,00 el m² con mínimo de 0,5 m², el ítem sale por R$ 50,00 aunque el arte tenga 0,2 m². La medida digitada permanece, y el área total aparece en rojo señalando el mínimo.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 100.00 per m² with a 0.5 m² minimum, the item costs R$ 50.00 even with 0.2 m² of artwork. The typed measure stays, and the total area shows in red pointing to the minimum."
+ },
+ "0f3a0e5400": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 20,00 el metro con mínimo de 0,5 m, el ítem sale por R$ 10,00 aunque tenga 0,3 m. La medida digitada permanece, y el total señala el mínimo en rojo.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 20.00 per meter with a 0.5 m minimum, the item costs R$ 10.00 even at 0.3 m. The typed measure stays, and the total points to the minimum in red."
+ },
+ "71f2313d0c": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 40,00 el kilo con mínimo de 0,5 kg, el ítem sale por R$ 20,00 aunque tenga 0,2 kg. El peso digitado permanece, y el total señala el mínimo en rojo.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 40.00 per kilo with a 0.5 kg minimum, the item costs R$ 20.00 even at 0.2 kg. The typed weight stays, and the total points to the minimum in red."
+ },
+ "d9abc18b2f": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 30,00 el litro con mínimo de 0,5 l, el ítem sale por R$ 15,00 aunque tenga 0,2 l. La cantidad digitada permanece, y el total señala el mínimo en rojo.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 30.00 per liter with a 0.5 l minimum, the item costs R$ 15.00 even at 0.2 l. The typed quantity stays, and the total points to the minimum in red."
+ },
+ "fb988ce18e": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 5,00 el kilómetro con mínimo de 10 km, el ítem sale por R$ 50,00 aunque tenga 4 km. La distancia digitada permanece, y el total señala el mínimo en rojo.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 5.00 per kilometer with a 10 km minimum, the item costs R$ 50.00 even at 4 km. The typed distance stays, and the total points to the minimum in red."
+ },
+ "b987edb3b6": {
+  "es": "Por debajo de ella, el ítem se cobra por la cantidad mínima: a R$ 80,00 la hora con mínimo de 1 h, el ítem sale por R$ 80,00 aunque tenga 30 minutos. El tiempo digitado permanece, y el total señala el mínimo en rojo.",
+  "en": "Below it, the item is charged by the minimum quantity: at R$ 80.00 per hour with a 1 h minimum, the item costs R$ 80.00 even at 30 minutes. The typed time stays, and the total points to the minimum in red."
+ },
+ "9d8460e52f": {
+  "es": "El ítem ya nace con esa cantidad en el presupuesto y, por debajo de ella, se cobra por la cantidad mínima: a R$ 1,00 la unidad con mínimo de 100 un, el ítem sale por R$ 100,00 aunque se pidan 50. La cantidad digitada permanece, y el total señala el mínimo en rojo.",
+  "en": "The item starts with that quantity in the quote and, below it, is charged by the minimum quantity: at R$ 1.00 per unit with a 100 un minimum, the item costs R$ 100.00 even when 50 are ordered. The typed quantity stays, and the total points to the minimum in red."
  }
 }
