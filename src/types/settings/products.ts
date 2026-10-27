@@ -52,6 +52,9 @@ export type ProductType = {
   allowEditValues: boolean
   allowEditDescription: boolean
   imageUrl: string
+  // Quantidade e preço (centavos por unidade comercial) com que o item nasce
+  minQuantity?: number | null
+  minPrice?: number | null
   productionStages: {
     id: string
     isAcive: boolean

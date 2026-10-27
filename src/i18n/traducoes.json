@@ -16346,5 +16346,33 @@
  "269ee1944a": {
   "es": "Marcar las formas de pago de este cliente una por una; el límite de crédito queda como está.",
   "en": "Select this client's payment methods one by one; the credit limit stays as it is."
+ },
+ "e2169962db": {
+  "es": "Variaciones no guardadas: {message}",
+  "en": "Variations not saved: {message}"
+ },
+ "3a561c0b57": {
+  "es": "Rangos no guardados: {message}",
+  "en": "Tiers not saved: {message}"
+ },
+ "f84a017c35": {
+  "es": "Al agregar el producto al presupuesto, el ítem ya viene con esta cantidad y este precio. El precio mínimo es la base para los descuentos del vendedor. En blanco, vale 1 y el valor de venta.",
+  "en": "When the product is added to the quote, the item starts with this quantity and this price. The minimum price is the base for the salesperson's discounts. Left blank, it is 1 and the sale price."
+ },
+ "a9d95aa31e": {
+  "es": "Precio mínimo por {valor}",
+  "en": "Minimum price per {valor}"
+ },
+ "4727ef7b11": {
+  "es": "Cantidad mínima y precio mínimo",
+  "en": "Minimum quantity and minimum price"
+ },
+ "0fb40e28e4": {
+  "es": "Cantidad mínima",
+  "en": "Minimum quantity"
+ },
+ "acfb06667b": {
+  "es": "La API aún no acepta: {valor}. El producto se guardó sin esos campos.",
+  "en": "The API does not accept yet: {valor}. The product was saved without those fields."
  }
 }

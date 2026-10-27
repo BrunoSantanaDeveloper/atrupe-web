@@ -50,6 +50,12 @@ import { InactivateProductDialog } from './InactivateProductDialog'
 import { OutsourcedProductFields } from './OutsourcedProductFields'
 import { NewGroupInline } from './NewGroupInline'
 import { ProductPriceTiers } from './ProductPriceTiers'
+import {
+  saveProductVariations,
+  setPriceTiers,
+} from '@/actions/product-variations'
+import type { PriceTier, UnitKind } from '../[id]/composicao/assembly'
+import { unitSymbol } from '../[id]/composicao/assembly'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -161,6 +167,12 @@ function NewProductModal({
   // Inativar com "onde é usado" (PAD-7, 05/10/2026): o diálogo lista os
   // produtos em que este é parte e os orçamentos abertos que o têm
   const [inactivateOpen, setInactivateOpen] = useState(false)
+  // Variações e faixas digitadas no cadastro novo, gravadas depois que o
+  // produto existe (27/10/2026)
+  const [pendingVariations, setPendingVariations] = useState<
+    { name: string; unitPrice: number | null }[]
+  >([])
+  const [pendingTiers, setPendingTiers] = useState<PriceTier[]>([])
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
@@ -274,6 +286,11 @@ function NewProductModal({
             : null,
           suppliers: product?.suppliers ?? [],
           supplierPick: null,
+          minQuantity: product?.minQuantity ?? null,
+          minPrice:
+            product?.minPrice !== null && product?.minPrice !== undefined
+              ? product.minPrice / 100
+              : null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items: product?.items?.map((item: any) => ({
             ...item,
@@ -307,6 +324,8 @@ function NewProductModal({
 
   function handleCleanForm() {
     reset(defaultNewProductValues)
+    setPendingVariations([])
+    setPendingTiers([])
     items.replace(defaultItemFields)
     fiscalForm.reset(defaultFiscalDataValues)
   }
@@ -322,6 +341,20 @@ function NewProductModal({
         toast.error('Informe o custo do fornecedor')
         return
       }
+    }
+    // Quantidade mínima e preço mínimo só quando preenchidos (no cadastro
+    // novo): a API sem o patch 13 recusa campo desconhecido
+    const minimums: { minQuantity?: number | null; minPrice?: number | null } =
+      {}
+    if (Number(data.minQuantity) > 0) {
+      minimums.minQuantity = Number(data.minQuantity)
+    } else if (editMode) {
+      minimums.minQuantity = null
+    }
+    if (data.minPrice) {
+      minimums.minPrice = Math.round(data.minPrice * 100)
+    } else if (editMode) {
+      minimums.minPrice = null
     }
     const body = {
       isOutsourced: !!data.isOutsourced,
@@ -341,6 +374,7 @@ function NewProductModal({
       technicalDescription: data?.technicalDescription ?? '',
       allowEditValues: data.allowEditValues,
       allowEditDescription: data.allowEditDescription,
+      ...minimums,
       imageUrl: data.imageUrl || null,
       imageSize: data.imageSize || null,
       items: data.items?.map((item) => ({
@@ -368,33 +402,66 @@ function NewProductModal({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let createdProduct: any = null
 
+      // A API desatualizada recusa campo que ainda não conhece ("property X
+      // should not exist"): grava sem esses campos e avisa quais ficaram de
+      // fora, em vez de perder o cadastro (27/10/2026)
+      const send = async (payload: Record<string, unknown>) =>
+        editMode
+          ? updateItemNew({ route: `/product/${productId}`, data: payload })
+          : createItemNew({ route: '/product', data: payload })
+      let payload: Record<string, unknown> = body
+      let result = await send(payload)
+      const unknown: string[] = []
+      // A API aponta um campo por vez: tira e tenta de novo, até seis vezes
+      for (let attempt = 0; attempt < 6 && !result.success; attempt++) {
+        const field = String(result.message).match(
+          /property (\w+) should not exist/,
+        )?.[1]
+        if (!field || !(field in payload)) break
+        unknown.push(field)
+        payload = Object.fromEntries(
+          Object.entries(payload).filter(([key]) => key !== field),
+        )
+        result = await send(payload)
+      }
+      if (result.success && unknown.length) {
+        toast.warning(
+          `A API ainda não aceita: ${unknown.join(', ')}. O produto foi salvo sem esses campos.`,
+        )
+      }
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
       if (editMode) {
-        const result = await updateItemNew({
-          route: `/product/${productId}`,
-          data: body,
-        })
-
-        if (!result.success) {
-          throw new Error(result.message)
-        }
-
         toast.success('Produto atualizado')
       } else {
-        const result = await createItemNew({
-          route: '/product',
-          data: body,
-        })
-
-        if (!result.success) {
-          throw new Error(result.message)
-        }
         createdProduct = result.data
-
         toast.success('Produto criado')
       }
 
       // Save fiscal data if fiscal tab is shown and productId is available
       const savedId = editMode ? productId : createdProduct?.id
+      if (!editMode && savedId) {
+        if (pendingVariations.length) {
+          const res = await saveProductVariations({
+            productId: savedId,
+            variations: pendingVariations,
+          })
+          if (!res.success)
+            toast.error(`Variações não gravadas: ${res.message}`)
+        }
+        if (pendingTiers.length) {
+          const res = await setPriceTiers({
+            productId: savedId,
+            tiers: pendingTiers,
+          })
+          if (!res.success) toast.error(`Faixas não gravadas: ${res.message}`)
+        }
+        setPendingVariations([])
+        setPendingTiers([])
+      }
       if (showFiscalTab && savedId) {
         const fiscalData = fiscalForm.getValues()
         try {
@@ -631,30 +698,57 @@ function NewProductModal({
                               elas vivem na aba Composição */}
                           {showVariations && (
                             <div className="w-full rounded-xl border border-gray-200 p-4">
-                              {editMode && productId ? (
-                                <ProductVariations
-                                  productId={productId}
-                                  unitKind={watch('items.0.unitKind')}
-                                />
-                              ) : (
-                                <p className="text-sm text-gray">
-                                  <span className="font-medium text-gray-700">
-                                    Variações
-                                  </span>{' '}
-                                  · Tamanhos ou cores do mesmo produto (P, M, G;
-                                  4x0, 4x4) entram depois de salvar, na edição
-                                  do produto.
-                                </p>
-                              )}
+                              <ProductVariations
+                                productId={
+                                  editMode ? (productId ?? null) : null
+                                }
+                                unitKind={watch('items.0.unitKind')}
+                                onLocalChange={setPendingVariations}
+                              />
                             </div>
                           )}
                           {/* Faixas de quantidade já no LITE (FQ-1; decisão do
                               produto, 26/10/2026). No PRO elas vivem na aba
                               Composição, com custo e margem por faixa */}
-                          {showVariations && editMode && productId ? (
-                            <div className="w-full rounded-xl border border-gray-200 p-4">
+                          {showVariations && (
+                            <div className="w-full space-y-4 rounded-xl border border-gray-200 p-4">
+                              {/* Quantidade mínima e preço mínimo (27/10/2026):
+                                  o item nasce com eles no orçamento; o preço
+                                  mínimo é a base do limite de desconto */}
+                              <div>
+                                <h4 className="type-card-title">
+                                  Quantidade mínima e preço mínimo
+                                </h4>
+                                <p className="text-sm text-gray">
+                                  Ao adicionar o produto no orçamento, o item já
+                                  vem com esta quantidade e este preço. O preço
+                                  mínimo é a base para os descontos do vendedor.
+                                  Em branco, vale 1 e o valor de venda.
+                                </p>
+                              </div>
+                              <div className="flex flex-wrap gap-3">
+                                <FormInput
+                                  name="minQuantity"
+                                  label="Quantidade mínima"
+                                  type="number"
+                                  width="flex-[1_0_160px]"
+                                />
+                                <FormBrlInput
+                                  name="minPrice"
+                                  label={`Preço mínimo por ${
+                                    unitSymbol[
+                                      (watch('items.0.unitKind') as UnitKind) ||
+                                        'UNITY'
+                                    ] || 'un'
+                                  }`}
+                                  startAdornment={<>R$</>}
+                                  width="flex-[1_0_160px]"
+                                />
+                              </div>
                               <ProductPriceTiers
-                                productId={productId}
+                                productId={
+                                  editMode ? (productId ?? null) : null
+                                }
                                 unitKind={watch('items.0.unitKind')}
                                 basePriceCents={Math.round(
                                   convertRawToUnitCost(
@@ -662,9 +756,10 @@ function NewProductModal({
                                     Number(watch('items.0.unitCost')) || 0,
                                   ),
                                 )}
+                                onLocalChange={setPendingTiers}
                               />
                             </div>
-                          ) : null}
+                          )}
                         </>
                       )}
                       {items?.fields?.length > 1 &&

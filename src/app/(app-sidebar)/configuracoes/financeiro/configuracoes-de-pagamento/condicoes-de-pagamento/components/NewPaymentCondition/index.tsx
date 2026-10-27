@@ -482,12 +482,14 @@ export function NewPaymentCondition({
 
               <FormInput
                 name="dayInterval"
+                // À vista também pode ter prazo (o cartão de débito cai no
+                // dia seguinte): zero é à vista (27/10/2026)
                 label={
                   receivingType === 'INSTALLMENTS'
                     ? 'Intervalo (dias)'
                     : receivingType === 'ANTICIPATE'
                       ? 'Recebo em (dias)'
-                      : 'Intervalo (dias)'
+                      : 'Recebo em (dias) · 0 = à vista'
                 }
                 type="number"
                 width="flex-[1_0_100px]"

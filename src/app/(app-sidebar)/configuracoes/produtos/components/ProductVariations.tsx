@@ -37,15 +37,23 @@ const EDIT = ['product_settings:products:edit']
 type Row = { id?: string; name: string; unitPrice: number | null }
 
 interface Props {
-  productId: string
+  // Nulo no cadastro novo: as linhas ficam na tela e são gravadas depois que
+  // o produto existe (27/10/2026)
+  productId: string | null
   unitKind: string
+  onLocalChange?: (rows: Row[]) => void
 }
 
-export function ProductVariations({ productId, unitKind }: Props) {
+export function ProductVariations({
+  productId,
+  unitKind,
+  onLocalChange,
+}: Props) {
   const queryClient = useQueryClient()
   const { data } = useQuery({
+    enabled: !!productId,
     queryKey: ['product-variations', productId],
-    queryFn: () => getProductVariations({ productId }),
+    queryFn: () => getProductVariations({ productId: productId as string }),
   })
   const saved = data?.data || []
   const [rows, setRows] = useState<Row[]>([])
@@ -59,6 +67,10 @@ export function ProductVariations({ productId, unitKind }: Props) {
 
   const persist = async (next: Row[]) => {
     setRows(next)
+    if (!productId) {
+      onLocalChange?.(next)
+      return
+    }
     const res = await saveProductVariations({ productId, variations: next })
     if (!res.success) {
       toast.error(res.message)

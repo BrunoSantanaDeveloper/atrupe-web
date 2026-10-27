@@ -39,8 +39,11 @@ import { IconTrash, IconPlus } from '@tabler/icons-react'
 const EDIT = ['product_settings:products:edit']
 
 interface Props {
-  productId: string
+  // Nulo no cadastro novo: as faixas ficam na tela e são gravadas depois que
+  // o produto existe (27/10/2026)
+  productId: string | null
   unitKind: string
+  onLocalChange?: (tiers: PriceTier[]) => void
   // Preço de venda por unidade do produto, em centavos, para a primeira faixa
   // nascer com ele
   basePriceCents: number
@@ -50,11 +53,13 @@ export function ProductPriceTiers({
   productId,
   unitKind,
   basePriceCents,
+  onLocalChange,
 }: Props) {
   const queryClient = useQueryClient()
   const { data } = useQuery({
+    enabled: !!productId,
     queryKey: ['price-tiers', productId],
-    queryFn: () => getPriceTiers({ productId }),
+    queryFn: () => getPriceTiers({ productId: productId as string }),
   })
   const saved = data?.data || []
   const [tiers, setTiers] = useState<PriceTier[]>([])
@@ -68,6 +73,10 @@ export function ProductPriceTiers({
 
   const persist = async (next: PriceTier[]) => {
     setTiers(next)
+    if (!productId) {
+      onLocalChange?.(next)
+      return
+    }
     const res = await setPriceTiers({ productId, tiers: next })
     if (!res.success) {
       toast.error(res.message)

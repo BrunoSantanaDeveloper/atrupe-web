@@ -217,12 +217,32 @@ export function QuotationProdDetailModal({
         items: product.items.map((item) => ({
           ...item,
           name: item.name,
-          quantity: item.quantity ?? 1,
+          // Quantidade mínima e preço mínimo do cadastro (27/10/2026): o
+          // item simples nasce com eles
+          quantity:
+            product.items.length === 1 && Number(product.minQuantity) > 0
+              ? Number(product.minQuantity)
+              : (item.quantity ?? 1),
           salePrice: item.salePrice,
-          unitCost: item.unitCost,
+          unitCost:
+            product.items.length === 1 && Number(product.minPrice) > 0
+              ? convertUnitCostToRaw(
+                  item.unitKind || 'UNITY',
+                  Number(product.minPrice),
+                )
+              : item.unitCost,
         })),
       })
+      if (
+        product.items.length === 1 &&
+        (Number(product.minQuantity) > 0 || Number(product.minPrice) > 0)
+      ) {
+        const { total, measurementValue } = calculateSalesValue(0)
+        setValue('items.0.salePrice', total)
+        setValue('items.0.measurementValue', measurementValue)
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product, reset, open])
 
   const items = useFieldArray({
@@ -354,7 +374,12 @@ export function QuotationProdDetailModal({
           .sort((a, b) => b.from - a.from)
           .find((tier) => itemQuantity >= tier.from) || null
       : null
-  const baseUnitCost = product?.items?.[0]?.unitCost ?? null
+  // O preço mínimo do cadastro, quando existe, é o preço de partida do item e
+  // a base do limite de desconto (27/10/2026)
+  const baseUnitCost =
+    Number(product?.minPrice) > 0
+      ? convertUnitCostToRaw(itemUnitKind, Number(product?.minPrice))
+      : (product?.items?.[0]?.unitCost ?? null)
 
   // Variações do produto (PV-6, já no START): o vendedor escolhe uma, e o
   // preço e o nome do item seguem a escolha. Com variação escolhida, as faixas

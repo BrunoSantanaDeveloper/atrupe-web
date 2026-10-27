@@ -28,6 +28,9 @@ export interface IProduct {
   technicalDescription?: string | null
   allowEditDescription: boolean
   allowEditValues: boolean
+  // Quantidade e preço (centavos por unidade comercial) com que o item nasce
+  minQuantity?: number | null
+  minPrice?: number | null
 }
 
 const QUERY_KEY = 'product'
