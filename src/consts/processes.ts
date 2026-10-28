@@ -206,8 +206,8 @@ export const afterBaseObj: {
   },
   // Era "Acompanha a base", que não se explicava a quem ouvia pela primeira vez
   INHERIT: {
-    label: 'Mesma medida da etapa anterior',
-    badge: 'Mesma medida',
+    label: 'Usar medida da etapa anterior',
+    badge: 'Medida anterior',
     help: 'Como um acabamento (bainha, ilhós, laminação): não pede medida ao vendedor; usa a medida e a quantidade da etapa anterior.',
   },
 }

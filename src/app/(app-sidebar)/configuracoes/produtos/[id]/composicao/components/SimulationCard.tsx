@@ -56,6 +56,8 @@ interface Props {
   className?: string
   // Prefixo dos ids dos campos, para o produto e o processo coexistirem
   idPrefix?: string
+  // Dentro de uma janela própria, o título e a frase ficam no cabeçalho dela
+  hideHeader?: boolean
 }
 
 const toneClass = {
@@ -77,6 +79,7 @@ export function SimulationCard({
   footer,
   className,
   idPrefix = 'sim',
+  hideHeader = false,
 }: Props) {
   const fields = (
     [
@@ -87,12 +90,14 @@ export function SimulationCard({
   ).filter(([key]) => !visibleFields || visibleFields.includes(key))
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>Simulação</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4 px-6 pb-6">
+    <Card className={cn(hideHeader && 'border-0 shadow-none', className)}>
+      {!hideHeader && (
+        <CardHeader>
+          <CardTitle>Simulação</CardTitle>
+          <CardDescription>{description}</CardDescription>
+        </CardHeader>
+      )}
+      <CardContent className={cn('space-y-4 px-6 pb-6', hideHeader && 'p-0')}>
         {children}
         <div className="space-y-2">
           {measureLabel && fields.length > 0 && (

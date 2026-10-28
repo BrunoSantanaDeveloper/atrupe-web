@@ -60,6 +60,7 @@ import {
   IconHierarchy2,
   IconCircleCheck,
   IconRulerMeasure,
+  IconCalculator,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
@@ -117,6 +118,7 @@ export function ProcessDialog({
   // O que o card Processo tem pendente e como gravar (PAD-5)
   const [saveHandle, setSaveHandle] = useState<ProcessSaveHandle | null>(null)
   const [inactivateOpen, setInactivateOpen] = useState(false)
+  const [simulationOpen, setSimulationOpen] = useState(false)
 
   // Os setores da empresa, do cadastro de setores (05/10/2026). Enquanto a
   // lista carrega, o campo diz isso em vez de parecer travado; se falhou,
@@ -201,7 +203,7 @@ export function ProcessDialog({
             onValueChange={(value) => setActiveTab(value as ProcessTab)}
             className="flex flex-col h-full"
           >
-            <div className="px-6 pt-4 border-b border-gray-100">
+            <div className="flex items-center justify-between gap-4 px-6 pt-4 border-b border-gray-100">
               <TabsList>
                 <TabsTrigger value="general">
                   <IconListCheck
@@ -228,6 +230,18 @@ export function ProcessDialog({
                   Uso
                 </TabsTrigger>
               </TabsList>
+              {/* A Simulação fica separada da composição (28/10/2026) */}
+              {ready && activeTab === 'composition' && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  LeftIcon={IconCalculator}
+                  onClick={() => setSimulationOpen(true)}
+                >
+                  Simular
+                </Button>
+              )}
             </div>
 
             <ScrollArea className="flex-1 max-h-[calc(100vh-280px)]">
@@ -361,7 +375,13 @@ export function ProcessDialog({
 
               <TabsContent value="composition" className="mt-0 p-6">
                 {ready ? (
-                  <ProcessEditor id={processId!} embedded section="resources" />
+                  <ProcessEditor
+                    id={processId!}
+                    embedded
+                    section="resources"
+                    simulationOpen={simulationOpen}
+                    onSimulationOpenChange={setSimulationOpen}
+                  />
                 ) : (
                   <AfterSave
                     title="Os recursos e o tempo vêm depois de salvar"

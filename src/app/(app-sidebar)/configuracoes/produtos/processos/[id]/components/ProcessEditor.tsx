@@ -42,6 +42,14 @@ import {
 } from '@/components/ui/card'
 
 // Components
+import {
+  Dialog,
+  DialogBody,
+  DialogTitle,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
@@ -186,10 +194,15 @@ export function ProcessEditor({
   embedded = false,
   section,
   onSaveHandle,
+  simulationOpen,
+  onSimulationOpenChange,
 }: {
   id: string
   embedded?: boolean
   section?: ProcessSection
+  // No diálogo, a Simulação abre separada pelo botão das abas
+  simulationOpen?: boolean
+  onSimulationOpenChange?: (open: boolean) => void
   // O diálogo recebe o handle e põe o Salvar no rodapé dele (PAD-5)
   onSaveHandle?: (handle: ProcessSaveHandle | null) => void
 }) {
@@ -546,6 +559,84 @@ export function ProcessEditor({
       ].join(' · ')
     : null
 
+  // A Simulação (PAD-6): o mesmo card do produto. Com a base ligada, as
+  // regras herdadas entram na conta (§9.1)
+  const simulation = (
+    <SimulationCard
+      hideHeader={embedded}
+      idPrefix="process-sim"
+      description="Confira o consumo numa medida. Não grava nada."
+      measure={measure}
+      onMeasureChange={setMeasure}
+      measureLabel={baseMeasure ? 'Medida própria do processo' : undefined}
+      fields={ownFields}
+      measureNote="Nada a informar: a quantidade e a medida vêm da base."
+      results={[
+        { label: 'Custo', value: money(detail.cost) },
+        {
+          label: 'Venda',
+          value: money(detail.sale),
+          tone: 'success',
+        },
+      ]}
+      footer={
+        baseText ? (
+          <p className="text-sm text-gray">Depois da base: {baseText}.</p>
+        ) : undefined
+      }
+    >
+      <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+        <label className="flex items-start gap-3">
+          <Switch
+            className="mt-0.5"
+            checked={!!baseMeasure}
+            onCheckedChange={(checked) =>
+              setBaseMeasure(checked ? { ...block.measure, ...measure } : null)
+            }
+            aria-label="Simular depois de outra etapa"
+          />
+          <span>
+            <span className="block text-sm font-medium text-gray-800">
+              Simular depois de outra etapa
+            </span>
+            <span className="block text-sm text-gray">
+              Aplica as regras da etapa: acompanhar a quantidade da base, usar a
+              medida dela e quantas cabem nela.
+            </span>
+          </span>
+        </label>
+        {baseMeasure && (
+          <div className="grid grid-cols-3 gap-3">
+            {(
+              [
+                ['quantity', 'Qtd. da base', '1'],
+                ['width', 'Larg. da base (m)', '0.01'],
+                ['height', 'Alt. da base (m)', '0.01'],
+              ] as const
+            ).map(([key, label, step]) => (
+              <div key={key} className="space-y-2">
+                <Label htmlFor={`sim-base-${key}`}>{label}</Label>
+                <Input
+                  id={`sim-base-${key}`}
+                  type="number"
+                  min={0}
+                  step={step}
+                  value={baseMeasure[key]}
+                  onChange={(event) =>
+                    setBaseMeasure((current) => ({
+                      ...current!,
+                      [key]: Number(event.target.value) || 0,
+                    }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </SimulationCard>
+  )
+
   return (
     <TooltipProvider>
       <div className="space-y-5">
@@ -560,7 +651,7 @@ export function ProcessEditor({
         )}
 
         {/* 1. O que o processo é e como se comporta na venda */}
-        {(show('config') || show('resources')) && (
+        {(show('config') || (!embedded && show('resources'))) && (
           <div
             className={cn(
               'grid grid-cols-1 gap-5',
@@ -661,88 +752,9 @@ export function ProcessEditor({
               </Card>
             )}
 
-            {/* 2. Simulação (PAD-6): o mesmo card do produto. Com a base
-                ligada, as regras herdadas entram na conta (§9.1) */}
-            {(!embedded || show('resources')) && (
-              <SimulationCard
-                idPrefix="process-sim"
-                description="Confira o consumo numa medida. Não grava nada."
-                measure={measure}
-                onMeasureChange={setMeasure}
-                measureLabel={
-                  baseMeasure ? 'Medida própria do processo' : undefined
-                }
-                fields={ownFields}
-                measureNote="Nada a informar: a quantidade e a medida vêm da base."
-                results={[
-                  { label: 'Custo', value: money(detail.cost) },
-                  {
-                    label: 'Venda',
-                    value: money(detail.sale),
-                    tone: 'success',
-                  },
-                ]}
-                footer={
-                  baseText ? (
-                    <p className="text-sm text-gray">
-                      Depois da base: {baseText}.
-                    </p>
-                  ) : undefined
-                }
-              >
-                <div className="space-y-3 rounded-lg border border-gray-200 p-3">
-                  <label className="flex items-start gap-3">
-                    <Switch
-                      className="mt-0.5"
-                      checked={!!baseMeasure}
-                      onCheckedChange={(checked) =>
-                        setBaseMeasure(
-                          checked ? { ...block.measure, ...measure } : null,
-                        )
-                      }
-                      aria-label="Simular depois de outra etapa"
-                    />
-                    <span>
-                      <span className="block text-sm font-medium text-gray-800">
-                        Simular depois de outra etapa
-                      </span>
-                      <span className="block text-sm text-gray">
-                        Aplica as regras da etapa: acompanhar a quantidade da
-                        base, usar a medida dela e quantas cabem nela.
-                      </span>
-                    </span>
-                  </label>
-                  {baseMeasure && (
-                    <div className="grid grid-cols-3 gap-3">
-                      {(
-                        [
-                          ['quantity', 'Qtd. da base', '1'],
-                          ['width', 'Larg. da base (m)', '0.01'],
-                          ['height', 'Alt. da base (m)', '0.01'],
-                        ] as const
-                      ).map(([key, label, step]) => (
-                        <div key={key} className="space-y-2">
-                          <Label htmlFor={`sim-base-${key}`}>{label}</Label>
-                          <Input
-                            id={`sim-base-${key}`}
-                            type="number"
-                            min={0}
-                            step={step}
-                            value={baseMeasure[key]}
-                            onChange={(event) =>
-                              setBaseMeasure((current) => ({
-                                ...current!,
-                                [key]: Number(event.target.value) || 0,
-                              }))
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </SimulationCard>
-            )}
+            {/* 2. Simulação (PAD-6): na página, ao lado do card Processo. No
+                diálogo ela abre separada, pelo "Simular" das abas (28/10/2026) */}
+            {!embedded && simulation}
           </div>
         )}
 
@@ -776,7 +788,7 @@ export function ProcessEditor({
                     <Badge variant="neutralLight">{block.sector}</Badge>
                     <Badge variant="blueLight">
                       {detail.meta.afterBase === 'INHERIT'
-                        ? 'Depois de outra etapa, herda a medida da base'
+                        ? 'Depois de outra etapa, usa a medida da etapa anterior'
                         : 'Depois de outra etapa, pede medida própria'}
                     </Badge>
                     <PermissionGate
@@ -1366,6 +1378,24 @@ export function ProcessEditor({
         )}
       </div>
 
+      {/* No diálogo do processo a simulação fica separada da composição:
+          abre pelo "Simular" ao lado das abas (28/10/2026) */}
+      {embedded && show('resources') && (
+        <Dialog
+          open={!!simulationOpen}
+          onOpenChange={(open) => onSimulationOpenChange?.(open)}
+        >
+          <DialogContent className="sm:max-w-[640px]">
+            <DialogHeader>
+              <DialogTitle>Simulação · {block.name}</DialogTitle>
+              <DialogDescription>
+                Confira o consumo numa medida. Não grava nada.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody>{simulation}</DialogBody>
+          </DialogContent>
+        </Dialog>
+      )}
       <NewLineDialog
         block={dialog?.kind === 'newLine' ? block : undefined}
         initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}

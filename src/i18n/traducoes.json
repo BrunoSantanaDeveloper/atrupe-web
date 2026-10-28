@@ -16451,8 +16451,24 @@
   "es": "Venta mínima de {minItemValue}: el ítem se cobra por {minItemValue2}.",
   "en": "Minimum sale of {minItemValue}: the item is charged {minItemValue2}."
  },
- "be44347186": {
-  "es": "Misma medida de la etapa anterior",
-  "en": "Same size as the previous step"
+ "dc0fa6ca77": {
+  "es": "Usar medida de la etapa anterior",
+  "en": "Use the previous step size"
+ },
+ "dc6fad97cf": {
+  "es": "Medida anterior",
+  "en": "Previous size"
+ },
+ "bb9a661cae": {
+  "es": "Después de otra etapa, usa la medida de la etapa anterior",
+  "en": "After another step, uses the previous step size"
+ },
+ "24112e0835": {
+  "es": "Simulación · {name}",
+  "en": "Simulation · {name}"
+ },
+ "a72e166118": {
+  "es": "Simular",
+  "en": "Simulate"
  }
 }
