@@ -69,10 +69,10 @@ export default function FinishSubscriptionPage() {
   const { refresh } = useRefreshCompanySession()
 
   /**
-   * Leva à sessão o que o servidor diz agora. Na contratação em três etapas a
-   * assinatura já nasce ativa (contratação registrada libera o acesso), então
-   * "ativa" não significa "paga": se a primeira cobrança ainda está pendente, a
-   * tela diz isso em vez de anunciar sucesso.
+   * Leva à sessão o que o servidor diz agora. A evolução (e a contratação
+   * anterior a 20/10) nasce ativa com a cobrança em aberto, então "ativa" não
+   * significa "paga": se a primeira cobrança ainda está pendente, a tela diz
+   * isso em vez de anunciar sucesso. A contratação nova só fica ativa paga.
    */
   const finishActivated = async (checkResult: { subscription?: unknown }) => {
     const block = await refresh().catch(() => null)
@@ -82,7 +82,9 @@ export default function FinishSubscriptionPage() {
     if (block?.billing?.paymentPending) {
       setStatus('waiting_payment')
       setErrorMessage(
-        'Seu acesso já está liberado. Assim que a confirmação do pagamento chegar, o aviso de cobrança pendente some sozinho.',
+        block.billing.activationPending
+          ? 'O plano contratado é liberado assim que a confirmação do pagamento chegar.'
+          : 'Seu acesso já está liberado. Assim que a confirmação do pagamento chegar, o aviso de cobrança pendente some sozinho.',
       )
       setCountdown(30)
       return

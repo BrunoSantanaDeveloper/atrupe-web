@@ -25,8 +25,14 @@ export interface ChargeInFocus {
 export interface BillingSituation {
   situation: BillingSituationKind
   daysOverdue: number
-  /** Contratação registrada, acesso liberado, primeira cobrança ainda não paga. */
+  /** Contratação registrada e a primeira cobrança ainda não paga. */
   paymentPending: boolean
+  /**
+   * O plano contratado só é liberado com esse pagamento (contratação a partir
+   * de 20/10). Falso quando a contratação já liberou o acesso — as anteriores
+   * e a evolução. Ausente no backend anterior à regra.
+   */
+  activationPending?: boolean
   chargeInFocus: ChargeInFocus | null
 }
 

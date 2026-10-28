@@ -39,6 +39,17 @@ export async function middleware(req: NextRequest) {
 
   const isFullBlocked = blockLevel === 'FULL'
 
+  // Contratação esperando o pagamento: o plano só é liberado quando ele é
+  // confirmado. Com o teste vigente, a pessoa segue nele; sem teste — vencido,
+  // ou a empresa sem nenhuma assinatura ativa —, fica na tela de pagamento.
+  // Bloqueio total segue para /blocked.
+  const hasValidTrial =
+    planName === 'TRIAL' && !!trialEndsAt && new Date(trialEndsAt) >= new Date()
+  const isAwaitingPayment =
+    !!session?.company?.billing?.activationPending &&
+    !hasValidTrial &&
+    !isFullBlocked
+
   // If the user is not logged in and is trying to access a private route, redirect to the login page
   const privateRoute = ![...GUEST_ROUTES, ...SHARED_ROUTES].some((route) =>
     pathname.endsWith(route),
@@ -83,7 +94,11 @@ export async function middleware(req: NextRequest) {
       (route) => pathname.endsWith('logout') || pathname.startsWith(route),
     )
 
-  if (isUserLoggedIn && isTrialExpired && !isAllowedRouteWhenTrialExpired) {
+  if (
+    isUserLoggedIn &&
+    (isTrialExpired || isAwaitingPayment) &&
+    !isAllowedRouteWhenTrialExpired
+  ) {
     return NextResponse.redirect(new URL(SUBSCRIPTION_PAGE, req.url).toString())
   }
 

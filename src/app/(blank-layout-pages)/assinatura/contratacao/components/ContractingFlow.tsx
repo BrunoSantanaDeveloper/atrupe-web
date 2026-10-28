@@ -536,6 +536,10 @@ export function ContractingFlow() {
                       Voltar
                     </Button>
                     <SecureNote />
+                    <p className="text-[11px] text-gray-500">
+                      O plano é liberado assim que o pagamento for confirmado:
+                      Pix e cartão em instantes, boleto após a compensação.
+                    </p>
                   </ConfirmCard>
                 </>
               }
