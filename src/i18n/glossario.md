@@ -69,6 +69,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | un / un. | u. | pc | |
 | Venda direta | Venta directa | Sold directly | Material vendido sem composição. |
 | Usar medida da etapa anterior / medida própria (era "Acompanha a base", 28/10) | Usar medida de la etapa anterior / medida propia | Use the previous step size / own size | |
+| Etapas anteriores / etapas seguintes (era "Costuma vir depois de" / "Etapas seguintes usuais", 28/10) | Etapas anteriores / etapas siguientes | Previous steps / next steps | Sugestões ao montar o produto, não ordem obrigatória |
 | Instruções ao vendedor | Instrucciones para el vendedor | Notes for the salesperson | |
 | Padrão de medidas | Estándar de medidas | Size standard | |
 

@@ -9,6 +9,7 @@
 // mesmo jeito (design.md §17: funções semelhantes, telas iguais).
 
 // React
+import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 
 // UI
@@ -56,19 +57,24 @@ import {
   IconPlus,
   IconLink,
   IconCircle,
-  IconPackages,
   IconHierarchy2,
   IconCircleCheck,
   IconRulerMeasure,
   IconCalculator,
+  IconRoute,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
 
-export type ProcessTab = 'general' | 'composition' | 'usage'
+export type ProcessTab = 'general' | 'composition' | 'steps'
 
 interface Props {
   open: boolean
@@ -89,6 +95,51 @@ const afterBaseCards: { value: AfterBase; Icon: typeof IconLink }[] = [
   { value: 'OWN', Icon: IconRulerMeasure },
   { value: 'INHERIT', Icon: IconLink },
 ]
+
+// Os produtos que usam o processo, como consulta (28/10/2026)
+function UsedInLine({
+  usedIn,
+}: {
+  usedIn: { productId: string; name: string }[]
+}) {
+  if (!usedIn.length)
+    return (
+      <span className="text-sm text-gray">Ainda não é usado em produtos.</span>
+    )
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="text-sm text-gray underline-offset-2 hover:text-brand-700 hover:underline"
+        >
+          {usedIn.length === 1
+            ? 'Usado em 1 produto · ver lista'
+            : `Usado em ${usedIn.length} produtos · ver lista`}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[320px] space-y-2" align="start">
+        <p className="text-xs text-gray">
+          Os produtos acompanham este processo: mudar a montagem muda todos
+          eles. O que cada produto ajustou só para ele continua como está, e os
+          orçamentos já feitos não mudam.
+        </p>
+        <ul className="max-h-[240px] space-y-1 overflow-y-auto">
+          {usedIn.map((item) => (
+            <li key={item.productId}>
+              <Link
+                href={`/configuracoes/produtos/${item.productId}/composicao`}
+                className="block rounded-md px-2 py-1.5 text-sm text-gray-800 hover:bg-gray-50"
+              >
+                {item.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  )
+}
 
 // O que só existe depois de salvar, como na aba Composição do produto novo
 function AfterSave({ title, text }: { title: string; text: string }) {
@@ -195,7 +246,17 @@ export function ProcessDialog({
               </span>
             </div>
           </DialogTitle>
-          <DialogDescription hidden></DialogDescription>
+          {/* "Usado em" é consulta, não montagem: uma linha no cabeçalho,
+              com a lista ao clicar (28/10/2026) */}
+          {ready && detail ? (
+            <DialogDescription asChild>
+              <div>
+                <UsedInLine usedIn={detail.usedIn} />
+              </div>
+            </DialogDescription>
+          ) : (
+            <DialogDescription hidden></DialogDescription>
+          )}
         </DialogHeader>
         <DialogBody className="p-0">
           <Tabs
@@ -221,13 +282,13 @@ export function ProcessDialog({
                   />
                   Composição
                 </TabsTrigger>
-                <TabsTrigger value="usage">
-                  <IconPackages
+                <TabsTrigger value="steps">
+                  <IconRoute
                     aria-hidden
                     size={ICON_SIZE.sm}
                     className="mr-1.5"
                   />
-                  Uso
+                  Etapas
                 </TabsTrigger>
               </TabsList>
               {/* A Simulação fica separada da composição (28/10/2026) */}
@@ -367,7 +428,7 @@ export function ProcessDialog({
                       Começando um produto, o processo sempre pede medida e
                       quantidade próprias. Recursos, tempo e regras de venda
                       entram na aba Composição, depois de salvar; as etapas que
-                      costumam vir antes e depois, na aba Uso.
+                      costumam vir antes e depois, na aba Etapas.
                     </p>
                   </div>
                 )}
@@ -390,13 +451,13 @@ export function ProcessDialog({
                 )}
               </TabsContent>
 
-              <TabsContent value="usage" className="mt-0 p-6">
+              <TabsContent value="steps" className="mt-0 p-6">
                 {ready ? (
-                  <ProcessEditor id={processId!} embedded section="usage" />
+                  <ProcessEditor id={processId!} embedded section="steps" />
                 ) : (
                   <AfterSave
-                    title="O uso aparece depois de salvar"
-                    text="Aqui ficam os produtos que usam o processo e as etapas que costumam vir antes e depois dele."
+                    title="As etapas aparecem depois de salvar"
+                    text="Aqui ficam as etapas que costumam vir antes e depois deste processo, como sugestão ao montar o produto."
                   />
                 )}
               </TabsContent>

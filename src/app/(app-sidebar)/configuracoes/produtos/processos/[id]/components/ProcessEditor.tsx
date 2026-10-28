@@ -28,7 +28,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -86,6 +85,7 @@ import {
 import type { ResourceKind, DimensionRule } from '../../types'
 import { ResourceKindButtons } from '../../../[id]/composicao/components/ResourceKindButtons'
 import { SimulationCard } from '../../../[id]/composicao/components/SimulationCard'
+import { UsualStepsPicker } from './UsualStepsPicker'
 import { ProductFields } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields'
 import { ProductFormulas } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFormulas'
 
@@ -175,7 +175,7 @@ type Dialog =
   | { kind: 'options'; lineId: string }
   | null
 
-export type ProcessSection = 'config' | 'resources' | 'usage'
+export type ProcessSection = 'config' | 'resources' | 'usage' | 'steps'
 
 // O que o rodapé precisa para salvar o card Processo (PAD-5): se há algo
 // pendente e a ação de gravar. O diálogo e a página chamam no Salvar
@@ -768,6 +768,12 @@ export function ProcessEditor({
                 ele usa, cada um com o seu tipo de cálculo. O produto que
                 incluir o processo acompanha esta montagem.
               </CardDescription>
+              {/* Os valores das linhas são de uma medida: a tela diz qual
+                  (28/10/2026) */}
+              <p className="text-xs text-gray">
+                Quantidade, custo e venda das linhas calculados em {measureText}
+                .{embedded ? ' Para outra medida, use Simular.' : ''}
+              </p>
               {/* Antes de mexer, quem edita sabe o alcance da mudança (CP-21) */}
               {detail.usedIn.length > 0 && (
                 <Badge variant="warningLight" className="w-fit">
@@ -1271,73 +1277,41 @@ export function ProcessEditor({
           </Card>
         )}
 
-        {/* 5. No fluxo dos produtos (FL-7): as etapas seguintes usuais são
-            marcadas à mão, num par guardado uma vez e editável dos dois
-            lados. Nada é bloqueado: o não marcado fica em "ver todos" */}
-        {show('usage') && (
+        {/* 5. Etapas anteriores e seguintes (FL-7): sugestões marcadas à
+            mão, num par guardado uma vez e editável dos dois lados. Nada é
+            bloqueado: o não marcado fica em "ver todos". Os dois lados com
+            o mesmo tipo de nome e só o marcado na lista (28/10/2026) */}
+        {show('steps') && (
           <Card>
             <CardHeader>
-              <CardTitle>No fluxo dos produtos</CardTitle>
+              <CardTitle>Etapas anteriores e seguintes</CardTitle>
               <CardDescription>
-                Ao montar um produto, &quot;+ etapa seguinte&quot; mostra
-                primeiro o que está marcado aqui; o resto fica em &quot;ver
-                todos&quot;. Marcar de um lado aparece no outro. Sem marcação,
-                valem os acabamentos do mesmo setor.
+                São sugestões, não uma ordem obrigatória. Ao montar um produto,
+                &quot;+ etapa seguinte&quot; mostra primeiro o que está marcado
+                aqui; o resto fica em &quot;ver todos&quot;. Marcar de um lado
+                aparece no outro. Sem marcação, valem os acabamentos do mesmo
+                setor.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
-              {(
-                [
-                  [
-                    'before',
-                    'Costuma vir depois de',
-                    'Os processos que normalmente vêm antes deste. A dupla face vem depois do adesivo, do PVC e do ACM.',
-                  ],
-                  [
-                    'after',
-                    'Etapas seguintes usuais',
-                    'Os processos que normalmente vêm depois deste. Depois da impressão, o refile e a laminação.',
-                  ],
-                ] as const
-              ).map(([side, label, help]) => (
-                <div key={side} className="space-y-2">
-                  <p className="text-sm font-medium text-gray-800">{label}</p>
-                  <p className="text-xs text-gray">{help}</p>
-                  <div className="max-h-[320px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
-                    {!usualRes ? (
-                      <Skeleton className="h-20 w-full" />
-                    ) : usualRes.data?.[side].length ? (
-                      usualRes.data[side].map((item) => (
-                        <label
-                          key={item.id}
-                          className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-gray-50"
-                        >
-                          <Checkbox
-                            checked={item.usual}
-                            disabled={!canEdit}
-                            aria-label={item.name}
-                            onCheckedChange={(checked) =>
-                              toggleUsual(side, item.id, checked === true)
-                            }
-                          />
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-gray-800">
-                              {item.name}
-                            </span>
-                            <span className="block text-xs text-gray">
-                              {item.sector}
-                            </span>
-                          </span>
-                        </label>
-                      ))
-                    ) : (
-                      <p className="px-2 py-1.5 text-sm text-gray">
-                        Nenhum outro processo cadastrado.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+              <UsualStepsPicker
+                label="Etapas anteriores"
+                help="Os processos que costumam vir antes deste. Ex.: a dupla face vem depois do adesivo, do PVC e do ACM."
+                items={usualRes?.data?.before}
+                canEdit={canEdit}
+                onToggle={(otherId, usual) =>
+                  toggleUsual('before', otherId, usual)
+                }
+              />
+              <UsualStepsPicker
+                label="Etapas seguintes"
+                help="Os processos que costumam vir depois deste. Ex.: depois da impressão, o refile e a laminação."
+                items={usualRes?.data?.after}
+                canEdit={canEdit}
+                onToggle={(otherId, usual) =>
+                  toggleUsual('after', otherId, usual)
+                }
+              />
             </CardContent>
           </Card>
         )}

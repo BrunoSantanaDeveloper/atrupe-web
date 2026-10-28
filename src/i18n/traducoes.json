@@ -16470,5 +16470,73 @@
  "a72e166118": {
   "es": "Simular",
   "en": "Simulate"
+ },
+ "585804b5fb": {
+  "es": "Cantidad, costo y venta de las líneas calculados en",
+  "en": "Quantity, cost and sale of the lines calculated at"
+ },
+ "5c6448f5fd": {
+  "es": "Para otra medida, use Simular.",
+  "en": "For another size, use Simulate."
+ },
+ "893d63dffd": {
+  "es": "Etapas anteriores y siguientes",
+  "en": "Previous and next steps"
+ },
+ "a72bb7e67a": {
+  "es": "Son sugerencias, no un orden obligatorio. Al armar un producto, &quot;+ etapa siguiente&quot; muestra primero lo que está marcado aquí; el resto queda en &quot;ver todos&quot;. Marcar de un lado aparece en el otro. Sin marcación, valen los acabados del mismo sector.",
+  "en": "These are suggestions, not a required order. When building a product, &quot;+ next step&quot; shows what is checked here first; the rest stays under &quot;see all&quot;. Checking one side shows on the other. With nothing checked, the finishes of the same department apply."
+ },
+ "48d2b88830": {
+  "es": "Etapas anteriores",
+  "en": "Previous steps"
+ },
+ "8dbb07a98c": {
+  "es": "Etapas siguientes",
+  "en": "Next steps"
+ },
+ "e26bdfd29b": {
+  "es": "Quitar {name}",
+  "en": "Remove {name}"
+ },
+ "d8e28e8edb": {
+  "es": "Ninguna etapa marcada.",
+  "en": "No step checked."
+ },
+ "b3af8f8d3d": {
+  "es": "Agregar etapa",
+  "en": "Add step"
+ },
+ "2bad187496": {
+  "es": "Ningún proceso encontrado.",
+  "en": "No process found."
+ },
+ "c49bf3ffd5": {
+  "es": "Todavía no se usa en productos.",
+  "en": "Not used in any product yet."
+ },
+ "4a90a6e043": {
+  "es": "Usado en 1 producto · ver lista",
+  "en": "Used in 1 product · see list"
+ },
+ "d6cd6fa7b5": {
+  "es": "Usado en {valor} productos · ver lista",
+  "en": "Used in {valor} products · see list"
+ },
+ "76e84c2049": {
+  "es": "Los productos siguen este proceso: cambiar el armado cambia todos ellos. Lo que cada producto ajustó solo para él sigue como está, y los presupuestos ya hechos no cambian.",
+  "en": "Products follow this process: changing the build-up changes all of them. What each product adjusted only for itself stays as it is, and quotes already made do not change."
+ },
+ "98ccaf4178": {
+  "es": "Al iniciar un producto, el proceso siempre pide medida y cantidad propias. Recursos, tiempo y reglas de venta entran en la pestaña Composición, después de guardar; las etapas que suelen venir antes y después, en la pestaña Etapas.",
+  "en": "When starting a product, the process always asks for its own size and quantity. Resources, time and sales rules go in the Build-up tab, after saving; the steps that usually come before and after, in the Steps tab."
+ },
+ "3689d9e1cf": {
+  "es": "Las etapas aparecen después de guardar",
+  "en": "Steps appear after saving"
+ },
+ "db6a857c27": {
+  "es": "Aquí quedan las etapas que suelen venir antes y después de este proceso, como sugerencia al armar el producto.",
+  "en": "Here are the steps that usually come before and after this process, as a suggestion when building the product."
  }
 }
