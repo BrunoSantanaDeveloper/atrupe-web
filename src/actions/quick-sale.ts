@@ -29,8 +29,6 @@ const cashMethods: Option[] = [
 ]
 
 const EMPTY: QuickSaleSettings = {
-  payment: 'CASH_ONLY',
-  cashMethods: [],
   downPaymentRequired: false,
   downPaymentPercent: 0,
   enabled: false,
@@ -56,8 +54,12 @@ export const updateQuickSaleSettings = async (values: QuickSaleSettings) => {
     route: '/sale/quick-sale/settings',
     data: {
       enabled: values.enabled,
-      payment: values.payment,
-      cashMethods: values.cashMethods,
+      // Sem efeito desde 26/10/2026 (o recebimento é da série); a API antiga
+      // ainda exige os dois campos
+      payment: values.payment ?? 'CASH_ONLY',
+      cashMethods: values.cashMethods?.length
+        ? values.cashMethods
+        : cashMethods.map((method) => method.value),
       downPaymentRequired: values.downPaymentRequired,
       downPaymentPercent: values.downPaymentPercent,
       clientId: values.clientId || null,

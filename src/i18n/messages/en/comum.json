@@ -42,6 +42,7 @@
     "paymentMethod": "Payment method",
     "installments": "Installments",
     "rg": "RG",
+    "bank": "Bank",
     "active": "Active",
     "legalRepresentative": "Legal representative",
     "paymentDate": "Payment date",
@@ -92,6 +93,7 @@
     "errorGeneratingPdf": "Error generating PDF",
     "delivery": "Delivery",
     "finish": "Finish",
+    "sortBy": "Sort by",
     "invalidEmailFormat": "Invalid email format",
     "validatingData": "Validating data"
   },
@@ -501,7 +503,10 @@
     "sessionExpiredSignInAgain": "Session expired: sign in again",
     "attachmentSaved": "Attachment saved",
     "couldnTSaveTheAttachment": "Couldn't save the attachment",
-    "all": "ALL"
+    "all": "ALL",
+    "customerName": "customer name",
+    "quoteNumber": "quote number",
+    "proposalValidity": "proposal validity"
   },
   "store": {
     "success": "Success!",

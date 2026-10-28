@@ -82,6 +82,7 @@
     "etapa": "Etapa",
     "origem": "Origem",
     "remover": "Remover",
+    "groupName": "Nome do grupo",
     "feature": "Recurso",
     "row": "Linha",
     "group": "Grupo",
@@ -125,6 +126,7 @@
     "telefone": "Telefone",
     "notes": "Observações",
     "new": "Novo",
+    "bank": "Banco",
     "active": "Ativos",
     "fornecedores": "Fornecedores",
     "configurar": "Configurar",
@@ -240,6 +242,7 @@
     "delivery": "Entrega",
     "finish": "Finalizar",
     "concluido": "Concluído",
+    "sortBy": "Ordenar por",
     "approved2": "Aprovado",
     "duplicate": "Duplicar",
     "invalidEmailFormat": "Formato de e-mail inválido",
@@ -813,7 +816,10 @@
     "sessionExpiredSignInAgain": "Sessão expirada: entre de novo",
     "attachmentSaved": "Anexo guardado",
     "couldnTSaveTheAttachment": "Não foi possível guardar o anexo",
-    "all": "ALL"
+    "all": "ALL",
+    "customerName": "nome do cliente",
+    "quoteNumber": "número do orçamento",
+    "proposalValidity": "validade da proposta"
   },
   "store": {
     "success": "Sucesso!",

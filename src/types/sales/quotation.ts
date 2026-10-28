@@ -246,6 +246,8 @@ export type QuotationType = {
   rejectionReason?: { id: string; reason: string } | null
   nextContactAt?: string | null
   nextContactNote?: string | null
+  // O último contato registrado (CRM fase 2)
+  lastContact?: import('./followUp').LastContact | null
   quickSale: boolean
   serie: {
     id: string

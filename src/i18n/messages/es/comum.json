@@ -42,6 +42,7 @@
     "paymentMethod": "Forma de pago",
     "installments": "Pago en cuotas",
     "rg": "RG",
+    "bank": "Banco",
     "active": "Activos",
     "legalRepresentative": "Representante legal",
     "paymentDate": "Fecha de pago",
@@ -92,6 +93,7 @@
     "errorGeneratingPdf": "Error al generar el PDF",
     "delivery": "Entrega",
     "finish": "Finalizar",
+    "sortBy": "Ordenar por",
     "invalidEmailFormat": "Formato de correo electrónico inválido",
     "validatingData": "Validando datos"
   },
@@ -501,7 +503,10 @@
     "sessionExpiredSignInAgain": "Sesión expirada: inicie sesión de nuevo",
     "attachmentSaved": "Adjunto guardado",
     "couldnTSaveTheAttachment": "No fue posible guardar el adjunto",
-    "all": "ALL"
+    "all": "ALL",
+    "customerName": "nombre del cliente",
+    "quoteNumber": "número del presupuesto",
+    "proposalValidity": "validez de la propuesta"
   },
   "store": {
     "success": "¡Éxito!",

@@ -23,12 +23,6 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import { AsyncSelectBasic } from '@/components/common/form/AsyncSelectBasic'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-// Types
-import type { QuickSalePayment } from '../types'
-
-// Hooks / Store / Consts
-import { cn } from '@/lib/utils'
-
 // Actions
 import {
   getQuickSaleOptions,
@@ -63,8 +57,6 @@ export function QuickSaleSettingsForm() {
   const [seriesId, setSeriesId] = useState('')
   const [serviceTypeId, setServiceTypeId] = useState('')
   const [responsibleId, setResponsibleId] = useState('none')
-  const [payment, setPayment] = useState<QuickSalePayment>('CASH_ONLY')
-  const [cashMethods, setCashMethods] = useState<string[]>([])
   const [downPaymentRequired, setDownPaymentRequired] = useState(false)
   const [downPaymentPercent, setDownPaymentPercent] = useState(50)
 
@@ -89,18 +81,9 @@ export function QuickSaleSettingsForm() {
     setSeriesId(settings.seriesId)
     setServiceTypeId(settings.serviceTypeId)
     setResponsibleId(settings.responsibleId || 'none')
-    setPayment(settings.payment)
-    setCashMethods(settings.cashMethods)
     setDownPaymentRequired(settings.downPaymentRequired)
     setDownPaymentPercent(settings.downPaymentPercent)
   }, [settings])
-
-  const toggleMethod = (value: string) =>
-    setCashMethods((current) =>
-      current.includes(value)
-        ? current.filter((item) => item !== value)
-        : [...current, value],
-    )
 
   const { mutate: save, isPending } = useMutation({
     mutationFn: () =>
@@ -112,8 +95,6 @@ export function QuickSaleSettingsForm() {
         seriesId,
         serviceTypeId,
         responsibleId: responsibleId === 'none' ? null : responsibleId,
-        payment,
-        cashMethods,
         downPaymentRequired,
         downPaymentPercent,
       }),
@@ -284,120 +265,61 @@ export function QuickSaleSettingsForm() {
         </CardFooter>
       </Card>
 
+      {/* O caminho do recebimento (cobrar na hora ou enviar ao caixa) saiu
+          daqui em 26/10/2026: é da série de venda, pelo tipo "Faturar na
+          frente de caixa" (VR-5). Fica só o sinal (FC-17) */}
       <Card>
         <CardHeader>
-          <CardTitle>Como a venda é recebida</CardTitle>
+          <CardTitle>Sinal na retirada</CardTitle>
           <CardDescription>
-            A venda de balcão não fica em aberto: ou ela é cobrada na hora, ou
-            vai para a frente de caixa fechar com o restante do movimento.
+            Vale para a venda enviada à frente de caixa, quando o cliente paga
+            agora e busca depois. Onde a venda é recebida é definido pela série
+            de venda, em Configurações › Vendas › Séries de venda.
           </CardDescription>
         </CardHeader>
         <CardContent className="px-6 pb-6 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => setPayment('CASH_ONLY')}
-              className={cn(
-                'rounded-lg border p-4 text-left',
-                payment === 'CASH_ONLY'
-                  ? 'border-brand-500 bg-brand-25'
-                  : 'border-gray-200 bg-white',
-              )}
-            >
-              <p className="font-medium">Cobrar na hora, só à vista</p>
-              <p className="text-sm text-gray">
-                A venda se encerra no atendimento, sem parcelar e sem gerar
-                cobrança futura.
-              </p>
-            </button>
-            <button
-              type="button"
-              onClick={() => setPayment('POS')}
-              className={cn(
-                'rounded-lg border p-4 text-left',
-                payment === 'POS'
-                  ? 'border-brand-500 bg-brand-25'
-                  : 'border-gray-200 bg-white',
-              )}
-            >
-              <p className="font-medium">Enviar para a frente de caixa</p>
-              <p className="text-sm text-gray">
-                A venda vai para o PDV, onde o recebimento é feito junto com o
-                caixa do dia.
-              </p>
-            </button>
+          <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="max-w-2xl">
+                <p className="font-medium">Entrada obrigatória (sinal)</p>
+                <p className="text-sm text-gray">
+                  Quando o cliente deixa o trabalho para buscar depois, o caixa
+                  só libera com a entrada mínima paga. O restante é cobrado na
+                  retirada. Quem tem permissão pode dispensar o sinal caso a
+                  caso.
+                </p>
+              </div>
+              <PermissionGate permissions={['sales_settings:series:edit']}>
+                <Switch
+                  checked={downPaymentRequired}
+                  onCheckedChange={setDownPaymentRequired}
+                  aria-label="Entrada obrigatória"
+                />
+              </PermissionGate>
+            </div>
+            {downPaymentRequired && (
+              <div className="w-full max-w-[200px] space-y-1.5">
+                <label
+                  htmlFor="quick-down-payment"
+                  className="text-sm font-medium"
+                >
+                  Percentual do sinal
+                </label>
+                <Input
+                  id="quick-down-payment"
+                  type="number"
+                  min={1}
+                  max={100}
+                  step="1"
+                  endAdornment={<span className="text-sm">%</span>}
+                  value={downPaymentPercent}
+                  onChange={(event) =>
+                    setDownPaymentPercent(Number(event.target.value) || 0)
+                  }
+                />
+              </div>
+            )}
           </div>
-
-          {payment === 'CASH_ONLY' && (
-            <div className="space-y-1.5">
-              <p className="text-sm font-medium">Meios aceitos</p>
-              <div className="flex flex-wrap gap-2">
-                {(options?.cashMethods || []).map((method) => (
-                  <button
-                    key={method.value}
-                    type="button"
-                    onClick={() => toggleMethod(method.value)}
-                    className={cn(
-                      'rounded-lg border px-4 py-2 text-sm',
-                      cashMethods.includes(method.value)
-                        ? 'border-brand-500 bg-white font-medium text-brand-700'
-                        : 'border-gray-200 bg-white text-gray-600',
-                    )}
-                  >
-                    {method.label}
-                  </button>
-                ))}
-              </div>
-              <p className="text-sm text-gray">
-                Sem meio selecionado, a venda rápida não consegue ser fechada.
-              </p>
-            </div>
-          )}
-
-          {payment === 'POS' && (
-            <div className="space-y-4 rounded-lg border border-gray-200 p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="max-w-2xl">
-                  <p className="font-medium">Entrada obrigatória (sinal)</p>
-                  <p className="text-sm text-gray">
-                    Quando o cliente deixa o trabalho para buscar depois, o
-                    caixa só libera com a entrada mínima paga. O restante é
-                    cobrado na retirada. Quem tem permissão pode dispensar o
-                    sinal caso a caso.
-                  </p>
-                </div>
-                <PermissionGate permissions={['sales_settings:series:edit']}>
-                  <Switch
-                    checked={downPaymentRequired}
-                    onCheckedChange={setDownPaymentRequired}
-                    aria-label="Entrada obrigatória"
-                  />
-                </PermissionGate>
-              </div>
-              {downPaymentRequired && (
-                <div className="w-full max-w-[200px] space-y-1.5">
-                  <label
-                    htmlFor="quick-down-payment"
-                    className="text-sm font-medium"
-                  >
-                    Percentual do sinal
-                  </label>
-                  <Input
-                    id="quick-down-payment"
-                    type="number"
-                    min={1}
-                    max={100}
-                    step="1"
-                    endAdornment={<span className="text-sm">%</span>}
-                    value={downPaymentPercent}
-                    onChange={(event) =>
-                      setDownPaymentPercent(Number(event.target.value) || 0)
-                    }
-                  />
-                </div>
-              )}
-            </div>
-          )}
         </CardContent>
         <CardFooter className="justify-end">
           <PermissionGate permissions={['sales_settings:series:edit']}>

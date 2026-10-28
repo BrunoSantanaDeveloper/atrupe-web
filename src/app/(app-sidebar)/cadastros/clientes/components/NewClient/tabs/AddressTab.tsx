@@ -1,5 +1,7 @@
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { FormInput } from '@/components/common/form/FormInput'
+import { RegularizadoMark } from '../RegularizadoMark'
+import { usePathname } from 'next/navigation'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { Button } from '@/components/ui/button'
 import { COUNTRIES } from '@/consts/country-codes'
@@ -15,7 +17,16 @@ const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({
   label: c.namePt,
 }))
 
+// A marca de "obrigatório para regularizado" só no cliente (a aba também
+// serve ao fornecedor): endereço completo é parte da regra (ALT-4)
+function useAddressMark() {
+  const pathname = usePathname()
+  const isClient = !!pathname?.includes('/cadastros/clientes')
+  return isClient ? <RegularizadoMark /> : null
+}
+
 export function AddressTab() {
+  const addressMark = useAddressMark()
   const { control, setValue, watch } = useFormContext<NewClientFormType>()
 
   const { fields, append, remove } = useFieldArray({
@@ -91,6 +102,7 @@ export function AddressTab() {
               <div className="mt-auto">
                 <FormInput<NewClientFormType>
                   name={`addresses.${index}.state`}
+                  labelSuffix={addressMark}
                   label="Estado"
                   disabled={isForeign}
                 />
@@ -98,12 +110,14 @@ export function AddressTab() {
               <div className="col-span-full flex gap-4 items-baseline">
                 <FormInput<NewClientFormType>
                   name={`addresses.${index}.city`}
+                  labelSuffix={addressMark}
                   label="Cidade"
                   disabled={isForeign}
                 />
                 {!isForeign ? (
                   <FormInput<NewClientFormType>
                     name={`addresses.${index}.neighborhood`}
+                    labelSuffix={addressMark}
                     label="Bairro"
                   />
                 ) : (
@@ -118,6 +132,7 @@ export function AddressTab() {
               <div className="col-span-2">
                 <FormInput<NewClientFormType>
                   name={`addresses.${index}.street`}
+                  labelSuffix={addressMark}
                   label="Rua"
                 />
               </div>
@@ -144,6 +159,7 @@ export function AddressTab() {
 
 // Componente auxiliar para o CEP com auto-complete
 function ZipcodeField({ index }: { index: number }) {
+  const addressMark = useAddressMark()
   const { watch, setValue } = useFormContext<NewClientFormType>()
   const zipcode = watch(`addresses.${index}.zipcode`)
 
@@ -171,6 +187,7 @@ function ZipcodeField({ index }: { index: number }) {
   return (
     <FormInput<NewClientFormType>
       name={`addresses.${index}.zipcode`}
+      labelSuffix={addressMark}
       label="CEP"
       placeholder="00000-000"
       additionalOnChange={(value) => {

@@ -33,6 +33,9 @@ export const newProductsSchema = z.object({
   // fornecedor por unidade de venda (centavos, na unidade da tela)
   isOutsourced: z.boolean().default(false),
   outsourcedCost: z.number().optional().nullable(),
+  // Quantidade mínima (27/10/2026), na unidade comercial do produto: abaixo
+  // dela o item é cobrado pelo mínimo; por unidade, o item nasce com ela
+  minQuantity: z.union([z.number(), z.string(), z.null()]).optional(),
   suppliers: z
     .array(z.object({ id: z.string(), name: z.string() }))
     .default([]),
@@ -162,6 +165,7 @@ export const defaultNewProductValues: NewProductsFormType = {
   imageSize: 'small',
   isOutsourced: false,
   outsourcedCost: null,
+  minQuantity: null,
   suppliers: [],
   supplierPick: null,
   items: [

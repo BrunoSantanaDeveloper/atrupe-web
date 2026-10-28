@@ -48,6 +48,14 @@ import { SelectProductGroupWithSectorField } from '@/components/common/form/glob
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 import { InactivateProductDialog } from './InactivateProductDialog'
 import { OutsourcedProductFields } from './OutsourcedProductFields'
+import { NewGroupInline } from './NewGroupInline'
+import { ProductPriceTiers } from './ProductPriceTiers'
+import {
+  saveProductVariations,
+  setPriceTiers,
+} from '@/actions/product-variations'
+import type { PriceTier, UnitKind } from '../[id]/composicao/assembly'
+import { unitSymbol } from '../[id]/composicao/assembly'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -159,6 +167,12 @@ function NewProductModal({
   // Inativar com "onde é usado" (PAD-7, 05/10/2026): o diálogo lista os
   // produtos em que este é parte e os orçamentos abertos que o têm
   const [inactivateOpen, setInactivateOpen] = useState(false)
+  // Variações e faixas digitadas no cadastro novo, gravadas depois que o
+  // produto existe (27/10/2026)
+  const [pendingVariations, setPendingVariations] = useState<
+    { name: string; unitPrice: number | null }[]
+  >([])
+  const [pendingTiers, setPendingTiers] = useState<PriceTier[]>([])
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
@@ -168,9 +182,14 @@ function NewProductModal({
   // lugar da lista simples de etapas do LITE (ET-1). A composição lê a
   // API (contrato, módulo 1, parte A)
   const showCompositionTab = hasFeature(FEATURES.COSTS.COST_BASE)
-  // As variações simples ficam aqui; com a composição (PRO), elas vivem
-  // na aba Composição, como abas com composição própria
-  const showVariations = !showCompositionTab
+  // Variações, faixas de quantidade e quantidade mínima são do LITE em
+  // diante (chave product_composition; decisão de 27/10/2026). As variações
+  // simples e as faixas ficam aqui; com a composição (PRO), elas vivem na
+  // aba Composição. A quantidade mínima fica no produto em todos os planos a
+  // partir do LITE: no PRO ela é a base mínima dos materiais da composição
+  const hasLiteProducts = hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+  const showVariations = hasLiteProducts && !showCompositionTab
+  const showMinQuantity = hasLiteProducts
 
   useEffect(() => {
     if (open) setActiveTab(initialTab)
@@ -272,6 +291,7 @@ function NewProductModal({
             : null,
           suppliers: product?.suppliers ?? [],
           supplierPick: null,
+          minQuantity: product?.minQuantity ?? null,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items: product?.items?.map((item: any) => ({
             ...item,
@@ -305,6 +325,8 @@ function NewProductModal({
 
   function handleCleanForm() {
     reset(defaultNewProductValues)
+    setPendingVariations([])
+    setPendingTiers([])
     items.replace(defaultItemFields)
     fiscalForm.reset(defaultFiscalDataValues)
   }
@@ -320,6 +342,14 @@ function NewProductModal({
         toast.error('Informe o custo do fornecedor')
         return
       }
+    }
+    // Quantidade mínima só quando preenchida (no cadastro novo): a API sem
+    // o patch 13 recusa campo desconhecido
+    const minimums: { minQuantity?: number | null } = {}
+    if (Number(data.minQuantity) > 0) {
+      minimums.minQuantity = Number(data.minQuantity)
+    } else if (editMode) {
+      minimums.minQuantity = null
     }
     const body = {
       isOutsourced: !!data.isOutsourced,
@@ -339,6 +369,7 @@ function NewProductModal({
       technicalDescription: data?.technicalDescription ?? '',
       allowEditValues: data.allowEditValues,
       allowEditDescription: data.allowEditDescription,
+      ...minimums,
       imageUrl: data.imageUrl || null,
       imageSize: data.imageSize || null,
       items: data.items?.map((item) => ({
@@ -366,33 +397,66 @@ function NewProductModal({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let createdProduct: any = null
 
+      // A API desatualizada recusa campo que ainda não conhece ("property X
+      // should not exist"): grava sem esses campos e avisa quais ficaram de
+      // fora, em vez de perder o cadastro (27/10/2026)
+      const send = async (payload: Record<string, unknown>) =>
+        editMode
+          ? updateItemNew({ route: `/product/${productId}`, data: payload })
+          : createItemNew({ route: '/product', data: payload })
+      let payload: Record<string, unknown> = body
+      let result = await send(payload)
+      const unknown: string[] = []
+      // A API aponta um campo por vez: tira e tenta de novo, até seis vezes
+      for (let attempt = 0; attempt < 6 && !result.success; attempt++) {
+        const field = String(result.message).match(
+          /property (\w+) should not exist/,
+        )?.[1]
+        if (!field || !(field in payload)) break
+        unknown.push(field)
+        payload = Object.fromEntries(
+          Object.entries(payload).filter(([key]) => key !== field),
+        )
+        result = await send(payload)
+      }
+      if (result.success && unknown.length) {
+        toast.warning(
+          `A API ainda não aceita: ${unknown.join(', ')}. O produto foi salvo sem esses campos.`,
+        )
+      }
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
       if (editMode) {
-        const result = await updateItemNew({
-          route: `/product/${productId}`,
-          data: body,
-        })
-
-        if (!result.success) {
-          throw new Error(result.message)
-        }
-
         toast.success('Produto atualizado')
       } else {
-        const result = await createItemNew({
-          route: '/product',
-          data: body,
-        })
-
-        if (!result.success) {
-          throw new Error(result.message)
-        }
         createdProduct = result.data
-
         toast.success('Produto criado')
       }
 
       // Save fiscal data if fiscal tab is shown and productId is available
       const savedId = editMode ? productId : createdProduct?.id
+      if (!editMode && savedId) {
+        if (pendingVariations.length) {
+          const res = await saveProductVariations({
+            productId: savedId,
+            variations: pendingVariations,
+          })
+          if (!res.success)
+            toast.error(`Variações não gravadas: ${res.message}`)
+        }
+        if (pendingTiers.length) {
+          const res = await setPriceTiers({
+            productId: savedId,
+            tiers: pendingTiers,
+          })
+          if (!res.success) toast.error(`Faixas não gravadas: ${res.message}`)
+        }
+        setPendingVariations([])
+        setPendingTiers([])
+      }
       if (showFiscalTab && savedId) {
         const fiscalData = fiscalForm.getValues()
         try {
@@ -550,12 +614,23 @@ function NewProductModal({
                         label="Setor"
                         width="flex-[1_0_190px]"
                       />
-                      <SelectProductGroupWithSectorField
-                        name="categoryId"
-                        label="Grupo de produtos"
-                        width="flex-[1_0_190px]"
-                        selectedSectorId={watch('sectorId')}
-                      />
+                      <div className="flex flex-[1_0_190px] gap-2">
+                        <SelectProductGroupWithSectorField
+                          name="categoryId"
+                          label="Grupo de produtos"
+                          width="flex-1"
+                          selectedSectorId={watch('sectorId')}
+                        />
+                        <NewGroupInline
+                          sectorId={watch('sectorId')}
+                          onCreated={(id) =>
+                            form.setValue('categoryId', id, {
+                              shouldDirty: true,
+                              shouldValidate: true,
+                            })
+                          }
+                        />
+                      </div>
 
                       <FormInput
                         name="name"
@@ -614,25 +689,71 @@ function NewProductModal({
                               </div>
                             )}
 
-                          {/* Variações já no START (PV-6, 05/10/2026). No PRO
-                              elas vivem na aba Composição */}
+                          {/* Variações do LITE em diante (PV-6, 05/10/2026;
+                              plano revisto em 27/10/2026). No PRO elas vivem
+                              na aba Composição */}
                           {showVariations && (
                             <div className="w-full rounded-xl border border-gray-200 p-4">
-                              {editMode && productId ? (
-                                <ProductVariations
-                                  productId={productId}
-                                  unitKind={watch('items.0.unitKind')}
-                                />
-                              ) : (
+                              <ProductVariations
+                                productId={
+                                  editMode ? (productId ?? null) : null
+                                }
+                                unitKind={watch('items.0.unitKind')}
+                                onLocalChange={setPendingVariations}
+                              />
+                            </div>
+                          )}
+                          {/* Quantidade mínima (27/10/2026), na unidade do
+                              produto, do LITE em diante: abaixo dela o item é
+                              cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).
+                              No PRO é também a base mínima dos materiais */}
+                          {showMinQuantity && (
+                            <div className="w-full space-y-4 rounded-xl border border-gray-200 p-4">
+                              <div>
+                                <h4 className="type-card-title">
+                                  Quantidade mínima
+                                </h4>
                                 <p className="text-sm text-gray">
-                                  <span className="font-medium text-gray-700">
-                                    Variações
-                                  </span>{' '}
-                                  · Tamanhos ou cores do mesmo produto (P, M, G;
-                                  4x0, 4x4) entram depois de salvar, na edição
-                                  do produto.
+                                  <MinimumExample
+                                    unitKind={
+                                      (watch('items.0.unitKind') as UnitKind) ||
+                                      'UNITY'
+                                    }
+                                  />
                                 </p>
-                              )}
+                              </div>
+                              <FormInput
+                                name="minQuantity"
+                                label={`Quantidade mínima (${
+                                  unitSymbol[
+                                    (watch('items.0.unitKind') as UnitKind) ||
+                                      'UNITY'
+                                  ] || 'un'
+                                })`}
+                                type="number"
+                                step="0.001"
+                                width="flex-[1_0_160px]"
+                              />
+                            </div>
+                          )}
+                          {/* Faixas de quantidade do LITE em diante (FQ-1;
+                              decisão do produto, 26/10/2026). No PRO elas vivem
+                              na aba Composição, com custo e margem por faixa */}
+                          {showVariations && (
+                            <div className="w-full rounded-xl border border-gray-200 p-4">
+                              <ProductPriceTiers
+                                productId={
+                                  editMode ? (productId ?? null) : null
+                                }
+                                unitKind={watch('items.0.unitKind')}
+                                basePriceCents={Math.round(
+                                  convertRawToUnitCost(
+                                    watch('items.0.unitKind') || 'UNITY',
+                                    Number(watch('items.0.unitCost')) || 0,
+                                  ),
+                                )}
+                                onLocalChange={setPendingTiers}
+                              />
                             </div>
                           )}
                         </>
@@ -877,6 +998,73 @@ function NewProductModal({
 }
 
 export const NewProduct = React.memo(NewProductModal)
+
+// O exemplo da quantidade mínima acompanha a unidade comercial (27/10/2026).
+// Em JSX para a biblioteca de idiomas enxergar os textos (IN-7)
+function MinimumExample({ unitKind }: { unitKind: UnitKind }) {
+  switch (unitKind) {
+    case 'AREA':
+      return (
+        <>
+          Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 100,00 o m²
+          com mínimo de 0,5 m², o item sai por R$ 50,00 mesmo com 0,2 m² de
+          arte. A medida digitada permanece, e a área total aparece em vermelho
+          apontando o mínimo.
+        </>
+      )
+    case 'LENGTH':
+      return (
+        <>
+          Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 20,00 o
+          metro com mínimo de 0,5 m, o item sai por R$ 10,00 mesmo com 0,3 m. A
+          medida digitada permanece, e o total aponta o mínimo em vermelho.
+        </>
+      )
+    case 'WEIGHT':
+      return (
+        <>
+          Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 40,00 o
+          quilo com mínimo de 0,5 kg, o item sai por R$ 20,00 mesmo com 0,2 kg.
+          O peso digitado permanece, e o total aponta o mínimo em vermelho.
+        </>
+      )
+    case 'CAPACITY':
+      return (
+        <>
+          Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 30,00 o
+          litro com mínimo de 0,5 l, o item sai por R$ 15,00 mesmo com 0,2 l. A
+          quantidade digitada permanece, e o total aponta o mínimo em vermelho.
+        </>
+      )
+    case 'DISTANCE':
+      return (
+        <>
+          Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 5,00 o
+          quilômetro com mínimo de 10 km, o item sai por R$ 50,00 mesmo com 4
+          km. A distância digitada permanece, e o total aponta o mínimo em
+          vermelho.
+        </>
+      )
+    case 'DURATION':
+      return (
+        <>
+          Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 80,00 a
+          hora com mínimo de 1 h, o item sai por R$ 80,00 mesmo com 30 minutos.
+          O tempo digitado permanece, e o total aponta o mínimo em vermelho.
+        </>
+      )
+    case 'UNITY':
+    default:
+      return (
+        <>
+          O item já nasce com essa quantidade no orçamento e, abaixo dela, é
+          cobrado pela quantidade mínima: a R$ 1,00 a unidade com mínimo de 100
+          un, o item sai por R$ 100,00 mesmo com 50 pedidas. A quantidade
+          digitada permanece, e o total aponta o mínimo em vermelho.
+        </>
+      )
+  }
+}
 
 export function NewProductTriggerButton({
   editMode,

@@ -141,7 +141,7 @@ export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
                   label="Cancela venda"
                   className="w-full"
                 />
-                {/* O vendedor só envia a venda rápida à frente de caixa: a
+                {/* O vendedor só envia a venda à frente de caixa: a
                     forma de pagamento e o faturamento ficam com o caixa
                     (FC-12.1) */}
                 {hasFeature(FEATURES.FINANCIAL.PDV_SCREEN) && (

@@ -11,36 +11,77 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 // Hooks / Store / Consts
 import { FEATURES } from '@/consts/features'
 import { updateFilterParam } from '@/lib/filter-utils'
+import { useSector } from '@/hooks/queries/useSector'
+import { useProductGroupWithSector } from '@/hooks/queries/useProductGroup'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
-// O filtro de composição (CP-17): no PRO, a composição é um recurso do
-// produto, e a lista precisa dizer quais já têm — não um segundo cadastro.
-// Os filtros de setor, grupo e unidade seguem desligados, como estavam
+// Setor e grupo filtram a lista (decisão do produto, 26/10/2026): com
+// dezenas de produtos, só a busca por texto não bastava. O grupo segue o
+// setor escolhido. O filtro de composição (CP-17) é do PRO.
 export function ProductsFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
   const params = useSearchParams()
+  const { data: sectors } = useSector({ isProductionStage: true })
+  const { data: groupsBySector } = useProductGroupWithSector()
 
-  // O filtro da composição é da base de custos (o FeatureGate abaixo)
   if (!searchParams) return null
 
+  const sectorId = searchParams?.sectorId || 'all'
+  const sectorOptions = (sectors || []).map((sector) => ({
+    value: sector.id,
+    label: sector.name,
+  }))
+  const groupOptions = (groupsBySector || [])
+    .filter((entry) => sectorId === 'all' || entry.sectorId === sectorId)
+    .flatMap((entry) =>
+      (entry.groups || []).map((group) => ({
+        value: group.id,
+        label:
+          sectorId === 'all' ? `${group.name} · ${entry.sector}` : group.name,
+      })),
+    )
+
+  const set = (key: string, value: string) =>
+    updateFilterParam(key, value, { router, params })
+
   return (
-    <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
+    <>
       <SelectBasic
-        name="composicao"
-        label="Composição"
-        className="w-[220px]"
-        options={[
-          { value: 'all', label: 'Todos' },
-          { value: 'com', label: 'Com composição' },
-          { value: 'sem', label: 'Sem composição' },
-        ]}
-        value={searchParams?.composicao || 'all'}
-        onChange={(value) =>
-          updateFilterParam('composicao', String(value), { router, params })
-        }
+        name="setor"
+        label="Setor"
+        className="w-full sm:w-[220px]"
+        options={[{ value: 'all', label: 'Todos' }, ...sectorOptions]}
+        value={sectorId}
+        onChange={(value) => {
+          // Trocar o setor limpa o grupo, que é por setor
+          if (searchParams?.categoryId) set('categoryId', 'all')
+          set('sectorId', String(value))
+        }}
       />
-    </FeatureGate>
+      <SelectBasic
+        name="grupo"
+        label="Grupo"
+        className="w-full sm:w-[220px]"
+        options={[{ value: 'all', label: 'Todos' }, ...groupOptions]}
+        value={searchParams?.categoryId || 'all'}
+        onChange={(value) => set('categoryId', String(value))}
+      />
+      <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
+        <SelectBasic
+          name="composicao"
+          label="Composição"
+          className="w-full sm:w-[220px]"
+          options={[
+            { value: 'all', label: 'Todos' },
+            { value: 'com', label: 'Com composição' },
+            { value: 'sem', label: 'Sem composição' },
+          ]}
+          value={searchParams?.composicao || 'all'}
+          onChange={(value) => set('composicao', String(value))}
+        />
+      </FeatureGate>
+    </>
   )
 }

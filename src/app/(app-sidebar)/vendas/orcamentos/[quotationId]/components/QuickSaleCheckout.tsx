@@ -1,11 +1,13 @@
 'use client'
 
-// A venda rápida vista pelo vendedor: o lugar das condições de pagamento.
+// O recebimento da venda cuja série fatura na frente de caixa, visto pelo
+// vendedor: o lugar das condições de pagamento.
 //
-// Na venda rápida o vendedor não monta condição de pagamento (FC-1). O que ele
-// faz depende da configuração (VR-5): ou cobra na hora, só à vista, ou envia
-// ao caixa, e quem recebe é o caixa. Enviar é aprovar (FC-12), e a venda
-// enviada trava (FC-11).
+// Nessa série o vendedor não monta condição de pagamento (FC-1). Ele cobra
+// na hora, à vista (dinheiro, PIX ou cartão), ou envia ao caixa, e quem
+// recebe é o caixa (VR-5, revista em 26/10/2026: vale para a venda rápida e
+// para o orçamento comum). Enviar é aprovar (FC-12), e a venda enviada trava
+// (FC-11).
 //
 // Os dados vêm da API (Fase 7.3): a situação no caixa, o "Cobrar" e o
 // enviar ao caixa passam por `src/actions/cash-front.ts`.
@@ -35,7 +37,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
+import { SaleReceiptDialog } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/SaleReceiptDialog'
 import {
   useCashReceipt,
   CashReceiptFields,
@@ -86,6 +88,8 @@ import { quickSaleCheckoutStatusObj } from '@/consts/quickSale'
 // Utils
 import { cn } from '@/lib/utils'
 import { useMoney } from '@/hooks/useMoney'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { calculatePaymentTotals } from './QuotationActions/PaymentConditions/utils'
 
 const hora = (iso: string) =>
@@ -94,18 +98,15 @@ const hora = (iso: string) =>
     minute: '2-digit',
   })
 
-// A configuração guarda os meios aceitos com os nomes da tela de configuração
-const settingsMethod: Record<string, PaymentMethod> = {
-  dinheiro: 'CASH',
-  pix: 'PIX',
-  cartao: 'CARD',
-}
+// O vendedor cobra à vista: dinheiro, PIX ou cartão (crédito ou débito)
+const CASH_METHODS: readonly PaymentMethod[] = ['CASH', 'PIX', 'CARD']
 
 export const QUICK_SALE_CHECKOUT_QUERY_KEY = 'quick-sale-checkout'
 
 // Tudo o que as duas peças da tela (o botão no topo e o card) precisam saber
 export function useQuickSale(data: QuotationType) {
   const { data: session } = useSession()
+  const { hasFeature } = usePlanFeatures()
 
   const { data: settingsRes } = useQuery({
     staleTime: Infinity,
@@ -121,17 +122,14 @@ export function useQuickSale(data: QuotationType) {
     refetchInterval: 15000,
   })
 
-  // Leitura que falhou devolve o padrão vazio da action, que é "cobrar na
-  // hora": aí vale o caminho seguro, a frente de caixa
   const settings = settingsRes?.success ? settingsRes.data : undefined
   // O vendedor com "Somente enviar ao caixa" no perfil (FC-12.1) não cobra:
-  // a venda vai sempre para a frente de caixa. O campo vem no vendedor do
-  // orçamento; enquanto a API não manda, vale a configuração da venda rápida
+  // a venda vai sempre para a frente de caixa
   const onlySendToCash = !!data?.seller?.onlySendToCash
-  const path = onlySendToCash ? 'POS' : (settings?.payment ?? 'POS')
-  const methods = (settings?.cashMethods ?? [])
-    .map((method) => settingsMethod[method])
-    .filter(Boolean)
+  // Sem a frente de caixa no plano, só resta cobrar na hora: a venda enviada
+  // ficaria numa fila que ninguém atende
+  const canSend = hasFeature(FEATURES.FINANCIAL.PDV_SCREEN)
+  const canCharge = !onlySendToCash || !canSend
 
   // Cliente bloqueado no limite de crédito: nem cobra nem envia ao caixa
   // (decisão de 24/10/2026)
@@ -149,14 +147,18 @@ export function useQuickSale(data: QuotationType) {
   }
 
   return {
-    path,
+    canSend,
+    canCharge,
+    // O cliente padrão da configuração: a venda com ele não tem "cliente
+    // informado", então não há proposta a mostrar (26/10/2026)
+    defaultClientId: settings?.clientId || null,
     // O arredondamento no balcão da frente padrão (FC-18)
     roundingLimit: roundingFor(
       settings?.roundingLimit,
       settings?.roundingType,
       total,
     ),
-    methods: methods.length ? methods : (['CASH', 'PIX', 'CARD'] as const),
+    methods: CASH_METHODS,
     total,
     itemCount,
     origin,
@@ -244,7 +246,7 @@ function ChargeNowDialog({
               <DialogTitle className="mb-1">Recebimento</DialogTitle>
               <DialogDescription className="truncate">
                 {sale.origin.client} - {sale.origin.reference} · à vista, pelo
-                total. Para parcelar ou cobrar depois, faça um orçamento comum.
+                total. Para parcelar ou cobrar depois, envie ao caixa.
               </DialogDescription>
             </div>
           </div>
@@ -280,7 +282,8 @@ function ChargeNowDialog({
               form="charge-now"
               RightIcon={IconCircleCheck}
               isLoading={saving}
-              // Venda rápida não fica em aberto: sem o total, não cobra (VR-5)
+              // A venda cobrada aqui não fica em aberto: sem o total, não
+              // cobra (VR-5)
               disabled={receipt.missing > 0}
             >
               {receipt.missing > 0
@@ -332,6 +335,8 @@ export function QuickSaleCheckoutButton({
       },
     })
 
+  // Os dois gestos da série da frente de caixa (VR-5): cobrar à vista agora
+  // ou enviar ao caixa. O perfil e o plano podem deixar só um deles
   return (
     <PermissionGate permissions={['sale:order:create']}>
       {sale.blocked && (
@@ -340,19 +345,34 @@ export function QuickSaleCheckoutButton({
           enviada ao caixa.
         </p>
       )}
-      <Button
-        type="button"
-        size={size}
-        disabled={empty || sale.blocked}
-        title={empty ? 'Adicione um item para continuar' : undefined}
-        RightIcon={sale.path === 'POS' ? IconCashRegister : IconCashBanknote}
-        onClick={() => (sale.path === 'POS' ? sendToCash() : setCharging(true))}
-      >
-        {sale.path === 'POS'
-          ? `Enviar ${money(sale.total)} ao caixa`
-          : `Cobrar ${money(sale.total)}`}
-      </Button>
-      {sale.path === 'CASH_ONLY' && (
+      <div className="flex flex-wrap gap-3">
+        {sale.canSend && (
+          <Button
+            type="button"
+            size={size}
+            variant={sale.canCharge ? 'neutralOutline' : 'default'}
+            disabled={empty || sale.blocked}
+            title={empty ? 'Adicione um item para continuar' : undefined}
+            RightIcon={IconCashRegister}
+            onClick={sendToCash}
+          >
+            {`Enviar ${money(sale.total)} ao caixa`}
+          </Button>
+        )}
+        {sale.canCharge && (
+          <Button
+            type="button"
+            size={size}
+            disabled={empty || sale.blocked}
+            title={empty ? 'Adicione um item para continuar' : undefined}
+            RightIcon={IconCashBanknote}
+            onClick={() => setCharging(true)}
+          >
+            {`Cobrar ${money(sale.total)}`}
+          </Button>
+        )}
+      </div>
+      {sale.canCharge && (
         <ChargeNowDialog
           sale={sale}
           open={charging}
@@ -371,28 +391,34 @@ export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
   const money = useMoney()
   if (sale.isLoading) return <Skeleton className="h-40 w-full" />
 
-  const isPos = sale.path === 'POS'
+  const both = sale.canSend && sale.canCharge
 
   return (
     <Card className="w-full overflow-hidden">
       <CardContent className="grid gap-6 p-6 md:grid-cols-[1fr_auto] md:items-center">
         <div className="flex gap-4">
           <FeaturedIcon
-            Icon={isPos ? IconCashRegister : IconBolt}
+            Icon={sale.canSend ? IconCashRegister : IconBolt}
             tone="brand"
           />
           <div className="space-y-2">
             <div>
               <p className="text-base font-semibold text-gray-700">
-                {isPos ? 'Recebimento na frente de caixa' : 'Cobrança na hora'}
+                {both
+                  ? 'Recebimento: na hora ou no caixa'
+                  : sale.canSend
+                    ? 'Recebimento na frente de caixa'
+                    : 'Cobrança na hora'}
               </p>
               <p className="text-sm text-gray">
-                {isPos
-                  ? 'Você envia, o caixa recebe. A forma de pagamento é o caixa quem define.'
-                  : 'À vista, pelo total, e a venda se encerra aqui mesmo no atendimento.'}
+                {both
+                  ? 'Cobre à vista agora, pelo total, ou envie ao caixa: aí a forma de pagamento é o caixa quem define.'
+                  : sale.canSend
+                    ? 'Você envia, o caixa recebe. A forma de pagamento é o caixa quem define.'
+                    : 'À vista, pelo total, e a venda se encerra aqui mesmo no atendimento.'}
               </p>
             </div>
-            {!isPos && (
+            {sale.canCharge && (
               <div className="flex flex-wrap gap-1.5">
                 {sale.methods.map((method) => (
                   <Badge key={method} variant="neutralLight">
@@ -402,14 +428,9 @@ export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
               </div>
             )}
             <p className="text-sm text-gray">
-              Parcelar ou faturar para o cliente?{' '}
-              <Link
-                href="/vendas/orcamentos"
-                className="font-medium text-brand-700 hover:underline"
-              >
-                Faça um orçamento comum
-              </Link>
-              .
+              {sale.canSend
+                ? 'Parcelar ou faturar para o cliente? Envie ao caixa.'
+                : 'Parcelar ou faturar para o cliente? Use uma série que fatura no pedido.'}
             </p>
           </div>
         </div>
@@ -640,8 +661,8 @@ export function QuickSaleStatusCard({
           </Button>
         </div>
       </CardContent>
-      <PrintQuotationDialog
-        type="quotation"
+      {/* A4 em duas vias ou térmica 80 mm (FC-16, 26/10/2026) */}
+      <SaleReceiptDialog
         quotationId={sale.origin.quotationId}
         open={openPrint}
         onOpenChange={setOpenPrint}

@@ -45,6 +45,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
+import type { UnitKind } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
+import { unitSymbol } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
+import { getSalesSettings } from '@/actions/sales-settings'
 import {
   UnitCostInput,
   convertUnitCostToRaw,
@@ -56,7 +59,7 @@ import {
 } from './productSchema'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
-import { parseCurrencyToBrl, cn } from '@/lib/utils'
+import { parseCurrencyToBrl, cn, formatCurrencyToBrl } from '@/lib/utils'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { QuotationItemType, QuotationType } from '@/types/sales/quotation'
@@ -217,18 +220,85 @@ export function QuotationProdDetailModal({
         items: product.items.map((item) => ({
           ...item,
           name: item.name,
-          quantity: item.quantity ?? 1,
+          // Quantidade mínima do cadastro (27/10/2026): o item simples por
+          // unidade nasce com ela; nas outras unidades ela é o mínimo
+          // cobrado (0,5 m² a R$ 100 o m² = R$ 50)
+          quantity:
+            product.items.length === 1 &&
+            (item.unitKind || 'UNITY') === 'UNITY' &&
+            Number(product.minQuantity) > 0
+              ? Math.ceil(Number(product.minQuantity))
+              : (item.quantity ?? 1),
           salePrice: item.salePrice,
           unitCost: item.unitCost,
         })),
       })
+      if (product.items.length === 1 && Number(product.minQuantity) > 0) {
+        const { total, measurementValue } = calculateSalesValue(0)
+        setValue('items.0.salePrice', total)
+        setValue('items.0.measurementValue', measurementValue)
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product, reset, open])
 
   const items = useFieldArray({
     control: form.control,
     name: 'items',
   })
+  // Quantidade mínima do cadastro (27/10/2026), na unidade comercial do
+  // produto (0,5 m², 3 un), convertida para a medida bruta do cálculo. Vale
+  // para o item simples: abaixo dela, o item é cobrado pelo mínimo; a medida
+  // digitada permanece
+  const minimumRaw = (index: number): number => {
+    if (index !== 0 || (watch('items') || []).length !== 1) return 0
+    const min = Number(product?.minQuantity)
+    if (!(min > 0)) return 0
+    const kind = watch('items.0.unitKind') ?? 'UNITY'
+    return min / convertUnitCostToRaw(kind, 1)
+  }
+  const measuredRaw = (index: number): number => {
+    const item = (watch('items') || [])[index]
+    if (!item) return 0
+    return (
+      calculateRawMeasurement(item, item.unitKind ?? 'UNITY') *
+      Number(item.quantity || 1)
+    )
+  }
+  const belowMinimum = (index: number) => {
+    const min = minimumRaw(index)
+    return min > 0 && measuredRaw(index) < min
+  }
+  // Venda mínima por item da empresa (GR-4, 27/10/2026), em centavos: o item
+  // simples abaixo dela é cobrado pelo mínimo. Vale junto com a quantidade
+  // mínima do produto: o maior dos dois
+  const { hasFeature } = usePlanFeatures()
+  const { data: salesSettingsRes } = useQuery({
+    enabled: open && hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION),
+    staleTime: 60_000,
+    queryKey: ['sales-settings'],
+    queryFn: () => getSalesSettings(),
+  })
+  const minItemValue = Number(salesSettingsRes?.data?.minItemValue) || 0
+  const minItemApplies = (index: number) =>
+    index === 0 && (watch('items') || []).length === 1 && minItemValue > 0
+  const belowMinValue = (index: number) => {
+    if (!minItemApplies(index)) return false
+    const item = (watch('items') || [])[index]
+    if (!item) return false
+    const value =
+      Number(item.unitCost || 0) *
+      Math.max(measuredRaw(index), minimumRaw(index))
+    return value > 0 && value < minItemValue
+  }
+  const minimumNote = (index: number) => {
+    const min = Number(product?.minQuantity)
+    const kind = (watch(`items.${index}.unitKind`) ?? 'UNITY') as UnitKind
+    const unit = unitSymbol[kind] || 'un'
+    const shown = min.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
+    return `Mínimo de ${shown} ${unit}: o item é cobrado por ${shown} ${unit}.`
+  }
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const calculateSalesValue = (index: number) => {
     const compositions = watch('items')
@@ -238,6 +308,7 @@ export function QuotationProdDetailModal({
         total: 0,
         measurementValue: 0,
       }
+    const minRaw = minimumRaw(index)
 
     // Em modo de edição, recalcular baseado na nova quantidade
     if (editMode && item.salePrice) {
@@ -259,7 +330,10 @@ export function QuotationProdDetailModal({
           : basicMeasurement * quantity * productQuantity
       }
 
-      const measurementValue = item.unitCost * measurement()
+      const measurementValue = Math.max(
+        item.unitCost * Math.max(measurement(), minRaw),
+        minItemApplies(index) ? minItemValue : 0,
+      )
       const total = measurementValue
 
       return {
@@ -287,7 +361,10 @@ export function QuotationProdDetailModal({
         : basicMeasurement * quantity * productQuantity
     }
 
-    const measurementValue = item.unitCost * measurement()
+    const measurementValue = Math.max(
+      item.unitCost * Math.max(measurement(), minRaw),
+      minItemApplies(index) ? minItemValue : 0,
+    )
 
     const total = measurementValue
 
@@ -314,9 +391,8 @@ export function QuotationProdDetailModal({
   // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
   // e muda o valor por unidade do item simples conforme a quantidade
   const tierProductId = product?.id || data?.product?.originalProductId || null
-  const { hasFeature } = usePlanFeatures()
-  // As faixas são do recurso de plano da composição (LITE em diante); as
-  // variações valem já no START
+  // Faixas, variações e quantidade mínima são do recurso de plano da
+  // composição (LITE em diante)
   const { data: tiersRes } = useQuery({
     enabled:
       !!tierProductId &&
@@ -330,6 +406,15 @@ export function QuotationProdDetailModal({
   const itemQuantity = Number(watch('items.0.quantity') || 1)
   // A unidade do item manda (fix da medida do item): sem ela, vale a unidade
   const itemUnitKind = watch('items.0.unitKind') ?? 'UNITY'
+  // Item por unidade com largura ou altura gravada (vem do legado ou do
+  // cadastro): só então a medida aparece; sem ela, o item é só quantidade
+  const hasUnitSize = (index: number) =>
+    (watch(`items.${index}.unitKind`) ?? 'UNITY') === 'UNITY' &&
+    (Number(watch(`items.${index}.width`)) > 0 ||
+      Number(watch(`items.${index}.height`)) > 0)
+  const showMeasure = (index: number) =>
+    (watch(`items.${index}.unitKind`) ?? 'UNITY') !== 'UNITY' ||
+    hasUnitSize(index)
   // Quantidade e medida do item para o aproveitamento de folha (AP-5): o
   // formulário guarda milímetros; a composição calcula em metros
   const compositionMeasure = {
@@ -347,11 +432,15 @@ export function QuotationProdDetailModal({
       : null
   const baseUnitCost = product?.items?.[0]?.unitCost ?? null
 
-  // Variações do produto (PV-6, já no START): o vendedor escolhe uma, e o
-  // preço e o nome do item seguem a escolha. Com variação escolhida, as faixas
-  // do produto não se aplicam
+  // Variações do produto (PV-6, do LITE em diante): o vendedor escolhe uma,
+  // e o preço e o nome do item seguem a escolha. Com variação escolhida, as
+  // faixas do produto não se aplicam
   const { data: variationsRes } = useQuery({
-    enabled: !!product?.id && open && !editMode,
+    enabled:
+      !!product?.id &&
+      open &&
+      !editMode &&
+      hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION),
     staleTime: 60_000,
     queryKey: ['product-variations', product?.id],
     queryFn: () => getProductVariations({ productId: product?.id as string }),
@@ -689,6 +778,79 @@ export function QuotationProdDetailModal({
                 )}
 
                 {items?.fields?.map((item, index) => {
+                  // Os três campos entram em ordens diferentes conforme a
+                  // medida do item (abaixo); por isso ficam prontos aqui
+                  const unitField = (
+                    <UnitOfMeasureField
+                      name={`items.${index}.unitKind`}
+                      width="flex-[1_0_200px]"
+                      disabled
+                    />
+                  )
+                  const quantityField = (
+                    <FormInput<ProductsFormType>
+                      name={`items.${index}.quantity`}
+                      label="Quantidade"
+                      type="number"
+                      min={0}
+                      startAdornment={
+                        items?.fields?.length > 1 ? (
+                          <span className="text-gray-500 text-md">
+                            {Number(watch('quantity')) || 1}x
+                          </span>
+                        ) : undefined
+                      }
+                      endAdornment={
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger
+                              type="button"
+                              aria-label="Ajuda sobre a quantidade"
+                            >
+                              <IconHelpCircle
+                                aria-hidden
+                                size={ICON_SIZE.sm}
+                                className="text-gray-400"
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent className="w-[205px] text-center">
+                              <p>
+                                Esta quantidade é multiplicada pela quantidade
+                                do item
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      }
+                      width="flex-[1_0_130px]"
+                      additionalOnChange={() => {
+                        const { total, measurementValue } =
+                          calculateSalesValue(index)
+                        setValue(`items.${index}.salePrice`, total)
+                        setValue(
+                          `items.${index}.measurementValue`,
+                          measurementValue,
+                        )
+                      }}
+                    />
+                  )
+                  const measureField = (
+                    <MeasurementInput<ProductsFormType>
+                      control={control}
+                      index={index}
+                      unitKind={watch(`items.${index}.unitKind`) ?? 'UNITY'}
+                      belowMinimum={belowMinimum(index)}
+                      onHasChanged={() => {
+                        const { total, measurementValue } =
+                          calculateSalesValue(index)
+                        setValue(`items.${index}.salePrice`, total)
+                        setValue(
+                          `items.${index}.measurementValue`,
+                          measurementValue,
+                        )
+                      }}
+                    />
+                  )
                   return (
                     <div
                       className="flex flex-wrap gap-4 relative"
@@ -697,70 +859,35 @@ export function QuotationProdDetailModal({
                       <span className="text-sm font-semibold text-gray-700 leading-4 w-[100%] my-2">
                         {item?.name}
                       </span>
-                      <UnitOfMeasureField
-                        name={`items.${index}.unitKind`}
-                        width="flex-[1_0_200px]"
-                        disabled
-                      />
-                      <FormInput<ProductsFormType>
-                        name={`items.${index}.quantity`}
-                        label="Quantidade"
-                        type="number"
-                        min={0}
-                        startAdornment={
-                          items?.fields?.length > 1 ? (
-                            <span className="text-gray-500 text-md">
-                              {Number(watch('quantity')) || 1}x
-                            </span>
-                          ) : undefined
-                        }
-                        endAdornment={
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger
-                                type="button"
-                                aria-label="Ajuda sobre a quantidade"
-                              >
-                                <IconHelpCircle
-                                  aria-hidden
-                                  size={ICON_SIZE.sm}
-                                  className="text-gray-400"
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent className="w-[205px] text-center">
-                                <p>
-                                  Esta quantidade é multiplicada pela quantidade
-                                  do item
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        }
-                        width="flex-[1_0_130px]"
-                        additionalOnChange={() => {
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                      />
-                      <MeasurementInput<ProductsFormType>
-                        control={control}
-                        index={index}
-                        unitKind={watch(`items.${index}.unitKind`) ?? 'UNITY'}
-                        onHasChanged={() => {
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                      />
+                      {/* Item por unidade (26/10/2026): com largura ou altura
+                          gravada, a medida fica na linha da quantidade e a
+                          unidade comercial desce para a linha dos preços; sem
+                          medida, os campos de medida não aparecem */}
+                      {hasUnitSize(index) ? (
+                        <>
+                          <div className="flex w-full flex-wrap gap-4">
+                            {quantityField}
+                            {measureField}
+                          </div>
+                          {unitField}
+                        </>
+                      ) : showMeasure(index) ? (
+                        // Item por medida (27/10/2026): a unidade comercial
+                        // numa linha; quantidade, largura e altura na linha
+                        // seguinte, sem quebra entre elas
+                        <>
+                          <div className="flex w-full gap-4">{unitField}</div>
+                          <div className="flex w-full flex-nowrap gap-4">
+                            {quantityField}
+                            {measureField}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex w-full flex-wrap gap-4">
+                          {unitField}
+                          {quantityField}
+                        </div>
+                      )}
                       <PermissionGate permissions={['values:values:view']}>
                         <UnitCostInput
                           name={`items.${index}.unitCost`}
@@ -789,6 +916,24 @@ export function QuotationProdDetailModal({
                           width="flex-[1_0_130px]"
                         />
                       </PermissionGate>
+                      {belowMinimum(index) && (
+                        <p
+                          className="w-full text-xs text-error-600"
+                          role="status"
+                        >
+                          {minimumNote(index)}
+                        </p>
+                      )}
+                      {belowMinValue(index) && (
+                        <p
+                          className="w-full text-xs text-error-600"
+                          role="status"
+                        >
+                          Venda mínima de {formatCurrencyToBrl(minItemValue)}: o
+                          item é cobrado por {formatCurrencyToBrl(minItemValue)}
+                          .
+                        </p>
+                      )}
                       {index === 0 && tiers.length > 0 && !variationId && (
                         <p className="w-full text-xs text-gray">
                           {activeTier

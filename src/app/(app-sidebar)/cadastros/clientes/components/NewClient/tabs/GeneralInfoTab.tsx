@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { IconRefresh } from '@tabler/icons-react'
 import { toast } from 'sonner'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { RegularizadoMark } from '../RegularizadoMark'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
 
@@ -37,8 +38,18 @@ interface Props {
 export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
   const { setValue, watch, getValues } = useFormContext<NewClientFormType>()
   const { searchByDocument } = useDocumentSearch()
-  const { canManageClientResponsible } = usePlanFeatures()
+  const { canManageClientResponsible, hasFiscalModule } = usePlanFeatures()
   const showResponsible = context === 'client' && canManageClientResponsible()
+  // As marcas de "obrigatório para regularizado" são do cliente (ALT-4)
+  const mark = context === 'client' ? <RegularizadoMark /> : null
+  const phoneMark =
+    context === 'client' ? (
+      <RegularizadoMark hint="Telefone ou celular: pelo menos um dos dois, para o cliente regularizado." />
+    ) : null
+  const fiscalMark =
+    context === 'client' && hasFiscalModule() ? (
+      <RegularizadoMark hint="Quem emite nota fiscal precisa da inscrição estadual ou do ISENTO no cliente regularizado." />
+    ) : null
 
   const primaryCountry = watch('addresses.0.country')
   const isForeign = !!(primaryCountry && primaryCountry !== 'Brasil')
@@ -273,6 +284,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
           <>
             <FormInput
               name="general.cpf"
+              labelSuffix={mark}
               label={isForeign ? 'Identificação Estrangeiro' : 'CPF'}
               placeholder={isForeign ? 'Passaporte ou ID' : 'Digite aqui'}
               additionalOnChange={
@@ -298,6 +310,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
           <>
             <FormInput
               name="general.cnpj"
+              labelSuffix={mark}
               label={isForeign ? 'Identificação Estrangeiro' : 'CNPJ'}
               placeholder={isForeign ? 'ID Estrangeiro' : 'Digite aqui'}
               additionalOnChange={
@@ -323,6 +336,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
           <>
             <FormInput
               name="general.corporateName"
+              labelSuffix={mark}
               label="Razão social"
               placeholder="Digite aqui"
               className="col-span-2"
@@ -331,6 +345,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
         )}
         <FormInput
           name="general.name"
+          labelSuffix={mark}
           label={type === 'PERSON' ? 'Nome' : 'Nome fantasia'}
           placeholder="Digite aqui"
           className="col-span-2"
@@ -340,6 +355,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
         <RecipientFiscalFields
           namePrefix="general."
           fieldWidth="flex-[1_0_250px]"
+          ieLabelSuffix={fiscalMark}
         />
 
         {type === 'PERSON' && (
@@ -378,6 +394,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
 
         <FormInput
           name="general.phone"
+          labelSuffix={phoneMark}
           label="Telefone"
           inputMode="tel"
           placeholder="Digite aqui"
@@ -389,6 +406,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
 
         <FormInput
           name="general.mobile"
+          labelSuffix={phoneMark}
           label="Celular"
           inputMode="tel"
           placeholder="Digite aqui"

@@ -41,12 +41,15 @@ interface RecipientFiscalFieldsProps {
    * Ex: "flex-[1_0_300px]" para layout flex, "col-span-1" para grid
    */
   fieldWidth?: string
+  /** Vai depois do rótulo da IE (a marca de obrigatório do cliente, ALT-4) */
+  ieLabelSuffix?: React.ReactNode
 }
 
 export function RecipientFiscalFields({
   namePrefix = '',
   showInscricaoMunicipal = false,
   fieldWidth = 'flex-[1_0_300px]',
+  ieLabelSuffix,
 }: RecipientFiscalFieldsProps) {
   const { setValue, watch } = useFormContext()
 
@@ -109,6 +112,7 @@ export function RecipientFiscalFields({
         <FormInput
           name={ieFieldName}
           label="Inscrição Estadual"
+          labelSuffix={ieLabelSuffix}
           placeholder="Somente números"
           disabled={isIsento}
           maxLength={14}

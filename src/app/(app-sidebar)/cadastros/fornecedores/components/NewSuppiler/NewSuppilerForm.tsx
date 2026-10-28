@@ -16,7 +16,8 @@ import {
 } from '../../../clientes/components/NewClient/tabs/GeneralInfoTab'
 import { AddressTab } from '../../../clientes/components/NewClient/tabs/AddressTab'
 import { ResponsibilitiesTab } from '../../../clientes/components/NewClient/tabs/ResponsibilitiesTab'
-import { NewSupplierFormType } from './schema'
+
+import { PaymentTab } from './PaymentTab'
 import { toast } from 'sonner'
 
 interface Props {
@@ -50,7 +51,12 @@ export function NewSupplierForm({ activeTab, setActiveTab }: Props) {
   ]
 
   const handleTabChange = async (value: string) => {
-    const fields = activeTab as keyof NewSupplierFormType
+    // Os dados de pagamento são todos opcionais: nada a validar
+    if (activeTab === 'payment') {
+      setActiveTab(value)
+      return
+    }
+    const fields = activeTab as 'general' | 'addresses' | 'responsibilities'
 
     const isValid = await trigger(fields)
 
@@ -84,6 +90,9 @@ export function NewSupplierForm({ activeTab, setActiveTab }: Props) {
           <TabsTrigger value="responsibilities" className="w-full">
             Responsáveis
           </TabsTrigger>
+          <TabsTrigger value="payment" className="w-full">
+            Dados de pagamento
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
@@ -98,6 +107,9 @@ export function NewSupplierForm({ activeTab, setActiveTab }: Props) {
         </TabsContent>
         <TabsContent value="responsibilities">
           <ResponsibilitiesTab />
+        </TabsContent>
+        <TabsContent value="payment">
+          <PaymentTab />
         </TabsContent>
       </Tabs>
     </>

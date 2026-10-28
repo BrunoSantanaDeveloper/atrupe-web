@@ -89,7 +89,7 @@
     "addIssue": "Add issue",
     "releaseNextStep": "Release next step",
     "whatIsBlockingThisStep": "What is blocking this step",
-    "logIssue": "Log issue",
+    "log": "Log",
     "releasesTheNextStepSo": "Releases the next step so it can start before this one finishes. Who released it and when is recorded. If you want, enter how much is already done; it's not required.",
     "quantityDoneOptional": "Quantity done (optional)",
     "of2": "of {quantity}",

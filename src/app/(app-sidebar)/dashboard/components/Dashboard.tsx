@@ -17,6 +17,7 @@ import {
 } from './DashboardValuesContext'
 
 import { DashboardQuotations } from './Quotations'
+import { FollowUpToday } from './FollowUpToday'
 import { FiscalOnboardingBanner } from './FiscalOnboardingBanner'
 import { FinancialOverview } from './FinancialOverview'
 import { SalesOverview } from './SalesOverview'
@@ -126,6 +127,11 @@ function DashboardContent() {
 
       <PermissionGate permissions={['dashboard:quotations:view']}>
         <DashboardQuotations filters={filters} />
+      </PermissionGate>
+
+      {/* O acompanhamento comercial do dia (CRM-3) */}
+      <PermissionGate permissions={['sale:quotation:view']}>
+        <FollowUpToday />
       </PermissionGate>
 
       <PermissionGate permissions={['dashboard:rankings:view']}>

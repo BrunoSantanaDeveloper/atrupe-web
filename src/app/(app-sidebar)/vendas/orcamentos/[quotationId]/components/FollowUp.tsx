@@ -1,9 +1,10 @@
 'use client'
 
-// Acompanhamento da negociação (CRM fase 1, 24/10/2026): o marcador de
-// acompanhamento, o próximo contato combinado com o cliente e um lembrete do
-// que ficou de ser feito. A lista de orçamentos tem a aba "Para retomar" com
-// os contatos vencidos ou de hoje.
+// Acompanhamento da negociação (CRM fase 1, 24/10/2026; fase 2, 27/10):
+// o marcador, o próximo contato combinado com o cliente e o lembrete; o
+// gesto "Registrar contato", o "Chamar no WhatsApp" e a linha do tempo com
+// os contatos e os eventos do orçamento. A aba Aguardando da lista é a
+// visão do dia, com o foco "Para retomar".
 
 import { useState } from 'react'
 import { z } from 'zod'
@@ -11,7 +12,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconCalendarEvent, IconPencil, IconTrash } from '@tabler/icons-react'
+import {
+  IconCalendarEvent,
+  IconPencil,
+  IconTrash,
+  IconMessageCircle,
+} from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -43,6 +49,10 @@ import { formatToLocaleDate } from '@/lib/formatDate'
 import { nextContactLabel, nextContactState } from '@/lib/nextContact'
 import type { QuotationType } from '@/types/sales/quotation'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
+import { ContactDialog } from '../../components/FollowUp/ContactDialog'
+import { WhatsAppButton } from '../../components/FollowUp/WhatsAppButton'
+import { QuotationTimeline } from '../../components/FollowUp/QuotationTimeline'
+import { formatCurrencyToBrl } from '@/lib/utils'
 
 const schema = z.object({
   nextContactAt: z.date({ required_error: 'Informe a data do contato' }),
@@ -58,6 +68,8 @@ const stateVariant = {
 
 export function FollowUp({ data }: { data: QuotationType }) {
   const [open, setOpen] = useState(false)
+  const [contacting, setContacting] = useState(false)
+  const reference = `${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`
   const queryClient = useQueryClient()
   const { hasFeature } = usePlanFeatures()
   const showTag = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
@@ -130,7 +142,7 @@ export function FollowUp({ data }: { data: QuotationType }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6">
           {showTag ? (
             <div className="space-y-1">
-              <p className="text-sm text-gray">Status</p>
+              <p className="text-sm text-gray">Fase</p>
               <QuotationTagDropdown
                 quotation={data}
                 tagsList={tagsList || []}
@@ -159,12 +171,54 @@ export function FollowUp({ data }: { data: QuotationType }) {
             </p>
           </div>
         </div>
+        {negotiating ? (
+          <PermissionGate permissions={['sale:quotation:edit']}>
+            {/* O gesto único (CRM-1) e o WhatsApp com modelo (CRM-3, CRM-5) */}
+            <div className="flex flex-wrap gap-3 px-6 pt-6">
+              <Button
+                type="button"
+                LeftIcon={IconMessageCircle}
+                onClick={() => setContacting(true)}
+              >
+                Registrar contato
+              </Button>
+              <WhatsAppButton
+                variant="button"
+                phone={data?.client?.phoneNumber}
+                template={data?.status === 'DONE' ? 'validity' : 'resume'}
+                vars={{
+                  cliente: data?.client?.name,
+                  numero: reference,
+                  valor: formatCurrencyToBrl(data?.totalValue || 0),
+                  validade: formatToLocaleDate(data?.dueDate),
+                  vendedor: data?.seller?.name,
+                }}
+              />
+            </div>
+          </PermissionGate>
+        ) : null}
+        {/* A linha do tempo: contatos e eventos juntos (CRM-1) */}
+        <div className="px-6 pt-6">
+          <QuotationTimeline quotationId={data.id} />
+        </div>
       </CardContent>
       <NextContactDialog
         open={open}
         onOpenChange={setOpen}
         data={data}
         onSave={save}
+      />
+      <ContactDialog
+        open={contacting}
+        onOpenChange={setContacting}
+        quotation={{
+          id: data.id,
+          reference,
+          clientName: data?.client?.name || 'Cliente não informado',
+          nextContactAt: data?.nextContactAt,
+          nextContactNote: data?.nextContactNote,
+          tagId: data?.tag?.id,
+        }}
       />
     </Card>
   )

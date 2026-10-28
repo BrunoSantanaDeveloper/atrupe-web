@@ -12,6 +12,8 @@ import type {
   SalesOrderBy,
   SalesPeriodBy,
   LossesByReasonData,
+  ConversionData,
+  InactiveClientsData,
 } from '@/app/(app-sidebar)/relatorios/vendas/types'
 
 interface SalesReportFilters {
@@ -99,6 +101,36 @@ export async function getLossesByReason(
   } catch (error) {
     console.error('Error fetching losses by reason:', error)
     return { rejections: [], cancellations: [] }
+  }
+}
+
+// Conversão por origem e por vendedor (CRM-6)
+export async function getConversion(
+  filters?: SalesReportFilters,
+): Promise<ConversionData> {
+  const api = await apiInstance()
+  try {
+    const res = await api.get(`${BASE_ROUTE}/conversion`, { params: filters })
+    return res.data
+  } catch (error) {
+    console.error('Error fetching conversion:', error)
+    return { byOrigin: [], bySeller: [] }
+  }
+}
+
+// Clientes sem compra há N dias (CRM-4)
+export async function getInactiveClients(
+  days: number,
+): Promise<InactiveClientsData> {
+  const api = await apiInstance()
+  try {
+    const res = await api.get(`${BASE_ROUTE}/inactive-clients`, {
+      params: { days },
+    })
+    return res.data
+  } catch (error) {
+    console.error('Error fetching inactive clients:', error)
+    return { days, clients: [] }
   }
 }
 

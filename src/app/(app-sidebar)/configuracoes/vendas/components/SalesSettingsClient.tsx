@@ -15,6 +15,8 @@ import {
   IconAlertSquareRounded,
   IconRoute,
   IconTruckDelivery,
+  IconMessageCircle,
+  IconCoin,
 } from '@tabler/icons-react'
 
 // Hooks / Consts
@@ -83,6 +85,20 @@ export function SalesSettingsClient() {
               },
             ]
           : []),
+        // Venda mínima por item (GR-4, 27/10/2026), do LITE em diante, junto
+        // da quantidade mínima do produto
+        ...(hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+          ? [
+              {
+                title: 'Venda mínima por item',
+                icon: IconCoin,
+                description:
+                  'O menor valor que um item do orçamento pode ter; abaixo dele, cobra o mínimo.',
+                link: `${defaultPath}/venda-minima`,
+                permission: 'sales_settings:series:view',
+              },
+            ]
+          : []),
         ...(canManageBudgetStatus()
           ? [
               {
@@ -103,6 +119,16 @@ export function SalesSettingsClient() {
                   'Defina motivos para mapear rejeições e cancelamentos.',
                 link: `${defaultPath}/motivos-de-rejeicao-e-cancelamento`,
                 permission: 'sales_settings:rejection_reasons:view',
+              },
+              // Acompanhamento comercial (área 13, CRM fase 2): modelos de
+              // mensagem, e-mail diário e cliente sem compra
+              {
+                title: 'Acompanhamento comercial',
+                icon: IconMessageCircle,
+                description:
+                  'Modelos de mensagem do WhatsApp, lembrete por e-mail e clientes sem compra.',
+                link: `${defaultPath}/acompanhamento`,
+                permission: 'sales_settings:series:view',
               },
             ]
           : []),

@@ -30,6 +30,8 @@ interface Props<T extends FieldValues>
   extends React.InputHTMLAttributes<HTMLInputElement> {
   name: Path<T>
   label?: string
+  // Vai depois do texto do rótulo (ex.: a marca de obrigatório com dica)
+  labelSuffix?: React.ReactNode
   startAdornment?: JSX.Element
   endAdornment?: JSX.Element
   showPasswordToggle?: boolean
@@ -42,6 +44,7 @@ export function FormInput<T extends FieldValues>({
   type,
   name,
   label,
+  labelSuffix,
   startAdornment,
   endAdornment,
   showPasswordToggle = true,
@@ -64,7 +67,12 @@ export function FormInput<T extends FieldValues>({
 
         return (
           <FormItem className={cn('flex flex-col relative', width)}>
-            {label ? <FormLabel>{label}</FormLabel> : null}
+            {label ? (
+              <FormLabel>
+                {label}
+                {labelSuffix}
+              </FormLabel>
+            ) : null}
             <FormControl>
               <Input
                 type={type === 'password' && showPassword ? 'text' : type}

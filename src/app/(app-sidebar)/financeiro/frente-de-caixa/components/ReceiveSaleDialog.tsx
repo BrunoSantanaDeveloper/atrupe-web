@@ -95,13 +95,11 @@ export function ReceiveSaleDialog({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sale])
 
-  // O sinal mínimo vale para a venda rápida que ainda não recebeu nada e
-  // vai ficar para retirada (FC-6, FC-17). Quem tem permissão dispensa
+  // O sinal mínimo vale para a venda da fila que ainda não recebeu nada e
+  // vai ficar para retirada (FC-6, FC-17), rápida ou comum (26/10/2026).
+  // Quem tem permissão dispensa
   const downPayment =
-    sale &&
-    sale.kind === 'QUICK' &&
-    sale.paid === 0 &&
-    settings?.downPaymentRequired
+    sale && sale.paid === 0 && settings?.downPaymentRequired
       ? Math.ceil((sale.total * settings.downPaymentPercent) / 100)
       : 0
   const paying = Math.min(received, remaining)

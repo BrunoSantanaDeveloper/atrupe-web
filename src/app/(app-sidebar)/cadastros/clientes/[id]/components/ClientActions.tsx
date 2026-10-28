@@ -16,9 +16,10 @@ import { IconRestore, IconBan, IconArrowsExchange } from '@tabler/icons-react'
 import type { ClientInfoType } from '@/types/cadastros/client'
 
 // Lib
-import { createItemNew, updateItemNew } from '@/actions/_cruds'
+import { createItemNew, getItem, updateItemNew } from '@/actions/_cruds'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
+import { extractConditions } from '@/app/(app-sidebar)/cadastros/clientes/components/NewClient/utils/ExtractConditions'
 
 interface Props {
   params: {
@@ -72,15 +73,47 @@ export function ClientActions({ params, data, entityType }: Props) {
     })
   }
 
+  // Cliente, com limite de crédito no plano: inativar desliga todas as formas
+  // de pagamento dele, e ativar pede para escolhê-las de novo (27/10/2026)
+  const turnsOffPayment = isClient && hasFinancialModule('credit_limit')
+
+  const turnOffPaymentMethods = async () => {
+    const client = await getItem({ route: `/client/${params.id}` })
+    if (!client.success) throw new Error(client.message)
+    const current = client.data?.creditLimit
+    const conditions = extractConditions(current?.paymentMethods ?? []).map(
+      (condition) => ({ ...condition, isActive: false }),
+    )
+    if (!conditions.length) return
+    const res = await updateItemNew({
+      route: `/client/${params.id}`,
+      data: {
+        creditLimit: {
+          minValue: current?.minValue ?? 0,
+          maxValue: current?.maxValue ?? 0,
+          blockClient: current?.blockClient ?? false,
+          conditions,
+        },
+      },
+    })
+    if (!res.success) throw new Error(res.message)
+  }
+
   // Ativar ou inativar cadastro
   const handleActiveToggle = async (type: 'active' | 'inactive') => {
     await alertDialog.open({
       title: `Deseja ${type === 'active' ? 'ativar' : 'inativar'} o cadastro?`,
-      description: '',
+      description:
+        type === 'inactive' && turnsOffPayment
+          ? 'Todas as formas de pagamento deste cliente serão desligadas. Ao ativar de novo, você escolhe entre o padrão da empresa e a edição manual.'
+          : '',
       cancelLabel: 'Cancelar',
       confirmVariant: type === 'active' ? 'success' : 'error',
       confirmLabel: type === 'active' ? 'Ativar' : 'Inativar',
       onConfirm: async () => {
+        if (type === 'inactive' && turnsOffPayment) {
+          await turnOffPaymentMethods()
+        }
         const res = await updateItemNew({
           route: `/${entityType}/${params.id}/status`,
           data: {},
@@ -135,7 +168,7 @@ export function ClientActions({ params, data, entityType }: Props) {
               onClick={() =>
                 // Cliente, com limite de crédito no plano: ativar exige
                 // definir as formas de pagamento permitidas (24/10/2026)
-                isClient && hasFinancialModule('credit_limit')
+                turnsOffPayment
                   ? setActivateOpen(true)
                   : handleActiveToggle('active')
               }
@@ -150,6 +183,7 @@ export function ClientActions({ params, data, entityType }: Props) {
           open={activateOpen}
           onOpenChange={setActivateOpen}
           clientId={params.id}
+          clientType={data?.type}
         />
       )}
     </PermissionGate>

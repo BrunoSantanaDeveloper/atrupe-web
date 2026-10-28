@@ -125,7 +125,10 @@ export function Quotation({ id }: Props) {
 
   // A venda rápida tem arranjo próprio: recebimento no lugar das condições de
   // pagamento, e a situação no caixa depois que ela sai (Fase 7.3)
-  if (data.quickSale) {
+  // O recebimento é da série (VR-5, 26/10/2026): a série que fatura na frente
+  // de caixa troca as condições de pagamento pelo Cobrar / Enviar ao caixa,
+  // na venda rápida ou no orçamento comum
+  if (data.paymentConditions?.billing === 'ON_CHECKOUT') {
     return <QuickSaleQuotation data={data} previousUrl={previousUrl} />
   }
 

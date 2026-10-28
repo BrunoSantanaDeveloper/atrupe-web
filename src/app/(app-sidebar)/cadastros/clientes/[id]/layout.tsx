@@ -2,7 +2,8 @@
 
 // Next
 import { AlertBanner } from '@/components/ui/alert-banner'
-import { IconAlertTriangle } from '@tabler/icons-react'
+import { IconInfoCircle, IconAlertTriangle } from '@tabler/icons-react'
+import { missingForRegular } from '@/lib/clientRegular'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -45,6 +46,8 @@ export default function ClientDetailLayout({ children, params }: Props) {
   const canViewTab: Record<string, boolean> = {
     dados: true,
     orcamentos: hasPermission('sale:quotation:view'),
+    // Acompanhamento comercial (CRM-4): os contatos de todos os orçamentos
+    contatos: hasPermission('sale:quotation:view'),
     ordens: hasPermission('sale:order:view'),
     financeiro: hasAllPermissions([
       'financial:flow:view',
@@ -70,6 +73,11 @@ export default function ClientDetailLayout({ children, params }: Props) {
       tab: 'orcamentos',
       label: 'Orçamentos',
       count: totals?.orcamentos,
+    },
+    {
+      value: 'CONTACTS',
+      tab: 'contatos',
+      label: 'Contatos',
     },
     {
       value: 'ORDERS',
@@ -113,6 +121,17 @@ export default function ClientDetailLayout({ children, params }: Props) {
             <ClientActions params={params} data={data} entityType="client" />
           }
         />
+        {/* Pré-cadastro (ALT-4, 26/10/2026): a regra do regularizado é
+            automática e do servidor; a faixa diz o que falta */}
+        {data?.status === 'PROSPECT' && missingForRegular(data).length > 0 && (
+          <AlertBanner
+            variant="info"
+            icon={IconInfoCircle}
+            className="rounded-lg border"
+            title="Pré-cadastro"
+            description={`Para o cadastro ficar regularizado falta: ${missingForRegular(data).join(', ')}. Dá para vender e orçar mesmo assim; a nota fiscal e a venda a prazo pedem o cadastro completo.`}
+          />
+        )}
         {/* Bloqueado no limite de crédito (decisão de 24/10/2026): o aviso
             fica em toda aba do cliente */}
         {data?.creditLimit?.blockClient && (

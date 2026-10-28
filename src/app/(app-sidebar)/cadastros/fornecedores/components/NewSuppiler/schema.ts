@@ -39,7 +39,27 @@ export const newSupplierSchema = z.object({
       notes: z.string().optional(),
     }),
   ),
+  // Dados de pagamento (26/10/2026): como pagar as contas deste fornecedor
+  payment: z
+    .object({
+      pixKey: z.string().optional(),
+      bankName: z.string().optional(),
+      bankAgency: z.string().optional(),
+      bankAccount: z.string().optional(),
+      accountHolder: z.string().optional(),
+      paymentTerms: z.string().optional(),
+    })
+    .optional(),
 })
+
+export const emptyPayment = {
+  pixKey: '',
+  bankName: '',
+  bankAgency: '',
+  bankAccount: '',
+  accountHolder: '',
+  paymentTerms: '',
+}
 
 export type NewSupplierFormType = z.infer<typeof newSupplierSchema>
 
@@ -78,6 +98,7 @@ export const defaultPersonValues: NewSupplierFormType = {
       notes: '',
     },
   ],
+  payment: emptyPayment,
 }
 
 export const defaultCompanyValues: NewSupplierFormType = {
@@ -115,4 +136,5 @@ export const defaultCompanyValues: NewSupplierFormType = {
       notes: '',
     },
   ],
+  payment: emptyPayment,
 }

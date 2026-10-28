@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useRouter } from '@/hooks/useRouter'
 
 // UI
@@ -24,6 +25,7 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { QuotationsData } from './QuotationsTable/QuotationsData'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
+import { AwaitingFocus, focusParam } from './QuotationsTable/AwaitingFocus'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
@@ -35,7 +37,7 @@ import type { ExportColumn } from '@/lib/export-excel'
 import type { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { createItemNew, getData, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getData, getDataOld, getItem } from '@/actions/_cruds'
 
 // Third-party
 import { toast } from 'sonner'
@@ -164,6 +166,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
   const router = useRouter()
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   // "Venda rápida" no menu leva para cá com ?novo=venda-rapida (o link antigo,
   // ?venda-rapida=1, continua valendo)
@@ -186,6 +189,26 @@ export function Quotations({ searchParams }: SearchParamsType) {
     const createQuickSale = async () => {
       setCreatingQuickSale(true)
 
+      // Abrir o menu criava uma venda vazia a cada visita e a lista enchia
+      // de lixo (decisão do produto, 26/10/2026): a venda rápida vazia do
+      // mesmo usuário é reaproveitada enquanto estiver em digitação e sem
+      // item. A API ainda vai criar a venda só com o primeiro item (Bruno)
+      const emptyKey = `atrupe:venda-rapida-vazia:${session?.user?.userId || ''}`
+      const previous = window.localStorage.getItem(emptyKey)
+      if (previous) {
+        const current = await getItem({ route: `/sale/quotation/${previous}` })
+        const sale = current.success ? current.data : null
+        if (
+          sale?.quickSale &&
+          sale?.status === 'OPEN' &&
+          !(sale?.quotationItems?.length > 0)
+        ) {
+          window.location.href = `/vendas/orcamentos/${previous}?adicionar=1`
+          return
+        }
+        window.localStorage.removeItem(emptyKey)
+      }
+
       // A API cria com os padrões da configuração e o vendedor da sessão
       const res = await createItemNew({ route: '/sale/quotation/quick-sale' })
 
@@ -201,12 +224,13 @@ export function Quotations({ searchParams }: SearchParamsType) {
         return
       }
 
+      window.localStorage.setItem(emptyKey, res.data.id)
       // Já com o modal "Qual item deseja adicionar?" aberto (VR-4)
       window.location.href = `/vendas/orcamentos/${res.data.id}?adicionar=1`
     }
 
     createQuickSale()
-  }, [isQuickSale, creatingQuickSale, router, pathname])
+  }, [isQuickSale, creatingQuickSale, router, pathname, session?.user?.userId])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({
@@ -220,8 +244,10 @@ export function Quotations({ searchParams }: SearchParamsType) {
     concluido: data?.DONE,
     vencidos: data?.OVERDUE,
     rejeitados: data?.REJECTED,
-    // CRM fase 1: em negociação com próximo contato vencido ou para hoje
+    // Acompanhamento (CRM-2, 27/10/2026): os focos da aba Aguardando
     retomar: data?.retomar,
+    semContato: data?.semContato,
+    vencendo: data?.vencendo,
     todos: data?.TOTAL,
   }
 
@@ -255,13 +281,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
       label: 'Rejeitados',
       count: totals?.rejeitados,
     },
-    // Sem status: a consulta leva nextContact=due (QuotationsData)
-    {
-      value: '',
-      tab: 'retomar',
-      label: 'Para retomar',
-      count: totals?.retomar,
-    },
+    // "Para retomar" deixou de ser aba (CRM-2, 27/10/2026): é um foco da
+    // aba Aguardando, que virou a visão do dia do vendedor
     {
       value: '',
       tab: 'todos',
@@ -278,12 +299,12 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
   const getExportQuotations = async () => {
     const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
-    // mesmo cuidado da listagem: `novo` é da tela, a API recusa
-    const { novo: _novo, ...exportParams } = searchParams
+    // mesmo cuidado da listagem: `novo` e `foco` são da tela, a API recusa
+    const { novo: _novo, foco: _foco, ...exportParams } = searchParams
     const filters = {
       ...exportParams,
       status: exportStatus,
-      ...(status === 'retomar' ? { nextContact: 'due' } : {}),
+      ...focusParam(searchParams?.foco),
     }
     const result = await getData({ route: '/sale/quotation/export', filters })
 
@@ -355,11 +376,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={
-                  status === 'retomar'
-                    ? 'Nenhum orçamento para retomar hoje'
-                    : `Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`
-                }
+                title={`Nenhum orçamento para o status: ${statusLabel || 'selecionado'}`}
                 icon={IconReportOff}
               />
             ) : (
@@ -368,6 +385,18 @@ export function Quotations({ searchParams }: SearchParamsType) {
                 <TableFiltersHeader searchParams={searchParams}>
                   <QuotationsFilter searchParams={searchParams} />
                 </TableFiltersHeader>
+                {/* A visão do dia (CRM-2): os focos da aba Aguardando */}
+                {status === 'concluido' && (
+                  <AwaitingFocus
+                    searchParams={searchParams}
+                    counts={{
+                      retomar: totals?.retomar,
+                      semContato: totals?.semContato,
+                      vencendo: totals?.vencendo,
+                      todos: totals?.concluido,
+                    }}
+                  />
+                )}
                 {/* Table */}
                 <QuotationsData searchParams={searchParams} tabs={tabs} />
               </>

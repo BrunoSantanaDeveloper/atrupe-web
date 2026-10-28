@@ -27,9 +27,12 @@ interface Props {
   // Substitui concluir e aprovar. É o caso da venda rápida, em que o vendedor
   // não monta condição de pagamento: ele cobra ou envia ao caixa (FC-1)
   primaryAction?: ReactNode
+  // Sem "Prévia da proposta": a venda rápida sem cliente informado tem
+  // comprovante, não proposta (decisão do produto, 26/10/2026)
+  hidePrint?: boolean
 }
 
-export function QuotationActions({ data, primaryAction }: Props) {
+export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
   const [openPrint, setOpenPrint] = useState(false)
   const router = useRouter()
   const { hasFeature } = usePlanFeatures()
@@ -51,13 +54,15 @@ export function QuotationActions({ data, primaryAction }: Props) {
     <>
       <div className="flex flex-wrap justify-between gap-4">
         <div className="flex flex-wrap gap-4">
-          <PermissionGate permissions={['sale:quotation:view']}>
-            <CustomButton
-              icon={IconPrinter}
-              title={status.done ? 'Proposta' : 'Prévia da proposta'}
-              onClick={() => setOpenPrint(true)}
-            />
-          </PermissionGate>
+          {!hidePrint && (
+            <PermissionGate permissions={['sale:quotation:view']}>
+              <CustomButton
+                icon={IconPrinter}
+                title={status.done ? 'Proposta' : 'Prévia da proposta'}
+                onClick={() => setOpenPrint(true)}
+              />
+            </PermissionGate>
+          )}
           {/* Custo e margem da venda (ORC-8): permissão própria, valores e
               a base de custos */}
           {hasFeature(FEATURES.COSTS.COST_BASE) && (
