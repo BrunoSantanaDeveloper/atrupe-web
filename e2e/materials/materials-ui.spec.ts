@@ -39,10 +39,12 @@ test.describe('Materiais (PRO)', () => {
   test('ativos e inativos são abas, como em Produtos', async ({ page }) => {
     await openMaterials(page)
 
-    await expect(
-      page.getByRole('tab', { name: 'Ativos', exact: true }),
-    ).toHaveAttribute('data-state', 'active')
-    await expect(page.getByRole('tab', { name: 'Inativos' })).toBeVisible()
+    // O contador entra no nome da aba ("Ativos 8") quando há materiais
+    await expect(page.getByRole('tab', { name: /^Ativos/ })).toHaveAttribute(
+      'data-state',
+      'active',
+    )
+    await expect(page.getByRole('tab', { name: /^Inativos/ })).toBeVisible()
   })
 
   test('o novo material usa Unidade e explica o que vira variação (MT-2, MT-6)', async ({

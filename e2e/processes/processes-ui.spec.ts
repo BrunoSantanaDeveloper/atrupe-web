@@ -39,10 +39,12 @@ test.describe('Processos (PRO)', () => {
   test('ativos e inativos são abas', async ({ page }) => {
     await openProcesses(page)
 
-    await expect(
-      page.getByRole('tab', { name: 'Ativos', exact: true }),
-    ).toHaveAttribute('data-state', 'active')
-    await expect(page.getByRole('tab', { name: 'Inativos' })).toBeVisible()
+    // O contador entra no nome da aba ("Ativos 8") quando há processos
+    await expect(page.getByRole('tab', { name: /^Ativos/ })).toHaveAttribute(
+      'data-state',
+      'active',
+    )
+    await expect(page.getByRole('tab', { name: /^Inativos/ })).toBeVisible()
   })
 
   test('o processo nasce vazio e abre na composição (MS-1)', async ({
