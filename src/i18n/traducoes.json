@@ -16666,5 +16666,13 @@
  "d6a81afec5": {
   "es": "Ningún movimiento disponible para exportar",
   "en": "No transaction available to export"
+ },
+ "9c93a1929a": {
+  "es": "costo de los colaboradores",
+  "en": "employee cost"
+ },
+ "9cfe6df98c": {
+  "es": "es lo que alimenta el costo de los sectores en la Base de costos. Para agregar un ítem a alguien, haga clic en el nombre de la persona.",
+  "en": "is what feeds the department cost in the Cost base. To add an item to someone, click the person name."
  }
 }

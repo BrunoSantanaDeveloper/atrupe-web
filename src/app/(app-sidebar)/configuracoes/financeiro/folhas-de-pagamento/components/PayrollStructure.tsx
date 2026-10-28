@@ -125,8 +125,10 @@ const salaryOf = (items: PayrollStructureItem[]) =>
       item.behavior === 'ONLY_INCREASE',
   )
 
-// A folha mostra um colaborador por vez (decisão do time, 24/09/2026), com
-// filtro de setor e de colaborador acima.
+// A folha mostra todos os colaboradores, cada um com os itens dele e o
+// total; escolher uma pessoa no filtro mostra só ela, com os itens que dá
+// para acrescentar (LITE part3, item 3, 28/10/2026). Antes era uma pessoa
+// por vez (24/09/2026), e quem abria via só o primeiro da lista.
 export function PayrollStructure() {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -140,11 +142,14 @@ export function PayrollStructure() {
   )
 
   const [sector, setSector] = useState(TODOS)
-  const [employeeId, setEmployeeId] = useState('')
+  const [employeeId, setEmployeeId] = useState(TODOS)
   const [costType, setCostType] = useState(TODOS)
   const [search, setSearch] = useState('')
   const [collapsed, setCollapsed] = useState(false)
-  const [editing, setEditing] = useState<PayrollStructureItem>()
+  const [editing, setEditing] = useState<{
+    item: PayrollStructureItem
+    employeeId: string
+  }>()
 
   const alertDialog = useAlertDialog()
   const queryClient = useQueryClient()
@@ -152,8 +157,8 @@ export function PayrollStructure() {
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: ['payroll-structure'] })
 
-  const addItem = async (item: PayrollStructureItem) => {
-    const res = await setPayrollItem(employeeId, item.id, true)
+  const addItem = async (item: PayrollStructureItem, empId: string) => {
+    const res = await setPayrollItem(empId, item.id, true)
 
     if (!res.success || !res.data) return toast.error(res.message)
 
@@ -161,12 +166,12 @@ export function PayrollStructure() {
     // Acrescentar sem informar valor deixaria a linha zerada: o diálogo abre
     // em seguida, com a linha como o servidor gravou, para a pessoa terminar
     // o que começou
-    if (!res.data.fixedByLaw) setEditing(res.data)
+    if (!res.data.fixedByLaw) setEditing({ item: res.data, employeeId: empId })
   }
 
   // Tirar o item não apaga o item da empresa — ele volta para a lista como
   // disponível. Por isso o texto fala em "tirar", não em "excluir"
-  const removeItem = (item: PayrollStructureItem) =>
+  const removeItem = (item: PayrollStructureItem, empId: string) =>
     alertDialog.open({
       title: `Tirar ${item.name} deste colaborador?`,
       description:
@@ -175,7 +180,7 @@ export function PayrollStructure() {
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
-        const res = await setPayrollItem(employeeId, item.id, false)
+        const res = await setPayrollItem(empId, item.id, false)
 
         if (!res.success) throw new Error(res.message)
 
@@ -205,15 +210,18 @@ export function PayrollStructure() {
   )
 
   // Trocar de setor pode deixar de fora quem estava selecionado: nesse caso a
-  // tela cai no primeiro do setor, em vez de ficar vazia sem explicação
+  // tela volta a mostrar todos do setor
   useEffect(() => {
+    if (employeeId === TODOS) return
     if (visible.some((item) => item.id === employeeId)) return
 
-    setEmployeeId(visible[0]?.id || '')
+    setEmployeeId(TODOS)
   }, [visible, employeeId])
 
-  const employee = visible.find((item) => item.id === employeeId)
-  const isClt = employee?.contract === 'CLT'
+  const allMode = employeeId === TODOS
+  const employee = allMode
+    ? undefined
+    : visible.find((item) => item.id === employeeId)
 
   const matches = (item: PayrollStructureItem) => {
     const byType = costType === TODOS || item.behavior === costType
@@ -244,11 +252,17 @@ export function PayrollStructure() {
   // contratação e salário base). Acrescentar à mão 13º e férias, ou um
   // encargo em quem não é CLT, deixaria uma linha zerada que o servidor
   // desfaz no próximo cálculo
-  const lockedCharge = (item: PayrollStructureItem) =>
-    item.derivedFromSalary && (item.fixedByLaw || !isClt)
+  const lockedCharge = (
+    item: PayrollStructureItem,
+    emp: PayrollStructureEmployee,
+  ) => item.derivedFromSalary && (item.fixedByLaw || emp.contract !== 'CLT')
 
-  const itemActions = (item: PayrollStructureItem) =>
-    item.isSet ? (
+  const itemActions = (
+    item: PayrollStructureItem,
+    emp: PayrollStructureEmployee,
+  ) => {
+    const isClt = emp.contract === 'CLT'
+    return item.isSet ? (
       <>
         <ActionButton
           Icon={IconPencil}
@@ -259,7 +273,7 @@ export function PayrollStructure() {
               : `Editar ${item.name}`
           }
           disabled={item.fixedByLaw}
-          onClick={() => setEditing(item)}
+          onClick={() => setEditing({ item, employeeId: emp.id })}
         />
         {/* O salário base e os itens da lei não saem da folha CLT */}
         {!item.isBase && (
@@ -272,7 +286,7 @@ export function PayrollStructure() {
                 : `Tirar ${item.name} deste colaborador`
             }
             disabled={isClt && item.fixedByLaw}
-            onClick={() => removeItem(item)}
+            onClick={() => removeItem(item, emp.id)}
           />
         )}
       </>
@@ -281,16 +295,21 @@ export function PayrollStructure() {
         Icon={IconPlus}
         variant="neutralGhost"
         tooltip={
-          lockedCharge(item)
+          lockedCharge(item, emp)
             ? 'Os encargos da CLT saem do cadastro do colaborador'
             : `Acrescentar ${item.name}`
         }
-        disabled={lockedCharge(item)}
-        onClick={() => addItem(item)}
+        disabled={lockedCharge(item, emp)}
+        onClick={() => addItem(item, emp.id)}
       />
     )
+  }
 
-  const itemRow = (item: PayrollStructureItem, child = false) => (
+  const itemRow = (
+    item: PayrollStructureItem,
+    emp: PayrollStructureEmployee,
+    child = false,
+  ) => (
     <TableRow key={item.id} className={cn(!item.isSet && 'text-gray')}>
       <TableCell>
         <div className={cn('flex items-center gap-2', child && 'pl-6')}>
@@ -320,18 +339,61 @@ export function PayrollStructure() {
       <TableCell>
         <div className="flex justify-end gap-1">
           <PermissionGate permissions={['financial_settings:payroll:edit']}>
-            {itemActions(item)}
+            {itemActions(item, emp)}
           </PermissionGate>
         </div>
       </TableCell>
     </TableRow>
   )
 
+  const subtitleOf = (emp: PayrollStructureEmployee) =>
+    [emp.code, emp.roleName, emp.sectorName].filter(Boolean).join(' · ')
   const subtitle = employee
-    ? [employee.code, employee.roleName, employee.sectorName]
-        .filter(Boolean)
-        .join(' · ')
-    : 'Troque o setor para ver outra pessoa'
+    ? subtitleOf(employee)
+    : allMode
+      ? `${visible.length} ${visible.length === 1 ? 'pessoa' : 'pessoas'}`
+      : ''
+
+  const contractBadge = (emp: PayrollStructureEmployee) => (
+    <Badge variant={emp.contract ? 'neutralLight' : 'warningLight'}>
+      {emp.contract
+        ? payrollContractLabel[emp.contract]
+        : 'Contratação não informada'}
+    </Badge>
+  )
+
+  // Na visão de todos, só os itens que a pessoa tem, com os encargos sob o
+  // salário base; os disponíveis para acrescentar aparecem ao escolher ela
+  const employeeRows = (emp: PayrollStructureEmployee) => {
+    const set = emp.items.filter((item) => item.isSet)
+    const base = salaryOf(set)
+    const rows: JSX.Element[] = []
+    if (base && matches(base)) rows.push(itemRow(base, emp))
+    set
+      .filter(
+        (item) =>
+          item.derivedFromSalary && item.id !== base?.id && matches(item),
+      )
+      .forEach((item) => rows.push(itemRow(item, emp, !!base)))
+    set
+      .filter(
+        (item) =>
+          !item.derivedFromSalary && item.id !== base?.id && matches(item),
+      )
+      .forEach((item) => rows.push(itemRow(item, emp)))
+    return rows
+  }
+
+  const totals = visible.reduce(
+    (acc, emp) => ({
+      increase: acc.increase + totalIncrease(emp),
+      discount: acc.discount + totalDiscount(emp),
+      cost: acc.cost + employeeCost(emp),
+      payroll: acc.payroll + employeePayroll(emp),
+      provision: acc.provision + employeeProvision(emp),
+    }),
+    { increase: 0, discount: 0, cost: 0, payroll: 0, provision: 0 },
+  )
 
   return (
     <TooltipProvider>
@@ -385,30 +447,25 @@ export function PayrollStructure() {
                 à direita */}
             <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-5">
               <div className="flex items-center gap-4">
-                <Avatar
-                  size="lg"
-                  url={employee?.avatarUrl || ''}
-                  name={employee ? getFirstAndLastName(employee.name) : ''}
-                />
+                {employee && (
+                  <Avatar
+                    size="lg"
+                    url={employee.avatarUrl || ''}
+                    name={getFirstAndLastName(employee.name)}
+                  />
+                )}
                 <div>
                   <p className="type-section-title">
-                    {employee?.name || 'Nenhum colaborador neste setor'}
+                    {employee?.name ||
+                      (allMode && visible.length
+                        ? 'Todos os colaboradores'
+                        : 'Nenhum colaborador neste setor')}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
                     {subtitle && (
                       <p className="text-sm text-gray">{subtitle}</p>
                     )}
-                    {employee && (
-                      <Badge
-                        variant={
-                          employee.contract ? 'neutralLight' : 'warningLight'
-                        }
-                      >
-                        {employee.contract
-                          ? payrollContractLabel[employee.contract]
-                          : 'Contratação não informada'}
-                      </Badge>
-                    )}
+                    {employee && contractBadge(employee)}
                   </div>
                 </div>
               </div>
@@ -429,10 +486,13 @@ export function PayrollStructure() {
                   onChange={setEmployeeId}
                   className="flex-[1_0_220px]"
                   emptyMessage="Nenhum colaborador neste setor"
-                  options={visible.map((item) => ({
-                    value: item.id,
-                    label: item.name,
-                  }))}
+                  options={[
+                    { value: TODOS, label: 'Todos' },
+                    ...visible.map((item) => ({
+                      value: item.id,
+                      label: item.name,
+                    })),
+                  ]}
                 />
                 <SelectBasic
                   name="costType"
@@ -475,7 +535,112 @@ export function PayrollStructure() {
               </CardContent>
             )}
 
-            {!employee ? (
+            {allMode && visible.length ? (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-full">Referência</TableHead>
+                      <TableHead className="text-right">Acréscimo</TableHead>
+                      <TableHead numeric>Desconto</TableHead>
+                      <TableHead numeric>Custo final</TableHead>
+                      <TableHead />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {visible.map((emp) => (
+                      <Fragment key={emp.id}>
+                        <TableRow className="bg-gray-50/60 hover:bg-gray-50/60">
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <Avatar
+                                size="xs"
+                                url={emp.avatarUrl || ''}
+                                name={getFirstAndLastName(emp.name)}
+                              />
+                              <div className="min-w-0">
+                                <button
+                                  type="button"
+                                  className="font-medium text-gray-900 hover:text-brand-700 hover:underline"
+                                  onClick={() => setEmployeeId(emp.id)}
+                                >
+                                  {emp.name}
+                                </button>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <p className="text-xs text-gray">
+                                    {subtitleOf(emp)}
+                                  </p>
+                                  {contractBadge(emp)}
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell numeric>
+                            {value(totalIncrease(emp), 'text-success-600')}
+                          </TableCell>
+                          <TableCell numeric>
+                            {value(totalDiscount(emp), 'text-error-600')}
+                          </TableCell>
+                          <TableCell numeric className="type-body-strong">
+                            {money(employeeCost(emp))}
+                          </TableCell>
+                          <TableCell />
+                        </TableRow>
+                        {employeeRows(emp)}
+                      </Fragment>
+                    ))}
+                  </TableBody>
+                </Table>
+                <div className="border-t border-gray-200 bg-gray-50">
+                  <Table>
+                    <TableBody>
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell className="w-full font-semibold text-gray-800">
+                          Total
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="font-semibold text-success-600"
+                        >
+                          {money(totals.increase)}
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="font-semibold text-error-600"
+                        >
+                          {money(totals.discount)}
+                        </TableCell>
+                        <TableCell numeric className="type-body-strong">
+                          {money(totals.cost)}
+                        </TableCell>
+                        <TableCell className="w-20" />
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+                <CardFooter className="flex-wrap justify-between gap-3">
+                  <p className="max-w-xl text-sm text-gray">
+                    O <strong>custo dos colaboradores</strong> é o que alimenta
+                    o custo dos setores na Base de custos. Para acrescentar um
+                    item a alguém, clique no nome da pessoa.
+                  </p>
+                  <div className="flex flex-wrap gap-6 text-sm">
+                    <div>
+                      <p className="text-gray">Sai na folha a pagar</p>
+                      <p className="font-semibold text-gray-900">
+                        {money(totals.payroll)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray">Provisão do mês</p>
+                      <p className="font-semibold text-gray-900">
+                        {money(totals.provision)}
+                      </p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </>
+            ) : !employee ? (
               <CardContent className="px-6 pb-10 text-center text-sm text-gray">
                 Escolha um setor que tenha colaboradores para ver a folha.
               </CardContent>
@@ -547,21 +712,21 @@ export function PayrollStructure() {
                                   'financial_settings:payroll:edit',
                                 ]}
                               >
-                                {itemActions(salary)}
+                                {itemActions(salary, employee)}
                               </PermissionGate>
                             </div>
                           </TableCell>
                         </TableRow>
                         {!collapsed &&
-                          derived.map((item) => itemRow(item, true))}
+                          derived.map((item) => itemRow(item, employee, true))}
                       </Fragment>
                     ) : (
                       // O filtro tirou o salário base: os encargos que
                       // passaram aparecem soltos, em vez de sumirem com ele
-                      derived.map((item) => itemRow(item))
+                      derived.map((item) => itemRow(item, employee))
                     )}
 
-                    {others.map((item) => itemRow(item))}
+                    {others.map((item) => itemRow(item, employee))}
                   </TableBody>
                 </Table>
 
@@ -623,8 +788,8 @@ export function PayrollStructure() {
         )}
 
         <EditPayrollItem
-          item={editing}
-          employeeId={employeeId}
+          item={editing?.item}
+          employeeId={editing?.employeeId || ''}
           onOpenChange={(open) => !open && setEditing(undefined)}
         />
       </div>
