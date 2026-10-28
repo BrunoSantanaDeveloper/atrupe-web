@@ -53,24 +53,30 @@ O Maicol manda o e-mail e a senha por um canal privado.
 
 O Maicol revisa **tela a tela**: primeiro a lógica e a organização, depois o visual. Para não mexer os dois na mesma tela ao mesmo tempo:
 
-1. O Maicol revisa a organização da tela (o que vem antes, o que é aba, o que é consulta) e avisa que ela está pronta para o visual.
+1. O Maicol revisa a organização da tela (o que vem antes, o que é aba, o que é consulta) e a põe em `openspec/telas-para-o-visual.md`.
 2. Você trabalha o visual dessa tela.
-3. Se no visual aparecer algo de organização ou de regra, anote e pergunte. Não mude a regra pelo visual.
+3. Se no visual aparecer algo de organização ou de regra, anote na tabela de dúvidas desse arquivo. Não mude a regra pelo visual.
 
 **Componentes compartilhados** (`src/components/ui/`, `src/components/common/`) aparecem no sistema inteiro. Uma mudança ali muda todas as telas. Combine antes e teste em mais de uma tela.
 
 ## 5. Branch, commit e pull request
 
+**De 30/10 a 10/11/2026 (viagem do Maicol), o trabalho vai para a branch `visual-2026-11`.** O Bruno traz para o homolog o que está em `correcoes-homolog-2026-10-22`. Por isso, o visual que o Maicol ainda não viu fica separado até ele revisar, na volta.
+
 ```bash
-git checkout correcoes-homolog-2026-10-22
+git fetch origin
+git checkout visual-2026-11
 git pull
-git checkout -b visual-<tela>-<data>     # ex.: visual-processos-2026-10-30
+git checkout -b visual-<tela>     # ex.: visual-processos
 ```
 
-- Um pull request por tela ou por assunto, **para a branch `correcoes-homolog-2026-10-22`**, nunca para `main` nem para o repositório do Bruno.
+- Um pull request por tela, **para `visual-2026-11`**. Nunca para `correcoes-homolog-2026-10-22`, `main` ou o repositório do Bruno.
+- Durante a viagem, você mesmo junta os seus pull requests em `visual-2026-11`. Na volta, o Maicol revisa a branch inteira e a junta à de trabalho.
+- As telas que podem receber o visual estão em `openspec/telas-para-o-visual.md`. Dúvidas de regra vão para a tabela no fim desse arquivo.
 - Commits no padrão `tipo(área): o que mudou`, em português. Exemplos: `fix(processos): …`, `feat(orçamentos): …`, `style(precificação): …`.
-- A branch base anda todo dia. Faça `git pull --rebase origin correcoes-homolog-2026-10-22` antes de abrir o PR.
 - O commit roda o `eslint --fix` nos arquivos alterados (husky e lint-staged).
+
+Depois de 10/11, o padrão volta a ser um pull request por tela para `correcoes-homolog-2026-10-22`.
 
 ## 6. Regras que a tela precisa seguir
 
