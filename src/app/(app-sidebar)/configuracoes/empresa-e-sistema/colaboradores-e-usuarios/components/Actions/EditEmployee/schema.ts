@@ -20,7 +20,13 @@ export const schema = z.object({
     .min(0, 'O salário base não pode ser negativo')
     .nullable(),
   address: z.object({
-    zipcode: z.string().min(8, 'CEP inválido'),
+    // O endereço é opcional: o colaborador nasce sem ele, e a edição não
+    // pode exigir o CEP para salvar o salário. Preenchido, precisa estar certo
+    zipcode: z
+      .string()
+      .refine((value) => !value || value.replace(/\D/g, '').length === 8, {
+        message: 'CEP inválido',
+      }),
     state: z.string(),
     city: z.string(),
     neighborhood: z.string(),

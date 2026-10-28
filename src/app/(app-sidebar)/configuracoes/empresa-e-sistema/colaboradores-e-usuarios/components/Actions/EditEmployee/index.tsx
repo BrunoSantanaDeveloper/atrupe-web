@@ -123,6 +123,10 @@ export function EditEmployeeDialog({
         contract?: EmploymentContract
         baseSalary?: number
       } = { ...data }
+      // Sem CEP, não há endereço para gravar
+      if (!data.address.zipcode) {
+        delete (body as Partial<typeof body>).address
+      }
       if (seesValues) {
         if (contract && contract !== (rowData?.contract || '')) {
           body.contract = contract
