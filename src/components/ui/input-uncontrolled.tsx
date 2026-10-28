@@ -36,6 +36,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'flex h-full w-full rounded-md bg-transparent px-2 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 shadow-none outline-none border-none focus-visible:outline-none focus-visible:border-none focus-visible:shadow-none',
             )}
             ref={ref}
+            autoComplete="off"
             {...props}
           />
           {endAdornment && (
@@ -58,6 +59,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           className,
         )}
         ref={ref}
+        autoComplete="off"
         {...props}
       />
     )
