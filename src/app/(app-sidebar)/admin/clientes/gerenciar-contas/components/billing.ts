@@ -64,6 +64,7 @@ export const ACCOUNT_STATUS: Record<
 > = {
   ACTIVE: { label: 'Ativa', variant: 'successLight' },
   BLOCKED: { label: 'Bloqueada', variant: 'warningLight' },
+  AWAITING_PAYMENT: { label: 'Aguardando pagamento', variant: 'blueLight' },
   INACTIVE: { label: 'Inativa', variant: 'neutralLight' },
   CANCELED: { label: 'Cancelada', variant: 'errorLight' },
 }
