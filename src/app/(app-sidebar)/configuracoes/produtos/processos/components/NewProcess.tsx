@@ -85,8 +85,8 @@ const EDIT = ['product_settings:composition:edit']
 // precificação (openspec/design.md): o texto de apoio diz quando usar cada
 // uma, com "acabamento" e "serviço principal" como exemplos (05/10/2026)
 const afterBaseCards: { value: AfterBase; Icon: typeof IconLink }[] = [
-  { value: 'INHERIT', Icon: IconLink },
   { value: 'OWN', Icon: IconRulerMeasure },
+  { value: 'INHERIT', Icon: IconLink },
 ]
 
 // O que só existe depois de salvar, como na aba Composição do produto novo

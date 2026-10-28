@@ -16450,5 +16450,9 @@
  "25b7f41633": {
   "es": "Venta mínima de {minItemValue}: el ítem se cobra por {minItemValue2}.",
   "en": "Minimum sale of {minItemValue}: the item is charged {minItemValue2}."
+ },
+ "be44347186": {
+  "es": "Misma medida de la etapa anterior",
+  "en": "Same size as the previous step"
  }
 }
