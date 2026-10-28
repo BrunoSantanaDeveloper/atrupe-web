@@ -163,6 +163,8 @@ O projeto segue rigorosos padrões de código estabelecidos pela equipe:
 
 ## 🤝 Contribuindo
 
+Quem está chegando: comece por [docs/como-trabalhar-no-front.md](docs/como-trabalhar-no-front.md) (instalação, contas de teste, branch, regras de tela e traduções).
+
 1. Siga os padrões de código estabelecidos no projeto
 2. Use commits convencionais: `feat:`, `fix:`, `refactor:`, etc.
 3. Mantenha a tipagem TypeScript rigorosa
