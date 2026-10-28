@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -21,10 +21,14 @@ import {
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { AssetRecord, CostNature } from '../../types'
+import type { AssetCostItem, AssetRecord, CostNature } from '../../types'
 
 // Actions
-import { createAssetCost, getAssetAccounts } from '@/actions/asset'
+import {
+  createAssetCost,
+  updateAssetCost,
+  getAssetAccounts,
+} from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -39,13 +43,27 @@ import { IconPlus } from '@tabler/icons-react'
 
 interface Props {
   asset: AssetRecord
+  // Com o custo, a mesma janela edita (28/10/2026: custo errado tem conserto)
+  cost?: AssetCostItem
+  // Controlada de fora (a linha da tabela); sem isso, traz o próprio botão
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 // As três naturezas de custo (P-6). A conta do plano de contas serve ao
 // Comparativo (P-17), e o custo mensal é calculado pela regra.
-export function NewCostModal({ asset }: Props) {
+export function CostModal({
+  asset,
+  cost: editing,
+  open: openProp,
+  onOpenChange,
+}: Props) {
   const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
+  const [innerOpen, setInnerOpen] = useState(false)
+  const controlled = openProp !== undefined
+  const open = controlled ? openProp : innerOpen
+  const setOpen = (value: boolean) =>
+    controlled ? onOpenChange?.(value) : setInnerOpen(value)
   const [name, setName] = useState('')
   const [nature, setNature] = useState<CostNature>('FIXED')
   const [unitCost, setUnitCost] = useState('')
@@ -53,6 +71,18 @@ export function NewCostModal({ asset }: Props) {
   const [accountId, setAccountId] = useState('none')
   const [setupId, setSetupId] = useState('')
   const [lastOccurrence, setLastOccurrence] = useState('')
+
+  // Ao abrir para editar, os campos vêm do custo
+  useEffect(() => {
+    if (!open || !editing) return
+    setName(editing.name)
+    setNature(editing.nature)
+    setUnitCost(String(editing.unitCost / 100))
+    setYieldAmount(String(editing.yieldAmount))
+    setAccountId(editing.financialNatureId || 'none')
+    setSetupId(editing.setupId || '')
+    setLastOccurrence(editing.lastOccurrence || '')
+  }, [open, editing])
 
   // A conta é uma subcategoria de despesa do plano de contas (P-17)
   const { data: accountsData } = useQuery({
@@ -86,45 +116,60 @@ export function NewCostModal({ asset }: Props) {
     : Math.round((cost / (amount || 1)) * productivity)
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createAssetCost({
-        assetId: asset.id,
-        cost: {
-          name,
-          nature,
-          unitCost: cost,
-          yieldAmount: amount,
-          financialNatureId: accountId === 'none' ? null : accountId,
-          lastOccurrence: lastOccurrence || null,
-          setupId: isSetup ? setupId || null : null,
-        },
-      }),
+    mutationFn: () => {
+      const values = {
+        name,
+        nature,
+        unitCost: cost,
+        yieldAmount: amount,
+        financialNatureId: accountId === 'none' ? null : accountId,
+        lastOccurrence: lastOccurrence || null,
+        setupId: isSetup ? setupId || null : null,
+      }
+      return editing
+        ? updateAssetCost({
+            assetId: asset.id,
+            costId: editing.id,
+            cost: values,
+          })
+        : createAssetCost({ assetId: asset.id, cost: values })
+    },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success('Custo lançado')
+      toast.success(editing ? 'Custo atualizado' : 'Custo lançado')
       queryClient.invalidateQueries({ queryKey: ['asset', asset.id] })
+      queryClient.invalidateQueries({ queryKey: ['assets'] })
       setName('')
       setUnitCost('')
       setSetupId('')
       setOpen(false)
     },
-    onError: () => toast.error('Erro ao lançar o custo'),
+    onError: () =>
+      toast.error(
+        editing ? 'Erro ao salvar o custo' : 'Erro ao lançar o custo',
+      ),
   })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        variant="neutralOutline"
-        LeftIcon={IconPlus}
-        onClick={() => setOpen(true)}
-      >
-        Novo custo
-      </Button>
+      {!controlled && (
+        <Button
+          variant="neutralOutline"
+          LeftIcon={IconPlus}
+          onClick={() => setOpen(true)}
+        >
+          Novo custo
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <DialogTitle>Novo custo do patrimônio</DialogTitle>
+            <DialogTitle>
+              {editing
+                ? 'Editar custo do patrimônio'
+                : 'Novo custo do patrimônio'}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Lance um custo fixo ou variável do bem.
             </DialogDescription>
@@ -243,7 +288,7 @@ export function NewCostModal({ asset }: Props) {
             disabled={!name || !unitCost || (isSetup && !setupId)}
             onClick={() => mutate()}
           >
-            Lançar custo
+            {editing ? 'Salvar' : 'Lançar custo'}
           </Button>
         </DialogFooter>
       </DialogContent>

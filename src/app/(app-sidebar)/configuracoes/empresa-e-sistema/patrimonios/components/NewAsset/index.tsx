@@ -24,15 +24,14 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import type {
-  AssetItem,
   AssetKind,
+  AssetRecord,
   AssetUnit,
   AssetFormValues,
-  AssetComposition,
 } from '../../types'
 
 // Actions
-import { createAsset, updateAsset } from '@/actions/asset'
+import { createAsset } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { useUploadFile } from '@/hooks/use-upload-file'
@@ -48,11 +47,9 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Components
-import { ActionButton } from '@/components/common/ActionButton'
-import { CompositionsWarning } from '../CompositionsWarning'
 
 // Icons
-import { IconPlus, IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
+import { IconPlus, IconPhoto, IconX } from '@tabler/icons-react'
 import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface Props {
@@ -64,45 +61,32 @@ interface Props {
     unit: AssetUnit
     sectorId: string | null
   }[]
-  // Com o bem informado, o mesmo formulário edita em vez de cadastrar (P-12)
-  asset?: AssetItem
+  // Cadastrado, o bem abre na janela dele para seguir a montagem (28/10/2026)
+  onCreated?: (asset: AssetRecord) => void
 }
 
 // Cadastro rápido em duas etapas (P-12): aqui só o essencial; vida útil,
-// residual, custos e configurações ficam na página do bem.
-export function NewAssetModal({ sectors, groups, asset }: Props) {
+// residual, custos e configurações ficam na janela do bem, que abre em
+// seguida. Editar é só na janela do bem (28/10/2026, design.md §19).
+export function NewAssetModal({ sectors, groups, onCreated }: Props) {
   const queryClient = useQueryClient()
-  const isEdit = Boolean(asset)
   const fileInput = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
-  const [detailed, setDetailed] = useState(asset?.detailed ?? true)
-  const [name, setName] = useState(asset?.name || '')
-  const [kind, setKind] = useState<AssetKind>(asset?.kind || 'MACHINES')
-  const [sectorId, setSectorId] = useState(asset?.sectorId || '')
-  const [groupId, setGroupId] = useState(asset?.groupId || 'none')
-  const [unit, setUnit] = useState<AssetUnit>(asset?.unit || 'HR')
-  const [imageUrl, setImageUrl] = useState(asset?.imageUrl || '')
-  const [productivity, setProductivity] = useState(
-    asset?.monthlyProductivity ? String(asset.monthlyProductivity) : '',
-  )
-  const [acquisitionDate, setAcquisitionDate] = useState(
-    asset?.acquisitionDate || '',
-  )
-  const [acquisitionValue, setAcquisitionValue] = useState(
-    asset ? String(asset.acquisitionValue / 100) : '',
-  )
-  // As composições que perdem o custo da máquina ao simplificar (P-16): a API
-  // recusa e a tela pede a confirmação
-  const [conflict, setConflict] = useState<AssetComposition[]>()
+  const [detailed, setDetailed] = useState(true)
+  const [name, setName] = useState('')
+  const [kind, setKind] = useState<AssetKind>('MACHINES')
+  const [sectorId, setSectorId] = useState('')
+  const [groupId, setGroupId] = useState('none')
+  const [unit, setUnit] = useState<AssetUnit>('HR')
+  const [imageUrl, setImageUrl] = useState('')
+  const [productivity, setProductivity] = useState('')
+  const [acquisitionDate, setAcquisitionDate] = useState('')
+  const [acquisitionValue, setAcquisitionValue] = useState('')
   const { compressImage, isCompressing } = useImageCompression()
   const { handleUpload, isUploading } = useUploadFile()
   const uploading = isCompressing || isUploading
 
-  // O setor atual fica na lista mesmo inativo, para a edição não o perder
-  const sectorOptions =
-    asset?.sectorId && !sectors.some((item) => item.value === asset.sectorId)
-      ? [...sectors, { value: asset.sectorId, label: asset.sector || '-' }]
-      : sectors
+  const sectorOptions = sectors
 
   // O grupo tem a mesma unidade e o mesmo setor do bem (P-5.2); os de
   // veículo nascem sem setor e ficam com o do primeiro bem
@@ -114,9 +98,6 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
     .map((group) => ({ value: group.value, label: group.label }))
 
   const reset = () => {
-    setConflict(undefined)
-    if (isEdit) return
-
     setName('')
     setSectorId('')
     setGroupId('none')
@@ -165,66 +146,32 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
         acquisitionValue: Math.round(Number(acquisitionValue || 0) * 100),
       }
 
-      if (!asset) {
-        const created = await createAsset(values)
-
-        return { ...created, compositions: [] as AssetComposition[] }
-      }
-
-      return updateAsset({
-        id: asset.id,
-        ...values,
-        confirmed: Boolean(conflict),
-      })
+      return createAsset(values)
     },
     onSuccess: (response) => {
-      if (response.compositions.length) {
-        return setConflict(response.compositions)
-      }
       if (!response.success) return toast.error(response.message)
 
-      toast.success(isEdit ? 'Patrimônio atualizado' : 'Patrimônio cadastrado')
+      toast.success('Patrimônio cadastrado')
       queryClient.invalidateQueries({ queryKey: ['assets'] })
-      queryClient.invalidateQueries({ queryKey: ['asset'] })
       reset()
       setOpen(false)
+      if (response.data) onCreated?.(response.data)
     },
-    onError: () =>
-      toast.error(
-        isEdit
-          ? 'Erro ao atualizar o patrimônio'
-          : 'Erro ao cadastrar o patrimônio',
-      ),
+    onError: () => toast.error('Erro ao cadastrar o patrimônio'),
   })
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(value) => {
-        setOpen(value)
-        if (!value) setConflict(undefined)
-      }}
-    >
-      {isEdit ? (
-        <ActionButton
-          Icon={IconPencil}
-          tooltip={`Editar ${asset?.name}`}
-          onClick={() => setOpen(true)}
-        />
-      ) : (
-        <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
-          Novo patrimônio
-        </Button>
-      )}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
+        Novo patrimônio
+      </Button>
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <DialogTitle>
-              {isEdit ? 'Editar patrimônio' : 'Novo patrimônio'}
-            </DialogTitle>
+            <DialogTitle>Novo patrimônio</DialogTitle>
             <DialogDescription className="sr-only">
-              Cadastro rápido do bem. Depreciação e custos são detalhados na
-              página do patrimônio.
+              Cadastro rápido do bem. Depreciação, configurações e custos são
+              detalhados na janela do patrimônio, que abre em seguida.
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -239,10 +186,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
             </div>
             <Switch
               checked={detailed}
-              onCheckedChange={(value) => {
-                setDetailed(value)
-                setConflict(undefined)
-              }}
+              onCheckedChange={setDetailed}
               aria-label="Detalhar custos deste bem"
             />
           </div>
@@ -396,14 +340,11 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
             )}
           </div>
 
-          {!isEdit && (
-            <p className="text-sm text-gray">
-              Vida útil e valor residual entram com os padrões do sistema (60
-              meses e 30%) e podem ser revisados na página do patrimônio.
-            </p>
-          )}
-
-          {conflict && <CompositionsWarning compositions={conflict} />}
+          <p className="text-sm text-gray">
+            Vida útil e valor residual entram com os padrões do sistema (60
+            meses e 30%) e podem ser revisados na aba Patrimônio, que abre ao
+            cadastrar.
+          </p>
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
@@ -416,11 +357,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
             disabled={!name || !sectorId || !acquisitionValue || uploading}
             onClick={() => mutate()}
           >
-            {conflict
-              ? 'Confirmar e salvar'
-              : isEdit
-                ? 'Salvar'
-                : 'Cadastrar patrimônio'}
+            Cadastrar patrimônio
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -18,10 +18,10 @@ import {
 } from '@/components/ui/dialog'
 
 // Types
-import type { AssetRecord } from '../../types'
+import type { AssetRecord, AssetSetupItem } from '../../types'
 
 // Actions
-import { createAssetSetup } from '@/actions/asset'
+import { createAssetSetup, updateAssetSetup } from '@/actions/asset'
 
 // Hooks / Store / Consts
 import { assetUnitShort } from '@/consts/assets'
@@ -35,17 +35,40 @@ import { IconPlus } from '@tabler/icons-react'
 
 interface Props {
   asset: AssetRecord
+  // Com a configuração, a mesma janela edita (28/10/2026)
+  setup?: AssetSetupItem
+  // Controlada de fora (a linha da tabela); sem isso, traz o próprio botão
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 // Configuração produtiva (P-2). A produtividade do bem é a soma das
 // configurações (P-31), e o tempo de atividade sai de tempo × produtividade.
-export function NewSetupModal({ asset }: Props) {
+export function SetupModal({
+  asset,
+  setup: editing,
+  open: openProp,
+  onOpenChange,
+}: Props) {
   const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
+  const [innerOpen, setInnerOpen] = useState(false)
+  const controlled = openProp !== undefined
+  const open = controlled ? openProp : innerOpen
+  const setOpen = (value: boolean) =>
+    controlled ? onOpenChange?.(value) : setInnerOpen(value)
   const [name, setName] = useState('')
   const [abbreviation, setAbbreviation] = useState('')
   const [minutes, setMinutes] = useState('5')
   const [productivity, setProductivity] = useState('')
+
+  // Ao abrir para editar, os campos vêm da configuração
+  useEffect(() => {
+    if (!open || !editing) return
+    setName(editing.name)
+    setAbbreviation(editing.abbreviation)
+    setMinutes(String(editing.timePerUnit))
+    setProductivity(String(editing.monthlyProductivity))
+  }, [open, editing])
 
   const unit = asset.unit ? assetUnitShort[asset.unit] : 'un'
   const activityHours = Math.round(
@@ -53,21 +76,28 @@ export function NewSetupModal({ asset }: Props) {
   )
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createAssetSetup({
-        assetId: asset.id,
-        setup: {
-          name,
-          abbreviation: abbreviation || name.slice(0, 4).toLowerCase(),
-          unit: asset.unit || 'UN',
-          timePerUnit: Number(minutes || 0),
-          monthlyProductivity: Number(productivity || 0),
-        },
-      }),
+    mutationFn: () => {
+      const values = {
+        name,
+        abbreviation: abbreviation || name.slice(0, 4).toLowerCase(),
+        unit: asset.unit || 'UN',
+        timePerUnit: Number(minutes || 0),
+        monthlyProductivity: Number(productivity || 0),
+      }
+      return editing
+        ? updateAssetSetup({
+            assetId: asset.id,
+            setupId: editing.id,
+            setup: values,
+          })
+        : createAssetSetup({ assetId: asset.id, setup: values })
+    },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success('Configuração produtiva criada')
+      toast.success(
+        editing ? 'Configuração atualizada' : 'Configuração produtiva criada',
+      )
       queryClient.invalidateQueries({ queryKey: ['asset', asset.id] })
       queryClient.invalidateQueries({ queryKey: ['assets'] })
       setName('')
@@ -75,22 +105,33 @@ export function NewSetupModal({ asset }: Props) {
       setProductivity('')
       setOpen(false)
     },
-    onError: () => toast.error('Erro ao criar a configuração'),
+    onError: () =>
+      toast.error(
+        editing
+          ? 'Erro ao salvar a configuração'
+          : 'Erro ao criar a configuração',
+      ),
   })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button
-        variant="neutralOutline"
-        LeftIcon={IconPlus}
-        onClick={() => setOpen(true)}
-      >
-        Nova configuração
-      </Button>
+      {!controlled && (
+        <Button
+          variant="neutralOutline"
+          LeftIcon={IconPlus}
+          onClick={() => setOpen(true)}
+        >
+          Nova configuração
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <DialogTitle>Nova configuração produtiva</DialogTitle>
+            <DialogTitle>
+              {editing
+                ? 'Editar configuração produtiva'
+                : 'Nova configuração produtiva'}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Modo de trabalho do bem, com tempo e produtividade próprios.
             </DialogDescription>
@@ -177,7 +218,7 @@ export function NewSetupModal({ asset }: Props) {
             disabled={!name || !productivity}
             onClick={() => mutate()}
           >
-            Cadastrar configuração
+            {editing ? 'Salvar' : 'Cadastrar configuração'}
           </Button>
         </DialogFooter>
       </DialogContent>

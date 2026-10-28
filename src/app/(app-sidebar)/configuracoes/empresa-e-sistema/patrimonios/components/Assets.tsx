@@ -2,7 +2,7 @@
 
 // React / Next
 import Link from 'next/link'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 // UI
 import {
@@ -22,6 +22,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Topbar } from '@/components/common/Topbar'
 import Image from 'next/image'
 import { NewAssetModal } from './NewAsset'
+import { AssetDialog, type AssetTab } from './AssetDialog'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { FetchingRegion } from '@/components/common/FetchingRegion'
@@ -52,7 +53,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconSearch,
+  IconPencil,
   IconLayersLinked,
   IconBuildingWarehouse,
 } from '@tabler/icons-react'
@@ -70,6 +71,18 @@ export function Assets({ searchParams }: SearchParamsType) {
   const sectors = (sectorsData || [])
     .filter((sector) => sector.isActive)
     .map((sector) => ({ value: sector.id, label: sector.name }))
+
+  // O bem aberto na janela dele. `?patrimonio=<id>` abre direto (o link da
+  // antiga página do bem leva para cá)
+  const [openAsset, setOpenAsset] = useState<{
+    id: string
+    tab: AssetTab
+  } | null>(null)
+  const linked =
+    typeof searchParams?.patrimonio === 'string' ? searchParams.patrimonio : ''
+  useEffect(() => {
+    if (linked) setOpenAsset({ id: linked, tab: 'asset' })
+  }, [linked])
 
   const { data: groupsData } = useQuery({
     staleTime: Infinity,
@@ -120,7 +133,16 @@ export function Assets({ searchParams }: SearchParamsType) {
                 </Link>
               </Button>
               <PermissionGate permissions={['cost:base:edit']}>
-                <NewAssetModal sectors={sectors} groups={groups} />
+                <NewAssetModal
+                  sectors={sectors}
+                  groups={groups}
+                  onCreated={(asset) =>
+                    setOpenAsset({
+                      id: asset.id,
+                      tab: asset.detailed ? 'setups' : 'asset',
+                    })
+                  }
+                />
               </PermissionGate>
             </div>
           }
@@ -230,15 +252,17 @@ export function Assets({ searchParams }: SearchParamsType) {
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex justify-end gap-1">
+                                    {/* Um registro, um lugar (§19): o lápis
+                                        abre o bem inteiro, em abas */}
                                     <ActionButton
-                                      Icon={IconSearch}
-                                      tooltip={`Abrir ${asset.name}`}
-                                      link={`/configuracoes/empresa-e-sistema/patrimonios/${asset.id}`}
-                                    />
-                                    <NewAssetModal
-                                      asset={asset}
-                                      sectors={sectors}
-                                      groups={groups}
+                                      Icon={IconPencil}
+                                      tooltip={`Editar ${asset.name}`}
+                                      onClick={() =>
+                                        setOpenAsset({
+                                          id: asset.id,
+                                          tab: 'asset',
+                                        })
+                                      }
                                     />
                                   </div>
                                 </TableCell>
@@ -261,6 +285,14 @@ export function Assets({ searchParams }: SearchParamsType) {
           </FetchingRegion>
         </Card>
       </div>
+      <AssetDialog
+        assetId={openAsset?.id ?? null}
+        open={!!openAsset}
+        initialTab={openAsset?.tab}
+        onOpenChange={(open) => !open && setOpenAsset(null)}
+        sectors={sectors}
+        groups={groups}
+      />
     </TooltipProvider>
   )
 }

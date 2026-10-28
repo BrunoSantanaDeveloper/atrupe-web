@@ -16538,5 +16538,129 @@
  "db6a857c27": {
   "es": "Aquí quedan las etapas que suelen venir antes y después de este proceso, como sugerencia al armar el producto.",
   "en": "Here are the steps that usually come before and after this process, as a suggestion when building the product."
+ },
+ "b47774ef31": {
+  "es": "Complete nombre, sector y valor de adquisición",
+  "en": "Fill in name, department and acquisition value"
+ },
+ "1dc778a0f1": {
+  "es": "Desactivado, el activo entra solo con la depreciación en el costo del sector, sin unidad, productividad, configuraciones ni costos propios.",
+  "en": "Turned off, the asset counts only through depreciation in the department cost, with no unit, productivity, setups or costs of its own."
+ },
+ "67a8a87b4a": {
+  "es": "Adquisición y depreciación",
+  "en": "Acquisition and depreciation"
+ },
+ "4ca7573481": {
+  "es": "(adquisición − residual) ÷ vida útil.",
+  "en": "(acquisition − residual) ÷ useful life."
+ },
+ "9cbf0e9c07": {
+  "es": "Suma de las configuraciones productivas.",
+  "en": "Sum of the production setups."
+ },
+ "37248b98e2": {
+  "es": "Eliminar configuración",
+  "en": "Delete setup"
+ },
+ "60025a6ec2": {
+  "es": "La configuración \"{name}\" sale del activo, y el costo de la máquina pasa a repartirse entre las demás.",
+  "en": "The setup \"{name}\" is removed from the asset, and the machine cost is split among the others."
+ },
+ "8b64027105": {
+  "es": "La configuración se usa en composiciones",
+  "en": "The setup is used in build-ups"
+ },
+ "3f23061768": {
+  "es": "Configuración eliminada",
+  "en": "Setup deleted"
+ },
+ "fa20076335": {
+  "es": "Los modos de trabajo del activo, con tiempo y productividad propios. La productividad del activo es la suma de las configuraciones, y el costo de la máquina se reparte entre ellas por el tiempo de actividad.",
+  "en": "The asset working modes, each with its own time and productivity. The asset productivity is the sum of the setups, and the machine cost is split among them by activity time."
+ },
+ "9a719238ee": {
+  "es": "Ninguna configuración productiva registrada. Sin ella, el activo usa la productividad de referencia de la pestaña Activo, en {unit}/mes.",
+  "en": "No production setup registered. Without one, the asset uses the reference productivity from the Asset tab, in {unit}/month."
+ },
+ "0b84889a3c": {
+  "es": "Eliminar costo",
+  "en": "Delete cost"
+ },
+ "3b4fc8cdbb": {
+  "es": "El costo \"{name}\" sale del activo y del costo del sector.",
+  "en": "The cost \"{name}\" is removed from the asset and from the department cost."
+ },
+ "cc1c5758ce": {
+  "es": "Costo eliminado",
+  "en": "Cost deleted"
+ },
+ "9235a79363": {
+  "es": "Editar costo del activo",
+  "en": "Edit asset cost"
+ },
+ "ab63f5009a": {
+  "es": "Todavía no se usa en procesos.",
+  "en": "Not used in any process yet."
+ },
+ "c6633fb594": {
+  "es": "Usado en 1 proceso · ver lista",
+  "en": "Used in 1 process · see list"
+ },
+ "5412b70345": {
+  "es": "Usado en {valor} procesos · ver lista",
+  "en": "Used in {valor} processes · see list"
+ },
+ "3b83d19b86": {
+  "es": "Procesos que usan este activo. El proceso se crea en Productos › Procesos, no aquí.",
+  "en": "Processes that use this asset. The process is created in Products › Processes, not here."
+ },
+ "b86c89882f": {
+  "es": "Descartar cambios",
+  "en": "Discard changes"
+ },
+ "e712315e43": {
+  "es": "Lo que cambió en la pestaña Activo todavía no se guardó. Cerrar descarta esos cambios.",
+  "en": "What changed in the Asset tab has not been saved yet. Closing discards those changes."
+ },
+ "8c5a2c9701": {
+  "es": "Costos",
+  "en": "Costs"
+ },
+ "1df0ef3a44": {
+  "es": "Lecturas",
+  "en": "Readings"
+ },
+ "1a5a3e2881": {
+  "es": "Editar activo · {name}",
+  "en": "Edit asset · {name}"
+ },
+ "966346d1f5": {
+  "es": "Vender",
+  "en": "Sell"
+ },
+ "b26fb309b5": {
+  "es": "Editar configuración productiva",
+  "en": "Edit production setup"
+ },
+ "ff9126cebd": {
+  "es": "Activo registrado",
+  "en": "Asset registered"
+ },
+ "7686cf5c2e": {
+  "es": "Error al registrar el activo",
+  "en": "Error registering the asset"
+ },
+ "0d10537c68": {
+  "es": "Registro rápido del activo. Depreciación, configuraciones y costos se detallan en la ventana del activo, que se abre a continuación.",
+  "en": "Quick asset registration. Depreciation, setups and costs are detailed in the asset window, which opens next."
+ },
+ "2faf523e14": {
+  "es": "Vida útil y valor residual entran con los valores del sistema (60 meses y 30%) y pueden revisarse en la pestaña Activo, que se abre al registrar.",
+  "en": "Useful life and residual value start with the system defaults (60 months and 30%) and can be reviewed in the Asset tab, which opens on registration."
+ },
+ "995949fab9": {
+  "es": "Registrar activo",
+  "en": "Register asset"
  }
 }
