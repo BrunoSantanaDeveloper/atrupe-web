@@ -1,4 +1,9 @@
-import { chromium, type Browser, type FullConfig } from '@playwright/test'
+import {
+  chromium,
+  expect,
+  type Browser,
+  type FullConfig,
+} from '@playwright/test'
 
 import {
   TEST_PLANS,
@@ -32,14 +37,22 @@ async function login(
     )
   }
 
-  await page.getByLabel(/e-?mail/i).fill(email)
-  await page.getByLabel(/senha/i).fill(password)
-  await page.getByRole('button', { name: /entrar|login|acessar/i }).click()
+  // A tela de login chama router.refresh() ao montar, e a resposta do refresh
+  // recria o formulário: o que foi preenchido antes dela some, e o envio sai
+  // vazio ("Campo obrigatório"). Por isso preenche e envia de novo enquanto a
+  // página continuar no login.
+  const onLogin = () => new URL(page.url()).pathname.startsWith('/login')
 
   try {
-    await page.waitForURL((url) => !url.pathname.startsWith('/login'), {
-      timeout: 30_000,
-    })
+    await expect(async () => {
+      if (!onLogin()) return
+      await page.getByLabel(/e-?mail/i).fill(email)
+      await page.getByLabel(/senha/i).fill(password)
+      await page.getByRole('button', { name: /entrar|login|acessar/i }).click()
+      await page.waitForURL((url) => !url.pathname.startsWith('/login'), {
+        timeout: 10_000,
+      })
+    }).toPass({ timeout: 40_000 })
   } catch (error) {
     console.error(
       '[E2E Setup] Falha no redirecionamento. O login pode ter falhado.',
