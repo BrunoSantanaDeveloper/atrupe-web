@@ -16662,5 +16662,9 @@
  "995949fab9": {
   "es": "Registrar activo",
   "en": "Register asset"
+ },
+ "d6a81afec5": {
+  "es": "Ningún movimiento disponible para exportar",
+  "en": "No transaction available to export"
  }
 }

@@ -31,7 +31,19 @@ const PERIOD_OPTIONS = [
   { value: 'custom', label: 'Personalizado' },
 ]
 
-export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
+interface Props extends SearchParamsType {
+  // Contas a receber e a pagar usam o mesmo filtro (LITE part3, item 2):
+  // com a permissão de ver a tela delas e com "Todos" no período, porque a
+  // lista não nasce presa ao mês
+  permissions?: string[]
+  allowAllPeriods?: boolean
+}
+
+export function FinancialFlowFilter({
+  searchParams,
+  permissions = ['financial:flow:edit'],
+  allowAllPeriods = false,
+}: Props) {
   const router = useRouter()
 
   const searchParamsObject = new URLSearchParams(searchParams)
@@ -65,8 +77,15 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   }
 
   const handlePeriodChange = (period: string) => {
-    params.set('period', period)
     params.delete('page')
+    if (period === 'all') {
+      params.delete('period')
+      params.delete('startDate')
+      params.delete('endDate')
+      router.push(`?${params.toString()}`)
+      return
+    }
+    params.set('period', period)
 
     if (period === 'custom') {
       router.push(`?${params.toString()}`)
@@ -99,15 +118,19 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   }
 
   return (
-    <PermissionGate permissions={['financial:flow:edit']}>
+    <PermissionGate permissions={permissions}>
       <>
         <SelectBasic
           name="period"
           label="Período"
           placeholder="Selecione o período"
           className="w-full sm:w-[200px]"
-          options={PERIOD_OPTIONS}
-          value={currentPeriod || ''}
+          options={
+            allowAllPeriods
+              ? [{ value: 'all', label: 'Todos' }, ...PERIOD_OPTIONS]
+              : PERIOD_OPTIONS
+          }
+          value={currentPeriod || (allowAllPeriods ? 'all' : '')}
           onChange={handlePeriodChange}
         />
         {isCustomPeriod && (
