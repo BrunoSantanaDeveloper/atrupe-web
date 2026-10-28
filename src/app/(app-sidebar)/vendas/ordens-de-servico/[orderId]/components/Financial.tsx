@@ -168,7 +168,7 @@ function OrderFinancialContent({
                           <p className="text-success-700">
                             {formatCurrencyToBrl(item.dueAmount)}
                           </p>
-                          <p className="text-gray">{item.dueDate}</p>
+                          <p className="text-gray">{item.dueDate || '-'}</p>
                         </TableCell>
                         <TableCell>
                           <p className="text-success-700">
@@ -229,7 +229,7 @@ function OrderFinancialContent({
                           <p className="text-error-700">
                             {formatCurrencyToBrl(item.dueAmount)}
                           </p>
-                          <p className="text-gray">{item.dueDate}</p>
+                          <p className="text-gray">{item.dueDate || '-'}</p>
                         </TableCell>
                         <TableCell>
                           <p className="text-error-700">
@@ -290,7 +290,7 @@ function OrderFinancialContent({
                           <p className="text-error-700">
                             {formatCurrencyToBrl(item.dueAmount)}
                           </p>
-                          <p className="text-gray">{item.dueDate}</p>
+                          <p className="text-gray">{item.dueDate || '-'}</p>
                         </TableCell>
                         <TableCell>
                           <p className="text-error-700">
