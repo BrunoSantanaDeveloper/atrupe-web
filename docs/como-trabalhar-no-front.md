@@ -4,10 +4,10 @@ Guia de entrada para quem vai mexer no código das telas. Escrito em 28/10/2026,
 
 ## 1. Os dois repositórios
 
-| Repositório | O que tem | Onde fica no seu computador |
-|---|---|---|
-| `Atrupe-Sistemas/atrupe-front` | O código do front (Next.js 14, React Query, React Hook Form, Zod, Tailwind, Radix) | a pasta do projeto |
-| `Atrupe-Sistemas/atrupe-regras` | As regras de negócio e os padrões de tela (OpenSpec) | a pasta `openspec/`, **dentro** do front |
+| Repositório                     | O que tem                                                                          | Onde fica no seu computador              |
+| ------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------- |
+| `Atrupe-Sistemas/atrupe-front`  | O código do front (Next.js 14, React Query, React Hook Form, Zod, Tailwind, Radix) | a pasta do projeto                       |
+| `Atrupe-Sistemas/atrupe-regras` | As regras de negócio e os padrões de tela (OpenSpec)                               | a pasta `openspec/`, **dentro** do front |
 
 As regras ficam num repositório separado, mas o front espera encontrá-las em `openspec/`. Cada um tem os seus commits.
 
