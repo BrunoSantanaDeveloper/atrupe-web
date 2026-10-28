@@ -285,9 +285,13 @@ export function QuotationItems({ data }: Props) {
     }
   }
 
-  // O material e o item montado vão com os itens montados, abaixo
+  // O material, o item montado e o terceirizado vão com os itens montados,
+  // abaixo; aqui ficariam em dobro (o terceirizado aparecia duas vezes)
   const items = data?.quotationItems?.filter(
-    (item) => item.origin !== 'MATERIAL' && item.origin !== 'COMPOSED',
+    (item) =>
+      item.origin !== 'MATERIAL' &&
+      item.origin !== 'COMPOSED' &&
+      item.origin !== 'OUTSOURCED',
   )
 
   return (
