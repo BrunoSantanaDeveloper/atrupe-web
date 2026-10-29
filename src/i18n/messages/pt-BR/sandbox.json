@@ -84,7 +84,7 @@
     "oPlanoQueLiberaO": "O plano que libera o recurso vem do mapa de chaves do servidor, e o botão só aparece para o titular da conta. Aqui o plano e o papel estão fixados para mostrar cada caso.",
     "avisoDaAcao": "Aviso da ação",
     "quandoAApiRecusaUma": "Quando a API recusa uma ação por plano. Os avisos usam a sua sessão: entre como titular e como colaborador para ver os dois textos.",
-    "mostrarOAviso": "Mostrar o aviso"
+    "show": "Mostrar o aviso"
   },
   "fileUpload": {
     "fileUploaderSandbox": "File Uploader — Sandbox",

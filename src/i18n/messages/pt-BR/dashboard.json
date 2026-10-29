@@ -1,7 +1,7 @@
 {
   "inicio": {
     "hideAmounts": "Ocultar valores",
-    "showAmounts": "Mostrar valores",
+    "show": "Mostrar valores",
     "dashboard": "Painel",
     "restrictedAccess": "Acesso restrito",
     "youDonTHavePermission": "Você não tem permissão para visualizar informações gerais do painel.",

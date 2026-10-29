@@ -1,7 +1,7 @@
 {
   "inicio": {
     "hideAmounts": "Hide amounts",
-    "showAmounts": "Show amounts",
+    "show": "Show",
     "dashboard": "Dashboard",
     "restrictedAccess": "Restricted access",
     "youDonTHavePermission": "You don't have permission to view the dashboard overview.",

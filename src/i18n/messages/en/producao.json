@@ -161,7 +161,7 @@
     "project": "Project {number}",
     "jobTicket": "Job ticket",
     "releaseProduction": "Release production",
-    "finishProject": "Finish project",
+    "finish": "Finish",
     "theDeliveryDeadlineHasPassed": "The delivery deadline has passed.",
     "deliveryIsAtRiskWhat": "Delivery is at risk: what's left in the chain doesn't fit within the deadline.",
     "changeDelivery": "Change delivery",

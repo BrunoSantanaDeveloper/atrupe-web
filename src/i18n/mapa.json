@@ -6493,7 +6493,7 @@
    "src/app/(blank-layout-pages)/assinatura/contratacao/components/ContractingFlow.tsx:309 (propriedade:message)"
   ]
  },
- "assinatura.contratacao.finishUpgrade": {
+ "assinatura.contratacao.finish": {
   "pt": "Concluir evolução",
   "usos": [
    "src/app/(blank-layout-pages)/assinatura/contratacao/components/EvolutionFlow.tsx:318 (jsx)"
@@ -21898,18 +21898,18 @@
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:206 (jsx)"
   ]
  },
- "configuracoes.financeiro.showTheCharges": {
-  "pt": "Mostrar os encargos",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:511 (atributo:tooltip)"
-  ]
- },
- "configuracoes.financeiro.showTotals": {
+ "configuracoes.financeiro.show": {
   "pt": "Mostrar totais",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccounts.tsx:279 (atributo:tooltip)",
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:413 (atributo:tooltip)",
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TopActions.tsx:94 (atributo:tooltip)"
+  ]
+ },
+ "configuracoes.financeiro.show2": {
+  "pt": "Mostrar os encargos",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:511 (atributo:tooltip)"
   ]
  },
  "configuracoes.financeiro.subcategory": {
@@ -33090,7 +33090,7 @@
    "src/app/(app-sidebar)/dashboard/components/SalesOverview.tsx:86 (jsx)"
   ]
  },
- "dashboard.inicio.showAmounts": {
+ "dashboard.inicio.show": {
   "pt": "Mostrar valores",
   "usos": [
    "src/app/(app-sidebar)/dashboard/components/Dashboard.tsx:66 (atributo:tooltip)"
@@ -34784,12 +34784,6 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:413 (atributo:description)"
   ]
  },
- "financeiro.controleDeCaixa.expected": {
-  "pt": "Esperado",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:199 (jsx)"
-  ]
- },
  "financeiro.controleDeCaixa.forAForgottenEntryThere": {
   "pt": "Para um lançamento esquecido, não é preciso reabrir: lance no caixa de hoje com a data certa, e ele aparece como retroativo neste dia.",
   "usos": [
@@ -35206,6 +35200,12 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:319 (jsx)"
   ]
  },
+ "financeiro.controleDeCaixa.waitsFor": {
+  "pt": "Esperado",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:199 (jsx)"
+  ]
+ },
  "financeiro.controleDeCaixa.whatExplainsTheDifference": {
   "pt": "O que explica a diferença?",
   "usos": [
@@ -35612,13 +35612,13 @@
    "src/app/(app-sidebar)/financeiro/_components/transactions/TransactionsTable/TransactionsData.tsx:434 (jsx)"
   ]
  },
- "financeiro.fluxoFinanceiro.showByDueDate": {
+ "financeiro.fluxoFinanceiro.show": {
   "pt": "Mostrar por data de vencimento",
   "usos": [
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TopActions.tsx:77 (atributo:tooltip)"
   ]
  },
- "financeiro.fluxoFinanceiro.showByPaymentDate": {
+ "financeiro.fluxoFinanceiro.show2": {
   "pt": "Mostrar por data de pagamento",
   "usos": [
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TopActions.tsx:78 (atributo:tooltip)"
@@ -43270,7 +43270,7 @@
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:255 (jsx)"
   ]
  },
- "producao.projetos.finishProject": {
+ "producao.projetos.finish": {
   "pt": "Concluir projeto",
   "usos": [
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:238 (jsx)"
@@ -45285,15 +45285,6 @@
    "src/app/sandbox/estados-de-plano/page.tsx:113 (propriedade:label)"
   ]
  },
- "sandbox.estadosDePlano.mostrarOAviso": {
-  "pt": "Mostrar o aviso",
-  "marcas": [
-   "vitrine"
-  ],
-  "usos": [
-   "src/app/sandbox/estados-de-plano/page.tsx:243 (jsx)"
-  ]
- },
  "sandbox.estadosDePlano.nenhumPlanoTemORecurso": {
   "pt": "Nenhum plano tem o recurso",
   "marcas": [
@@ -45418,6 +45409,15 @@
   ],
   "usos": [
    "src/app/sandbox/estados-de-plano/page.tsx:104 (propriedade:label)"
+  ]
+ },
+ "sandbox.estadosDePlano.show": {
+  "pt": "Mostrar o aviso",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/estados-de-plano/page.tsx:243 (jsx)"
   ]
  },
  "sandbox.estadosDePlano.titularPlanoAVenda": {
@@ -51111,22 +51111,22 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:765 (jsx)"
   ]
  },
- "vendas.orcamentos.finishAnyway": {
+ "vendas.orcamentos.finish": {
+  "pt": "Concluir orçamento",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:191 (atributo:title)"
+  ]
+ },
+ "vendas.orcamentos.finish2": {
   "pt": "Concluir mesmo assim?",
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:206 (jsx)"
   ]
  },
- "vendas.orcamentos.finishAnyway2": {
+ "vendas.orcamentos.finish3": {
   "pt": "Concluir mesmo assim",
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:223 (jsx)"
-  ]
- },
- "vendas.orcamentos.finishQuote": {
-  "pt": "Concluir orçamento",
-  "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:191 (atributo:title)"
   ]
  },
  "vendas.orcamentos.finishedOn": {

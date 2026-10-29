@@ -161,7 +161,7 @@
     "project": "Proyecto {number}",
     "jobTicket": "Hoja de producción",
     "releaseProduction": "Liberar producción",
-    "finishProject": "Finalizar proyecto",
+    "finish": "Concluir",
     "theDeliveryDeadlineHasPassed": "El plazo de entrega ya pasó.",
     "deliveryIsAtRiskWhat": "La entrega está en riesgo: lo que falta en la cadena no cabe en el plazo.",
     "changeDelivery": "Cambiar entrega",
