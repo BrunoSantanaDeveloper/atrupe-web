@@ -113,7 +113,10 @@ export function QuotationsData({
   // dias que faltam, e as ações de registrar contato e chamar no WhatsApp.
   // O foco (`foco=`) vira o parâmetro nextContact da API
   const isAwaitingTab = searchParams?.status === 'concluido'
-  const isResumeTab = isAwaitingTab
+  // O acompanhamento comercial é do LITE (CRM-7, 29/10/2026): sem ele, a
+  // aba Aguardando é a lista de antes
+  const followUp = hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
+  const isResumeTab = isAwaitingTab && followUp
   const [contacting, setContacting] = useState<QuotationType | null>(null)
   const { hasAllPermissions } = usePermissions()
   const canViewValues = hasAllPermissions(['values:values:view'])
@@ -125,7 +128,7 @@ export function QuotationsData({
   const filters = {
     ...listParams,
     status,
-    ...(isAwaitingTab ? focusParam(foco as string) : {}),
+    ...(isResumeTab ? focusParam(foco as string) : {}),
   }
 
   const { data, isLoading, isPlaceholderData } = useQuery({
@@ -433,7 +436,7 @@ export function QuotationsData({
                                     </TableCell>
                                   )}
                                   <TableCell className="text-gray-600">
-                                    {isAwaitingTab ? (
+                                    {isResumeTab ? (
                                       <DueDateCell quotation={quotation} />
                                     ) : (
                                       formatToLocaleDate(quotation?.dueDate)
@@ -442,7 +445,7 @@ export function QuotationsData({
                                   <TableCell>
                                     <div className="flex justify-end gap-1">
                                       <TooltipProvider>
-                                        {isAwaitingTab && (
+                                        {isResumeTab && (
                                           <PermissionGate
                                             permissions={[
                                               'sale:quotation:edit',
@@ -544,7 +547,7 @@ export function QuotationsData({
                 </TableBody>
               </Table>
               <ContactDialog
-                open={!!contacting}
+                open={followUp && !!contacting}
                 onOpenChange={(open) => !open && setContacting(null)}
                 quotation={
                   contacting

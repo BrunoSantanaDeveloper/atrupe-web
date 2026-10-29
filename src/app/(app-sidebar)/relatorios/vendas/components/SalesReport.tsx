@@ -11,6 +11,8 @@ import { TopClientsChart } from './TopClientsChart'
 import { LossesByReasonCharts } from './LossesByReasonChart'
 import { ConversionTables } from './ConversionTables'
 import { InactiveClientsTable } from './InactiveClientsTable'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { FEATURES } from '@/consts/features'
 import { TopProductsChart } from './TopProductsChart'
 import { OrdersOriginChart } from './OrdersOriginChart'
 import { SalesEvolutionChart } from './SalesEvolutionChart'
@@ -82,7 +84,10 @@ export function SalesReport({ searchParams }: SearchParamsType) {
 
       {/* Acompanhamento comercial (CRM-6, CRM-4): conversão e recompra */}
       <ConversionTables searchParams={effectiveSearchParams} />
-      <InactiveClientsTable />
+      {/* Clientes sem compra é do acompanhamento comercial (CRM-7) */}
+      <FeatureGate features={[FEATURES.SALES.SALES_FOLLOW_UP]}>
+        <InactiveClientsTable />
+      </FeatureGate>
 
       {/* Table */}
       <SalesTable searchParams={effectiveSearchParams} />

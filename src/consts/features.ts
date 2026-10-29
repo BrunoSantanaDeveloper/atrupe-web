@@ -28,6 +28,9 @@ export const FEATURES = {
     CAN_BILL_ON_DELIVERY_AND_CHECKOUT: 'can_bill_on_delivery_and_checkout',
     // Terceirizado avulso dentro do item, já no START (T-5, 24/10/2026)
     OUTSOURCED_ITEM: 'outsourced_item',
+    // Acompanhamento comercial (CRM, área 13), do LITE em diante (CRM-7,
+    // 29/10/2026)
+    SALES_FOLLOW_UP: 'sales_follow_up',
   },
 
   // Produtos e Produção

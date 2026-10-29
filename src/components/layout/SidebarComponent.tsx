@@ -57,6 +57,7 @@ import type { MainNavigationType, SecondaryNavigationType } from '@/consts/nav'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useFollowUpSummary } from '@/hooks/queries/useFollowUp'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { usePendingPath } from '@/hooks/usePendingPath'
 import { useSession } from 'next-auth/react'
@@ -156,7 +157,9 @@ export function SidebarComponent(props: Props) {
   // O contador de "para retomar" no menu Orçamentos (CRM-3, 27/10/2026):
   // contato até hoje ou proposta vencendo, no escopo do vendedor
   const canSeeQuotations = hasAnyPermission(['sale:quotation:view'])
-  const { data: followUp } = useFollowUpSummary(canSeeQuotations)
+  const { data: followUp } = useFollowUpSummary(
+    canSeeQuotations && hasFeature(FEATURES.SALES.SALES_FOLLOW_UP),
+  )
   const withCounter = <T extends { path?: string; counter?: number }>(
     item: T,
   ): T =>

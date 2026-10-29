@@ -105,8 +105,13 @@ export function SalesSettingsClient() {
                 link: `${defaultPath}/motivos-de-rejeicao-e-cancelamento`,
                 permission: 'sales_settings:rejection_reasons:view',
               },
-              // Acompanhamento comercial (área 13, CRM fase 2): modelos de
-              // mensagem, e-mail diário e cliente sem compra
+            ]
+          : []),
+        // Acompanhamento comercial (área 13, CRM fase 2): modelos de
+        // mensagem, e-mail diário e cliente sem compra; do LITE em diante
+        // pela chave própria (CRM-7, 29/10/2026)
+        ...(hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
+          ? [
               {
                 title: 'Acompanhamento comercial',
                 icon: IconMessageCircle,
