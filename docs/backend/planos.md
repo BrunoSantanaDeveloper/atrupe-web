@@ -24,7 +24,7 @@ O sistema **não pergunta o nome do plano**: cada tela pergunta por uma **chave 
 | Plano | Chaves que entram (além das do plano anterior) | Limites |
 |---|---|---|
 | **START** | nenhuma — tudo o que não depende de chave é START: empresa e sistema, orçamentos, ordens de serviço, financeiro básico, produtos sem composição, clientes e fornecedores simplificados, variações de produto | `max_users: 3` · 1 CNPJ |
-| **LITE** | `sectors_configuration` · `quotation_quick_sale` · `quotation_status_configuration` · `quotation_status_column` · `quotation_rejection_reasons` · `quotation_require_rejection_reason` · `service_order_cancellation_reason` · `service_order_current_phase` · `pdf_show_item_details` · `accounts_receivable` · `accounts_payable` · `cash_control` · `bank_account_cash_control_switch` · `pdv_screen` · `bank_account_creation` · `bank_account_delete` · `bank_account_provision` · `credit_limit_configuration` · `payment_condition_operator_fee` · `payment_difference` · `product_composition` · `product_production_stages` · `delivery_production_tabs` · `delivery_production_stages` · `delivery_stage_status_change` · `client_additional_tabs` · `supplier_additional_tabs` · `client_responsible_management` · `multiple_companies` (mais de um CNPJ) · `transaction_cancel_reasons` (motivo ao cancelar lançamento) | `max_users: 3` |
+| **LITE** | `sectors_configuration` · `quotation_quick_sale` · `quotation_status_configuration` · `quotation_status_column` · `quotation_rejection_reasons` · `quotation_require_rejection_reason` · `service_order_cancellation_reason` · `service_order_current_phase` · `pdf_show_item_details` · `accounts_receivable` · `accounts_payable` · `cash_control` · `bank_account_cash_control_switch` · `pdv_screen` · `bank_account_creation` · `bank_account_delete` · `bank_account_provision` · `credit_limit_configuration` · `payment_condition_operator_fee` · `payment_difference` · `product_composition` · `product_production_stages` · `delivery_production_tabs` · `delivery_production_stages` · `delivery_stage_status_change` · `client_additional_tabs` · `supplier_additional_tabs` · `client_responsible_management` · `multiple_companies` (mais de um CNPJ) · `transaction_cancel_reasons` (motivo ao cancelar lançamento) · `paper_register` (Papéis e contagem de folhas) | `max_users: 3` |
 | **PRO** | `cost_base` (Base de custos, materiais, processos, composição com custo, **rateio por item BC-8**) · `pricing_center` (Precificação) · `basic_management` · `basic_quotations` · `basic_service_orders` | `max_users: 3` |
 | **ELITE** | `production_manager` (Gerenciador, Projetos, Configurações › Produção, frota) · `productivity_tracking` (Produtividade) | `max_users: 3` |
 | **FULL** | `stock_control` (Estoque) · `invoice_entry` (Entrada de nota) · limite de crédito completo (`financial_settings:credit_limits`, hoje desligado "até o FULL") · baixa de material e alteração de venda em produção (ganchos no gerenciador, sem chave ainda) | `max_users: 3` |
@@ -46,6 +46,14 @@ O sistema **não pergunta o nome do plano**: cada tela pergunta por uma **chave 
 3. **Conferir a chave no servidor**, não só na tela (SEG-2, SEG-6): cada rota do contrato da API diz qual chave exige; empresa sem a chave recebe 403 (ou lista vazia, onde o contrato diz).
 4. **Trocar de plano sem recadastro:** subir de plano só acrescenta chaves; descer esconde telas, mas não apaga dados (regra do produto: migração de plano sem recadastro).
 5. **Contas de teste:** uma conta por plano no ambiente de desenvolvimento, com dados fictícios (SEG-5), para o dono do produto aprovar cada versão.
+
+## Gráfica rápida no LITE (13/10/2026)
+
+A gráfica rápida é LITE, e até o LITE o produto tem **preço, não custo**. Materiais, processos com recursos e custo ficam no PRO (`cost_base`).
+
+**Papéis no LITE (decidido em 13/10).** O LITE ganha a tela Cadastros › Papéis: nome, gramatura, formato da folha e área útil, sem custo e sem preço. No banco o papel **é um material** com a forma "folha"; o PRO abre a tela completa de Materiais sobre os mesmos registros. A variação do produto aponta para o papel. O LITE conta folhas (peças por folha e folhas do pedido) no item e na ficha, sem custo.
+
+**O que muda para a API:** chave nova no LITE, `paper_register`; a rota de materiais é a mesma, e sem `cost_base` o servidor aceita só os campos do papel e omite custo e preço (como a busca de venda direta já faz); `/measurement-standard` ganha o tipo "folha" (A4, A3, SRA3, A3+, personalizado); a composição da venda devolve a contagem de folhas sem os campos de custo.
 
 ## O que ainda falta decidir
 
