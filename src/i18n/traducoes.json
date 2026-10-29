@@ -16706,5 +16706,9 @@
  "2ed633f768": {
   "es": "{width} × {height} m",
   "en": "{width} × {height} m"
+ },
+ "7a67a40f34": {
+  "es": "Ninguna cuenta inactiva. La cuenta con movimientos que elimine queda aquí, con el historial guardado.",
+  "en": "No inactive accounts. An account with entries that you remove stays here, with its history kept."
  }
 }

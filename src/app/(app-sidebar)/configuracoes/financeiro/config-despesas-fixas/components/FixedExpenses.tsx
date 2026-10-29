@@ -71,6 +71,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
       <div className="space-y-5">
         <Topbar
           title="Despesas fixas"
+          previousPage="/configuracoes/financeiro"
           tabs={tabs}
           activeTab={searchParams?.status || 'ativos'}
           paramName="status"
