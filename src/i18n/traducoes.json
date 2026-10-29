@@ -16718,5 +16718,13 @@
  "e31d898d13": {
   "es": "Registrar contactos, marcar el próximo contacto y recordar a quién retomar forman parte del seguimiento comercial.",
   "en": "Logging contacts, scheduling the next contact and remembering who to follow up are part of the sales follow-up."
+ },
+ "bc87d5ab14": {
+  "es": "El presupuesto pasa a Rechazados. No se borra: se puede reabrir después.",
+  "en": "The quote moves to Rejected. It is not deleted: it can be reopened later."
+ },
+ "34fff5acd5": {
+  "es": "¿Rechazar presupuesto?",
+  "en": "Reject quote?"
  }
 }
