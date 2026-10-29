@@ -29,7 +29,11 @@ export const personColor = (name: string) => {
 }
 
 export const initialsOf = (name: string) => {
-  const parts = name.trim().split(/\s+/).filter(Boolean)
+  // Só as palavras que começam com letra: "Produção (teste)" dá "P", não "P("
+  const parts = name
+    .trim()
+    .split(/\s+/)
+    .filter((part) => /^\p{L}/u.test(part))
   if (!parts.length) return '?'
   const first = parts[0][0] ?? ''
   const last = parts.length > 1 ? (parts[parts.length - 1][0] ?? '') : ''
