@@ -94,7 +94,7 @@
     "suggestedPriceBreakdown": "Composição do preço sugerido",
     "costCharges": "Custo {costShare} + encargos {charges}",
     "texto": "{label}: {value}",
-    "eachGroupSTotalIs": "O total de cada grupo é a soma dos itens com preço e dos pendentes.",
+    "eachGroupTotalIsThe": "O total de cada grupo é a soma dos itens com preço, dos pendentes e dos que ainda não têm custo.",
     "pendingItem": "item pendente",
     "pendingItems": "itens pendentes",
     "belowCost2": "{belowCost} abaixo do custo"

@@ -39,10 +39,12 @@ test.describe('Processos (PRO)', () => {
   test('ativos e inativos são abas', async ({ page }) => {
     await openProcesses(page)
 
-    await expect(
-      page.getByRole('tab', { name: 'Ativos', exact: true }),
-    ).toHaveAttribute('data-state', 'active')
-    await expect(page.getByRole('tab', { name: 'Inativos' })).toBeVisible()
+    // O contador entra no nome da aba ("Ativos 8") quando há processos
+    await expect(page.getByRole('tab', { name: /^Ativos/ })).toHaveAttribute(
+      'data-state',
+      'active',
+    )
+    await expect(page.getByRole('tab', { name: /^Inativos/ })).toBeVisible()
   })
 
   test('o processo nasce vazio e abre na composição (MS-1)', async ({
@@ -56,10 +58,13 @@ test.describe('Processos (PRO)', () => {
     await dialog.getByRole('button', { name: 'Salvar' }).click()
 
     await expect(page.getByText('Processo criado')).toBeVisible()
-    // Reabre na aba Composição, com a simulação do servidor
+    // Reabre na aba Composição; a simulação fica no botão Simular, separada
+    // da composição (28/10/2026)
+    const editor = page.getByRole('dialog')
     await expect(
-      page.getByRole('dialog').getByText('Simulação').first(),
-    ).toBeVisible()
+      editor.getByRole('tab', { name: /Composição/ }),
+    ).toHaveAttribute('data-state', 'active')
+    await expect(editor.getByRole('button', { name: 'Simular' })).toBeVisible()
     await page.keyboard.press('Escape')
 
     const row = processRow(page, name)

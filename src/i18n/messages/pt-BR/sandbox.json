@@ -235,7 +235,6 @@
     "texto3ComLabelComHint": "3 — Com label · Com hint",
     "texto3bComLabelComHint": "3b — Com label · Com hint (currency-suffix · website · card)",
     "texto4FormularioIntegradoExemploReal": "4 — Formulário integrado (exemplo real)",
-    "dadosDePagamento": "Dados de pagamento",
     "emailExemploDeErro": "Email (exemplo de erro)",
     "enderecoDeEMailInvalido": "Endereço de e-mail inválido."
   },
@@ -318,7 +317,6 @@
     "aquiVaiUmTextoInformando": "Aqui vai um texto informando mais detalhes sobre a ação",
     "alteracoesNaoSalvas": "Alterações não salvas",
     "desejaSalvarOuDescartarAs": "Deseja salvar ou descartar as alterações?",
-    "descartar": "Descartar",
     "desejaDeletarAInformacao": "Deseja deletar a informação?",
     "essaAcaoNaoPodeSer": "Essa ação não pode ser desfeita.",
     "deletar": "Deletar",

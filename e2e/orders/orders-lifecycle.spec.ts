@@ -45,7 +45,7 @@ test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
     // ─────────────────────────────────────────────────────────────────────────
     // 3. Adicionar um Item ao orçamento
     //    Passo A: clicar "Adicionar item"
-    //    Passo B: o dialog abre com a busca e a lista de produtos
+    //    Passo B: escolher um setor na grade
     //    Passo C: selecionar um PRODUTO da lista
     //    Passo D: o dialog exibe um FORMULÁRIO com detalhes do item; clicar "Salvar"
     // ─────────────────────────────────────────────────────────────────────────
@@ -53,15 +53,25 @@ test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
     await expect(addItemBtn).toBeVisible({ timeout: 10000 })
     await addItemBtn.click()
 
-    // Passo B (ORC-1, revisto em 06/10/2026): o dialog "Qual item deseja
-    // adicionar?" já abre com a lista de produtos, com a busca e os setores
-    // como filtro. "Composição", o último botão, é o item montado (ORC-11).
+    // Passo B (23/10/2026, volta atrás no ORC-1): o dialog "Qual item deseja
+    // adicionar?" abre na grade de setores; "Composição", o último botão, é o
+    // item montado (ORC-11). O setor leva à lista, com os setores em abas
     const itemTypeDialog = page.getByRole('dialog', {
       name: /qual item deseja adicionar/i,
     })
     await expect(itemTypeDialog).toBeVisible({ timeout: 8000 })
+    const firstSectorBtn = itemTypeDialog
+      .getByRole('button')
+      .filter({ hasNotText: /composição|fechar|close|cancelar/i })
+      .first()
+    await expect(firstSectorBtn).toBeVisible({ timeout: 15000 })
+    await firstSectorBtn.click()
 
-    // Passo C: clicar na primeira linha-produto (a linha é um botão)
+    // Passo C: na aba "Todos" (o setor pode não ter produto), clicar na
+    // primeira linha-produto (a linha é um botão)
+    await itemTypeDialog
+      .getByRole('tab', { name: 'Todos', exact: true })
+      .click()
     const productRowBtn = itemTypeDialog.locator('tr[role="button"]').first()
     await expect(productRowBtn).toBeVisible({ timeout: 15000 })
     await productRowBtn.click()

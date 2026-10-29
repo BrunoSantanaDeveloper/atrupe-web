@@ -135,7 +135,10 @@ export function CompensateDialog({
 
     const result = await updateItemNew({
       route: `/financial/${type}/compensate/${rowData?.id}`,
-      data: { paidDate: data.paidDate },
+      // O paidDate da compensação é a data em que o dinheiro compensou: a do
+      // recebimento fica na parcela (provisionDate). Antes ia a data do
+      // recebimento e a da compensação se perdia (revisão de 23/10/2026)
+      data: { paidDate: data.compensateDate },
     })
 
     if (!result.success) {

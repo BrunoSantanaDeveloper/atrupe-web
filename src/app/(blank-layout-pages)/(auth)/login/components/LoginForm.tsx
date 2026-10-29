@@ -2,7 +2,7 @@
 
 // React
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/hooks/useRouter'
 
@@ -26,6 +26,8 @@ import { safeRedirectPath } from '@/lib/safeRedirect'
 // Icons
 import { IconArrowRight } from '@tabler/icons-react'
 
+const noSubscription = () => () => {}
+
 export function LoginForm() {
   const [errorState, setErrorState] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -38,8 +40,22 @@ export function LoginForm() {
   // depois de ela digitar a senha.
   const redirectUrl = safeRedirectPath(searchParams.get('to'))
 
+  // Na hidratação vale o valor do servidor (false); quando a tela monta numa
+  // navegação do cliente, já vem true
+  const clientNavigation = useSyncExternalStore(
+    noSubscription,
+    () => true,
+    () => false,
+  )
+  const [arrivedByClientNavigation] = useState(clientNavigation)
+
+  // Chegando por navegação do cliente (troca de conta, link do cadastro), o
+  // layout raiz ainda tem a sessão anterior, e o refresh o renderiza de novo.
+  // Com a página carregada do zero, o servidor acabou de renderizar com os
+  // cookies atuais: o refresh só recriaria o formulário, e o que já tivesse
+  // sido digitado (ou preenchido pelo navegador) sumia quando a resposta chegava.
   useEffect(() => {
-    if (redirectUrl !== '/') router.refresh()
+    if (arrivedByClientNavigation && redirectUrl !== '/') router.refresh()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
