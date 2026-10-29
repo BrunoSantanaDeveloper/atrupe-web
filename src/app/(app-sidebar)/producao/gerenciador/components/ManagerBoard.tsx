@@ -19,6 +19,7 @@ import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import { Badge } from '@/components/ui/badge'
+import { PersonAvatar } from './PersonAvatar'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -68,7 +69,6 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconLock,
-  IconUser,
   IconSearch,
   IconTruck,
   IconPaperclip,
@@ -387,8 +387,21 @@ export function ManagerBoard() {
             )}
           </div>
           {(item.workers.length > 0 || item.assignee) && (
-            <p className="flex items-center gap-1 text-xs text-gray-700">
-              <Icon icon={IconUser} size="sm" />
+            <p className="flex items-center gap-1.5 text-xs text-gray-700">
+              {/* As iniciais de quem está na tarefa (ou da pessoa atribuída),
+                  na cor da pessoa: o mesmo avatar da coluna Colaboradores */}
+              <span className="flex -space-x-1.5">
+                {(item.workers.length ? item.workers : [item.assignee!]).map(
+                  (person) => (
+                    <PersonAvatar
+                      key={person.id}
+                      name={person.name}
+                      size="sm"
+                      className="ring-2 ring-white"
+                    />
+                  ),
+                )}
+              </span>
               {item.workers.length
                 ? `${item.workers.map((worker) => worker.name).join(', ')} na tarefa`
                 : item.assignee?.name}
@@ -566,50 +579,55 @@ export function ManagerBoard() {
                               : 'cursor-grab border-gray-200 bg-white',
                           )}
                         >
-                          <p className="text-sm font-medium text-gray-800">
-                            {worker.name}
-                            {worker.onlyAssigned && (
-                              <span className="font-normal text-gray">
-                                {' '}
-                                · só as dele
-                              </span>
-                            )}
-                          </p>
-                          {worker.working ? (
-                            <>
-                              <p className="text-xs text-success-700">
-                                Em{' '}
-                                {current
-                                  ? `${current.code} ${current.stageName}`
-                                  : 'outra tarefa'}{' '}
-                                desde{' '}
-                                {new Date(
-                                  worker.working.since,
-                                ).toLocaleTimeString('pt-BR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
+                          <div className="flex items-start gap-3">
+                            <PersonAvatar name={worker.name} />
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-gray-800">
+                                {worker.name}
+                                {worker.onlyAssigned && (
+                                  <span className="font-normal text-gray">
+                                    {' '}
+                                    · só as dele
+                                  </span>
+                                )}
                               </p>
-                              <button
-                                type="button"
-                                className="mt-1 text-xs font-medium text-error-700 hover:underline"
-                                onClick={async () => {
-                                  await stopWork({
-                                    id: worker.working?.taskId,
-                                    collaboratorId: worker.id,
-                                  })
-                                  toast.success('Relógio parado')
-                                  await refresh()
-                                }}
-                              >
-                                Parar
-                              </button>
-                            </>
-                          ) : (
-                            <p className="text-xs text-gray">
-                              Disponível · arraste para uma tarefa
-                            </p>
-                          )}
+                              {worker.working ? (
+                                <>
+                                  <p className="text-xs text-success-700">
+                                    Em{' '}
+                                    {current
+                                      ? `${current.code} ${current.stageName}`
+                                      : 'outra tarefa'}{' '}
+                                    desde{' '}
+                                    {new Date(
+                                      worker.working.since,
+                                    ).toLocaleTimeString('pt-BR', {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    })}
+                                  </p>
+                                  <button
+                                    type="button"
+                                    className="mt-1 text-xs font-medium text-error-700 hover:underline"
+                                    onClick={async () => {
+                                      await stopWork({
+                                        id: worker.working?.taskId,
+                                        collaboratorId: worker.id,
+                                      })
+                                      toast.success('Relógio parado')
+                                      await refresh()
+                                    }}
+                                  >
+                                    Parar
+                                  </button>
+                                </>
+                              ) : (
+                                <p className="text-xs text-gray">
+                                  Disponível · arraste para uma tarefa
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )
                     })}
