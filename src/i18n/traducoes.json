@@ -3660,8 +3660,8 @@
   "en": "Already received"
  },
  "3c8f2e776f": {
-  "es": "Mostrar por fecha de pago",
-  "en": "Show by payment date"
+  "es": "Mostrar",
+  "en": "Show"
  },
  "3c8f4245c8": {
   "es": "Ninguna comisión registrada",
@@ -5276,8 +5276,8 @@
   "en": "Released for sale"
  },
  "55976f532f": {
-  "es": "¿Finalizar de todos modos?",
-  "en": "Finish anyway?"
+  "es": "Concluir",
+  "en": "Finish"
  },
  "55aaf5b370": {
   "es": "Nombre del campo {name}",
@@ -5928,8 +5928,8 @@
   "en": "Add equipment with productivity under Assets to choose how the department cost is split among them."
  },
  "5f3ee998eb": {
-  "es": "Mostrar las cargas",
-  "en": "Show the charges"
+  "es": "Mostrar",
+  "en": "Show"
  },
  "5f3f2260bc": {
   "es": "Ítem de costo actualizado",
@@ -7208,8 +7208,8 @@
   "en": "The company moves past improvisation, making sure no job is forgotten, with organized information and a more professional image."
  },
  "733d8bc176": {
-  "es": "Mostrar valores",
-  "en": "Show amounts"
+  "es": "Mostrar",
+  "en": "Show"
  },
  "7355de40dd": {
   "es": "Nombre de la categoría",
@@ -9008,8 +9008,8 @@
   "en": "No materials in inventory"
  },
  "8d6d8d8c74": {
-  "es": "Finalizar de todos modos",
-  "en": "Finish anyway"
+  "es": "Concluir",
+  "en": "Finish"
  },
  "8d89536d0a": {
   "es": "Mejore su plan para acceder a esta funcionalidad.",
@@ -9640,8 +9640,8 @@
   "en": "Unexpected error in the units of measure system."
  },
  "984c976c89": {
-  "es": "Mostrar por fecha de vencimiento",
-  "en": "Show by due date"
+  "es": "Mostrar",
+  "en": "Show"
  },
  "987f705276": {
   "es": "Saldo realizado (Recibido − Pagado)",
@@ -9772,8 +9772,8 @@
   "en": "Create group"
  },
  "9a1952248d": {
-  "es": "Finalizar evolución",
-  "en": "Finish upgrade"
+  "es": "Concluir",
+  "en": "Finish"
  },
  "9a2767353a": {
   "es": "Confirmación para desactivar o activar el producto.",
@@ -9852,8 +9852,8 @@
   "en": "Error opening pricing"
  },
  "9b5efa8bf8": {
-  "es": "Esperado",
-  "en": "Expected"
+  "es": "Espera",
+  "en": "Waits for"
  },
  "9b6d91f304": {
   "es": "Valor de adquisición",
@@ -12376,8 +12376,8 @@
   "en": "Labor by department"
  },
  "c32800eea8": {
-  "es": "Finalizar cotización",
-  "en": "Finish quote"
+  "es": "Concluir",
+  "en": "Finish"
  },
  "c34639636b": {
   "es": "Mostrar imágenes",
@@ -14064,8 +14064,8 @@
   "en": "Already have an account?"
  },
  "dfc7e11a61": {
-  "es": "Finalizar proyecto",
-  "en": "Finish project"
+  "es": "Concluir",
+  "en": "Finish"
  },
  "e01bc9b571": {
   "es": "Vendido en el período",
@@ -15720,8 +15720,8 @@
   "en": "Import supplier spreadsheet"
  },
  "fc9f20d495": {
-  "es": "Mostrar totales",
-  "en": "Show totals"
+  "es": "Mostrar",
+  "en": "Show"
  },
  "fca9c8da58": {
   "es": "Una etapa tiene alerta en la cadena de producción.",
@@ -16692,8 +16692,8 @@
   "en": "Products only"
  },
  "dccc5b8b17": {
-  "es": "Mostrar las variaciones",
-  "en": "Show variations"
+  "es": "Mostrar",
+  "en": "Show"
  },
  "d81bdbb7ef": {
   "es": "Colaborador actualizado",
@@ -16738,5 +16738,77 @@
  "6a5aa02dd4": {
   "es": "Por facturar",
   "en": "To invoice"
+ },
+ "f430f4331b": {
+  "es": "Detener el reloj",
+  "en": "Stop the clock"
+ },
+ "1858578da3": {
+  "es": "Iniciar el reloj",
+  "en": "Start the clock"
+ },
+ "13e7b0545d": {
+  "es": "Concluir",
+  "en": "Finish"
+ },
+ "1e77f1b044": {
+  "es": "Espera",
+  "en": "Waits for"
+ },
+ "6d187597b6": {
+  "es": "Nada aquí.",
+  "en": "Nothing here."
+ },
+ "ae686a5136": {
+  "es": "Cola del día",
+  "en": "Day queue"
+ },
+ "dd0003b5b0": {
+  "es": "Tablero",
+  "en": "Board"
+ },
+ "906dc61756": {
+  "es": "Mostrar",
+  "en": "Show"
+ },
+ "aff5611e35": {
+  "es": "Mostrar",
+  "en": "Show"
+ },
+ "77f3c48519": {
+  "es": "concluidas y canceladas (",
+  "en": "finished and cancelled ("
+ },
+ "3038702f0b": {
+  "es": "· {actualMinutes} registrado",
+  "en": "· {actualMinutes} logged"
+ },
+ "70c9a606ee": {
+  "es": "Gestor del sector",
+  "en": "Sector manager"
+ },
+ "5e567efd83": {
+  "es": "1 tarea abierta",
+  "en": "1 open task"
+ },
+ "ec1bd2f37e": {
+  "es": "{open} tareas abiertas",
+  "en": "{open} open tasks"
+ },
+ "fa083a641b": {
+  "es": "1 con alerta",
+  "en": "1 with alert"
+ },
+ "fbbde6b4e9": {
+  "es": "{alerts} con alerta",
+  "en": "{alerts} with alert"
+ },
+ "bf488927ef": {
+  "es": "Ningún gestor configurado. Cree uno por sector en Configuración › Producción.",
+  "en": "No manager configured. Create one per sector in Settings › Production."
+ },
+ "a35364b3c9": {
+  "es": "Vincule su usuario a un colaborador",
+  "en": "Link your user to a collaborator"
  }
 }

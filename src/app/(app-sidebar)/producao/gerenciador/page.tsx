@@ -1,4 +1,4 @@
-import { ManagerBoard } from './components/ManagerBoard'
+import { ManagersHome } from './components/ManagersHome'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -28,7 +28,7 @@ export default function ProductionBoardPage() {
           pageTitle: true,
         }}
       >
-        <ManagerBoard />
+        <ManagersHome />
       </FeatureGate>
     </PermissionGate>
   )
