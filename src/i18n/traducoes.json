@@ -16726,5 +16726,13 @@
  "34fff5acd5": {
   "es": "¿Rechazar presupuesto?",
   "en": "Reject quote?"
+ },
+ "1ef19d608c": {
+  "es": "Ciérrela, contando el cajón, para volver a recibir: no se registra nada al día siguiente con la caja anterior abierta.",
+  "en": "Close it, counting the drawer, to receive again: nothing is recorded the next day while the previous register is open."
+ },
+ "f35382d7bf": {
+  "es": "La caja n.º",
+  "en": "Register no."
  }
 }
