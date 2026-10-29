@@ -72,6 +72,9 @@ git checkout -b visual-<tela>     # ex.: visual-processos
 
 - Um pull request por tela, **para `visual-2026-11`**. Nunca para `correcoes-homolog-2026-10-22`, `main` ou o repositório do Bruno.
 - Durante a viagem, você mesmo junta os seus pull requests em `visual-2026-11`. Na volta, o Maicol revisa a branch inteira e a junta à de trabalho.
+- **O que você faz é uma proposta de layout.** Ela vai ter ajustes na revisão do Maicol antes de qualquer coisa ir para o Bruno. Por isso a branch separada: nada da `visual-2026-11` chega ao homolog sem essa revisão.
+- **Uma vez por semana, traga a branch de trabalho para a sua:** `git checkout visual-2026-11 && git merge origin/correcoes-homolog-2026-10-22`. As correções continuam entrando lá durante a viagem; sem isso, o merge na volta conflita nas telas em que vocês dois mexeram.
+- **O homolog está atrás do código.** O front local chama rotas que o servidor de desenvolvimento só ganha com os próximos patches do backend: hoje, editar o terceirizado avulso no orçamento, o preço sugerido em lote nos materiais e o acompanhamento comercial do LITE (que some da tela até o servidor ter a chave `sales_follow_up`). Não são erros de visual; não tente corrigir.
 - As telas que podem receber o visual estão em `openspec/telas-para-o-visual.md`. Dúvidas de regra vão para a tabela no fim desse arquivo.
 - Commits no padrão `tipo(área): o que mudou`, em português. Exemplos: `fix(processos): …`, `feat(orçamentos): …`, `style(precificação): …`.
 - O commit roda o `eslint --fix` nos arquivos alterados (husky e lint-staged).
