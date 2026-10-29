@@ -8,11 +8,11 @@ import {
 
 export type ThemeValue = 'light' | 'dark' | 'system'
 
-// Os seletores de tema (menu do usuário no computador e menu lateral no
-// celular) ficam escondidos até a mudança tema-claro-escuro (design/openspec)
-// ser arquivada: o tema escuro ainda tem tarefas de verificação abertas. Até
-// lá vale o claro (src/contexts/themeProvider.tsx)
-export const THEME_SWITCHER = false as boolean
+// Seletores de tema (menu do usuário no computador e menu lateral no celular)
+// ligados em 29/10/2026. O padrão continua o claro: só fica escuro quem
+// escolher. Pendente na mudança tema-claro-escuro (design/openspec): a
+// legibilidade das séries dos gráficos e dos controles nativos no escuro
+export const THEME_SWITCHER = true as boolean
 
 // Opções do seletor de tema, na ordem em que aparecem
 // (menu do usuário no computador e menu lateral no celular)
