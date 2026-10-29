@@ -39,233 +39,73 @@ export type UnitOfMeasure = {
 }
 
 /**
- * Formata uma medida individual com base no tipo de unidade
+ * Número de medida como se lê: vírgula decimal e até três casas, sem zeros
+ * à direita (0,5 · 1,25 · 2).
  */
-export function formatMeasurementValue(
-  value: number | null | undefined,
-  unitKind: string,
-  showUnit = true,
-): string {
-  if (!value || value === 0) return '-'
-
-  let formattedValue: string
-  let unit: string
-
-  switch (unitKind?.toUpperCase()) {
-    case 'AREA': {
-      // Área já deve vir calculada em mm², converter para m²
-      const areaInM2 = value / 1_000_000 // mm² para m²
-      formattedValue = areaInM2.toFixed(3).replace(/\.?0+$/, '')
-      unit = 'm²'
-      break
-    }
-
-    case 'LENGTH': {
-      // Comprimento em mm, exibir em metros
-      const lengthInM = millimetersToMeters(value)
-      formattedValue = lengthInM.toFixed(3).replace(/\.?0+$/, '')
-      unit = 'm'
-      break
-    }
-
-    case 'CAPACITY': {
-      // Volume em ml, exibir em litros
-      const volumeInL = millilitersToLiters(value)
-      formattedValue = volumeInL.toFixed(2).replace(/\.?0+$/, '')
-      unit = 'L'
-      break
-    }
-
-    case 'WEIGHT': {
-      // Peso em mg, exibir em kg
-      const weightInKg = milligramsToKilograms(value)
-      formattedValue = weightInKg.toFixed(3).replace(/\.?0+$/, '')
-      unit = 'kg'
-      break
-    }
-
-    case 'DISTANCE': {
-      // Distância em metros, exibir em km
-      const distanceInKm = metersToKilometers(value)
-      formattedValue = distanceInKm.toFixed(3).replace(/\.?0+$/, '')
-      unit = 'km'
-      break
-    }
-
-    case 'DURATION': {
-      // Duração em segundos, exibir em HH:MM:SS
-      formattedValue = secondsToTimeString(value)
-      unit = 'h'
-      break
-    }
-
-    case 'UNITY':
-    default: {
-      // Unidade simples
-      formattedValue = value.toString()
-      unit = 'un'
-      break
-    }
-  }
-
-  return showUnit ? `${formattedValue} ${unit}` : formattedValue
+export function formatMeasureNumber(value: number): string {
+  return value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 }
 
 /**
- * Gera o detalhamento das quantidades para exibição na tabela
- * Formato: [Qtd Item] x [Qtd Composition] x [Dimensões da unidade]
- * Exemplo: 3x2x3x3 (para área), 3x2x2 (para volume)
- */
-export function generateQuantityDetails(
-  itemQuantity: number,
-  composition: {
-    quantity?: number | null
-    originalQuantity?: number | null
-  } & MeasurementValues,
-): string {
-  const compositionQty =
-    composition.quantity || composition.originalQuantity || 1
-
-  // Usar unitKind da API
-  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
-
-  let dimensionDetails = ''
-
-  switch (unitKind) {
-    case 'AREA':
-      if (composition.width && composition.height) {
-        const widthM = millimetersToMeters(composition.width)
-        const heightM = millimetersToMeters(composition.height)
-        dimensionDetails = `x${widthM}x${heightM}`
-      }
-      break
-
-    case 'LENGTH':
-      if (composition.length) {
-        const lengthM = millimetersToMeters(composition.length)
-        dimensionDetails = `x${lengthM}`
-      }
-      break
-
-    case 'CAPACITY':
-      if (composition.volume) {
-        const volumeL = millilitersToLiters(composition.volume)
-        dimensionDetails = `x${volumeL}`
-      }
-      break
-
-    case 'WEIGHT':
-      if (composition.weight) {
-        const weightKg = milligramsToKilograms(composition.weight)
-        dimensionDetails = `x${weightKg}`
-      }
-      break
-
-    case 'DISTANCE':
-      if (composition.distance) {
-        const distanceKm = metersToKilometers(composition.distance)
-        dimensionDetails = `x${distanceKm}`
-      }
-      break
-
-    case 'DURATION':
-      if (composition.duration) {
-        const timeStr = secondsToTimeString(composition.duration)
-        dimensionDetails = `x${timeStr}`
-      }
-      break
-
-    case 'UNITY':
-    default:
-      // Para unidade simples, sem dimensões extras
-      break
-  }
-
-  return `${itemQuantity}x${compositionQty}${dimensionDetails}`
-}
-
-/**
- * Gera o detalhamento das medidas no formato correto para a tabela
- * Formato: [Qtd Item] x [Qtd Composition] x [Dimensões]
- * Exemplo: 3x2x3x3 para área, 3x2x2 para volume
+ * Detalhamento da linha: quantidade e medida de cada unidade, no padrão do
+ * sistema (design.md §18): "4 un · 1 × 0,5 m", "2 un · 3 m", "1 un".
+ * Antes saía "4 un 1x0.5", com ponto decimal e sem a unidade da medida.
  */
 export function generateFormattedQuantityDetails(
   composition: {
     quantity?: number | null
     originalQuantity?: number | null
   } & MeasurementValues,
-  // itemQuantity?: number,
 ): string {
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
-
-  // Usar unitKind da API
+  const num = formatMeasureNumber
   const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
 
-  // let details = `${itemQuantity}x${compositionQty}`
-  let details = `${compositionQty} un `
+  const area =
+    composition.width && composition.height
+      ? `${num(millimetersToMeters(composition.width))} × ${num(millimetersToMeters(composition.height))} m`
+      : ''
+  const length = composition.length
+    ? `${num(millimetersToMeters(composition.length))} m`
+    : ''
 
+  let measure = ''
   switch (unitKind) {
     case 'AREA':
-      if (composition.width && composition.height) {
-        const widthM = millimetersToMeters(composition.width)
-        const heightM = millimetersToMeters(composition.height)
-        details += `${widthM}x${heightM}`
-      }
+      measure = area
       break
-
     case 'LENGTH':
-      if (composition.length) {
-        const lengthM = millimetersToMeters(composition.length)
-        details += `${lengthM} m`
-      }
+      measure = length
       break
-
     case 'CAPACITY':
-      if (composition.volume) {
-        const volumeL = millilitersToLiters(composition.volume)
-        details += `${volumeL} l`
-      }
+      if (composition.volume)
+        measure = `${num(millilitersToLiters(composition.volume))} l`
       break
-
     case 'WEIGHT':
-      if (composition.weight) {
-        const weightKg = milligramsToKilograms(composition.weight)
-        details += `${weightKg} kg`
-      }
+      if (composition.weight)
+        measure = `${num(milligramsToKilograms(composition.weight))} kg`
       break
-
     case 'DISTANCE':
-      if (composition.distance) {
-        const distanceKm = metersToKilometers(composition.distance)
-        details += `${distanceKm} km`
-      }
+      if (composition.distance)
+        measure = `${num(metersToKilometers(composition.distance))} km`
       break
-
     case 'DURATION':
-      if (composition.duration) {
-        const timeStr = secondsToTimeString(composition.duration)
-        details += `${timeStr}`
-      }
+      if (composition.duration)
+        measure = secondsToTimeString(composition.duration)
       break
-
     case 'UNITY':
     default:
       // Unidade simples também pode trazer a medida do arquivo: é assim que a
       // venda vem do sistema legado — cobrada por unidade, com o tamanho
       // anotado na linha. Sem isto a medida existe no banco e não aparece em
       // lugar nenhum: nem na tela do documento, nem na proposta impressa.
-      if (composition.width && composition.height) {
-        const widthM = millimetersToMeters(composition.width)
-        const heightM = millimetersToMeters(composition.height)
-        details += `${widthM}x${heightM}`
-      } else if (composition.length) {
-        details += `${millimetersToMeters(composition.length)} m`
-      }
+      measure = area || length
       break
   }
 
-  return details
+  const quantity = `${num(compositionQty)} un`
+  return measure ? `${quantity} · ${measure}` : quantity
 }
 
 /**
@@ -305,108 +145,6 @@ function getUnitCodeFromKind(unitKind: string): string {
     default:
       return 'un'
   }
-}
-
-/**
- * Gera o detalhamento das medidas para exibição na tabela (versão antiga)
- * Mantida para compatibilidade
- */
-export function generateMeasurementDetails(
-  composition: {
-    quantity?: number | null
-    unitOfMeasure?: UnitOfMeasure
-  } & MeasurementValues,
-): string {
-  if (!composition.unitOfMeasure) return '-'
-
-  const { unitOfMeasure, quantity = 1 } = composition
-  const unitKind = unitOfMeasure.kind?.toUpperCase()
-
-  // Para quantidade simples, mostrar apenas a quantidade
-  if (unitKind === 'UNITY' || !unitKind) {
-    return `${quantity} ${unitCodeLabel(unitOfMeasure.code)}`
-  }
-
-  const details: string[] = []
-
-  switch (unitKind) {
-    case 'AREA':
-      // Para área, mostrar largura x altura
-      if (composition.width && composition.height) {
-        const width = formatMeasurementValue(composition.width, 'LENGTH', false)
-        const height = formatMeasurementValue(
-          composition.height,
-          'LENGTH',
-          false,
-        )
-        details.push(`${quantity}un ${width} x ${height}m`)
-      }
-      break
-
-    case 'LENGTH':
-      // Para comprimento, mostrar a medida linear
-      if (composition.length) {
-        const length = formatMeasurementValue(
-          composition.length,
-          'LENGTH',
-          false,
-        )
-        details.push(`${quantity}un ${length}m`)
-      }
-      break
-
-    case 'CAPACITY':
-      // Para volume, mostrar a capacidade
-      if (composition.volume) {
-        const volume = formatMeasurementValue(
-          composition.volume,
-          'CAPACITY',
-          false,
-        )
-        details.push(`${quantity}un ${volume}L`)
-      }
-      break
-
-    case 'WEIGHT':
-      // Para peso, mostrar o peso unitário
-      if (composition.weight) {
-        const weight = formatMeasurementValue(
-          composition.weight,
-          'WEIGHT',
-          false,
-        )
-        details.push(`${quantity}un ${weight}kg`)
-      }
-      break
-
-    case 'DISTANCE':
-      // Para distância, mostrar a distância
-      if (composition.distance) {
-        const distance = formatMeasurementValue(
-          composition.distance,
-          'DISTANCE',
-          false,
-        )
-        details.push(`${quantity}un ${distance}km`)
-      }
-      break
-
-    case 'DURATION':
-      // Para duração, mostrar o tempo
-      if (composition.duration) {
-        const duration = formatMeasurementValue(
-          composition.duration,
-          'DURATION',
-          false,
-        )
-        details.push(`${quantity}un ${duration}`)
-      }
-      break
-  }
-
-  return details.length > 0
-    ? details.join(', ')
-    : `${quantity} ${unitCodeLabel(unitOfMeasure.code)}`
 }
 
 /**

@@ -140,6 +140,7 @@ export function EditEmployeeDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries()
+      toast.success('Colaborador atualizado')
       handleOpenChange(false)
     },
     onError: (error) => {

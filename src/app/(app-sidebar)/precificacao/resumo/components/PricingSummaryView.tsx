@@ -288,8 +288,8 @@ export function PricingSummaryView() {
           <div>
             <CardTitle>Precificação por grupo</CardTitle>
             <CardDescription>
-              O total de cada grupo é a soma dos itens com preço e dos
-              pendentes.
+              O total de cada grupo é a soma dos itens com preço, dos pendentes
+              e dos que ainda não têm custo.
             </CardDescription>
           </div>
           {pendingGroup && (
@@ -334,6 +334,12 @@ export function PricingSummaryView() {
                       <span className="text-gray">Pendentes</span>
                       <span className="text-gray-900">{group.pending}</span>
                     </div>
+                    {group.noCost > 0 && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray">Sem custo</span>
+                        <span className="text-gray-900">{group.noCost}</span>
+                      </div>
+                    )}
                     {group.belowCost > 0 && (
                       <Badge variant="errorLight">
                         {group.belowCost} abaixo do custo

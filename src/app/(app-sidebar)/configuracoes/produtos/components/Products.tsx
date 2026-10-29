@@ -262,7 +262,11 @@ export function Products({ searchParams }: SearchParamsType) {
             </TooltipProvider>
           }
         />
-        <FiscalPendenciasAlert />
+        {/* As pendências são da emissão: sem o módulo, a API recusa a rota */}
+        {hasFiscalModule() &&
+          hasAllPermissions(['nota_fiscal:config:view']) && (
+            <FiscalPendenciasAlert />
+          )}
 
         <div>
           <Card>

@@ -16694,5 +16694,17 @@
  "dccc5b8b17": {
   "es": "Mostrar las variaciones",
   "en": "Show variations"
+ },
+ "d81bdbb7ef": {
+  "es": "Colaborador actualizado",
+  "en": "Employee updated"
+ },
+ "a6199cf9ab": {
+  "es": "El total de cada grupo es la suma de los ítems con precio, de los pendientes y de los que todavía no tienen costo.",
+  "en": "Each group total is the sum of priced items, pending items and items that have no cost yet."
+ },
+ "2ed633f768": {
+  "es": "{width} × {height} m",
+  "en": "{width} × {height} m"
  }
 }
