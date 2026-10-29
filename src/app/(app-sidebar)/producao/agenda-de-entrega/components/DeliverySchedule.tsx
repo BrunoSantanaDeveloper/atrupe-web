@@ -65,13 +65,17 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
     {
       value: 'FINISHED',
       tab: 'faturamento',
-      label: 'Faturamento',
+      // O serviço pronto que ainda não tem cobrança: a venda faturada na
+      // aprovação vai direto a Finalizados (29/10/2026). "A faturar", como
+      // "A receber" e "A pagar" no menu Financeiro
+      label: 'A faturar',
       count: totals?.faturamento,
     },
     {
       value: '',
       tab: 'todos',
-      label: 'Todos os ativos',
+      // Em produção e em entrega juntos: nem o pronto nem o encerrado
+      label: 'Em andamento',
       count: totals?.todos,
     },
     {
