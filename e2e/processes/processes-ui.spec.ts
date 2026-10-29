@@ -58,10 +58,13 @@ test.describe('Processos (PRO)', () => {
     await dialog.getByRole('button', { name: 'Salvar' }).click()
 
     await expect(page.getByText('Processo criado')).toBeVisible()
-    // Reabre na aba Composição, com a simulação do servidor
+    // Reabre na aba Composição; a simulação fica no botão Simular, separada
+    // da composição (28/10/2026)
+    const editor = page.getByRole('dialog')
     await expect(
-      page.getByRole('dialog').getByText('Simulação').first(),
-    ).toBeVisible()
+      editor.getByRole('tab', { name: /Composição/ }),
+    ).toHaveAttribute('data-state', 'active')
+    await expect(editor.getByRole('button', { name: 'Simular' })).toBeVisible()
     await page.keyboard.press('Escape')
 
     const row = processRow(page, name)
