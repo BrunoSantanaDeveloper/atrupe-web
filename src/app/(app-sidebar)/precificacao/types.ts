@@ -20,6 +20,7 @@ export type PricingGroupSummary = {
   total: number
   priced: number
   pending: number
+  noCost: number
   belowCost: number
 }
 

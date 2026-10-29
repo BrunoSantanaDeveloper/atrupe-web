@@ -68,6 +68,7 @@ import {
   calculateTotalQuantity,
   calculateItemDisplayUnitValue,
   generateFormattedQuantityDetails,
+  formatMeasureNumber,
 } from '@/lib/quotation-display-utils'
 
 // Actions
@@ -828,10 +829,7 @@ export function QuotationItems({ data }: Props) {
                       </TableCell>
                       <TableCell className="py-4 text-sm text-gray">
                         {item.width && item.height
-                          ? `${item.width} x ${item.height} m`.replace(
-                              /\./g,
-                              ',',
-                            )
+                          ? `${formatMeasureNumber(item.width)} × ${formatMeasureNumber(item.height)} m`
                           : '-'}
                       </TableCell>
                       <TableCell className="py-4 text-sm text-gray text-nowrap">

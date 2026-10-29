@@ -16,7 +16,6 @@ import {
   IconRoute,
   IconTruckDelivery,
   IconMessageCircle,
-  IconCoin,
 } from '@tabler/icons-react'
 
 // Hooks / Consts
@@ -81,20 +80,6 @@ export function SalesSettingsClient() {
                 description:
                   'Pule o cadastro do orçamento e caia direto na escolha do item.',
                 link: `${defaultPath}/venda-rapida`,
-                permission: 'sales_settings:series:view',
-              },
-            ]
-          : []),
-        // Venda mínima por item (GR-4, 27/10/2026), do LITE em diante, junto
-        // da quantidade mínima do produto
-        ...(hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
-          ? [
-              {
-                title: 'Venda mínima por item',
-                icon: IconCoin,
-                description:
-                  'O menor valor que um item do orçamento pode ter; abaixo dele, cobra o mínimo.',
-                link: `${defaultPath}/venda-minima`,
                 permission: 'sales_settings:series:view',
               },
             ]

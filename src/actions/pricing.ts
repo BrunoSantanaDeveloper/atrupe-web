@@ -94,6 +94,7 @@ const toGroupSummary = (group: ApiRow): PricingGroupSummary => ({
   total: num(group.total),
   priced: num(group.priced),
   pending: num(group.pending),
+  noCost: num(group.noCost),
   belowCost: num(group.belowCost),
 })
 
@@ -281,7 +282,8 @@ export const updateItemPrice = async ({
 // Aplicar o preço sugerido a vários itens (CP-7, PO 14/10/2026): sem
 // `confirmed`, a API só devolve a prévia; com ele, grava. Produto pelo preço
 // da composição; mão de obra e máquina por custo × markup, como preço
-// variável pelo lucro desejado. Material fica no cadastro dele
+// variável pelo lucro desejado; material também, gravado no cadastro dele
+// (28/10/2026, patch 18 do backend)
 export const applySuggestedPrices = async ({
   group,
   ids,
@@ -293,12 +295,6 @@ export const applySuggestedPrices = async ({
 }) => {
   type Applied = { items: SuggestedPriceItem[]; applied: number }
   const empty: Applied = { items: [], applied: 0 }
-  if (group === 'materials') {
-    return refuse(
-      'O preço do material é gravado no cadastro do material',
-      empty,
-    )
-  }
   const res: ApiResult = await createItemNew({
     route: '/pricing/item/apply-suggested',
     data: { group, ids, confirmed },

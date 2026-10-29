@@ -20,6 +20,9 @@ export type ProductListType = {
   isOutsourced?: boolean
   compositionStatus?: 'DRAFT' | 'RELEASED' | 'PART' | null
   hasVariations?: boolean
+  // As variações, para a lista mostrar sob o produto (LITE part3, item 4).
+  // Preço em centavos; nulo vale o preço do produto
+  variations?: { id: string; name: string; unitPrice: number | null }[]
   fiscalData?: {
     ncm?: string | null
     cest?: string | null

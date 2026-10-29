@@ -104,11 +104,9 @@ export function PricingList({
 }: Props) {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState<PricingItem>()
-  // Os itens marcados para o preço sugerido em lote (fora os materiais,
-  // cujo preço é gravado no cadastro)
+  // Os itens marcados para o preço sugerido em lote
   const [selected, setSelected] = useState<string[]>([])
   const [applying, setApplying] = useState(false)
-  const canApply = group !== 'materials'
   const status = (searchParams?.status as string) || 'todos'
   const search = searchParams?.search || ''
 
@@ -185,19 +183,17 @@ export function PricingList({
               {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
             </CardDescription>
           </div>
-          {canApply ? (
-            <PermissionGate permissions={['cost:pricing:edit']}>
-              <Button
-                variant="neutralOutline"
-                LeftIcon={IconWand}
-                disabled={!selected.length}
-                onClick={() => setApplying(true)}
-              >
-                Aplicar preço sugerido
-                {selected.length ? ` (${selected.length})` : ''}
-              </Button>
-            </PermissionGate>
-          ) : null}
+          <PermissionGate permissions={['cost:pricing:edit']}>
+            <Button
+              variant="neutralOutline"
+              LeftIcon={IconWand}
+              disabled={!selected.length}
+              onClick={() => setApplying(true)}
+            >
+              Aplicar preço sugerido
+              {selected.length ? ` (${selected.length})` : ''}
+            </Button>
+          </PermissionGate>
         </CardHeader>
         <TableFiltersHeader searchParams={searchParams}>
           <Tabs value={status} className="overflow-x-auto">
@@ -229,15 +225,14 @@ export function PricingList({
                 <Table className="min-w-[1000px]">
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      {canApply ? (
-                        <TableHead className="w-[40px]">
-                          <Checkbox
-                            aria-label="Marcar os itens da página"
-                            checked={allSelected}
-                            onCheckedChange={togglePage}
-                          />
-                        </TableHead>
-                      ) : null}
+                      <TableHead className="w-[40px]">
+                        <Checkbox
+                          aria-label="Marcar os itens da página"
+                          checked={allSelected}
+                          onCheckedChange={togglePage}
+                        />
+                      </TableHead>
+
                       <TableHead className="w-[24%] min-w-[200px]">
                         {itemLabel === 'setor' ? 'Setor' : 'Item'}
                       </TableHead>
@@ -261,19 +256,18 @@ export function PricingList({
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableSkeletonRows cols={canApply ? 10 : 9} rows={6} />
+                      <TableSkeletonRows cols={10} rows={6} />
                     ) : (
                       items.map((item) => (
                         <TableRow key={item.id}>
-                          {canApply ? (
-                            <TableCell>
-                              <Checkbox
-                                aria-label={`Marcar ${item.name}`}
-                                checked={selected.includes(item.id)}
-                                onCheckedChange={() => toggle(item.id)}
-                              />
-                            </TableCell>
-                          ) : null}
+                          <TableCell>
+                            <Checkbox
+                              aria-label={`Marcar ${item.name}`}
+                              checked={selected.includes(item.id)}
+                              onCheckedChange={() => toggle(item.id)}
+                            />
+                          </TableCell>
+
                           <TableCell>
                             <p className="font-medium">{item.name}</p>
                             {/* Código e setor podem vir nulos (o grupo de bens
@@ -367,18 +361,17 @@ export function PricingList({
           )}
         </FetchingRegion>
       </Card>
-      {canApply ? (
-        <ApplySuggestedDialog
-          group={group}
-          ids={selected}
-          open={applying}
-          onOpenChange={setApplying}
-          onApplied={() => {
-            setSelected([])
-            queryClient.invalidateQueries({ queryKey: ['pricing-items'] })
-          }}
-        />
-      ) : null}
+      <ApplySuggestedDialog
+        group={group}
+        ids={selected}
+        open={applying}
+        onOpenChange={setApplying}
+        onApplied={() => {
+          setSelected([])
+          queryClient.invalidateQueries({ queryKey: ['pricing-items'] })
+        }}
+      />
+
       <EditPriceModal
         group={group}
         item={editing}

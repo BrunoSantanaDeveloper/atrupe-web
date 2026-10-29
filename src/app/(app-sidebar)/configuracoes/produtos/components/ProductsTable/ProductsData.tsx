@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 
 // Components
 import { TableSkeletonRows } from '@/components/common/TableSkeleton'
@@ -88,9 +88,13 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
   // O filtro de composição vai à API (CP-17), valendo para todas as páginas
-  const { composicao, ...rest } = searchParams
+  const { composicao, ordem, variacoes, ...rest } = searchParams
+  // A lista segue a ordem de cadastro; "Nome" volta à ordem alfabética
+  // (LITE part3, item 4, 28/10/2026)
+  const showVariations = variacoes === 'mostrar'
   const apiParams = {
     ...rest,
+    ...(ordem === 'nome' ? {} : { orderBy: 'createdAt' }),
     ...(showComposition && composicao === 'com'
       ? { hasComposition: 'true' }
       : {}),
@@ -280,124 +284,159 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   />
                 ) : (
                   products.map((product) => (
-                    <TableRow key={product?.id}>
-                      {canConfigureFiscalData && (
-                        <TableCell className="w-10">
-                          <Checkbox
-                            aria-label={`Selecionar ${product?.name}`}
-                            checked={selectedIds.includes(product.id)}
-                            onCheckedChange={(checked) =>
-                              toggleProduct(product.id, checked === true)
-                            }
-                          />
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <p className="font-medium">
-                          {product?.name}
-                          {showComposition && product?.hasComposition && (
-                            <Badge
-                              variant="blueLight"
-                              className="ml-2 align-middle"
-                            >
-                              Com composição
-                            </Badge>
-                          )}
-                          {/* O Produto base do setor (ALT-8): nome com "#" para
-                              ficar na frente; o selo diz o que ele é */}
-                          {/^#?\s*Produto base/i.test(product?.name || '') && (
-                            <Badge
-                              variant="neutralLight"
-                              className="ml-2 align-middle"
-                            >
-                              Base do setor
-                            </Badge>
-                          )}
-                          {product?.isOutsourced && (
-                            <Badge
-                              variant="warningLight"
-                              className="ml-2 align-middle"
-                            >
-                              Terceirizado
-                            </Badge>
-                          )}
-                        </p>
-                        {/* O produto salvo do item montado nasce sem código: ele sai
-                            ao liberar a composição para venda (ORC-11) */}
-                        <p className="text-gray">
-                          {product?.code || 'Sem código'}
-                        </p>
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        <Badge variant="neutralLight">
-                          {product?.sectorName}
-                        </Badge>
-                      </TableCell>
-                      {showNcmColumn && (
-                        <TableCell className="text-gray-600">
-                          {product?.fiscalData?.ncm || (
-                            <span className="text-gray-400">—</span>
-                          )}
-                        </TableCell>
-                      )}
-                      {canSeeValues && (
-                        <TableCell className="text-success-700">
-                          {(() => {
-                            const unitKind =
-                              product?.items?.[0]?.unitKind || 'UNITY'
-                            const visualUnitCost = convertRawToUnitCost(
-                              unitKind,
-                              product?.unitCost || 0,
-                            )
-                            return formatCurrencyToBrl(visualUnitCost)
-                          })()}
-                        </TableCell>
-                      )}
-                      <TableCell>
-                        <div className="flex justify-end gap-1">
-                          <TooltipProvider>
-                            {showComposition && (
-                              <ActionButton
-                                Icon={IconStack2}
-                                tooltip={`Composição de ${product?.name}`}
-                                link={`/configuracoes/produtos/${product?.id}/composicao`}
-                              />
+                    <Fragment key={product?.id}>
+                      <TableRow>
+                        {canConfigureFiscalData && (
+                          <TableCell className="w-10">
+                            <Checkbox
+                              aria-label={`Selecionar ${product?.name}`}
+                              checked={selectedIds.includes(product.id)}
+                              onCheckedChange={(checked) =>
+                                toggleProduct(product.id, checked === true)
+                              }
+                            />
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          <p className="font-medium">
+                            {product?.name}
+                            {showComposition && product?.hasComposition && (
+                              <Badge
+                                variant="blueLight"
+                                className="ml-2 align-middle"
+                              >
+                                Com composição
+                              </Badge>
                             )}
-                            <PermissionGate
-                              permissions={['product_settings:products:edit']}
-                            >
-                              {/* Duplicar: outro produto com os mesmos dados e a
+                            {/* O Produto base do setor (ALT-8): nome com "#" para
+                              ficar na frente; o selo diz o que ele é */}
+                            {/^#?\s*Produto base/i.test(
+                              product?.name || '',
+                            ) && (
+                              <Badge
+                                variant="neutralLight"
+                                className="ml-2 align-middle"
+                              >
+                                Base do setor
+                              </Badge>
+                            )}
+                            {product?.isOutsourced && (
+                              <Badge
+                                variant="warningLight"
+                                className="ml-2 align-middle"
+                              >
+                                Terceirizado
+                              </Badge>
+                            )}
+                          </p>
+                          {/* O produto salvo do item montado nasce sem código: ele sai
+                            ao liberar a composição para venda (ORC-11) */}
+                          <p className="text-gray">
+                            {product?.code || 'Sem código'}
+                          </p>
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          <Badge variant="neutralLight">
+                            {product?.sectorName}
+                          </Badge>
+                        </TableCell>
+                        {showNcmColumn && (
+                          <TableCell className="text-gray-600">
+                            {product?.fiscalData?.ncm || (
+                              <span className="text-gray-400">—</span>
+                            )}
+                          </TableCell>
+                        )}
+                        {canSeeValues && (
+                          <TableCell className="text-success-700">
+                            {(() => {
+                              const unitKind =
+                                product?.items?.[0]?.unitKind || 'UNITY'
+                              const visualUnitCost = convertRawToUnitCost(
+                                unitKind,
+                                product?.unitCost || 0,
+                              )
+                              return formatCurrencyToBrl(visualUnitCost)
+                            })()}
+                          </TableCell>
+                        )}
+                        <TableCell>
+                          <div className="flex justify-end gap-1">
+                            <TooltipProvider>
+                              {showComposition && (
+                                <ActionButton
+                                  Icon={IconStack2}
+                                  tooltip={`Composição de ${product?.name}`}
+                                  link={`/configuracoes/produtos/${product?.id}/composicao`}
+                                />
+                              )}
+                              <PermissionGate
+                                permissions={['product_settings:products:edit']}
+                              >
+                                {/* Duplicar: outro produto com os mesmos dados e a
                                   mesma composição, aberto para edição. Cria um
                                   produto, então pede também "Cria" (CC-9). O
                                   servidor copia fiscal, ST, variações e, com o
                                   plano, composição e faixas; o código ganha "-C"
                                   (liberado pelo PO em 14/10/2026) */}
-                              <PermissionGate
-                                permissions={[
-                                  'product_settings:products:create',
-                                ]}
-                              >
-                                <DuplicateProductButton
-                                  productId={product?.id}
-                                  name={product?.name}
-                                  onDone={(newId) => {
-                                    setSelectedProductId(newId)
+                                <PermissionGate
+                                  permissions={[
+                                    'product_settings:products:create',
+                                  ]}
+                                >
+                                  <DuplicateProductButton
+                                    productId={product?.id}
+                                    name={product?.name}
+                                    onDone={(newId) => {
+                                      setSelectedProductId(newId)
+                                      setOpenDialog('edit-product')
+                                    }}
+                                  />
+                                </PermissionGate>
+                                <NewProductTriggerButton
+                                  editMode
+                                  onOpenChange={() => {
                                     setOpenDialog('edit-product')
+                                    setSelectedProductId(product?.id)
                                   }}
                                 />
                               </PermissionGate>
-                              <NewProductTriggerButton
-                                editMode
-                                onOpenChange={() => {
-                                  setOpenDialog('edit-product')
-                                  setSelectedProductId(product?.id)
-                                }}
-                              />
-                            </PermissionGate>
-                          </TooltipProvider>
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                            </TooltipProvider>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                      {/* As variações sob o produto, quando pedidas no filtro */}
+                      {showVariations &&
+                        product?.variations?.map((variation) => (
+                          <TableRow
+                            key={variation.id}
+                            className="bg-gray-50/60 hover:bg-gray-50/60"
+                          >
+                            {canConfigureFiscalData && <TableCell />}
+                            <TableCell>
+                              <div className="flex items-center gap-2 pl-4 text-sm text-gray-700">
+                                <span
+                                  aria-hidden
+                                  className="h-4 w-3 rounded-bl border-b border-l border-gray-300"
+                                />
+                                {variation.name}
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              Variação
+                            </TableCell>
+                            {showNcmColumn && <TableCell />}
+                            {canSeeValues && (
+                              <TableCell className="text-sm text-success-700">
+                                {variation.unitPrice === null
+                                  ? 'Preço do produto'
+                                  : formatCurrencyToBrl(variation.unitPrice)}
+                              </TableCell>
+                            )}
+                            <TableCell />
+                          </TableRow>
+                        ))}
+                    </Fragment>
                   ))
                 )}
               </TableBody>

@@ -9,6 +9,7 @@ import { calculatePeriodDates, formatDateToISO } from '@/lib/filter-utils'
 
 // UI
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent } from '@/components/ui/card'
 
 // Components
@@ -35,7 +36,7 @@ import { cn } from '@/lib/utils'
 
 interface Props extends SearchParamsType {}
 
-type FinancialFlowExportType = TransactionListType & {
+export type FinancialFlowExportType = TransactionListType & {
   groupDate?: string
   nature?: {
     id: string
@@ -71,126 +72,127 @@ function getInstallmentExpectedValue(transaction: FinancialFlowExportType) {
   return ((installment?.value || 0) + (installment?.additionalFee || 0)) / 100
 }
 
-const FINANCIAL_FLOW_EXPORT_COLUMNS: ExportColumn<FinancialFlowExportType>[] = [
-  {
-    header: 'Tipo',
-    getValue: (transaction) =>
-      transaction.type === 'receivable' ? 'Receita' : 'Despesa',
-  },
-  {
-    header: 'Pessoa',
-    getValue: getTransactionPerson,
-  },
-  {
-    header: 'Descrição',
-    key: 'description',
-  },
-  {
-    header: 'Natureza',
-    getValue: (transaction) => transaction.nature?.name,
-  },
-  {
-    header: 'Subcategoria',
-    getValue: (transaction) => transaction.subCategory?.name,
-  },
-  {
-    header: 'Status da movimentação',
-    getValue: (transaction) =>
-      FINANCIAL_FLOW_STATUS_LABELS[transaction.status] || transaction.status,
-  },
-  {
-    header: 'Status da parcela',
-    getValue: (transaction) =>
-      FINANCIAL_FLOW_STATUS_LABELS[
-        transaction.currentInstallment?.status || ''
-      ] ||
-      transaction.currentInstallment?.status ||
-      '',
-  },
-  {
-    header: 'Parcela',
-    getValue: (transaction) =>
-      `${transaction.currentInstallment?.installmentNumber || 1} / ${
-        transaction.installmentsQuantity || 1
-      }`,
-  },
-  {
-    header: 'Data agrupada',
-    key: 'groupDate',
-    type: 'date',
-  },
-  {
-    header: 'Vencimento',
-    getValue: (transaction) => transaction.currentInstallment?.dueDate,
-    type: 'date',
-  },
-  {
-    header: 'Data de pagamento',
-    getValue: (transaction) => transaction.currentInstallment?.paymentDate,
-    type: 'date',
-  },
-  {
-    header: 'Data de compensacao',
-    getValue: (transaction) => transaction.currentInstallment?.compensateDate,
-    type: 'date',
-  },
-  {
-    header: 'Forma de pagamento',
-    getValue: (transaction) =>
-      transaction.currentInstallment?.paymentCondition?.name,
-  },
-  {
-    header: 'Conta bancaria',
-    getValue: (transaction) =>
-      transaction.currentInstallment?.bankAccount?.name,
-  },
-  {
-    header: 'Banco',
-    getValue: (transaction) => transaction.currentInstallment?.bank?.name,
-  },
-  {
-    header: 'Valor parcela',
-    type: 'currency',
-    getValue: (transaction) =>
-      (transaction.currentInstallment?.value || 0) / 100,
-  },
-  {
-    header: 'Acrescimo',
-    type: 'currency',
-    getValue: (transaction) =>
-      (transaction.currentInstallment?.additionalFee || 0) / 100,
-  },
-  {
-    header: 'Valor previsto',
-    type: 'currency',
-    getValue: getInstallmentExpectedValue,
-  },
-  {
-    header: 'Valor realizado',
-    type: 'currency',
-    getValue: (transaction) =>
-      (transaction.currentInstallment?.paidValue || 0) / 100,
-  },
-  {
-    header: 'Valor total',
-    type: 'currency',
-    getValue: (transaction) => (transaction.totalValue || 0) / 100,
-  },
-  {
-    header: 'Total realizado',
-    type: 'currency',
-    getValue: (transaction) => (transaction.totalPaid || 0) / 100,
-  },
-  {
-    header: 'Período de referência',
-    key: 'period',
-    type: 'date',
-  },
-  {
-    header: 'Observacoes',
-    key: 'notes',
-  },
-]
+export const FINANCIAL_FLOW_EXPORT_COLUMNS: ExportColumn<FinancialFlowExportType>[] =
+  [
+    {
+      header: 'Tipo',
+      getValue: (transaction) =>
+        transaction.type === 'receivable' ? 'Receita' : 'Despesa',
+    },
+    {
+      header: 'Pessoa',
+      getValue: getTransactionPerson,
+    },
+    {
+      header: 'Descrição',
+      key: 'description',
+    },
+    {
+      header: 'Natureza',
+      getValue: (transaction) => transaction.nature?.name,
+    },
+    {
+      header: 'Subcategoria',
+      getValue: (transaction) => transaction.subCategory?.name,
+    },
+    {
+      header: 'Status da movimentação',
+      getValue: (transaction) =>
+        FINANCIAL_FLOW_STATUS_LABELS[transaction.status] || transaction.status,
+    },
+    {
+      header: 'Status da parcela',
+      getValue: (transaction) =>
+        FINANCIAL_FLOW_STATUS_LABELS[
+          transaction.currentInstallment?.status || ''
+        ] ||
+        transaction.currentInstallment?.status ||
+        '',
+    },
+    {
+      header: 'Parcela',
+      getValue: (transaction) =>
+        `${transaction.currentInstallment?.installmentNumber || 1} / ${
+          transaction.installmentsQuantity || 1
+        }`,
+    },
+    {
+      header: 'Data agrupada',
+      key: 'groupDate',
+      type: 'date',
+    },
+    {
+      header: 'Vencimento',
+      getValue: (transaction) => transaction.currentInstallment?.dueDate,
+      type: 'date',
+    },
+    {
+      header: 'Data de pagamento',
+      getValue: (transaction) => transaction.currentInstallment?.paymentDate,
+      type: 'date',
+    },
+    {
+      header: 'Data de compensacao',
+      getValue: (transaction) => transaction.currentInstallment?.compensateDate,
+      type: 'date',
+    },
+    {
+      header: 'Forma de pagamento',
+      getValue: (transaction) =>
+        transaction.currentInstallment?.paymentCondition?.name,
+    },
+    {
+      header: 'Conta bancaria',
+      getValue: (transaction) =>
+        transaction.currentInstallment?.bankAccount?.name,
+    },
+    {
+      header: 'Banco',
+      getValue: (transaction) => transaction.currentInstallment?.bank?.name,
+    },
+    {
+      header: 'Valor parcela',
+      type: 'currency',
+      getValue: (transaction) =>
+        (transaction.currentInstallment?.value || 0) / 100,
+    },
+    {
+      header: 'Acrescimo',
+      type: 'currency',
+      getValue: (transaction) =>
+        (transaction.currentInstallment?.additionalFee || 0) / 100,
+    },
+    {
+      header: 'Valor previsto',
+      type: 'currency',
+      getValue: getInstallmentExpectedValue,
+    },
+    {
+      header: 'Valor realizado',
+      type: 'currency',
+      getValue: (transaction) =>
+        (transaction.currentInstallment?.paidValue || 0) / 100,
+    },
+    {
+      header: 'Valor total',
+      type: 'currency',
+      getValue: (transaction) => (transaction.totalValue || 0) / 100,
+    },
+    {
+      header: 'Total realizado',
+      type: 'currency',
+      getValue: (transaction) => (transaction.totalPaid || 0) / 100,
+    },
+    {
+      header: 'Período de referência',
+      key: 'period',
+      type: 'date',
+    },
+    {
+      header: 'Observacoes',
+      key: 'notes',
+    },
+  ]
 
 export function FinancialFlow({ searchParams }: Props) {
   const [showTotals, setShowTotals] = useState(false)
@@ -230,6 +232,19 @@ export function FinancialFlow({ searchParams }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasFiltersApplied])
+
+  // Sem período no endereço, a tela põe o mês atual e só então monta. Montar
+  // antes fazia a troca de endereço derrubar as buscas já começadas (contas
+  // e formas de pagamento dos filtros), que ficavam carregando para sempre e
+  // o filtro só mostrava "Todas" (LITE part3, item 1, 28/10/2026)
+  if (!hasFiltersApplied) {
+    return (
+      <div className="space-y-5">
+        <Skeleton className="h-10 w-64" />
+        <Skeleton className="h-[420px] w-full" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-5">

@@ -196,15 +196,19 @@ export const dimensionRuleOptions = (
 // "Acabamento" e "serviço principal" são exemplos para entender a escolha,
 // não um tipo: base ou acabamento é a posição no produto (05/10/2026)
 export const afterBaseObj: {
-  [key in AfterBase]: { label: string; help: string }
+  [key in AfterBase]: { label: string; badge: string; help: string }
 } = {
-  INHERIT: {
-    label: 'Acompanha a base',
-    help: 'Como um acabamento: herda a medida e a quantidade da etapa anterior.',
-  },
+  // Medida própria vem primeiro: é a regra de quem começa um produto (28/10/2026)
   OWN: {
     label: 'Medida própria',
+    badge: 'Medida própria',
     help: 'Como um serviço principal ou uma instalação: pede medida e quantidade ao vendedor, mesmo vindo depois de outra etapa.',
+  },
+  // Era "Acompanha a base", que não se explicava a quem ouvia pela primeira vez
+  INHERIT: {
+    label: 'Usar medida da etapa anterior',
+    badge: 'Medida anterior',
+    help: 'Como um acabamento (bainha, ilhós, laminação): não pede medida ao vendedor; usa a medida e a quantidade da etapa anterior.',
   },
 }
 export const afterBaseOptions = (Object.keys(afterBaseObj) as AfterBase[]).map(

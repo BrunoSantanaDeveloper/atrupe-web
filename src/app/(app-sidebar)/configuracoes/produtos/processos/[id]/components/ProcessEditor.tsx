@@ -28,7 +28,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -42,6 +41,14 @@ import {
 } from '@/components/ui/card'
 
 // Components
+import {
+  Dialog,
+  DialogBody,
+  DialogTitle,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
@@ -78,6 +85,7 @@ import {
 import type { ResourceKind, DimensionRule } from '../../types'
 import { ResourceKindButtons } from '../../../[id]/composicao/components/ResourceKindButtons'
 import { SimulationCard } from '../../../[id]/composicao/components/SimulationCard'
+import { UsualStepsPicker } from './UsualStepsPicker'
 import { ProductFields } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields'
 import { ProductFormulas } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFormulas'
 
@@ -167,7 +175,7 @@ type Dialog =
   | { kind: 'options'; lineId: string }
   | null
 
-export type ProcessSection = 'config' | 'resources' | 'usage'
+export type ProcessSection = 'config' | 'resources' | 'usage' | 'steps'
 
 // O que o rodapé precisa para salvar o card Processo (PAD-5): se há algo
 // pendente e a ação de gravar. O diálogo e a página chamam no Salvar
@@ -186,10 +194,15 @@ export function ProcessEditor({
   embedded = false,
   section,
   onSaveHandle,
+  simulationOpen,
+  onSimulationOpenChange,
 }: {
   id: string
   embedded?: boolean
   section?: ProcessSection
+  // No diálogo, a Simulação abre separada pelo botão das abas
+  simulationOpen?: boolean
+  onSimulationOpenChange?: (open: boolean) => void
   // O diálogo recebe o handle e põe o Salvar no rodapé dele (PAD-5)
   onSaveHandle?: (handle: ProcessSaveHandle | null) => void
 }) {
@@ -546,6 +559,84 @@ export function ProcessEditor({
       ].join(' · ')
     : null
 
+  // A Simulação (PAD-6): o mesmo card do produto. Com a base ligada, as
+  // regras herdadas entram na conta (§9.1)
+  const simulation = (
+    <SimulationCard
+      hideHeader={embedded}
+      idPrefix="process-sim"
+      description="Confira o consumo numa medida. Não grava nada."
+      measure={measure}
+      onMeasureChange={setMeasure}
+      measureLabel={baseMeasure ? 'Medida própria do processo' : undefined}
+      fields={ownFields}
+      measureNote="Nada a informar: a quantidade e a medida vêm da base."
+      results={[
+        { label: 'Custo', value: money(detail.cost) },
+        {
+          label: 'Venda',
+          value: money(detail.sale),
+          tone: 'success',
+        },
+      ]}
+      footer={
+        baseText ? (
+          <p className="text-sm text-gray">Depois da base: {baseText}.</p>
+        ) : undefined
+      }
+    >
+      <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+        <label className="flex items-start gap-3">
+          <Switch
+            className="mt-0.5"
+            checked={!!baseMeasure}
+            onCheckedChange={(checked) =>
+              setBaseMeasure(checked ? { ...block.measure, ...measure } : null)
+            }
+            aria-label="Simular depois de outra etapa"
+          />
+          <span>
+            <span className="block text-sm font-medium text-gray-800">
+              Simular depois de outra etapa
+            </span>
+            <span className="block text-sm text-gray">
+              Aplica as regras da etapa: acompanhar a quantidade da base, usar a
+              medida dela e quantas cabem nela.
+            </span>
+          </span>
+        </label>
+        {baseMeasure && (
+          <div className="grid grid-cols-3 gap-3">
+            {(
+              [
+                ['quantity', 'Qtd. da base', '1'],
+                ['width', 'Larg. da base (m)', '0.01'],
+                ['height', 'Alt. da base (m)', '0.01'],
+              ] as const
+            ).map(([key, label, step]) => (
+              <div key={key} className="space-y-2">
+                <Label htmlFor={`sim-base-${key}`}>{label}</Label>
+                <Input
+                  id={`sim-base-${key}`}
+                  type="number"
+                  min={0}
+                  step={step}
+                  value={baseMeasure[key]}
+                  onChange={(event) =>
+                    setBaseMeasure((current) => ({
+                      ...current!,
+                      [key]: Number(event.target.value) || 0,
+                    }))
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </SimulationCard>
+  )
+
   return (
     <TooltipProvider>
       <div className="space-y-5">
@@ -560,7 +651,7 @@ export function ProcessEditor({
         )}
 
         {/* 1. O que o processo é e como se comporta na venda */}
-        {(show('config') || show('resources')) && (
+        {(show('config') || (!embedded && show('resources'))) && (
           <div
             className={cn(
               'grid grid-cols-1 gap-5',
@@ -661,88 +752,9 @@ export function ProcessEditor({
               </Card>
             )}
 
-            {/* 2. Simulação (PAD-6): o mesmo card do produto. Com a base
-                ligada, as regras herdadas entram na conta (§9.1) */}
-            {(!embedded || show('resources')) && (
-              <SimulationCard
-                idPrefix="process-sim"
-                description="Confira o consumo numa medida. Não grava nada."
-                measure={measure}
-                onMeasureChange={setMeasure}
-                measureLabel={
-                  baseMeasure ? 'Medida própria do processo' : undefined
-                }
-                fields={ownFields}
-                measureNote="Nada a informar: a quantidade e a medida vêm da base."
-                results={[
-                  { label: 'Custo', value: money(detail.cost) },
-                  {
-                    label: 'Venda',
-                    value: money(detail.sale),
-                    tone: 'success',
-                  },
-                ]}
-                footer={
-                  baseText ? (
-                    <p className="text-sm text-gray">
-                      Depois da base: {baseText}.
-                    </p>
-                  ) : undefined
-                }
-              >
-                <div className="space-y-3 rounded-lg border border-gray-200 p-3">
-                  <label className="flex items-start gap-3">
-                    <Switch
-                      className="mt-0.5"
-                      checked={!!baseMeasure}
-                      onCheckedChange={(checked) =>
-                        setBaseMeasure(
-                          checked ? { ...block.measure, ...measure } : null,
-                        )
-                      }
-                      aria-label="Simular depois de outra etapa"
-                    />
-                    <span>
-                      <span className="block text-sm font-medium text-gray-800">
-                        Simular depois de outra etapa
-                      </span>
-                      <span className="block text-sm text-gray">
-                        Aplica as regras da etapa: acompanhar a quantidade da
-                        base, usar a medida dela e quantas cabem nela.
-                      </span>
-                    </span>
-                  </label>
-                  {baseMeasure && (
-                    <div className="grid grid-cols-3 gap-3">
-                      {(
-                        [
-                          ['quantity', 'Qtd. da base', '1'],
-                          ['width', 'Larg. da base (m)', '0.01'],
-                          ['height', 'Alt. da base (m)', '0.01'],
-                        ] as const
-                      ).map(([key, label, step]) => (
-                        <div key={key} className="space-y-2">
-                          <Label htmlFor={`sim-base-${key}`}>{label}</Label>
-                          <Input
-                            id={`sim-base-${key}`}
-                            type="number"
-                            min={0}
-                            step={step}
-                            value={baseMeasure[key]}
-                            onChange={(event) =>
-                              setBaseMeasure((current) => ({
-                                ...current!,
-                                [key]: Number(event.target.value) || 0,
-                              }))
-                            }
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </SimulationCard>
-            )}
+            {/* 2. Simulação (PAD-6): na página, ao lado do card Processo. No
+                diálogo ela abre separada, pelo "Simular" das abas (28/10/2026) */}
+            {!embedded && simulation}
           </div>
         )}
 
@@ -756,6 +768,12 @@ export function ProcessEditor({
                 ele usa, cada um com o seu tipo de cálculo. O produto que
                 incluir o processo acompanha esta montagem.
               </CardDescription>
+              {/* Os valores das linhas são de uma medida: a tela diz qual
+                  (28/10/2026) */}
+              <p className="text-xs text-gray">
+                Quantidade, custo e venda das linhas calculados em {measureText}
+                .{embedded ? ' Para outra medida, use Simular.' : ''}
+              </p>
               {/* Antes de mexer, quem edita sabe o alcance da mudança (CP-21) */}
               {detail.usedIn.length > 0 && (
                 <Badge variant="warningLight" className="w-fit">
@@ -776,7 +794,7 @@ export function ProcessEditor({
                     <Badge variant="neutralLight">{block.sector}</Badge>
                     <Badge variant="blueLight">
                       {detail.meta.afterBase === 'INHERIT'
-                        ? 'Depois de outra etapa, herda a medida da base'
+                        ? 'Depois de outra etapa, usa a medida da etapa anterior'
                         : 'Depois de outra etapa, pede medida própria'}
                     </Badge>
                     <PermissionGate
@@ -1259,73 +1277,41 @@ export function ProcessEditor({
           </Card>
         )}
 
-        {/* 5. No fluxo dos produtos (FL-7): as etapas seguintes usuais são
-            marcadas à mão, num par guardado uma vez e editável dos dois
-            lados. Nada é bloqueado: o não marcado fica em "ver todos" */}
-        {show('usage') && (
+        {/* 5. Etapas anteriores e seguintes (FL-7): sugestões marcadas à
+            mão, num par guardado uma vez e editável dos dois lados. Nada é
+            bloqueado: o não marcado fica em "ver todos". Os dois lados com
+            o mesmo tipo de nome e só o marcado na lista (28/10/2026) */}
+        {show('steps') && (
           <Card>
             <CardHeader>
-              <CardTitle>No fluxo dos produtos</CardTitle>
+              <CardTitle>Etapas anteriores e seguintes</CardTitle>
               <CardDescription>
-                Ao montar um produto, &quot;+ etapa seguinte&quot; mostra
-                primeiro o que está marcado aqui; o resto fica em &quot;ver
-                todos&quot;. Marcar de um lado aparece no outro. Sem marcação,
-                valem os acabamentos do mesmo setor.
+                São sugestões, não uma ordem obrigatória. Ao montar um produto,
+                &quot;+ etapa seguinte&quot; mostra primeiro o que está marcado
+                aqui; o resto fica em &quot;ver todos&quot;. Marcar de um lado
+                aparece no outro. Sem marcação, valem os acabamentos do mesmo
+                setor.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
-              {(
-                [
-                  [
-                    'before',
-                    'Costuma vir depois de',
-                    'Os processos que normalmente vêm antes deste. A dupla face vem depois do adesivo, do PVC e do ACM.',
-                  ],
-                  [
-                    'after',
-                    'Etapas seguintes usuais',
-                    'Os processos que normalmente vêm depois deste. Depois da impressão, o refile e a laminação.',
-                  ],
-                ] as const
-              ).map(([side, label, help]) => (
-                <div key={side} className="space-y-2">
-                  <p className="text-sm font-medium text-gray-800">{label}</p>
-                  <p className="text-xs text-gray">{help}</p>
-                  <div className="max-h-[320px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
-                    {!usualRes ? (
-                      <Skeleton className="h-20 w-full" />
-                    ) : usualRes.data?.[side].length ? (
-                      usualRes.data[side].map((item) => (
-                        <label
-                          key={item.id}
-                          className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-gray-50"
-                        >
-                          <Checkbox
-                            checked={item.usual}
-                            disabled={!canEdit}
-                            aria-label={item.name}
-                            onCheckedChange={(checked) =>
-                              toggleUsual(side, item.id, checked === true)
-                            }
-                          />
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-gray-800">
-                              {item.name}
-                            </span>
-                            <span className="block text-xs text-gray">
-                              {item.sector}
-                            </span>
-                          </span>
-                        </label>
-                      ))
-                    ) : (
-                      <p className="px-2 py-1.5 text-sm text-gray">
-                        Nenhum outro processo cadastrado.
-                      </p>
-                    )}
-                  </div>
-                </div>
-              ))}
+              <UsualStepsPicker
+                label="Etapas anteriores"
+                help="Os processos que costumam vir antes deste. Ex.: a dupla face vem depois do adesivo, do PVC e do ACM."
+                items={usualRes?.data?.before}
+                canEdit={canEdit}
+                onToggle={(otherId, usual) =>
+                  toggleUsual('before', otherId, usual)
+                }
+              />
+              <UsualStepsPicker
+                label="Etapas seguintes"
+                help="Os processos que costumam vir depois deste. Ex.: depois da impressão, o refile e a laminação."
+                items={usualRes?.data?.after}
+                canEdit={canEdit}
+                onToggle={(otherId, usual) =>
+                  toggleUsual('after', otherId, usual)
+                }
+              />
             </CardContent>
           </Card>
         )}
@@ -1366,6 +1352,24 @@ export function ProcessEditor({
         )}
       </div>
 
+      {/* No diálogo do processo a simulação fica separada da composição:
+          abre pelo "Simular" ao lado das abas (28/10/2026) */}
+      {embedded && show('resources') && (
+        <Dialog
+          open={!!simulationOpen}
+          onOpenChange={(open) => onSimulationOpenChange?.(open)}
+        >
+          <DialogContent className="sm:max-w-[640px]">
+            <DialogHeader>
+              <DialogTitle>Simulação · {block.name}</DialogTitle>
+              <DialogDescription>
+                Confira o consumo numa medida. Não grava nada.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogBody>{simulation}</DialogBody>
+          </DialogContent>
+        </Dialog>
+      )}
       <NewLineDialog
         block={dialog?.kind === 'newLine' ? block : undefined}
         initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}

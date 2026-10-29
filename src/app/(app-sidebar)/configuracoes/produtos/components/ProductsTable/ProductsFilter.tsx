@@ -68,6 +68,30 @@ export function ProductsFilter({ searchParams }: SearchParamsType) {
         value={searchParams?.categoryId || 'all'}
         onChange={(value) => set('categoryId', String(value))}
       />
+      {/* LITE part3, item 4 (28/10/2026): a ordem de cadastro por padrão e
+          as variações sob o produto só quando pedidas */}
+      <SelectBasic
+        name="ordem"
+        label="Ordem"
+        className="w-full sm:w-[200px]"
+        options={[
+          { value: 'all', label: 'Ordem de cadastro' },
+          { value: 'nome', label: 'Nome (A–Z)' },
+        ]}
+        value={searchParams?.ordem || 'all'}
+        onChange={(value) => set('ordem', String(value))}
+      />
+      <SelectBasic
+        name="variacoes"
+        label="Variações"
+        className="w-full sm:w-[220px]"
+        options={[
+          { value: 'all', label: 'Só os produtos' },
+          { value: 'mostrar', label: 'Mostrar as variações' },
+        ]}
+        value={searchParams?.variacoes || 'all'}
+        onChange={(value) => set('variacoes', String(value))}
+      />
       <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
         <SelectBasic
           name="composicao"

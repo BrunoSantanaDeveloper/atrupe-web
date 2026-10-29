@@ -25,11 +25,18 @@ import {
 import { SearchParamsType } from '@/types/coreTypes'
 
 interface Props extends SearchParamsType {
+  // Contas a receber e a pagar passam a permissão de ver a tela delas
+  viewPermissions?: string[]
   showTotals: boolean
   setShowTotals: Dispatch<SetStateAction<boolean>>
 }
 
-export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
+export function TopActions({
+  showTotals,
+  setShowTotals,
+  searchParams,
+  viewPermissions = ['financial:flow:view'],
+}: Props) {
   const router = useRouter()
 
   const searchParamsObject = new URLSearchParams(searchParams)
@@ -52,7 +59,7 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
       <TooltipProvider>
         {/* EC-23: estes três só mudam a forma de ver a lista — não alteram
             dado nenhum, então bastam a permissão de visualizar */}
-        <PermissionGate permissions={['financial:flow:view']}>
+        <PermissionGate permissions={viewPermissions}>
           <ActionButton
             tooltip={
               searchParams.sort === 'asc'

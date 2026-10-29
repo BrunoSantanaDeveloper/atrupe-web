@@ -95,7 +95,7 @@ function ProcessRow({
         <span className="block text-xs text-gray">{process.sector}</span>
       </span>
       {process.afterBase === 'INHERIT' && (
-        <Badge variant="neutralLight">{afterBaseObj.INHERIT.label}</Badge>
+        <Badge variant="neutralLight">{afterBaseObj.INHERIT.badge}</Badge>
       )}
     </button>
   )
