@@ -90,6 +90,7 @@ import {
   getItemOld,
   updateItemNew,
   getData,
+  getDataOld,
 } from '@/actions/_cruds'
 
 // Hooks
@@ -307,7 +308,7 @@ function NewProductModal({
     name: 'items',
   })
 
-  const { handleSubmit, control, reset, watch } = form
+  const { handleSubmit, control, reset, watch, setError } = form
 
   useEffect(() => {
     if (editMode) return
@@ -329,6 +330,23 @@ function NewProductModal({
     setPendingTiers([])
     items.replace(defaultItemFields)
     fiscalForm.reset(defaultFiscalDataValues)
+  }
+
+  // O código é único na empresa, inclusive entre os inativos, que a lista
+  // esconde: a API só diz "código já existe", e quem cadastrava não achava o
+  // produto que o usa (Lite 4, terceirizado, 29/10/2026)
+  const codeOwner = async (code: string) => {
+    for (const status of ['ACTIVE', 'INACTIVE']) {
+      const res = await getDataOld({
+        route: 'productRoute',
+        filters: { search: code, status, limit: '20' },
+      })
+      const owner = (
+        (res?.data ?? []) as { name: string; code: string }[]
+      ).find((item) => item.code?.toUpperCase() === code.toUpperCase())
+      if (owner) return { name: owner.name, inactive: status === 'INACTIVE' }
+    }
+    return null
   }
 
   const onSubmit = async (data: NewProductsFormType) => {
@@ -499,8 +517,21 @@ function NewProductModal({
 
       await queryClient.invalidateQueries()
     } catch (error) {
+      const message = error instanceof Error ? error.message : ''
+      if (/código.*já existe/i.test(message)) {
+        const owner = await codeOwner(data.code)
+        const text = owner
+          ? owner.inactive
+            ? `O código ${data.code} é do produto ${owner.name}, que está inativo. Use outro código ou reative esse produto.`
+            : `O código ${data.code} é do produto ${owner.name}. Use outro código.`
+          : `O código ${data.code} já é usado por outro produto. Use outro código.`
+        setActiveTab('general')
+        setError('code', { message: text })
+        toast.error(text)
+        return
+      }
       toast.error(
-        `Erro ao ${editMode ? 'editar' : 'cadastrar'} produto: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
+        `Erro ao ${editMode ? 'editar' : 'cadastrar'} produto: ${message || 'Erro desconhecido'}`,
       )
     }
   }
