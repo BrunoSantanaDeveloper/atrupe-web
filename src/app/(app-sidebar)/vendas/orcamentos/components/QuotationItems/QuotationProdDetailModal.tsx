@@ -47,7 +47,6 @@ import {
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
 import type { UnitKind } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 import { unitSymbol } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
-import { getSalesSettings } from '@/actions/sales-settings'
 import {
   UnitCostInput,
   convertUnitCostToRaw,
@@ -59,7 +58,7 @@ import {
 } from './productSchema'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
-import { parseCurrencyToBrl, cn, formatCurrencyToBrl } from '@/lib/utils'
+import { parseCurrencyToBrl, cn } from '@/lib/utils'
 import { useParams } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import type { QuotationItemType, QuotationType } from '@/types/sales/quotation'
@@ -269,28 +268,6 @@ export function QuotationProdDetailModal({
     const min = minimumRaw(index)
     return min > 0 && measuredRaw(index) < min
   }
-  // Venda mínima por item da empresa (GR-4, 27/10/2026), em centavos: o item
-  // simples abaixo dela é cobrado pelo mínimo. Vale junto com a quantidade
-  // mínima do produto: o maior dos dois
-  const { hasFeature } = usePlanFeatures()
-  const { data: salesSettingsRes } = useQuery({
-    enabled: open && hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION),
-    staleTime: 60_000,
-    queryKey: ['sales-settings'],
-    queryFn: () => getSalesSettings(),
-  })
-  const minItemValue = Number(salesSettingsRes?.data?.minItemValue) || 0
-  const minItemApplies = (index: number) =>
-    index === 0 && (watch('items') || []).length === 1 && minItemValue > 0
-  const belowMinValue = (index: number) => {
-    if (!minItemApplies(index)) return false
-    const item = (watch('items') || [])[index]
-    if (!item) return false
-    const value =
-      Number(item.unitCost || 0) *
-      Math.max(measuredRaw(index), minimumRaw(index))
-    return value > 0 && value < minItemValue
-  }
   const minimumNote = (index: number) => {
     const min = Number(product?.minQuantity)
     const kind = (watch(`items.${index}.unitKind`) ?? 'UNITY') as UnitKind
@@ -330,10 +307,7 @@ export function QuotationProdDetailModal({
           : basicMeasurement * quantity * productQuantity
       }
 
-      const measurementValue = Math.max(
-        item.unitCost * Math.max(measurement(), minRaw),
-        minItemApplies(index) ? minItemValue : 0,
-      )
+      const measurementValue = item.unitCost * Math.max(measurement(), minRaw)
       const total = measurementValue
 
       return {
@@ -361,10 +335,7 @@ export function QuotationProdDetailModal({
         : basicMeasurement * quantity * productQuantity
     }
 
-    const measurementValue = Math.max(
-      item.unitCost * Math.max(measurement(), minRaw),
-      minItemApplies(index) ? minItemValue : 0,
-    )
+    const measurementValue = item.unitCost * Math.max(measurement(), minRaw)
 
     const total = measurementValue
 
@@ -391,6 +362,7 @@ export function QuotationProdDetailModal({
   // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
   // e muda o valor por unidade do item simples conforme a quantidade
   const tierProductId = product?.id || data?.product?.originalProductId || null
+  const { hasFeature } = usePlanFeatures()
   // Faixas, variações e quantidade mínima são do recurso de plano da
   // composição (LITE em diante)
   const { data: tiersRes } = useQuery({
@@ -922,16 +894,6 @@ export function QuotationProdDetailModal({
                           role="status"
                         >
                           {minimumNote(index)}
-                        </p>
-                      )}
-                      {belowMinValue(index) && (
-                        <p
-                          className="w-full text-xs text-error-600"
-                          role="status"
-                        >
-                          Venda mínima de {formatCurrencyToBrl(minItemValue)}: o
-                          item é cobrado por {formatCurrencyToBrl(minItemValue)}
-                          .
                         </p>
                       )}
                       {index === 0 && tiers.length > 0 && !variationId && (
