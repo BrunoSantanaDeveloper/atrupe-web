@@ -204,6 +204,8 @@
     "toTocantins": "TO – Tocantins",
     "logo": "Logotipo",
     "itWillBeAppliedTo": "Será aplicado no menu lateral da plataforma, orçamentos e relatórios.",
+    "logoForTheDarkTheme": "Logotipo para o tema escuro",
+    "versionWithLightLetteringFor": "Versão com letras claras, para o menu lateral no tema escuro. Sem ela, vale o logotipo acima.",
     "favicon": "Favicon",
     "itWillBeAppliedTo2": "Será aplicado na aba do navegador. Utilize apenas o símbolo da sua marca.",
     "commercialProposalTexts": "Textos da proposta comercial",

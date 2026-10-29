@@ -25,6 +25,7 @@ export const companySchema = z.object({
   // .url('URL do logo inválida')
   personalization: z.object({
     logoUrl: z.string().optional().nullable(),
+    logoDarkUrl: z.string().optional().nullable(),
     favIconUrl: z.string().optional().nullable(),
     textsBeforeItems: z.string().optional(),
     textsAfterItems: z.string().optional(),
@@ -75,6 +76,7 @@ export const defaultValues: CompanyFormType = {
   },
   personalization: {
     logoUrl: '',
+    logoDarkUrl: '',
     favIconUrl: '',
     textsBeforeItems: '',
     textsAfterItems: '',
@@ -108,6 +110,7 @@ interface Address {
 // Definição de tipos para a personalização
 interface Personalization {
   logoUrl: string | null
+  logoDarkUrl?: string | null
   favIconUrl: string | null
   textsBeforeItems: string | null
   textsAfterItems: string | null

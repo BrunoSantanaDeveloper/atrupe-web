@@ -57,6 +57,7 @@ interface LoginResponse {
     name: string
     legalName: string
     logo: string
+    logoDark?: string | null
     favicon: string
     subscription: string
     subscriptionActive: boolean
@@ -85,6 +86,8 @@ declare module 'next-auth' {
       name: string
       legalName: string
       logo: string
+      /** Logo da empresa para o tema escuro (letras claras); vazio sem ela */
+      logoDark: string
       favicon: string
       features: string[]
       blockLevel: 'NONE' | 'PARTIAL' | 'FULL'
@@ -154,6 +157,7 @@ export const {
             isSystemAdmin: authData.isSystemAdmin,
             companyId: company?.id ?? null,
             companyLogo: company?.logo ?? null,
+            companyLogoDark: company?.logoDark ?? null,
             companyFavicon: company?.favicon ?? null,
             companyName: company?.name ?? null,
             companyLegalName: company?.legalName ?? null,
@@ -297,6 +301,9 @@ export const {
             if (typeof session.company.logo !== 'undefined') {
               token.companyLogo = session.company.logo
             }
+            if (typeof session.company.logoDark !== 'undefined') {
+              token.companyLogoDark = session.company.logoDark
+            }
             if (typeof session.company.favicon !== 'undefined') {
               token.companyFavicon = session.company.favicon
             }
@@ -367,6 +374,7 @@ export const {
           name: token.companyName || '',
           legalName: token.companyLegalName || '',
           logo: token.companyLogo || '',
+          logoDark: token.companyLogoDark || '',
           favicon: token.companyFavicon || '',
           blockLevel:
             (token.blockLevel as 'NONE' | 'PARTIAL' | 'FULL') || 'NONE',

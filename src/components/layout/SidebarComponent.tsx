@@ -87,6 +87,9 @@ export function SidebarComponent(props: Props) {
   const userRole = user.role || 'USER'
   const userIsSystemAdmin = user.isSystemAdmin
   const companyLogo = session.company.logo as string
+  // Versão do logo para o tema escuro: a da empresa, quando ela cadastrou;
+  // sem logo da empresa, a da Atrupe com letras claras
+  const darkLogo = companyLogo ? session.company.logoDark || '' : logoLight
   const companyFavicon = session.company.favicon as string
 
   const mainNavigation = getMainNavigation(user)
@@ -217,14 +220,14 @@ export function SidebarComponent(props: Props) {
                   className={cn(
                     'min-w-[145px] max-h-28 h-full transition-all ease-out duration-slow object-contain',
                     collapsed ? '-ml-44 opacity-0' : 'ml-0',
-                    // Sem logo da empresa, o da Atrupe troca para a versão de
-                    // letras claras no tema escuro
-                    !companyLogo && 'dark:hidden',
+                    // No tema escuro troca para a versão de letras claras
+                    // (da empresa ou da Atrupe), quando ela existe
+                    !!darkLogo && 'dark:hidden',
                   )}
                 />
-                {!companyLogo && (
+                {!!darkLogo && (
                   <Image
-                    src={logoLight}
+                    src={darkLogo}
                     alt="logo empresa"
                     width={145}
                     height={35}

@@ -204,6 +204,8 @@
     "toTocantins": "TO – Tocantins",
     "logo": "Logo",
     "itWillBeAppliedTo": "It will be applied to the platform's side menu, quotes and reports.",
+    "logoForTheDarkTheme": "Logo for the dark theme",
+    "versionWithLightLetteringFor": "Version with light lettering, for the side menu in the dark theme. Without it, the logo above is used.",
     "favicon": "Favicon",
     "itWillBeAppliedTo2": "It will be applied to the browser tab. Use only your brand's symbol.",
     "commercialProposalTexts": "Commercial proposal texts",

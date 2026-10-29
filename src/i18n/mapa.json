@@ -1934,7 +1934,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveUser/index.tsx:84 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveUser/index.tsx:111 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/DangerActionCompanyModal.tsx:84 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:278 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:280 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:361 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:256 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/PaymentConditionsTable/PaymentConditionsData.tsx:88 (propriedade:confirmLabel)",
@@ -10194,9 +10194,9 @@
  "comum.components.companyLogo2": {
   "pt": "logo empresa",
   "usos": [
-   "src/components/layout/SidebarComponent.tsx:214 (atributo:alt)",
-   "src/components/layout/SidebarComponent.tsx:228 (atributo:alt)",
-   "src/components/layout/SidebarComponent.tsx:239 (atributo:alt)"
+   "src/components/layout/SidebarComponent.tsx:217 (atributo:alt)",
+   "src/components/layout/SidebarComponent.tsx:231 (atributo:alt)",
+   "src/components/layout/SidebarComponent.tsx:242 (atributo:alt)"
   ]
  },
  "comum.components.conferenciaAntesDaEmissaoO": {
@@ -11575,7 +11575,7 @@
    "name"
   ],
   "usos": [
-   "src/components/layout/SidebarComponent.tsx:575 (frase)"
+   "src/components/layout/SidebarComponent.tsx:578 (frase)"
   ]
  },
  "comum.components.preVisualizacao": {
@@ -12180,11 +12180,11 @@
    "src/components/layout/MobileSidebar.tsx:280 (validacao)",
    "src/components/layout/MobileSidebar.tsx:344 (validacao)",
    "src/components/layout/MobileSidebar.tsx:361 (validacao)",
-   "src/components/layout/SidebarComponent.tsx:331 (validacao)",
-   "src/components/layout/SidebarComponent.tsx:346 (validacao)",
-   "src/components/layout/SidebarComponent.tsx:354 (validacao)",
-   "src/components/layout/SidebarComponent.tsx:479 (validacao)",
-   "src/components/layout/SidebarComponent.tsx:498 (validacao)"
+   "src/components/layout/SidebarComponent.tsx:334 (validacao)",
+   "src/components/layout/SidebarComponent.tsx:349 (validacao)",
+   "src/components/layout/SidebarComponent.tsx:357 (validacao)",
+   "src/components/layout/SidebarComponent.tsx:482 (validacao)",
+   "src/components/layout/SidebarComponent.tsx:501 (validacao)"
   ]
  },
  "comum.components.texto9": {
@@ -14005,7 +14005,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/NewUser/index.tsx:293 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/NewEmployee/index.tsx:144 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/DangerActionCompanyModal.tsx:76 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:285 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:287 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog.tsx:206 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetReadingsCard.tsx:105 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/CostModal.tsx:283 (jsx)",
@@ -14610,7 +14610,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/components/CompanySettingsList.tsx:118 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:334 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:336 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/index.tsx:95 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog.tsx:137 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:219 (jsx)",
@@ -14619,8 +14619,8 @@
    "src/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/Main.tsx:172 (atributo:tooltip)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceItems.tsx:221 (jsx)",
    "src/components/layout/MobileSidebar.tsx:295 (jsx)",
-   "src/components/layout/SidebarComponent.tsx:375 (jsx)",
-   "src/components/layout/SidebarComponent.tsx:537 (jsx)"
+   "src/components/layout/SidebarComponent.tsx:378 (jsx)",
+   "src/components/layout/SidebarComponent.tsx:540 (jsx)"
   ]
  },
  "comum.geral.configurarDepois": {
@@ -14984,8 +14984,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step1/index.tsx:44 (atributo:placeholder)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step1/index.tsx:50 (atributo:placeholder)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step1/index.tsx:61 (atributo:placeholder)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:103 (atributo:placeholder)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:110 (atributo:placeholder)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:115 (atributo:placeholder)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:122 (atributo:placeholder)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/ManageItems/EditItem.tsx:155 (atributo:placeholder)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/NewItem/index.tsx:112 (atributo:placeholder)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/CfopFormModal.tsx:154 (atributo:placeholder)",
@@ -15143,7 +15143,7 @@
    "src/app/(app-sidebar)/cadastros/clientes/components/NewClient/tabs/AddressTab.tsx:60 (jsx)",
    "src/app/(app-sidebar)/cadastros/fornecedores/components/NewSuppiler/NewSuppilerForm.tsx:88 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/EditEmployee/index.tsx:299 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:225 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:227 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorListItem.tsx:675 (jsx)",
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:564 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseTomadorSection.tsx:114 (jsx)",
@@ -15933,7 +15933,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:229 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:231 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:436 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:156 (propriedade:title)",
    "src/app/sandbox/estados-de-plano/page.tsx:117 (propriedade:title)",
@@ -16210,8 +16210,8 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir/components/NfeAvulsaSection.tsx:150 (propriedade:label)",
    "src/app/sandbox/tema/page.tsx:350 (jsx)",
    "src/components/layout/MobileSidebar.tsx:295 (jsx)",
-   "src/components/layout/SidebarComponent.tsx:375 (jsx)",
-   "src/components/layout/SidebarComponent.tsx:536 (jsx)",
+   "src/components/layout/SidebarComponent.tsx:378 (jsx)",
+   "src/components/layout/SidebarComponent.tsx:539 (jsx)",
    "src/consts/financial.ts:8 (propriedade:text)"
   ]
  },
@@ -16888,7 +16888,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/EditEmployee/index.tsx:390 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/NewUser/index.tsx:302 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/NewEmployee/index.tsx:153 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:294 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:296 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog.tsx:216 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/CostModal.tsx:291 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:221 (jsx)",
@@ -17057,7 +17057,7 @@
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:678 (jsx)",
    "src/app/(blank-layout-pages)/(auth)/_components/NewPasswordForm.tsx:47 (atributo:label)",
    "src/app/(blank-layout-pages)/(auth)/login/components/LoginForm.tsx:146 (atributo:label)",
-   "src/lib/auth.ts:122 (propriedade:label)"
+   "src/lib/auth.ts:125 (propriedade:label)"
   ]
  },
  "comum.geral.senhaDoCertificado": {
@@ -18130,8 +18130,8 @@
  "configuracoes.empresaESistema.addCompany": {
   "pt": "Adicionar empresa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:349 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:362 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:351 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:364 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.addGroup": {
@@ -18499,7 +18499,7 @@
  "configuracoes.empresaESistema.commercialProposalTexts": {
   "pt": "Textos da proposta comercial",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:98 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:110 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.companyAndSystemSettings": {
@@ -18517,7 +18517,7 @@
  "configuracoes.empresaESistema.companySettings": {
   "pt": "Configuração da empresa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:211 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:213 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/index.tsx:101 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanySettingsClient.tsx:39 (propriedade:title)"
   ]
@@ -18528,7 +18528,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:132 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:133 (aviso)"
   ]
  },
  "configuracoes.empresaESistema.confirmCancellation": {
@@ -18606,7 +18606,7 @@
  "configuracoes.empresaESistema.customization": {
   "pt": "Personalização",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:240 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:242 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.dayS": {
@@ -18621,7 +18621,7 @@
  "configuracoes.empresaESistema.deactivateThisCompany": {
   "pt": "Deseja inativar esta empresa?",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:305 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:307 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.defineTheStandardsUsedTo": {
@@ -18958,7 +18958,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/DangerActionCompanyModal.tsx:55 (propriedade:error)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:137 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:138 (aviso)"
   ]
  },
  "configuracoes.empresaESistema.esEspiritoSanto": {
@@ -19006,7 +19006,7 @@
  "configuracoes.empresaESistema.favicon": {
   "pt": "Favicon",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:89 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:101 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.fillInNameDepartmentAnd": {
@@ -19036,7 +19036,7 @@
  "configuracoes.empresaESistema.general": {
   "pt": "Gerais",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:220 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:222 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.goGoias": {
@@ -19220,13 +19220,13 @@
  "configuracoes.empresaESistema.itWillBeAppliedTo": {
   "pt": "Será aplicado no menu lateral da plataforma, orçamentos e relatórios.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:83 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:84 (atributo:description)"
   ]
  },
  "configuracoes.empresaESistema.itWillBeAppliedTo2": {
   "pt": "Será aplicado na aba do navegador. Utilize apenas o símbolo da sua marca.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:90 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:102 (atributo:description)"
   ]
  },
  "configuracoes.empresaESistema.itWillBeUsedTo": {
@@ -19280,13 +19280,19 @@
  "configuracoes.empresaESistema.logo": {
   "pt": "Logotipo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:82 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:83 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.logo2": {
   "pt": "Logo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:163 (atributo:alt)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:183 (atributo:alt)"
+  ]
+ },
+ "configuracoes.empresaESistema.logoForTheDarkTheme": {
+  "pt": "Logotipo para o tema escuro",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:93 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.maMaranhao": {
@@ -19594,7 +19600,7 @@
  "configuracoes.empresaESistema.notAvailableOnYourCurrent": {
   "pt": "Não disponível no plano atual",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:345 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:347 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.notCalculated": {
@@ -19639,7 +19645,7 @@
    "pais-br"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:306 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:308 (atributo:description)"
   ]
  },
  "configuracoes.empresaESistema.onlyThePrimaryAccountAdministrator": {
@@ -19846,7 +19852,7 @@
  "configuracoes.empresaESistema.previewProposal": {
   "pt": "Pré-visualizar proposta",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:122 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:134 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.previousOwners": {
@@ -20080,7 +20086,7 @@
  "configuracoes.empresaESistema.removeImage": {
   "pt": "Remover imagem",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:173 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:193 (atributo:aria-label)"
   ]
  },
  "configuracoes.empresaESistema.removeModule": {
@@ -20368,7 +20374,7 @@
  "configuracoes.empresaESistema.socialMedia": {
   "pt": "Redes sociais",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:235 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:237 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.spSaoPaulo": {
@@ -20477,13 +20483,13 @@
  "configuracoes.empresaESistema.textAfterTheItems": {
   "pt": "Texto depois dos itens",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:109 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:121 (atributo:label)"
   ]
  },
  "configuracoes.empresaESistema.textBeforeTheItems": {
   "pt": "Texto antes dos itens",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:102 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:114 (atributo:label)"
   ]
  },
  "configuracoes.empresaESistema.texto": {
@@ -20823,6 +20829,12 @@
   "pt": "Versão",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/ContractSection.tsx:51 (jsx)"
+  ]
+ },
+ "configuracoes.empresaESistema.versionWithLightLetteringFor": {
+  "pt": "Versão com letras claras, para o menu lateral no tema escuro. Sem ela, vale o logotipo acima.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step3/index.tsx:94 (atributo:description)"
   ]
  },
  "configuracoes.empresaESistema.view": {
