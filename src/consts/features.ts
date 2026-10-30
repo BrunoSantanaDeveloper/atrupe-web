@@ -35,6 +35,8 @@ export const FEATURES = {
 
   // Produtos e Produção
   PRODUCTS: {
+    // Papéis no LITE (GR-0): o papel sem custo, sem a base de custos
+    PAPER_REGISTER: 'paper_register',
     PRODUCT_COMPOSITION: 'product_composition',
     PRODUCT_PRODUCTION_STAGES: 'product_production_stages',
     DELIVERY_PRODUCTION_TABS: 'delivery_production_tabs',

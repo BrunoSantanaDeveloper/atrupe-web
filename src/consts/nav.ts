@@ -14,6 +14,7 @@ import {
   IconBolt,
   IconBoxSeam,
   IconPackages,
+  IconFiles,
   IconBuilding,
   IconSettings,
   IconChartBar,
@@ -300,6 +301,15 @@ export const defaultMainNavigation: MainNavigationType[] = [
       // configuração: ficavam escondidos em abas dentro de Configurações.
       // Ordem pedida pelo time (03/10/2026): materiais → processos →
       // produtos, a ordem em que a composição é montada
+      // Papéis (GR-0, 13/10/2026): o papel do LITE, com menos campos; no
+      // PRO o mesmo registro vive também em Materiais
+      {
+        icon: IconFiles,
+        title: 'Papéis',
+        path: '/cadastros/papeis',
+        permission: 'product_settings:products:view',
+        requiredFeature: ['paper_register', 'cost_base'],
+      },
       {
         icon: IconPackages,
         title: 'Materiais',

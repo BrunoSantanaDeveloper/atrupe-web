@@ -642,7 +642,7 @@
     "hideTheCharges": "Esconder os encargos",
     "teamMemberCost": "custo do colaborador",
     "isWhatFeedsTheDepartment2": "é o que alimenta o custo do setor na Base de custos. A folha a pagar é menor porque a provisão de férias, 13º e FGTS custa agora e é paga depois.",
-    "payrollSettings": "Folha de pagamento - Config.",
+    "sheet": "Folha de pagamento - Config.",
     "youDonTHavePermission4": "Você não tem permissão para visualizar as configurações de folha de pagamento.",
     "creditLimit": "Limite de Crédito",
     "defaultCreditLimitUpdated": "Limite de crédito padrão atualizado",

@@ -627,7 +627,7 @@
     "hideTheCharges": "Hide the charges",
     "teamMemberCost": "team member cost",
     "isWhatFeedsTheDepartment2": "is what feeds the department cost in the Cost base. The payroll payable is lower because the provision for vacation, 13th salary and FGTS costs now and is paid later.",
-    "payrollSettings": "Payroll - Settings",
+    "sheet": "Sheet",
     "youDonTHavePermission4": "You don't have permission to view payroll settings.",
     "creditLimit": "Credit limit",
     "defaultCreditLimitUpdated": "Default credit limit updated",

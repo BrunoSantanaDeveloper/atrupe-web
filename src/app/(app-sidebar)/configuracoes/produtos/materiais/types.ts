@@ -3,6 +3,7 @@
 // cor são variações (MT-2), e o custo desce até o cruzamento marca × cor (MT-4).
 
 import type { AssetUnit } from '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/types'
+import type { SheetFormat } from '@/app/(app-sidebar)/cadastros/papeis/types'
 
 export type MaterialUnit = AssetUnit
 
@@ -75,4 +76,10 @@ export type Material = {
   // Os dados fiscais da venda direta, com o módulo Nota Fiscal: o que
   // ficar vazio sai do padrão do emissor na nota (PO, 14/10/2026)
   fiscal?: MaterialFiscal
+  // O papel (forma folha; Papéis, GR-0): gramatura, formato da folha e a
+  // área útil que o aproveitamento lê. A folha é advanced.width × height
+  grammage?: number | null
+  sheetFormat?: SheetFormat | null
+  usableWidth?: number | null
+  usableHeight?: number | null
 }

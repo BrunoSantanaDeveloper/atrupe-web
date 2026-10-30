@@ -16179,19 +16179,6 @@
    "src/app/(blank-layout-pages)/assinatura/contratacao/components/RegularizationFlow.tsx:212 (jsx)"
   ]
  },
- "comum.geral.payroll": {
-  "pt": "Folha de pagamento",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/EditEmployee/index.tsx:266 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/FinanceSettingsClient.tsx:81 (propriedade:title)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:402 (atributo:title)",
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollDetail.tsx:50 (atributo:title)",
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/page.tsx:11 (propriedade:title)",
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/Payroll.tsx:167 (atributo:title)",
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/page.tsx:10 (propriedade:title)",
-   "src/consts/nav.ts:185 (propriedade:title)"
-  ]
- },
  "comum.geral.pendente": {
   "pt": "Pendente",
   "marcas": [
@@ -17091,6 +17078,19 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsFilter.tsx:118 (atributo:label)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/EditOrderInfo/index.tsx:264 (atributo:label)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersFilter.tsx:62 (atributo:label)"
+  ]
+ },
+ "comum.geral.sheet": {
+  "pt": "Folha de pagamento",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/EditEmployee/index.tsx:266 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/FinanceSettingsClient.tsx:81 (propriedade:title)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:402 (atributo:title)",
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollDetail.tsx:50 (atributo:title)",
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/page.tsx:11 (propriedade:title)",
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/Payroll.tsx:167 (atributo:title)",
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/page.tsx:10 (propriedade:title)",
+   "src/consts/nav.ts:185 (propriedade:title)"
   ]
  },
  "comum.geral.sim": {
@@ -22202,12 +22202,6 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/NewItem/index.tsx:117 (atributo:label)"
   ]
  },
- "configuracoes.financeiro.payrollSettings": {
-  "pt": "Folha de pagamento - Config.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/page.tsx:7 (propriedade:title)"
-  ]
- },
  "configuracoes.financeiro.paysIn": {
   "pt": "Paga em {methodName}",
   "vars": [
@@ -22380,6 +22374,12 @@
   "pt": "Defina o padrão de limite de crédito para os clientes",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/financeiro/FinanceSettingsClient.tsx:73 (propriedade:description)"
+  ]
+ },
+ "configuracoes.financeiro.sheet": {
+  "pt": "Folha de pagamento - Config.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/page.tsx:7 (propriedade:title)"
   ]
  },
  "configuracoes.financeiro.shortageTolerance": {
@@ -36909,16 +36909,6 @@
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:82 (propriedade:loading)"
   ]
  },
- "financeiro.folhaDePagamento.payroll2": {
-  "pt": "Folha de pagamento {valor}/{valor2}",
-  "vars": [
-   "valor",
-   "valor2"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollDetail.tsx:93 (atributo:title)"
-  ]
- },
  "financeiro.folhaDePagamento.payrollControl": {
   "pt": "Controle de Folha de Pagamento",
   "usos": [
@@ -36935,25 +36925,10 @@
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:62 (propriedade:title)"
   ]
  },
- "financeiro.folhaDePagamento.payrollOpened": {
-  "pt": "Folha de pagamento aberta",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/Payroll.tsx:135 (aviso)"
-  ]
- },
  "financeiro.folhaDePagamento.payrollOperation": {
   "pt": "Operação em folha",
   "usos": [
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/NewItem/index.tsx:147 (atributo:label)"
-  ]
- },
- "financeiro.folhaDePagamento.payrollSuccessfully": {
-  "pt": "Folha {actionPast} com sucesso!",
-  "vars": [
-   "actionPast"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:83 (propriedade:success)"
   ]
  },
  "financeiro.folhaDePagamento.payrollsPostedWereNotPosted": {
@@ -37011,6 +36986,31 @@
   "pt": "Movimentação do salário",
   "usos": [
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollMovement.tsx:65 (jsx)"
+  ]
+ },
+ "financeiro.folhaDePagamento.sheet": {
+  "pt": "Folha {actionPast} com sucesso!",
+  "vars": [
+   "actionPast"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:83 (propriedade:success)"
+  ]
+ },
+ "financeiro.folhaDePagamento.sheet2": {
+  "pt": "Folha de pagamento {valor}/{valor2}",
+  "vars": [
+   "valor",
+   "valor2"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollDetail.tsx:93 (atributo:title)"
+  ]
+ },
+ "financeiro.folhaDePagamento.sheet3": {
+  "pt": "Folha de pagamento aberta",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/Payroll.tsx:135 (aviso)"
   ]
  },
  "financeiro.folhaDePagamento.teamMemberPayrollDetails": {
@@ -51571,7 +51571,7 @@
    "src/app/sandbox/tipografia/page.tsx:116 (jsx)"
   ]
  },
- "sandbox.tipografia.papeisTipograficos": {
+ "sandbox.tipografia.papers": {
   "pt": "Papéis tipográficos",
   "marcas": [
    "vitrine"

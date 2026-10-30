@@ -1080,8 +1080,8 @@
     "en": "Invalid quote data"
   },
   "11b967ae5e": {
-    "es": "Nómina - Config.",
-    "en": "Payroll - Settings"
+    "es": "Hoja",
+    "en": "Sheet"
   },
   "11f1187930": {
     "es": "Saldo en todas las cuentas",
@@ -1672,8 +1672,8 @@
     "en": "({principalAdminEmail})"
   },
   "1d4d0f5ce8": {
-    "es": "Nómina {valor}/{valor2}",
-    "en": "Payroll {valor}/{valor2}"
+    "es": "Hoja",
+    "en": "Sheet"
   },
   "1d6661c77d": {
     "es": "Vale para la venta enviada a la caja, cuando el cliente paga ahora y retira después. Dónde se recibe la venta lo define la serie de venta, en Configuración › Ventas › Series de venta.",
@@ -2944,8 +2944,8 @@
     "en": "Attention: installments not canceled"
   },
   "30be878cd0": {
-    "es": "¡Nómina {actionPast} con éxito!",
-    "en": "Payroll {actionPast} successfully!"
+    "es": "Hoja",
+    "en": "Sheet"
   },
   "30cb22ff70": {
     "es": "Ingresos",
@@ -9272,8 +9272,8 @@
     "en": "3 months"
   },
   "93b4cb9ded": {
-    "es": "Nómina abierta",
-    "en": "Payroll opened"
+    "es": "Hoja",
+    "en": "Sheet"
   },
   "93c93164a1": {
     "es": "Facturado",
@@ -10712,8 +10712,8 @@
     "en": "Left to collect"
   },
   "aae992972c": {
-    "es": "Nómina",
-    "en": "Payroll"
+    "es": "Hoja",
+    "en": "Sheet"
   },
   "aaf3890f82": {
     "es": "Archivo",
@@ -16602,5 +16602,121 @@
   "a5a9f13588": {
     "es": "Iniciar, pausar y medir el tiempo de las tareas son del plan Elite.",
     "en": "Starting, pausing and timing tasks belong to the Elite plan."
+  },
+  "1454696c48": {
+    "es": "Nuevo papel",
+    "en": "New paper"
+  },
+  "d1ba1588ae": {
+    "es": "Editar papel",
+    "en": "Edit paper"
+  },
+  "6ed1dc1d17": {
+    "es": "La hoja y el área útil alimentan el conteo de hojas y el aprovechamiento. Medidas en milímetros.",
+    "en": "The sheet and the usable area feed the sheet count and the imposition. Measurements in millimetres."
+  },
+  "7228aecff4": {
+    "es": "Couché mate 300 g",
+    "en": "Matte coated 300 g"
+  },
+  "be6a03eaa7": {
+    "es": "Gramaje",
+    "en": "Weight"
+  },
+  "c6f8fd8227": {
+    "es": "Formato de la hoja",
+    "en": "Sheet format"
+  },
+  "61eb89a449": {
+    "es": "Formato de la hoja (papel)",
+    "en": "Sheet format (paper)"
+  },
+  "f18a57b1fc": {
+    "es": "Área útil",
+    "en": "Usable area"
+  },
+  "c626c68148": {
+    "es": "Lo que la impresora imprime de verdad, descontado el borde. Vacía, vale la hoja entera.",
+    "en": "What the printer actually prints, minus the margin. Empty means the whole sheet."
+  },
+  "9e6fe93cc1": {
+    "es": "Ancho útil (mm)",
+    "en": "Usable width (mm)"
+  },
+  "378b1d1964": {
+    "es": "Alto útil (mm)",
+    "en": "Usable height (mm)"
+  },
+  "f3c5072c79": {
+    "es": "Informe el ancho y el alto del área útil, o deje los dos vacíos.",
+    "en": "Enter both the width and the height of the usable area, or leave both empty."
+  },
+  "2ecc4af7e5": {
+    "es": "El área útil no puede ser mayor que la hoja.",
+    "en": "The usable area cannot be larger than the sheet."
+  },
+  "32feae295e": {
+    "es": "Inactivo, el papel sale de las listas y de las composiciones.",
+    "en": "Inactive, the paper leaves the lists and the compositions."
+  },
+  "e8b812f757": {
+    "es": "Registrar papel",
+    "en": "Add paper"
+  },
+  "0680da50d5": {
+    "es": "Papeles",
+    "en": "Papers"
+  },
+  "6329e7eb64": {
+    "es": "Papeles",
+    "en": "Papers"
+  },
+  "84cedbbe5b": {
+    "es": "Ningún papel inactivo",
+    "en": "No inactive paper"
+  },
+  "8cc366d9c2": {
+    "es": "Para inactivar un papel, apague la llave Activo en su edición",
+    "en": "To deactivate a paper, turn off the Active switch when editing it"
+  },
+  "4a1e7a79f9": {
+    "es": "Ningún papel registrado",
+    "en": "No paper registered"
+  },
+  "210121aee2": {
+    "es": "Registre el primer papel: nombre, gramaje y la hoja",
+    "en": "Add the first paper: name, weight and the sheet"
+  },
+  "705ba022bf": {
+    "es": "Papel",
+    "en": "Paper"
+  },
+  "1fad3b47c6": {
+    "es": "Gramaje",
+    "en": "Weight"
+  },
+  "09006a30e8": {
+    "es": "Hoja",
+    "en": "Sheet"
+  },
+  "be0d0c7285": {
+    "es": "{grammage} g/m²",
+    "en": "{grammage} g/m²"
+  },
+  "88cab5ef66": {
+    "es": "La hoja entera",
+    "en": "The whole sheet"
+  },
+  "417a3b1aa3": {
+    "es": "No tienes permiso para ver los papeles.",
+    "en": "You do not have permission to view papers."
+  },
+  "ee32bc4fe9": {
+    "es": "Los papeles de la imprenta, con gramaje, hoja y área útil para el aprovechamiento.",
+    "en": "The print shop papers, with weight, sheet and usable area for the imposition."
+  },
+  "580e855506": {
+    "es": "No es papel",
+    "en": "Not paper"
   }
 }

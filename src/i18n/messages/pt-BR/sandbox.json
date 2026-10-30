@@ -635,7 +635,7 @@
     "atualizadoAs1432": "Atualizado às 14:32",
     "companyName": "Nome da empresa",
     "apareceNoCabecalhoDosDocumentos": "Aparece no cabeçalho dos documentos.",
-    "papeisTipograficos": "Papéis tipográficos",
+    "papers": "Papéis tipográficos",
     "cadaTextoDaInterfacePertence": "Cada texto da interface pertence a um destes papéis.",
     "escala": "Escala",
     "nomeDoPapelMedidaE": "Nome do papel, medida e exemplo. Use a classe `type-&lt;papel&gt;` ou os componentes `Heading` e `Text`.",

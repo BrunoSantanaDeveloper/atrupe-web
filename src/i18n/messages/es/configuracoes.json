@@ -627,7 +627,7 @@
     "hideTheCharges": "Ocultar las cargas",
     "teamMemberCost": "costo del colaborador",
     "isWhatFeedsTheDepartment2": "es lo que alimenta el costo del sector en la Base de costos. La nómina por pagar es menor porque la provisión de vacaciones, aguinaldo y FGTS cuesta ahora y se paga después.",
-    "payrollSettings": "Nómina - Config.",
+    "sheet": "Hoja",
     "youDonTHavePermission4": "Usted no tiene permiso para ver la configuración de nómina.",
     "creditLimit": "Límite de crédito",
     "defaultCreditLimitUpdated": "Límite de crédito predeterminado actualizado",
