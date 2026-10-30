@@ -374,6 +374,13 @@ export function ActivationWizardModal({
                   }
                 />
               </div>
+              {emissor.cscConfigured && (
+                <p className="text-xs text-warning-700">
+                  Salvar um CSC novo suspende a emissão de NFC-e em{' '}
+                  {isProducao ? 'produção' : 'homologação'} até a ativação ser
+                  concluída no último passo.
+                </p>
+              )}
               <Button
                 size="sm"
                 onClick={() => setCscMutation.mutate()}
