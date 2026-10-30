@@ -62,6 +62,10 @@ test.describe('Materiais (PRO)', () => {
     await expect(dialog.getByText('Tipo de Cálculo')).toHaveCount(0)
 
     await dialog.getByLabel('Nome', { exact: true }).fill(name)
+    // O material novo pergunta o setor, sem padrão (GP-47, item 9): sem a
+    // escolha, o botão de cadastrar fica desabilitado
+    await dialog.getByRole('combobox', { name: 'Setor' }).click()
+    await page.getByRole('option').first().click()
     await dialog.getByLabel('Custo por unidade').fill('18.50')
     await dialog.getByRole('switch', { name: 'Venda direta' }).click()
     await dialog.getByRole('button', { name: 'Cadastrar material' }).click()
