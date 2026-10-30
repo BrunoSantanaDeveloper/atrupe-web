@@ -30,6 +30,23 @@ export type DeliveryScheduleType = {
     prevStatus: string
     notes: string
   }[]
+  // O segundo nível (área 9 §4.7): os itens da ordem com a medida e, com
+  // projeto no gerenciador, as etapas de cada um. Sem projeto, as etapas
+  // por item vêm vazias até o dado existir (a API manda; o front antigo
+  // não tinha)
+  items?: {
+    id: string
+    name: string
+    quantity: number
+    measure: string
+    stages: {
+      id: string
+      name: string
+      sectorId: string | null
+      sector: string
+      status: string
+    }[]
+  }[]
   createdAt: Date
   updatedAt: Date
 }

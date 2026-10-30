@@ -16962,5 +16962,21 @@
   "beae0f1e40": {
     "es": ". El valor a aprobar es el contado.",
     "en": ". The amount to approve is the counted one."
+  },
+  "34d165fd10": {
+    "es": "Contraer los ítems",
+    "en": "Collapse items"
+  },
+  "6452070d06": {
+    "es": "Ver los {valor} ítems",
+    "en": "Show the {valor} items"
+  },
+  "ba05b141f8": {
+    "es": "{name} · {sector} {valor}",
+    "en": "{name} · {sector} {valor}"
+  },
+  "b291737020": {
+    "es": "Las etapas de este ítem siguen las de la orden.",
+    "en": "This item’s steps follow the order’s steps."
   }
 }

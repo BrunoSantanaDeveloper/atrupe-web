@@ -65,6 +65,8 @@ import {
 import {
   IconCircleCheck,
   IconQuestionMark,
+  IconChevronDown,
+  IconChevronRight,
   IconCalendarRepeat,
 } from '@tabler/icons-react'
 import { IconReceitaFederal } from '@/assets/icons/pictogramas'
@@ -86,6 +88,15 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   const colorOf = useSectorColor()
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
+  // As ordens abertas no segundo nível (área 9 §4.7): os itens e as etapas
+  // de cada um, sob a linha principal
+  const [expanded, setExpanded] = useState<string[]>([])
+  const toggleExpanded = (id: string) =>
+    setExpanded((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id],
+    )
   const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
 
   const { canManageDeliverySchedule, hasFeature } = usePlanFeatures()
@@ -238,268 +249,383 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                               const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${truncateString(80, quotation?.description)}`
                               const clientName = `${truncateString(50, quotation?.client?.name)}`
 
+                              const items = deliverySchedule?.items || []
+                              const isExpanded = expanded.includes(
+                                deliverySchedule?.id,
+                              )
+                              // O ícone do setor da etapa do item vem da
+                              // etapa da principal com o mesmo setor
+                              const iconOfSector = (sectorId: string | null) =>
+                                deliverySchedule?.productionStages?.find(
+                                  (stage) => stage?.stage?.id === sectorId,
+                                )?.stage?.icon
+
                               return (
-                                <TableRow key={deliverySchedule?.id}>
-                                  <TableCell>
-                                    <p className="font-medium text-nowrap">
-                                      {clientName || '-'}
-                                    </p>
-                                    <Link
-                                      href={link}
-                                      className="text-gray hover:opacity-80 active:opacity-95 transition-opacity text-nowrap"
-                                    >
-                                      {description}
-                                    </Link>
-                                  </TableCell>
-                                  <TableCell className="w-full">
-                                    {deliverySchedule?.status === 'DONE' ||
-                                    deliverySchedule?.status === 'FINISHED' ? (
-                                      <div className="flex gap-2 items-center">
-                                        <Badge status variant="successLight">
-                                          {deliverySchedule?.status ===
-                                          'FINISHED'
-                                            ? 'Concluído'
-                                            : 'Finalizado'}
-                                        </Badge>
-                                      </div>
-                                    ) : (
-                                      <div className="flex gap-2 items-center">
-                                        {showProductionStages && (
-                                          <div className="flex gap-2">
-                                            <TooltipProvider>
-                                              {deliverySchedule?.productionStages?.map(
-                                                (stage) => {
-                                                  const tooltip = `${stage?.stage?.name || 'Etapa desconhecida'} ${stageStatus[stage?.status]?.tooltip || ''}`
-                                                  return (
-                                                    <StageStatusDropdown
-                                                      key={stage?.id}
-                                                      currentStage={
-                                                        stage?.stage?.id
-                                                      }
-                                                      rowData={stage}
-                                                      searchParams={
-                                                        searchParams
-                                                      }
-                                                      canChangeStatus={
-                                                        canChangeStageStatus
-                                                      }
-                                                      managedByProduction={
-                                                        !!deliverySchedule?.managedByProduction
-                                                      }
-                                                    >
-                                                      <ActionButton
-                                                        Icon={
-                                                          sectorIcons[
-                                                            stage?.stage?.icon
-                                                          ]?.icon ||
-                                                          IconQuestionMark
-                                                        }
-                                                        tooltip={tooltip}
-                                                        badge={
-                                                          stageStatus[
-                                                            stage?.status
-                                                          ]?.badge
-                                                        }
-                                                        variant={
-                                                          stage?.status ===
-                                                          'DONE'
-                                                            ? 'successLight'
-                                                            : 'neutralLight'
-                                                        }
-                                                        className="p-2"
-                                                        // A cor do setor no ícone
-                                                        // da etapa (área 9 §4.14)
-                                                        style={
-                                                          stage?.status ===
-                                                          'DONE'
-                                                            ? undefined
-                                                            : {
-                                                                color: colorOf({
-                                                                  id: stage
-                                                                    ?.stage?.id,
-                                                                  name: stage
-                                                                    ?.stage
-                                                                    ?.name,
-                                                                  icon: stage
-                                                                    ?.stage
-                                                                    ?.icon,
-                                                                }),
-                                                              }
-                                                        }
-                                                      />
-                                                    </StageStatusDropdown>
-                                                  )
-                                                },
-                                              )}
-                                            </TooltipProvider>
-                                          </div>
-                                        )}
-                                        <div
-                                          className={cn(
-                                            'overflow-hidden transition-[width] duration-300 ease-in-out',
-                                            // Sem etapas na tela (ou sem poder trocá-las), sempre mostrar o botão
-                                            // Com elas, mostrar apenas quando etapas estão concluídas
-                                            !showProductionStages ||
-                                              !canChangeStageStatus ||
-                                              !deliverySchedule
-                                                ?.productionStages?.length ||
-                                              deliverySchedule?.productionStages?.every(
-                                                (stage) =>
-                                                  stage.status === 'DONE' ||
-                                                  stage.status === 'CANCELED',
-                                              )
-                                              ? 'w-[170px]'
-                                              : 'w-0',
-                                          )}
-                                        >
-                                          <PermissionGate
-                                            permissions={[
-                                              'production:delivery_schedule:edit',
-                                            ]}
-                                          >
-                                            <Button
-                                              type="button"
-                                              variant="success"
-                                              size="md"
-                                              LeftIcon={IconCircleCheck}
-                                              className="whitespace-nowrap"
+                                <Fragment key={deliverySchedule?.id}>
+                                  <TableRow>
+                                    <TableCell>
+                                      <div className="flex items-start gap-2">
+                                        {items.length > 0 && (
+                                          <TooltipProvider>
+                                            <ActionButton
+                                              Icon={
+                                                isExpanded
+                                                  ? IconChevronDown
+                                                  : IconChevronRight
+                                              }
+                                              tooltip={
+                                                isExpanded
+                                                  ? 'Recolher os itens'
+                                                  : `Ver os ${items.length} itens`
+                                              }
                                               onClick={() =>
-                                                handleFinishService(
+                                                toggleExpanded(
                                                   deliverySchedule?.id,
                                                 )
                                               }
-                                            >
-                                              Finalizar serviço
-                                            </Button>
-                                          </PermissionGate>
+                                            />
+                                          </TooltipProvider>
+                                        )}
+                                        <div>
+                                          <p className="font-medium text-nowrap">
+                                            {clientName || '-'}
+                                          </p>
+                                          <Link
+                                            href={link}
+                                            className="text-gray hover:opacity-80 active:opacity-95 transition-opacity text-nowrap"
+                                          >
+                                            {description}
+                                          </Link>
                                         </div>
                                       </div>
-                                    )}
-                                  </TableCell>
-                                  <TableCell className="text-gray-600 relative z-30">
-                                    <div className="flex gap-2">
-                                      <TooltipProvider>
-                                        {deliverySchedule?.financial?.billed ? (
-                                          <PermissionGate
-                                            permissions={[
-                                              'financial:receivable:edit',
-                                            ]}
-                                          >
-                                            <ActionButton
-                                              variant="neutralLight"
-                                              gesto="editarParcelas"
-                                              tooltip="Editar parcelas"
-                                              onClick={() => {
-                                                setRowData(deliverySchedule)
-                                                setOpenDialog(
-                                                  'edit-installments',
+                                    </TableCell>
+                                    <TableCell className="w-full">
+                                      {deliverySchedule?.status === 'DONE' ||
+                                      deliverySchedule?.status ===
+                                        'FINISHED' ? (
+                                        <div className="flex gap-2 items-center">
+                                          <Badge status variant="successLight">
+                                            {deliverySchedule?.status ===
+                                            'FINISHED'
+                                              ? 'Concluído'
+                                              : 'Finalizado'}
+                                          </Badge>
+                                        </div>
+                                      ) : (
+                                        <div className="flex gap-2 items-center">
+                                          {showProductionStages && (
+                                            <div className="flex gap-2">
+                                              <TooltipProvider>
+                                                {deliverySchedule?.productionStages?.map(
+                                                  (stage) => {
+                                                    const tooltip = `${stage?.stage?.name || 'Etapa desconhecida'} ${stageStatus[stage?.status]?.tooltip || ''}`
+                                                    return (
+                                                      <StageStatusDropdown
+                                                        key={stage?.id}
+                                                        currentStage={
+                                                          stage?.stage?.id
+                                                        }
+                                                        rowData={stage}
+                                                        searchParams={
+                                                          searchParams
+                                                        }
+                                                        canChangeStatus={
+                                                          canChangeStageStatus
+                                                        }
+                                                        managedByProduction={
+                                                          !!deliverySchedule?.managedByProduction
+                                                        }
+                                                      >
+                                                        <ActionButton
+                                                          Icon={
+                                                            sectorIcons[
+                                                              stage?.stage?.icon
+                                                            ]?.icon ||
+                                                            IconQuestionMark
+                                                          }
+                                                          tooltip={tooltip}
+                                                          badge={
+                                                            stageStatus[
+                                                              stage?.status
+                                                            ]?.badge
+                                                          }
+                                                          variant={
+                                                            stage?.status ===
+                                                            'DONE'
+                                                              ? 'successLight'
+                                                              : 'neutralLight'
+                                                          }
+                                                          className="p-2"
+                                                          // A cor do setor no ícone
+                                                          // da etapa (área 9 §4.14)
+                                                          style={
+                                                            stage?.status ===
+                                                            'DONE'
+                                                              ? undefined
+                                                              : {
+                                                                  color:
+                                                                    colorOf({
+                                                                      id: stage
+                                                                        ?.stage
+                                                                        ?.id,
+                                                                      name: stage
+                                                                        ?.stage
+                                                                        ?.name,
+                                                                      icon: stage
+                                                                        ?.stage
+                                                                        ?.icon,
+                                                                    }),
+                                                                }
+                                                          }
+                                                        />
+                                                      </StageStatusDropdown>
+                                                    )
+                                                  },
+                                                )}
+                                              </TooltipProvider>
+                                            </div>
+                                          )}
+                                          <div
+                                            className={cn(
+                                              'overflow-hidden transition-[width] duration-300 ease-in-out',
+                                              // Sem etapas na tela (ou sem poder trocá-las), sempre mostrar o botão
+                                              // Com elas, mostrar apenas quando etapas estão concluídas
+                                              !showProductionStages ||
+                                                !canChangeStageStatus ||
+                                                !deliverySchedule
+                                                  ?.productionStages?.length ||
+                                                deliverySchedule?.productionStages?.every(
+                                                  (stage) =>
+                                                    stage.status === 'DONE' ||
+                                                    stage.status === 'CANCELED',
                                                 )
-                                              }}
-                                              // disabled={
-                                              //   item?.expenseSource === 'EMPLOYEE'
-                                              // }
-                                            />
-                                          </PermissionGate>
-                                        ) : (
+                                                ? 'w-[170px]'
+                                                : 'w-0',
+                                            )}
+                                          >
+                                            <PermissionGate
+                                              permissions={[
+                                                'production:delivery_schedule:edit',
+                                              ]}
+                                            >
+                                              <Button
+                                                type="button"
+                                                variant="success"
+                                                size="md"
+                                                LeftIcon={IconCircleCheck}
+                                                className="whitespace-nowrap"
+                                                onClick={() =>
+                                                  handleFinishService(
+                                                    deliverySchedule?.id,
+                                                  )
+                                                }
+                                              >
+                                                Finalizar serviço
+                                              </Button>
+                                            </PermissionGate>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </TableCell>
+                                    <TableCell className="text-gray-600 relative z-30">
+                                      <div className="flex gap-2">
+                                        <TooltipProvider>
+                                          {deliverySchedule?.financial
+                                            ?.billed ? (
+                                            <PermissionGate
+                                              permissions={[
+                                                'financial:receivable:edit',
+                                              ]}
+                                            >
+                                              <ActionButton
+                                                variant="neutralLight"
+                                                gesto="editarParcelas"
+                                                tooltip="Editar parcelas"
+                                                onClick={() => {
+                                                  setRowData(deliverySchedule)
+                                                  setOpenDialog(
+                                                    'edit-installments',
+                                                  )
+                                                }}
+                                                // disabled={
+                                                //   item?.expenseSource === 'EMPLOYEE'
+                                                // }
+                                              />
+                                            </PermissionGate>
+                                          ) : (
+                                            <PermissionGate
+                                              permissions={[
+                                                'production:delivery_schedule:edit',
+                                              ]}
+                                            >
+                                              <ActionButton
+                                                variant="neutralLight"
+                                                gesto="faturar"
+                                                badge="errorLight"
+                                                tooltip="Faturar"
+                                                onClick={() => {
+                                                  setRowData(deliverySchedule)
+                                                  setOpenDialog('billing')
+                                                }}
+                                              />
+                                            </PermissionGate>
+                                          )}
+                                          <ActionButton
+                                            Icon={IconReceitaFederal}
+                                            tooltip={
+                                              invoiceStatus[
+                                                deliverySchedule?.financial
+                                                  ?.invoiceStatus
+                                              ]?.tooltip || 'NF'
+                                            }
+                                            badge={
+                                              invoiceStatus[
+                                                deliverySchedule?.financial
+                                                  ?.invoiceStatus
+                                              ]?.badge
+                                            }
+                                            variant={
+                                              invoiceStatus[
+                                                deliverySchedule?.financial
+                                                  ?.invoiceStatus
+                                              ]?.badge === 'successLight'
+                                                ? 'successLight'
+                                                : 'neutralLight'
+                                            }
+                                            onClick={handleInvoice}
+                                          />
+                                        </TooltipProvider>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell>
+                                      <div className="flex justify-end gap-1">
+                                        <TooltipProvider>
                                           <PermissionGate
                                             permissions={[
                                               'production:delivery_schedule:edit',
                                             ]}
                                           >
                                             <ActionButton
-                                              variant="neutralLight"
-                                              gesto="faturar"
-                                              badge="errorLight"
-                                              tooltip="Faturar"
+                                              gesto="observacao"
+                                              tooltip="Observações"
                                               onClick={() => {
                                                 setRowData(deliverySchedule)
-                                                setOpenDialog('billing')
+                                                setOpenDialog('notes')
+                                              }}
+                                              badge={
+                                                deliverySchedule?.notes
+                                                  ? 'warningLight'
+                                                  : undefined
+                                              }
+                                            />
+                                          </PermissionGate>
+                                          <PermissionGate
+                                            permissions={[
+                                              'production:delivery_schedule:edit',
+                                            ]}
+                                          >
+                                            <ActionButton
+                                              Icon={IconCalendarRepeat}
+                                              tooltip="Data"
+                                              onClick={() => {
+                                                setRowData(deliverySchedule)
+                                                setOpenDialog('date')
                                               }}
                                             />
                                           </PermissionGate>
-                                        )}
-                                        <ActionButton
-                                          Icon={IconReceitaFederal}
-                                          tooltip={
-                                            invoiceStatus[
-                                              deliverySchedule?.financial
-                                                ?.invoiceStatus
-                                            ]?.tooltip || 'NF'
-                                          }
-                                          badge={
-                                            invoiceStatus[
-                                              deliverySchedule?.financial
-                                                ?.invoiceStatus
-                                            ]?.badge
-                                          }
-                                          variant={
-                                            invoiceStatus[
-                                              deliverySchedule?.financial
-                                                ?.invoiceStatus
-                                            ]?.badge === 'successLight'
-                                              ? 'successLight'
-                                              : 'neutralLight'
-                                          }
-                                          onClick={handleInvoice}
-                                        />
-                                      </TooltipProvider>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell>
-                                    <div className="flex justify-end gap-1">
-                                      <TooltipProvider>
-                                        <PermissionGate
-                                          permissions={[
-                                            'production:delivery_schedule:edit',
-                                          ]}
-                                        >
                                           <ActionButton
-                                            gesto="observacao"
-                                            tooltip="Observações"
-                                            onClick={() => {
-                                              setRowData(deliverySchedule)
-                                              setOpenDialog('notes')
-                                            }}
-                                            badge={
-                                              deliverySchedule?.notes
-                                                ? 'warningLight'
-                                                : undefined
+                                            gesto="imprimir"
+                                            tooltip="Imprimir"
+                                            onClick={() =>
+                                              handleGeneratePDF(
+                                                deliverySchedule,
+                                              )
                                             }
+                                            isLoading={isLoadingPDF.includes(
+                                              deliverySchedule?.id,
+                                            )}
                                           />
-                                        </PermissionGate>
-                                        <PermissionGate
-                                          permissions={[
-                                            'production:delivery_schedule:edit',
-                                          ]}
-                                        >
                                           <ActionButton
-                                            Icon={IconCalendarRepeat}
-                                            tooltip="Data"
-                                            onClick={() => {
-                                              setRowData(deliverySchedule)
-                                              setOpenDialog('date')
-                                            }}
+                                            link={link}
+                                            gesto="ver"
+                                            tooltip="Ver ordem de serviço"
                                           />
-                                        </PermissionGate>
-                                        <ActionButton
-                                          gesto="imprimir"
-                                          tooltip="Imprimir"
-                                          onClick={() =>
-                                            handleGeneratePDF(deliverySchedule)
-                                          }
-                                          isLoading={isLoadingPDF.includes(
-                                            deliverySchedule?.id,
+                                        </TooltipProvider>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
+                                  {/* O segundo nível (área 9 §4.7): cada item
+                                    pelo nome, com a medida e as suas etapas;
+                                    a principal é a união dos setores */}
+                                  {isExpanded &&
+                                    items.map((item) => (
+                                      <TableRow
+                                        key={item.id}
+                                        className="bg-gray-50 hover:bg-gray-50"
+                                      >
+                                        <TableCell className="pl-14">
+                                          <p className="text-sm text-gray-800">
+                                            {item.name || 'Item'}
+                                          </p>
+                                          <p className="text-xs text-gray">
+                                            {item.measure}
+                                          </p>
+                                        </TableCell>
+                                        <TableCell colSpan={3}>
+                                          {item.stages.length ? (
+                                            <div className="flex gap-2">
+                                              <TooltipProvider>
+                                                {item.stages.map((stage) => (
+                                                  <ActionButton
+                                                    key={stage.id}
+                                                    Icon={
+                                                      sectorIcons[
+                                                        iconOfSector(
+                                                          stage.sectorId,
+                                                        ) || ''
+                                                      ]?.icon ||
+                                                      IconQuestionMark
+                                                    }
+                                                    tooltip={`${stage.name} · ${stage.sector} ${stageStatus[stage.status]?.tooltip || ''}`}
+                                                    badge={
+                                                      stageStatus[stage.status]
+                                                        ?.badge
+                                                    }
+                                                    variant={
+                                                      stage.status === 'DONE'
+                                                        ? 'successLight'
+                                                        : 'neutralLight'
+                                                    }
+                                                    className="p-2"
+                                                    style={
+                                                      stage.status === 'DONE'
+                                                        ? undefined
+                                                        : {
+                                                            color: colorOf({
+                                                              id: stage.sectorId,
+                                                              name: stage.sector,
+                                                              icon:
+                                                                iconOfSector(
+                                                                  stage.sectorId,
+                                                                ) || null,
+                                                            }),
+                                                          }
+                                                    }
+                                                  />
+                                                ))}
+                                              </TooltipProvider>
+                                            </div>
+                                          ) : (
+                                            <span className="text-xs text-gray">
+                                              {showProductionStages
+                                                ? 'As etapas deste item seguem as da ordem.'
+                                                : ''}
+                                            </span>
                                           )}
-                                        />
-                                        <ActionButton
-                                          link={link}
-                                          gesto="ver"
-                                          tooltip="Ver ordem de serviço"
-                                        />
-                                      </TooltipProvider>
-                                    </div>
-                                  </TableCell>
-                                </TableRow>
+                                        </TableCell>
+                                      </TableRow>
+                                    ))}
+                                </Fragment>
                               )
                             })
                           : null}
