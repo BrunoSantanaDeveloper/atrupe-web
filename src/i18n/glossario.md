@@ -21,6 +21,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Ordem de serviço | Orden de trabajo | Work order | "OS" → "OT" / "WO". |
 | Venda | Venta | Sale | |
 | Venda rápida | Venta rápida | Quick sale | |
+| Etapa da venda (era "Fase atual", 29/10) | Etapa de la venta | Sale stage | A coluna da lista de orçamentos, das ordens e do relatório de vendas. "Fase" fica só no CRM (acompanhamento comercial). |
 | Item do orçamento | Ítem de la cotización | Quote item | |
 | Adicionar item | Agregar ítem | Add item | |
 | Acrescentar a este item | Agregar a este ítem | Add to this item | |

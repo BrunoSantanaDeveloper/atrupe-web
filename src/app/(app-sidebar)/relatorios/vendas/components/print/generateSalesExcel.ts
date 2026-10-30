@@ -22,7 +22,7 @@ export function generateSalesExcel(
     'Serviço',
     'Aprovado',
     'Data de entrega',
-    'Fase atual',
+    'Etapa da venda',
     'Valor',
     '%',
   ])
@@ -87,7 +87,7 @@ export function generateSalesExcel(
     { wch: 40 }, // Serviço
     { wch: 12 }, // Aprovado
     { wch: 16 }, // Data de entrega
-    { wch: 16 }, // Fase atual
+    { wch: 16 }, // Etapa da venda
     { wch: 18 }, // Valor
     { wch: 8 }, // %
   ]

@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -138,9 +138,8 @@ export function NewMaterialModal({ material }: Props) {
         .map((item) => ({ value: item.id, label: item.name })),
     [sectorList, material?.sectorId],
   )
-  useEffect(() => {
-    if (!sectorId && sectors.length) setSectorId(sectors[0].value)
-  }, [sectorId, sectors])
+  // O material novo sempre pergunta o setor (GP-47, item 9; achado 5 da
+  // revisão do PRO): sem padrão, para o setor não sair errado sem ninguém ver
   const [subcategory, setSubcategory] = useState(
     material?.subcategory || subcategories[0].value,
   )
@@ -316,6 +315,7 @@ export function NewMaterialModal({ material }: Props) {
             <SelectBasic
               name="sector"
               label="Setor"
+              placeholder="Escolha o setor"
               value={sectorId}
               onChange={setSectorId}
               options={sectors}

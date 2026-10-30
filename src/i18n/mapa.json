@@ -27964,6 +27964,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:130 (jsx)"
   ]
  },
+ "configuracoes.produtos.chooseTheDepartment": {
+  "pt": "Escolha o setor primeiro",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewGroupInline.tsx:78 (atributo:tooltip)"
+  ]
+ },
  "configuracoes.produtos.chooseTheProcess": {
   "pt": "Escolha o processo",
   "usos": [
@@ -27980,12 +27986,6 @@
   "pt": "Escolha o recurso: o nome vem dele",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:658 (atributo:placeholder)"
-  ]
- },
- "configuracoes.produtos.chooseTheSectorFirst": {
-  "pt": "Escolha o setor primeiro",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewGroupInline.tsx:78 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.chosen": {
@@ -52039,7 +52039,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/MaterialItemDialog.tsx:203 (jsx)"
   ]
  },
- "vendas.orcamentos.chooseTheItemSDepartment": {
+ "vendas.orcamentos.chooseTheDepartment": {
   "pt": "Escolha o setor do item",
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:298 (jsx)"

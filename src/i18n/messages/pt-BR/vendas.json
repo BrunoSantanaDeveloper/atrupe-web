@@ -322,7 +322,7 @@
     "addToTheQuote": "Acrescentar ao orçamento",
     "theBoxStaysInThe": "A caixa continua no mesmo lugar do fluxo, com as mesmas ligações. O que muda são os recursos e o tempo.",
     "whichItemDoYouWant": "Qual item deseja adicionar?",
-    "chooseTheItemSDepartment": "Escolha o setor do item",
+    "chooseTheDepartment": "Escolha o setor do item",
     "buildAnItemThatDoesn": "Montar um item que não existe pronto",
     "serviceHiredFromASupplier": "Serviço contratado de fornecedor só para esta venda",
     "searchForTheProductBy": "Busque o produto pelo nome ou filtre pelo setor",

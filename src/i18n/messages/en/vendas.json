@@ -320,7 +320,7 @@
     "addToTheQuote": "Add to the quote",
     "theBoxStaysInThe": "The box stays in the same place in the flow, with the same connections. What changes are the resources and the time.",
     "whichItemDoYouWant": "Which item do you want to add?",
-    "chooseTheItemSDepartment": "Choose the item’s department",
+    "chooseTheDepartment": "Choose the department",
     "buildAnItemThatDoesn": "Build an item that doesn't exist ready-made",
     "serviceHiredFromASupplier": "Service hired from a supplier for this sale only",
     "searchForTheProductBy": "Search for the product by name or filter by department",

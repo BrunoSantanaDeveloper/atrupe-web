@@ -5,7 +5,7 @@
 // área útil, menor ou igual à folha. Área útil vazia é a folha inteira.
 
 // React
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -68,21 +68,16 @@ export function PaperDialog({ paper }: { paper?: Paper }) {
   })
   const [active, setActive] = useState(paper?.active ?? true)
 
-  // O setor: o do papel, ou o primeiro de produção (como a API faz)
+  // O setor: o papel novo sempre pergunta (GP-47, item 9), sem padrão
   const { data: sectorList } = useSector()
   const [sectorId, setSectorId] = useState(paper?.sectorId || '')
   const sectors = useMemo(
     () =>
       (sectorList || [])
         .filter((item) => item.isActive || item.id === paper?.sectorId)
-        .map((item) => ({ value: item.id, label: item.name, kind: item.kind })),
+        .map((item) => ({ value: item.id, label: item.name })),
     [sectorList, paper?.sectorId],
   )
-  useEffect(() => {
-    if (sectorId || !sectors.length) return
-    const production = sectors.find((item) => item.kind === 'PRODUCTION')
-    setSectorId((production || sectors[0]).value)
-  }, [sectorId, sectors])
 
   // O formato padrão preenche a folha e tranca a medida
   const preset = sheetFormatObj[format]
@@ -178,6 +173,7 @@ export function PaperDialog({ paper }: { paper?: Paper }) {
             <SelectBasic
               name="paper-sector"
               label="Setor"
+              placeholder="Escolha o setor"
               options={sectors}
               value={sectorId}
               onChange={(value) => value && setSectorId(String(value))}

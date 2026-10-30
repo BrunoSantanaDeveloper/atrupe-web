@@ -239,7 +239,7 @@ export function QuotationsData({
                     <PermissionGate permissions={['values:values:view']}>
                       <TableHead>Valor</TableHead>
                     </PermissionGate>
-                    {isAllTab && <TableHead>Fase atual</TableHead>}
+                    {isAllTab && <TableHead>Etapa da venda</TableHead>}
                     {showStatusColumn && <TableHead>Status</TableHead>}
                     <TableHead>
                       {isResumeTab ? 'Próximo contato' : 'Concluído em'}

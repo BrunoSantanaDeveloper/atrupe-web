@@ -1428,8 +1428,8 @@
     "en": "Reactivate {name}?"
   },
   "17fe69b134": {
-    "es": "Elija el sector del ítem",
-    "en": "Choose the item’s department"
+    "es": "Elija el sector",
+    "en": "Choose the department"
   },
   "18021cc58e": {
     "es": "Entiendo que perderé el acceso a este entorno por completo.",
@@ -4172,8 +4172,8 @@
     "en": "{client} - {reference} · paid in full, now. To split or charge later, send it to the cash register."
   },
   "44df83ae69": {
-    "es": "Elija primero el sector",
-    "en": "Choose the sector first"
+    "es": "Elija el sector",
+    "en": "Choose the department"
   },
   "451c7bd4f7": {
     "es": "Sector",
@@ -16934,5 +16934,13 @@
   "b4fa575446": {
     "es": "Aprobada",
     "en": "Approved"
+  },
+  "044f62f587": {
+    "es": "Elija el sector",
+    "en": "Choose the department"
+  },
+  "869d257d84": {
+    "es": "Etapa de la venta",
+    "en": "Sale stage"
   }
 }

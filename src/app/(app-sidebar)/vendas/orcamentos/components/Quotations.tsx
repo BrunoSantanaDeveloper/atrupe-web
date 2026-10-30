@@ -108,7 +108,7 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
       quotationsStatusObj[quotation.status]?.text || quotation.status,
   },
   {
-    header: 'Fase atual',
+    header: 'Etapa da venda',
     getValue: (quotation) => quotation.tag?.text,
   },
   {

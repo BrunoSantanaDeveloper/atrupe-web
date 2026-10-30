@@ -320,7 +320,7 @@
     "addToTheQuote": "Agregar a la cotización",
     "theBoxStaysInThe": "La caja sigue en el mismo lugar del flujo, con las mismas conexiones. Lo que cambia son los recursos y el tiempo.",
     "whichItemDoYouWant": "¿Qué ítem desea agregar?",
-    "chooseTheItemSDepartment": "Elija el sector del ítem",
+    "chooseTheDepartment": "Elija el sector",
     "buildAnItemThatDoesn": "Armar un ítem que no existe listo",
     "serviceHiredFromASupplier": "Servicio contratado a un proveedor solo para esta venta",
     "searchForTheProductBy": "Busque el producto por nombre o filtre por sector",

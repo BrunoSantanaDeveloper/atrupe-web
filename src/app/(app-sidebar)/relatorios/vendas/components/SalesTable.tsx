@@ -238,7 +238,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                   <TableHead>Aprovado</TableHead>
                   <TableHead>Entrega</TableHead>
                   <TableHead>Vendas</TableHead>
-                  <TableHead>Fase atual</TableHead>
+                  <TableHead>Etapa da venda</TableHead>
                   <TableHead numeric>%</TableHead>
                 </TableRow>
               </TableHeader>
@@ -295,7 +295,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                   <TableHead>Aprovado</TableHead>
                   <TableHead>Entrega</TableHead>
                   <TableHead>Vendas</TableHead>
-                  <TableHead>Fase atual</TableHead>
+                  <TableHead>Etapa da venda</TableHead>
                   <TableHead numeric>100%</TableHead>
                 </TableRow>
               </TableHeader>
