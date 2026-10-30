@@ -45683,12 +45683,18 @@
   ]
  },
  "relatorios.vendas.approved": {
+  "pt": "Aprovadas x Não aprovadas",
+  "usos": [
+   "src/app/(app-sidebar)/relatorios/vendas/components/ApprovedRejectedChart.tsx:85 (jsx)"
+  ]
+ },
+ "relatorios.vendas.approved2": {
   "pt": "APROVADO",
   "usos": [
    "src/app/(app-sidebar)/relatorios/vendas/components/print/SalesReportPdf.tsx:241 (jsx)"
   ]
  },
- "relatorios.vendas.approved2": {
+ "relatorios.vendas.approved3": {
   "pt": "{count} Aprovadas ({name})",
   "vars": [
    "count",
@@ -45698,7 +45704,7 @@
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesEvolutionChart.tsx:240 (frase)"
   ]
  },
- "relatorios.vendas.approved3": {
+ "relatorios.vendas.approved4": {
   "pt": "Aprovadas ({approvedCount})",
   "vars": [
    "approvedCount"
@@ -45711,12 +45717,6 @@
   "pt": "Valor aprovado",
   "usos": [
    "src/app/(app-sidebar)/relatorios/vendas/components/ConversionTables.tsx:49 (jsx)"
-  ]
- },
- "relatorios.vendas.approvedXNotApproved": {
-  "pt": "Aprovadas x Não aprovadas",
-  "usos": [
-   "src/app/(app-sidebar)/relatorios/vendas/components/ApprovedRejectedChart.tsx:85 (jsx)"
   ]
  },
  "relatorios.vendas.averageApproval": {

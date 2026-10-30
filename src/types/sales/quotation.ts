@@ -74,6 +74,9 @@ export type QuotationItemType = {
     // Produto inativado depois de lançado (PAD-7)
     isActive?: boolean
     hasComposition?: boolean
+    // A situação da composição (IP-14 revisto em 29/10/2026): em montagem,
+    // o item vende pelo cadastro e a tela avisa "custo não conferido"
+    compositionStatus?: 'DRAFT' | 'RELEASED' | 'PART' | null
     // A marca discreta do produto terceirizado (T-3, T-5)
     isOutsourced?: boolean
     quantity: number

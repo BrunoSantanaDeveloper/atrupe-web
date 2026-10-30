@@ -1540,36 +1540,62 @@ function AssemblyEditorBody({
                 permissions={EDIT}
                 fallback={<Badge variant={status.variant}>{status.text}</Badge>}
               >
-                {/* Situação no canto superior direito da tela (IP-14) */}
-                <Select
-                  value={assembly.status}
-                  onValueChange={(value) =>
-                    run(
-                      updateAssembly({
-                        productId,
-                        values: { status: value as AssemblyStatus },
-                      }),
-                      assemblyStatusObj[value as AssemblyStatus].text,
-                    )
-                  }
-                >
-                  <SelectTrigger
-                    aria-label="Status"
-                    title={status.help}
-                    className="h-10 w-[220px]"
+                {/* A situação da composição (IP-14 revisto em 29/10/2026):
+                    em montagem, o botão aprova; aprovada ou parte, a lista
+                    volta para montagem ou troca */}
+                {assembly.status === 'DRAFT' ? (
+                  <>
+                    <Badge variant={status.variant} title={status.help}>
+                      {status.text}
+                    </Badge>
+                    <Button
+                      type="button"
+                      LeftIcon={IconCircleCheck}
+                      title={assemblyStatusObj.RELEASED.help}
+                      onClick={() =>
+                        run(
+                          updateAssembly({
+                            productId,
+                            values: { status: 'RELEASED' },
+                          }),
+                          'Composição aprovada: o custo passa a valer no orçamento',
+                        )
+                      }
+                    >
+                      Aprovar composição
+                    </Button>
+                  </>
+                ) : (
+                  <Select
+                    value={assembly.status}
+                    onValueChange={(value) =>
+                      run(
+                        updateAssembly({
+                          productId,
+                          values: { status: value as AssemblyStatus },
+                        }),
+                        assemblyStatusObj[value as AssemblyStatus].text,
+                      )
+                    }
                   >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(Object.keys(assemblyStatusObj) as AssemblyStatus[]).map(
-                      (key) => (
-                        <SelectItem key={key} value={key}>
-                          {assemblyStatusObj[key].text}
-                        </SelectItem>
-                      ),
-                    )}
-                  </SelectContent>
-                </Select>
+                    <SelectTrigger
+                      aria-label="Status"
+                      title={status.help}
+                      className="h-10 w-[220px]"
+                    >
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(assemblyStatusObj) as AssemblyStatus[]).map(
+                        (key) => (
+                          <SelectItem key={key} value={key}>
+                            {assemblyStatusObj[key].text}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectContent>
+                  </Select>
+                )}
               </PermissionGate>
             </div>
           }

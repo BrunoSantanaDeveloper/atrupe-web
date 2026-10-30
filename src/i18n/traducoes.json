@@ -2480,8 +2480,8 @@
     "en": "No entries"
   },
   "2a8ea7ae4f": {
-    "es": "Aprobadas x No aprobadas",
-    "en": "Approved x Not approved"
+    "es": "Aprobada",
+    "en": "Approved"
   },
   "2a9063c49a": {
     "es": "Ítem quitado del colaborador",
@@ -6880,7 +6880,7 @@
     "en": "Item name"
   },
   "6f4f2a78f4": {
-    "es": "Aprobadas",
+    "es": "Aprobada",
     "en": "Approved"
   },
   "6f5823f940": {
@@ -12020,8 +12020,8 @@
     "en": "Conversion"
   },
   "c0494c8d3f": {
-    "es": "Aprobadas ({approvedCount})",
-    "en": "Approved ({approvedCount})"
+    "es": "Aprobada",
+    "en": "Approved"
   },
   "c05f8d0a33": {
     "es": "Confección",
@@ -16914,5 +16914,25 @@
   "f5da88859d": {
     "es": "Comentar",
     "en": "Comment"
+  },
+  "e8bd16eaad": {
+    "es": "Aprobar composición",
+    "en": "Approve composition"
+  },
+  "a3f283372a": {
+    "es": "La composición de este producto aún no fue aprobada: el ítem usa el precio del catálogo, sin costo",
+    "en": "This product’s composition has not been approved yet: the item uses the catalogue price, without cost"
+  },
+  "fe4137102a": {
+    "es": "Costo no verificado",
+    "en": "Cost not verified"
+  },
+  "25395c304c": {
+    "es": "En montaje",
+    "en": "In progress"
+  },
+  "b4fa575446": {
+    "es": "Aprobada",
+    "en": "Approved"
   }
 }

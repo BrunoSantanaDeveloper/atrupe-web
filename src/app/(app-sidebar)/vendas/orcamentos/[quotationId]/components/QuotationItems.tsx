@@ -418,6 +418,19 @@ export function QuotationItems({ data }: Props) {
                                 Produto inativo
                               </Badge>
                             )}
+                            {/* A composição em montagem não entra no custo
+                                (IP-14 revisto em 29/10/2026): o item vende
+                                pelo cadastro e avisa */}
+                            {item.product?.hasComposition &&
+                              item.product?.compositionStatus === 'DRAFT' && (
+                                <Badge
+                                  status
+                                  variant="warningLight"
+                                  title="A composição deste produto ainda não foi aprovada: o item usa o preço do cadastro, sem custo"
+                                >
+                                  Custo não conferido
+                                </Badge>
+                              )}
                             {item?.notes ? (
                               <IconMessage
                                 size={ICON_SIZE.sm}
