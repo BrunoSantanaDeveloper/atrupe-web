@@ -38,6 +38,9 @@ export function ProductionFilters({
   person,
   onPerson,
   people,
+  machine,
+  onMachine,
+  machines,
   period,
   onPeriod,
 }: {
@@ -46,6 +49,10 @@ export function ProductionFilters({
   person?: string
   onPerson?: (value: string) => void
   people?: { id: string; name: string }[]
+  // A fila por máquina (GP-47, item 4): só quando o setor tem máquinas
+  machine?: string
+  onMachine?: (value: string) => void
+  machines?: string[]
   period: Period
   onPeriod: (value: Period) => void
 }) {
@@ -73,6 +80,19 @@ export function ProductionFilters({
             ]}
             value={person}
             onChange={(value) => value && onPerson(String(value))}
+          />
+        )}
+        {machines && machines.length > 0 && onMachine && (
+          <SelectBasic
+            name="board-machine"
+            label=""
+            className="w-[200px]"
+            options={[
+              { value: 'todas', label: 'Todas as máquinas' },
+              ...machines.map((item) => ({ value: item, label: item })),
+            ]}
+            value={machine}
+            onChange={(value) => value && onMachine(String(value))}
           />
         )}
         <Tabs

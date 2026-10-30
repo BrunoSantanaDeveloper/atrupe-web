@@ -16886,5 +16886,33 @@
   "b00b359ec5": {
     "es": "Abrir el presupuesto",
     "en": "Open the quote"
+  },
+  "8e4ee5ded2": {
+    "es": "Todas las máquinas",
+    "en": "All machines"
+  },
+  "690da2666a": {
+    "es": "Urgente",
+    "en": "Urgent"
+  },
+  "6fe3053fa0": {
+    "es": "Comentario",
+    "en": "Comment"
+  },
+  "48f46299c6": {
+    "es": "Quitar urgencia",
+    "en": "Remove urgency"
+  },
+  "42f06f61b3": {
+    "es": "Comentario",
+    "en": "Comment"
+  },
+  "efb171347c": {
+    "es": "Un recado para quien tome esta tarea",
+    "en": "A note for whoever picks up this task"
+  },
+  "f5da88859d": {
+    "es": "Comentar",
+    "en": "Comment"
   }
 }

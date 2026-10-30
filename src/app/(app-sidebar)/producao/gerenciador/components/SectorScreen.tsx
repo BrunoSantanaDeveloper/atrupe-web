@@ -37,6 +37,7 @@ import {
   today,
   dayLabel,
   taskMatches,
+  urgentFirst,
   BoardSkeleton,
   useProductionRefresh,
   type Period,
@@ -96,6 +97,7 @@ export function SectorScreen({ id }: { id: string }) {
   const [taskId, setTaskId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [person, setPerson] = useState('todos')
+  const [machine, setMachine] = useState('todas')
   const [period, setPeriod] = useState<Period>('todas')
   const [dragging, setDragging] = useState<string | null>(null)
   const [showClosed, setShowClosed] = useState(false)
@@ -128,13 +130,26 @@ export function SectorScreen({ id }: { id: string }) {
     ? 'fila'
     : (params.get('visao') as View) || (collective ? 'quadro' : 'fila')
 
-  const filter = { search, person, period }
+  const filter = { search, person, period, machine }
   const tasks = useMemo(
-    () => (board?.tasks || []).filter((item) => taskMatches(item, filter)),
+    () =>
+      urgentFirst(
+        (board?.tasks || []).filter((item) => taskMatches(item, filter)),
+      ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [board, search, person, period],
+    [board, search, person, period, machine],
   )
   const people = board?.collaborators || []
+  // As máquinas das tarefas do setor: a fila por máquina na impressão
+  const machines = useMemo(
+    () =>
+      Array.from(
+        new Set((board?.tasks || []).map((item) => item.machine || '')),
+      )
+        .filter(Boolean)
+        .sort(),
+    [board],
+  )
   const task = (board?.tasks || []).find((item) => item.id === taskId) || null
 
   const dropOn = async (target: TaskView) => {
@@ -285,7 +300,9 @@ export function SectorScreen({ id }: { id: string }) {
       `${a.schedule!.date} ${a.schedule!.start}`.localeCompare(
         `${b.schedule!.date} ${b.schedule!.start}`,
       )
-    const scheduled = waiting.filter((item) => item.schedule).sort(byTime)
+    const scheduled = urgentFirst(
+      waiting.filter((item) => item.schedule).sort(byTime),
+    )
     const days = Array.from(new Set(scheduled.map((t) => t.schedule!.date)))
     // Sem tempo não há agenda: a fila segue a entrega da ordem
     const byDue = (a: TaskView, b: TaskView) =>
@@ -296,9 +313,11 @@ export function SectorScreen({ id }: { id: string }) {
         day,
         tasks: scheduled.filter((item) => item.schedule!.date === day),
       })),
-      unscheduled: timeless
-        ? waiting.sort(byDue)
-        : waiting.filter((item) => !item.schedule),
+      unscheduled: urgentFirst(
+        timeless
+          ? [...waiting].sort(byDue)
+          : waiting.filter((item) => !item.schedule),
+      ),
       closed: tasks.filter((item) => !OPEN.includes(item.status)),
     }
   }, [tasks, timeless])
@@ -393,6 +412,9 @@ export function SectorScreen({ id }: { id: string }) {
           person={timeless ? undefined : person}
           onPerson={timeless ? undefined : setPerson}
           people={timeless ? undefined : people}
+          machine={machine}
+          onMachine={setMachine}
+          machines={machines}
           period={period}
           onPeriod={setPeriod}
         />

@@ -62,6 +62,8 @@ import {
   assignTask,
   releaseNext,
   addPendency,
+  addComment,
+  setTaskPriority,
   scheduleTask,
   addTimeEntry,
   setTaskVehicle,
@@ -96,6 +98,8 @@ import {
   IconCircleCheck,
   IconPlayerPause,
   IconArrowBackUp,
+  IconMessage,
+  IconFlag,
   IconAlertTriangle,
   IconArrowBigRight,
   IconLock,
@@ -182,6 +186,8 @@ export function TaskDetailDialog({
   const [pendencyText, setPendencyText] = useState('')
   const [releaseOpen, setReleaseOpen] = useState(false)
   const [releaseQty, setReleaseQty] = useState('')
+  // O comentário da equipe (VS-5; GP-47, item 3)
+  const [commentText, setCommentText] = useState('')
   const [vehicleId, setVehicleId] = useState('')
   const [km, setKm] = useState('')
   // Anexos
@@ -214,6 +220,7 @@ export function TaskDetailDialog({
     setPendencyText('')
     setReleaseOpen(false)
     setReleaseQty('')
+    setCommentText('')
     setAttachOpen(null)
     setCorrecting(null)
   }, [task, collaborators, viewerCollaboratorId])
@@ -334,6 +341,9 @@ export function TaskDetailDialog({
             <Badge variant="neutralLight">
               {task.taskType.name} · {task.stepIndex + 1}º {task.step.name}
             </Badge>
+            {task.priority === 'URGENT' && (
+              <Badge variant="errorLight">Urgente</Badge>
+            )}
             {task.late && <Badge variant="errorLight">Prazo em atraso</Badge>}
             {task.releasedNext && (
               <Badge variant="successLight">
@@ -427,6 +437,33 @@ export function TaskDetailDialog({
                 >
                   Liberar próxima etapa
                 </Button>
+              )}
+              {/* Urgente sobe na fila do setor (GP-47, item 4) */}
+              {open && (
+                <PermissionGate permissions={PRODUCTION_MANAGE}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={
+                      task.priority === 'URGENT'
+                        ? 'errorOutline'
+                        : 'neutralOutline'
+                    }
+                    LeftIcon={IconFlag}
+                    isLoading={pending === 'priority'}
+                    onClick={() =>
+                      run('priority', () =>
+                        setTaskPriority({
+                          id: task.id,
+                          priority:
+                            task.priority === 'URGENT' ? 'NORMAL' : 'URGENT',
+                        }),
+                      )
+                    }
+                  >
+                    {task.priority === 'URGENT' ? 'Tirar urgência' : 'Urgente'}
+                  </Button>
+                </PermissionGate>
               )}
             </div>
             {pendencyOpen && (
@@ -1235,16 +1272,80 @@ export function TaskDetailDialog({
               </div>
             )}
 
-            {/* Histórico */}
-            {task.history.length > 0 && (
+            {/* Comentários da equipe (VS-5; GP-47, item 3): texto livre, no
+                histórico, sem notificação */}
+            <div className="space-y-2">
+              <p className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                <Icon icon={IconMessage} size="sm" />
+                Comentários
+                <span className="font-normal text-gray">
+                  (
+                  {
+                    task.history.filter((entry) => entry.kind === 'COMMENT')
+                      .length
+                  }
+                  )
+                </span>
+              </p>
+              <ul className="space-y-1.5">
+                {task.history
+                  .filter((entry) => entry.kind === 'COMMENT')
+                  .map((entry) => (
+                    <li
+                      key={entry.id}
+                      className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-800"
+                    >
+                      <p className="whitespace-pre-wrap">{entry.text}</p>
+                      <p className="text-xs text-gray">
+                        {entry.by} · {when(entry.at)}
+                      </p>
+                    </li>
+                  ))}
+              </ul>
+              <div className="flex items-end gap-2">
+                <Textarea
+                  id="task-comment"
+                  aria-label="Comentário"
+                  value={commentText}
+                  rows={2}
+                  placeholder="Um recado para quem pega esta tarefa"
+                  onChange={(event) => setCommentText(event.target.value)}
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  isLoading={pending === 'comment'}
+                  disabled={!commentText.trim()}
+                  onClick={async () => {
+                    if (
+                      await run(
+                        'comment',
+                        () => addComment({ id: task.id, text: commentText }),
+                        'Comentário registrado',
+                      )
+                    )
+                      setCommentText('')
+                  }}
+                >
+                  Comentar
+                </Button>
+              </div>
+            </div>
+
+            {/* Histórico (sem os comentários, que têm o bloco acima) */}
+            {task.history.some((entry) => entry.kind !== 'COMMENT') && (
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-800">Histórico</p>
                 <ul className="space-y-0.5 text-xs text-gray">
-                  {task.history.slice(0, 12).map((entry) => (
-                    <li key={entry.id}>
-                      {when(entry.at)} · {entry.by}: {entry.text}
-                    </li>
-                  ))}
+                  {task.history
+                    .filter((entry) => entry.kind !== 'COMMENT')
+                    .slice(0, 12)
+                    .map((entry) => (
+                      <li key={entry.id}>
+                        {when(entry.at)} · {entry.by}: {entry.text}
+                      </li>
+                    ))}
                 </ul>
               </div>
             )}

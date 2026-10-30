@@ -143,7 +143,16 @@ export type TaskAttachment = {
   versions: AttachmentVersion[]
 }
 
-export type TaskHistory = { id: string; at: string; by: string; text: string }
+// O comentário da equipe vive no histórico (VS-5, GP-47): kind COMMENT
+export type TaskHistory = {
+  id: string
+  at: string
+  by: string
+  text: string
+  kind?: 'EVENT' | 'COMMENT'
+}
+
+export type TaskPriority = 'NORMAL' | 'URGENT'
 
 // Veículo da frota (VS-7): a instalação e a entrega ocupam o veículo
 export type Vehicle = {
@@ -213,6 +222,10 @@ export type ProductionTask = {
   // Frota (VS-7): o veículo, os km e o horário da saída
   vehicleId: string | null
   km: number | null
+  // Urgente sobe na fila do setor (GP-47, item 4); o balão conta os
+  // comentários da equipe (VS-5). A API manda; o front antigo não tinha
+  priority?: TaskPriority
+  comments?: number
 }
 
 export type ProductionProject = {

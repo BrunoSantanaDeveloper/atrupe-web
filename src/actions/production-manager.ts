@@ -592,6 +592,32 @@ export const addPendency = async ({ id, text }: { id: string; text: string }) =>
     'Pendência registrada',
   )
 
+// O comentário da equipe, no histórico da tarefa (VS-5; GP-47, item 3)
+export const addComment = async ({ id, text }: { id: string; text: string }) =>
+  done(
+    await createItemNew({
+      route: `/production/task/${id}/comment`,
+      data: { text },
+    }),
+    'Comentário registrado',
+  )
+
+// Urgente sobe na fila do setor (GP-47, item 4)
+export const setTaskPriority = async ({
+  id,
+  priority,
+}: {
+  id: string
+  priority: 'NORMAL' | 'URGENT'
+}) =>
+  done(
+    await updateItemNew({
+      route: `/production/task/${id}`,
+      data: { priority },
+    }),
+    priority === 'URGENT' ? 'Marcada como urgente' : 'Urgência retirada',
+  )
+
 // Liberar a próxima etapa antes de concluir esta (FL-13, GP-37)
 export const releaseNext = async ({
   id,

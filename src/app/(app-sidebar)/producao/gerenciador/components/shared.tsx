@@ -64,8 +64,17 @@ export const agendaRange = (period: Period) => ({
 // A busca, a pessoa e o período, aplicados à tarefa
 export const taskMatches = (
   task: TaskView,
-  filter: { search: string; person: string; period: Period },
+  filter: {
+    search: string
+    person: string
+    period: Period
+    // A fila por máquina na impressão (GP-47, item 4)
+    machine?: string
+  },
 ) => {
+  if (filter.machine && filter.machine !== 'todas') {
+    if ((task.machine || '') !== filter.machine) return false
+  }
   if (filter.person !== 'todos') {
     const mine =
       task.assigneeId === filter.person ||
@@ -76,6 +85,12 @@ export const taskMatches = (
   const text = `${task.code} ${task.stageName} ${task.itemName} ${task.project.client} ${task.project.number}`
   return text.toLowerCase().includes(filter.search.trim().toLowerCase())
 }
+
+// Urgente primeiro, mantendo a ordem de quem já está ordenado (GP-47)
+export const urgentFirst = (tasks: TaskView[]) => [
+  ...tasks.filter((task) => task.priority === 'URGENT'),
+  ...tasks.filter((task) => task.priority !== 'URGENT'),
+]
 
 // Tudo o que mostra tarefa recarrega junto depois de uma ação
 export function useProductionRefresh() {

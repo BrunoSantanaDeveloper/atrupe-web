@@ -31,6 +31,7 @@ import { shortDate } from './shared'
 import {
   IconLock,
   IconTruck,
+  IconMessage,
   IconPaperclip,
   IconAlertTriangle,
 } from '@tabler/icons-react'
@@ -105,6 +106,11 @@ export function TaskCard({
           {shortDate(item.project.due)}
         </p>
         <div className="flex flex-wrap items-center gap-1.5">
+          {item.priority === 'URGENT' && (
+            <Badge variant="errorLight" size="sm">
+              Urgente
+            </Badge>
+          )}
           <Badge variant={badge.variant} size="sm">
             {badge.text}
           </Badge>
@@ -124,6 +130,13 @@ export function TaskCard({
               label="Tem anexos"
               className="text-gray"
             />
+          )}
+          {/* O balão conta os comentários da equipe (VS-5) */}
+          {!!item.comments && (
+            <span className="flex items-center gap-0.5 text-xs text-gray">
+              <Icon icon={IconMessage} size="sm" label="Comentários" />
+              {item.comments}
+            </span>
           )}
           {item.vehicleId && (
             <Icon
