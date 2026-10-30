@@ -93,7 +93,7 @@
     "suggestedPriceBreakdown": "Suggested price breakdown",
     "costCharges": "Cost {costShare} + charges {charges}",
     "texto": "{label}: {value}",
-    "eachGroupSTotalIs": "Each group's total is the sum of priced items and pending ones.",
+    "eachGroupTotalIsThe": "Each group total is the sum of priced items, pending items and items that have no cost yet.",
     "pendingItem": "pending item",
     "pendingItems": "pending items",
     "belowCost2": "{belowCost} below cost"

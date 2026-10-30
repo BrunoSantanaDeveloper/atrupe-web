@@ -39,6 +39,7 @@ import { getDataOld } from '@/actions/_cruds'
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import { unitSymbol } from '../../[id]/composicao/assembly'
 
 // Third-party
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
@@ -349,15 +350,29 @@ export function ProductsData({ searchParams, tabs }: Props) {
                         )}
                         {canSeeValues && (
                           <TableCell className="text-success-700">
-                            {(() => {
-                              const unitKind =
-                                product?.items?.[0]?.unitKind || 'UNITY'
-                              const visualUnitCost = convertRawToUnitCost(
-                                unitKind,
-                                product?.unitCost || 0,
-                              )
-                              return formatCurrencyToBrl(visualUnitCost)
-                            })()}
+                            {/* Um preço por unidade de venda: o unitCost do
+                              produto é a soma de todas, e m² somado com
+                              unidade dava R$ 20.000.100,00 (Lite 4, item 07) */}
+                            {(product?.items?.length
+                              ? product.items
+                              : [
+                                  {
+                                    unitKind: 'UNITY',
+                                    unitCost: product?.unitCost || 0,
+                                  },
+                                ]
+                            ).map((item, index, units) => (
+                              <p key={index}>
+                                {formatCurrencyToBrl(
+                                  convertRawToUnitCost(
+                                    item.unitKind,
+                                    item.unitCost,
+                                  ),
+                                )}
+                                {units.length > 1 &&
+                                  `/${unitSymbol[item.unitKind as keyof typeof unitSymbol] ?? 'un'}`}
+                              </p>
+                            ))}
                           </TableCell>
                         )}
                         <TableCell>

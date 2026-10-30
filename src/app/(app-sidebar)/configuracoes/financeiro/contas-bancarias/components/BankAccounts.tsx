@@ -21,7 +21,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent } from '@/components/ui/card'
 
 // Components
-import { Topbar } from '@/components/common/Topbar'
+import { Topbar, type TabNavType } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { AccountDialog } from './AccountDialog'
@@ -60,7 +60,7 @@ import { useMoney } from '@/hooks/useMoney'
 // Utils
 import { cn } from '@/lib/utils'
 
-export function BankAccounts(_: SearchParamsType) {
+export function BankAccounts({ searchParams }: SearchParamsType) {
   // Custo e preço só para quem tem a permissão de valores (§9)
   const money = useMoney()
   const queryClient = useQueryClient()
@@ -87,6 +87,19 @@ export function BankAccounts(_: SearchParamsType) {
   const active = accounts.filter((account) => account.isActive)
   const inactive = accounts.filter((account) => !account.isActive)
   const total = active.reduce((sum, account) => sum + account.balance, 0)
+
+  // Ativas e Inativas em abas, como em Despesas fixas e Produtos: as inativas
+  // ficavam no fim da página e não se achava onde consultá-las (Lite 4, item 04)
+  const showInactive = searchParams?.status === 'inativas'
+  const tabs: TabNavType[] = [
+    { value: 'ACTIVE', tab: 'ativas', label: 'Ativas', count: active.length },
+    {
+      value: 'INACTIVE',
+      tab: 'inativas',
+      label: 'Inativas',
+      count: inactive.length,
+    },
+  ]
 
   const refresh = () =>
     Promise.all([
@@ -261,6 +274,10 @@ export function BankAccounts(_: SearchParamsType) {
             title="Contas bancárias"
             supportText="Onde o dinheiro da empresa fica"
             previousPage="/configuracoes/financeiro"
+            tabs={tabs}
+            activeTab={showInactive ? 'inativas' : 'ativas'}
+            paramName="status"
+            countsLoading={isLoading}
             primaryCta={
               <PermissionGate
                 permissions={['financial_settings:bank_accounts:create']}
@@ -340,15 +357,19 @@ export function BankAccounts(_: SearchParamsType) {
                 </CardContent>
               </Card>
 
-              <Card>{active.map(row)}</Card>
-
-              {inactive.length > 0 && (
-                <div className="space-y-2">
-                  <p className="px-1 text-sm font-medium text-gray">
-                    Inativas · guardadas pelo histórico
-                  </p>
-                  <Card>{inactive.map(row)}</Card>
-                </div>
+              {showInactive ? (
+                <Card>
+                  {inactive.length ? (
+                    inactive.map(row)
+                  ) : (
+                    <p className="px-6 py-5 text-sm text-gray">
+                      Nenhuma conta inativa. A conta com lançamentos que você
+                      remover fica aqui, com o histórico guardado.
+                    </p>
+                  )}
+                </Card>
+              ) : (
+                <Card>{active.map(row)}</Card>
               )}
             </>
           )}

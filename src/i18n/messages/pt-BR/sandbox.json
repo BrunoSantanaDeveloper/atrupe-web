@@ -84,7 +84,7 @@
     "oPlanoQueLiberaO": "O plano que libera o recurso vem do mapa de chaves do servidor, e o botão só aparece para o titular da conta. Aqui o plano e o papel estão fixados para mostrar cada caso.",
     "avisoDaAcao": "Aviso da ação",
     "quandoAApiRecusaUma": "Quando a API recusa uma ação por plano. Os avisos usam a sua sessão: entre como titular e como colaborador para ver os dois textos.",
-    "mostrarOAviso": "Mostrar o aviso"
+    "show": "Mostrar o aviso"
   },
   "fileUpload": {
     "fileUploaderSandbox": "File Uploader — Sandbox",
@@ -317,7 +317,6 @@
     "aquiVaiUmTextoInformando": "Aqui vai um texto informando mais detalhes sobre a ação",
     "alteracoesNaoSalvas": "Alterações não salvas",
     "desejaSalvarOuDescartarAs": "Deseja salvar ou descartar as alterações?",
-    "descartar": "Descartar",
     "desejaDeletarAInformacao": "Deseja deletar a informação?",
     "essaAcaoNaoPodeSer": "Essa ação não pode ser desfeita.",
     "deletar": "Deletar",
@@ -590,7 +589,7 @@
   },
   "tema": {
     "tema": "Tema",
-    "tokensEComponentesNoTema": "Tokens e componentes no tema claro e no escuro.",
+    "tokens": "Tokens e componentes no tema claro e no escuro.",
     "superficiesENeutros": "Superfícies e neutros",
     "hierarquiaDeTexto": "Hierarquia de texto",
     "textoPrincipalGray900": "Texto principal (gray-900)",
@@ -636,7 +635,7 @@
     "atualizadoAs1432": "Atualizado às 14:32",
     "companyName": "Nome da empresa",
     "apareceNoCabecalhoDosDocumentos": "Aparece no cabeçalho dos documentos.",
-    "papeisTipograficos": "Papéis tipográficos",
+    "papers": "Papéis tipográficos",
     "cadaTextoDaInterfacePertence": "Cada texto da interface pertence a um destes papéis.",
     "escala": "Escala",
     "nomeDoPapelMedidaE": "Nome do papel, medida e exemplo. Use a classe `type-&lt;papel&gt;` ou os componentes `Heading` e `Text`.",

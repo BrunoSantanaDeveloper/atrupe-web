@@ -1,4 +1,6 @@
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { FEATURES } from '@/consts/features'
 import { FollowUpSettingsForm } from './components/FollowUpSettingsForm'
 
 export function metadata() {
@@ -17,7 +19,16 @@ export default function FollowUpSettingsPage() {
         </div>
       }
     >
-      <FollowUpSettingsForm />
+      <FeatureGate
+        features={[FEATURES.SALES.SALES_FOLLOW_UP]}
+        wall={{
+          title: 'Acompanhamento comercial',
+          description:
+            'Registrar contatos, marcar o próximo contato e lembrar quem retomar fazem parte do acompanhamento comercial.',
+        }}
+      >
+        <FollowUpSettingsForm />
+      </FeatureGate>
     </PermissionGate>
   )
 }

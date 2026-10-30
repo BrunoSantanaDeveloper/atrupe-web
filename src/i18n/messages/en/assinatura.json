@@ -93,7 +93,7 @@
     "thisIsThePersonWho": "This is the person who changes the plan, purchases or removes modules and cancels the subscription. Other administrators keep their current access.",
     "thisUpgradeIsnTAvailable": "This upgrade isn't available right now.",
     "upgradeCompleteTheCreditFrom": "Upgrade complete. The credit from your previous plan covered the first monthly payment.",
-    "finishUpgrade": "Finish upgrade",
+    "finish": "Finish",
     "youReChargedWhenYou": "You're charged when you confirm the subscription: you complete the payment on the secure invoice, which you're taken to at the end of this step.",
     "renewsAutomaticallyEveryYear": "Renews automatically every year.",
     "monthly": "MONTHLY",

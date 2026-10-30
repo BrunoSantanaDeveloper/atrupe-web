@@ -19,6 +19,7 @@ import { Form } from '@/components/ui/form'
 // Component Imports
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { AiContextButton } from '@/components/ai/AiContextButton'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 
 // Icon Imports
@@ -932,6 +933,18 @@ export function QuotationProdDetailModal({
                   placeholder="Digite aqui"
                   disabled={!canEditDescription}
                 />
+                {/* O assistente escreve o descritivo do item (IA-5, seção 9):
+                    a proposta volta no chat, para aplicar ou descartar */}
+                {editMode && data?.id && canEditDescription && (
+                  <AiContextButton
+                    label="Escrever descritivo com IA"
+                    message="Escreva o descritivo técnico deste item do orçamento."
+                    context={{
+                      quotationId: String(quotationId),
+                      quotationItemId: data.id,
+                    }}
+                  />
+                )}
               </div>
             </form>
           </Form>

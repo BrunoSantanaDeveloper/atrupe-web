@@ -80,16 +80,23 @@ const PRODUCT_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
     // unitCost é o preço de venda por unidade de medida (R$/m², R$/hora), o
     // mesmo da coluna "Preço de venda" da tela: o nome "Custo unitário" do
     // EC-28 fazia o cliente ler a própria tabela de preços como custo (CC-2)
+    // A primeira unidade de venda, a da coluna Unidade: o unitCost do produto
+    // soma todas, inclusive m² com unidade (Lite 4, item 07)
     header: 'Preço de venda',
     type: 'currency',
-    getValue: (product) => getVisualCurrencyValue(product, product.unitCost),
+    getValue: (product) =>
+      getVisualCurrencyValue(
+        product,
+        product.items?.[0]?.unitCost ?? product.unitCost,
+      ),
   },
   {
     // salePrice é o total da medida padrão, em centavos: não passa pela
     // conversão de unidade, que o multiplicava por 1.000.000 (EC-28)
     header: 'Valor total',
     type: 'currency',
-    getValue: (product) => (product.salePrice || 0) / 100,
+    getValue: (product) =>
+      (product.items?.[0]?.salePrice ?? product.salePrice ?? 0) / 100,
   },
 ]
 

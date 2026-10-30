@@ -140,6 +140,7 @@ export function QuotationItems({ data }: Props) {
     useState<ComposedItemSummary | null>(null)
   const [materialTarget, setMaterialTarget] =
     useState<ComposedItemSummary | null>(null)
+  const [outsourcedTarget, setOutsourcedTarget] = useState<string | null>(null)
 
   // Produto inativado depois de lançado (PAD-7): o item fica marcado, o bloco
   // avisa e a aprovação é travada até trocar ou retirar o item
@@ -188,7 +189,7 @@ export function QuotationItems({ data }: Props) {
       attention: !!item.attention,
     }))
   // O serviço terceirizado lançado como item (T-6): nome, fornecedor e o
-  // valor na linha avulsa; sem medida. Para alterar, retira e lança de novo
+  // valor na linha avulsa; sem medida. O lápis abre a mesma janela do lançar
   const outsourcedRows: ComposedItemSummary[] = (data?.quotationItems ?? [])
     .filter((item) => item.origin === 'OUTSOURCED')
     .map((item) => ({
@@ -417,6 +418,19 @@ export function QuotationItems({ data }: Props) {
                                 Produto inativo
                               </Badge>
                             )}
+                            {/* A composição em montagem não entra no custo
+                                (IP-14 revisto em 29/10/2026): o item vende
+                                pelo cadastro e avisa */}
+                            {item.product?.hasComposition &&
+                              item.product?.compositionStatus === 'DRAFT' && (
+                                <Badge
+                                  status
+                                  variant="warningLight"
+                                  title="A composição deste produto ainda não foi aprovada: o item usa o preço do cadastro, sem custo"
+                                >
+                                  Custo não conferido
+                                </Badge>
+                              )}
                             {item?.notes ? (
                               <IconMessage
                                 size={ICON_SIZE.sm}
@@ -857,13 +871,13 @@ export function QuotationItems({ data }: Props) {
                             >
                               <ActionButton
                                 Icon={IconPencil}
-                                tooltip={
-                                  item.origin === 'OUTSOURCED'
-                                    ? 'Para alterar, retire e lance de novo'
-                                    : 'Editar item'
-                                }
+                                tooltip="Editar item"
                                 onClick={() => {
-                                  if (item.origin === 'OUTSOURCED') return
+                                  if (item.origin === 'OUTSOURCED') {
+                                    setOutsourcedTarget(item.id)
+                                    openChangeModal(true, 'outsourcedItem')
+                                    return
+                                  }
                                   if (item.origin === 'MATERIAL') {
                                     setMaterialTarget(item)
                                     openChangeModal(true, 'materialItem')
@@ -1002,7 +1016,11 @@ export function QuotationItems({ data }: Props) {
       <QuotationOutsourcedModal
         open={modalType === 'outsourcedItem'}
         quotationId={String(data?.id)}
-        onClose={() => openChangeModal(false)}
+        itemId={outsourcedTarget}
+        onClose={() => {
+          openChangeModal(false)
+          setOutsourcedTarget(null)
+        }}
       />
       <CompositionReport item={report} onOpenChange={() => setReport(null)} />
     </>

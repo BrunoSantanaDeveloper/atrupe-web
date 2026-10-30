@@ -28,10 +28,15 @@ export const FEATURES = {
     CAN_BILL_ON_DELIVERY_AND_CHECKOUT: 'can_bill_on_delivery_and_checkout',
     // Terceirizado avulso dentro do item, já no START (T-5, 24/10/2026)
     OUTSOURCED_ITEM: 'outsourced_item',
+    // Acompanhamento comercial (CRM, área 13), do LITE em diante (CRM-7,
+    // 29/10/2026)
+    SALES_FOLLOW_UP: 'sales_follow_up',
   },
 
   // Produtos e Produção
   PRODUCTS: {
+    // Papéis no LITE (GR-0): o papel sem custo, sem a base de custos
+    PAPER_REGISTER: 'paper_register',
     PRODUCT_COMPOSITION: 'product_composition',
     PRODUCT_PRODUCTION_STAGES: 'product_production_stages',
     DELIVERY_PRODUCTION_TABS: 'delivery_production_tabs',
@@ -48,6 +53,8 @@ export const FEATURES = {
   // Produção (ELITE)
   PRODUCTION: {
     PRODUCTION_MANAGER: 'production_manager',
+    // A tela por setor sem controle de tempo, do PRO (GP-46/GP-47, 29/10/2026)
+    SECTOR_BOARD: 'sector_board',
     PRODUCTIVITY_TRACKING: 'productivity_tracking',
   },
 

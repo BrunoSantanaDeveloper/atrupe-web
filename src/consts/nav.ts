@@ -14,6 +14,7 @@ import {
   IconBolt,
   IconBoxSeam,
   IconPackages,
+  IconFiles,
   IconBuilding,
   IconSettings,
   IconChartBar,
@@ -248,7 +249,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Gerenciador de produção',
         path: '/producao/gerenciador',
         permission: 'production:production:view',
-        requiredFeature: 'production_manager',
+        // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
+        requiredFeature: ['production_manager', 'sector_board'],
         demo: true,
       },
       {
@@ -256,7 +258,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Projetos',
         path: '/producao/projetos',
         permission: 'production:production:view',
-        requiredFeature: 'production_manager',
+        // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
+        requiredFeature: ['production_manager', 'sector_board'],
         demo: true,
       },
       {
@@ -298,6 +301,15 @@ export const defaultMainNavigation: MainNavigationType[] = [
       // configuração: ficavam escondidos em abas dentro de Configurações.
       // Ordem pedida pelo time (03/10/2026): materiais → processos →
       // produtos, a ordem em que a composição é montada
+      // Papéis (GR-0, 13/10/2026): o papel do LITE, com menos campos; no
+      // PRO o mesmo registro vive também em Materiais
+      {
+        icon: IconFiles,
+        title: 'Papéis',
+        path: '/cadastros/papeis',
+        permission: 'product_settings:products:view',
+        requiredFeature: ['paper_register', 'cost_base'],
+      },
       {
         icon: IconPackages,
         title: 'Materiais',
@@ -466,7 +478,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Produção',
         path: '/configuracoes/producao',
         permission: 'production:production:view',
-        requiredFeature: 'production_manager',
+        // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
+        requiredFeature: ['production_manager', 'sector_board'],
         demo: true,
       },
       {

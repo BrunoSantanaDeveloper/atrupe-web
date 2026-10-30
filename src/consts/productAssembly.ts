@@ -5,20 +5,22 @@
 import type { BadgeType } from '@/types/coreTypes'
 import type { AssemblyStatus } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
-// Situação do produto composto (IP-14): compor leva tempo, e o vendedor não
-// pode pegar no orçamento um produto pela metade
+// Situação da composição (IP-14 revisto em 29/10/2026, GP-47): o produto
+// vende sempre, pelo preço do cadastro; a composição em montagem não entra
+// no custo. Quem aprova confirma que ela está completa e correta: só então a
+// base de custos do produto passa a valer no orçamento
 export const assemblyStatusObj: {
   [key in AssemblyStatus]: BadgeType & { help: string }
 } = {
   DRAFT: {
-    text: 'Em edição',
-    variant: 'neutralLight',
-    help: 'Não aparece no orçamento enquanto a composição é montada.',
+    text: 'Em montagem',
+    variant: 'warningLight',
+    help: 'O produto vende pelo preço do cadastro; o item avisa "custo não conferido" até a composição ser aprovada.',
   },
   RELEASED: {
-    text: 'Liberado para venda',
+    text: 'Aprovada',
     variant: 'successLight',
-    help: 'O vendedor encontra o produto no orçamento.',
+    help: 'A composição confere: o custo e o preço sugerido valem no orçamento.',
   },
   PART: {
     text: 'Parte',

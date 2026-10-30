@@ -327,12 +327,30 @@ export function PDV() {
           </Card>
         )}
 
+        {/* O aviso leva ao fechamento (29/10/2026): o botão "Fechar caixa"
+            do topo passava despercebido e quem via o aviso não achava como
+            fechar o caixa anterior */}
         {stale && session && (
-          <Card className="border-warning-300 bg-warning-50 p-4 text-sm text-warning-800 animate-in fade-in-0 duration-base">
-            O caixa nº {session.number} foi aberto em{' '}
-            {new Date(session.openedAt).toLocaleDateString('pt-BR')} e ficou
-            aberto. Feche-o, conferindo a gaveta, para voltar a receber: não se
-            lança nada no dia seguinte com o caixa anterior aberto.
+          <Card className="flex flex-col gap-3 border-warning-300 bg-warning-50 p-4 text-sm text-warning-800 sm:flex-row sm:items-center sm:justify-between animate-in fade-in-0 duration-base">
+            <p>
+              <strong>
+                O caixa nº {session.number} foi aberto em{' '}
+                {new Date(session.openedAt).toLocaleDateString('pt-BR')} e ficou
+                aberto.
+              </strong>{' '}
+              Feche-o, conferindo a gaveta, para voltar a receber: não se lança
+              nada no dia seguinte com o caixa anterior aberto.
+            </p>
+            <PermissionGate permissions={['financial:pdv:edit']}>
+              <Button
+                type="button"
+                size="sm"
+                className="shrink-0"
+                onClick={() => setDialog('fechar')}
+              >
+                Fechar agora
+              </Button>
+            </PermissionGate>
           </Card>
         )}
 

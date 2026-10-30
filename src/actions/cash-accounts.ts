@@ -102,15 +102,19 @@ export const getBankAccounts = async () => {
 
 /** As formas da tabela de regras são as condições de pagamento reais. */
 export const getPaymentMethods = async () => {
+  // A rota não aceita o filtro isActive (400, e a janela da conta ficava sem
+  // nenhuma forma): as inativas saem aqui
   const res: ApiResult = await getItem({
     route: '/payment-condition',
-    params: { page: '1', limit: '100', isActive: 'true' },
+    params: { page: '1', limit: '100' },
   })
   if (!res.success)
     return fail(res.message, [] as { id: string; name: string }[])
   const rows: Raw[] = res.data?.data ?? res.data ?? []
   return ok(
-    rows.map((row) => ({ id: row.id as string, name: row.name as string })),
+    rows
+      .filter((row) => row.isActive !== false)
+      .map((row) => ({ id: row.id as string, name: row.name as string })),
   )
 }
 

@@ -124,6 +124,7 @@ export function NewCompany({
             name: data.general.name,
             legalName: data.general.legalName,
             logo: data.personalization.logoUrl,
+            logoDark: data.personalization.logoDarkUrl,
             favicon: data.personalization.favIconUrl,
           },
         })
@@ -167,6 +168,7 @@ export function NewCompany({
       },
       personalization: {
         logoUrl: company?.personalization?.logoUrl ?? '',
+        logoDarkUrl: company?.personalization?.logoDarkUrl ?? '',
         favIconUrl: company?.personalization?.favIconUrl ?? '',
         textsBeforeItems: company?.personalization?.textsBeforeItems ?? '',
         textsAfterItems: company?.personalization?.textsAfterItems ?? '',

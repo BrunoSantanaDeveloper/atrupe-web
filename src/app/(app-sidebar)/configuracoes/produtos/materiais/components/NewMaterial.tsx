@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -30,6 +30,7 @@ import type {
   MaterialShape,
   MaterialAdvanced,
 } from '../types'
+import type { SheetFormat } from '@/app/(app-sidebar)/cadastros/papeis/types'
 
 // Components
 import { InactivateMaterialDialog } from './InactivateMaterialDialog'
@@ -43,6 +44,7 @@ import {
 
 // Hooks / Store / Consts
 import { assetUnitOptions } from '@/consts/assets'
+import { sheetFormatObj, sheetFormatOptions } from '@/consts/papers'
 import { useSector } from '@/hooks/queries/useSector'
 
 // Third-party
@@ -136,9 +138,8 @@ export function NewMaterialModal({ material }: Props) {
         .map((item) => ({ value: item.id, label: item.name })),
     [sectorList, material?.sectorId],
   )
-  useEffect(() => {
-    if (!sectorId && sectors.length) setSectorId(sectors[0].value)
-  }, [sectorId, sectors])
+  // O material novo sempre pergunta o setor (GP-47, item 9; achado 5 da
+  // revisão do PRO): sem padrão, para o setor não sair errado sem ninguém ver
   const [subcategory, setSubcategory] = useState(
     material?.subcategory || subcategories[0].value,
   )
@@ -167,6 +168,37 @@ export function NewMaterialModal({ material }: Props) {
   )
   const setAdvField = (key: keyof typeof adv, value: string) =>
     setAdv((current) => ({ ...current, [key]: value }))
+  // O papel (Papéis, GR-0): gramatura, formato da folha e área útil. Sem
+  // formato, a folha é só uma chapa (ACM, PS). O padrão preenche a medida
+  const [grammage, setGrammage] = useState(text(material?.grammage))
+  const [sheetFormat, setSheetFormat] = useState<SheetFormat | ''>(
+    material?.sheetFormat || '',
+  )
+  const [usable, setUsable] = useState({
+    width: text(material?.usableWidth),
+    height: text(material?.usableHeight),
+  })
+  const preset = sheetFormat ? sheetFormatObj[sheetFormat] : null
+  const presetSize = !!preset?.width
+  const pickFormat = (value: SheetFormat | '') => {
+    setSheetFormat(value)
+    const size = value ? sheetFormatObj[value] : null
+    if (size?.width)
+      setAdv((current) => ({
+        ...current,
+        width: String(size.width),
+        height: String(size.height),
+      }))
+  }
+  const paper =
+    showAdvanced && shape === 'SHEET'
+      ? {
+          grammage: numberOrNull(grammage),
+          sheetFormat: sheetFormat || null,
+          usableWidth: numberOrNull(usable.width),
+          usableHeight: numberOrNull(usable.height),
+        }
+      : {}
   const advanced: MaterialAdvanced | undefined = showAdvanced
     ? {
         shape,
@@ -191,6 +223,7 @@ export function NewMaterialModal({ material }: Props) {
         productionMaterial,
         cost: centsOrNull(cost),
         advanced,
+        ...paper,
       }
 
       return material
@@ -282,6 +315,7 @@ export function NewMaterialModal({ material }: Props) {
             <SelectBasic
               name="sector"
               label="Setor"
+              placeholder="Escolha o setor"
               value={sectorId}
               onChange={setSectorId}
               options={sectors}
@@ -435,6 +469,37 @@ export function NewMaterialModal({ material }: Props) {
                 {shape === 'SHEET' && (
                   <>
                     <div className="grid grid-cols-2 gap-3">
+                      <SelectBasic
+                        name="sheet-format"
+                        label="Formato da folha (papel)"
+                        options={[
+                          { value: '', label: 'Não é papel' },
+                          ...sheetFormatOptions,
+                        ]}
+                        value={sheetFormat}
+                        onChange={(value) =>
+                          pickFormat((value ?? '') as SheetFormat | '')
+                        }
+                      />
+                      <div className="space-y-1.5">
+                        <label
+                          htmlFor="adv-grammage"
+                          className="text-sm font-medium"
+                        >
+                          Gramatura (g/m²)
+                        </label>
+                        <Input
+                          id="adv-grammage"
+                          type="number"
+                          min={1}
+                          step={1}
+                          disabled={!sheetFormat}
+                          value={grammage}
+                          onChange={(event) => setGrammage(event.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1.5">
                         <label htmlFor="adv-w" className="text-sm font-medium">
                           Largura (mm)
@@ -443,6 +508,7 @@ export function NewMaterialModal({ material }: Props) {
                           id="adv-w"
                           type="number"
                           min={0}
+                          disabled={presetSize}
                           value={adv.width}
                           onChange={(event) =>
                             setAdvField('width', event.target.value)
@@ -457,6 +523,7 @@ export function NewMaterialModal({ material }: Props) {
                           id="adv-h"
                           type="number"
                           min={0}
+                          disabled={presetSize}
                           value={adv.height}
                           onChange={(event) =>
                             setAdvField('height', event.target.value)
@@ -464,6 +531,54 @@ export function NewMaterialModal({ material }: Props) {
                         />
                       </div>
                     </div>
+                    {/* GR-2: a área útil do papel, descontada a borda que a
+                        impressora não imprime; vazia = a folha inteira */}
+                    {sheetFormat && (
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <label
+                            htmlFor="adv-uw"
+                            className="text-sm font-medium"
+                          >
+                            Largura útil (mm)
+                          </label>
+                          <Input
+                            id="adv-uw"
+                            type="number"
+                            min={0}
+                            placeholder="A folha inteira"
+                            value={usable.width}
+                            onChange={(event) =>
+                              setUsable((current) => ({
+                                ...current,
+                                width: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label
+                            htmlFor="adv-uh"
+                            className="text-sm font-medium"
+                          >
+                            Altura útil (mm)
+                          </label>
+                          <Input
+                            id="adv-uh"
+                            type="number"
+                            min={0}
+                            placeholder="A folha inteira"
+                            value={usable.height}
+                            onChange={(event) =>
+                              setUsable((current) => ({
+                                ...current,
+                                height: event.target.value,
+                              }))
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
                     {/* AP-4 (05/10/2026): o padrão da cobrança fica no
                       material; a etapa do produto pode trocar */}
                     <label className="flex items-start justify-between gap-4">

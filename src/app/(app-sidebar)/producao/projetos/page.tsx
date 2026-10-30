@@ -20,7 +20,10 @@ export default function Page() {
       }
     >
       <FeatureGate
-        features={[FEATURES.PRODUCTION.PRODUCTION_MANAGER]}
+        features={[
+          FEATURES.PRODUCTION.PRODUCTION_MANAGER,
+          FEATURES.PRODUCTION.SECTOR_BOARD,
+        ]}
         wall={{ title: 'Projetos em produção', pageTitle: true }}
       >
         <Projects />

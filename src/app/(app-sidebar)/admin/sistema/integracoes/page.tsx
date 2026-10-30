@@ -1,5 +1,6 @@
 import { AsaasForm } from './components/AsaasForm'
 import { AiAccessForm } from './components/AiAccessForm'
+import { AiUsageCard } from './components/AiUsageCard'
 import { getItem } from '@/actions/_cruds'
 import { Topbar } from '@/components/common/Topbar'
 
@@ -27,6 +28,7 @@ export default async function IntegracoesPage() {
       />
       <div className="space-y-5">
         <AiAccessForm initialEnabled={aiAccessEnabled} />
+        <AiUsageCard />
         <AsaasForm initialData={config} />
       </div>
     </div>

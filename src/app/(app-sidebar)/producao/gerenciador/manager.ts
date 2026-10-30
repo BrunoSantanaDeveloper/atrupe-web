@@ -14,7 +14,9 @@ export type ProductionFlow = { id: string; name: string }
 
 // Como o tempo é capturado no gerenciador (GP-43): Play & Stop individual
 // ou arrastar o colaborador no coletivo. O modelo é do setor
-export type TimeMode = 'PLAY_STOP' | 'DRAG_DROP'
+// NONE (GP-47, 29/10/2026): sem controle de tempo, a tarefa só se conclui.
+// É o modo da tela por setor do PRO; o tempo é do ELITE
+export type TimeMode = 'PLAY_STOP' | 'DRAG_DROP' | 'NONE'
 
 export type ManagerUser = {
   collaboratorId: string
@@ -141,7 +143,16 @@ export type TaskAttachment = {
   versions: AttachmentVersion[]
 }
 
-export type TaskHistory = { id: string; at: string; by: string; text: string }
+// O comentário da equipe vive no histórico (VS-5, GP-47): kind COMMENT
+export type TaskHistory = {
+  id: string
+  at: string
+  by: string
+  text: string
+  kind?: 'EVENT' | 'COMMENT'
+}
+
+export type TaskPriority = 'NORMAL' | 'URGENT'
 
 // Veículo da frota (VS-7): a instalação e a entrega ocupam o veículo
 export type Vehicle = {
@@ -211,6 +222,10 @@ export type ProductionTask = {
   // Frota (VS-7): o veículo, os km e o horário da saída
   vehicleId: string | null
   km: number | null
+  // Urgente sobe na fila do setor (GP-47, item 4); o balão conta os
+  // comentários da equipe (VS-5). A API manda; o front antigo não tinha
+  priority?: TaskPriority
+  comments?: number
 }
 
 export type ProductionProject = {

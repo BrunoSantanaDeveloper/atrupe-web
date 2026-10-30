@@ -111,7 +111,9 @@ export function ProductionCalendarCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      {/* Formulário dentro de card leva p-6 (design §18.1); sem ele, os
+          campos encostavam na borda (29/10/2026) */}
+      <CardContent className="space-y-6 p-6">
         <div className="space-y-2">
           <Label>Dias de trabalho</Label>
           <div className="flex flex-wrap gap-4">

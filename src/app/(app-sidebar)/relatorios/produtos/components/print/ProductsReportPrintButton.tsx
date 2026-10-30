@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
 import { toast } from 'sonner'
 import { useSearchParams } from 'next/navigation'
 
@@ -27,8 +26,10 @@ import {
   type PeriodType,
 } from '@/lib/filter-utils'
 
-// PDF & Excel
-import { ProductsReportPdf } from './ProductsReportPdf'
+// Excel. O PDF não entra no topo do arquivo (EC-3): o @react-pdf/renderer
+// chega como undefined na renderização do servidor e dava o erro de
+// hidratação do relatório (achado 10 da revisão do PRO); biblioteca e
+// documento são carregados dentro do clique
 import { generateProductsExcel } from './generateProductsExcel'
 
 export function ProductsReportPrintButton() {
@@ -68,6 +69,10 @@ export function ProductsReportPrintButton() {
         throw new Error('Erro ao buscar dados do PDF')
       }
 
+      const [{ pdf }, { ProductsReportPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./ProductsReportPdf'),
+      ])
       const blob = await pdf(<ProductsReportPdf data={pdfData} />).toBlob()
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')

@@ -200,6 +200,13 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
             logo: companyLogo,
           }
         }
+        const companyLogoDark = company.logoDarkUrl || ''
+        if (companyLogoDark !== (session?.company?.logoDark || '')) {
+          updatePayload.company = {
+            ...updatePayload.company,
+            logoDark: companyLogoDark,
+          }
+        }
         const companyFavicon = company.favIconUrl || ''
         if (companyFavicon !== session?.company?.favicon) {
           updatePayload.company = {

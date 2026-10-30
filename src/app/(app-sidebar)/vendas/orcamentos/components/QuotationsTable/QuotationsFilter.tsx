@@ -148,7 +148,10 @@ export function QuotationsFilter({ searchParams }: SearchParamsType) {
           className="w-full sm:w-[200px]"
           options={[
             { value: 'createdAt', label: 'Data de criação' },
-            { value: 'nextContactAt', label: 'Próximo contato' },
+            // Pelo próximo contato só com o acompanhamento (CRM-7)
+            ...(hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
+              ? [{ value: 'nextContactAt', label: 'Próximo contato' }]
+              : []),
           ]}
           value={orderBy}
           onChange={(value) =>

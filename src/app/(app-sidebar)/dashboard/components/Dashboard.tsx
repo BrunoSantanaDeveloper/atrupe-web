@@ -9,6 +9,8 @@ import { Heading } from '@/components/ui/typography'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { FEATURES } from '@/consts/features'
 import { usePermissions } from '@/hooks/usePermissions'
 
 import {
@@ -130,9 +132,12 @@ function DashboardContent() {
       </PermissionGate>
 
       {/* O acompanhamento comercial do dia (CRM-3) */}
-      <PermissionGate permissions={['sale:quotation:view']}>
-        <FollowUpToday />
-      </PermissionGate>
+      {/* O acompanhamento comercial é do LITE (CRM-7, 29/10/2026) */}
+      <FeatureGate features={[FEATURES.SALES.SALES_FOLLOW_UP]}>
+        <PermissionGate permissions={['sale:quotation:view']}>
+          <FollowUpToday />
+        </PermissionGate>
+      </FeatureGate>
 
       <PermissionGate permissions={['dashboard:rankings:view']}>
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">

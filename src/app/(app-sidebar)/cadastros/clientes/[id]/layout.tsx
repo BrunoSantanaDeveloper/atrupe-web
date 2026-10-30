@@ -39,7 +39,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
   const pathname = usePathname()
   const activeTab = pathname?.split('/').filter(Boolean).at(-1) ?? 'dados'
   const { data, isLoading } = useClientById({ id: params.id })
-  const { canManageClients } = usePlanFeatures()
+  const { canManageClients, hasFeature } = usePlanFeatures()
   const { hasPermission, hasAllPermissions } = usePermissions()
 
   // Cada aba avançada só aparece se o usuário tiver a permissão do seu conteúdo.
@@ -47,7 +47,8 @@ export default function ClientDetailLayout({ children, params }: Props) {
     dados: true,
     orcamentos: hasPermission('sale:quotation:view'),
     // Acompanhamento comercial (CRM-4): os contatos de todos os orçamentos
-    contatos: hasPermission('sale:quotation:view'),
+    contatos:
+      hasPermission('sale:quotation:view') && hasFeature('sales_follow_up'),
     ordens: hasPermission('sale:order:view'),
     financeiro: hasAllPermissions([
       'financial:flow:view',

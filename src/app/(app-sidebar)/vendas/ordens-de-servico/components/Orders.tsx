@@ -109,7 +109,7 @@ const ORDER_BASE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
     getValue: (order) => ordersStatusObj[order.status]?.text || order.status,
   },
   {
-    header: 'Fase atual',
+    header: 'Etapa da venda',
     getValue: (order) => order.quotation?.tag?.text,
   },
   {

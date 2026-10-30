@@ -88,6 +88,20 @@ function Section({
                     Aguardando aprovação
                   </Badge>
                 )}
+                {/* A quebra do fechamento como detalhe do pedido (4.1.3):
+                    "R$ 845 recebidos, quebra de R$ 5 no nome de X" */}
+                {item.breakage && (
+                  <span className="mt-1 block text-xs text-warning-700">
+                    {item.breakage.direction === 'SHORTAGE'
+                      ? 'Faltou'
+                      : 'Sobrou'}{' '}
+                    {money(item.breakage.amount)} na contagem
+                    {item.breakage.responsible
+                      ? `, no nome de ${item.breakage.responsible}`
+                      : ''}
+                    . O valor a aprovar é o contado.
+                  </span>
+                )}
               </span>
               <span className="flex shrink-0 items-center gap-3">
                 <span

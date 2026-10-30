@@ -16,13 +16,14 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // do clique que gera o PDF
 import { useState } from 'react'
 import { formData, quotationExampleData } from './previewData'
-import { maskCnpj } from '@/lib/utils'
+import { cn, maskCnpj } from '@/lib/utils'
 
 export function Step3() {
   const { watch } = useFormContext<CompanyFormType>()
   const [isLoading, setIsLoading] = useState(false)
 
   const logoUrl = watch('personalization.logoUrl')
+  const logoDarkUrl = watch('personalization.logoDarkUrl')
   const favIconUrl = watch('personalization.favIconUrl')
 
   // Dados para a pré-visualização do orçamento
@@ -77,13 +78,24 @@ export function Step3() {
 
   return (
     <div className="flex flex-wrap gap-4">
-      <div className="flex gap-4  min-h-52  w-full">
+      <div className="grid w-full min-h-52 gap-4 md:grid-cols-3">
         <LogoUpload
           title="Logotipo"
           description="Será aplicado no menu lateral da plataforma, orçamentos e relatórios."
           name="personalization.logoUrl"
           imageUrl={logoUrl ?? undefined}
           customHelpText="PNG com fundo transparente até 50KB e 150x40px"
+        />
+        {/* O menu lateral troca para esta versão no tema escuro; sem ela,
+            vale o logotipo normal. Orçamentos e relatórios usam sempre o
+            normal, porque o papel é branco */}
+        <LogoUpload
+          title="Logotipo para o tema escuro"
+          description="Versão com letras claras, para o menu lateral no tema escuro. Sem ela, vale o logotipo acima."
+          name="personalization.logoDarkUrl"
+          imageUrl={logoDarkUrl ?? undefined}
+          customHelpText="PNG com fundo transparente até 50KB e 150x40px"
+          darkPreview
         />
         <LogoUpload
           title="Favicon"
@@ -131,6 +143,8 @@ interface LogoUploadProps {
   description: string
   imageUrl?: string
   customHelpText?: string
+  /** Mostra a imagem sobre fundo escuro, como ela vai aparecer */
+  darkPreview?: boolean
 }
 
 function LogoUpload({
@@ -139,6 +153,7 @@ function LogoUpload({
   name,
   imageUrl,
   customHelpText,
+  darkPreview,
 }: LogoUploadProps) {
   const { control, setValue } = useFormContext<CompanyFormType>()
 
@@ -157,7 +172,12 @@ function LogoUpload({
         />
       )}
       {imageUrl && imageUrl.length > 0 && (
-        <div className="w-full h-full flex items-center justify-center relative">
+        <div
+          className={cn(
+            'w-full h-full min-h-32 flex items-center justify-center relative rounded-xl',
+            darkPreview && 'bg-gray-900',
+          )}
+        >
           <Image
             src={imageUrl}
             alt="Logo"

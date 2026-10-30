@@ -27,7 +27,10 @@ import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
 import { AwaitingFocus, focusParam } from './QuotationsTable/AwaitingFocus'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
+import { AiQuotationDraftButton } from './AiQuotationDraftDialog'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 
@@ -105,7 +108,7 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
       quotationsStatusObj[quotation.status]?.text || quotation.status,
   },
   {
-    header: 'Fase atual',
+    header: 'Etapa da venda',
     getValue: (quotation) => quotation.tag?.text,
   },
   {
@@ -167,6 +170,9 @@ export function Quotations({ searchParams }: SearchParamsType) {
   const router = useRouter()
   const pathname = usePathname()
   const { data: session } = useSession()
+  // O acompanhamento comercial é do LITE (CRM-7, 29/10/2026)
+  const { hasFeature } = usePlanFeatures()
+  const followUp = hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
 
   // "Venda rápida" no menu leva para cá com ?novo=venda-rapida (o link antigo,
   // ?venda-rapida=1, continua valendo)
@@ -304,7 +310,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
     const filters = {
       ...exportParams,
       status: exportStatus,
-      ...focusParam(searchParams?.foco),
+      ...(followUp ? focusParam(searchParams?.foco) : {}),
     }
     const result = await getData({ route: '/sale/quotation/export', filters })
 
@@ -358,6 +364,9 @@ export function Quotations({ searchParams }: SearchParamsType) {
             {/* O mesmo caminho do menu: a venda rápida nasce com os padrões e
                 abre direto na escolha do item. O formulário "Nova venda
                 rápida" fica só para quando falta configuração */}
+            {/* "Montar com IA" (IA-1): o texto do cliente vira o rascunho,
+                como proposta; só com o assistente no plano */}
+            <AiQuotationDraftButton />
             <NewQuickSaleTriggerButton
               onOpenChange={() => router.push(`${pathname}?novo=venda-rapida`)}
             />
@@ -386,7 +395,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
                   <QuotationsFilter searchParams={searchParams} />
                 </TableFiltersHeader>
                 {/* A visão do dia (CRM-2): os focos da aba Aguardando */}
-                {status === 'concluido' && (
+                {status === 'concluido' && followUp && (
                   <AwaitingFocus
                     searchParams={searchParams}
                     counts={{

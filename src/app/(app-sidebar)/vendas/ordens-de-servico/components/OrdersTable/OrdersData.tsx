@@ -184,7 +184,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                       <TableHead>Valor</TableHead>
                     </PermissionGate>
                     <TableHead>Vendedor</TableHead>
-                    {showCurrentPhase && <TableHead>Fase atual</TableHead>}
+                    {showCurrentPhase && <TableHead>Etapa da venda</TableHead>}
                     <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>

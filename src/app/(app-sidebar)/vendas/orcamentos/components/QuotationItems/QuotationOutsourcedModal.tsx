@@ -5,7 +5,8 @@
 // Nome, fornecedor do cadastro, quantidade e custo unitário; o preço vem
 // sugerido pela API (custo + acréscimo sobre o custo) e quem vê valores
 // pode alterar. Vira um item do orçamento; ao aprovar, a conta a pagar ao
-// fornecedor nasce como a do terceirizado dentro do item.
+// fornecedor nasce como a do terceirizado dentro do item. Com `itemId`, a
+// mesma janela edita o terceirizado já lançado (Lite 4, 29/10/2026).
 
 import { useEffect, useState } from 'react'
 import { z } from 'zod'
@@ -32,7 +33,9 @@ import { SupplierSelector } from '@/components/common/form/global-inputs/Supplie
 
 import {
   addOutsourcedItem,
+  getOutsourcedItem,
   previewOutsourcedItem,
+  updateOutsourcedItem,
 } from '@/actions/outsourced-item'
 import { usePermissions } from '@/hooks/usePermissions'
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -61,12 +64,15 @@ const EMPTY: FormType = {
 interface Props {
   open: boolean
   quotationId: string
+  // O item a editar; sem ele, lança um novo
+  itemId?: string | null
   onClose: () => void
 }
 
 export function QuotationOutsourcedModal({
   open,
   quotationId,
+  itemId,
   onClose,
 }: Props) {
   const queryClient = useQueryClient()
@@ -90,6 +96,35 @@ export function QuotationOutsourcedModal({
     }
   }, [open, reset])
 
+  // Ao editar, a janela abre com o que foi lançado. O preço gravado fica
+  // como está até o custo mudar; sem a permissão de valores, o custo não
+  // vem e é digitado de novo
+  const { data: current, isLoading: loadingCurrent } = useQuery({
+    queryKey: ['outsourced-item', quotationId, itemId],
+    queryFn: () => getOutsourcedItem({ quotationId, itemId: itemId as string }),
+    enabled: open && !!itemId,
+  })
+  useEffect(() => {
+    if (!open || !itemId || !current) return
+    if (!current.success || !current.data) {
+      toast.error(current.message || 'Não foi possível abrir o terceirizado.')
+      onClose()
+      return
+    }
+    const item = current.data
+    reset({
+      name: item.name,
+      supplier: item.supplierId
+        ? { value: item.supplierId, label: item.supplierName }
+        : null,
+      quantity: item.quantity,
+      cost: item.cost ?? 0,
+      price: item.price ?? null,
+    })
+    setPriceEdited(item.price !== undefined)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current, open, itemId])
+
   // O preço sugerido vem da API: a tela não calcula preço (SEG-1)
   const { data: previewRes } = useQuery({
     queryKey: ['outsourced-preview', quotationId, cost],
@@ -107,24 +142,28 @@ export function QuotationOutsourcedModal({
   }, [suggested, priceEdited, setValue])
 
   const submit = form.handleSubmit(async (values) => {
-    const res = await addOutsourcedItem({
-      quotationId,
-      data: {
-        name: values.name,
-        supplierId: values.supplier!.value,
-        quantity: values.quantity,
-        cost: values.cost,
-        ...(canSeeValues && values.price != null
-          ? { price: values.price }
-          : {}),
-      },
-    })
+    const body = {
+      name: values.name,
+      supplierId: values.supplier!.value,
+      quantity: values.quantity,
+      cost: values.cost,
+      ...(canSeeValues && values.price != null ? { price: values.price } : {}),
+    }
+    const res = itemId
+      ? await updateOutsourcedItem({ quotationId, itemId, data: body })
+      : await addOutsourcedItem({ quotationId, data: body })
     if (!res.success) {
-      toast.error(res.message || 'Não foi possível lançar o terceirizado.')
+      toast.error(
+        res.message ||
+          (itemId
+            ? 'Não foi possível salvar o terceirizado.'
+            : 'Não foi possível lançar o terceirizado.'),
+      )
       return
     }
-    toast.success('Terceirizado lançado.')
+    toast.success(itemId ? 'Terceirizado alterado.' : 'Terceirizado lançado.')
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+    queryClient.invalidateQueries({ queryKey: ['outsourced-item'] })
     onClose()
   })
 
@@ -132,7 +171,9 @@ export function QuotationOutsourcedModal({
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
-          <DialogTitle>Terceirizado</DialogTitle>
+          <DialogTitle>
+            {itemId ? 'Editar terceirizado' : 'Terceirizado'}
+          </DialogTitle>
           <DialogDescription>
             Um serviço contratado de fornecedor só para esta venda. Ao aprovar o
             orçamento, a conta a pagar ao fornecedor é gerada com o custo
@@ -211,9 +252,10 @@ export function QuotationOutsourcedModal({
           <Button
             type="button"
             onClick={submit}
+            disabled={!!itemId && loadingCurrent}
             isLoading={form.formState.isSubmitting}
           >
-            Lançar no orçamento
+            {itemId ? 'Salvar' : 'Lançar no orçamento'}
           </Button>
         </DialogFooter>
       </DialogContent>

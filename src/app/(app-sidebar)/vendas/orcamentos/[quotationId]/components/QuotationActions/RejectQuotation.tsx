@@ -47,6 +47,7 @@ import Link from 'next/link'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 import { toast } from 'sonner'
@@ -61,6 +62,7 @@ export function RejectQuotation({ data }: Props) {
 
   const queryClient = useQueryClient()
   const { canManageRejectionReasons } = usePlanFeatures()
+  const alertDialog = useAlertDialog()
   const { notifyActionError } = usePlanErrorToast()
 
   const { data: reasonList } = useCancelReason('REJECTION')
@@ -93,14 +95,26 @@ export function RejectQuotation({ data }: Props) {
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
 
-  // Se não tiver permissão, mostra botão simples sem modal
+  // Sem o cadastro de motivos (START), o botão rejeitava com um clique, sem
+  // confirmar: a confirmação faz o papel que o motivo faz nos outros planos
+  // (29/10/2026)
   if (!canManageRejectionReasons()) {
     return (
       <CustomButton
         icon={IconX}
         title="Rejeitar orçamento"
         iconTone="error"
-        onClick={handleReject}
+        onClick={() =>
+          alertDialog.open({
+            title: 'Rejeitar orçamento?',
+            description:
+              'O orçamento vai para Rejeitados. Ele não é apagado: dá para reabrir depois.',
+            confirmLabel: 'Rejeitar',
+            cancelLabel: 'Cancelar',
+            confirmVariant: 'error',
+            onConfirm: handleReject,
+          })
+        }
       />
     )
   }

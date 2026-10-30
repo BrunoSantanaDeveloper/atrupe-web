@@ -1,5 +1,6 @@
 // React
 import { useEffect, useState } from 'react'
+import { AiContextButton } from '@/components/ai/AiContextButton'
 
 // UI
 import { toast } from 'sonner'
@@ -185,6 +186,15 @@ export function EditTransactionData({
                 width="flex-[1_0_280px]"
                 natureId={watch('natureId') || ''}
               />
+              {/* O assistente sugere natureza e categoria pelos lançamentos
+                  parecidos (seção 9); a proposta aplica no lançamento */}
+              {type === 'payable' && rowData?.id && (
+                <AiContextButton
+                  label="Sugerir categoria com IA"
+                  message={`Sugira a categoria deste lançamento: ${watch('description') || rowData.description || ''}`}
+                  context={{ payableId: rowData.id }}
+                />
+              )}
             </form>
           </Form>
         </DialogBody>

@@ -74,11 +74,13 @@ export function FollowUp({ data }: { data: QuotationType }) {
   const { hasFeature } = usePlanFeatures()
   const showTag = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
   const { data: tagsList } = useQuotationTag()
+  // O acompanhamento comercial é do LITE (CRM-7, 29/10/2026)
+  const followUp = hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
 
   // Só enquanto a negociação está aberta. Depois de aprovado ou rejeitado,
   // o card fica se ainda houver um contato anotado, para não sumir com ele
   const negotiating = ['OPEN', 'DONE', 'OVERDUE'].includes(data?.status)
-  if (!negotiating && !data?.nextContactAt) return null
+  if (!followUp || (!negotiating && !data?.nextContactAt)) return null
 
   const state = nextContactState(data?.nextContactAt)
 

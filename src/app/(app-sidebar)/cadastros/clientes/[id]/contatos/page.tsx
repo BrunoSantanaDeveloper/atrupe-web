@@ -20,7 +20,11 @@ export default function ClientContactsPage({ params }: Props) {
       }
     >
       <FeatureGate
-        features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
+        features={[
+          FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS,
+          FEATURES.SALES.SALES_FOLLOW_UP,
+        ]}
+        requireAll
         wall={{
           title: 'Abas adicionais de cliente',
           description:

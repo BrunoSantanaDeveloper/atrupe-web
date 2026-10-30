@@ -76,6 +76,10 @@ const toMaterial = (material: ApiMaterial): Material => ({
   active: material.active,
   advanced: material.advanced || undefined,
   fiscal: material.fiscal || {},
+  grammage: material.grammage ?? null,
+  sheetFormat: material.sheetFormat ?? null,
+  usableWidth: material.usableWidth ?? null,
+  usableHeight: material.usableHeight ?? null,
 })
 
 export const getMaterials = async ({
@@ -122,6 +126,11 @@ type MaterialValues = {
   directSale: boolean
   productionMaterial: boolean
   advanced?: MaterialAdvanced
+  // Só na forma folha (Papéis, GR-0); fora dela a API recusa
+  grammage?: number | null
+  sheetFormat?: Material['sheetFormat']
+  usableWidth?: number | null
+  usableHeight?: number | null
 }
 
 export const createMaterial = async (values: MaterialValues) => {

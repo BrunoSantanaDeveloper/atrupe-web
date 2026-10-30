@@ -40,6 +40,8 @@ import type {
 
 // Hooks / Store / Consts
 import { usePending } from '@/hooks/usePending'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { useCompanySectors } from '@/hooks/queries/useCompanySectors'
 import { timeModeObj, releaseRuleObj } from '@/consts/productionManager'
 
@@ -83,11 +85,15 @@ export function ManagerDialog({
 }) {
   const { sectors } = useCompanySectors()
   const { pending, track } = usePending()
+  const { hasFeature } = usePlanFeatures()
+  // O controle de tempo é do ELITE (production_manager); o PRO, com a tela
+  // por setor, só tem o modo sem tempo (GP-47)
+  const withTime = hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
   const [values, setValues] = useState<ManagerValues>({
     name: '',
     sector: '',
     flowId: '',
-    timeMode: 'PLAY_STOP',
+    timeMode: withTime ? 'PLAY_STOP' : 'NONE',
     intervalMinutes: 0,
   })
 
@@ -97,10 +103,11 @@ export function ManagerDialog({
         name: manager?.name || '',
         sector: manager?.sector || '',
         flowId: manager?.flowId || flows[0]?.id || '',
-        timeMode: manager?.timeMode || 'PLAY_STOP',
+        timeMode: manager?.timeMode || (withTime ? 'PLAY_STOP' : 'NONE'),
         intervalMinutes: manager?.intervalMinutes || 0,
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, manager, flows])
 
   const sectorOptions = Array.from(
@@ -199,11 +206,12 @@ export function ManagerDialog({
           </div>
           <div className="space-y-2">
             <Label>Controle de tempo</Label>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {(Object.keys(timeModeObj) as TimeMode[]).map((mode) => (
                 <button
                   key={mode}
                   type="button"
+                  disabled={mode !== 'NONE' && !withTime}
                   onClick={() =>
                     setValues((current) => ({ ...current, timeMode: mode }))
                   }
@@ -212,6 +220,7 @@ export function ManagerDialog({
                     values.timeMode === mode
                       ? 'border-brand-500 bg-brand-25 ring-1 ring-brand-500'
                       : 'border-gray-200 hover:border-gray-300',
+                    mode !== 'NONE' && !withTime && 'opacity-50',
                   )}
                 >
                   <span className="block text-sm font-medium text-gray-800">
@@ -223,6 +232,11 @@ export function ManagerDialog({
                 </button>
               ))}
             </div>
+            {!withTime && (
+              <p className="text-xs text-gray">
+                Iniciar, pausar e medir o tempo das tarefas são do plano Elite.
+              </p>
+            )}
           </div>
         </DialogBody>
         <DialogFooter>
