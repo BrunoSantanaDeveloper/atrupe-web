@@ -16942,5 +16942,25 @@
   "869d257d84": {
     "es": "Etapa de la venta",
     "en": "Sale stage"
+  },
+  "f090c9214c": {
+    "es": "en el conteo",
+    "en": "in the count"
+  },
+  "f33c1eeefe": {
+    "es": "Faltó",
+    "en": "Short"
+  },
+  "892365b2e3": {
+    "es": "Sobró",
+    "en": "Over"
+  },
+  "81abb01ad5": {
+    "es": ", a nombre de {responsible}",
+    "en": ", in the name of {responsible}"
+  },
+  "beae0f1e40": {
+    "es": ". El valor a aprobar es el contado.",
+    "en": ". The amount to approve is the counted one."
   }
 }

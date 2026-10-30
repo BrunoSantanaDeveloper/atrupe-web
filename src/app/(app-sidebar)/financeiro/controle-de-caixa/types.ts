@@ -118,6 +118,14 @@ export type Movement = {
   // registro dos dois lados
   awaitingApproval?: boolean
   approvedBy?: string
+  // A quebra do fechamento da frente vem junto do valor a aprovar (4.1.3,
+  // revisão do LITE §17.1 item 3): um pedido só, o contado a aprovar e a
+  // quebra como detalhe, no nome de quem operava
+  breakage?: {
+    amount: number
+    direction: 'SHORTAGE' | 'OVERAGE'
+    responsible: string
+  }
 }
 
 export type CashDayStatus = 'OPEN' | 'CLOSED'
