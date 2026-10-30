@@ -16718,5 +16718,173 @@
   "580e855506": {
     "es": "No es papel",
     "en": "Not paper"
+  },
+  "2549d36e1f": {
+    "es": "Armar con IA",
+    "en": "Build with AI"
+  },
+  "7f8c009de9": {
+    "es": "Pegue el pedido del cliente tal como llegó. La IA arma el borrador con los productos de su catálogo; usted revisa y aplica. Nada se guarda antes de eso.",
+    "en": "Paste the customer request as it came. The AI builds the draft with the products from your catalogue; you review and apply. Nothing is saved before that."
+  },
+  "b64dbd708f": {
+    "es": "Su empresa usó los mensajes del asistente de este mes.",
+    "en": "Your company has used this month’s assistant messages."
+  },
+  "ca5f798964": {
+    "es": "Ej.: \"Necesito 500 tarjetas de visita 4x4 y un banner de 1,20 x 0,80 para el viernes\"",
+    "en": "E.g.: \"I need 500 business cards 4/4 and a 1.20 x 0.80 banner by Friday\""
+  },
+  "7ca2d0b5fa": {
+    "es": "Armar el borrador",
+    "en": "Build the draft"
+  },
+  "deb53ed4c0": {
+    "es": "No se pudieron cargar las conversaciones.",
+    "en": "Could not load the conversations."
+  },
+  "212eb07d76": {
+    "es": "No se pudo cargar esta conversación.",
+    "en": "Could not load this conversation."
+  },
+  "9004606e13": {
+    "es": "No se pudo eliminar la conversación.",
+    "en": "Could not delete the conversation."
+  },
+  "21ed343303": {
+    "es": "Consulte la operación, los informes y el uso del sistema. Lo que propone, usted revisa y aplica.",
+    "en": "Ask about operations, reports and how to use the system. What it proposes, you review and apply."
+  },
+  "1545175a06": {
+    "es": "Pregunte sobre caja, ventas, clientes, informes o uso del sistema. Pida un presupuesto a partir del pedido del cliente.",
+    "en": "Ask about cash, sales, customers, reports or how to use the system. Ask for a quote from the customer request."
+  },
+  "dc5187b780": {
+    "es": "Cuota del mes agotada",
+    "en": "Monthly quota used up"
+  },
+  "0678ecc736": {
+    "es": "Aplicando",
+    "en": "Applying"
+  },
+  "e890057b85": {
+    "es": "Aplicada",
+    "en": "Applied"
+  },
+  "601654f740": {
+    "es": "Descartada",
+    "en": "Discarded"
+  },
+  "5d40eecaf5": {
+    "es": "Descartada",
+    "en": "Discarded"
+  },
+  "4e4b328529": {
+    "es": "Propuesta aplicada",
+    "en": "Proposal applied"
+  },
+  "876d5d1d12": {
+    "es": "Cliente (elija entre los parecidos)",
+    "en": "Customer (choose among the similar ones)"
+  },
+  "0e0607c565": {
+    "es": "· el presupuesto se abre sin cliente",
+    "en": "· the quote opens without a customer"
+  },
+  "2061d8a312": {
+    "es": "Destino",
+    "en": "Destination"
+  },
+  "c468fa8b32": {
+    "es": "Destino",
+    "en": "Destination"
+  },
+  "bd2fd92791": {
+    "es": "Destino",
+    "en": "Destination"
+  },
+  "1370eaf41e": {
+    "es": "Los ítems entran en el presupuesto abierto",
+    "en": "The items go into the open quote"
+  },
+  "7d109e50e0": {
+    "es": "Elegir producto",
+    "en": "Choose product"
+  },
+  "f4e1ae9066": {
+    "es": "Falta la medida",
+    "en": "Missing measurement"
+  },
+  "acaf20497a": {
+    "es": "Producto base",
+    "en": "Base product"
+  },
+  "b812baab74": {
+    "es": "Mantener",
+    "en": "Keep"
+  },
+  "e660e16559": {
+    "es": "Medida ({unit})",
+    "en": "Measurement ({unit})"
+  },
+  "42b6ba7367": {
+    "es": "· {width} × {height} m",
+    "en": "· {width} × {height} m"
+  },
+  "deb4bba241": {
+    "es": "la unidad",
+    "en": "each"
+  },
+  "7a6bf3b871": {
+    "es": "Total previsto: {total}",
+    "en": "Expected total: {total}"
+  },
+  "6cf1081b24": {
+    "es": "Observación: {notes}",
+    "en": "Note: {notes}"
+  },
+  "21a03f4ed5": {
+    "es": "Hoy: {current}",
+    "en": "Today: {current}"
+  },
+  "5e6a5cf092": {
+    "es": "Movimiento:",
+    "en": "Entry:"
+  },
+  "d7a3e0c4c5": {
+    "es": "Confianza alta",
+    "en": "High confidence"
+  },
+  "beca8ffa5d": {
+    "es": "Confianza baja",
+    "en": "Low confidence"
+  },
+  "9258454787": {
+    "es": "Sin sugerencia para este movimiento.",
+    "en": "No suggestion for this entry."
+  },
+  "3b8cd167ca": {
+    "es": "Con base en",
+    "en": "Based on"
+  },
+  "c6d0b56cd0": {
+    "es": "movimiento(s) parecido(s)",
+    "en": "similar entry(ies)"
+  },
+  "4b1c4c30a4": {
+    "es": ": {valor}",
+    "en": ": {valor}"
+  },
+  "7ea449fce7": {
+    "es": "Anotación",
+    "en": "Note"
+  },
+  "177b35b001": {
+    "es": "Nada se guarda hasta que aplique. Vale por 24 horas.",
+    "en": "Nothing is saved until you apply. Valid for 24 hours."
+  },
+  "b00b359ec5": {
+    "es": "Abrir el presupuesto",
+    "en": "Open the quote"
   }
 }

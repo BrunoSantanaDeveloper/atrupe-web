@@ -116,7 +116,7 @@
     "editarCliente": "Editar cliente",
     "ativas": "Ativas",
     "inativas": "Inativas",
-    "descartadas": "Descartadas",
+    "discarded": "Descartadas",
     "contasTrial": "Contas trial",
     "nenhumOrcamentoParaOStatus": "Nenhum orçamento para o status {valor}",
     "nenhumaContaTrialCadastrada": "Nenhuma conta trial cadastrada",

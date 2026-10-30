@@ -1,5 +1,11 @@
 'use client'
 
+// O assistente de IA (área 11): o botão flutuante e a janela do chat. Obedece
+// ao plano e à cota (seção 9 do documento de 28/10/2026): sem o assistente
+// no plano ou com a chave global desligada, não aparece; com a cota do mês
+// estourada, mostra o aviso e não envia. As propostas da IA chegam como
+// cartões abaixo da resposta, com Aplicar e Descartar.
+
 import {
   FormEvent,
   useCallback,
@@ -9,6 +15,7 @@ import {
   useState,
 } from 'react'
 import { usePathname } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import {
   IconRobot as Bot,
   IconMessage as MessageSquare,
@@ -21,7 +28,6 @@ import { toast } from 'sonner'
 
 import {
   deleteAiConversation,
-  getAiAccessStatus,
   getAiConversations,
   getAiMessages,
   sendAiChatMessage,
@@ -38,14 +44,37 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import type { AiConversation, AiMessage } from '@/types/ai-chat'
+import type {
+  AiMessage,
+  AiConversation,
+  AiActionSummary,
+} from '@/types/ai-chat'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { AiProposalCard } from './AiProposalCard'
+import { useAiAccess, quotaText } from '@/hooks/useAiAccess'
+import { useQueryClient } from '@tanstack/react-query'
 
-type LocalMessage = AiMessage & { pending?: boolean }
+type LocalMessage = AiMessage & {
+  pending?: boolean
+  // As propostas desta resposta (o histórico traz o id na ferramenta)
+  actions?: AiActionSummary[]
+}
+
+// As propostas de uma mensagem guardada: o id vem na ferramenta que propôs
+const actionsOf = (message: AiMessage): AiActionSummary[] =>
+  (message.toolCalls || [])
+    .filter((tool) => tool.actionId)
+    .map((tool) => ({
+      id: tool.actionId as string,
+      type: 'QUOTATION_DRAFT',
+      summary: '',
+    }))
 
 export function AiChatWidget() {
   const pathname = usePathname()
-  const [accessEnabled, setAccessEnabled] = useState(false)
+  const router = useRouter()
+  const queryClient = useQueryClient()
+  const { access, visible, exceeded, refetch, setQuotaExceeded } = useAiAccess()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingMessages, setLoadingMessages] = useState(false)
@@ -60,34 +89,21 @@ export function AiChatWidget() {
     [conversationId, conversations],
   )
 
-  const loadAccessStatus = useCallback(async () => {
-    try {
-      const status = await getAiAccessStatus()
-      setAccessEnabled(status.enabled)
-      if (!status.enabled) setOpen(false)
-    } catch {
-      setAccessEnabled(false)
-    }
-  }, [])
-
   const loadConversations = useCallback(async () => {
     try {
       const data = await getAiConversations()
       setConversations(data)
     } catch {
-      await loadAccessStatus()
-      toast.error('Nao foi possivel carregar as conversas.')
+      await refetch()
+      toast.error('Não foi possível carregar as conversas.')
     }
-  }, [loadAccessStatus])
-
-  useEffect(() => {
-    loadAccessStatus()
-  }, [loadAccessStatus])
+  }, [refetch])
 
   useEffect(() => {
     if (!open) return
     loadConversations()
-  }, [loadConversations, open])
+    refetch()
+  }, [loadConversations, open, refetch])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -98,10 +114,10 @@ export function AiChatWidget() {
     setLoadingMessages(true)
     try {
       const data = await getAiMessages(id)
-      setMessages(data)
+      setMessages(data.map((item) => ({ ...item, actions: actionsOf(item) })))
     } catch {
-      await loadAccessStatus()
-      toast.error('Nao foi possivel carregar esta conversa.')
+      await refetch()
+      toast.error('Não foi possível carregar esta conversa.')
     } finally {
       setLoadingMessages(false)
     }
@@ -119,15 +135,15 @@ export function AiChatWidget() {
       if (conversationId === id) startNewConversation()
       setConversations((current) => current.filter((item) => item.id !== id))
     } catch {
-      await loadAccessStatus()
-      toast.error('Nao foi possivel excluir a conversa.')
+      await refetch()
+      toast.error('Não foi possível excluir a conversa.')
     }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const text = message.trim()
-    if (!text || loading) return
+    if (!text || loading || exceeded) return
 
     const userMessage: LocalMessage = {
       id: `local-user-${Date.now()}`,
@@ -141,45 +157,46 @@ export function AiChatWidget() {
     setMessage('')
     setLoading(true)
 
-    try {
-      const response = await sendAiChatMessage({
-        message: text,
-        conversationId,
-        context: { currentPath: pathname },
-      })
+    const response = await sendAiChatMessage({
+      message: text,
+      conversationId,
+      context: { currentPath: pathname },
+    })
+    setLoading(false)
 
-      setConversationId(response.conversationId)
-      setMessages((current) => [
-        ...current.map((item) =>
-          item.id === userMessage.id ? { ...item, pending: false } : item,
-        ),
-        {
-          id: `local-assistant-${Date.now()}`,
-          role: 'assistant',
-          content: response.message,
-          toolCalls: response.toolCalls || [],
-          createdAt: new Date().toISOString(),
-        },
-      ])
-      await loadConversations()
-    } catch (error: unknown) {
-      const actionError = error as {
-        response?: { data?: { message?: string } }
-      }
+    if ('failed' in response) {
       setMessages((current) =>
         current.filter((item) => item.id !== userMessage.id),
       )
-      await loadAccessStatus()
-      toast.error(
-        actionError.response?.data?.message ||
-          'Nao foi possivel enviar a mensagem para a IA.',
-      )
-    } finally {
-      setLoading(false)
+      setMessage(text)
+      // A cota do mês estourou (429): o aviso fica na janela
+      if (response.status === 429) setQuotaExceeded(response.quota)
+      else await refetch()
+      toast.error(response.message)
+      return
     }
+
+    setConversationId(response.conversationId)
+    setMessages((current) => [
+      ...current.map((item) =>
+        item.id === userMessage.id ? { ...item, pending: false } : item,
+      ),
+      {
+        id: `local-assistant-${Date.now()}`,
+        role: 'assistant',
+        content: response.message,
+        toolCalls: response.toolCalls || [],
+        actions: response.actions || [],
+        createdAt: new Date().toISOString(),
+      },
+    ])
+    await loadConversations()
+    refetch()
   }
 
-  if (!accessEnabled) return null
+  if (!visible) return null
+
+  const quota = quotaText(access.quota)
 
   return (
     <>
@@ -199,7 +216,9 @@ export function AiChatWidget() {
           <DialogHeader className="px-5 py-4">
             <DialogTitle>Assistente IA</DialogTitle>
             <DialogDescription>
-              Consulte operacao, relatorios e funcionalidades da conta.
+              Consulte a operação, os relatórios e o uso do sistema. O que ele
+              propõe, você confere e aplica.
+              {quota && <span className="block text-xs">{quota}</span>}
             </DialogDescription>
           </DialogHeader>
 
@@ -285,10 +304,8 @@ export function AiChatWidget() {
                         <div
                           key={item.id}
                           className={cn(
-                            'flex',
-                            item.role === 'user'
-                              ? 'justify-end'
-                              : 'justify-start',
+                            'flex flex-col gap-2',
+                            item.role === 'user' ? 'items-end' : 'items-start',
                           )}
                         >
                           <div
@@ -304,6 +321,24 @@ export function AiChatWidget() {
                               {item.content}
                             </p>
                           </div>
+                          {/* O cartão de cada proposta desta resposta */}
+                          {item.actions?.map((action) => (
+                            <div key={action.id} className="w-full max-w-[92%]">
+                              <AiProposalCard
+                                actionId={action.id}
+                                summary={action.summary}
+                                onApplied={(_applied, result) => {
+                                  queryClient.invalidateQueries()
+                                  if (typeof result.quotationId === 'string') {
+                                    setOpen(false)
+                                    router.push(
+                                      `/vendas/orcamentos/${result.quotationId}`,
+                                    )
+                                  }
+                                }}
+                              />
+                            </div>
+                          ))}
                         </div>
                       ))
                   ) : (
@@ -319,8 +354,9 @@ export function AiChatWidget() {
                           Como posso ajudar?
                         </p>
                         <p className="mt-1 text-xs text-gray-500">
-                          Pergunte sobre caixa, vendas, clientes, relatorios ou
-                          uso do sistema.
+                          Pergunte sobre caixa, vendas, clientes, relatórios ou
+                          uso do sistema. Peça um orçamento a partir do pedido
+                          do cliente.
                         </p>
                       </div>
                     </div>
@@ -340,11 +376,21 @@ export function AiChatWidget() {
                 onSubmit={handleSubmit}
                 className="border-t border-gray-200 bg-white p-4"
               >
+                {exceeded && (
+                  <p className="mb-3 rounded-lg bg-warning-50 px-4 py-2 text-sm text-warning-700">
+                    Sua empresa usou as mensagens do assistente deste mês.
+                    {access.quota &&
+                      ` A cota renova em ${new Date(access.quota.renewsAt).toLocaleDateString('pt-BR')}.`}
+                  </p>
+                )}
                 <div className="flex items-end gap-3">
                   <Textarea
                     value={message}
                     onChange={(event) => setMessage(event.target.value)}
-                    placeholder="Digite sua pergunta"
+                    placeholder={
+                      exceeded ? 'Cota do mês esgotada' : 'Digite sua pergunta'
+                    }
+                    disabled={exceeded}
                     className="min-h-11 max-h-32 resize-none bg-white"
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' && !event.shiftKey) {
@@ -357,7 +403,7 @@ export function AiChatWidget() {
                     type="submit"
                     size="iconMd"
                     isLoading={loading}
-                    disabled={!message.trim()}
+                    disabled={!message.trim() || exceeded}
                     aria-label="Enviar mensagem"
                   >
                     <Icon icon={Send} size="md" />

@@ -554,15 +554,6 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsFilter.tsx:150 (propriedade:label)"
   ]
  },
- "admin.avaliacao.descartadas": {
-  "pt": "Descartadas",
-  "marcas": [
-   "interno"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/admin/avaliacao/contas-trial/components/Main.tsx:64 (propriedade:label)"
-  ]
- },
  "admin.avaliacao.digiteSuaSenha": {
   "pt": "Digite sua senha",
   "marcas": [
@@ -610,6 +601,15 @@
    "src/app/(app-sidebar)/admin/avaliacao/contas-trial/components/TrialAccountHistoryDialog/index.tsx:124 (atributo:placeholder)",
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/ClientHistoryDialog/index.tsx:104 (aviso)",
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/ClientHistoryDialog/index.tsx:193 (atributo:placeholder)"
+  ]
+ },
+ "admin.avaliacao.discarded": {
+  "pt": "Descartadas",
+  "marcas": [
+   "interno"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/admin/avaliacao/contas-trial/components/Main.tsx:64 (propriedade:label)"
   ]
  },
  "admin.avaliacao.eMailEObrigatorio": {
@@ -38888,22 +38888,22 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceRecipientSection.tsx:76 (jsx)"
   ]
  },
- "notaFiscal.emitir.destinoDaOperacao": {
-  "pt": "Destino da operação",
-  "marcas": [
-   "fiscal-br"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceEmissionConfigSection.tsx:484 (jsx)"
-  ]
- },
- "notaFiscal.emitir.destinoOperacao": {
+ "notaFiscal.emitir.destination": {
   "pt": "Destino operação",
   "marcas": [
    "fiscal-br"
   ],
   "usos": [
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceConfigSection.tsx:42 (propriedade:label)"
+  ]
+ },
+ "notaFiscal.emitir.destination2": {
+  "pt": "Destino da operação",
+  "marcas": [
+   "fiscal-br"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceEmissionConfigSection.tsx:484 (jsx)"
   ]
  },
  "notaFiscal.emitir.devolucao": {

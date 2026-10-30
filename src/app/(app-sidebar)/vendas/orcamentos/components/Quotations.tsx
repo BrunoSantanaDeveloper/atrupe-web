@@ -27,6 +27,7 @@ import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
 import { AwaitingFocus, focusParam } from './QuotationsTable/AwaitingFocus'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
+import { AiQuotationDraftButton } from './AiQuotationDraftDialog'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
@@ -363,6 +364,9 @@ export function Quotations({ searchParams }: SearchParamsType) {
             {/* O mesmo caminho do menu: a venda rápida nasce com os padrões e
                 abre direto na escolha do item. O formulário "Nova venda
                 rápida" fica só para quando falta configuração */}
+            {/* "Montar com IA" (IA-1): o texto do cliente vira o rascunho,
+                como proposta; só com o assistente no plano */}
+            <AiQuotationDraftButton />
             <NewQuickSaleTriggerButton
               onOpenChange={() => router.push(`${pathname}?novo=venda-rapida`)}
             />
