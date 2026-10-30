@@ -589,7 +589,7 @@
   },
   "tema": {
     "tema": "Tema",
-    "tokensEComponentesNoTema": "Tokens e componentes no tema claro e no escuro.",
+    "tokens": "Tokens e componentes no tema claro e no escuro.",
     "superficiesENeutros": "Superfícies e neutros",
     "hierarquiaDeTexto": "Hierarquia de texto",
     "textoPrincipalGray900": "Texto principal (gray-900)",

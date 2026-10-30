@@ -81,7 +81,7 @@
     "errorSavingTheDistribution": "Erro ao salvar a distribuição",
     "indirectCostDistribution": "Distribuição dos custos indiretos",
     "chooseHowMuchOfThe": "Escolha quanto do custo administrativo cada setor produtivo recebe. Distribuir é opcional: pelo método do custo puro, o padrão é deixar o administrativo fora do custo dos setores e cobri-lo com o resultado das vendas.",
-    "referenceMonth": "Mês de referência: {referenceMonth}.",
+    "month": "Mês de referência: {referenceMonth}.",
     "noDepartmentsYet": "Nenhum setor cadastrado",
     "addYourCompanySDepartments": "Cadastre os setores da empresa para distribuir o custo administrativo.",
     "alreadyExcluding": "Já sem",

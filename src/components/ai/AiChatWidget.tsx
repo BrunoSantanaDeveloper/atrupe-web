@@ -52,6 +52,7 @@ import type {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { AiProposalCard } from './AiProposalCard'
 import { useAiAccess, quotaText } from '@/hooks/useAiAccess'
+import { useAiChat, type AiChatContext } from '@/store/useAiChat'
 import { useQueryClient } from '@tanstack/react-query'
 
 type LocalMessage = AiMessage & {
@@ -142,7 +143,12 @@ export function AiChatWidget() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const text = message.trim()
+    await send(message.trim(), { currentPath: pathname })
+  }
+
+  // Envia a mensagem com o contexto da tela; os botões de contexto passam o
+  // que a tela tem aberto (produto, item, lançamento)
+  async function send(text: string, context: AiChatContext) {
     if (!text || loading || exceeded) return
 
     const userMessage: LocalMessage = {
@@ -160,7 +166,7 @@ export function AiChatWidget() {
     const response = await sendAiChatMessage({
       message: text,
       conversationId,
-      context: { currentPath: pathname },
+      context: { currentPath: pathname, ...context },
     })
     setLoading(false)
 
@@ -193,6 +199,21 @@ export function AiChatWidget() {
     await loadConversations()
     refetch()
   }
+
+  // O pedido de um botão de contexto: abre o chat numa conversa nova e
+  // envia na hora
+  const request = useAiChat((state) => state.request)
+  const clearRequest = useAiChat((state) => state.clear)
+  useEffect(() => {
+    if (!request || !visible) return
+    clearRequest()
+    setOpen(true)
+    setConversationId(undefined)
+    setMessages([])
+    setMessage('')
+    send(request.message, { currentPath: pathname, ...request.context })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [request, visible])
 
   if (!visible) return null
 

@@ -2,6 +2,7 @@
 
 // React
 import { useCallback, useEffect, useState } from 'react'
+import { AiContextButton } from '@/components/ai/AiContextButton'
 
 // UI
 import { toast } from 'sonner'
@@ -270,6 +271,15 @@ export function NewTransaction({ type }: Props) {
                     width="flex-[1_0_280px]"
                     natureId={watch('natureId')}
                   />
+                  {/* Na despesa nova, o assistente sugere pela descrição;
+                      como o lançamento ainda não existe, a escolha é na tela */}
+                  {type === 'payable' && !!watch('description') && (
+                    <AiContextButton
+                      label="Sugerir categoria com IA"
+                      message={`Sugira a categoria deste lançamento: ${watch('description')}`}
+                      className="self-end"
+                    />
+                  )}
                   <PaymentConditionsSelectField
                     name="paymentConditionId"
                     label="Forma de pagamento"

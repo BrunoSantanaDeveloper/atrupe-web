@@ -2,6 +2,7 @@
 
 // React
 import React, { useEffect, useState } from 'react'
+import { AiContextButton } from '@/components/ai/AiContextButton'
 
 // UI
 import {
@@ -879,6 +880,15 @@ function NewProductModal({
                         label="Descritivo técnico"
                         placeholder="Digite aqui."
                       />
+                      {/* O assistente escreve o descritivo do produto já
+                          cadastrado (IA-5, seção 9) */}
+                      {productId && (
+                        <AiContextButton
+                          label="Escrever descritivo com IA"
+                          message="Escreva o descritivo técnico deste produto."
+                          context={{ productId }}
+                        />
+                      )}
                       <div className="flex gap-6">
                         <div className="flex items-center gap-1.5">
                           <FormSwitch

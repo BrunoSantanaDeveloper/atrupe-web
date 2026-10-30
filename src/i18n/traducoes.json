@@ -3028,8 +3028,8 @@
     "en": "Undo {typeText}"
   },
   "32c014432f": {
-    "es": "Mes actual",
-    "en": "Current month"
+    "es": "Mes",
+    "en": "Month"
   },
   "32c89d624b": {
     "es": "Costo no calculado",
@@ -6852,8 +6852,8 @@
     "en": "Services"
   },
   "6e8c5b4166": {
-    "es": "Mes de referencia",
-    "en": "Reference month"
+    "es": "Mes",
+    "en": "Month"
   },
   "6eac0191be": {
     "es": "Previsto",
@@ -9480,8 +9480,8 @@
     "en": "Payroll control"
   },
   "97e01562f3": {
-    "es": "Mes de referencia: {referenceMonth}.",
-    "en": "Reference month: {referenceMonth}."
+    "es": "Mes",
+    "en": "Month"
   },
   "97e29f80cd": {
     "es": "Ingreso",
@@ -9948,8 +9948,8 @@
     "en": "Process formulas"
   },
   "9ef462c393": {
-    "es": "Mes anterior",
-    "en": "Previous month"
+    "es": "Mes",
+    "en": "Month"
   },
   "9efc3992dc": {
     "es": "Marcar como pagado",
@@ -13164,8 +13164,8 @@
     "en": "Remove {valor}"
   },
   "d426181783": {
-    "es": "Mes pasado",
-    "en": "Last month"
+    "es": "Mes",
+    "en": "Month"
   },
   "d42c5f0882": {
     "es": "Grupo eliminado",
@@ -15916,8 +15916,8 @@
     "en": "Overdue"
   },
   "38a56ac48c": {
-    "es": "Propuestas por vencer",
-    "en": "Proposals expiring"
+    "es": "Propuestas",
+    "en": "Proposals"
   },
   "967b8ca2c3": {
     "es": "Sin próximo contacto",
@@ -16978,5 +16978,61 @@
   "b291737020": {
     "es": "Las etapas de este ítem siguen las de la orden.",
     "en": "This item’s steps follow the order’s steps."
+  },
+  "cc557feaad": {
+    "es": "Escribir descripción con IA",
+    "en": "Write description with AI"
+  },
+  "bc9787a861": {
+    "es": "Escriba la descripción técnica de este ítem de la cotización.",
+    "en": "Write the technical description of this quote item."
+  },
+  "30a92559a6": {
+    "es": "Escriba la descripción técnica de este producto.",
+    "en": "Write the technical description of this product."
+  },
+  "8fa017ef90": {
+    "es": "La cuota del asistente de este mes se agotó",
+    "en": "This month’s assistant quota is used up"
+  },
+  "2ef20979ee": {
+    "es": "Sugerir categoría con IA",
+    "en": "Suggest category with AI"
+  },
+  "38e7333262": {
+    "es": "Sugiera la categoría de este movimiento: {valor}",
+    "en": "Suggest the category for this entry: {valor}"
+  },
+  "5294c94cf2": {
+    "es": "Consumo del asistente",
+    "en": "Assistant usage"
+  },
+  "b87a28a61d": {
+    "es": "Mensajes",
+    "en": "Messages"
+  },
+  "d3b297e4de": {
+    "es": "Mensajes",
+    "en": "Messages"
+  },
+  "c38c6c1f3a": {
+    "es": "Tokens",
+    "en": "Tokens"
+  },
+  "d4f8fffb81": {
+    "es": "Tokens",
+    "en": "Tokens"
+  },
+  "5bcdbc2dfb": {
+    "es": "Propuestas",
+    "en": "Proposals"
+  },
+  "3d7916479d": {
+    "es": "Aplicadas",
+    "en": "Applied"
+  },
+  "fd2303d6c3": {
+    "es": "Ningún consumo en este mes.",
+    "en": "No usage this month."
   }
 }

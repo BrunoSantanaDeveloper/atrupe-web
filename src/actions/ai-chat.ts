@@ -93,6 +93,44 @@ export async function deleteAiConversation(
   return res.data
 }
 
+// O consumo do assistente por empresa no mês (só superadmin)
+export type AiUsageRow = {
+  companyId: string
+  companyName: string | null
+  messages: number
+  promptTokens: number
+  completionTokens: number
+  costUsd: number
+  actionsProposed: number
+  actionsApplied: number
+  applyRate: number | null
+}
+
+export type AiUsage = {
+  month: string
+  companies: AiUsageRow[]
+  totals: {
+    companies: number
+    messages: number
+    promptTokens: number
+    completionTokens: number
+    costUsd: number
+    actionsProposed: number
+    actionsApplied: number
+  }
+}
+
+export const getAiUsage = async (month?: string) => {
+  const res = await getItem({
+    route: `${BASE_ROUTE}/usage`,
+    params: month ? { month } : undefined,
+  })
+  if (!res.success) {
+    return { success: false, data: null, message: res.message }
+  }
+  return { success: true, data: res.data as AiUsage, message: '' }
+}
+
 // --- As propostas -----------------------------------------------------------
 
 export const getAiAction = async (id: string) => {

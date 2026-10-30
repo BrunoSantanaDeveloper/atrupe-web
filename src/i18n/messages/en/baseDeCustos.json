@@ -81,7 +81,7 @@
     "errorSavingTheDistribution": "Error saving the distribution",
     "indirectCostDistribution": "Indirect cost distribution",
     "chooseHowMuchOfThe": "Choose how much of the overhead cost each production department receives. Distributing is optional: under the pure cost method, the default is to leave overhead out of the departments' cost and cover it with sales results.",
-    "referenceMonth": "Reference month: {referenceMonth}.",
+    "month": "Month",
     "noDepartmentsYet": "No departments yet",
     "addYourCompanySDepartments": "Add your company's departments to distribute the overhead cost.",
     "alreadyExcluding": "Already excluding",

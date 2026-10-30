@@ -7601,6 +7601,18 @@
    "src/consts/cost-base.ts:69 (propriedade:label)"
   ]
  },
+ "baseDeCustos.distribuicao.month": {
+  "pt": "Mês de referência: {referenceMonth}.",
+  "vars": [
+   "referenceMonth"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/base-de-custos/distribuicao/components/Distribution.tsx:165 (jsx)",
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:100 (jsx)",
+   "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCosts.tsx:54 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:183 (jsx)"
+  ]
+ },
  "baseDeCustos.distribuicao.monthlyCost": {
   "pt": "Custo mensal",
   "usos": [
@@ -7691,18 +7703,6 @@
    "src/app/(app-sidebar)/dashboard/components/Revenues.tsx:21 (jsx)",
    "src/app/(app-sidebar)/dashboard/components/Revenues.tsx:26 (jsx)",
    "src/app/(app-sidebar)/dashboard/components/Revenues.tsx:31 (jsx)"
-  ]
- },
- "baseDeCustos.distribuicao.referenceMonth": {
-  "pt": "Mês de referência: {referenceMonth}.",
-  "vars": [
-   "referenceMonth"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/distribuicao/components/Distribution.tsx:165 (jsx)",
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:100 (jsx)",
-   "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCosts.tsx:54 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:183 (jsx)"
   ]
  },
  "baseDeCustos.distribuicao.saveDistribution": {
@@ -14743,15 +14743,6 @@
    "src/components/layout/MyProfile/index.tsx:189 (atributo:label)"
   ]
  },
- "comum.geral.currentMonth": {
-  "pt": "Mês atual",
-  "usos": [
-   "src/app/(app-sidebar)/dashboard/components/DashboardPeriodFilter.tsx:9 (propriedade:label)",
-   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:27 (propriedade:label)",
-   "src/app/(app-sidebar)/relatorios/dfc/config.ts:8 (propriedade:label)",
-   "src/app/(app-sidebar)/relatorios/financeiro/config.ts:7 (propriedade:label)"
-  ]
- },
  "comum.geral.custom": {
   "pt": "Personalizado",
   "usos": [
@@ -15694,6 +15685,15 @@
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:419 (jsx)",
    "src/app/(blank-layout-pages)/assinatura/configurar-fiscal/page.tsx:276 (jsx)",
    "src/components/fiscal/FiscalOnboardingModal.tsx:298 (jsx)"
+  ]
+ },
+ "comum.geral.month": {
+  "pt": "Mês atual",
+  "usos": [
+   "src/app/(app-sidebar)/dashboard/components/DashboardPeriodFilter.tsx:9 (propriedade:label)",
+   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:27 (propriedade:label)",
+   "src/app/(app-sidebar)/relatorios/dfc/config.ts:8 (propriedade:label)",
+   "src/app/(app-sidebar)/relatorios/financeiro/config.ts:7 (propriedade:label)"
   ]
  },
  "comum.geral.motivo": {
@@ -33974,7 +33974,7 @@
    "src/app/(app-sidebar)/dashboard/components/FiscalOnboardingBanner.tsx:63 (jsx)"
   ]
  },
- "dashboard.inicio.proposalsExpiring": {
+ "dashboard.inicio.proposals": {
   "pt": "Propostas vencendo",
   "usos": [
    "src/app/(app-sidebar)/dashboard/components/FollowUpToday.tsx:44 (propriedade:label)"
@@ -36460,6 +36460,21 @@
    "src/app/(app-sidebar)/financeiro/despesas-fixas/components/LaunchMovementModal.tsx:181 (jsx)"
   ]
  },
+ "financeiro.despesasFixas.month": {
+  "pt": "Mês anterior",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/despesas-fixas/components/FixedExpensesFilter.tsx:170 (atributo:aria-label)",
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/PayrollFilter.tsx:170 (atributo:aria-label)",
+   "src/app/(app-sidebar)/relatorios/dfc/config.ts:9 (propriedade:label)"
+  ]
+ },
+ "financeiro.despesasFixas.month2": {
+  "pt": "Mês de referência",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/despesas-fixas/components/FixedExpensesFilter.tsx:176 (atributo:label)",
+   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/PayrollFilter.tsx:176 (atributo:label)"
+  ]
+ },
  "financeiro.despesasFixas.nextMonth": {
   "pt": "Próximo mês",
   "usos": [
@@ -36509,21 +36524,6 @@
   "usos": [
    "src/app/(app-sidebar)/financeiro/despesas-fixas/components/FixedExpenses.tsx:338 (jsx)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollItems.tsx:207 (jsx)"
-  ]
- },
- "financeiro.despesasFixas.previousMonth": {
-  "pt": "Mês anterior",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/despesas-fixas/components/FixedExpensesFilter.tsx:170 (atributo:aria-label)",
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/PayrollFilter.tsx:170 (atributo:aria-label)",
-   "src/app/(app-sidebar)/relatorios/dfc/config.ts:9 (propriedade:label)"
-  ]
- },
- "financeiro.despesasFixas.referenceMonth": {
-  "pt": "Mês de referência",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/despesas-fixas/components/FixedExpensesFilter.tsx:176 (atributo:label)",
-   "src/app/(app-sidebar)/financeiro/folha-de-pagamento/components/PayrollFilter.tsx:176 (atributo:label)"
   ]
  },
  "financeiro.despesasFixas.selectTheMonth": {
@@ -36603,7 +36603,7 @@
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/ImportFinancial/ImportFinancialModal.tsx:328 (jsx)"
   ]
  },
- "financeiro.fluxoFinanceiro.lastMonth": {
+ "financeiro.fluxoFinanceiro.month": {
   "pt": "Mês passado",
   "usos": [
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:28 (propriedade:label)",
@@ -51481,7 +51481,7 @@
    "src/app/sandbox/tema/page.tsx:233 (jsx)"
   ]
  },
- "sandbox.tema.tokensEComponentesNoTema": {
+ "sandbox.tema.tokens": {
   "pt": "Tokens e componentes no tema claro e no escuro.",
   "marcas": [
    "vitrine"
