@@ -5,6 +5,8 @@
 // da GP-28 e a caixa de colaboradores; no individual (Play & Stop), a Fila
 // do dia: a lista das tarefas por dia com o relógio e as ações em cada uma.
 // As duas visões existem nas duas; o modelo só escolhe a que abre.
+// Sem controle de tempo (NONE, GP-47; o modo do PRO): só a fila, ordenada
+// pela entrega, e a tarefa só se conclui. Sem relógio, pessoas nem agenda.
 
 // React / Next
 import { useMemo, useState } from 'react'
@@ -54,7 +56,9 @@ import {
 
 // Hooks / Consts
 import { usePermissions } from '@/hooks/usePermissions'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { updateFilterParam } from '@/lib/filter-utils'
+import { FEATURES } from '@/consts/features'
 import {
   timeModeObj,
   taskStatusObj,
@@ -86,6 +90,7 @@ export function SectorScreen({ id }: { id: string }) {
   const router = useRouter()
   const params = useSearchParams()
   const { hasPermission } = usePermissions()
+  const { hasFeature } = usePlanFeatures()
   const refresh = useProductionRefresh()
 
   const [taskId, setTaskId] = useState<string | null>(null)
@@ -113,9 +118,15 @@ export function SectorScreen({ id }: { id: string }) {
     enabled: !!id,
   })
   const board = boardRes?.data
-  const collective = board?.manager.timeMode === 'DRAG_DROP'
+  // Sem tempo: o gerenciador NONE, ou o plano sem production_manager (PRO)
+  const timeless =
+    board?.manager.timeMode === 'NONE' ||
+    !hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+  const collective = !timeless && board?.manager.timeMode === 'DRAG_DROP'
   // O modelo escolhe a visão que abre; a pessoa pode trocar (GP-45)
-  const view = (params.get('visao') as View) || (collective ? 'quadro' : 'fila')
+  const view = timeless
+    ? 'fila'
+    : (params.get('visao') as View) || (collective ? 'quadro' : 'fila')
 
   const filter = { search, person, period }
   const tasks = useMemo(
@@ -168,11 +179,42 @@ export function SectorScreen({ id }: { id: string }) {
     await refresh()
   }
 
-  // Os botões da fila do dia (GP-28): o relógio e a ação do estado
+  // Os botões da fila do dia (GP-28): o relógio e a ação do estado.
+  // Sem tempo (GP-47), só Concluir e, na pendência, Continuar
   const actions = (item: TaskView) => {
     const me = meFor(item)
     const working = !!me && item.workers.some((worker) => worker.id === me)
     const canStart = item.status === 'NOT_STARTED' && !item.blocked
+    if (timeless)
+      return (
+        <>
+          {item.status === 'PENDING' ? (
+            <Button
+              size="sm"
+              variant="neutralOutline"
+              onClick={() => act(item, 'RESUME', 'Pendência resolvida')}
+            >
+              <Icon icon={IconPlayerPlay} size="sm" />
+              Continuar
+            </Button>
+          ) : (
+            !item.blocked && (
+              <Button
+                size="sm"
+                onClick={() => act(item, 'FINISH', 'Etapa concluída')}
+              >
+                <Icon icon={IconCircleCheck} size="sm" />
+                Concluir
+              </Button>
+            )
+          )}
+          {item.blocked && item.status === 'NOT_STARTED' && (
+            <span className="text-xs text-gray">
+              Espera {item.blockedBy || 'a etapa anterior'}
+            </span>
+          )}
+        </>
+      )
     return (
       <>
         {canStart && (
@@ -245,16 +287,21 @@ export function SectorScreen({ id }: { id: string }) {
       )
     const scheduled = waiting.filter((item) => item.schedule).sort(byTime)
     const days = Array.from(new Set(scheduled.map((t) => t.schedule!.date)))
+    // Sem tempo não há agenda: a fila segue a entrega da ordem
+    const byDue = (a: TaskView, b: TaskView) =>
+      a.project.due.localeCompare(b.project.due)
     return {
       running,
       days: days.map((day) => ({
         day,
         tasks: scheduled.filter((item) => item.schedule!.date === day),
       })),
-      unscheduled: waiting.filter((item) => !item.schedule),
+      unscheduled: timeless
+        ? waiting.sort(byDue)
+        : waiting.filter((item) => !item.schedule),
       closed: tasks.filter((item) => !OPEN.includes(item.status)),
     }
-  }, [tasks])
+  }, [tasks, timeless])
 
   const section = (title: string, items: TaskView[], hint?: string) => (
     <Card key={title}>
@@ -272,6 +319,7 @@ export function SectorScreen({ id }: { id: string }) {
             item={item}
             onOpen={setTaskId}
             actions={actions(item)}
+            timeless={timeless}
           />
         ))}
         {!items.length && <p className="text-sm text-gray">Nada aqui.</p>}
@@ -289,7 +337,7 @@ export function SectorScreen({ id }: { id: string }) {
           ? [
               manager.sector,
               timeModeObj[manager.timeMode]?.text,
-              manager.intervalMinutes > 0
+              !timeless && manager.intervalMinutes > 0
                 ? `${manager.intervalMinutes} min entre tarefas`
                 : null,
               board && board.hidden > 0
@@ -317,52 +365,76 @@ export function SectorScreen({ id }: { id: string }) {
         {topbar}
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Tabs
-            value={view}
-            variant="pill"
-            onValueChange={(value) =>
-              updateFilterParam('visao', value, { router, params })
-            }
-          >
-            <TabsList>
-              <TabsTrigger value="fila">Fila do dia</TabsTrigger>
-              <TabsTrigger value="quadro">Quadro</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          {!timeless && (
+            <Tabs
+              value={view}
+              variant="pill"
+              onValueChange={(value) =>
+                updateFilterParam('visao', value, { router, params })
+              }
+            >
+              <TabsList>
+                <TabsTrigger value="fila">Fila do dia</TabsTrigger>
+                <TabsTrigger value="quadro">Quadro</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
           <p className="flex items-center gap-2 text-sm text-gray">
             <SectorIcon name={manager!.sector} size="sm" />
-            {timeModeObj[manager!.timeMode]?.help}
+            {timeless
+              ? timeModeObj.NONE.help
+              : timeModeObj[manager!.timeMode]?.help}
           </p>
         </div>
 
         <ProductionFilters
           search={search}
           onSearch={setSearch}
-          person={person}
-          onPerson={setPerson}
-          people={people}
+          person={timeless ? undefined : person}
+          onPerson={timeless ? undefined : setPerson}
+          people={timeless ? undefined : people}
           period={period}
           onPeriod={setPeriod}
         />
 
         {view === 'fila' ? (
           <div className="space-y-4">
-            {section(
-              'Em andamento',
-              queue.running,
-              'O relógio corre em quem está na tarefa; pausar ou abrir pendência para o tempo.',
-            )}
-            {queue.days.map(({ day, tasks: inDay }) =>
-              section(
-                day === today() ? 'Hoje' : dayLabel(day),
-                inDay,
-                day === today() ? 'Na ordem do horário agendado.' : undefined,
-              ),
-            )}
-            {section(
-              'Sem agendamento',
-              queue.unscheduled,
-              'Abra a tarefa para agendar: dia, início e duração.',
+            {timeless ? (
+              <>
+                {queue.running.length > 0 &&
+                  section(
+                    'Com pendência',
+                    queue.running,
+                    'Resolva a pendência e continue; depois, conclua.',
+                  )}
+                {section(
+                  'A fazer',
+                  queue.unscheduled,
+                  'Na ordem da entrega. Concluir passa a tarefa para a próxima etapa.',
+                )}
+              </>
+            ) : (
+              <>
+                {section(
+                  'Em andamento',
+                  queue.running,
+                  'O relógio corre em quem está na tarefa; pausar ou abrir pendência para o tempo.',
+                )}
+                {queue.days.map(({ day, tasks: inDay }) =>
+                  section(
+                    day === today() ? 'Hoje' : dayLabel(day),
+                    inDay,
+                    day === today()
+                      ? 'Na ordem do horário agendado.'
+                      : undefined,
+                  ),
+                )}
+                {section(
+                  'Sem agendamento',
+                  queue.unscheduled,
+                  'Abra a tarefa para agendar: dia, início e duração.',
+                )}
+              </>
             )}
             {queue.closed.length > 0 && (
               <div className="space-y-3">
@@ -528,6 +600,7 @@ export function SectorScreen({ id }: { id: string }) {
         collaborators={people}
         vehicles={board.vehicles || []}
         viewerCollaboratorId={viewer.collaboratorId}
+        timeless={timeless}
         onOpenChange={() => setTaskId(null)}
         onChanged={refresh}
       />

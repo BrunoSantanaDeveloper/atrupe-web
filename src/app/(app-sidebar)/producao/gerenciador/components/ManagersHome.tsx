@@ -3,7 +3,8 @@
 // A entrada do gerenciador de produção (GP-45, 29/10/2026): um cartão por
 // setor, como o legado abre, com a contagem de tarefas abertas e os alertas;
 // cada cartão leva à tela do setor. Abaixo, as visões gerais, de todos os
-// setores: a Agenda viva e os Veículos.
+// setores: a Agenda viva e os Veículos, que pedem o tempo (production_manager,
+// ELITE); o PRO, com a tela por setor (sector_board), vê só os cartões.
 
 // React / Next
 import { useState } from 'react'
@@ -41,7 +42,9 @@ import {
 
 // Hooks / Consts
 import { usePermissions } from '@/hooks/usePermissions'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { updateFilterParam } from '@/lib/filter-utils'
+import { FEATURES } from '@/consts/features'
 import { timeModeObj, PRODUCTION_MANAGE } from '@/consts/productionManager'
 
 // Third-party
@@ -57,7 +60,9 @@ export function ManagersHome() {
   const router = useRouter()
   const params = useSearchParams()
   const { hasPermission } = usePermissions()
+  const { hasFeature } = usePlanFeatures()
   const refresh = useProductionRefresh()
+  const withTime = hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
 
   const [taskId, setTaskId] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -85,6 +90,7 @@ export function ManagersHome() {
   const { data: agendaRes, isLoading: loadingAgenda } = useQuery({
     queryKey: ['production-agenda', period],
     queryFn: () => getAgenda(agendaRange(period)),
+    enabled: withTime,
   })
   const agenda = agendaRes?.data
 
@@ -105,7 +111,9 @@ export function ManagersHome() {
           title="Gerenciador de produção"
           supportText={
             viewer.manager
-              ? 'Cada setor tem a sua tela. Abaixo, a agenda e os veículos de todos.'
+              ? withTime
+                ? 'Cada setor tem a sua tela. Abaixo, a agenda e os veículos de todos.'
+                : 'Cada setor tem a sua tela: a fila do que é dele, na ordem da entrega.'
               : viewer.name
                 ? `Olá, ${viewer.name}: os setores em que você trabalha`
                 : 'Seu usuário não está ligado a um colaborador da produção'
@@ -133,8 +141,9 @@ export function ManagersHome() {
                     {manager.name}
                   </p>
                   <p className="truncate text-sm text-gray">
-                    {manager.sector} ·{' '}
-                    {timeModeObj[manager.timeMode]?.text ?? manager.timeMode}
+                    {manager.sector}
+                    {withTime &&
+                      ` · ${timeModeObj[manager.timeMode]?.text ?? manager.timeMode}`}
                   </p>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <Badge
@@ -175,47 +184,51 @@ export function ManagersHome() {
           </Card>
         )}
 
-        {/* As visões de todos os setores */}
-        <Tabs
-          value={view}
-          variant="pill"
-          onValueChange={(value) =>
-            updateFilterParam('visao', value, { router, params })
-          }
-        >
-          <TabsList>
-            <TabsTrigger value="agenda">Agenda viva</TabsTrigger>
-            <TabsTrigger value="veiculos">Veículos</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* As visões de todos os setores, com o tempo (ELITE) */}
+        {withTime && (
+          <>
+            <Tabs
+              value={view}
+              variant="pill"
+              onValueChange={(value) =>
+                updateFilterParam('visao', value, { router, params })
+              }
+            >
+              <TabsList>
+                <TabsTrigger value="agenda">Agenda viva</TabsTrigger>
+                <TabsTrigger value="veiculos">Veículos</TabsTrigger>
+              </TabsList>
+            </Tabs>
 
-        <ProductionFilters
-          search={search}
-          onSearch={setSearch}
-          period={period}
-          onPeriod={setPeriod}
-        />
+            <ProductionFilters
+              search={search}
+              onSearch={setSearch}
+              period={period}
+              onPeriod={setPeriod}
+            />
 
-        {loadingAgenda || !agenda ? (
-          <AgendaSkeleton />
-        ) : view === 'agenda' ? (
-          <AgendaView
-            scheduled={agenda.scheduled.filter((item) =>
-              taskMatches(item, filter),
+            {loadingAgenda || !agenda ? (
+              <AgendaSkeleton />
+            ) : view === 'agenda' ? (
+              <AgendaView
+                scheduled={agenda.scheduled.filter((item) =>
+                  taskMatches(item, filter),
+                )}
+                unscheduled={agenda.unscheduled.filter((item) =>
+                  taskMatches(item, filter),
+                )}
+                card={card}
+              />
+            ) : (
+              <VehiclesView
+                vehicles={agenda.vehicles}
+                scheduled={agenda.scheduled.filter((item) =>
+                  taskMatches(item, filter),
+                )}
+                onOpen={setTaskId}
+              />
             )}
-            unscheduled={agenda.unscheduled.filter((item) =>
-              taskMatches(item, filter),
-            )}
-            card={card}
-          />
-        ) : (
-          <VehiclesView
-            vehicles={agenda.vehicles}
-            scheduled={agenda.scheduled.filter((item) =>
-              taskMatches(item, filter),
-            )}
-            onOpen={setTaskId}
-          />
+          </>
         )}
       </div>
 
@@ -224,6 +237,7 @@ export function ManagersHome() {
         collaborators={[]}
         vehicles={agenda?.vehicles || []}
         viewerCollaboratorId={viewer.collaboratorId}
+        timeless={!withTime}
         onOpenChange={() => setTaskId(null)}
         onChanged={refresh}
       />

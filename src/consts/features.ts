@@ -51,6 +51,8 @@ export const FEATURES = {
   // Produção (ELITE)
   PRODUCTION: {
     PRODUCTION_MANAGER: 'production_manager',
+    // A tela por setor sem controle de tempo, do PRO (GP-46/GP-47, 29/10/2026)
+    SECTOR_BOARD: 'sector_board',
     PRODUCTIVITY_TRACKING: 'productivity_tracking',
   },
 

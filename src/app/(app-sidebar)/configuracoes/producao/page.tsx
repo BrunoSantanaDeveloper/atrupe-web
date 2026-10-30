@@ -20,7 +20,10 @@ export default function ProductionSettingsPage() {
       }
     >
       <FeatureGate
-        features={[FEATURES.PRODUCTION.PRODUCTION_MANAGER]}
+        features={[
+          FEATURES.PRODUCTION.PRODUCTION_MANAGER,
+          FEATURES.PRODUCTION.SECTOR_BOARD,
+        ]}
         wall={{
           title: 'Configurações da produção',
           description: 'Os gerenciadores e os tipos de tarefa da produção.',

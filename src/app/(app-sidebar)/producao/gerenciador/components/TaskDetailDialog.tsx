@@ -154,6 +154,10 @@ interface Props {
   vehicles?: Vehicle[]
   // O colaborador da sessão (se for um): o padrão de "Quem faz"
   viewerCollaboratorId?: string | null
+  // Sem controle de tempo (GP-47): o gerenciador NONE ou o PRO, que não tem
+  // production_manager. A tarefa só se conclui: sem agenda com hora, relógio,
+  // pessoas na tarefa nem apontamentos
+  timeless?: boolean
   onOpenChange: (open: boolean) => void
   onChanged: () => void
 }
@@ -163,6 +167,7 @@ export function TaskDetailDialog({
   collaborators,
   vehicles = [],
   viewerCollaboratorId = null,
+  timeless = false,
   onOpenChange,
   onChanged,
 }: Props) {
@@ -243,7 +248,11 @@ export function TaskDetailDialog({
   const badge = taskStatusBadge(task)
   const open = task.status !== 'DONE' && task.status !== 'CANCELED'
   const lastStep = task.stepIndex >= task.taskType.steps.length - 1
-  const actions = actionsByStatus[task.status]
+  // Sem tempo não se inicia nem se pausa: conclui, cancela, retoma a
+  // pendência ou reabre
+  const actions = actionsByStatus[task.status].filter(
+    (action) => !timeless || (action !== 'START' && action !== 'PAUSE'),
+  )
   const canRelease = open && !task.releasedNext
   const occupies =
     task.setupMinutes + Math.max(task.estimatedMinutes - task.setupMinutes, 0)
@@ -780,441 +789,451 @@ export function TaskDetailDialog({
           </div>
 
           <PermissionGate permissions={PRODUCTION_VIEW}>
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              {/* Agenda: data, início e duração; o preparo ocupa a máquina */}
-              <div className="space-y-3 rounded-lg border border-gray-200 p-4">
-                <p className="text-sm font-medium text-gray-800">Agenda</p>
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="col-span-3 space-y-1 sm:col-span-1">
-                    <Label htmlFor="task-date">Dia</Label>
-                    <Input
-                      id="task-date"
-                      type="date"
-                      value={schedule.date}
-                      onChange={(event) =>
-                        setSchedule((current) => ({
-                          ...current,
-                          date: event.target.value,
-                        }))
-                      }
-                    />
+            {!timeless && (
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {/* Agenda: data, início e duração; o preparo ocupa a máquina */}
+                <div className="space-y-3 rounded-lg border border-gray-200 p-4">
+                  <p className="text-sm font-medium text-gray-800">Agenda</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-3 space-y-1 sm:col-span-1">
+                      <Label htmlFor="task-date">Dia</Label>
+                      <Input
+                        id="task-date"
+                        type="date"
+                        value={schedule.date}
+                        onChange={(event) =>
+                          setSchedule((current) => ({
+                            ...current,
+                            date: event.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="task-start">Início</Label>
+                      <Input
+                        id="task-start"
+                        type="time"
+                        value={schedule.start}
+                        onChange={(event) =>
+                          setSchedule((current) => ({
+                            ...current,
+                            start: event.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="task-minutes">Duração (min)</Label>
+                      <Input
+                        id="task-minutes"
+                        type="number"
+                        min={1}
+                        value={schedule.minutes}
+                        onChange={(event) =>
+                          setSchedule((current) => ({
+                            ...current,
+                            minutes: Number(event.target.value) || 0,
+                          }))
+                        }
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="task-start">Início</Label>
-                    <Input
-                      id="task-start"
-                      type="time"
-                      value={schedule.start}
-                      onChange={(event) =>
-                        setSchedule((current) => ({
-                          ...current,
-                          start: event.target.value,
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="task-minutes">Duração (min)</Label>
-                    <Input
-                      id="task-minutes"
-                      type="number"
-                      min={1}
-                      value={schedule.minutes}
-                      onChange={(event) =>
-                        setSchedule((current) => ({
-                          ...current,
-                          minutes: Number(event.target.value) || 0,
-                        }))
-                      }
-                    />
-                  </div>
-                </div>
-                {task.machine && (
-                  <p className="text-xs text-gray">
-                    Ocupa {task.machine} por {duration(occupies)}: preparo de{' '}
-                    {duration(task.setupMinutes)} mais a produção.
-                  </p>
-                )}
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    isLoading={pending === 'schedule'}
-                    type="button"
-                    size="sm"
-                    variant="neutralOutline"
-                    disabled={!schedule.date || !schedule.minutes}
-                    onClick={() =>
-                      run(
-                        'schedule',
-                        () => scheduleTask({ id: task.id, schedule }),
-                        'Tarefa agendada',
-                      )
-                    }
-                  >
-                    {task.schedule ? 'Reagendar' : 'Agendar'}
-                  </Button>
-                  {task.schedule && (
+                  {task.machine && (
+                    <p className="text-xs text-gray">
+                      Ocupa {task.machine} por {duration(occupies)}: preparo de{' '}
+                      {duration(task.setupMinutes)} mais a produção.
+                    </p>
+                  )}
+                  <div className="flex flex-wrap gap-2">
                     <Button
-                      isLoading={pending === 'unschedule'}
+                      isLoading={pending === 'schedule'}
+                      type="button"
+                      size="sm"
+                      variant="neutralOutline"
+                      disabled={!schedule.date || !schedule.minutes}
+                      onClick={() =>
+                        run(
+                          'schedule',
+                          () => scheduleTask({ id: task.id, schedule }),
+                          'Tarefa agendada',
+                        )
+                      }
+                    >
+                      {task.schedule ? 'Reagendar' : 'Agendar'}
+                    </Button>
+                    {task.schedule && (
+                      <Button
+                        isLoading={pending === 'unschedule'}
+                        type="button"
+                        size="sm"
+                        variant="link"
+                        onClick={() =>
+                          run(
+                            'unschedule',
+                            () =>
+                              scheduleTask({
+                                id: task.id,
+                                schedule: null,
+                              }),
+                            'Agendamento removido',
+                          )
+                        }
+                      >
+                        Tirar da agenda
+                      </Button>
+                    )}
+                  </div>
+                  {/* Frota (VS-7): a saída com veículo */}
+                  {vehicles.length > 0 && (
+                    <div className="space-y-2 border-t border-gray-100 pt-3">
+                      <p className="type-eyebrow">Saída com veículo</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <SelectBasic
+                          name="task-vehicle"
+                          label="Veículo"
+                          options={[
+                            { value: 'none', label: 'Sem veículo' },
+                            ...vehicles.map((vehicle) => ({
+                              value: vehicle.id,
+                              label: `${vehicle.name} · ${vehicle.plate}`,
+                            })),
+                          ]}
+                          value={vehicleId || 'none'}
+                          onChange={(value) =>
+                            setVehicleId(value === 'none' ? '' : String(value))
+                          }
+                        />
+                        <div className="space-y-1">
+                          <Label htmlFor="task-km">Km previstos</Label>
+                          <Input
+                            id="task-km"
+                            type="number"
+                            min={0}
+                            value={km}
+                            onChange={(event) => setKm(event.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        isLoading={pending === 'vehicle'}
+                        type="button"
+                        size="sm"
+                        variant="neutralOutline"
+                        onClick={() =>
+                          run(
+                            'vehicle',
+                            () =>
+                              setTaskVehicle({
+                                id: task.id,
+                                vehicleId: vehicleId || null,
+                                km: Number(km) || null,
+                              }),
+                            'Veículo reservado',
+                          )
+                        }
+                      >
+                        Reservar veículo
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Quem faz e o relógio individual (GP-43) */}
+                <div className="space-y-3 rounded-lg border border-gray-200 p-4">
+                  <p className="text-sm font-medium text-gray-800">Quem faz</p>
+                  <SelectBasic
+                    name="task-worker"
+                    label=""
+                    options={collaborators.map((item) => ({
+                      value: item.id,
+                      label: item.working
+                        ? `${item.name} (trabalhando)`
+                        : item.name,
+                    }))}
+                    value={worker}
+                    onChange={(value) => value && setWorker(String(value))}
+                  />
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      isLoading={pending === 'assign'}
+                      type="button"
+                      size="sm"
+                      variant="neutralOutline"
+                      disabled={!worker}
+                      onClick={() =>
+                        run(
+                          'assign',
+                          () =>
+                            assignTask({
+                              id: task.id,
+                              collaboratorId: worker,
+                            }),
+                          'Tarefa atribuída',
+                        )
+                      }
+                    >
+                      Atribuir
+                    </Button>
+                    {task.taskType.timeControl && open && !myWork && (
+                      <Button
+                        isLoading={pending === 'start-work'}
+                        type="button"
+                        size="sm"
+                        variant="neutralOutline"
+                        LeftIcon={IconPlayerPlay}
+                        disabled={!worker || task.blocked}
+                        onClick={() =>
+                          run(
+                            'start-work',
+                            () =>
+                              startWork({
+                                id: task.id,
+                                collaboratorId: worker,
+                              }),
+                            'Relógio iniciado',
+                          )
+                        }
+                      >
+                        Play
+                      </Button>
+                    )}
+                  </div>
+                  {task.workers.map((person) => (
+                    <div
+                      key={person.id}
+                      className="flex items-center justify-between rounded-lg bg-success-50 px-3 py-2 text-sm text-success-700"
+                    >
+                      {person.name} está na tarefa desde{' '}
+                      {clock(person.working!.since)}
+                      <Button
+                        isLoading={pending === `stop-${person.id}`}
+                        type="button"
+                        size="sm"
+                        variant="errorGhost"
+                        LeftIcon={IconPlayerStop}
+                        onClick={() =>
+                          run(
+                            `stop-${person.id}`,
+                            () =>
+                              stopWork({
+                                id: task.id,
+                                collaboratorId: person.id,
+                              }),
+                            'Relógio parado',
+                          )
+                        }
+                      >
+                        Stop
+                      </Button>
+                    </div>
+                  ))}
+                  {!task.taskType.timeControl && (
+                    <p className="text-xs text-gray">
+                      Este tipo de tarefa não controla tempo: só se conclui.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Apontamentos por pessoa e correções (GP-43, GP-44) */}
+            {!timeless && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-medium text-gray-800">
+                    Apontamentos
+                  </p>
+                  <PermissionGate permissions={PRODUCTION_MANAGE}>
+                    <Button
                       type="button"
                       size="sm"
                       variant="link"
-                      onClick={() =>
-                        run(
-                          'unschedule',
-                          () =>
-                            scheduleTask({
-                              id: task.id,
-                              schedule: null,
-                            }),
-                          'Agendamento removido',
-                        )
-                      }
+                      className="h-auto p-0"
+                      onClick={() => {
+                        setCorrecting('new')
+                        setCorrectMinutes('')
+                        setCorrectWho(worker)
+                        setCorrectNote('')
+                      }}
                     >
-                      Tirar da agenda
+                      Lançar tempo à mão
                     </Button>
-                  )}
+                  </PermissionGate>
                 </div>
-                {/* Frota (VS-7): a saída com veículo */}
-                {vehicles.length > 0 && (
-                  <div className="space-y-2 border-t border-gray-100 pt-3">
-                    <p className="type-eyebrow">Saída com veículo</p>
-                    <div className="grid grid-cols-2 gap-2">
+                {task.timeEntries.length ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="w-[26%]">Quem</TableHead>
+                        <TableHead className="w-[26%]">Início · fim</TableHead>
+                        <TableHead className="w-[14%] text-right">
+                          Tempo
+                        </TableHead>
+                        <TableHead className="w-[22%]">Origem</TableHead>
+                        <TableHead className="w-[12%]" />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {task.timeEntries.map((entry) => (
+                        <TableRow key={entry.id}>
+                          <TableCell className="text-sm text-gray-800">
+                            {personName(entry.collaboratorId)}
+                          </TableCell>
+                          <TableCell className="text-sm text-gray-700">
+                            {clock(entry.start)} ·{' '}
+                            {entry.end ? clock(entry.end) : 'correndo'}
+                          </TableCell>
+                          <TableCell className="text-right text-sm">
+                            {entry.end ? duration(entry.minutes) : '…'}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray">
+                            {entry.source === 'CLOCK'
+                              ? 'relógio'
+                              : entry.source === 'DRAG'
+                                ? 'arrastado'
+                                : `correção${entry.note ? `: ${entry.note}` : ''}`}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {entry.end && (
+                              <PermissionGate permissions={PRODUCTION_MANAGE}>
+                                <button
+                                  type="button"
+                                  className="text-xs text-brand-700 hover:underline"
+                                  onClick={() => {
+                                    setCorrecting(entry.id)
+                                    setCorrectMinutes(String(entry.minutes))
+                                    setCorrectWho(entry.collaboratorId)
+                                    setCorrectNote('')
+                                  }}
+                                >
+                                  corrigir
+                                </button>
+                              </PermissionGate>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <p className="text-sm text-gray">
+                    Nenhum tempo apontado ainda.
+                  </p>
+                )}
+                {correcting && (
+                  <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <p className="text-sm font-medium text-gray-800">
+                      {correcting === 'new'
+                        ? 'Lançar tempo'
+                        : 'Corrigir apontamento'}
+                    </p>
+                    <p className="text-xs text-gray">
+                      A correção fica registrada: o que era, o que ficou, quem
+                      alterou e quando. Quem teve o tempo alterado vê a
+                      alteração.
+                    </p>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                      <div className="space-y-1">
+                        <Label htmlFor="correct-minutes">Tempo (min)</Label>
+                        <Input
+                          id="correct-minutes"
+                          type="number"
+                          min={0}
+                          value={correctMinutes}
+                          onChange={(event) =>
+                            setCorrectMinutes(event.target.value)
+                          }
+                        />
+                      </div>
                       <SelectBasic
-                        name="task-vehicle"
-                        label="Veículo"
-                        options={[
-                          { value: 'none', label: 'Sem veículo' },
-                          ...vehicles.map((vehicle) => ({
-                            value: vehicle.id,
-                            label: `${vehicle.name} · ${vehicle.plate}`,
-                          })),
-                        ]}
-                        value={vehicleId || 'none'}
+                        name="correct-who"
+                        label="Quem"
+                        options={collaborators.map((item) => ({
+                          value: item.id,
+                          label: item.name,
+                        }))}
+                        value={correctWho}
                         onChange={(value) =>
-                          setVehicleId(value === 'none' ? '' : String(value))
+                          value && setCorrectWho(String(value))
                         }
                       />
                       <div className="space-y-1">
-                        <Label htmlFor="task-km">Km previstos</Label>
+                        <Label htmlFor="correct-note">Motivo</Label>
                         <Input
-                          id="task-km"
-                          type="number"
-                          min={0}
-                          value={km}
-                          onChange={(event) => setKm(event.target.value)}
+                          id="correct-note"
+                          value={correctNote}
+                          placeholder="Ex.: esqueceu o relógio no almoço"
+                          onChange={(event) =>
+                            setCorrectNote(event.target.value)
+                          }
                         />
                       </div>
                     </div>
-                    <Button
-                      isLoading={pending === 'vehicle'}
-                      type="button"
-                      size="sm"
-                      variant="neutralOutline"
-                      onClick={() =>
-                        run(
-                          'vehicle',
-                          () =>
-                            setTaskVehicle({
-                              id: task.id,
-                              vehicleId: vehicleId || null,
-                              km: Number(km) || null,
-                            }),
-                          'Veículo reservado',
-                        )
-                      }
-                    >
-                      Reservar veículo
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        isLoading={pending === 'time-entry'}
+                        type="button"
+                        size="sm"
+                        disabled={!correctNote.trim() || !correctWho}
+                        onClick={async () => {
+                          const saved = await run(
+                            'time-entry',
+                            () =>
+                              correcting === 'new'
+                                ? addTimeEntry({
+                                    id: task.id,
+                                    collaboratorId: correctWho,
+                                    minutes: Number(correctMinutes) || 0,
+                                    note: correctNote,
+                                  })
+                                : correctTimeEntry({
+                                    id: task.id,
+                                    entryId: correcting,
+                                    minutes: Number(correctMinutes) || 0,
+                                    collaboratorId: correctWho,
+                                    note: correctNote,
+                                  }),
+                            'Apontamento corrigido',
+                          )
+                          if (saved) setCorrecting(null)
+                        }}
+                      >
+                        Salvar
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="neutralOutline"
+                        onClick={() => setCorrecting(null)}
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
                   </div>
                 )}
-              </div>
-
-              {/* Quem faz e o relógio individual (GP-43) */}
-              <div className="space-y-3 rounded-lg border border-gray-200 p-4">
-                <p className="text-sm font-medium text-gray-800">Quem faz</p>
-                <SelectBasic
-                  name="task-worker"
-                  label=""
-                  options={collaborators.map((item) => ({
-                    value: item.id,
-                    label: item.working
-                      ? `${item.name} (trabalhando)`
-                      : item.name,
-                  }))}
-                  value={worker}
-                  onChange={(value) => value && setWorker(String(value))}
-                />
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    isLoading={pending === 'assign'}
-                    type="button"
-                    size="sm"
-                    variant="neutralOutline"
-                    disabled={!worker}
-                    onClick={() =>
-                      run(
-                        'assign',
-                        () =>
-                          assignTask({
-                            id: task.id,
-                            collaboratorId: worker,
-                          }),
-                        'Tarefa atribuída',
-                      )
-                    }
-                  >
-                    Atribuir
-                  </Button>
-                  {task.taskType.timeControl && open && !myWork && (
-                    <Button
-                      isLoading={pending === 'start-work'}
-                      type="button"
-                      size="sm"
-                      variant="neutralOutline"
-                      LeftIcon={IconPlayerPlay}
-                      disabled={!worker || task.blocked}
-                      onClick={() =>
-                        run(
-                          'start-work',
-                          () =>
-                            startWork({ id: task.id, collaboratorId: worker }),
-                          'Relógio iniciado',
-                        )
-                      }
-                    >
-                      Play
-                    </Button>
-                  )}
-                </div>
-                {task.workers.map((person) => (
-                  <div
-                    key={person.id}
-                    className="flex items-center justify-between rounded-lg bg-success-50 px-3 py-2 text-sm text-success-700"
-                  >
-                    {person.name} está na tarefa desde{' '}
-                    {clock(person.working!.since)}
-                    <Button
-                      isLoading={pending === `stop-${person.id}`}
-                      type="button"
-                      size="sm"
-                      variant="errorGhost"
-                      LeftIcon={IconPlayerStop}
-                      onClick={() =>
-                        run(
-                          `stop-${person.id}`,
-                          () =>
-                            stopWork({
-                              id: task.id,
-                              collaboratorId: person.id,
-                            }),
-                          'Relógio parado',
-                        )
-                      }
-                    >
-                      Stop
-                    </Button>
-                  </div>
-                ))}
-                {!task.taskType.timeControl && (
-                  <p className="text-xs text-gray">
-                    Este tipo de tarefa não controla tempo: só se conclui.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Apontamentos por pessoa e correções (GP-43, GP-44) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-gray-800">
-                  Apontamentos
-                </p>
-                <PermissionGate permissions={PRODUCTION_MANAGE}>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="link"
-                    className="h-auto p-0"
-                    onClick={() => {
-                      setCorrecting('new')
-                      setCorrectMinutes('')
-                      setCorrectWho(worker)
-                      setCorrectNote('')
-                    }}
-                  >
-                    Lançar tempo à mão
-                  </Button>
-                </PermissionGate>
-              </div>
-              {task.timeEntries.length ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="w-[26%]">Quem</TableHead>
-                      <TableHead className="w-[26%]">Início · fim</TableHead>
-                      <TableHead className="w-[14%] text-right">
-                        Tempo
-                      </TableHead>
-                      <TableHead className="w-[22%]">Origem</TableHead>
-                      <TableHead className="w-[12%]" />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {task.timeEntries.map((entry) => (
-                      <TableRow key={entry.id}>
-                        <TableCell className="text-sm text-gray-800">
-                          {personName(entry.collaboratorId)}
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-700">
-                          {clock(entry.start)} ·{' '}
-                          {entry.end ? clock(entry.end) : 'correndo'}
-                        </TableCell>
-                        <TableCell className="text-right text-sm">
-                          {entry.end ? duration(entry.minutes) : '…'}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray">
-                          {entry.source === 'CLOCK'
-                            ? 'relógio'
-                            : entry.source === 'DRAG'
-                              ? 'arrastado'
-                              : `correção${entry.note ? `: ${entry.note}` : ''}`}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {entry.end && (
-                            <PermissionGate permissions={PRODUCTION_MANAGE}>
-                              <button
-                                type="button"
-                                className="text-xs text-brand-700 hover:underline"
-                                onClick={() => {
-                                  setCorrecting(entry.id)
-                                  setCorrectMinutes(String(entry.minutes))
-                                  setCorrectWho(entry.collaboratorId)
-                                  setCorrectNote('')
-                                }}
-                              >
-                                corrigir
-                              </button>
-                            </PermissionGate>
-                          )}
-                        </TableCell>
-                      </TableRow>
+                {task.corrections.length > 0 && (
+                  <ul className="space-y-1 text-xs text-gray">
+                    {task.corrections.map((correction) => (
+                      <li key={correction.id}>
+                        {when(correction.at)} · {correction.by}{' '}
+                        {correction.before ? (
+                          <>
+                            corrigiu:{' '}
+                            {personName(correction.before.collaboratorId)}{' '}
+                            {duration(correction.before.minutes)} →{' '}
+                          </>
+                        ) : (
+                          'lançou: '
+                        )}
+                        {personName(correction.after.collaboratorId)}{' '}
+                        {duration(correction.after.minutes)} · {correction.note}
+                      </li>
                     ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-sm text-gray">
-                  Nenhum tempo apontado ainda.
-                </p>
-              )}
-              {correcting && (
-                <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-sm font-medium text-gray-800">
-                    {correcting === 'new'
-                      ? 'Lançar tempo'
-                      : 'Corrigir apontamento'}
-                  </p>
-                  <p className="text-xs text-gray">
-                    A correção fica registrada: o que era, o que ficou, quem
-                    alterou e quando. Quem teve o tempo alterado vê a alteração.
-                  </p>
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <div className="space-y-1">
-                      <Label htmlFor="correct-minutes">Tempo (min)</Label>
-                      <Input
-                        id="correct-minutes"
-                        type="number"
-                        min={0}
-                        value={correctMinutes}
-                        onChange={(event) =>
-                          setCorrectMinutes(event.target.value)
-                        }
-                      />
-                    </div>
-                    <SelectBasic
-                      name="correct-who"
-                      label="Quem"
-                      options={collaborators.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
-                      value={correctWho}
-                      onChange={(value) =>
-                        value && setCorrectWho(String(value))
-                      }
-                    />
-                    <div className="space-y-1">
-                      <Label htmlFor="correct-note">Motivo</Label>
-                      <Input
-                        id="correct-note"
-                        value={correctNote}
-                        placeholder="Ex.: esqueceu o relógio no almoço"
-                        onChange={(event) => setCorrectNote(event.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      isLoading={pending === 'time-entry'}
-                      type="button"
-                      size="sm"
-                      disabled={!correctNote.trim() || !correctWho}
-                      onClick={async () => {
-                        const saved = await run(
-                          'time-entry',
-                          () =>
-                            correcting === 'new'
-                              ? addTimeEntry({
-                                  id: task.id,
-                                  collaboratorId: correctWho,
-                                  minutes: Number(correctMinutes) || 0,
-                                  note: correctNote,
-                                })
-                              : correctTimeEntry({
-                                  id: task.id,
-                                  entryId: correcting,
-                                  minutes: Number(correctMinutes) || 0,
-                                  collaboratorId: correctWho,
-                                  note: correctNote,
-                                }),
-                          'Apontamento corrigido',
-                        )
-                        if (saved) setCorrecting(null)
-                      }}
-                    >
-                      Salvar
-                    </Button>
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="neutralOutline"
-                      onClick={() => setCorrecting(null)}
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
-                </div>
-              )}
-              {task.corrections.length > 0 && (
-                <ul className="space-y-1 text-xs text-gray">
-                  {task.corrections.map((correction) => (
-                    <li key={correction.id}>
-                      {when(correction.at)} · {correction.by}{' '}
-                      {correction.before ? (
-                        <>
-                          corrigiu:{' '}
-                          {personName(correction.before.collaboratorId)}{' '}
-                          {duration(correction.before.minutes)} →{' '}
-                        </>
-                      ) : (
-                        'lançou: '
-                      )}
-                      {personName(correction.after.collaboratorId)}{' '}
-                      {duration(correction.after.minutes)} · {correction.note}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+                  </ul>
+                )}
+              </div>
+            )}
 
             {/* Histórico */}
             {task.history.length > 0 && (

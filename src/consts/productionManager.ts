@@ -24,6 +24,10 @@ export const timeModeObj: {
     text: 'Arrastar colaborador (coletivo)',
     help: 'Arraste quem está disponível para a tarefa; o tempo corre enquanto ele está nela. Para setores em que várias pessoas trabalham juntas: acabamento, instalação.',
   },
+  NONE: {
+    text: 'Sem controle de tempo',
+    help: 'A tarefa só se conclui: sem relógio nem pessoas na tarefa. É o modo do PRO; iniciar, pausar e medir o tempo são do ELITE.',
+  },
 }
 
 export const releaseRuleObj: {

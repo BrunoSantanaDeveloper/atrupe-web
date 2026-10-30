@@ -29,7 +29,10 @@ export default function Page({ params }: { params: { id: string } }) {
       }
     >
       <FeatureGate
-        features={[FEATURES.PRODUCTION.PRODUCTION_MANAGER]}
+        features={[
+          FEATURES.PRODUCTION.PRODUCTION_MANAGER,
+          FEATURES.PRODUCTION.SECTOR_BOARD,
+        ]}
         wall={{
           title: 'Gerenciador de produção',
           description:

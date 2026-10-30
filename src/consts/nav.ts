@@ -248,7 +248,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Gerenciador de produção',
         path: '/producao/gerenciador',
         permission: 'production:production:view',
-        requiredFeature: 'production_manager',
+        // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
+        requiredFeature: ['production_manager', 'sector_board'],
         demo: true,
       },
       {
@@ -256,7 +257,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Projetos',
         path: '/producao/projetos',
         permission: 'production:production:view',
-        requiredFeature: 'production_manager',
+        // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
+        requiredFeature: ['production_manager', 'sector_board'],
         demo: true,
       },
       {
@@ -466,7 +468,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Produção',
         path: '/configuracoes/producao',
         permission: 'production:production:view',
-        requiredFeature: 'production_manager',
+        // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
+        requiredFeature: ['production_manager', 'sector_board'],
         demo: true,
       },
       {

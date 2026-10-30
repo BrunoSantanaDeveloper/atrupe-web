@@ -14,7 +14,9 @@ export type ProductionFlow = { id: string; name: string }
 
 // Como o tempo é capturado no gerenciador (GP-43): Play & Stop individual
 // ou arrastar o colaborador no coletivo. O modelo é do setor
-export type TimeMode = 'PLAY_STOP' | 'DRAG_DROP'
+// NONE (GP-47, 29/10/2026): sem controle de tempo, a tarefa só se conclui.
+// É o modo da tela por setor do PRO; o tempo é do ELITE
+export type TimeMode = 'PLAY_STOP' | 'DRAG_DROP' | 'NONE'
 
 export type ManagerUser = {
   collaboratorId: string

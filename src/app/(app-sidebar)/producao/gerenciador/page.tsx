@@ -20,7 +20,10 @@ export default function ProductionBoardPage() {
       }
     >
       <FeatureGate
-        features={[FEATURES.PRODUCTION.PRODUCTION_MANAGER]}
+        features={[
+          FEATURES.PRODUCTION.PRODUCTION_MANAGER,
+          FEATURES.PRODUCTION.SECTOR_BOARD,
+        ]}
         wall={{
           title: 'Gerenciador de produção',
           description:

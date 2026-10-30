@@ -65,6 +65,8 @@ import {
 // Hooks / Store / Consts
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePending } from '@/hooks/usePending'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { projectStatusObj, PRODUCTION_MANAGE } from '@/consts/productionManager'
 
 // Third-party
@@ -97,6 +99,7 @@ export function ProjectDetail({ id }: { id: string }) {
   const [deliveryOpen, setDeliveryOpen] = useState(false)
   const [due, setDue] = useState('')
   const { pending: savingDelivery, track } = usePending()
+  const { hasFeature } = usePlanFeatures()
 
   const { data, isLoading } = useQuery({
     queryKey: ['production-project', id],
@@ -451,6 +454,8 @@ export function ProjectDetail({ id }: { id: string }) {
         collaborators={configRes?.data?.collaborators || []}
         vehicles={configRes?.data?.vehicles || []}
         viewerCollaboratorId={viewerRes?.data?.collaboratorId ?? null}
+        // Sem production_manager (PRO), a tarefa só se conclui (GP-47)
+        timeless={!hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)}
         onOpenChange={() => setTaskId(null)}
         onChanged={refresh}
       />

@@ -43,6 +43,7 @@ export function TaskCard({
   dragging = null,
   onDrop,
   actions,
+  timeless = false,
 }: {
   item: TaskView
   showSector?: boolean
@@ -53,6 +54,8 @@ export function TaskCard({
   onDrop?: (item: TaskView) => void
   // Os botões da fila do dia (relógio e ações), abaixo do cartão
   actions?: ReactNode
+  // Sem controle de tempo (GP-47): só o previsto, sem o apontado
+  timeless?: boolean
 }) {
   const colorOf = useSectorColor()
   const badge = taskStatusBadge(item)
@@ -106,8 +109,8 @@ export function TaskCard({
             {badge.text}
           </Badge>
           <span className="text-xs text-gray-700">
-            {duration(item.estimatedMinutes)} previsto ·{' '}
-            {duration(item.actualMinutes)} apontado
+            {duration(item.estimatedMinutes)} previsto
+            {!timeless && ` · ${duration(item.actualMinutes)} apontado`}
           </span>
           {item.schedule && (
             <span className="text-xs text-gray">
