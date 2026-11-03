@@ -41,7 +41,7 @@ export interface AccountItem {
   createdAt: string
   plan: string
   planType: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
-  status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE' | 'CANCELED'
+  status: 'ACTIVE' | 'BLOCKED' | 'AWAITING_PAYMENT' | 'INACTIVE' | 'CANCELED'
   state: { id: string; name: string }
   city: { id: string; name: string }
   /** Titular (Usuário nº 1): quem responde pela conta perante a Atrupe. */

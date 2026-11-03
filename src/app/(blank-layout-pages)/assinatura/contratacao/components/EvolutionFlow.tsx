@@ -328,6 +328,13 @@ export function EvolutionFlow() {
                       Voltar
                     </Button>
                     <SecureNote />
+                    {!nothingToPay && (
+                      <p className="text-xs text-gray-500">
+                        O novo plano é liberado assim que o pagamento for
+                        confirmado: Pix e cartão em instantes, boleto após a
+                        compensação. Até lá, seu plano atual continua valendo.
+                      </p>
+                    )}
                   </ConfirmCard>
                 </>
               }

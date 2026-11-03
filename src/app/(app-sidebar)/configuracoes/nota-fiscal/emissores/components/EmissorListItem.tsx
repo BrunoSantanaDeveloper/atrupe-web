@@ -427,6 +427,24 @@ export function EmissorListItem({
                   */}
                   {editType === 'NFCE' && (
                     <>
+                      {/*
+                        Com o ambiente ativo, o assistente (único lugar onde o
+                        CSC é informado) só abria pelo "Mudar para ...", isto é,
+                        no outro ambiente. Sem esta entrada não havia como
+                        corrigir o CSC de quem já estava em produção.
+                      */}
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onActivate(
+                            emissor,
+                            cardState.activeEnv ?? 'PRODUCAO',
+                            editType,
+                          )
+                        }}
+                      >
+                        Trocar CSC e reativar
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         onClick={(e) => {

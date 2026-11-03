@@ -43,6 +43,7 @@ export function Main({ searchParams }: SearchParamsType) {
   const totals: { [key: string]: number } = {
     ativas: statusTotal?.ACTIVE,
     bloqueadas: statusTotal?.BLOCKED,
+    aguardando: statusTotal?.AWAITING_PAYMENT,
     inativas: statusTotal?.INACTIVE,
     canceladas: statusTotal?.CANCELED,
     todos: statusTotal?.TOTAL,
@@ -63,6 +64,12 @@ export function Main({ searchParams }: SearchParamsType) {
       tab: 'bloqueadas',
       label: 'Bloqueadas',
       count: totals?.bloqueadas,
+    },
+    {
+      value: 'AWAITING_PAYMENT',
+      tab: 'aguardando',
+      label: 'Aguardando pagamento',
+      count: totals?.aguardando,
     },
     {
       value: 'INACTIVE',

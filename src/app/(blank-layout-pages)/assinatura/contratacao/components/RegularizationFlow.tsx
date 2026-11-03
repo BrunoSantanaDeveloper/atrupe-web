@@ -52,10 +52,24 @@ function reasonOf(view: RegularizationView) {
       text: `A cobrança está vencida há ${view.daysOverdue ?? 0} dia(s). Regularize para manter sua conta ativa.`,
     }
   }
+  if (view.reason === 'EVOLUTION_PENDING') {
+    return {
+      tone: 'warning' as const,
+      title: 'Pagamento da evolução pendente',
+      text: 'O novo plano é liberado assim que o pagamento for confirmado: Pix e cartão em instantes, boleto após a compensação. Até lá, seu plano atual continua valendo.',
+    }
+  }
+  if (view.reason === 'FIRST_CHARGE_PENDING') {
+    return {
+      tone: 'warning' as const,
+      title: 'Pagamento da contratação pendente',
+      text: 'Seu acesso já está liberado. Conclua o pagamento para confirmar a assinatura.',
+    }
+  }
   return {
     tone: 'warning' as const,
     title: 'Pagamento da contratação pendente',
-    text: 'Seu acesso já está liberado. Conclua o pagamento para confirmar a assinatura.',
+    text: 'O plano contratado é liberado assim que o pagamento for confirmado: Pix e cartão em instantes, boleto após a compensação.',
   }
 }
 

@@ -38,22 +38,26 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
     queryFn: () => getDashboardFinancialOverview(filters),
   })
 
-  const receivables = data?.totals?.receivables
-  const payables = data?.totals?.payables
+  // Realizado é o que foi pago no período (data de pagamento); a realizar e
+  // vencidos são o que vence no período (vencimento).
+  const paid = data?.byPaidDate
+  const due = data?.byDueDate
 
-  const realizedRevenue = receivables?.totalPaid ?? 0
-  const realizedExpense = payables?.totalPaid ?? 0
-  const expectedRevenue = receivables?.expected ?? 0
-  const expectedExpense = payables?.expected ?? 0
+  const realizedRevenue = paid?.receivables?.totalPaid ?? 0
+  const realizedExpense = paid?.payables?.totalPaid ?? 0
+  const expectedRevenue = due?.receivables?.expected ?? 0
+  const expectedExpense = due?.payables?.expected ?? 0
 
   // "A realizar" vem somado parcela a parcela pelo backend. O fallback
   // reproduz o cálculo antigo (previsto - pago do conjunto), que deixava
   // resíduo de toda parcela quitada por valor diferente do previsto;
   // serve só enquanto a API não estiver atualizada.
   const pendingRevenue =
-    receivables?.open ?? Math.max(expectedRevenue - realizedRevenue, 0)
+    due?.receivables?.open ??
+    Math.max(expectedRevenue - (due?.receivables?.totalPaid ?? 0), 0)
   const pendingExpense =
-    payables?.open ?? Math.max(expectedExpense - realizedExpense, 0)
+    due?.payables?.open ??
+    Math.max(expectedExpense - (due?.payables?.totalPaid ?? 0), 0)
 
   const realizedBalance = realizedRevenue - realizedExpense
   // Projetado = o que já se realizou mais o que ainda está em aberto.
@@ -61,11 +65,12 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
   // quitadas por valor menor que o previsto.
   const projectedBalance = realizedBalance + pendingRevenue - pendingExpense
 
-  const receivedCount = receivables?.paidCount ?? 0
-  const paidCount = payables?.paidCount ?? 0
-  const overdueTotal = (receivables?.overdue ?? 0) + (payables?.overdue ?? 0)
+  const receivedCount = paid?.receivables?.paidCount ?? 0
+  const paidCount = paid?.payables?.paidCount ?? 0
+  const overdueTotal =
+    (due?.receivables?.overdue ?? 0) + (due?.payables?.overdue ?? 0)
   const overdueCount =
-    (receivables?.overdueCount ?? 0) + (payables?.overdueCount ?? 0)
+    (due?.receivables?.overdueCount ?? 0) + (due?.payables?.overdueCount ?? 0)
 
   const cards = [
     {
@@ -110,8 +115,9 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
           permissions={['financial:flow:view', 'values:values:view']}
         >
           <Button asChild type="button" size="sm" variant="neutralOutline">
+            {/* Abre na data de pagamento, a mesma do realizado. */}
             <Link
-              href={`/financeiro/fluxo-financeiro?startDate=${filters.startDate}&endDate=${filters.endDate}`}
+              href={`/financeiro/fluxo-financeiro?startDate=${filters.startDate}&endDate=${filters.endDate}&dateType=paidDate`}
             >
               Ver fluxo
             </Link>

@@ -49,7 +49,12 @@ interface Props {
   rowData: AccountItem | null
 }
 
-type StatusOption = 'ACTIVE' | 'BLOCKED' | 'INACTIVE' | 'CANCELED'
+type StatusOption =
+  | 'ACTIVE'
+  | 'BLOCKED'
+  | 'AWAITING_PAYMENT'
+  | 'INACTIVE'
+  | 'CANCELED'
 
 const formSchema = z.object({
   status: z.enum(['ACTIVE', 'BLOCKED', 'INACTIVE']),
@@ -64,6 +69,8 @@ const getStatusConfig = (currentStatus?: StatusOption) => {
   const statusTexts: Record<StatusOption, string> = {
     ACTIVE: 'Conta ativa, o que deseja fazer?',
     BLOCKED: 'Conta bloqueada, o que deseja fazer?',
+    AWAITING_PAYMENT:
+      'Conta aguardando o pagamento da contratação, o que deseja fazer?',
     INACTIVE: 'Conta inativa, o que deseja fazer?',
     CANCELED: 'Conta cancelada, o que deseja fazer?',
   }
@@ -89,6 +96,20 @@ const getStatusConfig = (currentStatus?: StatusOption) => {
       },
     ],
     BLOCKED: [
+      {
+        label: 'Ativar',
+        value: 'ACTIVE',
+        icon: IconCheck,
+      },
+      {
+        label: 'Inativar',
+        value: 'INACTIVE',
+        icon: IconSquareX,
+      },
+    ],
+    // Ativar libera o plano antes do pagamento; inativar retém a contratação,
+    // e o pagamento já não a libera sozinho.
+    AWAITING_PAYMENT: [
       {
         label: 'Ativar',
         value: 'ACTIVE',

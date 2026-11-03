@@ -25,8 +25,19 @@ export interface ChargeInFocus {
 export interface BillingSituation {
   situation: BillingSituationKind
   daysOverdue: number
-  /** Contratação registrada, acesso liberado, primeira cobrança ainda não paga. */
+  /** Contratação registrada e a primeira cobrança ainda não paga. */
   paymentPending: boolean
+  /**
+   * O plano contratado só é liberado com esse pagamento (contratação a partir
+   * de 20/10). Falso quando a contratação já liberou o acesso — as
+   * anteriores. Ausente no backend anterior à regra.
+   */
+  activationPending?: boolean
+  /**
+   * Evolução registrada que espera o pagamento: o plano atual segue valendo e
+   * o novo é liberado quando a cobrança da evolução for paga.
+   */
+  evolutionPending?: boolean
   chargeInFocus: ChargeInFocus | null
 }
 
@@ -210,7 +221,11 @@ export interface ContractorOnFile {
 
 export interface RegularizationView {
   required: boolean
-  reason?: 'FIRST_CHARGE_PENDING' | 'OVERDUE' | 'CHECKOUT_PENDING'
+  reason?:
+    | 'FIRST_CHARGE_PENDING'
+    | 'OVERDUE'
+    | 'CHECKOUT_PENDING'
+    | 'EVOLUTION_PENDING'
   situation?: BillingSituationKind
   daysOverdue?: number
   subscription?: {

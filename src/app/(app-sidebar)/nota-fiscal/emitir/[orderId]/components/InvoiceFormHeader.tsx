@@ -41,6 +41,8 @@ function getStatusBadgeVariant(status?: string) {
   if (status === 'AUTHORIZED') return 'success' as const
   if (status === 'CORRECTION_SENT') return 'successLight' as const
   if (status === 'REJECTED') return 'error' as const
+  if (status === 'CANCELLED') return 'neutral' as const
+  if (status === 'PROCESSING' || status === 'PENDING') return 'warning' as const
   return 'blueLight' as const
 }
 
@@ -48,6 +50,10 @@ function getStatusBadgeLabel(status?: string) {
   if (status === 'AUTHORIZED') return 'NF-e Autorizada'
   if (status === 'CORRECTION_SENT') return 'CC-e Enviada'
   if (status === 'REJECTED') return 'NF-e Rejeitada'
+  // Sem estes rotulos, CANCELLED e PROCESSING caiam no padrao "Em digitação" e
+  // o usuario via uma nota aparentemente editavel, mas sem botao de emitir.
+  if (status === 'CANCELLED') return 'NF-e Cancelada'
+  if (status === 'PROCESSING' || status === 'PENDING') return 'Em processamento'
   return 'Em digitação'
 }
 
@@ -62,10 +68,15 @@ export function InvoiceFormHeader({
   const router = useRouter()
   const [isCanceling, setIsCanceling] = useState(false)
 
+  // CANCELLED entra na lista: nota cancelada nao impede emitir outra para a
+  // mesma ordem. Sem ela, quem cancelasse e tentasse refazer ficava sem botao.
+  // PROCESSING/PENDING continuam de fora de proposito — ali ha transmissao em
+  // andamento —, mas agora o rotulo diz isso em vez de "Em digitação".
   const showActionBar =
     !data.hasExistingNfe ||
     data.existingNfe?.status === 'DRAFT' ||
-    data.existingNfe?.status === 'REJECTED'
+    data.existingNfe?.status === 'REJECTED' ||
+    data.existingNfe?.status === 'CANCELLED'
 
   const handleCancel = async () => {
     // Se existe um draft salvo, excluí-lo antes de voltar
