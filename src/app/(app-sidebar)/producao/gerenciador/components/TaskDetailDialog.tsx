@@ -406,8 +406,13 @@ export function TaskDetailDialog({
                         : 'neutralOutline'
                   }
                   LeftIcon={actionIcon[action]}
+                  // Concluir a que nem começou também espera a anterior,
+                  // como a API recusa (patch 32, 03/11/2026)
                   disabled={
-                    (action === 'START' || action === 'RESUME') && task.blocked
+                    task.blocked &&
+                    (action === 'START' ||
+                      action === 'RESUME' ||
+                      (action === 'FINISH' && task.status === 'NOT_STARTED'))
                   }
                   onClick={() => act(action)}
                 >
