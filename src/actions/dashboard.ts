@@ -70,24 +70,35 @@ function cleanFilters(filters?: DashboardFilters) {
   )
 }
 
-// O resumo financeiro do dashboard sai inteiro de /financial/flow/totals.
-// Antes os valores vinham daqui e as contagens de /report/financial/summary,
-// que usa outra janela de datas (limite do dia em -03:00) e outro regime
-// (caixa, não competência) - valor e legenda falavam de conjuntos diferentes.
+// O resumo financeiro do dashboard sai inteiro de /financial/flow/totals, para
+// valor e legenda de cada card falarem do mesmo conjunto de parcelas. São duas
+// janelas do mesmo período: o realizado vai pela data de pagamento, e o a
+// realizar e os vencidos pelo vencimento. Com tudo pelo vencimento, a parcela
+// que vence em novembro e foi recebida em outubro entrava como receita
+// realizada de novembro.
 export async function getDashboardFinancialOverview(
   filters?: DashboardFilters,
-): Promise<{ totals: FlowTotals }> {
+): Promise<{ byPaidDate: FlowTotals; byDueDate: FlowTotals }> {
   const api = await apiInstance()
+  const params = cleanFilters(filters)
 
   try {
-    const totals = await api.get('/financial/flow/totals', {
-      params: cleanFilters(filters),
-    })
+    const [byPaidDate, byDueDate] = await Promise.all([
+      api.get('/financial/flow/totals', {
+        params: { ...params, dateType: 'paidDate' },
+      }),
+      api.get('/financial/flow/totals', {
+        params: { ...params, dateType: 'dueDate' },
+      }),
+    ])
 
-    return { totals: totals.data || emptyFlowTotals }
+    return {
+      byPaidDate: byPaidDate.data || emptyFlowTotals,
+      byDueDate: byDueDate.data || emptyFlowTotals,
+    }
   } catch (error) {
     console.error('Error fetching dashboard financial overview:', error)
-    return { totals: emptyFlowTotals }
+    return { byPaidDate: emptyFlowTotals, byDueDate: emptyFlowTotals }
   }
 }
 
