@@ -40,6 +40,9 @@ import { z } from 'zod'
 // Actions
 import { createItemNew } from '@/actions/_cruds'
 
+// Utils
+import { abrirPdfNfse } from '@/lib/abrir-pdf-nfse'
+
 // Hooks
 import { useQueryClient } from '@tanstack/react-query'
 
@@ -59,6 +62,7 @@ interface Props {
 }
 
 type EmissionResult = {
+  id?: string
   status: string
   numero?: number
   serie?: string
@@ -229,11 +233,20 @@ export function EmitNfseButton({ orderId, orderStatus, tooltip }: Props) {
                   </div>
                 )}
 
-                {emissionResult.pdfUrl && (
+                {(emissionResult.id || emissionResult.pdfUrl) && (
                   <Button
                     variant="outline"
                     className="w-full"
-                    onClick={() => window.open(emissionResult.pdfUrl, '_blank')}
+                    onClick={() => {
+                      // pdfUrl é a página do portal do InvoiCy, não o arquivo:
+                      // quem busca o PDF é a API. Sem id (retornos antigos),
+                      // resta o link.
+                      if (emissionResult.id) {
+                        abrirPdfNfse(emissionResult.id, emissionResult.pdfUrl)
+                        return
+                      }
+                      window.open(emissionResult.pdfUrl, '_blank')
+                    }}
                   >
                     <IconExternalLink className="w-4 h-4 mr-2" />
                     Visualizar PDF

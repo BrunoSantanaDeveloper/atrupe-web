@@ -10,6 +10,9 @@ import { InvoiceTypeSelectModal } from '@/app/(app-sidebar)/nota-fiscal/emitir/c
 // Icons
 import { IconDownload, IconFileInvoice } from '@tabler/icons-react'
 
+// Utils
+import { abrirPdfNfse } from '@/lib/abrir-pdf-nfse'
+
 // Types
 import type { OrderType } from '@/types/sales/order'
 
@@ -63,9 +66,9 @@ export function EmitNfe({ data }: Props) {
         icon={IconDownload}
         title={`PDF NFS-e ${existingNfse.numero}/${existingNfse.serie}`}
         onClick={() => {
-          if (existingNfse.pdfUrl) {
-            window.open(existingNfse.pdfUrl, '_blank')
-          }
+          // pdfUrl é a página do portal do InvoiCy, não o arquivo: quem busca
+          // o PDF é a API. Ver src/lib/abrir-pdf-nfse.ts.
+          abrirPdfNfse(existingNfse.id, existingNfse.pdfUrl)
         }}
       />
     )

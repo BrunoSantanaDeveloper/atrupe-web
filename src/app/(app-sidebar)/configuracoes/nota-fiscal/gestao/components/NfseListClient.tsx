@@ -42,6 +42,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Actions
 import { getDataOld } from '@/actions/_cruds'
 
+// Utils
+import { abrirPdfNfse } from '@/lib/abrir-pdf-nfse'
+
 function formatDate(dateString: string) {
   return new Date(dateString).toLocaleDateString('pt-BR')
 }
@@ -171,8 +174,10 @@ export function NfseListClient() {
     queryClient.invalidateQueries({ queryKey: ['nfse-list'] })
   }
 
-  const handleOpenPdf = (url: string) => {
-    window.open(url, '_blank')
+  const handleOpenPdf = (nfse: NfseItem) => {
+    // O pdfUrl é a página do portal do InvoiCy, não o arquivo: quem busca o
+    // PDF é a API. Ver src/lib/abrir-pdf-nfse.ts.
+    abrirPdfNfse(nfse.id, nfse.pdfUrl)
   }
 
   const formatCurrency = (value: number) => {
@@ -299,7 +304,7 @@ export function NfseListClient() {
                                 type="button"
                                 variant="neutralGhost"
                                 size="icon"
-                                onClick={() => handleOpenPdf(nfse.pdfUrl!)}
+                                onClick={() => handleOpenPdf(nfse)}
                               >
                                 <IconExternalLink className="size-4" />
                               </Button>

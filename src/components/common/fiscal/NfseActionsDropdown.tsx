@@ -31,6 +31,9 @@ import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/g
 // Actions
 import { createItemNew, getItem } from '@/actions/_cruds'
 
+// Utils
+import { abrirPdfNfse } from '@/lib/abrir-pdf-nfse'
+
 // Hooks
 import { useFiscalHistoryLock } from '@/hooks/queries/useFiscalHistoryLock'
 import { HistoricalDocumentNotice } from './HistoricalDocumentNotice'
@@ -66,34 +69,9 @@ export function NfseActionsDropdown({
   const historical = isHistorical(nfse)
 
   const handleVerPdf = async () => {
-    const previewWindow = window.open('', '_blank')
-    if (!previewWindow) {
-      toast.error('Permita a abertura de pop-ups para visualizar o PDF')
-      return
-    }
-
     setIsOpeningPdf(true)
     try {
-      // O pdfUrl salvo na emissão evita um round-trip; o endpoint é o fallback
-      // para notas antigas que não o têm gravado.
-      if (nfse.pdfUrl) {
-        previewWindow.location.href = nfse.pdfUrl
-        return
-      }
-
-      const result = await getItem({ route: `/fiscal/nfse/${nfse.id}/pdf` })
-      if (!result.success) {
-        throw new Error(result.message || 'PDF não disponível')
-      }
-
-      const url = result.data?.url || result.data?.pdfUrl
-      if (!url) throw new Error('PDF não disponível')
-      previewWindow.location.href = url
-    } catch (error) {
-      previewWindow.close()
-      toast.error(
-        error instanceof Error ? error.message : 'Não foi possível abrir o PDF',
-      )
+      await abrirPdfNfse(nfse.id, nfse.pdfUrl)
     } finally {
       setIsOpeningPdf(false)
     }

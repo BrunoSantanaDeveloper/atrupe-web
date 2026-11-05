@@ -39,6 +39,7 @@ import { getDataOld, getItem } from '@/actions/_cruds'
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
+import { abrirPdfNfse } from '@/lib/abrir-pdf-nfse'
 
 // Third-party
 import { toast } from 'sonner'
@@ -403,12 +404,13 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                               Icon={IconFileInvoice}
                                               tooltip={`PDF NFS-e ${issuedNfse.numero}/${issuedNfse.serie}`}
                                               onClick={() => {
-                                                if (issuedNfse.pdfUrl) {
-                                                  window.open(
-                                                    issuedNfse.pdfUrl,
-                                                    '_blank',
-                                                  )
-                                                }
+                                                // pdfUrl é a página do portal
+                                                // do InvoiCy, não o arquivo:
+                                                // quem busca o PDF é a API.
+                                                abrirPdfNfse(
+                                                  issuedNfse.id,
+                                                  issuedNfse.pdfUrl,
+                                                )
                                               }}
                                             />
                                           ) : (
