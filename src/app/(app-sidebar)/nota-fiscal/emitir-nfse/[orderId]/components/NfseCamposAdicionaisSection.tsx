@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useEffect, useState } from 'react'
+
 // UI
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -98,6 +101,12 @@ interface Props {
    * precisa ver aqui que aquilo não vai sair na nota.
    */
   servicoSemIbsCbs?: boolean
+  /**
+   * Serviço com CST IBS/CBS e sem Indicador de Operação resolvido (nem aqui,
+   * nem no padrão do emissor). Declarado o grupo, a prefeitura exige o cIndOp
+   * — recusa E0860 — e a emissão fica bloqueada até preencher.
+   */
+  cIndOpObrigatorio?: boolean
 }
 
 // Só os campos que moram no grupo IBSCBS. Tributos aproximados e INSS saem
@@ -114,11 +123,20 @@ export function NfseCamposAdicionaisSection({
   valores,
   onChange,
   servicoSemIbsCbs = false,
+  cIndOpObrigatorio = false,
 }: Props) {
   const indicadoresPreenchidos = CAMPOS_DO_GRUPO_IBSCBS.some(
     (campo) => valores[campo] !== undefined && valores[campo] !== '',
   )
   const avisarDescarte = servicoSemIbsCbs && indicadoresPreenchidos
+
+  // O bloco é fechado por padrão. Quando o Indicador de Operação vira
+  // obrigatório, deixá-lo escondido seria pedir um campo que não se vê.
+  const [aberto, setAberto] = useState<string>('')
+  useEffect(() => {
+    if (cIndOpObrigatorio) setAberto('campos-adicionais')
+  }, [cIndOpObrigatorio])
+
   const setCampo = <K extends keyof NfseCamposAdicionais>(
     campo: K,
     valor: NfseCamposAdicionais[K],
@@ -137,7 +155,12 @@ export function NfseCamposAdicionaisSection({
   return (
     <Card className="border-none shadow-sm overflow-hidden">
       {/* Fechado por padrão: são campos que a maioria das emissões não usa. */}
-      <Accordion type="single" collapsible>
+      <Accordion
+        type="single"
+        collapsible
+        value={aberto}
+        onValueChange={setAberto}
+      >
         <AccordionItem value="campos-adicionais" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
@@ -159,6 +182,17 @@ export function NfseCamposAdicionaisSection({
               )}
             />
           </CardHeader>
+          {cIndOpObrigatorio && (
+            <div className="px-6 py-3 bg-error-50 border-b border-error-200">
+              <p className="text-xs text-error-700">
+                O serviço escolhido tem CST IBS/CBS, então o{' '}
+                <strong>Indicador de Operação é obrigatório</strong> — sem ele a
+                prefeitura recusa a nota (E0860). Preencha abaixo ou cadastre um
+                padrão em Configurações &gt; Nota Fiscal &gt; Reforma
+                Tributária.
+              </p>
+            </div>
+          )}
           {avisarDescarte && (
             <div className="px-6 py-3 bg-amber-50 border-b border-amber-200">
               <p className="text-xs text-amber-800">
@@ -174,12 +208,23 @@ export function NfseCamposAdicionaisSection({
             <CardContent className="p-6 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-1.5">
-                  <Label htmlFor="cIndOp">Indicador de Operação</Label>
+                  <Label htmlFor="cIndOp">
+                    Indicador de Operação
+                    {cIndOpObrigatorio && (
+                      <span className="text-error-600"> *</span>
+                    )}
+                  </Label>
                   <Input
                     id="cIndOp"
                     placeholder="Ex: 100301"
                     maxLength={6}
                     value={valores.cIndOp ?? ''}
+                    aria-invalid={cIndOpObrigatorio}
+                    className={
+                      cIndOpObrigatorio
+                        ? 'border-error-500 focus-visible:ring-error-500'
+                        : undefined
+                    }
                     onChange={(e) =>
                       setCampo(
                         'cIndOp',

@@ -364,9 +364,24 @@ export function ListaServicosManagerDialog({
     setForm(FORM_VAZIO)
   }
 
+  // Declarado o grupo IBS/CBS, a prefeitura passa a exigir o item da NBS
+  // (E0322) e o Indicador de Operação (E0860). O NBS mora aqui; o cIndOp, na
+  // emissão ou no padrão do emissor.
+  const declaraIbsCbs = Boolean(
+    form.cstIbsCbs.trim() && form.codClassificacao.trim(),
+  )
+  const nbsObrigatorioFaltando = declaraIbsCbs && !form.nbs.trim()
+
   const salvar = async () => {
     if (!form.codigo.trim() || !form.descricao.trim()) {
       toast.error('Código e descrição são obrigatórios')
+      return
+    }
+
+    if (nbsObrigatorioFaltando) {
+      toast.error(
+        'Com CST e Classificação IBS/CBS preenchidos, o código NBS é obrigatório — a prefeitura recusa a nota sem ele.',
+      )
       return
     }
 
@@ -498,13 +513,28 @@ export function ListaServicosManagerDialog({
                 />
               </div>
               <div className="space-y-1">
-                <Label htmlFor="ls-nbs">Código NBS</Label>
+                <Label htmlFor="ls-nbs">
+                  Código NBS
+                  {declaraIbsCbs && <span className="text-error-600"> *</span>}
+                </Label>
                 <Input
                   id="ls-nbs"
                   placeholder="121012200"
                   value={form.nbs}
+                  aria-invalid={nbsObrigatorioFaltando}
+                  className={
+                    nbsObrigatorioFaltando
+                      ? 'border-error-500 focus-visible:ring-error-500'
+                      : undefined
+                  }
                   onChange={(e) => setForm({ ...form, nbs: e.target.value })}
                 />
+                {nbsObrigatorioFaltando && (
+                  <p className="text-[11px] text-error-600">
+                    Obrigatório com CST IBS/CBS preenchido: a prefeitura recusa
+                    a nota sem o item da NBS.
+                  </p>
+                )}
               </div>
               <div className="space-y-1">
                 <Label htmlFor="ls-codnac">Cód. Trib. Nacional</Label>
@@ -548,7 +578,7 @@ export function ListaServicosManagerDialog({
               )}
               <Button
                 onClick={salvar}
-                disabled={salvando}
+                disabled={salvando || nbsObrigatorioFaltando}
                 isLoading={salvando}
                 RightIcon={editandoId ? IconPencil : IconPlus}
               >

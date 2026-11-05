@@ -66,6 +66,8 @@ interface PrepareStandaloneData {
   codigoServico?: string
   codigoMunicipio?: number
   ambiente?: string
+  /** cIndOp padrão do emissor; com ele a nota já sai com o indicador. */
+  indicadorOperacaoPadrao?: string | null
 }
 
 interface ClientAddressItem {
@@ -424,10 +426,33 @@ export function StandaloneNfseForm() {
     setEntrega(updatedEntrega)
   }
 
+  // Declarado o grupo IBS/CBS (CST + classificação), a prefeitura passa a
+  // exigir o item da NBS (E0322) e o Indicador de Operação (E0860).
+  const declaraIbsCbs = Boolean(
+    servicoEscolhido?.cstIbsCbs && servicoEscolhido?.codClassificacao,
+  )
+  const cIndOpFaltando =
+    declaraIbsCbs &&
+    !camposAdicionais.cIndOp?.trim() &&
+    !prepareData?.indicadorOperacaoPadrao?.trim()
+  const nbsFaltando = declaraIbsCbs && !servicoEscolhido?.nbs?.trim()
+
   /** Pré-checagens comuns a emitir e pré-visualizar. */
   const validarAntesDeEnviar = (): boolean => {
     if (!selectedClient || !effectiveTomador) {
       toast.error('Selecione um cliente / tomador do serviço')
+      return false
+    }
+    if (cIndOpFaltando) {
+      toast.error(
+        'Informe o Indicador de Operação em Campos adicionais: ele é obrigatório porque o serviço tem CST IBS/CBS.',
+      )
+      return false
+    }
+    if (nbsFaltando) {
+      toast.error(
+        'O serviço escolhido tem CST IBS/CBS e está sem código NBS. Cadastre o NBS na Lista de Serviços antes de emitir.',
+      )
       return false
     }
     if (!codigoServico.trim()) {
@@ -768,6 +793,7 @@ export function StandaloneNfseForm() {
           servicoSemIbsCbs={
             !servicoEscolhido?.cstIbsCbs || !servicoEscolhido?.codClassificacao
           }
+          cIndOpObrigatorio={cIndOpFaltando}
         />
 
         {/* Totals */}

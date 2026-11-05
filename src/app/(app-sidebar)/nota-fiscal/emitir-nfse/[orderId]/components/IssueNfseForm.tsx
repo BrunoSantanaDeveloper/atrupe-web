@@ -178,6 +178,9 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   const [issRetido, setIssRetido] = useState(false)
   // Código padrão do emissor, guardado para casar com a lista de serviços.
   const [codigoPadraoEmissor, setCodigoPadraoEmissor] = useState('')
+  // Indicador de Operação padrão do emissor: quando existe, o cIndOp da
+  // nota já está resolvido e não precisa ser pedido na emissão.
+  const [indicadorOperacaoPadrao, setIndicadorOperacaoPadrao] = useState('')
   const padraoAplicado = useRef(false)
 
   const router = useRouter()
@@ -209,6 +212,11 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         if (prepareData?.codigoServico) {
           setCodigoServico(prepareData.codigoServico as string)
           setCodigoPadraoEmissor(prepareData.codigoServico as string)
+        }
+        if (prepareData?.indicadorOperacaoPadrao) {
+          setIndicadorOperacaoPadrao(
+            prepareData.indicadorOperacaoPadrao as string,
+          )
         }
         if (prepareData?.aliquotaIss) {
           setAliquotaIss(prepareData.aliquotaIss as number)
@@ -277,6 +285,11 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         if (prepareData?.codigoServico) {
           setCodigoServico(prepareData.codigoServico as string)
           setCodigoPadraoEmissor(prepareData.codigoServico as string)
+        }
+        if (prepareData?.indicadorOperacaoPadrao) {
+          setIndicadorOperacaoPadrao(
+            prepareData.indicadorOperacaoPadrao as string,
+          )
         }
         if (prepareData?.aliquotaIss) {
           setAliquotaIss(prepareData.aliquotaIss as number)
@@ -410,9 +423,34 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     toast.success('Dados do tomador atualizados para esta NFS-e')
   }
 
+  // Declarado o grupo IBS/CBS (CST + classificação), a prefeitura passa a
+  // exigir o item da NBS (E0322) e o Indicador de Operação (E0860). Os dois
+  // eram descobertos na recusa, depois de consumir um número de RPS.
+  const declaraIbsCbs = Boolean(
+    servicoEscolhido?.cstIbsCbs && servicoEscolhido?.codClassificacao,
+  )
+  const cIndOpFaltando =
+    declaraIbsCbs &&
+    !camposAdicionais.cIndOp?.trim() &&
+    !indicadorOperacaoPadrao.trim()
+  const nbsFaltando = declaraIbsCbs && !servicoEscolhido?.nbs?.trim()
+
   /** Pré-checagens comuns a emitir e pré-visualizar. */
   const validarAntesDeEnviar = (): boolean => {
     if (!orderData) return false
+
+    if (cIndOpFaltando) {
+      toast.error(
+        'Informe o Indicador de Operação em Campos adicionais: ele é obrigatório porque o serviço tem CST IBS/CBS.',
+      )
+      return false
+    }
+    if (nbsFaltando) {
+      toast.error(
+        'O serviço escolhido tem CST IBS/CBS e está sem código NBS. Cadastre o NBS na Lista de Serviços antes de emitir.',
+      )
+      return false
+    }
 
     // Classificação fiscal: sem código próprio a nota sai com o código padrão
     // do emissor, e a prefeitura autoriza mesmo assim. Exigir a confirmação
@@ -439,7 +477,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     }
 
     if (getServicesTotal() <= 0) {
-      toast.error('A NFS-e precisa ter valor de serviÃ§os maior que zero')
+      toast.error('A NFS-e precisa ter valor de serviços maior que zero')
       return false
     }
 
@@ -452,7 +490,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
       tomadorDocumentoDigits.length !== 11 &&
       tomadorDocumentoDigits.length !== 14
     ) {
-      toast.error('Informe CPF ou CNPJ vÃ¡lido para o tomador da NFS-e')
+      toast.error('Informe CPF ou CNPJ válido para o tomador da NFS-e')
       return false
     }
 
@@ -948,6 +986,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           servicoSemIbsCbs={
             !servicoEscolhido?.cstIbsCbs || !servicoEscolhido?.codClassificacao
           }
+          cIndOpObrigatorio={cIndOpFaltando}
         />
 
         <NfseTotaisSection
