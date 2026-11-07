@@ -28,6 +28,14 @@ import {
 
 const api = supportApi()
 
+/** Estados do OpenWA em que a sessão acabou: conectar de novo gera outra. */
+const SESSAO_ENCERRADA = [
+  'failed',
+  'action_required',
+  'disconnected',
+  'unknown',
+]
+
 export function ConectarWhatsApp({
   permitirNaoOficial = true,
 }: {
@@ -37,11 +45,25 @@ export function ConectarWhatsApp({
   const [valores, setValores] = useState<Record<string, string>>({})
   const [problemas, setProblemas] = useState<Record<string, string>>({})
   const [conectado, setConectado] = useState<boolean | null>(null)
+  const [rota, setRota] = useState<string | null>(null)
 
   useEffect(() => {
     api
       .whatsappStatus()
-      .then((status) => setConectado(status.connected))
+      .then((status) => {
+        setConectado(status.connected)
+        setRota(status.route)
+        // Adaptação do Atrupe: uma sessão do WhatsApp Web que ainda espera a
+        // leitura do QR volta direto para o QR, sem criar outra conexão.
+        if (
+          !status.connected &&
+          status.route === 'nao_oficial' &&
+          status.status &&
+          !SESSAO_ENCERRADA.includes(status.status)
+        ) {
+          dispatch({ type: 'criou_sessao' })
+        }
+      })
       .catch(() => setConectado(false))
   }, [])
 
@@ -90,10 +112,19 @@ export function ConectarWhatsApp({
   if (conectado && state.step === 'escolher') {
     return (
       <Card title="WhatsApp conectado">
-        <Text>
-          O número já está ligado ao atendimento. As conversas chegam no painel
-          de atendimento.
-        </Text>
+        <Stack gap={8}>
+          <Text>
+            O número já está ligado ao atendimento. As conversas chegam no
+            painel de atendimento.
+          </Text>
+          {rota === 'nao_oficial' ? (
+            <Text tone="muted">
+              Conectado pelo WhatsApp Web: deixe o celular do número ligado e
+              com internet. Se ele desconectar, esta tela volta a oferecer a
+              conexão para ler um QR novo.
+            </Text>
+          ) : null}
+        </Stack>
       </Card>
     )
   }

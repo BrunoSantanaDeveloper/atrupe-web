@@ -7,8 +7,8 @@ export function metadata() {
   }
 }
 
-// O número do suporte, pela API oficial da Meta. A conexão não oficial
-// (OpenWA) fica desligada: não está no stack do atendimento.
+// O número do suporte: pela API oficial da Meta ou pelo WhatsApp Web (OpenWA,
+// não oficial), que a tela só libera depois do aceite do risco.
 export default function WhatsAppPage() {
   return (
     <div className="space-y-5">
@@ -17,7 +17,7 @@ export default function WhatsAppPage() {
         label="Super Admin"
         classNames={{ title: 'text-white', label: 'bg-[#FF4201]' }}
       />
-      <ConectarWhatsApp permitirNaoOficial={false} />
+      <ConectarWhatsApp />
     </div>
   )
 }
