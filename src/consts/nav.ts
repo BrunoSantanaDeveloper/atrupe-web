@@ -34,6 +34,11 @@ import {
   IconReceiptTax,
   IconTicket,
   IconSquareRoundedPlusFilled,
+  IconBrandWhatsapp,
+  IconHeadset,
+  IconRobot,
+  IconBulb,
+  IconMessageQuestion,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -424,6 +429,38 @@ export const adminMainNavigation: MainNavigationType[] = [
         title: 'Academy',
         path: '/admin/academy',
         permission: 'academy:academy:view',
+      },
+    ],
+  },
+  {
+    icon: IconBrandWhatsapp,
+    title: 'Atendimento',
+    path: '/admin/atendimento',
+    children: [
+      {
+        icon: IconHeadset,
+        title: 'Painel da equipe',
+        path: '/admin/atendimento',
+      },
+      {
+        icon: IconRobot,
+        title: 'Robô',
+        path: '/admin/atendimento/robo',
+      },
+      {
+        icon: IconBulb,
+        title: 'Sugestões',
+        path: '/admin/atendimento/sugestoes',
+      },
+      {
+        icon: IconMessageQuestion,
+        title: 'O que o robô não soube',
+        path: '/admin/atendimento/lacunas',
+      },
+      {
+        icon: IconBrandWhatsapp,
+        title: 'WhatsApp',
+        path: '/admin/atendimento/whatsapp',
       },
     ],
   },
