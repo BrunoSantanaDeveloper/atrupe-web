@@ -8,6 +8,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
 import { ProductFiscalDataDialog } from '../ProductFiscalData'
 import { BulkNcmDialog } from '../ProductFiscalData/BulkNcmDialog'
+import { BulkTributacaoDialog } from '../ProductFiscalData/BulkTributacaoDialog'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -163,6 +164,15 @@ export function ProductsData({ searchParams, tabs }: Props) {
                 onClick={limparSelecao}
               >
                 Limpar seleção
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="neutralOutline"
+                RightIcon={IconReceiptTax}
+                onClick={() => setOpenDialog('bulk-tributacao')}
+              >
+                Corrigir tributação
               </Button>
               <Button
                 type="button"
@@ -350,6 +360,20 @@ export function ProductsData({ searchParams, tabs }: Props) {
       />
       <BulkNcmDialog
         open={openDialog === 'bulk-ncm'}
+        scope={
+          selecionouTodos
+            ? { kind: 'all', filters: filtrosDaLista, total: totalDaLista }
+            : { kind: 'selected', productIds: selectedIds }
+        }
+        onOpenChange={(open) => {
+          if (!open) setOpenDialog('')
+        }}
+        onApplied={limparSelecao}
+      />
+      {/* Mesmo escopo da alteração de NCM: a seleção, ou a lista filtrada
+          inteira quando o usuário marca "selecionar todos". */}
+      <BulkTributacaoDialog
+        open={openDialog === 'bulk-tributacao'}
         scope={
           selecionouTodos
             ? { kind: 'all', filters: filtrosDaLista, total: totalDaLista }
