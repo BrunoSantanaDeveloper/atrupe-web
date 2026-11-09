@@ -114,8 +114,26 @@ interface FiscalRecordWithRejection {
   invoicyConfigId?: string | null
 }
 
+interface ConsolidatedOrderRef {
+  id: string
+  reference: string
+  totalValue: number
+}
+
 interface UnifiedInvoiceItem {
-  type: 'ORDER' | 'NFE_AVULSA' | 'NFSE_AVULSA' | 'NFCE_AVULSA'
+  /**
+   * NFSE_CONSOLIDADA representa UMA nota que cobre varias O.S.. Antes cada
+   * ordem virava uma linha: so' a principal dizia "Emitida", as outras diziam
+   * "Nao emitida" e o valor mostrado era o da ordem, nao o da nota.
+   */
+  type:
+    | 'ORDER'
+    | 'NFE_AVULSA'
+    | 'NFSE_AVULSA'
+    | 'NFSE_CONSOLIDADA'
+    | 'NFCE_AVULSA'
+  consolidatedOrderCount?: number
+  consolidatedOrders?: ConsolidatedOrderRef[]
   id: string
   createdAt: string
   status: string
@@ -159,6 +177,14 @@ interface OrderGroupFromBackend {
 
 interface Props extends SearchParamsType {}
 
+/**
+ * A consolidada carrega a mesma nota que a avulsa, em `item.nfse`. O que muda
+ * e' a etiqueta e a lista de O.S. cobertas — status, rejeicao, ambiente e
+ * acoes seguem iguais.
+ */
+const isNfseItem = (item: UnifiedInvoiceItem) =>
+  item.type === 'NFSE_AVULSA' || item.type === 'NFSE_CONSOLIDADA'
+
 // Helper para traduzir o status real do item unificado
 const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
   if (item.type === 'NFE_AVULSA') {
@@ -175,7 +201,7 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
     return { label: item.status, variant: 'neutralLight' as const }
   }
 
-  if (item.type === 'NFSE_AVULSA') {
+  if (isNfseItem(item)) {
     if (item.status === 'AUTHORIZED')
       return { label: 'Emitida', variant: 'successLight' as const }
     if (item.status === 'DRAFT')
@@ -286,7 +312,7 @@ const getRejectionReason = (item: UnifiedInvoiceItem) => {
     )
   }
 
-  if (item.type === 'NFSE_AVULSA') {
+  if (isNfseItem(item)) {
     return item.nfse?.motivoRejeicao || item.originalData?.motivoRejeicao
   }
 
@@ -469,16 +495,15 @@ const isRejectedInvoiceInActiveEnvironment = (
  * homologação continuam valendo um chip.
  */
 const getItemEnvironments = (item: UnifiedInvoiceItem): number[] => {
-  const documents: { ambiente?: number }[] =
-    item.type === 'NFSE_AVULSA'
-      ? item.nfse
-        ? [item.nfse]
+  const documents: { ambiente?: number }[] = isNfseItem(item)
+    ? item.nfse
+      ? [item.nfse]
+      : []
+    : item.type === 'NFCE_AVULSA'
+      ? item.nfce
+        ? [item.nfce]
         : []
-      : item.type === 'NFCE_AVULSA'
-        ? item.nfce
-          ? [item.nfce]
-          : []
-        : [...(item.nfes || []), ...(item.nfses || [])]
+      : [...(item.nfes || []), ...(item.nfses || [])]
 
   // `ambiente` ausente é homologação, mesma leitura de isActiveEnvironmentDocument.
   const ambientes = new Set(documents.map((doc) => doc.ambiente ?? 2))
@@ -1068,6 +1093,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     ? 'NF-e de Devolução'
                                     : 'NF-e Avulsa'}
                               </Badge>
+                            ) : item.type === 'NFSE_CONSOLIDADA' ? (
+                              <Badge variant="orangeLight" className="w-fit">
+                                NFS-e Consolidada
+                              </Badge>
                             ) : item.type === 'NFSE_AVULSA' ? (
                               <Badge variant="orangeLight" className="w-fit">
                                 NFS-e Avulsa
@@ -1083,6 +1112,25 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             {/* O ambiente saiu daqui para a coluna própria:
                                 repetido em toda linha, poluía a referência. */}
                             {(() => {
+                              if (item.type === 'NFSE_CONSOLIDADA') {
+                                const ordens = item.consolidatedOrders ?? []
+                                if (ordens.length === 0) return null
+                                // Quais O.S. entraram na nota. A linha ocupa o
+                                // lugar delas na lista; sem isto ninguem sabe
+                                // o que foi faturado nesta nota.
+                                const visiveis = ordens.slice(0, 4)
+                                const restantes =
+                                  ordens.length - visiveis.length
+                                return (
+                                  <span className="text-xs text-gray-500">
+                                    {visiveis
+                                      .map((o) => o.reference)
+                                      .join(' · ')}
+                                    {restantes > 0 ? ` · +${restantes}` : ''}
+                                  </span>
+                                )
+                              }
+
                               if (item.type === 'ORDER') {
                                 const authorizedNfe = findActiveNfe(
                                   item,
@@ -1162,7 +1210,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                           <div className="flex justify-end gap-1">
                             <TooltipProvider>
                               {(() => {
-                                if (item.type === 'NFSE_AVULSA') {
+                                if (isNfseItem(item)) {
                                   const nfse = item.nfse
 
                                   // O dropdown cobre todos os status: quando a
