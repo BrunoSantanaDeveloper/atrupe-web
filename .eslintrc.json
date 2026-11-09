@@ -1,5 +1,6 @@
 {
   "extends": ["@tribodev/eslint-config/next", "next/core-web-vitals"],
+  "ignorePatterns": ["src/lib/atendimento-kit/"],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
       "error",
