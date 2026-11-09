@@ -20,7 +20,6 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Spinner } from '@/components/ui/spinner'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
-import { Text as UiText } from '@/components/ui/typography'
 import { cn } from '@/lib/utils'
 
 export function Stack({
@@ -74,12 +73,16 @@ export function Text({
   tone?: 'normal' | 'muted' | 'danger'
 }) {
   return (
-    <UiText
-      variant={tone === 'muted' ? 'helper' : 'body'}
-      className={cn(tone === 'danger' && 'text-error-600')}
+    <p
+      className={cn(
+        'text-sm',
+        tone === 'muted' && 'text-gray-500',
+        tone === 'danger' && 'text-error-600',
+        tone === 'normal' && 'text-gray-700',
+      )}
     >
       {children}
-    </UiText>
+    </p>
   )
 }
 
@@ -201,7 +204,9 @@ export function Choice<T extends string>({
   const id = useId()
   return (
     <fieldset className="grid gap-3">
-      <legend className="type-label mb-2">{label}</legend>
+      <legend className="mb-2 text-sm font-medium text-gray-700">
+        {label}
+      </legend>
       <RadioGroup
         value={value}
         onValueChange={(next) => onChange(next as T)}
@@ -218,7 +223,9 @@ export function Choice<T extends string>({
               htmlFor={`${id}-${option.value}`}
               className="grid cursor-pointer gap-0.5"
             >
-              <span className="type-body-strong">{option.label}</span>
+              <span className="text-sm font-semibold text-gray-900">
+                {option.label}
+              </span>
               {option.hint ? <Text tone="muted">{option.hint}</Text> : null}
             </label>
           </div>
@@ -243,7 +250,7 @@ export function Toggle({
   return (
     <div className="flex items-start justify-between gap-4">
       <label htmlFor={id} className="grid cursor-pointer gap-0.5">
-        <span className="type-body">{label}</span>
+        <span className="text-sm text-gray-700">{label}</span>
         {hint ? <Text tone="muted">{hint}</Text> : null}
       </label>
       <Switch id={id} checked={checked} onCheckedChange={onChange} />
@@ -271,7 +278,7 @@ export function Alert({
         tone === 'danger' ? 'error' : tone === 'warning' ? 'warning' : 'default'
       }
       role={tone === 'danger' ? 'alert' : 'status'}
-      className={cn('type-body', ALERT_CLASS[tone])}
+      className={cn('text-sm', ALERT_CLASS[tone])}
     >
       {children}
     </UiAlert>
@@ -282,7 +289,7 @@ export function Loading({ label = 'Carregando' }: { label?: string }) {
   return (
     <div className="flex items-center text-gray-500" role="status">
       <Spinner />
-      <span className="type-secondary">{label}...</span>
+      <span className="text-sm text-gray-500">{label}...</span>
     </div>
   )
 }
