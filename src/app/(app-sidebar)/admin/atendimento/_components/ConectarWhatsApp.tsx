@@ -2,6 +2,8 @@
 
 // Tela "Conectar WhatsApp": o cliente escolhe a API oficial (credenciais da Meta) ou a conexão
 // não oficial (QR do WhatsApp Web, depois de ler o aviso de risco). Os passos vêm de base/ui/connect.mjs.
+// Com o número já ligado, mostra o que a conferência viu e retoma a mesma caixa quando ele para: o QR de
+// novo na não oficial, o token novo na oficial.
 
 import { useEffect, useReducer, useState } from 'react'
 
@@ -13,7 +15,10 @@ import {
   UNOFFICIAL_RISK,
   validateOfficial,
 } from '@/lib/atendimento-kit/ui/connect.mjs'
-import { supportApi } from '@/lib/atendimento-kit/ui/client.mjs'
+import {
+  supportApi,
+  type WhatsappStatus,
+} from '@/lib/atendimento-kit/ui/client.mjs'
 import {
   Alert,
   Button,
@@ -28,13 +33,26 @@ import {
 
 const api = supportApi()
 
-/** Estados do OpenWA em que a sessão acabou: conectar de novo gera outra. */
-const SESSAO_ENCERRADA = [
-  'failed',
-  'action_required',
-  'disconnected',
-  'unknown',
-]
+const SEM_LEITURA: WhatsappStatus = {
+  connected: false,
+  route: null,
+  status: null,
+  qrCode: null,
+  level: null,
+  findings: [],
+}
+
+function Achados({ itens }: { itens: WhatsappStatus['findings'] }) {
+  return (
+    <Stack gap={8}>
+      {itens.map((item) => (
+        <Text key={item.code}>
+          {item.detail} {item.fix}
+        </Text>
+      ))}
+    </Stack>
+  )
+}
 
 export function ConectarWhatsApp({
   permitirNaoOficial = true,
@@ -44,28 +62,17 @@ export function ConectarWhatsApp({
   const [state, dispatch] = useReducer(connectReducer, initialConnectState)
   const [valores, setValores] = useState<Record<string, string>>({})
   const [problemas, setProblemas] = useState<Record<string, string>>({})
-  const [conectado, setConectado] = useState<boolean | null>(null)
-  const [rota, setRota] = useState<string | null>(null)
+  const [situacao, setSituacao] = useState<WhatsappStatus | null>(null)
+  const [outroNumero, setOutroNumero] = useState(false)
+  const noInicio = state.step === 'escolher'
 
   useEffect(() => {
+    if (!noInicio) return
     api
       .whatsappStatus()
-      .then((status) => {
-        setConectado(status.connected)
-        setRota(status.route)
-        // Adaptação do Atrupe: uma sessão do WhatsApp Web que ainda espera a
-        // leitura do QR volta direto para o QR, sem criar outra conexão.
-        if (
-          !status.connected &&
-          status.route === 'nao_oficial' &&
-          status.status &&
-          !SESSAO_ENCERRADA.includes(status.status)
-        ) {
-          dispatch({ type: 'criou_sessao' })
-        }
-      })
-      .catch(() => setConectado(false))
-  }, [])
+      .then(setSituacao)
+      .catch(() => setSituacao(SEM_LEITURA))
+  }, [noInicio])
 
   useEffect(() => {
     const delay = pollingDelay(state.step)
@@ -108,22 +115,70 @@ export function ConectarWhatsApp({
     }
   }
 
-  if (conectado === null) return <Loading />
-  if (conectado && state.step === 'escolher') {
+  async function lerQrDeNovo() {
+    dispatch({ type: 'enviar' })
+    try {
+      await api.reconnect()
+      dispatch({ type: 'criou_sessao' })
+    } catch (error) {
+      dispatch({ type: 'erro', message: (error as Error).message })
+    }
+  }
+
+  if (situacao === null) return <Loading />
+  if (noInicio && situacao.route && situacao.connected) {
     return (
       <Card title="WhatsApp conectado">
-        <Stack gap={8}>
+        <Stack>
           <Text>
             O número já está ligado ao atendimento. As conversas chegam no
             painel de atendimento.
           </Text>
-          {rota === 'nao_oficial' ? (
-            <Text tone="muted">
-              Conectado pelo WhatsApp Web: deixe o celular do número ligado e
-              com internet. Se ele desconectar, esta tela volta a oferecer a
-              conexão para ler um QR novo.
-            </Text>
+          {situacao.findings.length ? (
+            <Alert tone="warning">
+              <Achados itens={situacao.findings} />
+            </Alert>
           ) : null}
+          <Text tone="muted">
+            {situacao.route === 'nao_oficial'
+              ? 'Conectado pelo WhatsApp Web: deixe o celular do número ligado e com internet. '
+              : ''}
+            O número é conferido a cada 15 minutos, e os superadmins recebem um
+            e-mail se ele parar.
+          </Text>
+        </Stack>
+      </Card>
+    )
+  }
+  if (noInicio && situacao.route && !outroNumero) {
+    return (
+      <Card
+        title={
+          situacao.level === 'fora'
+            ? 'O WhatsApp do atendimento parou'
+            : 'O WhatsApp do atendimento pede atenção'
+        }
+      >
+        <Stack>
+          <Alert tone={situacao.level === 'fora' ? 'danger' : 'warning'}>
+            <Achados itens={situacao.findings} />
+          </Alert>
+          <Stack direction="row" gap={8}>
+            {situacao.route === 'nao_oficial' ? (
+              <Button onClick={lerQrDeNovo}>Ler o QR de novo</Button>
+            ) : (
+              <Button
+                onClick={() =>
+                  dispatch({ type: 'escolher_rota', route: 'oficial' })
+                }
+              >
+                Trocar o token da Meta
+              </Button>
+            )}
+            <Button variant="secondary" onClick={() => setOutroNumero(true)}>
+              Conectar outro número
+            </Button>
+          </Stack>
         </Stack>
       </Card>
     )
