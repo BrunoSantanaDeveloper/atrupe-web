@@ -54,17 +54,8 @@ interface PrepareNfceData {
   naturezaOperacao: string
   informacoesComplementares: string
   prazoCancelamentoMinutos: number
-}
-
-interface ProductFiscalResult {
-  ncm?: string
-  cean?: string
-  productCode?: string
-  commercialUnit?: string
-  icmsCst?: string
-  pisCst?: string
-  cofinsCst?: string
-  cfopInState?: string
+  /** Itens da O.S. quando a tela foi aberta a partir de uma. */
+  itens?: NfePrepareItem[]
 }
 
 export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
@@ -100,7 +91,16 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
 
     try {
       const [defaultsResult, orderResult] = await Promise.all([
-        getItem({ route: '/fiscal/nfce/prepare-standalone' }),
+        // Com a O.S. na URL, o preparo ja' devolve os itens calculados. A
+        // tela fazia essa conta sozinha e errava: os valores do orcamento
+        // estao em centavos (R$ 35,00 virava R$ 3.500,00) e a quantidade
+        // comercial nao e' a "Qtd. Item". Quantidade e valor de documento
+        // fiscal nao se calculam aqui.
+        getItem({
+          route: linkedOrderId
+            ? `/fiscal/nfce/prepare-standalone?orderId=${linkedOrderId}`
+            : '/fiscal/nfce/prepare-standalone',
+        }),
         linkedOrderId
           ? getItem({ route: `/sale/order/${linkedOrderId}` })
           : Promise.resolve(null),
@@ -118,71 +118,19 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
           setNaturezaOperacao(data.naturezaOperacao)
         }
         setInformacoesComplementares(data.informacoesComplementares || '')
+        if (data.itens?.length) setItems(data.itens)
       }
 
       if (orderResult?.success && orderResult?.data) {
         const order = orderResult.data as OrderType
-        const { client, quotationItems } = order.quotation
+        // Da O.S. so' vem o consumidor: os itens chegam calculados do preparo.
+        const { client } = order.quotation
 
         if (client) {
           const cnpjCpf = client.cpf || client.cnpj || ''
           setConsumidorNome(client.name || '')
           setCpfConsumidor(cnpjCpf)
           setSelectedClient({ id: client.id, name: client.name, cnpjCpf })
-        }
-
-        if (quotationItems?.length > 0) {
-          const fiscalResults = await Promise.all(
-            quotationItems.map((qi) =>
-              qi.product.originalProductId
-                ? getItem({
-                    route: `/fiscal/product/${qi.product.originalProductId}`,
-                  }).catch(() => null)
-                : Promise.resolve(null),
-            ),
-          )
-
-          const mappedItems: NfePrepareItem[] = quotationItems.map(
-            (qi, idx) => {
-              const fiscalResult = fiscalResults[idx]
-              const fiscal =
-                fiscalResult?.success && fiscalResult?.data
-                  ? (fiscalResult.data as ProductFiscalResult)
-                  : null
-
-              return {
-                itemNumber: idx + 1,
-                productId: qi.product.originalProductId || '',
-                productCode: fiscal?.productCode || '',
-                description: qi.description || qi.product.name,
-                ncm: fiscal?.ncm || '',
-                cfop: fiscal?.cfopInState || '5102',
-                cstIcms: fiscal?.icmsCst || '',
-                cstIpi: '',
-                cstPis: fiscal?.pisCst || '',
-                cstCofins: fiscal?.cofinsCst || '',
-                unit: fiscal?.commercialUnit || 'UN',
-                uCom: fiscal?.commercialUnit || 'UN',
-                ean: fiscal?.cean || '',
-                ceantrib: '',
-                quantity: Number(qi.product.quantity) || 1,
-                unitValue: Number(qi.unitValue) || 0,
-                discount: Number(qi.discount) || 0,
-                freight: 0,
-                insurance: 0,
-                totalValue: Number(qi.finalValue) || 0,
-                isService: false,
-                needsConfiguration:
-                  !fiscal?.ncm ||
-                  !fiscal?.cfopInState ||
-                  !fiscal?.icmsCst ||
-                  !fiscal?.pisCst ||
-                  !fiscal?.cofinsCst,
-              }
-            },
-          )
-
-          setItems(mappedItems)
         }
       }
     } catch {
