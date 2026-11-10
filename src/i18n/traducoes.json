@@ -17034,5 +17034,25 @@
   "fd2303d6c3": {
     "es": "Ningún consumo en este mes.",
     "en": "No usage this month."
+  },
+  "fcee791f9c": {
+    "es": "El plan se libera en cuanto se confirma el pago: Pix y tarjeta en unos instantes, boleto después de la compensación.",
+    "en": "The plan is unlocked as soon as the payment is confirmed: Pix and card within moments, boleto after it clears."
+  },
+  "b353f0376e": {
+    "es": "El nuevo plan se libera en cuanto se confirma el pago: Pix y tarjeta en unos instantes, boleto después de la compensación. Hasta entonces, su plan actual sigue vigente.",
+    "en": "The new plan is unlocked as soon as the payment is confirmed: Pix and card within moments, boleto after it clears. Until then, your current plan stays active."
+  },
+  "e1917d3fdd": {
+    "es": "Pago de la evolución pendiente",
+    "en": "Upgrade payment pending"
+  },
+  "fe43524c29": {
+    "es": "El plan contratado se libera en cuanto se confirma el pago: Pix y tarjeta en unos instantes, boleto después de la compensación.",
+    "en": "The plan you signed up for is unlocked as soon as the payment is confirmed: Pix and card within moments, boleto after it clears."
+  },
+  "ffeb68df7c": {
+    "es": "El nuevo plan se libera en cuanto se confirma el pago. Hasta entonces, su plan actual sigue vigente.",
+    "en": "The new plan is unlocked as soon as the payment is confirmed. Until then, your current plan stays active."
   }
 }
