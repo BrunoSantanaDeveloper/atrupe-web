@@ -202,10 +202,10 @@ const styles = StyleSheet.create({
   conditions: {
     marginBottom: 40,
   },
-  // As condições gerais da empresa são longas: 30% menores que o corpo
-  // (8 → 5,6), para não ocuparem meia página (11/11/2026)
+  // As condições gerais da empresa são longas: 25% menores que o corpo
+  // (8 → 6), para não ocuparem meia página (11/11/2026)
   textAfterItems: {
-    fontSize: 5.6,
+    fontSize: 6,
   },
   signatures: {
     flexDirection: 'row',
