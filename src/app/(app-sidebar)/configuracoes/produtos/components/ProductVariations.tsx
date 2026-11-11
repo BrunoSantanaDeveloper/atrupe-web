@@ -4,7 +4,8 @@
 // plano revisto em 27/10/2026): o mesmo produto em tamanhos ou cores (P, M,
 // G; 4x0, 4x1, 4x4), cada um com o seu preço. Sem isso, o mesmo produto acaba cadastrado várias vezes. Na venda, o
 // vendedor escolhe a variação. No PRO, a composição aprofunda as mesmas
-// variações.
+// variações. Cada variação tem os seus valores por quantidade (correção do
+// LITE, 11/11/2026): a camiseta P com uma tabela, a M com outra.
 
 import { useEffect, useState } from 'react'
 
@@ -18,6 +19,9 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 // Types
 import type { UnitKind } from '../[id]/composicao/assembly'
 import { unitSymbol } from '../[id]/composicao/assembly'
+
+// Components
+import { ProductPriceTiers } from './ProductPriceTiers'
 
 // Actions
 import {
@@ -34,7 +38,12 @@ import { IconTrash, IconPlus } from '@tabler/icons-react'
 
 const EDIT = ['product_settings:products:edit']
 
-type Row = { id?: string; name: string; unitPrice: number | null }
+type Row = {
+  id?: string
+  name: string
+  unitPrice: number | null
+  hasOwnTiers?: boolean
+}
 
 interface Props {
   // Nulo no cadastro novo: as linhas ficam na tela e são gravadas depois que
@@ -42,12 +51,19 @@ interface Props {
   productId: string | null
   unitKind: string
   onLocalChange?: (rows: Row[]) => void
+  // Preço de venda do produto, em centavos: a primeira faixa da variação sem
+  // preço próprio nasce com ele
+  basePriceCents: number
+  // Quantas variações há: com elas, a tabela de faixas do produto sai
+  onCountChange?: (count: number) => void
 }
 
 export function ProductVariations({
   productId,
   unitKind,
   onLocalChange,
+  basePriceCents,
+  onCountChange,
 }: Props) {
   const queryClient = useQueryClient()
   const { data } = useQuery({
@@ -57,6 +73,13 @@ export function ProductVariations({
   })
   const saved = data?.data || []
   const [rows, setRows] = useState<Row[]>([])
+  // A variação com a tabela de faixas aberta
+  const [openTiers, setOpenTiers] = useState<string | null>(null)
+
+  useEffect(() => {
+    onCountChange?.(rows.length)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows.length])
 
   useEffect(() => {
     setRows(saved)
@@ -71,7 +94,14 @@ export function ProductVariations({
       onLocalChange?.(next)
       return
     }
-    const res = await saveProductVariations({ productId, variations: next })
+    const res = await saveProductVariations({
+      productId,
+      variations: next.map(({ id, name, unitPrice }) => ({
+        id,
+        name,
+        unitPrice,
+      })),
+    })
     if (!res.success) {
       toast.error(res.message)
       return
@@ -94,8 +124,9 @@ export function ProductVariations({
             <h4 className="type-card-title">Variações</h4>
             <p className="text-sm text-gray">
               O mesmo produto em tamanhos ou cores, como P, M e G ou 4x0, 4x1 e
-              4x4, cada um com o seu preço. Na venda, o vendedor escolhe a
-              variação. Sem preço, vale o valor do produto.
+              4x4, cada um com o seu preço e os seus valores por quantidade. Na
+              venda, o vendedor escolhe a variação. Sem preço, vale o valor do
+              produto.
             </p>
           </div>
           <PermissionGate permissions={EDIT}>
@@ -119,66 +150,106 @@ export function ProductVariations({
         {rows.length > 0 && (
           <div className="space-y-2">
             {rows.map((row, index) => (
-              <div
-                key={row.id || index}
-                className="flex flex-wrap items-end gap-3"
-              >
-                <div className="flex flex-[1_0_200px] flex-col gap-1.5">
-                  <label
-                    htmlFor={`variation-name-${index}`}
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Nome
-                  </label>
-                  <Input
-                    id={`variation-name-${index}`}
-                    value={row.name}
-                    placeholder="Ex.: P, 4x0"
-                    onChange={(event) =>
-                      update(index, { name: event.target.value })
-                    }
-                    onBlur={() => persist(rows)}
-                  />
-                </div>
-                <div className="flex flex-[1_0_180px] flex-col gap-1.5">
-                  <label
-                    htmlFor={`variation-price-${index}`}
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Preço de venda por {unit}
-                  </label>
-                  <PermissionGate
-                    permissions={['values:values:view']}
-                    fallback={<span>••••••</span>}
-                  >
+              <div key={row.id || index} className="space-y-2">
+                <div className="flex flex-wrap items-end gap-3">
+                  <div className="flex flex-[1_0_200px] flex-col gap-1.5">
+                    <label
+                      htmlFor={`variation-name-${index}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Nome
+                    </label>
                     <Input
-                      id={`variation-price-${index}`}
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      placeholder="Valor do produto"
-                      startAdornment={<span className="text-sm">R$</span>}
-                      value={row.unitPrice === null ? '' : row.unitPrice / 100}
+                      id={`variation-name-${index}`}
+                      value={row.name}
+                      placeholder="Ex.: P, 4x0"
                       onChange={(event) =>
-                        update(index, {
-                          unitPrice:
-                            event.target.value === ''
-                              ? null
-                              : Math.round(Number(event.target.value) * 100),
-                        })
+                        update(index, { name: event.target.value })
                       }
                       onBlur={() => persist(rows)}
                     />
+                  </div>
+                  <div className="flex flex-[1_0_180px] flex-col gap-1.5">
+                    <label
+                      htmlFor={`variation-price-${index}`}
+                      className="text-sm font-medium text-gray-700"
+                    >
+                      Preço de venda por {unit}
+                    </label>
+                    <PermissionGate
+                      permissions={['values:values:view']}
+                      fallback={<span>••••••</span>}
+                    >
+                      <Input
+                        id={`variation-price-${index}`}
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        placeholder="Valor do produto"
+                        startAdornment={<span className="text-sm">R$</span>}
+                        value={
+                          row.unitPrice === null ? '' : row.unitPrice / 100
+                        }
+                        onChange={(event) =>
+                          update(index, {
+                            unitPrice:
+                              event.target.value === ''
+                                ? null
+                                : Math.round(Number(event.target.value) * 100),
+                          })
+                        }
+                        onBlur={() => persist(rows)}
+                      />
+                    </PermissionGate>
+                  </div>
+                  <PermissionGate permissions={EDIT}>
+                    <ActionButton
+                      Icon={IconTrash}
+                      variant="errorGhost"
+                      tooltip={`Remover ${row.name}`}
+                      onClick={() =>
+                        persist(rows.filter((_, i) => i !== index))
+                      }
+                    />
                   </PermissionGate>
                 </div>
-                <PermissionGate permissions={EDIT}>
-                  <ActionButton
-                    Icon={IconTrash}
-                    variant="errorGhost"
-                    tooltip={`Remover ${row.name}`}
-                    onClick={() => persist(rows.filter((_, i) => i !== index))}
-                  />
-                </PermissionGate>
+                {/* Os valores por quantidade da variação: só depois de gravada,
+                  porque a tabela é ligada a ela */}
+                {row.id ? (
+                  <>
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto p-0"
+                      onClick={() =>
+                        setOpenTiers((current) =>
+                          current === row.id ? null : (row.id ?? null),
+                        )
+                      }
+                    >
+                      {openTiers === row.id
+                        ? 'Ocultar valores por quantidade'
+                        : row.hasOwnTiers
+                          ? 'Valores por quantidade (cadastrados)'
+                          : 'Valores por quantidade'}
+                    </Button>
+                    {openTiers === row.id && productId ? (
+                      <div className="rounded-lg border border-gray-200 p-3">
+                        <ProductPriceTiers
+                          productId={productId}
+                          variationId={row.id}
+                          unitKind={unitKind}
+                          basePriceCents={row.unitPrice ?? basePriceCents}
+                        />
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <p className="text-xs text-gray">
+                    Salve o produto para cadastrar os valores por quantidade
+                    desta variação.
+                  </p>
+                )}
               </div>
             ))}
           </div>

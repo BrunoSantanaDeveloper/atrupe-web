@@ -22,6 +22,9 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
+// Lib
+import { cn } from '@/lib/utils'
+
 // Types
 import type { PriceTier, UnitKind } from '../[id]/composicao/assembly'
 import { unitSymbol } from '../[id]/composicao/assembly'
@@ -47,6 +50,16 @@ interface Props {
   // Preço de venda por unidade do produto, em centavos, para a primeira faixa
   // nascer com ele
   basePriceCents: number
+  // A tabela de uma variação (correção do LITE, 11/11/2026): cada variação
+  // tem a sua. Sem tabela própria a API devolve a do produto como herdada;
+  // aqui ela aparece vazia, porque no orçamento só a da variação vale
+  variationId?: string
+  // Aviso acima da tabela (a do produto quando há variações)
+  notice?: string
+  // Sem faixas, não aparece: a do produto quando há variações só fica à
+  // vista para apagar o que já foi cadastrado
+  hideWhenEmpty?: boolean
+  className?: string
 }
 
 export function ProductPriceTiers({
@@ -54,14 +67,19 @@ export function ProductPriceTiers({
   unitKind,
   basePriceCents,
   onLocalChange,
+  variationId,
+  notice,
+  hideWhenEmpty,
+  className,
 }: Props) {
   const queryClient = useQueryClient()
   const { data } = useQuery({
     enabled: !!productId,
-    queryKey: ['price-tiers', productId],
-    queryFn: () => getPriceTiers({ productId: productId as string }),
+    queryKey: ['price-tiers', productId, variationId ?? null],
+    queryFn: () =>
+      getPriceTiers({ productId: productId as string, variationId }),
   })
-  const saved = data?.data || []
+  const saved = variationId && data?.inherited ? [] : data?.data || []
   const [tiers, setTiers] = useState<PriceTier[]>([])
 
   useEffect(() => {
@@ -77,12 +95,21 @@ export function ProductPriceTiers({
       onLocalChange?.(next)
       return
     }
-    const res = await setPriceTiers({ productId, tiers: next })
+    const res = await setPriceTiers({
+      productId,
+      tiers: next,
+      variationId,
+      // A variação sem faixas volta a herdar (não guarda tabela vazia)
+      inherit: !!variationId && !next.length,
+    })
     if (!res.success) {
       toast.error(res.message)
       return
     }
     queryClient.invalidateQueries({ queryKey: ['price-tiers', productId] })
+    queryClient.invalidateQueries({
+      queryKey: ['product-variations', productId],
+    })
     queryClient.invalidateQueries({ queryKey: ['assembly', productId] })
   }
 
@@ -91,18 +118,30 @@ export function ProductPriceTiers({
       current.map((tier, i) => (i === index ? { ...tier, ...patch } : tier)),
     )
 
+  if (hideWhenEmpty && !tiers.length) return null
+
   return (
     <TooltipProvider>
-      <div className="w-full space-y-3">
+      <div className={cn('w-full space-y-3', className)}>
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h4 className="type-card-title">Preço por quantidade</h4>
+          {variationId ? (
             <p className="text-sm text-gray">
-              Até 100 um valor, de 101 a 500 outro. A faixa vale para o total:
-              150 unidades saem todas pelo valor da segunda faixa. Sem faixas,
-              vale o valor de venda do produto.
+              Valores por quantidade desta variação. Sem faixas, vale o preço da
+              variação.
             </p>
-          </div>
+          ) : (
+            <div>
+              <h4 className="type-card-title">Preço por quantidade</h4>
+              <p className="text-sm text-gray">
+                Até 100 um valor, de 101 a 500 outro. A faixa vale para o total:
+                150 unidades saem todas pelo valor da segunda faixa. Sem faixas,
+                vale o valor de venda do produto.
+              </p>
+              {notice ? (
+                <p className="mt-1 text-sm text-warning-700">{notice}</p>
+              ) : null}
+            </div>
+          )}
           <PermissionGate permissions={EDIT}>
             <Button
               type="button"

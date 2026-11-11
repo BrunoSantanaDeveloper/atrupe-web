@@ -17126,5 +17126,21 @@
   "098922d56e": {
     "es": "No tiene permiso para ver las ventas.",
     "en": "You do not have permission to view sales."
+  },
+  "04e31dabff": {
+    "es": "Valores por cantidad de esta variante. Sin rangos, vale el precio de la variante.",
+    "en": "Quantity-based prices for this variant. Without tiers, the variant price applies."
+  },
+  "06fbcfb3f6": {
+    "es": "El mismo producto en tamaños o colores, como P, M y G o 4x0, 4x1 y 4x4, cada uno con su precio y sus valores por cantidad. En la venta, el vendedor elige la variante. Sin precio, vale el valor del producto.",
+    "en": "The same product in sizes or colors, such as S, M and L or 4x0, 4x1 and 4x4, each with its own price and quantity-based prices. In the sale, the salesperson picks the variant. Without a price, the product price applies."
+  },
+  "473a64256e": {
+    "es": "Ocultar valores por cantidad",
+    "en": "Hide quantity-based prices"
+  },
+  "542a55141b": {
+    "es": "Guarde el producto para registrar los valores por cantidad de esta variante.",
+    "en": "Save the product to set quantity-based prices for this variant."
   }
 }

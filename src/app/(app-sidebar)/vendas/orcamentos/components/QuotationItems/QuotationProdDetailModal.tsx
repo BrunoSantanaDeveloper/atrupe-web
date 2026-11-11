@@ -364,18 +364,6 @@ export function QuotationProdDetailModal({
   // e muda o valor por unidade do item simples conforme a quantidade
   const tierProductId = product?.id || data?.product?.originalProductId || null
   const { hasFeature } = usePlanFeatures()
-  // Faixas, variações e quantidade mínima são do recurso de plano da
-  // composição (LITE em diante)
-  const { data: tiersRes } = useQuery({
-    enabled:
-      !!tierProductId &&
-      open &&
-      hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION),
-    staleTime: 60_000,
-    queryKey: ['price-tiers', tierProductId],
-    queryFn: () => getPriceTiers({ productId: tierProductId as string }),
-  })
-  const tiers = tiersRes?.data || []
   const itemQuantity = Number(watch('items.0.quantity') || 1)
   // A unidade do item manda (fix da medida do item): sem ela, vale a unidade
   const itemUnitKind = watch('items.0.unitKind') ?? 'UNITY'
@@ -397,17 +385,11 @@ export function QuotationProdDetailModal({
     width: Number(watch('items.0.width') || 0) / 1000,
     height: Number(watch('items.0.height') || 0) / 1000,
   }
-  const activeTier =
-    tiers.length && (watch('items') || []).length === 1
-      ? [...tiers]
-          .sort((a, b) => b.from - a.from)
-          .find((tier) => itemQuantity >= tier.from) || null
-      : null
   const baseUnitCost = product?.items?.[0]?.unitCost ?? null
 
   // Variações do produto (PV-6, do LITE em diante): o vendedor escolhe uma,
-  // e o preço e o nome do item seguem a escolha. Com variação escolhida, as
-  // faixas do produto não se aplicam
+  // e o preço e o nome do item seguem a escolha. Com variação escolhida,
+  // valem as faixas dela (abaixo)
   const { data: variationsRes } = useQuery({
     enabled:
       !!product?.id &&
@@ -426,6 +408,40 @@ export function QuotationProdDetailModal({
   }, [open, product?.id])
   // Na edição, a variação é a do item: não muda depois de lançado
   const itemVariationId = editMode ? (data?.variation?.id ?? null) : variationId
+
+  // Faixas, variações e quantidade mínima são do recurso de plano da
+  // composição (LITE em diante). Cada variação tem a sua tabela de faixas
+  // (correção do LITE, 11/11/2026): com variação escolhida, só a dela vale;
+  // a do produto, que a API devolve como herdada, não serve ao preço da
+  // variação. Sem tabela própria, vale o preço da variação
+  const { data: tiersRes } = useQuery({
+    enabled:
+      !!tierProductId &&
+      open &&
+      hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION),
+    staleTime: 60_000,
+    queryKey: ['price-tiers', tierProductId, itemVariationId],
+    queryFn: () =>
+      getPriceTiers({
+        productId: tierProductId as string,
+        variationId: itemVariationId ?? undefined,
+      }),
+  })
+  const tiers =
+    itemVariationId && tiersRes?.inherited ? [] : tiersRes?.data || []
+  const activeTier =
+    tiers.length && (watch('items') || []).length === 1
+      ? [...tiers]
+          .sort((a, b) => b.from - a.from)
+          .find((tier) => itemQuantity >= tier.from) || null
+      : null
+  // O preço de quem está fora das faixas: o da variação escolhida ou o do
+  // produto
+  const chosenVariation = variations.find((item) => item.id === variationId)
+  const outsideTiersUnitCost =
+    chosenVariation && chosenVariation.unitPrice !== null
+      ? convertUnitCostToRaw(itemUnitKind, chosenVariation.unitPrice)
+      : baseUnitCost
   const chooseVariation = (id: string) => {
     const variation = variations.find((item) => item.id === id)
     if (!variation) return
@@ -446,12 +462,11 @@ export function QuotationProdDetailModal({
   }
 
   useEffect(() => {
-    if (variationId) return
     if (!tiers.length || (watch('items') || []).length !== 1) return
     const target =
       activeTier !== null
         ? convertUnitCostToRaw(itemUnitKind, activeTier.unitPrice)
-        : baseUnitCost
+        : outsideTiersUnitCost
     if (target === null || target === undefined) return
     if (Number(watch('items.0.unitCost')) === target) return
     setValue('items.0.unitCost', target)
@@ -459,7 +474,7 @@ export function QuotationProdDetailModal({
     setValue('items.0.salePrice', total)
     setValue('items.0.measurementValue', measurementValue)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [itemQuantity, activeTier?.from, tiers.length])
+  }, [itemQuantity, activeTier?.from, tiers.length, tiersRes, variationId])
 
   // Limite de desconto já na janela do produto (ALT-8, decisão de
   // 24/10/2026): com o preço editado abaixo do cadastro, o orçamento inteiro
@@ -471,6 +486,8 @@ export function QuotationProdDetailModal({
   const catalogUnitOf = (index: number): number | null => {
     if (formItems.length === 1) {
       if (itemVariationId) {
+        if (activeTier)
+          return convertUnitCostToRaw(itemUnitKind, activeTier.unitPrice)
         if (editMode) return null
         const variation = variations.find((v) => v.id === itemVariationId)
         if (variation?.unitPrice !== null && variation?.unitPrice !== undefined)
@@ -897,11 +914,13 @@ export function QuotationProdDetailModal({
                           {minimumNote(index)}
                         </p>
                       )}
-                      {index === 0 && tiers.length > 0 && !variationId && (
+                      {index === 0 && tiers.length > 0 && (
                         <p className="w-full text-xs text-gray">
                           {activeTier
                             ? `Preço da faixa a partir de ${activeTier.from}: R$ ${(activeTier.unitPrice / 100).toFixed(2).replace('.', ',')} por unidade de venda.`
-                            : `Abaixo de ${Math.min(...tiers.map((tier) => tier.from))} vale o valor de venda do produto.`}
+                            : itemVariationId
+                              ? `Abaixo de ${Math.min(...tiers.map((tier) => tier.from))} vale o valor de venda da variação.`
+                              : `Abaixo de ${Math.min(...tiers.map((tier) => tier.from))} vale o valor de venda do produto.`}
                         </p>
                       )}
                     </div>

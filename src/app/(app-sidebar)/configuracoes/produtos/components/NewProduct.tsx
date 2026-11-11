@@ -175,6 +175,8 @@ function NewProductModal({
     { name: string; unitPrice: number | null }[]
   >([])
   const [pendingTiers, setPendingTiers] = useState<PriceTier[]>([])
+  // Com variações, os valores por quantidade passam para cada uma
+  const [variationCount, setVariationCount] = useState(0)
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
@@ -732,6 +734,13 @@ function NewProductModal({
                                 }
                                 unitKind={watch('items.0.unitKind')}
                                 onLocalChange={setPendingVariations}
+                                onCountChange={setVariationCount}
+                                basePriceCents={Math.round(
+                                  convertRawToUnitCost(
+                                    watch('items.0.unitKind') || 'UNITY',
+                                    Number(watch('items.0.unitCost')) || 0,
+                                  ),
+                                )}
                               />
                             </div>
                           )}
@@ -771,22 +780,29 @@ function NewProductModal({
                           {/* Faixas de quantidade do LITE em diante (FQ-1;
                               decisão do produto, 26/10/2026). No PRO elas vivem
                               na aba Composição, com custo e margem por faixa */}
+                          {/* Com variações, os valores por quantidade são de
+                              cada variação (correção do LITE, 11/11/2026): a
+                              tabela do produto só aparece se já tiver faixas,
+                              avisando que não vale, para serem apagadas */}
                           {showVariations && (
-                            <div className="w-full rounded-xl border border-gray-200 p-4">
-                              <ProductPriceTiers
-                                productId={
-                                  editMode ? (productId ?? null) : null
-                                }
-                                unitKind={watch('items.0.unitKind')}
-                                basePriceCents={Math.round(
-                                  convertRawToUnitCost(
-                                    watch('items.0.unitKind') || 'UNITY',
-                                    Number(watch('items.0.unitCost')) || 0,
-                                  ),
-                                )}
-                                onLocalChange={setPendingTiers}
-                              />
-                            </div>
+                            <ProductPriceTiers
+                              className="rounded-xl border border-gray-200 p-4"
+                              productId={editMode ? (productId ?? null) : null}
+                              unitKind={watch('items.0.unitKind')}
+                              basePriceCents={Math.round(
+                                convertRawToUnitCost(
+                                  watch('items.0.unitKind') || 'UNITY',
+                                  Number(watch('items.0.unitCost')) || 0,
+                                ),
+                              )}
+                              onLocalChange={setPendingTiers}
+                              hideWhenEmpty={variationCount > 0}
+                              notice={
+                                variationCount > 0
+                                  ? 'Com variações, vale a tabela de cada variação: esta não entra no orçamento. Apague as faixas daqui e cadastre em cada variação.'
+                                  : undefined
+                              }
+                            />
                           )}
                         </>
                       )}
