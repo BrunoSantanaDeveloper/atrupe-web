@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { AlertBanner } from '@/components/ui/alert-banner'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import {
   MoneyInput,
@@ -47,7 +48,11 @@ import { useTransactionCategory } from '@/hooks/queries/useTransactionCategory'
 import { toast } from 'sonner'
 
 // Icons
-import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react'
+import {
+  IconTrendingUp,
+  IconTrendingDown,
+  IconAlertTriangle,
+} from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -365,7 +370,12 @@ export function CloseDayDialog({
   // Às cegas só na conta Caixa que pediu isso no cadastro; o padrão é a
   // conferência simples, com o esperado à vista e o contado já preenchido
   const blind = isCash && !!account?.blindCount
-  const expected = day ? cashDayTotals(day).balance : 0
+  const totals = day ? cashDayTotals(day) : null
+  const expected = totals?.balance ?? 0
+  // A gaveta não tem dinheiro negativo: com mais saídas que entradas
+  // lançadas, a API recusa o fechamento. A janela diz isso logo, com a conta,
+  // em vez de deixar contar e recusar no fim (correção do LITE, 11/11/2026)
+  const negativeDrawer = isCash && expected < 0
 
   useEffect(() => {
     if (open) {
@@ -424,7 +434,7 @@ export function CloseDayDialog({
           <Button
             type="button"
             isLoading={saving}
-            disabled={needsNote && !note.trim()}
+            disabled={negativeDrawer || (needsNote && !note.trim())}
             onClick={save}
           >
             Fechar caixa
@@ -432,6 +442,30 @@ export function CloseDayDialog({
         )
       }
     >
+      {negativeDrawer && totals ? (
+        <AlertBanner
+          variant="error"
+          icon={IconAlertTriangle}
+          className="rounded-lg border"
+          title="Este caixa não fecha: pelos lançamentos, a gaveta ficaria negativa"
+          description={
+            <div className="space-y-1">
+              <p>
+                {totals.retroactive
+                  ? `Saldo de abertura ${money(day.opening)} + entradas ${money(totals.entries)} − saídas ${money(totals.exits)} + retroativos ${money(totals.retroactive)} = ${money(expected)}.`
+                  : `Saldo de abertura ${money(day.opening)} + entradas ${money(totals.entries)} − saídas ${money(totals.exits)} = ${money(expected)}.`}
+              </p>
+              <p>
+                Não existe dinheiro negativo na gaveta: falta lançar alguma
+                entrada (o saldo de abertura, um suprimento ou um recebimento)
+                ou alguma saída foi lançada a mais ou na conta errada. Confira
+                os lançamentos do dia e corrija; se o dinheiro existe mesmo,
+                lance um ajuste de entrada com o motivo.
+              </p>
+            </div>
+          }
+        />
+      ) : null}
       {step === 'inform' ? (
         informedField
       ) : (

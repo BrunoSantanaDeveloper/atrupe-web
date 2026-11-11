@@ -17142,5 +17142,21 @@
   "542a55141b": {
     "es": "Guarde el producto para registrar los valores por cantidad de esta variante.",
     "en": "Save the product to set quantity-based prices for this variant."
+  },
+  "45c6e563f0": {
+    "es": "Esta caja no cierra: según los movimientos, el cajón quedaría negativo",
+    "en": "This cash register cannot close: based on the entries, the drawer would be negative"
+  },
+  "e9a69cdee2": {
+    "es": "Saldo de apertura {opening} + entradas {entries} − salidas {exits} + retroactivos {retroactive} = {expected}.",
+    "en": "Opening balance {opening} + inflows {entries} − outflows {exits} + backdated {retroactive} = {expected}."
+  },
+  "8ca227dc46": {
+    "es": "Saldo de apertura {opening} + entradas {entries} − salidas {exits} = {expected}.",
+    "en": "Opening balance {opening} + inflows {entries} − outflows {exits} = {expected}."
+  },
+  "f18e96394a": {
+    "es": "No existe dinero negativo en el cajón: falta registrar alguna entrada (el saldo de apertura, un ingreso de caja o un cobro) o alguna salida se registró de más o en la cuenta equivocada. Revise los movimientos del día y corrija; si el dinero existe realmente, registre un ajuste de entrada con el motivo.",
+    "en": "There is no negative cash in the drawer: an inflow is missing (the opening balance, a cash deposit or a receipt) or an outflow was entered twice or in the wrong account. Check the day’s entries and correct them; if the money really exists, post an inflow adjustment with the reason."
   }
 }
