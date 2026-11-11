@@ -1,3 +1,4 @@
+import { useAllowedConditions } from './allowedConditions'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { useFormContext } from 'react-hook-form'
@@ -15,6 +16,7 @@ interface Props {
 
 export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   const form = useFormContext<QuotationPaymentConditionsType>()
+  const allowedIds = useAllowedConditions()
   const { setValue, watch, clearErrors } = form
 
   const downPaymentValue = watch('downPayment.amount') || 0
@@ -60,6 +62,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
   return (
     <PaymentConditionsSelectField<QuotationPaymentConditionsType>
+      allowedIds={allowedIds}
       name="paymentConditionId"
       label="Forma de pagamento"
       width="flex-[1_0_150px]"

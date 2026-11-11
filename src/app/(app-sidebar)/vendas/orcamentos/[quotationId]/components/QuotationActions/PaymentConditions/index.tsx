@@ -57,6 +57,10 @@ import { useQueryClient } from '@tanstack/react-query'
 // Actions
 import { getItem, updateItemNew } from '@/actions/_cruds'
 
+// Hooks
+import { useQuotationCredit } from '@/hooks/queries/useQuotationCredit'
+import { AllowedConditionsContext } from './allowedConditions'
+
 // Libs
 import { actionDisabled } from '@/lib/quotation'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -105,6 +109,14 @@ export function PaymentConditionsDialog({
   // const isFetching = useIsFetching()
 
   const queryClient = useQueryClient()
+
+  // Só as formas liberadas para o cliente (correção do LITE, 11/11/2026)
+  const { data: credit } = useQuotationCredit(
+    quotationData?.id,
+    open && !!quotationData?.client?.id,
+    `${quotationData?.client?.id ?? ''}|${quotationData?.updatedAt ?? ''}`,
+  )
+  const allowedConditionIds = credit?.allowedConditionIds ?? null
 
   const form = useForm<QuotationPaymentConditionsType>({
     resolver: zodResolver(quotationPaymentConditionsSchema),
@@ -286,63 +298,65 @@ export function PaymentConditionsDialog({
           />
         )}
         <DialogBody>
-          <Form {...form}>
-            <form
-              id="quotation-payment-conditions"
-              onSubmit={handleSubmit(onSubmit)}
-              noValidate
-              className="flex flex-wrap gap-4"
-            >
-              <TypeAndBilling quotationData={quotationData} />
+          <AllowedConditionsContext.Provider value={allowedConditionIds}>
+            <Form {...form}>
+              <form
+                id="quotation-payment-conditions"
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
+                className="flex flex-wrap gap-4"
+              >
+                <TypeAndBilling quotationData={quotationData} />
 
-              <FormSelect
-                name="hasDownPayment"
-                label="Entrada"
-                options={[
-                  { value: 'false', label: 'Não' },
-                  { value: 'true', label: 'Sim' },
-                ]}
-                width="flex-[1_0_50px]"
-              />
+                <FormSelect
+                  name="hasDownPayment"
+                  label="Entrada"
+                  options={[
+                    { value: 'false', label: 'Não' },
+                    { value: 'true', label: 'Sim' },
+                  ]}
+                  width="flex-[1_0_50px]"
+                />
 
-              <PaymentMethodAndCondition quotationData={quotationData} />
+                <PaymentMethodAndCondition quotationData={quotationData} />
 
-              <InstallmentQty />
+                <InstallmentQty />
 
-              <Separator className="my-2 bg-gray-300" />
+                <Separator className="my-2 bg-gray-300" />
 
-              {hasDownPayment === 'true' && <DownPayment />}
+                {hasDownPayment === 'true' && <DownPayment />}
 
-              {installments?.length > 0 && (
-                <div className="bg-white rounded-xl border border-gray-300 w-full">
-                  <div className="space-y-6 p-6 pb-0">
-                    <Installments />
+                {installments?.length > 0 && (
+                  <div className="bg-white rounded-xl border border-gray-300 w-full">
+                    <div className="space-y-6 p-6 pb-0">
+                      <Installments />
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              <FormBrlInput
-                name="commission.totalCommission"
-                label="Valor da comissão"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-                disabled
-                readOnly
-              />
+                <FormBrlInput
+                  name="commission.totalCommission"
+                  label="Valor da comissão"
+                  startAdornment={<>R$</>}
+                  width="flex-[1_0_200px]"
+                  disabled
+                  readOnly
+                />
 
-              <DiscountAndTotal
-                addComissionValue={addComissionValue}
-                quotationData={quotationData}
-                onDiscountLimitChange={setExceedsDiscountLimit}
-              />
+                <DiscountAndTotal
+                  addComissionValue={addComissionValue}
+                  quotationData={quotationData}
+                  onDiscountLimitChange={setExceedsDiscountLimit}
+                />
 
-              <FormTextarea
-                name="description"
-                label="Descrição auxiliar"
-                width="w-full"
-              />
-            </form>
-          </Form>
+                <FormTextarea
+                  name="description"
+                  label="Descrição auxiliar"
+                  width="w-full"
+                />
+              </form>
+            </Form>
+          </AllowedConditionsContext.Provider>
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div className="flex gap-6">

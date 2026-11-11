@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { Separator } from '@/components/ui/separator'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
+import { useAllowedConditions } from './allowedConditions'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { QuotationPaymentConditionsType } from './schema'
@@ -14,6 +15,7 @@ import { loadCondition, withFees } from './fees'
 
 export function Installments() {
   const form = useFormContext<QuotationPaymentConditionsType>()
+  const allowedIds = useAllowedConditions()
 
   const { watch, setValue } = form
 
@@ -119,6 +121,7 @@ export function Installments() {
             width="flex-[1_0_130px]"
           />
           <PaymentConditionsSelectField
+            allowedIds={allowedIds}
             name={`installments.${index}.paymentConditionId`}
             label="Forma de pagamento"
             width="flex-[1_0_200px]"

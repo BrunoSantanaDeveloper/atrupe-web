@@ -4,6 +4,7 @@ import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInpu
 
 import { useFormContext } from 'react-hook-form'
 import type { QuotationPaymentConditionsType } from './schema'
+import { useAllowedConditions } from './allowedConditions'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { installmentFee, splitCents } from '@/lib/paymentFee'
@@ -11,6 +12,7 @@ import { loadCondition, withFees } from './fees'
 
 export function DownPayment() {
   const form = useFormContext<QuotationPaymentConditionsType>()
+  const allowedIds = useAllowedConditions()
 
   const { setValue, clearErrors, watch, trigger } = form
 
@@ -71,8 +73,8 @@ export function DownPayment() {
         label="Vencimento"
         width="flex-[1_0_130px]"
       />
-      {/* TODO : Filtrar condições de pagamento permitidas para a entrada */}
       <PaymentConditionsSelectField<QuotationPaymentConditionsType>
+        allowedIds={allowedIds}
         name={`downPayment.paymentConditionId`}
         label="Forma de pagamento"
         width="flex-[1_0_200px]"

@@ -4,7 +4,7 @@ import React, { useMemo } from 'react'
 import { FormSelect, SelectBasic } from '../FormSelect'
 
 // Type Imports
-import { type Path, type FieldValues } from 'react-hook-form'
+import { type Path, type FieldValues, useFormContext } from 'react-hook-form'
 
 // Hooks
 import { usePaymentConditions } from '@/hooks/queries/usePaymentConditions'
@@ -18,6 +18,9 @@ interface Props<T extends FieldValues> {
   value?: string
   additionalOnChange?: (value: string) => void
   disabled?: boolean
+  // Só estas formas (as liberadas para o cliente no orçamento); nulo, todas.
+  // A escolhida fica na lista mesmo fora delas, para o campo não esvaziar
+  allowedIds?: string[] | null
 }
 
 export function PaymentConditionsSelectField<T extends FieldValues>({
@@ -29,18 +32,29 @@ export function PaymentConditionsSelectField<T extends FieldValues>({
   noForm,
   additionalOnChange,
   disabled,
+  allowedIds,
   ...props
 }: Props<T>) {
   const { data: paymentConditions } = usePaymentConditions()
 
+  const form = useFormContext()
+  const current = noForm ? value : form?.watch(name)
+
   const options = useMemo(() => {
     if (!paymentConditions || paymentConditions.length === 0) return []
 
-    return paymentConditions.map((paymentCondition) => ({
-      value: paymentCondition.id,
-      label: paymentCondition.name,
-    }))
-  }, [paymentConditions])
+    return paymentConditions
+      .filter(
+        (paymentCondition) =>
+          !allowedIds ||
+          allowedIds.includes(paymentCondition.id) ||
+          paymentCondition.id === current,
+      )
+      .map((paymentCondition) => ({
+        value: paymentCondition.id,
+        label: paymentCondition.name,
+      }))
+  }, [paymentConditions, allowedIds, current])
 
   if (noForm)
     return (

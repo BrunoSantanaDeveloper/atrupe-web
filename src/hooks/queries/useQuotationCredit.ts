@@ -27,6 +27,8 @@ export type QuotationCredit = {
   used?: number
   available?: number | null
   requested?: number
+  // As formas liberadas para o cliente; nulo, todas
+  allowedConditionIds?: string[] | null
   issues: CreditIssue[]
 }
 
