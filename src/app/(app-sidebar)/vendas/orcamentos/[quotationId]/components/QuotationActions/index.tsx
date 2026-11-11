@@ -8,6 +8,7 @@ import { SetClient } from './SetClient'
 import { OpenQuotation } from './OpenQuotation'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { RejectQuotation } from './RejectQuotation'
+import { DiscardQuickSale } from './DiscardQuickSale'
 import { FinishQuotation } from './FinishQuotation'
 import { ApproveQuotation } from './ApproveQuotation'
 import { CustomButton } from '@/components/common/CustomButton'
@@ -44,16 +45,28 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
     rejected: data?.status === 'REJECTED',
   }
 
-  const canApprove = status.done || status.overdue
-  const canReject = status.open || status.done || status.overdue
+  // A venda rápida não tem Digitação, Aguardando e Rejeitado: aprova direto
+  // da digitação ou é descartada (11/11/2026)
+  const quickSale = !!data?.quickSale
+  const canApprove = status.done || status.overdue || (quickSale && status.open)
+  const canReject = !quickSale && (status.open || status.done || status.overdue)
+  const canDiscard = quickSale && status.open
   const canFinish = status.open
   const canOpen = status.rejected || status.done || status.overdue
-  const canSetClient = status.open && data?.quickSale
+  const canSetClient = status.open && quickSale
+
+  // Informar o cliente é o próximo passo da venda rápida: vem primeiro
+  const setClient = canSetClient ? (
+    <PermissionGate permissions={['sale:quotation:edit']}>
+      <SetClient quotationId={data.id} />
+    </PermissionGate>
+  ) : null
 
   return (
     <>
       <div className="flex flex-wrap justify-between gap-4">
         <div className="flex flex-wrap gap-4">
+          {setClient}
           {!hidePrint && (
             <PermissionGate permissions={['sale:quotation:view']}>
               <CustomButton
@@ -79,11 +92,6 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
               />
             </PermissionGate>
           )}
-          {canSetClient ? (
-            <PermissionGate permissions={['sale:quotation:edit']}>
-              <SetClient quotationId={data.id} />
-            </PermissionGate>
-          ) : null}
           {canOpen ? (
             <PermissionGate permissions={['sale:quotation:edit']}>
               <OpenQuotation data={data} />
@@ -96,11 +104,18 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
               <RejectQuotation data={data} />
             </PermissionGate>
           ) : null}
+          {canDiscard ? (
+            <PermissionGate permissions={['sale:quotation:delete']}>
+              <DiscardQuickSale data={data} />
+            </PermissionGate>
+          ) : null}
           {primaryAction ?? (
             <>
-              <PermissionGate permissions={['sale:quotation:edit']}>
-                <FinishQuotation data={data} canFinish={canFinish} />
-              </PermissionGate>
+              {!quickSale ? (
+                <PermissionGate permissions={['sale:quotation:edit']}>
+                  <FinishQuotation data={data} canFinish={canFinish} />
+                </PermissionGate>
+              ) : null}
               {canApprove ? (
                 <PermissionGate permissions={['sale:order:create']}>
                   <ApproveQuotation data={data} />

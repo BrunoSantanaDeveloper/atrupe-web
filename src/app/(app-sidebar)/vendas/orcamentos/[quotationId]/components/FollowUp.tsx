@@ -17,6 +17,7 @@ import {
   IconPencil,
   IconTrash,
   IconMessageCircle,
+  IconCalendarPlus,
 } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
@@ -69,6 +70,7 @@ const stateVariant = {
 export function FollowUp({ data }: { data: QuotationType }) {
   const [open, setOpen] = useState(false)
   const [contacting, setContacting] = useState(false)
+  const [showTimeline, setShowTimeline] = useState(false)
   const reference = `${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`
   const queryClient = useQueryClient()
   const { hasFeature } = usePlanFeatures()
@@ -77,10 +79,18 @@ export function FollowUp({ data }: { data: QuotationType }) {
   // O acompanhamento comercial é do LITE (CRM-7, 29/10/2026)
   const followUp = hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
 
-  // Só enquanto a negociação está aberta. Depois de aprovado ou rejeitado,
-  // o card fica se ainda houver um contato anotado, para não sumir com ele
+  // A negociação começa ao concluir o orçamento: em Digitação ele ainda não
+  // foi ao cliente, e o card só aparece se já houver contato combinado. Depois
+  // de aprovado ou rejeitado, fica se ainda houver um contato anotado, para não
+  // sumir com ele. A venda rápida é de balcão e não tem acompanhamento
+  // (revisão do LITE, 11/11/2026)
   const negotiating = ['OPEN', 'DONE', 'OVERDUE'].includes(data?.status)
-  if (!followUp || (!negotiating && !data?.nextContactAt)) return null
+  const sent = ['DONE', 'OVERDUE'].includes(data?.status)
+  if (!followUp || data?.quickSale || (!sent && !data?.nextContactAt))
+    return null
+  // Nada combinado ainda: o card fica numa linha, com os gestos, e a linha do
+  // tempo abre a pedido
+  const compact = !data?.nextContactAt && !data?.tag?.id
 
   const state = nextContactState(data?.nextContactAt)
 
@@ -100,6 +110,103 @@ export function FollowUp({ data }: { data: QuotationType }) {
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
     return true
+  }
+
+  const dialogs = (
+    <>
+      <NextContactDialog
+        open={open}
+        onOpenChange={setOpen}
+        data={data}
+        onSave={save}
+      />
+      <ContactDialog
+        open={contacting}
+        onOpenChange={setContacting}
+        quotation={{
+          id: data.id,
+          reference,
+          clientName: data?.client?.name || 'Cliente não informado',
+          nextContactAt: data?.nextContactAt,
+          nextContactNote: data?.nextContactNote,
+          tagId: data?.tag?.id,
+        }}
+      />
+    </>
+  )
+
+  // O gesto único (CRM-1) e o WhatsApp com modelo (CRM-3, CRM-5)
+  const gestures = (
+    <>
+      <Button
+        type="button"
+        LeftIcon={IconMessageCircle}
+        onClick={() => setContacting(true)}
+      >
+        Registrar contato
+      </Button>
+      <WhatsAppButton
+        variant="button"
+        phone={data?.client?.phoneNumber}
+        template={data?.status === 'DONE' ? 'validity' : 'resume'}
+        vars={{
+          cliente: data?.client?.name,
+          numero: reference,
+          valor: formatCurrencyToBrl(data?.totalValue || 0),
+          validade: formatToLocaleDate(data?.dueDate),
+          vendedor: data?.seller?.name,
+        }}
+      />
+    </>
+  )
+
+  const tag = showTag ? (
+    <QuotationTagDropdown quotation={data} tagsList={tagsList || []} />
+  ) : null
+
+  if (compact) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <div className="flex flex-wrap items-center gap-3">
+            <FeaturedIcon tone="neutral" Icon={IconCalendarEvent} />
+            <CardTitle>Acompanhamento</CardTitle>
+            {tag}
+            {negotiating ? (
+              <PermissionGate permissions={['sale:quotation:edit']}>
+                <div className="ml-auto flex flex-wrap gap-3">
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    LeftIcon={IconCalendarPlus}
+                    onClick={() => setOpen(true)}
+                  >
+                    Combinar próximo contato
+                  </Button>
+                  {gestures}
+                </div>
+              </PermissionGate>
+            ) : null}
+          </div>
+        </CardHeader>
+        <CardContent className="px-6">
+          <Button
+            type="button"
+            variant="link"
+            className="h-auto p-0"
+            onClick={() => setShowTimeline((value) => !value)}
+          >
+            {showTimeline ? 'Ocultar linha do tempo' : 'Ver linha do tempo'}
+          </Button>
+          {showTimeline ? (
+            <div className="pt-4">
+              <QuotationTimeline quotationId={data.id} />
+            </div>
+          ) : null}
+        </CardContent>
+        {dialogs}
+      </Card>
+    )
   }
 
   return (
@@ -142,13 +249,10 @@ export function FollowUp({ data }: { data: QuotationType }) {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6">
-          {showTag ? (
+          {tag ? (
             <div className="space-y-1">
               <p className="text-sm text-gray">Fase</p>
-              <QuotationTagDropdown
-                quotation={data}
-                tagsList={tagsList || []}
-              />
+              {tag}
             </div>
           ) : null}
           <div className="space-y-1">
@@ -175,28 +279,7 @@ export function FollowUp({ data }: { data: QuotationType }) {
         </div>
         {negotiating ? (
           <PermissionGate permissions={['sale:quotation:edit']}>
-            {/* O gesto único (CRM-1) e o WhatsApp com modelo (CRM-3, CRM-5) */}
-            <div className="flex flex-wrap gap-3 px-6 pt-6">
-              <Button
-                type="button"
-                LeftIcon={IconMessageCircle}
-                onClick={() => setContacting(true)}
-              >
-                Registrar contato
-              </Button>
-              <WhatsAppButton
-                variant="button"
-                phone={data?.client?.phoneNumber}
-                template={data?.status === 'DONE' ? 'validity' : 'resume'}
-                vars={{
-                  cliente: data?.client?.name,
-                  numero: reference,
-                  valor: formatCurrencyToBrl(data?.totalValue || 0),
-                  validade: formatToLocaleDate(data?.dueDate),
-                  vendedor: data?.seller?.name,
-                }}
-              />
-            </div>
+            <div className="flex flex-wrap gap-3 px-6 pt-6">{gestures}</div>
           </PermissionGate>
         ) : null}
         {/* A linha do tempo: contatos e eventos juntos (CRM-1) */}
@@ -204,24 +287,7 @@ export function FollowUp({ data }: { data: QuotationType }) {
           <QuotationTimeline quotationId={data.id} />
         </div>
       </CardContent>
-      <NextContactDialog
-        open={open}
-        onOpenChange={setOpen}
-        data={data}
-        onSave={save}
-      />
-      <ContactDialog
-        open={contacting}
-        onOpenChange={setContacting}
-        quotation={{
-          id: data.id,
-          reference,
-          clientName: data?.client?.name || 'Cliente não informado',
-          nextContactAt: data?.nextContactAt,
-          nextContactNote: data?.nextContactNote,
-          tagId: data?.tag?.id,
-        }}
-      />
+      {dialogs}
     </Card>
   )
 }

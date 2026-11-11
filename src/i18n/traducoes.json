@@ -17054,5 +17054,41 @@
   "ffeb68df7c": {
     "es": "El nuevo plan se libera en cuanto se confirma el pago. Hasta entonces, su plan actual sigue vigente.",
     "en": "The new plan is unlocked as soon as the payment is confirmed. Until then, your current plan stays active."
+  },
+  "2a6def4862": {
+    "es": "Ocultar línea de tiempo",
+    "en": "Hide timeline"
+  },
+  "0bdbd38e66": {
+    "es": "Ver línea de tiempo",
+    "en": "View timeline"
+  },
+  "f25c2e0322": {
+    "es": "Aprobar venta",
+    "en": "Approve sale"
+  },
+  "4d77ffa105": {
+    "es": "¿Desea aprobar esta venta?",
+    "en": "Do you want to approve this sale?"
+  },
+  "0aff1e2f43": {
+    "es": "Venta descartada",
+    "en": "Sale discarded"
+  },
+  "7174728f7b": {
+    "es": "Descartar venta",
+    "en": "Discard sale"
+  },
+  "01ac539ba2": {
+    "es": "¿Descartar esta venta?",
+    "en": "Discard this sale?"
+  },
+  "e681889ce9": {
+    "es": "La venta rápida y los ítems registrados se eliminan. No se pueden recuperar después.",
+    "en": "The quick sale and the items entered are deleted. They cannot be recovered afterwards."
+  },
+  "5a7296c90a": {
+    "es": "{valor} #{reference}",
+    "en": "{valor} #{reference}"
   }
 }

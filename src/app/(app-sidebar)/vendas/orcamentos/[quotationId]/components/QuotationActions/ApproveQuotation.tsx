@@ -164,7 +164,9 @@ export function ApproveQuotation({ data }: Props) {
     toast.success(
       project
         ? `Orçamento aprovado. Projeto de produção criado em stand-by, com ${project.tasks} tarefa(s)`
-        : 'Orçamento aprovado',
+        : data?.quickSale
+          ? 'Venda aprovada'
+          : 'Orçamento aprovado',
     )
 
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
@@ -189,7 +191,7 @@ export function ApproveQuotation({ data }: Props) {
     <>
       <CustomButton
         icon={IconCircleCheck}
-        title="Aprovar orçamento"
+        title={data?.quickSale ? 'Aprovar venda' : 'Aprovar orçamento'}
         iconTone="success"
         onClick={handleTriggerClick}
       />
@@ -283,7 +285,11 @@ export function ApproveQuotation({ data }: Props) {
               tone="warning"
               className="mx-auto mb-2 flex"
             />
-            <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
+            <AlertDialogTitle>
+              {data?.quickSale
+                ? 'Deseja aprovar esta venda?'
+                : 'Deseja aprovar este orçamento?'}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               Ao aprovar, este trabalho mudará de status e passará a ficar
               disponível na aba Ordens de Serviço.

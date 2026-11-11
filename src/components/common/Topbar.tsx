@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 
 // Next
 import Link from 'next/link'
@@ -45,6 +45,9 @@ interface Props {
   label?: string
   previousPage?: string
   badge?: BadgeType
+  // Selos ao lado do status, como o da venda rápida. Diferencia a tela sem
+  // mudar a diagramação, que a faixa do `label` muda (11/11/2026)
+  tags?: ReactNode
   supportText?: string
   classNames?: { title?: string; label?: string }
   // Marcação temporária da revisão: 'new' pinta o título de azul,
@@ -63,6 +66,7 @@ export function Topbar({
   paramName = 'status',
   previousPage,
   badge,
+  tags,
   supportText,
   classNames,
   countsLoading,
@@ -115,6 +119,7 @@ export function Topbar({
                   {badge.text || '-'}
                 </Badge>
               ) : null}
+              {tags || null}
             </div>
             {supportText ? (
               <p className="type-page-subtitle truncate">{supportText}</p>

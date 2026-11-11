@@ -16,6 +16,7 @@ import { QuotationDelivery } from './Delivery'
 import { QuotationItems } from './QuotationItems'
 import { Topbar } from '@/components/common/Topbar'
 import { QuotationActions } from './QuotationActions'
+import { QuotationTopbar } from './QuotationTopbar'
 import { CreditBanner } from './CreditBanner'
 import { FollowUp } from './FollowUp'
 import { AlertBanner } from '@/components/ui/alert-banner'
@@ -46,7 +47,6 @@ import {
 import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
-import { quotationsStatusObj } from '@/consts/quotations'
 import { QuotationProvider } from '@/contexts/quotationContext'
 
 interface Props {
@@ -168,18 +168,7 @@ export function Quotation({ id }: Props) {
     return (
       <PermissionGate permissions={['sale:quotation:view']}>
         <div className="relative space-y-5">
-          <Topbar
-            title={`Orçamento #${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`}
-            supportText={data?.client?.name || ''}
-            previousPage={previousUrl}
-            badge={
-              quotationsStatusObj[data?.status] || {
-                text: 'Desconhecido',
-                variant: 'neutralLight',
-              }
-            }
-            label={data?.quickSale ? 'Venda rápida' : ''}
-          />
+          <QuotationTopbar data={data} previousUrl={previousUrl} />
           <Card className="w-full">
             <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
@@ -224,18 +213,7 @@ export function Quotation({ id }: Props) {
           //   'pointer-events-none opacity-50',
         )}
       >
-        <Topbar
-          title={`Orçamento #${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`}
-          supportText={data?.client?.name || ''}
-          previousPage={previousUrl}
-          badge={
-            quotationsStatusObj[data?.status] || {
-              text: 'Desconhecido',
-              variant: 'neutralLight',
-            }
-          }
-          label={data?.quickSale ? 'Venda rápida' : ''}
-        />
+        <QuotationTopbar data={data} previousUrl={previousUrl} />
         <div className="space-y-3">
           {/* O motivo da rejeição fica à vista (CRM fase 1) */}
           {data?.status === 'REJECTED' && data?.rejectionReason ? (

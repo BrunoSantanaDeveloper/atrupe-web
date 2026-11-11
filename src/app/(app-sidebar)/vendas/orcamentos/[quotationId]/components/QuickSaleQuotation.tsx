@@ -17,7 +17,7 @@ import { QuotationSummary } from './Summary'
 import { QuotationDelivery } from './Delivery'
 import { QuotationItems } from './QuotationItems'
 import { QuotationActions } from './QuotationActions'
-import { Topbar } from '@/components/common/Topbar'
+import { QuotationTopbar } from './QuotationTopbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   useQuickSale,
@@ -32,9 +32,6 @@ import { QuotationProvider } from '@/contexts/quotationContext'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
-
-// Consts
-import { quotationsStatusObj } from '@/consts/quotations'
 
 // Icons
 import { IconExternalLink } from '@tabler/icons-react'
@@ -58,17 +55,10 @@ export function QuickSaleQuotation({ data, previousUrl }: Props) {
   const view = locked ? { ...data, status: 'APPROVED' } : data
 
   const topbar = (
-    <Topbar
-      title={`${data?.quickSale ? 'Venda rápida' : 'Orçamento'} #${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`}
-      supportText={data?.client?.name || ''}
-      previousPage={previousUrl}
-      badge={
-        quotationsStatusObj[view.status] || {
-          text: 'Desconhecido',
-          variant: 'neutralLight',
-        }
-      }
-      label={data?.quickSale ? 'Venda rápida' : ''}
+    <QuotationTopbar
+      data={data}
+      previousUrl={previousUrl}
+      status={view.status}
       primaryCta={
         data?.orderId ? (
           <Button type="button" variant="neutralOutline" asChild>

@@ -26,7 +26,7 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Icon } from '@/components/ui/icon'
+import { QuickSaleBadge } from '@/components/common/QuickSaleBadge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -73,7 +73,6 @@ import {
   IconPrinter,
   IconHistory,
   IconTrash,
-  IconBolt,
   IconMessageCircle,
 } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
@@ -609,15 +608,6 @@ export function QuotationsData({
         }}
       />
     </>
-  )
-}
-
-function QuickSaleBadge() {
-  return (
-    <Badge variant="warningLight" size="sm" className="shrink-0">
-      <Icon icon={IconBolt} size="sm" />
-      Venda rápida
-    </Badge>
   )
 }
 
