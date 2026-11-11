@@ -5,6 +5,7 @@
 
 // React / Next
 import { useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/hooks/useRouter'
 
@@ -258,6 +259,14 @@ export function PDV() {
           secondaryCta={
             isLoading ? undefined : (
               <div className="flex items-center gap-2">
+                {/* As vendas rápidas do dia (VR-9, 11/11/2026) */}
+                <PermissionGate permissions={['sale:quotation:view']}>
+                  <Button type="button" variant="neutralOutline" asChild>
+                    <Link href="/vendas/vendas-de-hoje?de=caixa">
+                      Vendas de hoje
+                    </Link>
+                  </Button>
+                </PermissionGate>
                 <PermissionGate permissions={['financial:pdv_settings:edit']}>
                   <ActionButton
                     size="iconMd"

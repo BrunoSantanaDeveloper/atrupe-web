@@ -6,8 +6,10 @@
 // 11/11/2026)
 
 import type { ReactNode } from 'react'
+import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 
+import { Button } from '@/components/ui/button'
 import { Topbar } from '@/components/common/Topbar'
 import { QuickSaleBadge } from '@/components/common/QuickSaleBadge'
 import { getQuickSaleSettings } from '@/actions/quick-sale'
@@ -66,6 +68,16 @@ export function QuotationTopbar({
         }
       }
       tags={tags}
+      // As vendas rápidas do dia, a partir da venda (VR-9, 11/11/2026)
+      secondaryCta={
+        quickSale ? (
+          <Button type="button" variant="neutralOutline" asChild>
+            <Link href={`/vendas/vendas-de-hoje?venda=${data.id}`}>
+              Vendas de hoje
+            </Link>
+          </Button>
+        ) : undefined
+      }
       primaryCta={primaryCta}
     />
   )

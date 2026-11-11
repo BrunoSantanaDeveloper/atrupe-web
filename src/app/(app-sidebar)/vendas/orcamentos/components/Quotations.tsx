@@ -63,7 +63,7 @@ function getQuotationReference(quotation: QuotationExportType) {
   return [reference, quotation.description].filter(Boolean).join(' - ')
 }
 
-function getQuotationFinalValue(quotation: QuotationExportType) {
+export function getQuotationFinalValue(quotation: QuotationExportType) {
   const itemsValue = quotation.totalValue || 0
   const deliveryValue = quotation.deliveryInfo?.value ?? 0
   const payment = quotation.quotationPayment

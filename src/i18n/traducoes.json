@@ -17090,5 +17090,41 @@
   "5a7296c90a": {
     "es": "{valor} #{reference}",
     "en": "{valor} #{reference}"
+  },
+  "89afd1626c": {
+    "es": "Ventas de hoy",
+    "en": "Today's sales"
+  },
+  "0dc20fc2ef": {
+    "es": "Rechazada en caja",
+    "en": "Rejected at checkout"
+  },
+  "693ac2194c": {
+    "es": "Rechazadas en caja",
+    "en": "Rejected at checkout"
+  },
+  "7ce042eec5": {
+    "es": "venta aprobada",
+    "en": "approved sale"
+  },
+  "28f88b8847": {
+    "es": "ventas aprobadas",
+    "en": "approved sales"
+  },
+  "3d872fbfff": {
+    "es": "Venta rápida #{reference}",
+    "en": "Quick sale #{reference}"
+  },
+  "ed7dea73e3": {
+    "es": "Ninguna venta en esta situación hoy.",
+    "en": "No sales in this status today."
+  },
+  "08f403b4c4": {
+    "es": "Ninguna venta rápida hoy.",
+    "en": "No quick sales today."
+  },
+  "098922d56e": {
+    "es": "No tiene permiso para ver las ventas.",
+    "en": "You do not have permission to view sales."
   }
 }
