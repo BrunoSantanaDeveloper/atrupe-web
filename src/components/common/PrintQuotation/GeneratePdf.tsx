@@ -202,6 +202,11 @@ const styles = StyleSheet.create({
   conditions: {
     marginBottom: 40,
   },
+  // As condições gerais da empresa são longas: 30% menores que o corpo
+  // (8 → 5,6), para não ocuparem meia página (11/11/2026)
+  textAfterItems: {
+    fontSize: 5.6,
+  },
   signatures: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1858,7 +1863,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <View style={styles.totalDivider} />
               </View>
               {/* Texto após itens */}
-              <Text>{data.company?.textAfterItems}</Text>
+              <Text style={styles.textAfterItems}>
+                {data.company?.textAfterItems}
+              </Text>
 
               <View style={styles.infoDate}>
                 <View>
