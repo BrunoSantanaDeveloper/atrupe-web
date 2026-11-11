@@ -41,10 +41,12 @@ interface Props {
 
 function QuotationTag({ quotation, tagsList }: Props) {
   // Trocar a etiqueta mexe no orçamento: pede a permissão de editar, como os
-  // outros gestos do orçamento
+  // outros gestos do orçamento. Vale enquanto a negociação está aberta,
+  // inclusive no Aguardando, que é onde a etapa da venda mais anda (correção
+  // do LITE, 11/11/2026); aprovado ou rejeitado, não muda
   const { hasPermission } = usePermissions()
   const allowChangeStatus =
-    (quotation?.status === 'OPEN' || quotation?.status === 'OVERDUE') &&
+    ['OPEN', 'DONE', 'OVERDUE'].includes(quotation?.status) &&
     hasPermission('sale:quotation:edit')
 
   const queryClient = useQueryClient()
