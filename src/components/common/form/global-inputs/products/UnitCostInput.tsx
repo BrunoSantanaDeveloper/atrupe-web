@@ -104,6 +104,23 @@ export function convertRawToUnitCost(
   }
 }
 
+/**
+ * Preço de venda do produto em REAIS, por unidade comercial.
+ *
+ * `salePrice` fica em centavos e, nas unidades medidas, por unidade pequena
+ * (R$/mm², R$/mg...). Quem lê o campo cru mostra cem vezes o valor: um banner
+ * de R$ 42,00 aparecia como R$ 4.200,00 na busca de produtos da nota fiscal, e
+ * entrava na nota com esse valor. É a mesma conta que a tela de produtos faz
+ * para exibir a coluna de preço.
+ */
+export function salePriceToReais(product: {
+  salePrice?: number | null
+  items?: { unitKind?: string | null }[] | null
+}): number {
+  const unitKind = product.items?.[0]?.unitKind || 'UNITY'
+  return convertRawToUnitCost(unitKind, product.salePrice || 0) / 100
+}
+
 // Função para calcular a quantidade total baseada na unidade (usando valores brutos)
 function calculateTotalQuantity(
   unitKind: string,

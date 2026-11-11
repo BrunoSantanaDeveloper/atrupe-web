@@ -19,20 +19,11 @@ import {
 } from '@/components/ui/popover'
 
 // Icons
-import {
-  IconCheck,
-  IconChevronDown,
-  IconPlus,
-  IconLoader2,
-  IconX,
-  IconPackage,
-} from '@tabler/icons-react'
+import { IconPlus, IconLoader2, IconPackage } from '@tabler/icons-react'
 
 // Actions
 import { getData } from '@/actions/_cruds'
-
-// Utils
-import { cn } from '@/lib/utils'
+import { salePriceToReais } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Types
 import type { NfePrepareItem } from '@/types/fiscal/nfe-prepare'
@@ -54,6 +45,8 @@ interface ProductSearchResult {
   name: string
   code?: string
   salePrice: number
+  /** Composições: a primeira diz a unidade em que `salePrice` foi gravado. */
+  items?: { unitKind?: string | null }[] | null
   unitOfMeasureCode?: string
   fiscalData?: ProductFiscalData | null
 }
@@ -159,11 +152,11 @@ export function ProductSelector({
       ean: '',
       ceantrib: '',
       quantity: 1,
-      unitValue: product.salePrice || 0,
+      unitValue: salePriceToReais(product),
       discount: 0,
       freight: 0,
       insurance: 0,
-      totalValue: product.salePrice || 0,
+      totalValue: salePriceToReais(product),
       isService: false,
       needsConfiguration: !fiscal?.ncm,
     }
@@ -240,7 +233,7 @@ export function ProductSelector({
                               <span className="text-gray-300">·</span>
                             )}
                             <span className="text-gray-600 font-medium">
-                              {formatCurrency(product.salePrice)}
+                              {formatCurrency(salePriceToReais(product))}
                             </span>
                           </>
                         )}
