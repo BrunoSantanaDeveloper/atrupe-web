@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useRascunhoAvulso } from '@/components/common/fiscal/useRascunhoAvulso'
 import { useState, useEffect, useCallback, useRef } from 'react'
 
 // UI
@@ -264,6 +265,69 @@ export function StandaloneNfseForm() {
   }
 
   const router = useRouter()
+
+  /**
+   * Rascunho: a tela não gravava nada e sair dela perdia tudo. O retrato é do
+   * ESTADO, não do corpo da emissão — é ele que recompõe a tela.
+   */
+  const montarEstadoDaTela = useCallback(
+    () => ({
+      selectedClient,
+      tomadorOverride,
+      entrega,
+      selectedAddressId,
+      codigoServico,
+      discriminacao,
+      aliquotaIss,
+      issRetido,
+      valorServicos,
+      servicoEscolhidoId,
+      servicoEscolhido,
+      camposAdicionais,
+    }),
+    [
+      selectedClient,
+      tomadorOverride,
+      entrega,
+      selectedAddressId,
+      codigoServico,
+      discriminacao,
+      aliquotaIss,
+      issRetido,
+      valorServicos,
+      servicoEscolhidoId,
+      servicoEscolhido,
+      camposAdicionais,
+    ],
+  )
+
+  const { estadoRetomado, salvoEm, descartar } = useRascunhoAvulso({
+    docType: 'NFSE',
+    montarEstado: montarEstadoDaTela,
+    descricao: selectedClient?.name || undefined,
+    total: valorServicos,
+    // Sem tomador e sem valor é tela em branco, não rascunho.
+    temConteudo: !isLoading && (!!selectedClient || valorServicos > 0),
+  })
+
+  useEffect(() => {
+    if (!estadoRetomado) return
+    setSelectedClient(estadoRetomado.selectedClient ?? null)
+    setTomadorOverride(estadoRetomado.tomadorOverride ?? null)
+    setEntrega(estadoRetomado.entrega ?? null)
+    setSelectedAddressId(estadoRetomado.selectedAddressId ?? null)
+    setCodigoServico(estadoRetomado.codigoServico || '')
+    setDiscriminacao(estadoRetomado.discriminacao || '')
+    setAliquotaIss(estadoRetomado.aliquotaIss || 0)
+    setIssRetido(!!estadoRetomado.issRetido)
+    setValorServicos(estadoRetomado.valorServicos || 0)
+    setServicoEscolhidoId(estadoRetomado.servicoEscolhidoId ?? null)
+    setServicoEscolhido(estadoRetomado.servicoEscolhido ?? null)
+    setCamposAdicionais(estadoRetomado.camposAdicionais || {})
+    // Retomar já traz o serviço aplicado: o padrão do emissor não deve
+    // sobrescrever o que a pessoa tinha escolhido.
+    padraoAplicado.current = true
+  }, [estadoRetomado])
 
   const { data: addresses } = useClientAddresses({
     clientId: selectedClient?.id || '',
@@ -558,6 +622,8 @@ export function StandaloneNfseForm() {
       }
 
       setPreviewOpen(false)
+      // O que virou nota não pode continuar aparecendo como em digitação.
+      await descartar()
       toast.success('NFS-e avulsa emitida com sucesso!')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
@@ -695,6 +761,21 @@ export function StandaloneNfseForm() {
             onEmit={handleEmit}
           />
         </div>
+
+        {/* Sinal de que o rascunho está guardado: sem isso a gravação
+
+            automática é invisível e ninguém confia nela. */}
+
+        {salvoEm && (
+          <p className="text-xs text-gray-500 text-right">
+            Rascunho salvo às{' '}
+            {salvoEm.toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+
+              minute: '2-digit',
+            })}
+          </p>
+        )}
 
         {/* Homologação banner */}
         {isHomologacao && (

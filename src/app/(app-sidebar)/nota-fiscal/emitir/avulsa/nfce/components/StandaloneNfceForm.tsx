@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useRascunhoAvulso } from '@/components/common/fiscal/useRascunhoAvulso'
 
 // UI
 import { toast } from 'sonner'
@@ -84,6 +85,57 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
   )
 
   const router = useRouter()
+
+  /**
+   * Rascunho: a tela gravava nada e sair dela perdia tudo. O retrato é do
+   * ESTADO, não do corpo da emissão — é ele que recompõe a tela.
+   */
+  const montarEstadoDaTela = useCallback(
+    () => ({
+      cpfConsumidor,
+      consumidorNome,
+      selectedClient,
+      items,
+      pagamentos,
+      valorTroco,
+      informacoesComplementares,
+      naturezaOperacao,
+    }),
+    [
+      cpfConsumidor,
+      consumidorNome,
+      selectedClient,
+      items,
+      pagamentos,
+      valorTroco,
+      informacoesComplementares,
+      naturezaOperacao,
+    ],
+  )
+
+  const { estadoRetomado, salvoEm, descartar } = useRascunhoAvulso({
+    docType: 'NFCE',
+    montarEstado: montarEstadoDaTela,
+    descricao: consumidorNome || undefined,
+    total: items.reduce((soma, i) => soma + i.quantity * i.unitValue, 0),
+    // Uma nota sem item nenhum não é rascunho, é tela em branco.
+    temConteudo: !isLoading && items.length > 0,
+  })
+
+  // Volta ao ponto em que parou.
+  useEffect(() => {
+    if (!estadoRetomado) return
+    setCpfConsumidor(estadoRetomado.cpfConsumidor || '')
+    setConsumidorNome(estadoRetomado.consumidorNome || '')
+    setSelectedClient(estadoRetomado.selectedClient ?? null)
+    setItems(estadoRetomado.items || [])
+    setPagamentos(estadoRetomado.pagamentos || [])
+    setValorTroco(estadoRetomado.valorTroco || 0)
+    setInformacoesComplementares(estadoRetomado.informacoesComplementares || '')
+    if (estadoRetomado.naturezaOperacao) {
+      setNaturezaOperacao(estadoRetomado.naturezaOperacao)
+    }
+  }, [estadoRetomado])
 
   const fetchDefaults = useCallback(async () => {
     setIsLoading(true)
@@ -327,6 +379,8 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       }
 
       setPreviewOpen(false)
+      // O que virou nota não pode continuar aparecendo como em digitação.
+      await descartar()
       toast.success('NFC-e avulsa emitida com sucesso!')
       router.push(
         linkedOrderId
@@ -435,6 +489,18 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             onEmit={handleEmit}
           />
         </div>
+
+        {/* Sinal de que o rascunho está guardado: sem isso a gravação
+            automática é invisível e ninguém confia nela. */}
+        {salvoEm && (
+          <p className="text-xs text-gray-500 text-right">
+            Rascunho salvo às{' '}
+            {salvoEm.toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </p>
+        )}
 
         {/* Homologação banner */}
         {isHomologacao && (

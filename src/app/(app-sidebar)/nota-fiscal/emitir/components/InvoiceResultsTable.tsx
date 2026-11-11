@@ -132,6 +132,9 @@ interface UnifiedInvoiceItem {
     | 'NFSE_AVULSA'
     | 'NFSE_CONSOLIDADA'
     | 'NFCE_AVULSA'
+    | 'RASCUNHO_AVULSO'
+  /** Só em RASCUNHO_AVULSO: diz qual tela avulsa retomar. */
+  docType?: 'NFE' | 'NFSE' | 'NFCE'
   consolidatedOrderCount?: number
   consolidatedOrders?: ConsolidatedOrderRef[]
   id: string
@@ -199,6 +202,10 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
     if (item.status === 'CANCELLED')
       return { label: 'Cancelada', variant: 'errorLight' as const }
     return { label: item.status, variant: 'neutralLight' as const }
+  }
+
+  if (item.type === 'RASCUNHO_AVULSO') {
+    return { label: 'Em digitação', variant: 'blueLight' as const }
   }
 
   if (isNfseItem(item)) {
@@ -1093,6 +1100,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     ? 'NF-e de Devolução'
                                     : 'NF-e Avulsa'}
                               </Badge>
+                            ) : item.type === 'RASCUNHO_AVULSO' ? (
+                              <Badge variant="neutralLight" className="w-fit">
+                                Rascunho
+                              </Badge>
                             ) : item.type === 'NFSE_CONSOLIDADA' ? (
                               <Badge variant="orangeLight" className="w-fit">
                                 NFS-e Consolidada
@@ -1210,6 +1221,29 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                           <div className="flex justify-end gap-1">
                             <TooltipProvider>
                               {(() => {
+                                if (item.type === 'RASCUNHO_AVULSO') {
+                                  // Retomar abre a mesma tela avulsa; o
+                                  // draftId diz de onde continuar.
+                                  const tela = {
+                                    NFE: 'nfe',
+                                    NFSE: 'nfse',
+                                    NFCE: 'nfce',
+                                  }[item.docType || 'NFE']
+                                  return (
+                                    <Button
+                                      variant="neutralOutline"
+                                      size="sm"
+                                      onClick={() =>
+                                        router.push(
+                                          `/nota-fiscal/emitir/avulsa/${tela}?draftId=${item.id}`,
+                                        )
+                                      }
+                                    >
+                                      Continuar
+                                    </Button>
+                                  )
+                                }
+
                                 if (isNfseItem(item)) {
                                   const nfse = item.nfse
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useRascunhoAvulso } from '@/components/common/fiscal/useRascunhoAvulso'
 import { useState, useEffect, useCallback } from 'react'
 
 // Hooks
@@ -108,6 +109,36 @@ export function StandaloneNfeForm() {
   const [data, setData] = useState<NfePrepareResponse | null>(null)
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null)
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
+
+  /**
+   * Rascunho: a tela não gravava nada e sair dela perdia tudo. Aqui o estado
+   * editável mora quase todo em `data` — é a nota preparada, que a tela vai
+   * alterando —, então o retrato é ele mais o cliente escolhido.
+   *
+   * O modo (devolução, complementar, reemissão) fica de fora: vem da URL e é
+   * ela que manda ao retomar.
+   */
+  const montarEstadoDaTela = useCallback(
+    () => ({ data, selectedClient }),
+    [data, selectedClient],
+  )
+
+  const { estadoRetomado, salvoEm, descartar } = useRascunhoAvulso({
+    docType: 'NFE',
+    montarEstado: montarEstadoDaTela,
+    descricao: data?.destinatario?.razaoSocial || undefined,
+    total: data?.items?.reduce(
+      (soma, item) => soma + item.quantity * item.unitValue,
+      0,
+    ),
+    temConteudo: !isLoading && !!data,
+  })
+
+  useEffect(() => {
+    if (!estadoRetomado?.data) return
+    setData(estadoRetomado.data)
+    setSelectedClient(estadoRetomado.selectedClient ?? null)
+  }, [estadoRetomado])
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -621,6 +652,8 @@ export function StandaloneNfeForm() {
       }
 
       setPreviewOpen(false)
+      // O que virou nota não pode continuar aparecendo como em digitação.
+      await descartar()
       toast.success('NF-e emitida com sucesso!')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
@@ -788,6 +821,21 @@ export function StandaloneNfeForm() {
               </p>
             )}
           </div>
+        )}
+
+        {/* Sinal de que o rascunho está guardado: sem isso a gravação
+
+            automática é invisível e ninguém confia nela. */}
+
+        {salvoEm && (
+          <p className="text-xs text-gray-500 text-right">
+            Rascunho salvo às{' '}
+            {salvoEm.toLocaleTimeString('pt-BR', {
+              hour: '2-digit',
+
+              minute: '2-digit',
+            })}
+          </p>
         )}
 
         {data?.emissao.ambiente === 'HOMOLOGACAO' && (
