@@ -39,6 +39,7 @@ import {
   IconRobot,
   IconBulb,
   IconMessageQuestion,
+  IconUsersGroup,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -456,6 +457,11 @@ export const adminMainNavigation: MainNavigationType[] = [
         icon: IconMessageQuestion,
         title: 'O que o robô não soube',
         path: '/admin/atendimento/lacunas',
+      },
+      {
+        icon: IconUsersGroup,
+        title: 'Grupos da equipe',
+        path: '/admin/atendimento/grupos',
       },
       {
         icon: IconBrandWhatsapp,

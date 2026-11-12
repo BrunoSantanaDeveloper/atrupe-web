@@ -2,7 +2,8 @@
 
 Estes arquivos são cópia exata de `atrupe-back/atendimento/base/ui` e `atrupe-back/atendimento/base/shared`,
 mais os tipos de `base/server` que `ui/client.d.mts` importa (só `.d.mts`, sem código de servidor), do kit
-`whatsapp-support` 1.0.0 com a conferência do número. **Não edite aqui**: a adaptação ao Atrupe fica em
+`whatsapp-support` 1.0.0 com a conferência do número, os grupos e a saúde do adaptador (atualizada em
+12/11/2026). **Não edite aqui**: a adaptação ao Atrupe fica em
 `src/app/(app-sidebar)/admin/atendimento/_components/` e em `src/app/api/atendimento/`.
 
 O kit fica instalado no backend, que é onde roda o servidor do atendimento. Quando o kit for atualizado lá

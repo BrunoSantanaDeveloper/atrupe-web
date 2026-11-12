@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic'
  * As rotas do robô (/atendimento/robo) não passam: o robô fala direto com a
  * API, com assinatura.
  */
-const ROTAS = ['entrar', 'config', 'sugestoes', 'lacunas', 'whatsapp']
+const ROTAS = ['entrar', 'config', 'sugestoes', 'lacunas', 'whatsapp', 'grupos']
 
 type Context = { params: { rota: string[] } }
 
@@ -95,3 +95,5 @@ function answer(status: number, raw: unknown) {
 export const GET = repassar
 export const POST = repassar
 export const PUT = repassar
+// Arquivar um grupo da equipe (DELETE /atendimento/grupos?chave=).
+export const DELETE = repassar
