@@ -40,6 +40,7 @@ import { getData } from '@/actions/_cruds'
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
+// Em centavos, como o formatCurrencyToBrl espera
 import { getQuotationFinalValue } from '../../orcamentos/components/Quotations'
 
 // Hooks
@@ -168,9 +169,7 @@ export function TodayQuickSales({ searchParams }: SearchParamsType) {
         <p className="text-sm text-gray">
           {approved.length}{' '}
           {approved.length === 1 ? 'venda aprovada' : 'vendas aprovadas'}
-          {canViewValues
-            ? ` · ${formatCurrencyToBrl(approvedTotal / 100)}`
-            : ''}
+          {canViewValues ? ` · ${formatCurrencyToBrl(approvedTotal)}` : ''}
         </p>
       ) : null}
       <Card className="w-full">
@@ -211,9 +210,7 @@ export function TodayQuickSales({ searchParams }: SearchParamsType) {
                       </TableCell>
                       <PermissionGate permissions={['values:values:view']}>
                         <TableCell>
-                          {formatCurrencyToBrl(
-                            getQuotationFinalValue(sale) / 100,
-                          )}
+                          {formatCurrencyToBrl(getQuotationFinalValue(sale))}
                         </TableCell>
                       </PermissionGate>
                       <TableCell>
