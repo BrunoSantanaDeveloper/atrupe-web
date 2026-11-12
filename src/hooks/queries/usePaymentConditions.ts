@@ -8,6 +8,9 @@ async function fetchData(): Promise<PaymentConditionsType[]> {
   const res = await getData({
     route: '/payment-condition',
     perPage: '9999',
+    // Só as ativas: condição inativada nas configurações não deve mais
+    // aparecer para escolher no orçamento.
+    filters: { isActive: 'true' },
   })
 
   return (res.data || []) as PaymentConditionsType[]
