@@ -63,6 +63,7 @@ const situation: Record<
   APPROVED: { text: 'Aprovada', variant: 'successLight' },
   REJECTED: { text: 'Rejeitada no caixa', variant: 'errorLight' },
   DONE: { text: 'Aguardando', variant: 'neutralLight' },
+  PENDING_PAYMENT: { text: 'Pendente de pagamento', variant: 'neutralLight' },
   OVERDUE: { text: 'Aguardando', variant: 'neutralLight' },
 }
 
@@ -104,17 +105,25 @@ export function TodayQuickSales({ searchParams }: SearchParamsType) {
         ? `/vendas/orcamentos/${searchParams.venda}`
         : undefined
 
+  // A lista de orçamentos sem situação deixa as aprovadas de fora (elas são
+  // as ordens de serviço): as aprovadas vêm numa segunda consulta
   const { data, isLoading } = useQuery({
     queryKey: ['quick-sales-today'],
-    queryFn: () =>
-      getData({
-        route: '/sale/quotation',
-        filters: { ...todayRange(), page: '1', limit: DAY_LIMIT },
-      }),
+    queryFn: async () => {
+      const filters = { ...todayRange(), page: '1', limit: DAY_LIMIT }
+      const [others, approved] = await Promise.all([
+        getData({ route: '/sale/quotation', filters }),
+        getData({
+          route: '/sale/quotation',
+          filters: { ...filters, status: 'APPROVED' },
+        }),
+      ])
+      return [...(others?.data || []), ...(approved?.data || [])]
+    },
     refetchInterval: 30000,
   })
 
-  const groups: ListQuotationsDataType[] = data?.data || []
+  const groups: ListQuotationsDataType[] = data || []
   const sales: QuotationType[] = groups
     .flatMap((group) => group.quotations || [])
     .filter((quotation) => quotation?.quickSale)

@@ -17530,5 +17530,9 @@
   "7c649c133a": {
     "es": "De quién la empresa compra este ítem. La cuenta por pagar sale con este proveedor cuando se aprueba la venta; después no cambia por aquí.",
     "en": "Who the company buys this item from. The payable is created with this supplier when the sale is approved; after that it does not change here."
+  },
+  "587de4b24c": {
+    "es": "Pendiente de pago",
+    "en": "Awaiting payment"
   }
 }
