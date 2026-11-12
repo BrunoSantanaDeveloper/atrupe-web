@@ -26,6 +26,8 @@ export type CreditIssue = {
 export type PaymentHoldPreview = {
   reason: 'PREPAYMENT' | 'CREDIT_LIMIT'
   amount: number
+  // Só a entrada nasce na pendência, ou a venda inteira
+  scope?: 'DOWN_PAYMENT' | 'ALL'
 } | null
 
 // Os valores (centavos) só vêm para quem vê valores

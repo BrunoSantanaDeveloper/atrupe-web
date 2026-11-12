@@ -17494,5 +17494,17 @@
   "b2bf2ca439": {
     "es": "Cómo la cotización cuenta las hojas de este producto. El papel viene de la variante; aquí están el sangrado y las hojas de arranque.",
     "en": "How the quote counts this product's sheets. The paper comes from the variant; here you set the bleed and the make-ready sheets."
+  },
+  "66f3cdbffa": {
+    "es": "{amount} deben pagarse antes",
+    "en": "{amount} must be paid first"
+  },
+  "7ad04f6970": {
+    "es": "Es lo que supera el límite de crédito del cliente: lo que vence hoy (el anticipo o el pago al contado) solo cuenta como pagado después de recibido. Al aprobar, la venta queda en la pestaña ⚠️ Pendiente hasta que finanzas reciba {amount}; después, se convierte en orden de trabajo.",
+    "en": "It is what exceeds the customer's credit limit: what is due today (the down payment or the upfront payment) only counts as paid once received. When approved, the sale stays in the ⚠️ On hold tab until Finance receives {amount}; then it becomes a work order."
+  },
+  "91bf08590c": {
+    "es": "La venta superaba el límite de crédito del cliente. Se convierte en orden de trabajo cuando finanzas reciba lo que supera el límite.",
+    "en": "The sale exceeded the customer's credit limit. It becomes a work order when Finance receives what exceeds the limit."
   }
 }

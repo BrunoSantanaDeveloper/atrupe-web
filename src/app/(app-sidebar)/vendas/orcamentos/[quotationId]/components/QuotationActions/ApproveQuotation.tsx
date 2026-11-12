@@ -345,7 +345,7 @@ export function ApproveQuotation({ data }: Props) {
               {hold?.reason === 'PREPAYMENT'
                 ? 'Aprovar com pagamento antecipado?'
                 : hold?.reason === 'CREDIT_LIMIT'
-                  ? 'Aprovar com entrada?'
+                  ? 'Aprovar com pagamento antes?'
                   : data?.quickSale
                     ? 'Deseja aprovar esta venda?'
                     : 'Deseja aprovar este orçamento?'}
@@ -354,7 +354,7 @@ export function ApproveQuotation({ data }: Props) {
               {hold?.reason === 'PREPAYMENT'
                 ? `Este cliente exige pagamento antecipado. A venda fica na aba ⚠️ Pendente e o financeiro recebe ${holdAmount} num título marcado ⚠️ Pendência. Quando ele for baixado, a venda vira ordem de serviço.`
                 : hold?.reason === 'CREDIT_LIMIT'
-                  ? `A entrada de ${holdAmount} precisa ser paga antes: a venda fica na aba ⚠️ Pendente até ela ser recebida no financeiro. Depois, vira ordem de serviço.`
+                  ? `A venda passa do limite de crédito do cliente: ${holdAmount} precisam ser pagos antes. Ela fica na aba ⚠️ Pendente até esse valor ser recebido no financeiro; depois, vira ordem de serviço.`
                   : 'Ao aprovar, este trabalho mudará de status e passará a ficar disponível na aba Ordens de Serviço.'}
             </AlertDialogDescription>
           </AlertDialogHeader>

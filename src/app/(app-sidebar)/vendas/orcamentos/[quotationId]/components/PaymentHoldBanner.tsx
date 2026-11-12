@@ -65,17 +65,17 @@ export function PaymentHoldBanner({ data }: { data: QuotationType }) {
         !showValues
           ? hold.reason === 'PREPAYMENT'
             ? '⚠️ Pendente: aguarda o pagamento antecipado'
-            : '⚠️ Pendente: aguarda a entrada'
+            : '⚠️ Pendente: aguarda o que passa do limite'
           : hold.reason === 'PREPAYMENT'
             ? `⚠️ Pendente: aguarda o pagamento antecipado de ${amount}`
-            : `⚠️ Pendente: aguarda a entrada de ${amount}`
+            : `⚠️ Pendente: aguarda ${amount} do que passa do limite`
       }
       description={
         <div className="space-y-1">
           <p>
             {hold.reason === 'PREPAYMENT'
               ? 'Este cliente exige pagamento antecipado. A venda vira ordem de serviço, e entra na produção, quando o total for recebido no financeiro.'
-              : 'A venda passava do limite de crédito do cliente e foi aprovada com entrada. Ela vira ordem de serviço quando a entrada for recebida no financeiro.'}
+              : 'A venda passava do limite de crédito do cliente. Ela vira ordem de serviço quando o que passa do limite for recebido no financeiro.'}
           </p>
           {showValues ? (
             <p>{`Recebido até agora: ${formatCurrencyToBrl(hold.paid)} de ${amount}.`}</p>

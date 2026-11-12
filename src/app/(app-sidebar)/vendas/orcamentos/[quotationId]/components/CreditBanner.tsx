@@ -71,12 +71,12 @@ export function CreditBanner({ data }: { data: QuotationType }) {
         className="rounded-lg border"
         title={
           hold?.reason === 'CREDIT_LIMIT'
-            ? `A entrada de ${amount} precisa ser paga antes`
+            ? `${amount} precisam ser pagos antes`
             : 'Este cliente exige pagamento antecipado'
         }
         description={
           hold?.reason === 'CREDIT_LIMIT'
-            ? 'Com a entrada, a venda cabe no limite de crédito do cliente. Ao aprovar, ela fica na aba ⚠️ Pendente até a entrada ser recebida no financeiro; depois, vira ordem de serviço.'
+            ? `É o que passa do limite de crédito do cliente: o que vence hoje (a entrada ou o pagamento à vista) só conta como pago depois de recebido. Ao aprovar, a venda fica na aba ⚠️ Pendente até ${amount} serem recebidos no financeiro; depois, vira ordem de serviço.`
             : hold
               ? `Ao aprovar, a venda fica na aba ⚠️ Pendente e o financeiro recebe ${amount} num título marcado ⚠️ Pendência. Quando ele for baixado, a venda vira ordem de serviço.`
               : 'A venda só vira ordem de serviço depois de paga: ao aprovar, ela fica na aba ⚠️ Pendente até o financeiro baixar o pagamento.'
