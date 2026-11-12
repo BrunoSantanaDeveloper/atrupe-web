@@ -2,8 +2,17 @@ export type Mode = "auto" | "sugestao" | "desligado";
 export type Model = "por-cliente" | "plataforma";
 export type Scope = "plataforma" | "cliente";
 export type Day = "seg" | "ter" | "qua" | "qui" | "sex" | "sab" | "dom";
-export type PermissionGroup = "apresentacao" | "instrucoes" | "conhecimento" | "horario" | "mensagens" | "transferencia" | "consultas" | "modo" | "grupos";
+export type PermissionGroup = "apresentacao" | "instrucoes" | "conhecimento" | "horario" | "mensagens" | "transferencia" | "consultas" | "modo" | "grupos" | "midia";
 export type GroupMode = "fora" | "equipe" | "chamado";
+
+/** O que o robô lê do que a pessoa manda (D28). */
+export interface MediaSettings {
+  images: boolean;
+  audio: boolean;
+  video: boolean;
+  /** A transcrição do áudio e da fala do vídeo também como nota interna para a equipe. */
+  transcription_note: boolean;
+}
 
 /** Grupos do WhatsApp (só na rota não oficial). */
 export interface GroupSettings {
@@ -50,6 +59,8 @@ export interface BotSettings {
   tools_enabled: string[];
   /** Ausente nas camadas gravadas antes dos grupos: vale "fora". */
   groups?: GroupSettings;
+  /** Imagem, áudio e vídeo que a pessoa manda; ausente, tudo ligado. */
+  media?: MediaSettings;
   suggest_on_open: boolean;
   share_contact_name: boolean;
 }
