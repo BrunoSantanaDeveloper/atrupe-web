@@ -58,7 +58,7 @@ const GROUP_LABELS: Record<PermissionGroup, string> = {
   consultas: 'Quais consultas ao sistema ligar',
   modo: 'Como o robô trabalha',
   grupos: 'Grupos do WhatsApp',
-  midia: 'Imagens, áudios e vídeos',
+  midia: 'Imagens, áudios, vídeos e arquivos',
 }
 // Configuração gravada antes dos grupos não tem o campo: vale "fora".
 const SEM_GRUPOS: GroupSettings = {
@@ -71,6 +71,7 @@ const MIDIA_PADRAO: MediaSettings = {
   images: true,
   audio: true,
   video: true,
+  documents: true,
   transcription_note: true,
 }
 
@@ -219,6 +220,9 @@ export function RoboAtendimento({
   }
   const grupos = settings.groups ?? SEM_GRUPOS
   const midia = settings.media ?? MIDIA_PADRAO
+  // Sem quem transcreva, "Ouvir áudios" some: ligar não mudaria nada. Quando
+  // não se sabe (null), mostra tudo.
+  const semAudio = data.media?.audio === false
 
   return (
     <Stack>
@@ -538,37 +542,58 @@ export function RoboAtendimento({
       ) : null}
 
       {can('midia') ? (
-        <Card title="Imagens, áudios e vídeos">
+        <Card title="Imagens, áudios, vídeos e arquivos">
           <Stack gap={8}>
             <Text tone="muted">
               O robô lê o que a pessoa manda e só passa para a equipe quando não
-              consegue. Áudio e fala de vídeo precisam da chave do Gemini ou da
-              OpenAI no robô.
+              consegue.
             </Text>
+            {semAudio ? (
+              <Text tone="muted">
+                Áudios vão para a equipe, porque este atendimento ainda não
+                transcreve o que é falado. Nos vídeos, o robô vê os quadros.
+              </Text>
+            ) : null}
             <Toggle
               label="Ler imagens e prints"
               checked={midia.images}
               onChange={(images) => update({ media: { ...midia, images } })}
             />
-            <Toggle
-              label="Ouvir áudios"
-              checked={midia.audio}
-              onChange={(audio) => update({ media: { ...midia, audio } })}
-            />
+            {semAudio ? null : (
+              <Toggle
+                label="Ouvir áudios"
+                checked={midia.audio}
+                onChange={(audio) => update({ media: { ...midia, audio } })}
+              />
+            )}
             <Toggle
               label="Ver vídeos"
-              hint="O robô vê uma grade de quadros do vídeo e ouve a fala, também em vídeo longo."
+              hint={
+                semAudio
+                  ? 'O robô vê uma grade de quadros do vídeo, também em vídeo longo.'
+                  : 'O robô vê uma grade de quadros do vídeo e ouve a fala, também em vídeo longo.'
+              }
               checked={midia.video}
               onChange={(video) => update({ media: { ...midia, video } })}
             />
             <Toggle
-              label="Deixar a transcrição para a equipe"
-              hint="Uma nota interna com o que foi falado, para quem atende ler sem ouvir."
-              checked={midia.transcription_note}
-              onChange={(checked) =>
-                update({ media: { ...midia, transcription_note: checked } })
+              label="Ler PDFs, planilhas e documentos"
+              hint="Comprovante, boleto, nota, planilha, CSV e documento de texto. Arquivo grande é lido só no começo."
+              checked={midia.documents !== false}
+              onChange={(documents) =>
+                update({ media: { ...midia, documents } })
               }
             />
+            {semAudio ? null : (
+              <Toggle
+                label="Deixar a transcrição para a equipe"
+                hint="Uma nota interna com o que foi falado, para quem atende ler sem ouvir."
+                checked={midia.transcription_note}
+                onChange={(checked) =>
+                  update({ media: { ...midia, transcription_note: checked } })
+                }
+              />
+            )}
           </Stack>
         </Card>
       ) : null}

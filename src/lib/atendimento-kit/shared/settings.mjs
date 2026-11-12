@@ -49,7 +49,7 @@ export function defaultSettings(brand = "") {
     tools_enabled: [],
     groups: { mode: "fora", call_words: [], team_id: null },
     // Imagem, áudio e vídeo que a pessoa manda (D28); a transcrição também vira nota interna para a equipe.
-    media: { images: true, audio: true, video: true, transcription_note: true },
+    media: { images: true, audio: true, video: true, documents: true, transcription_note: true },
     suggest_on_open: true,
     share_contact_name: true,
   };
@@ -186,6 +186,8 @@ export function validateSettings(settings, { declaredTools = [], scope = "client
     for (const field of ["images", "audio", "video", "transcription_note"]) {
       if (typeof media[field] !== "boolean") add(`media.${field}`, "Escolha sim ou não para imagem, áudio, vídeo e a nota com a transcrição.");
     }
+    // Arquivos chegaram depois (D29): uma configuração salva antes não tem o campo e vale como ligado.
+    if (media.documents !== undefined && typeof media.documents !== "boolean") add("media.documents", "Escolha sim ou não para PDF, planilha e documento.");
   }
 
   for (const name of settings.tools_enabled ?? []) {
@@ -223,7 +225,7 @@ export function groupSettings({ model = "por-cliente", platform, client }) {
 function mediaSettings({ platform, client }) {
   const chosen = client?.media && typeof client.media === "object" ? client.media : platform?.media ?? {};
   const on = (field) => chosen[field] !== false;
-  return { images: on("images"), audio: on("audio"), video: on("video"), transcription_note: on("transcription_note") };
+  return { images: on("images"), audio: on("audio"), video: on("video"), documents: on("documents"), transcription_note: on("transcription_note") };
 }
 
 const filled = (value) => (Array.isArray(value) ? value.length > 0 : value !== null && value !== undefined && String(value).trim() !== "");

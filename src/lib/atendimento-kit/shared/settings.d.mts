@@ -10,6 +10,8 @@ export interface MediaSettings {
   images: boolean;
   audio: boolean;
   video: boolean;
+  /** PDF, planilha (XLSX, ODS), CSV e documento de texto (DOCX, ODT, TXT). Ausente numa configuração antiga: ligado. */
+  documents?: boolean;
   /** A transcrição do áudio e da fala do vídeo também como nota interna para a equipe. */
   transcription_note: boolean;
 }
@@ -44,6 +46,11 @@ export interface AiSettings {
   fallbacks: boolean;
   max_tokens: number;
   cache_ttl: "5m" | "1h";
+  /**
+   * "project": o projeto transcreve áudio e a fala do vídeo pela rota transcribe do contrato do robô, e o
+   * contêiner do robô fica sem chave de IA. Sem o campo, transcreve a chave do Gemini ou da OpenAI do robô.
+   */
+  transcription?: "project" | null;
 }
 
 /** A camada do cliente (ou a base da camada da plataforma). */
