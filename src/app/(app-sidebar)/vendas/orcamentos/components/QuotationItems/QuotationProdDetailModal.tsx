@@ -69,6 +69,8 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { SaleCompositionFields } from './SaleCompositionFields'
+import { PrintCountPanel } from './PrintCountPanel'
+import type { PrintSpec } from '@/actions/print'
 
 import {
   getPriceTiers,
@@ -142,6 +144,11 @@ export function QuotationProdDetailModal({
   // nela, dentro deste mesmo modal (IP-36, ORC-3)
   const [composition, setComposition] = React.useState<
     ItemComposition | undefined
+  >()
+  // Sangria, bloco e apostila deste item (gráfica rápida, 12/11/2026):
+  // undefined = não mexeu; nulo = volta ao que o produto define
+  const [printSpec, setPrintSpec] = React.useState<
+    PrintSpec | null | undefined
   >()
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
@@ -609,6 +616,9 @@ export function QuotationProdDetailModal({
       variationId: !editMode && variationId ? variationId : undefined,
       composition: composition ? choicesOf(composition) : undefined,
     })
+    if (printSpec !== undefined) {
+      Object.assign(newFormData, { printSpec })
+    }
 
     // console.info('SUBMIT:', newFormData)
 
@@ -945,6 +955,20 @@ export function QuotationProdDetailModal({
                       onChange={setComposition}
                     />
                   </div>
+                </FeatureGate>
+                {/* A contagem de folhas da gráfica rápida (12/11/2026),
+                    com Papéis no plano */}
+                <FeatureGate features={[FEATURES.PRODUCTS.PAPER_REGISTER]}>
+                  <PrintCountPanel
+                    key={`${data?.id || product?.id}:print`}
+                    productId={product?.id || data?.product?.originalProductId}
+                    variationId={itemVariationId}
+                    width={Number(watch('items.0.width') || 0)}
+                    height={Number(watch('items.0.height') || 0)}
+                    quantity={itemQuantity}
+                    initialSpec={editMode ? (data?.printSpec ?? null) : null}
+                    onChange={setPrintSpec}
+                  />
                 </FeatureGate>
                 <FormTextarea<ProductsFormType>
                   name="technicalDescription"

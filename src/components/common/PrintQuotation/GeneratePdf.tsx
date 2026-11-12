@@ -1,6 +1,11 @@
 'use client'
 
 // Lib
+import type { PrintCount } from '@/actions/print'
+import {
+  printCountText,
+  printCountTitle,
+} from '@/components/common/SheetCountBadges'
 import {
   maskCnpj,
   formatCurrencyToBrl,
@@ -440,6 +445,8 @@ type PdfItemExtras = {
     items: { name: string; quantity: number | null; unit: string }[]
   }[]
   lines?: { name: string; sector: string; tags: string[]; price?: number }[]
+  // As folhas da gráfica rápida (AP-5, 12/11/2026): uma por parte impressa
+  sheetCounts?: PrintCount[]
 }
 
 const extraQuantity = (quantity: number | null, unit: string) =>
@@ -456,7 +463,9 @@ function ItemExtras({
 }) {
   const stages = item.stages ?? []
   const lines = item.lines ?? []
-  if (!stages.length && !lines.length && !item.variation) return null
+  const counts = item.sheetCounts ?? []
+  if (!stages.length && !lines.length && !item.variation && !counts.length)
+    return null
 
   return (
     <View style={{ marginTop: 4, marginLeft, gap: 1 }}>
@@ -480,6 +489,7 @@ function ItemExtras({
             : ''}
         </Text>
       ))}
+      <SheetCountLines counts={counts} />
       {lines.map((line, index) => (
         <Text key={`linha-${index}`} style={styles.itemTechnicalDescription}>
           <Text style={styles.itemTechnicalLabel}>Acrescentado: </Text>
@@ -490,6 +500,24 @@ function ItemExtras({
         </Text>
       ))}
     </View>
+  )
+}
+
+// As folhas do item na proposta e na ficha (AP-5): "Couché 300 A3: 21 por
+// folha · 48 folhas + 3 de acerto = 51 folhas"
+function SheetCountLines({ counts }: { counts?: PrintCount[] }) {
+  if (!counts?.length) return null
+  return (
+    <>
+      {counts.map((count, index) => (
+        <Text key={`folhas-${index}`} style={styles.itemTechnicalDescription}>
+          <Text style={styles.itemTechnicalLabel}>
+            {`${printCountTitle(count)}: `}
+          </Text>
+          {printCountText(count)}
+        </Text>
+      ))}
+    </>
   )
 }
 
@@ -1357,6 +1385,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             >
                               {item.notes}
                             </Text>
+                          )}
+                          {/* A ficha de produção conta as folhas (AP-6) */}
+                          {isProduction && (
+                            <SheetCountLines counts={item.sheetCounts} />
                           )}
                           {(isProduction ||
                             (printOptions.showDimensions &&

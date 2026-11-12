@@ -115,9 +115,18 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const [saleUnit, setSaleUnit] = useState<SaleUnit>('HOUR')
   const [hourCost, setHourCost] = useState('')
   const [hourSale, setHourSale] = useState('')
+  // Gráfica rápida (GR-1.1, 12/11/2026): o padrão do setor para a contagem
+  // de folhas. Vazio = o do sistema (2 mm, nenhuma folha de acerto)
+  const printing = hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER)
+  const [bleedMm, setBleedMm] = useState('')
+  const [setupSheets, setSetupSheets] = useState('')
 
   useEffect(() => {
     if (!open) return
+    setBleedMm(rowData?.bleedMm == null ? '' : String(rowData.bleedMm))
+    setSetupSheets(
+      rowData?.setupSheets == null ? '' : String(rowData.setupSheets),
+    )
     setSaleUnit(rowData?.saleUnit || 'HOUR')
     setHourCost(moneyText(rowData?.hourCost))
     setHourSale(moneyText(rowData?.hourSale))
@@ -158,7 +167,15 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
         saleUnit?: SaleUnit
         hourCost?: number | null
         hourSale?: number | null
+        bleedMm?: number | null
+        setupSheets?: number | null
       } = { ...data }
+      if (printing) {
+        const bleed = bleedMm.trim() === '' ? null : Number(bleedMm)
+        const setup = setupSheets.trim() === '' ? null : Number(setupSheets)
+        if (bleed !== (rowData?.bleedMm ?? null)) body.bleedMm = bleed
+        if (setup !== (rowData?.setupSheets ?? null)) body.setupSheets = setup
+      }
       // Vai só o que mudou: gravar custo ou venda da hora pede a permissão
       // de valores
       if (composition) {
@@ -343,6 +360,55 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+              {printing && (
+                <div className="w-full space-y-3 rounded-lg border border-gray-200 p-3">
+                  <div>
+                    <p className="text-sm font-medium">Impressão</p>
+                    <p className="text-xs text-gray">
+                      O padrão dos produtos deste setor na contagem de folhas. O
+                      produto e o item do orçamento podem mudar. Vazio, vale a
+                      sangria de 2 mm por lado e nenhuma folha de acerto.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex-[1_0_160px] space-y-1.5">
+                      <label
+                        htmlFor="sector-bleed"
+                        className="text-sm font-medium"
+                      >
+                        Sangria por lado (mm)
+                      </label>
+                      <Input
+                        id="sector-bleed"
+                        type="number"
+                        min={0}
+                        max={20}
+                        step="0.5"
+                        placeholder="2"
+                        value={bleedMm}
+                        onChange={(event) => setBleedMm(event.target.value)}
+                      />
+                    </div>
+                    <div className="flex-[1_0_160px] space-y-1.5">
+                      <label
+                        htmlFor="sector-setup-sheets"
+                        className="text-sm font-medium"
+                      >
+                        Folhas de acerto por trabalho
+                      </label>
+                      <Input
+                        id="sector-setup-sheets"
+                        type="number"
+                        min={0}
+                        step="1"
+                        placeholder="0"
+                        value={setupSheets}
+                        onChange={(event) => setSetupSheets(event.target.value)}
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
             </form>

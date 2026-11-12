@@ -1,4 +1,5 @@
 // React
+import { SheetCountBadges } from '@/components/common/SheetCountBadges'
 import { useEffect, useState } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
@@ -672,6 +673,9 @@ export function QuotationItems({ data }: Props) {
                                   onClose={() => setAddingTo(null)}
                                 />
                               )}
+
+                              {/* As folhas da gráfica rápida (12/11/2026) */}
+                              <SheetCountBadges counts={item.sheetCounts} />
 
                               {chosen ? (
                                 <div className="flex flex-wrap items-center gap-2">

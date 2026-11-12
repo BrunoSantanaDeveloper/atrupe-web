@@ -1,4 +1,5 @@
 // React
+import { SheetCountBadges } from '@/components/common/SheetCountBadges'
 import { Fragment, useState } from 'react'
 
 // UI
@@ -163,8 +164,12 @@ export function OrderItems({ data }: Props) {
                           <Fragment key={item?.id + index}>
                             {/* Linha única para produtos simples - dados da composição diretamente */}
                             <TableRow className="border-b">
-                              <TableCell className="font-medium pl-14 flex items-center gap-4 py-6 text-sm">
-                                {item?.description || '-'}
+                              <TableCell className="font-medium pl-14 py-6 text-sm">
+                                <div className="space-y-2">
+                                  <p>{item?.description || '-'}</p>
+                                  {/* As folhas da gráfica rápida (AP-6) */}
+                                  <SheetCountBadges counts={item.sheetCounts} />
+                                </div>
                               </TableCell>
                               <TableCell className="py-4 text-sm text-gray">
                                 {item.product.quantity}

@@ -28,6 +28,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 // Components
 import { ProductionStages } from './ProductionStages'
 import { ProductVariations } from './ProductVariations'
+import { ProductPrintSettings } from './ProductPrintSettings'
 import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FormInput } from '@/components/common/form/FormInput'
@@ -744,6 +745,17 @@ function NewProductModal({
                               />
                             </div>
                           )}
+                          {/* Impressão da gráfica rápida (12/11/2026):
+                              sangria e folhas de acerto, com Papéis no plano */}
+                          {hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER) &&
+                            (editMode && productId ? (
+                              <ProductPrintSettings productId={productId} />
+                            ) : (
+                              <p className="w-full text-xs text-gray">
+                                Salve o produto para configurar a impressão:
+                                sangria e folhas de acerto.
+                              </p>
+                            ))}
                           {/* Quantidade mínima (27/10/2026), na unidade do
                               produto, do LITE em diante: abaixo dela o item é
                               cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).

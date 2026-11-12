@@ -17342,5 +17342,157 @@
   "ae5bdf78fe": {
     "es": "Al cobrarla, libera la venta {sale}: se convierte en orden de trabajo.",
     "en": "When paid, it releases sale {sale}: it becomes a work order."
+  },
+  "d1093fb5f9": {
+    "es": "El estándar de los productos de este sector en el conteo de hojas. El producto y el ítem de la cotización pueden cambiarlo. Vacío, vale un sangrado de 2 mm por lado y ninguna hoja de arranque.",
+    "en": "The default for this department's products in the sheet count. The product and the quote item can change it. Empty means a 2 mm bleed per side and no make-ready sheets."
+  },
+  "84ae1dab90": {
+    "es": "Sangrado por lado (mm)",
+    "en": "Bleed per side (mm)"
+  },
+  "a0f4db4807": {
+    "es": "Hojas de arranque por trabajo",
+    "en": "Make-ready sheets per job"
+  },
+  "f5907e4783": {
+    "es": "Guarde el producto para configurar la impresión: tipo, sangrado y hojas de arranque.",
+    "en": "Save the product to set up printing: type, bleed and make-ready sheets."
+  },
+  "1900b8a3d1": {
+    "es": "Pieza simple",
+    "en": "Single piece"
+  },
+  "3809f77ba6": {
+    "es": "Tarjeta, volante, adhesivo: cada unidad vendida es una pieza en la hoja.",
+    "en": "Business card, flyer, sticker: each unit sold is one piece on the sheet."
+  },
+  "edae7ca74a": {
+    "es": "Talonario",
+    "en": "Pad"
+  },
+  "7a5e5ff3f3": {
+    "es": "Cada talonario tiene hojas y copias: 4 talonarios de 50 hojas en 2 copias son 400 impresiones.",
+    "en": "Each pad has sheets and copies: 4 pads of 50 sheets in 2 copies are 400 impressions."
+  },
+  "5e4dc6e811": {
+    "es": "Cuadernillo",
+    "en": "Booklet"
+  },
+  "7cf9409d28": {
+    "es": "Hasta tres secciones (interior, tapa…), cada una con su papel y sus páginas. Doble cara cuenta dos páginas por impresión.",
+    "en": "Up to three sections (inner pages, cover…), each with its own paper and pages. Double-sided counts two pages per impression."
+  },
+  "b9dfa49c5a": {
+    "es": "Cada sección del cuadernillo necesita nombre y papel.",
+    "en": "Each booklet section needs a name and a paper."
+  },
+  "d14e03ff25": {
+    "es": "Impresión del producto guardada",
+    "en": "Product printing saved"
+  },
+  "c51687032c": {
+    "es": "Cómo la cotización cuenta las hojas de este producto. El papel viene de la variante; aquí están el tipo, el sangrado y las hojas de arranque.",
+    "en": "How the quote counts this product's sheets. The paper comes from the variant; here you set the type, the bleed and the make-ready sheets."
+  },
+  "f9ff621c67": {
+    "es": "Hojas de arranque",
+    "en": "Make-ready sheets"
+  },
+  "c07ee595ad": {
+    "es": "Hojas por talonario",
+    "en": "Sheets per pad"
+  },
+  "562b760f34": {
+    "es": "Copias",
+    "en": "Copies"
+  },
+  "5474cdc968": {
+    "es": "El estándar del producto; el vendedor lo ajusta en el ítem de la cotización.",
+    "en": "The product default; the salesperson adjusts it on the quote item."
+  },
+  "8ee128cf6e": {
+    "es": "Ej.: Interior, Tapa",
+    "en": "E.g.: Inner pages, Cover"
+  },
+  "c90effa72c": {
+    "es": "Elija el papel",
+    "en": "Choose the paper"
+  },
+  "351ec3c02b": {
+    "es": "Páginas",
+    "en": "Pages"
+  },
+  "c0a80cacf8": {
+    "es": "Doble cara",
+    "en": "Double-sided"
+  },
+  "a5fec4045a": {
+    "es": "Nueva sección",
+    "en": "New section"
+  },
+  "b5f7fa12f0": {
+    "es": "El cuadernillo tiene hasta tres secciones.",
+    "en": "A booklet has up to three sections."
+  },
+  "9a56a10a65": {
+    "es": "Las páginas son el estándar; el vendedor informa las del pedido en el ítem. La medida de la página es la del producto.",
+    "en": "The pages are the default; the salesperson enters the order's pages on the item. The page size is the product's."
+  },
+  "3158651ee7": {
+    "es": "Guardar impresión",
+    "en": "Save printing"
+  },
+  "d5fc33cbbb": {
+    "es": "Sin papel",
+    "en": "No paper"
+  },
+  "d0150b0f2f": {
+    "es": "Hojas",
+    "en": "Sheets"
+  },
+  "fe2d431285": {
+    "es": "El cálculo usa el tamaño final más el sangrado de ambos lados.",
+    "en": "The count uses the final size plus the bleed on both sides."
+  },
+  "1b4c2fd4cc": {
+    "es": "Páginas: {name}",
+    "en": "Pages: {name}"
+  },
+  "a1eed183c2": {
+    "es": "Este cuadernillo no tiene secciones en el registro del producto. Registre el interior y la tapa, con el papel de cada uno, en Impresión.",
+    "en": "This booklet has no sections in the product record. Add the inner pages and the cover, each with its paper, under Printing."
+  },
+  "d390cb1eef": {
+    "es": "{label} ·",
+    "en": "{label} ·"
+  },
+  "c15ba1fe5e": {
+    "es": "Elija la variante con papel para contar las hojas del talonario.",
+    "en": "Choose the variant with paper to count the pad's sheets."
+  },
+  "9e8f686b0f": {
+    "es": "Sangrado de {mm} mm por lado, {valor}.",
+    "en": "Bleed of {mm} mm per side, {valor}."
+  },
+  "faf6287b8f": {
+    "es": "Ajustar en este ítem",
+    "en": "Adjust on this item"
+  },
+  "2e893f3a4b": {
+    "es": "{count}:",
+    "en": "{count}:"
+  },
+  "224103cd88": {
+    "es": "{count}: {count2}",
+    "en": "{count}: {count2}"
+  },
+  "0471a8276f": {
+    "es": "Guarde el producto para configurar la impresión: sangrado y hojas de arranque.",
+    "en": "Save the product to set up printing: bleed and make-ready sheets."
+  },
+  "b2bf2ca439": {
+    "es": "Cómo la cotización cuenta las hojas de este producto. El papel viene de la variante; aquí están el sangrado y las hojas de arranque.",
+    "en": "How the quote counts this product's sheets. The paper comes from the variant; here you set the bleed and the make-ready sheets."
   }
 }

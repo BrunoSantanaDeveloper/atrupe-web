@@ -5,13 +5,24 @@
 // G; 4x0, 4x1, 4x4), cada um com o seu preço. Sem isso, o mesmo produto acaba cadastrado várias vezes. Na venda, o
 // vendedor escolhe a variação. No PRO, a composição aprofunda as mesmas
 // variações. Cada variação tem os seus valores por quantidade (correção do
-// LITE, 11/11/2026): a camiseta P com uma tabela, a M com outra.
+// LITE, 11/11/2026): a camiseta P com uma tabela, a M com outra. Com
+// Papéis no plano, cada variação aponta o seu papel (GR-0): o cartão em
+// couché 300 e em reciclado é o mesmo produto, e o orçamento conta as folhas
+// do papel escolhido (12/11/2026).
 
 import { useEffect, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { usePapers } from '@/hooks/queries/usePapers'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -43,7 +54,10 @@ type Row = {
   name: string
   unitPrice: number | null
   hasOwnTiers?: boolean
+  paper?: { id: string; name: string } | null
 }
+
+const NO_PAPER = 'none'
 
 interface Props {
   // Nulo no cadastro novo: as linhas ficam na tela e são gravadas depois que
@@ -75,6 +89,7 @@ export function ProductVariations({
   const [rows, setRows] = useState<Row[]>([])
   // A variação com a tabela de faixas aberta
   const [openTiers, setOpenTiers] = useState<string | null>(null)
+  const { active: withPapers, papers } = usePapers()
 
   useEffect(() => {
     onCountChange?.(rows.length)
@@ -96,10 +111,12 @@ export function ProductVariations({
     }
     const res = await saveProductVariations({
       productId,
-      variations: next.map(({ id, name, unitPrice }) => ({
+      variations: next.map(({ id, name, unitPrice, paper }) => ({
         id,
         name,
         unitPrice,
+        // O papel só vai com Papéis no plano: sem o recurso, a API recusa
+        ...(withPapers ? { paperId: paper?.id ?? null } : {}),
       })),
     })
     if (!res.success) {
@@ -202,6 +219,46 @@ export function ProductVariations({
                       />
                     </PermissionGate>
                   </div>
+                  {withPapers ? (
+                    <div className="flex flex-[1_0_200px] flex-col gap-1.5">
+                      <label
+                        htmlFor={`variation-paper-${index}`}
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Papel
+                      </label>
+                      <Select
+                        value={row.paper?.id ?? NO_PAPER}
+                        onValueChange={(value) => {
+                          const paper = papers.find((item) => item.id === value)
+                          persist(
+                            rows.map((item, i) =>
+                              i === index
+                                ? {
+                                    ...item,
+                                    paper: paper
+                                      ? { id: paper.id, name: paper.name }
+                                      : null,
+                                  }
+                                : item,
+                            ),
+                          )
+                        }}
+                      >
+                        <SelectTrigger id={`variation-paper-${index}`}>
+                          <SelectValue placeholder="Sem papel" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={NO_PAPER}>Sem papel</SelectItem>
+                          {papers.map((paper) => (
+                            <SelectItem key={paper.id} value={paper.id}>
+                              {paper.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ) : null}
                   <PermissionGate permissions={EDIT}>
                     <ActionButton
                       Icon={IconTrash}

@@ -52,6 +52,10 @@ export type QuotationItemType = {
   // As escolhas da composição e o resumo; o retrato com custo fica no
   // servidor (ORC-7)
   composition?: ItemComposition | null
+  // Gráfica rápida (12/11/2026): o que o item muda (sangria, bloco,
+  // apostila) e a contagem de folhas, uma por parte impressa
+  printSpec?: import('@/actions/print').PrintSpec | null
+  sheetCounts?: import('@/actions/print').PrintCount[]
   // As linhas acrescentadas dentro do item (ORC-5) e a soma delas, que já
   // está no valor final; o preço só vem com a permissão de valores
   linesTotal?: number

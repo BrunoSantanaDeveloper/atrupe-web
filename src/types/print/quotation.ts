@@ -141,6 +141,8 @@ type ImageType = {
 
 // Tipo para item do orçamento
 type QuotationItemType = {
+  // As folhas da gráfica rápida (AP-5, 12/11/2026), uma por parte impressa
+  sheetCounts?: import('@/actions/print').PrintCount[]
   id: string
   description: string
   allowEditDescription: boolean

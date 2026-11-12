@@ -59,6 +59,10 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 |---|---|---|---|
 | Produto | Producto | Product | |
 | Composição | Composición | Build-up | A receita do produto (etapas, recursos, consumo). Em inglês, "composition" não é usado no ramo. |
+| Papel (cadastro Papéis) | Papel | Paper stock | O material com a forma folha (GR-0). |
+| Folha / folhas | Hoja / hojas | Sheet / sheets | A folha de impressão. |
+| Sangria | Sangrado | Bleed | O que a arte passa do corte, por lado (GR-1.1). |
+| Folhas de acerto | Hojas de arranque | Make-ready sheets | As folhas que a máquina gasta para acertar, por trabalho. |
 | Etapa | Etapa | Step | |
 | Setor | Sector | Department | Setor produtivo da empresa. |
 | Processo | Proceso | Process | |

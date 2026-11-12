@@ -18,6 +18,8 @@ export type ProductVariationItem = {
   unitPrice: number | null
   hasOwnAssembly?: boolean
   hasOwnTiers?: boolean
+  // O papel da variação (GR-0): a contagem de folhas lê a folha dele
+  paper?: { id: string; name: string } | null
 }
 
 type ApiVariation = Omit<ProductVariationItem, 'unitPrice'> & {
@@ -56,16 +58,23 @@ export const saveProductVariations = async ({
   variations,
 }: {
   productId: string
-  variations: { id?: string; name: string; unitPrice: number | null }[]
+  variations: {
+    id?: string
+    name: string
+    unitPrice: number | null
+    // Indefinido = não mexe; nulo = sem papel
+    paperId?: string | null
+  }[]
 }) => {
   const res = await putItemNew({
     route: `/product/${productId}/variation`,
     // Só os campos que a API aceita: a linha da tela traz mais
     data: {
-      variations: variations.map(({ id, name, unitPrice }) => ({
+      variations: variations.map(({ id, name, unitPrice, paperId }) => ({
         ...(id ? { id } : {}),
         name,
         unitPrice,
+        ...(paperId !== undefined ? { paperId } : {}),
       })),
     },
   })
