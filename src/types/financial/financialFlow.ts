@@ -56,6 +56,8 @@ export type TransactionListType = {
   expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
   quotationId?: string
   invoiceType?: 'NFE' | 'NFSE' | 'OTHER' | null
+  // "⚠️ Pendência" (PA-5): a venda pendente que este título libera
+  pendency?: { quotationId: string; reference: string } | null
 }
 
 export type TransactionDetailsType = {
@@ -88,6 +90,8 @@ export type TransactionDetailsType = {
   expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
   quotationId?: string
   invoiceType?: 'NFE' | 'NFSE' | 'OTHER' | null
+  // "⚠️ Pendência" (PA-5): a venda pendente que este título libera
+  pendency?: { quotationId: string; reference: string } | null
 }
 
 export type TransactionDataType = {

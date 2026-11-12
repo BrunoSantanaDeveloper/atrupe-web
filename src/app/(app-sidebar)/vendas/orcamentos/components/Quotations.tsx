@@ -250,6 +250,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
     concluido: data?.DONE,
     vencidos: data?.OVERDUE,
     rejeitados: data?.REJECTED,
+    // A venda aprovada à espera do pagamento antecipado (PA-4)
+    pendente: data?.PENDING_PAYMENT,
     // Acompanhamento (CRM-2, 27/10/2026): os focos da aba Aguardando
     retomar: data?.retomar,
     semContato: data?.semContato,
@@ -275,6 +277,18 @@ export function Quotations({ searchParams }: SearchParamsType) {
       label: 'Aguardando',
       count: totals?.concluido,
     },
+    // "⚠️ Pendente" (PA-4, 12/11/2026): só aparece com alguma venda
+    // pendente, ou enquanto é a aba aberta
+    ...((totals?.pendente ?? 0) > 0 || status === 'pendente'
+      ? [
+          {
+            value: 'PENDING_PAYMENT',
+            tab: 'pendente',
+            label: '⚠️ Pendente',
+            count: totals?.pendente,
+          },
+        ]
+      : []),
     {
       value: 'OVERDUE',
       tab: 'vencidos',

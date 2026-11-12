@@ -17158,5 +17158,189 @@
   "f18e96394a": {
     "es": "No existe dinero negativo en el cajón: falta registrar alguna entrada (el saldo de apertura, un ingreso de caja o un cobro) o alguna salida se registró de más o en la cuenta equivocada. Revise los movimientos del día y corrija; si el dinero existe realmente, registre un ajuste de entrada con el motivo.",
     "en": "There is no negative cash in the drawer: an inflow is missing (the opening balance, a cash deposit or a receipt) or an outflow was entered twice or in the wrong account. Check the day’s entries and correct them; if the money really exists, post an inflow adjustment with the reason."
+  },
+  "90f75f6a8f": {
+    "es": "Exige pago anticipado",
+    "en": "Requires prepayment"
+  },
+  "3537109c80": {
+    "es": "Las ventas de este cliente solo se convierten en orden de trabajo después de pagadas: una vez aprobadas, quedan en la pestaña ⚠️ Pendiente de Cotizaciones hasta que finanzas registre el cobro de la cuenta por cobrar. La opción está en la pestaña Límite de crédito del registro.",
+    "en": "This customer's sales only become work orders after they are paid: once approved, they stay in the ⚠️ On hold tab of Quotes until Finance records the receivable as paid. The option is in the Credit limit tab of the customer record."
+  },
+  "e84bbcbe72": {
+    "es": "Exigir pago anticipado",
+    "en": "Require prepayment"
+  },
+  "b84d016f81": {
+    "es": "La venta de este cliente solo se convierte en orden de trabajo después de pagada. Una vez aprobada, queda en Cotizaciones, en la pestaña ⚠️ Pendiente, y finanzas recibe el total en una cuenta por cobrar marcada ⚠️ Pendiente de pago. Cuando se registra el cobro, la venta se aprueba sola.",
+    "en": "This customer's sale only becomes a work order after it is paid. Once approved, it stays in Quotes, in the ⚠️ On hold tab, and Finance receives the total as a receivable marked ⚠️ Payment hold. When it is recorded as paid, the sale is approved automatically."
+  },
+  "ea0de0255d": {
+    "es": "Venta {sale} liberada: se convirtió en orden de trabajo. Esta cuenta por cobrar sigue pendiente de cobro.",
+    "en": "Sale {sale} released: it became a work order. This receivable is still open."
+  },
+  "8cf15278e5": {
+    "es": "⚠️ Pendiente de pago: esta cuenta por cobrar libera la venta {sale}",
+    "en": "⚠️ Payment hold: this receivable releases sale {sale}"
+  },
+  "fce1dd23f9": {
+    "es": "La venta fue aprobada con pago anticipado y espera este cobro. Cuando se registre, la venta se convierte en orden de trabajo sola.",
+    "en": "The sale was approved with prepayment and is waiting for this payment. When it is recorded, the sale becomes a work order automatically."
+  },
+  "24ee0d2081": {
+    "es": "Para liberar la venta antes del pago, pídaselo al administrador: solo él puede hacerlo, indicando el motivo.",
+    "en": "To release the sale before payment, ask the administrator: only they can do it, with a reason."
+  },
+  "126cf91cb4": {
+    "es": "Ver la venta",
+    "en": "View sale"
+  },
+  "4aec0f32e8": {
+    "es": "Liberar sin pago",
+    "en": "Release without payment"
+  },
+  "f9f0632496": {
+    "es": "Liberar la venta sin el pago",
+    "en": "Release the sale without payment"
+  },
+  "034b217384": {
+    "es": "La venta {sale} se convierte en orden de trabajo ahora, sin esperar el pago anticipado. Esta cuenta por cobrar sigue pendiente de cobro, y el motivo queda en el historial de la venta y de la cuenta.",
+    "en": "Sale {sale} becomes a work order now, without waiting for the prepayment. This receivable stays open, and the reason is kept in the history of the sale and of the receivable."
+  },
+  "af18c4e878": {
+    "es": "Ej.: cliente antiguo, pago acordado con el gerente",
+    "en": "E.g.: long-standing customer, payment agreed with the manager"
+  },
+  "47cbfa99b7": {
+    "es": "Liberar la venta",
+    "en": "Release sale"
+  },
+  "b0e944284c": {
+    "es": "Pendientes de pago",
+    "en": "Payment holds"
+  },
+  "707083a225": {
+    "es": "Todos los movimientos",
+    "en": "All transactions"
+  },
+  "93cfcd4de7": {
+    "es": "⚠️ Solo las que liberan una venta",
+    "en": "⚠️ Only those that release a sale"
+  },
+  "03b47ba893": {
+    "es": "El anticipo de {amount} debe pagarse antes",
+    "en": "The down payment of {amount} must be paid first"
+  },
+  "069d9b72b0": {
+    "es": "Este cliente exige pago anticipado",
+    "en": "This customer requires prepayment"
+  },
+  "60f029c8ad": {
+    "es": "Con el anticipo, la venta queda dentro del límite de crédito del cliente. Al aprobarla, queda en la pestaña ⚠️ Pendiente hasta que finanzas reciba el anticipo; después, se convierte en orden de trabajo.",
+    "en": "With the down payment, the sale fits within the customer's credit limit. When approved, it stays in the ⚠️ On hold tab until Finance receives the down payment; then it becomes a work order."
+  },
+  "de6a204e1b": {
+    "es": "Esta venta supera el límite de crédito del cliente",
+    "en": "This sale exceeds the customer's credit limit"
+  },
+  "3225f18daa": {
+    "es": "Usar {suggested} como anticipo",
+    "en": "Use {suggested} as down payment"
+  },
+  "fba110a9fe": {
+    "es": "⚠️ Pendiente: espera el pago anticipado de {amount}",
+    "en": "⚠️ On hold: waiting for the prepayment of {amount}"
+  },
+  "7b23bd92e2": {
+    "es": "⚠️ Pendiente: espera el anticipo de {amount}",
+    "en": "⚠️ On hold: waiting for the down payment of {amount}"
+  },
+  "ce7f3c27e5": {
+    "es": "Este cliente exige pago anticipado. La venta se convierte en orden de trabajo, y entra en producción, cuando finanzas reciba el total.",
+    "en": "This customer requires prepayment. The sale becomes a work order, and goes into production, when Finance receives the total."
+  },
+  "f8d5a1d3f6": {
+    "es": "La venta superaba el límite de crédito del cliente y se aprobó con anticipo. Se convierte en orden de trabajo cuando finanzas reciba el anticipo.",
+    "en": "The sale exceeded the customer's credit limit and was approved with a down payment. It becomes a work order when Finance receives the down payment."
+  },
+  "3f4394e469": {
+    "es": "Recibido hasta ahora: {paid} de {amount}.",
+    "en": "Received so far: {paid} of {amount}."
+  },
+  "808a5676fc": {
+    "es": "Aprobada con pendiente de pago el {since}.",
+    "en": "Approved on hold on {since}."
+  },
+  "c53425898d": {
+    "es": "Para cambiar la venta, vuélvala a elaboración. Para desistir, recházela: la cuenta por cobrar ⚠️ Pendiente de pago se cancela junto.",
+    "en": "To change the sale, move it back to draft. To give up, reject it: the ⚠️ Payment hold receivable is canceled with it."
+  },
+  "8221d96b45": {
+    "es": "Ver en finanzas",
+    "en": "View in Finance"
+  },
+  "1234c8b28c": {
+    "es": "Venta pendiente: espera {holdAmount} en finanzas para convertirse en orden de trabajo",
+    "en": "Sale on hold: waiting for {holdAmount} in Finance to become a work order"
+  },
+  "652b18312e": {
+    "es": "Usar {suggestedDownPayment} como anticipo",
+    "en": "Use {suggestedDownPayment} as down payment"
+  },
+  "69f85826f4": {
+    "es": "¿Aprobar con pago anticipado?",
+    "en": "Approve with prepayment?"
+  },
+  "db2a523154": {
+    "es": "Este cliente exige pago anticipado. La venta queda en la pestaña ⚠️ Pendiente y finanzas recibe {holdAmount} en una cuenta por cobrar marcada ⚠️ Pendiente de pago. Cuando se registre el cobro, la venta se convierte en orden de trabajo.",
+    "en": "This customer requires prepayment. The sale stays in the ⚠️ On hold tab and Finance receives {holdAmount} as a receivable marked ⚠️ Payment hold. When it is recorded as paid, the sale becomes a work order."
+  },
+  "8e9091c229": {
+    "es": "Aprobar con pendiente de pago",
+    "en": "Approve on hold"
+  },
+  "45705f9c73": {
+    "es": "Volver a elaboración",
+    "en": "Move back to draft"
+  },
+  "46f6cde4a8": {
+    "es": "¿Volver la venta a elaboración?",
+    "en": "Move the sale back to draft?"
+  },
+  "ab1c127527": {
+    "es": "La venta sale de Pendiente para editarse, y la cuenta por cobrar ⚠️ Pendiente de pago de finanzas se cancela. Para aprobarla de nuevo, finalícela y apruébela: el pendiente vuelve con los valores nuevos.",
+    "en": "The sale leaves On hold so it can be edited, and the ⚠️ Payment hold receivable in Finance is canceled. To approve it again, finish and approve it: the hold comes back with the new amounts."
+  },
+  "cb1b36f38a": {
+    "es": "Anticipo sugerido: {suggestedDownPayment}, con vencimiento hoy",
+    "en": "Suggested down payment: {suggestedDownPayment}, due today"
+  },
+  "07afa812fb": {
+    "es": "Con este anticipo pagado, lo que queda a plazo cabe en el límite de crédito del cliente. Elija la forma de pago del anticipo y guarde. Al aprobar, la venta queda pendiente hasta que finanzas reciba el anticipo.",
+    "en": "With this down payment paid, the remaining balance fits within the customer's credit limit. Choose the payment method for the down payment and save. When approved, the sale stays on hold until Finance receives the down payment."
+  },
+  "b607f51d0e": {
+    "es": "La cotización pasa a Rechazadas. No se elimina: se puede reabrir después.{pendingNote}",
+    "en": "The quote moves to Rejected. It is not deleted: it can be reopened later.{pendingNote}"
+  },
+  "9fadbae041": {
+    "es": "Indique por qué el cliente no cerró. El motivo aparece en la cotización y en el informe de pérdidas.{pendingNote}",
+    "en": "Tell us why the customer did not close. The reason shows on the quote and in the lost-sales report.{pendingNote}"
+  },
+  "55bce40267": {
+    "es": "⚠️ Pendiente",
+    "en": "⚠️ On hold"
+  },
+  "f31659321f": {
+    "es": "· {approvedTotal}",
+    "en": "· {approvedTotal}"
+  },
+  "e15c2aabc0": {
+    "es": "⚠️ Pendiente de pago",
+    "en": "⚠️ Payment hold"
+  },
+  "ae5bdf78fe": {
+    "es": "Al cobrarla, libera la venta {sale}: se convierte en orden de trabajo.",
+    "en": "When paid, it releases sale {sale}: it becomes a work order."
   }
 }

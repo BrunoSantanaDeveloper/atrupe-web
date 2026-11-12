@@ -144,6 +144,17 @@ export default function ClientDetailLayout({ children, params }: Props) {
             description="Dá para montar orçamento para este cliente, mas nenhum orçamento é aprovado, vira ordem de serviço nem gera cobrança enquanto ele estiver bloqueado. O desbloqueio é na aba Limite de crédito do cadastro."
           />
         )}
+        {/* Pagamento antecipado (PA-1, 12/11/2026): o aviso fica em toda aba */}
+        {!data?.creditLimit?.blockClient &&
+          data?.creditLimit?.requirePrepayment && (
+            <AlertBanner
+              variant="warning"
+              icon={IconAlertTriangle}
+              className="rounded-lg border"
+              title="Exige pagamento antecipado"
+              description="As vendas deste cliente só viram ordem de serviço depois de pagas: aprovadas, ficam na aba ⚠️ Pendente de Orçamentos até o financeiro baixar o título. A opção fica na aba Limite de crédito do cadastro."
+            />
+          )}
         <Tabs value={activeTab} defaultValue="dados" variant="pill">
           {tabs.length > 1 && (
             <TabsList>

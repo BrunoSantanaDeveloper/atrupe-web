@@ -43,16 +43,22 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
     done: data?.status === 'DONE',
     overdue: data?.status === 'OVERDUE',
     rejected: data?.status === 'REJECTED',
+    // Aprovada à espera do pagamento antecipado (PA-4): volta para
+    // digitação ou é rejeitada; a aprovação de fato é a baixa no financeiro
+    pending: data?.status === 'PENDING_PAYMENT',
   }
 
   // A venda rápida não tem Digitação, Aguardando e Rejeitado: aprova direto
   // da digitação ou é descartada (11/11/2026)
   const quickSale = !!data?.quickSale
   const canApprove = status.done || status.overdue || (quickSale && status.open)
-  const canReject = !quickSale && (status.open || status.done || status.overdue)
+  const canReject =
+    !quickSale &&
+    (status.open || status.done || status.overdue || status.pending)
   const canDiscard = quickSale && status.open
   const canFinish = status.open
-  const canOpen = status.rejected || status.done || status.overdue
+  const canOpen =
+    status.rejected || status.done || status.overdue || status.pending
   const canSetClient = status.open && quickSale
 
   // Informar o cliente é o próximo passo da venda rápida: vem primeiro
@@ -111,7 +117,7 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
           ) : null}
           {primaryAction ?? (
             <>
-              {!quickSale ? (
+              {!quickSale && !status.pending ? (
                 <PermissionGate permissions={['sale:quotation:edit']}>
                   <FinishQuotation data={data} canFinish={canFinish} />
                 </PermissionGate>

@@ -18,6 +18,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { QuotationActions } from './QuotationActions'
 import { QuotationTopbar } from './QuotationTopbar'
 import { CreditBanner } from './CreditBanner'
+import { PaymentHoldBanner } from './PaymentHoldBanner'
 import { FollowUp } from './FollowUp'
 import { AlertBanner } from '@/components/ui/alert-banner'
 import { QuickSaleQuotation } from './QuickSaleQuotation'
@@ -224,7 +225,13 @@ export function Quotation({ id }: Props) {
               title={`Rejeitado: ${data.rejectionReason.reason}`}
             />
           ) : null}
-          <CreditBanner data={data} />
+          {/* A venda pendente diz o que espera; o crédito já foi conferido
+              na aprovação com pendência (PA-4) */}
+          {data?.status === 'PENDING_PAYMENT' ? (
+            <PaymentHoldBanner data={data} />
+          ) : (
+            <CreditBanner data={data} />
+          )}
           <QuotationActions data={data} />
           <FollowUp data={data} />
           <QuotationSummary data={data} />

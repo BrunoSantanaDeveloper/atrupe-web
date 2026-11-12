@@ -28,7 +28,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 // Icons
 import {
@@ -47,12 +47,18 @@ export function OpenQuotation({ data }: Props) {
 
   const queryClient = useQueryClient()
 
+  // A venda pendente (PA-8): voltar para digitação cancela o título
+  const pending = data?.status === 'PENDING_PAYMENT'
+
+  // A recusa do servidor diz o caminho (ex.: a entrada já recebida)
   const mutation = useMutation({
-    mutationFn: () =>
-      createItem({
-        route: 'quotationRoute',
-        customPath: `/${data.id}/open`,
-      }),
+    mutationFn: async () => {
+      const res = await createItemNew({
+        route: `/sale/quotation/${data.id}/open`,
+      })
+      if (!res.success) throw new Error(res.message)
+      return res
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
@@ -64,9 +70,9 @@ export function OpenQuotation({ data }: Props) {
     toast.promise(mutation.mutateAsync(), {
       loading: 'Aguarde...',
       success: () => {
-        return 'Orçamento reaberto'
+        return pending ? 'Venda voltou para digitação' : 'Orçamento reaberto'
       },
-      error: 'Ocorreu um erro',
+      error: (error: Error) => error.message || 'Ocorreu um erro',
     })
   }
 
@@ -74,7 +80,10 @@ export function OpenQuotation({ data }: Props) {
     <>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
-          <CustomButton icon={IconArrowBackUp} title="Reabrir orçamento" />
+          <CustomButton
+            icon={IconArrowBackUp}
+            title={pending ? 'Voltar para digitação' : 'Reabrir orçamento'}
+          />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -84,15 +93,27 @@ export function OpenQuotation({ data }: Props) {
               tone="warning"
               className="mx-auto mb-2 flex"
             />
-            <AlertDialogTitle>Deseja reabrir este orçamento?</AlertDialogTitle>
-            <AlertDialogDescription className="sr-only">
-              Confirme se deseja reabrir o orçamento.
-            </AlertDialogDescription>
+            <AlertDialogTitle>
+              {pending
+                ? 'Voltar a venda para digitação?'
+                : 'Deseja reabrir este orçamento?'}
+            </AlertDialogTitle>
+            {pending ? (
+              <AlertDialogDescription>
+                A venda sai de Pendente para ser editada, e o título ⚠️
+                Pendência do financeiro é cancelado. Para aprovar de novo,
+                conclua e aprove: a pendência volta com os valores novos.
+              </AlertDialogDescription>
+            ) : (
+              <AlertDialogDescription className="sr-only">
+                Confirme se deseja reabrir o orçamento.
+              </AlertDialogDescription>
+            )}
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleOpen} RightIcon={IconCircleCheck}>
-              Reabrir
+              {pending ? 'Voltar para digitação' : 'Reabrir'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

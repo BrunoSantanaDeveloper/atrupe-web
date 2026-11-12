@@ -67,6 +67,12 @@ export function RejectQuotation({ data }: Props) {
 
   const { data: reasonList } = useCancelReason('REJECTION')
 
+  // A venda pendente (PA-8): desistir cancela o título do financeiro
+  const pendingNote =
+    data?.status === 'PENDING_PAYMENT'
+      ? ' O título ⚠️ Pendência do financeiro é cancelado junto.'
+      : ''
+
   const options = useMemo(() => {
     if (!reasonList) return []
     return reasonList?.find((item) => item.type === 'REJECTION')?.reasons || []
@@ -107,8 +113,7 @@ export function RejectQuotation({ data }: Props) {
         onClick={() =>
           alertDialog.open({
             title: 'Rejeitar orçamento?',
-            description:
-              'O orçamento vai para Rejeitados. Ele não é apagado: dá para reabrir depois.',
+            description: `O orçamento vai para Rejeitados. Ele não é apagado: dá para reabrir depois.${pendingNote}`,
             confirmLabel: 'Rejeitar',
             cancelLabel: 'Cancelar',
             confirmVariant: 'error',
@@ -141,7 +146,7 @@ export function RejectQuotation({ data }: Props) {
               alimenta o relatório de perdas por motivo */}
           <AlertDialogDescription>
             Informe por que o cliente não fechou. O motivo aparece no orçamento
-            e no relatório de perdas.
+            e no relatório de perdas.{pendingNote}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="space-y-1">

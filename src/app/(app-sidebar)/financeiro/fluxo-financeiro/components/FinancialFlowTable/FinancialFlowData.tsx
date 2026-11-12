@@ -69,6 +69,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Consts
 import { transactionStatus } from '@/consts/receivables'
 import { Badge } from '@/components/ui/badge'
+import { PendencyBadge } from '@/components/common/PendencyBadge'
 
 interface Props extends SearchParamsType {
   showTotals: boolean
@@ -308,6 +309,12 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                               : 'NFS-e'}
                                           </Badge>
                                         )}
+                                      {item?.type === 'receivable' && (
+                                        <PendencyBadge
+                                          pendency={item?.pendency}
+                                          clientName={item?.client?.name}
+                                        />
+                                      )}
                                       <p className="text-gray truncate">
                                         {item?.description}
                                       </p>

@@ -9,6 +9,8 @@ export const quotationsStatusObj: {
   REJECTED: { text: 'Rejeitado', variant: 'errorLight' },
   APPROVED: { text: 'Aprovado', variant: 'successLight' },
   DONE: { text: 'Aguardando', variant: 'blueLight' },
+  // Aprovada à espera do pagamento antecipado (PA-4, 12/11/2026)
+  PENDING_PAYMENT: { text: '⚠️ Pendente', variant: 'warningLight' },
 }
 
 // export const quotationsQuotationStatusObj: {

@@ -166,6 +166,7 @@ export function NewClientModal({
             conditions: method.conditions || [],
           })) || [],
         blockClient: apiData.creditLimit?.blockClient || false,
+        requirePrepayment: apiData.creditLimit?.requirePrepayment || false,
       },
     }
   }
@@ -179,6 +180,7 @@ export function NewClientModal({
         maxValue: personPaymentMethods.maxValue,
         paymentMethods: personPaymentMethods.paymentMethods,
         blockClient: false,
+        requirePrepayment: false,
       },
     },
     mode: 'onChange',
@@ -194,6 +196,7 @@ export function NewClientModal({
         maxValue: personPaymentMethods.maxValue,
         paymentMethods: personPaymentMethods.paymentMethods,
         blockClient: false,
+        requirePrepayment: false,
       })
     } else {
       form.setValue('creditLimit', {
@@ -201,6 +204,7 @@ export function NewClientModal({
         maxValue: companyPaymentMethods.maxValue,
         paymentMethods: companyPaymentMethods.paymentMethods,
         blockClient: false,
+        requirePrepayment: false,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -312,6 +316,7 @@ export function NewClientModal({
         maxValue: personPaymentMethods.maxValue,
         paymentMethods: personPaymentMethods.paymentMethods,
         blockClient: false,
+        requirePrepayment: false,
       }
     }
 

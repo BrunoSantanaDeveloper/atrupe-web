@@ -123,6 +123,32 @@ export function CreditLimitTab() {
             </label>
           </div>
         </div>
+
+        {/* Pagamento antes da produção (PA-1, 12/11/2026): para quem já deu
+            problema, vender sem recusar e sem gastar material antes */}
+        <div className="flex items-start space-x-4 bg-white border border-gray-200 rounded-lg p-6">
+          <Switch
+            id="requirePrepayment"
+            checked={!!watch('creditLimit.requirePrepayment')}
+            onCheckedChange={(checked) => {
+              setValue('creditLimit.requirePrepayment', checked)
+            }}
+          />
+          <div className="space-y-1">
+            <label
+              htmlFor="requirePrepayment"
+              className="type-label peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              Exigir pagamento antecipado
+            </label>
+            <p className="text-sm text-gray">
+              A venda deste cliente só vira ordem de serviço depois de paga.
+              Aprovada, ela fica em Orçamentos, na aba ⚠️ Pendente, e o
+              financeiro recebe o total num título marcado ⚠️ Pendência. Quando
+              ele é baixado, a venda é aprovada sozinha.
+            </p>
+          </div>
+        </div>
       </div>
     </PermissionGate>
   )

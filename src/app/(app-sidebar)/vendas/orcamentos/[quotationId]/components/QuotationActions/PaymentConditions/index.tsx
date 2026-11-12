@@ -83,6 +83,9 @@ interface Props {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   hideTrigger?: boolean
+  // A entrada que faz a venda caber no limite de crédito (PA-2, 12/11/2026),
+  // em centavos: o diálogo abre com ela lançada, vencendo hoje
+  suggestedDownPayment?: number
 }
 
 export function PaymentConditionsDialog({
@@ -95,6 +98,7 @@ export function PaymentConditionsDialog({
   open: controlledOpen,
   onOpenChange,
   hideTrigger,
+  suggestedDownPayment,
 }: Props) {
   // EC-17: desconto acima do limite do vendedor não salva
   const [exceedsDiscountLimit, setExceedsDiscountLimit] = useState(false)
@@ -143,6 +147,14 @@ export function PaymentConditionsDialog({
     // Resetar o formulário com os valores padrão
     const initialValues = defaultValues(quotationData)
     reset(initialValues)
+
+    // "Usar R$ X como entrada" (PA-2): a entrada da diferença, no ato. As
+    // parcelas se refazem quando a entrada aparece (DownPayment)
+    if (suggestedDownPayment && suggestedDownPayment > 0) {
+      setValue('hasDownPayment', 'true')
+      setValue('downPayment.dueDate', new Date())
+      setValue('downPayment.amount', suggestedDownPayment)
+    }
 
     // O mín/máx de parcelas salvo no orçamento pode estar desatualizado
     // (ex.: gravado como 1x), o que limitava o campo Parcelas a "1x" ao
@@ -288,6 +300,15 @@ export function PaymentConditionsDialog({
             Configurar condições de pagamento do orçamento
           </DialogDescription>
         </DialogHeader>
+        {suggestedDownPayment ? (
+          <AlertBanner
+            variant="info"
+            icon={IconAlertTriangle}
+            className="mx-6 mt-4 rounded-lg border"
+            title={`Entrada sugerida: ${formatCurrencyToBrl(suggestedDownPayment)}, vencendo hoje`}
+            description="Com esta entrada paga, o que fica a prazo cabe no limite de crédito do cliente. Escolha a forma de pagamento da entrada e salve. Ao aprovar, a venda fica pendente até a entrada ser recebida no financeiro."
+          />
+        ) : null}
         {blocked && (
           <AlertBanner
             variant="error"
@@ -324,7 +345,9 @@ export function PaymentConditionsDialog({
 
                 <Separator className="my-2 bg-gray-300" />
 
-                {hasDownPayment === 'true' && <DownPayment />}
+                {hasDownPayment === 'true' && (
+                  <DownPayment suggestedAmount={suggestedDownPayment} />
+                )}
 
                 {installments?.length > 0 && (
                   <div className="bg-white rounded-xl border border-gray-300 w-full">

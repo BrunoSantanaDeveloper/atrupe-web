@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
@@ -10,7 +11,9 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 import { installmentFee, splitCents } from '@/lib/paymentFee'
 import { loadCondition, withFees } from './fees'
 
-export function DownPayment() {
+// A entrada sugerida pelo limite de crédito (PA-2) chega lançada: as
+// parcelas se refazem com ela ao abrir
+export function DownPayment({ suggestedAmount }: { suggestedAmount?: number }) {
   const form = useFormContext<QuotationPaymentConditionsType>()
   const allowedIds = useAllowedConditions()
 
@@ -62,6 +65,14 @@ export function DownPayment() {
     // são calculadas automaticamente e passariam despercebidas sem destaque
     trigger(['installments', 'downPayment.amount'])
   }
+
+  useEffect(() => {
+    if (suggestedAmount && suggestedAmount > 0) {
+      handleDownPaymentAmountChange(suggestedAmount)
+    }
+    // Só ao abrir com a sugestão
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestedAmount])
 
   return (
     <div className="flex flex-wrap gap-3 p-6 bg-blue-light-50 rounded-xl border border-blue-light-300">

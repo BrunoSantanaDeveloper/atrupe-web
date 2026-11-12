@@ -64,6 +64,8 @@ export const newClientSchema = z
         )
         .default([]),
       blockClient: z.boolean().default(false),
+      // "Exigir pagamento antecipado" (PA-1, 12/11/2026): vem desligada
+      requirePrepayment: z.boolean().default(false),
     }),
   })
   .superRefine((data, _ctx) => {
@@ -160,6 +162,7 @@ export const defaultPersonValues: NewClientFormType = {
       // },
     ],
     blockClient: false,
+    requirePrepayment: false,
   },
 }
 
@@ -221,5 +224,6 @@ export const defaultCompanyValues: NewClientFormType = {
       // },
     ],
     blockClient: false,
+    requirePrepayment: false,
   },
 }

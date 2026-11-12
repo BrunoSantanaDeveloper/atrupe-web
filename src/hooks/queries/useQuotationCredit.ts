@@ -13,7 +13,20 @@ export type CreditIssue = {
   code: 'CLIENT_BLOCKED' | 'CONDITION_NOT_ALLOWED' | 'CREDIT_LIMIT_EXCEEDED'
   message: string
   conditions?: { id: string; name: string }[]
+  // No limite (PA-2): quanto passa e a entrada que resolve (centavos)
+  excess?: number
+  suggestedDownPayment?: number
 }
+
+/**
+ * A aprovação, se feita agora, deixa a venda pendente deste valor (PA,
+ * 12/11/2026): o total (cliente com pagamento antecipado) ou a entrada que
+ * faz a venda caber no limite.
+ */
+export type PaymentHoldPreview = {
+  reason: 'PREPAYMENT' | 'CREDIT_LIMIT'
+  amount: number
+} | null
 
 // Os valores (centavos) só vêm para quem vê valores
 export type QuotationCredit = {
@@ -21,6 +34,8 @@ export type QuotationCredit = {
   // A aprovação já é recusada (a data de corte chegou); antes, só avisa
   enforcing: boolean
   blockClient: boolean
+  // "Exigir pagamento antecipado" no cadastro do cliente (PA-1)
+  requirePrepayment?: boolean
   limit?: number | null
   openBalance?: number
   pendingApproved?: number
@@ -30,6 +45,7 @@ export type QuotationCredit = {
   // As formas liberadas para o cliente; nulo, todas
   allowedConditionIds?: string[] | null
   issues: CreditIssue[]
+  hold?: PaymentHoldPreview
 }
 
 export const QUOTATION_CREDIT_QUERY_KEY = 'quotation-credit'

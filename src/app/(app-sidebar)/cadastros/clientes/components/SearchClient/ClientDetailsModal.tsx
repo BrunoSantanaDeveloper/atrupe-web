@@ -209,6 +209,7 @@ export function ClientDetailsModalWithNewClient({
         maxValue: 0,
         paymentMethods: [],
         blockClient: false,
+        requirePrepayment: false,
       },
     } as NewClientFormType
 

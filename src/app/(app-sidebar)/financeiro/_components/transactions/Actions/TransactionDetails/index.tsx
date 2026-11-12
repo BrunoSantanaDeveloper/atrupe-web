@@ -53,6 +53,7 @@ import { transactionStatus } from '@/consts/receivables'
 
 import { getItem, createItemNew } from '@/actions/_cruds'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { PendencyNotice } from './PendencyNotice'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 interface Props {
@@ -123,6 +124,13 @@ export function TransactionDetailsDialog({
           <DialogDescription className="sr-only"></DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
+          {type === 'receivable' && data?.pendency && rowData?.id ? (
+            <PendencyNotice
+              receivableId={rowData.id}
+              pendency={data.pendency}
+              clientName={rowData?.client?.name}
+            />
+          ) : null}
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
             {type === 'receivable' ? (
               <TextSupportingText

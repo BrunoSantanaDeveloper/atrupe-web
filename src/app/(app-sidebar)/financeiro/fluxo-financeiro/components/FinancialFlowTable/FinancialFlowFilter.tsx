@@ -37,12 +37,16 @@ interface Props extends SearchParamsType {
   // lista não nasce presa ao mês
   permissions?: string[]
   allowAllPeriods?: boolean
+  // O filtro "Pendências" (PA-5): os títulos que liberam venda pendente.
+  // Não vale em Contas a pagar
+  showPendency?: boolean
 }
 
 export function FinancialFlowFilter({
   searchParams,
   permissions = ['financial:flow:edit'],
   allowAllPeriods = false,
+  showPendency = true,
 }: Props) {
   const router = useRouter()
 
@@ -168,6 +172,20 @@ export function FinancialFlowFilter({
           value={searchParams?.status || 'all'}
           onChange={(value) => handleFilter('status', value)}
         />
+        {showPendency && (
+          <SelectBasic
+            name="pendency"
+            label="Pendências"
+            placeholder="Selecione"
+            className="w-full sm:w-[220px]"
+            options={[
+              { value: 'all', label: 'Todas as movimentações' },
+              { value: 'true', label: '⚠️ Só as que liberam venda' },
+            ]}
+            value={searchParams?.pendency || 'all'}
+            onChange={(value) => handleFilter('pendency', value)}
+          />
+        )}
         <InUsePaymentConditionsSelectField
           noForm
           name="paymentConditionId"

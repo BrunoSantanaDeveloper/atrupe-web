@@ -35,6 +35,7 @@ import { CardFooter, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { PendencyBadge } from '@/components/common/PendencyBadge'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -252,6 +253,10 @@ export function TransactionsData({ type, searchParams }: Props) {
                                               : 'NFS-e'}
                                           </Badge>
                                         )}
+                                      <PendencyBadge
+                                        pendency={item?.pendency}
+                                        clientName={item?.client?.name}
+                                      />
                                       <p className="text-gray">{description}</p>
                                     </div>
                                   </TableCell>

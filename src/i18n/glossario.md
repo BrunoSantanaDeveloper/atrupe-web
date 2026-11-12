@@ -46,6 +46,12 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Frente de caixa | Punto de venta | Point of sale | |
 | Sangria | Retiro de caja | Cash withdrawal | |
 | Suprimento | Ingreso de caja | Cash deposit | |
+| Pagamento antecipado / "Exigir pagamento antecipado" | Pago anticipado / "Exigir pago anticipado" | Prepayment / "Require prepayment" | Opção do cliente: a venda só vira ordem de serviço depois de paga (PA, 12/11/2026). |
+| Entrada (da condição de pagamento) | Anticipo | Down payment | |
+| Pendente (venda à espera do pagamento) | Pendiente | On hold | A aba "⚠️ Pendente" de Orçamentos (PA-4). Não confundir com a pendência da tarefa de produção. |
+| Pendência (o título que libera a venda) | Pendiente de pago | Payment hold | A marcação "⚠️ Pendência" no financeiro (PA-5). |
+| Limite de crédito | Límite de crédito | Credit limit | |
+| Título (a receber) | Cuenta por cobrar | Receivable | |
 
 ## Produto e composição
 

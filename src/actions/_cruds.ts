@@ -13,6 +13,16 @@ import { defaultRoutes } from './routes'
 
 const defaultRoute = defaultRoutes()
 
+/** Um motivo da recusa da aprovação pelo crédito (centavos). */
+export type CreditRefusalIssue = {
+  code: 'CLIENT_BLOCKED' | 'CONDITION_NOT_ALLOWED' | 'CREDIT_LIMIT_EXCEEDED'
+  limit?: number
+  used?: number
+  requested?: number
+  excess?: number
+  suggestedDownPayment?: number
+}
+
 const getEmbeddedError = (payload: any) => {
   const statusCode = Number(
     payload?.statusCode || payload?.userMessage?.statusCode,
@@ -288,6 +298,11 @@ export const createItemNew = async ({
       // aprovação pelo crédito do cliente)
       errorCode:
         typeof userMessage?.code === 'string' ? userMessage.code : undefined,
+      // Os motivos da recusa pelo crédito, com os valores do limite e a
+      // entrada sugerida (PA-2, 12/11/2026)
+      issues: Array.isArray(userMessage?.issues)
+        ? (userMessage.issues as CreditRefusalIssue[])
+        : undefined,
     }
   }
 }

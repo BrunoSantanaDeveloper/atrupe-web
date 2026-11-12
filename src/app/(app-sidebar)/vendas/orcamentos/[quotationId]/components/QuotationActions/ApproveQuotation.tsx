@@ -7,8 +7,11 @@
 //   acrescentada, trava a aprovação até ser trocado ou retirado. A parte
 //   da linha só o servidor confere: os itens vêm na recusa.
 // E a do crédito do cliente (PO, 13 e 14/10/2026): cliente bloqueado,
-// condição fora das permitidas ou acima do limite. Só o servidor confere;
-// a recusa vem com o motivo (sem valores).
+// condição fora das permitidas ou acima do limite. Só o servidor confere.
+// O limite estourado diz o caminho (PA-2, 12/11/2026): a recusa traz a
+// entrada sugerida e o botão "Usar R$ X como entrada". A venda que precisa
+// do pagamento antes (a entrada ou o cliente com pagamento antecipado) é
+// aprovada com pendência: fica na aba ⚠️ Pendente, sem ordem de serviço.
 
 // React
 import { useClientBlocked } from '../useClientBlocked'
@@ -43,6 +46,8 @@ import { QuotationType } from '@/types/sales/quotation'
 
 // Actions
 import { createItemNew } from '@/actions/_cruds'
+import { useQuotationCredit } from '@/hooks/queries/useQuotationCredit'
+import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Hooks
 import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationItems'
@@ -77,6 +82,8 @@ export function ApproveQuotation({ data }: Props) {
     [],
   )
   const [approvedAt, setApprovedAt] = useState('')
+  // A entrada da diferença do limite (centavos), da recusa (PA-2)
+  const [suggestedDownPayment, setSuggestedDownPayment] = useState(0)
 
   const queryClient = useQueryClient()
   const router = useRouter()
@@ -92,6 +99,15 @@ export function ApproveQuotation({ data }: Props) {
     (hasInstallments && !!data?.paymentConditions?.paymentCondition?.id)
 
   const { inactiveItems } = useInactiveQuotationItems(data)
+
+  // O que a aprovação fará: com pendência de pagamento ou não (PA-3)
+  const { data: credit } = useQuotationCredit(
+    data?.id,
+    open && !!data?.client?.id,
+    `approve|${data?.updatedAt ?? ''}`,
+  )
+  const hold = credit?.issues?.length ? null : (credit?.hold ?? null)
+  const holdAmount = hold ? formatCurrencyToBrl(hold.amount) : ''
 
   const blockedItems = refused.length
     ? refused
@@ -151,11 +167,33 @@ export function ApproveQuotation({ data }: Props) {
       if ('errorCode' in res && res.errorCode === 'CREDIT_CHECK') {
         setOpen(false)
         setCreditMessage(res.message)
+        const issues = 'issues' in res ? (res.issues ?? []) : []
+        const limit = issues.find(
+          (issue) => issue.code === 'CREDIT_LIMIT_EXCEEDED',
+        )
+        // A entrada só resolve quando o limite é o único motivo
+        setSuggestedDownPayment(
+          issues.length === 1 ? (limit?.suggestedDownPayment ?? 0) : 0,
+        )
         setOpenBlocked('credit')
         queryClient.invalidateQueries({ queryKey: ['quotation-credit'] })
         return
       }
       toast.error(res.message)
+      return
+    }
+
+    // Aprovada com pendência (PA-4): fica em Orçamentos, na aba Pendente,
+    // até o financeiro baixar o título; não há ordem de serviço ainda
+    if (res?.data?.pendingPayment) {
+      toast.success(
+        `Venda pendente: aguarda ${formatCurrencyToBrl(res.data.holdAmount)} no financeiro para virar ordem de serviço`,
+      )
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-credit'] })
+      queryClient.invalidateQueries({ queryKey: ['transaction-list'] })
       return
     }
 
@@ -211,7 +249,9 @@ export function ApproveQuotation({ data }: Props) {
             />
             <AlertDialogTitle>
               {openBlocked === 'credit'
-                ? 'Aprovação bloqueada pelo crédito do cliente'
+                ? suggestedDownPayment > 0
+                  ? 'Esta venda passa do limite de crédito do cliente'
+                  : 'Aprovação bloqueada pelo crédito do cliente'
                 : openBlocked === 'inactive'
                   ? 'Este orçamento não pode ser aprovado'
                   : 'Informe a condição de pagamento para aprovar'}
@@ -251,6 +291,18 @@ export function ApproveQuotation({ data }: Props) {
             <AlertDialogCancel>
               {openBlocked === 'payment' ? 'Cancelar' : 'Fechar'}
             </AlertDialogCancel>
+            {openBlocked === 'credit' && suggestedDownPayment > 0 && (
+              <Button
+                type="button"
+                RightIcon={IconCircleCheck}
+                onClick={() => {
+                  setOpenBlocked(null)
+                  setOpenPayment(true)
+                }}
+              >
+                {`Usar ${formatCurrencyToBrl(suggestedDownPayment)} como entrada`}
+              </Button>
+            )}
             {openBlocked === 'payment' && (
               <Button
                 type="button"
@@ -270,10 +322,14 @@ export function ApproveQuotation({ data }: Props) {
       <PaymentConditionsDialog
         quotationData={data}
         open={openPayment}
-        onOpenChange={setOpenPayment}
+        onOpenChange={(value) => {
+          setOpenPayment(value)
+          if (!value) setSuggestedDownPayment(0)
+        }}
         hideTrigger
         onFinish={handlePaymentConditionsSaved}
         submitLabel="Salvar e continuar"
+        suggestedDownPayment={suggestedDownPayment || undefined}
       />
 
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -286,13 +342,20 @@ export function ApproveQuotation({ data }: Props) {
               className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>
-              {data?.quickSale
-                ? 'Deseja aprovar esta venda?'
-                : 'Deseja aprovar este orçamento?'}
+              {hold?.reason === 'PREPAYMENT'
+                ? 'Aprovar com pagamento antecipado?'
+                : hold?.reason === 'CREDIT_LIMIT'
+                  ? 'Aprovar com entrada?'
+                  : data?.quickSale
+                    ? 'Deseja aprovar esta venda?'
+                    : 'Deseja aprovar este orçamento?'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Ao aprovar, este trabalho mudará de status e passará a ficar
-              disponível na aba Ordens de Serviço.
+              {hold?.reason === 'PREPAYMENT'
+                ? `Este cliente exige pagamento antecipado. A venda fica na aba ⚠️ Pendente e o financeiro recebe ${holdAmount} num título marcado ⚠️ Pendência. Quando ele for baixado, a venda vira ordem de serviço.`
+                : hold?.reason === 'CREDIT_LIMIT'
+                  ? `A entrada de ${holdAmount} precisa ser paga antes: a venda fica na aba ⚠️ Pendente até ela ser recebida no financeiro. Depois, vira ordem de serviço.`
+                  : 'Ao aprovar, este trabalho mudará de status e passará a ficar disponível na aba Ordens de Serviço.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -301,7 +364,7 @@ export function ApproveQuotation({ data }: Props) {
               onClick={handleApprove}
               RightIcon={IconCircleCheck}
             >
-              Aprovar
+              {hold ? 'Aprovar com pendência' : 'Aprovar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

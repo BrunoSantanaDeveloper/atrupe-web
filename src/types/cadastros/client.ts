@@ -57,6 +57,7 @@ export type ClientInfoType = {
     maxValue: number
     paymentMethods: string[]
     blockClient: boolean
+    requirePrepayment?: boolean
   }
   // Falta:
   createdAt: Date

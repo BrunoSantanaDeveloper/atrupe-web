@@ -126,6 +126,7 @@ export function Transactions({ type, searchParams }: Props) {
                   searchParams={searchParams}
                   permissions={viewPermissions}
                   allowAllPeriods
+                  showPendency={type === 'receivable'}
                 />
               </TableFiltersHeader>
               {showTotals && (

@@ -2,10 +2,23 @@
 
 // A barra de aviso do crédito do cliente no orçamento (PO, 13/10/2026):
 // incluir o cliente e concluir só avisam; a aprovação é recusada com cliente
-// bloqueado, condição fora das permitidas ou acima do limite
+// bloqueado ou condição fora das permitidas.
+//
+// Todo bloqueio diz o caminho (12/11/2026): o limite estourado diz quanto
+// passa e oferece a entrada da diferença ("Usar R$ X como entrada"), que a
+// venda precisa receber antes de virar ordem de serviço (PA-2). O cliente
+// com "Exigir pagamento antecipado" é avisado do que a aprovação fará (PA-3)
+
+// React
+import { useState } from 'react'
 
 // UI
 import { AlertBanner } from '@/components/ui/alert-banner'
+import { Button } from '@/components/ui/button'
+
+// Components
+import { PermissionGate } from '@/components/common/PermissionGate'
+import { PaymentConditionsDialog } from './QuotationActions/PaymentConditions'
 
 // Hooks
 import { useQuotationCredit } from '@/hooks/queries/useQuotationCredit'
@@ -17,9 +30,10 @@ import type { QuotationType } from '@/types/sales/quotation'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Icons
-import { IconAlertTriangle } from '@tabler/icons-react'
+import { IconAlertTriangle, IconCash } from '@tabler/icons-react'
 
 export function CreditBanner({ data }: { data: QuotationType }) {
+  const [openPayment, setOpenPayment] = useState(false)
   const version = [
     data?.client?.id,
     data?.status,
@@ -35,42 +49,91 @@ export function CreditBanner({ data }: { data: QuotationType }) {
     version,
   )
 
-  if (!credit?.applies || !credit.issues?.length) return null
+  if (!credit?.applies) return null
 
-  const exceeded = credit.issues.some(
+  const limitIssue = credit.issues?.find(
     (issue) => issue.code === 'CREDIT_LIMIT_EXCEEDED',
   )
-  // Sem a permissão de valores, os valores não vêm: fica só o motivo
-  const amounts =
-    exceeded &&
-    typeof credit.limit === 'number' &&
-    typeof credit.used === 'number' &&
-    typeof credit.requested === 'number'
-      ? `Limite ${formatCurrencyToBrl(credit.limit)} · já usado ${formatCurrencyToBrl(credit.used)} · esta venda ${formatCurrencyToBrl(credit.requested)}`
-      : null
+  const registryIssues = (credit.issues ?? []).filter(
+    (issue) => issue.code !== 'CREDIT_LIMIT_EXCEEDED',
+  )
+  const suggested = limitIssue?.suggestedDownPayment ?? 0
+
+  // Sem bloqueio: o que a aprovação fará, se a venda vai esperar o pagamento
+  if (!credit.issues?.length) {
+    const hold = credit.hold
+    if (!hold && !credit.requirePrepayment) return null
+    const amount = hold ? formatCurrencyToBrl(hold.amount) : ''
+    return (
+      <AlertBanner
+        variant="warning"
+        icon={IconAlertTriangle}
+        className="rounded-lg border"
+        title={
+          hold?.reason === 'CREDIT_LIMIT'
+            ? `A entrada de ${amount} precisa ser paga antes`
+            : 'Este cliente exige pagamento antecipado'
+        }
+        description={
+          hold?.reason === 'CREDIT_LIMIT'
+            ? 'Com a entrada, a venda cabe no limite de crédito do cliente. Ao aprovar, ela fica na aba ⚠️ Pendente até a entrada ser recebida no financeiro; depois, vira ordem de serviço.'
+            : hold
+              ? `Ao aprovar, a venda fica na aba ⚠️ Pendente e o financeiro recebe ${amount} num título marcado ⚠️ Pendência. Quando ele for baixado, a venda vira ordem de serviço.`
+              : 'A venda só vira ordem de serviço depois de paga: ao aprovar, ela fica na aba ⚠️ Pendente até o financeiro baixar o pagamento.'
+        }
+      />
+    )
+  }
 
   return (
-    <AlertBanner
-      variant={credit.enforcing ? 'error' : 'warning'}
-      icon={IconAlertTriangle}
-      className="rounded-lg border"
-      title={
-        credit.enforcing
-          ? 'A aprovação está bloqueada pelo crédito do cliente'
-          : 'Atenção ao crédito do cliente'
-      }
-      description={
-        <div className="space-y-1">
-          {credit.issues.map((issue) => (
-            <p key={issue.code}>{issue.message}</p>
-          ))}
-          {amounts ? <p>{amounts}</p> : null}
-          <p>
-            Quem pode alterar o limite ou desbloquear o cliente faz isso no
-            cadastro do cliente.
-          </p>
-        </div>
-      }
-    />
+    <>
+      <AlertBanner
+        variant="error"
+        icon={IconAlertTriangle}
+        className="rounded-lg border"
+        title={
+          registryIssues.length
+            ? 'A aprovação está bloqueada pelo crédito do cliente'
+            : 'Esta venda passa do limite de crédito do cliente'
+        }
+        description={
+          <div className="space-y-1">
+            {credit.issues.map((issue) => (
+              <p key={issue.code}>{issue.message}</p>
+            ))}
+            {registryIssues.length ? (
+              <p>
+                Quem pode alterar o limite ou desbloquear o cliente faz isso no
+                cadastro do cliente.
+              </p>
+            ) : null}
+          </div>
+        }
+        action={
+          suggested > 0 && !registryIssues.length ? (
+            <PermissionGate permissions={['sale:quotation:edit']}>
+              <Button
+                type="button"
+                size="sm"
+                LeftIcon={IconCash}
+                onClick={() => setOpenPayment(true)}
+              >
+                {`Usar ${formatCurrencyToBrl(suggested)} como entrada`}
+              </Button>
+            </PermissionGate>
+          ) : null
+        }
+      />
+      {suggested > 0 ? (
+        <PaymentConditionsDialog
+          quotationData={data}
+          open={openPayment}
+          onOpenChange={setOpenPayment}
+          hideTrigger
+          suggestedDownPayment={openPayment ? suggested : undefined}
+          submitLabel="Salvar a entrada"
+        />
+      ) : null}
+    </>
   )
 }
