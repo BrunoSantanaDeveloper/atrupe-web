@@ -17506,5 +17506,29 @@
   "91bf08590c": {
     "es": "La venta superaba el límite de crédito del cliente. Se convierte en orden de trabajo cuando finanzas reciba lo que supera el límite.",
     "en": "The sale exceeded the customer's credit limit. It becomes a work order when Finance receives what exceeds the limit."
+  },
+  "14c8575b7c": {
+    "es": "Cuenta donde se acredita",
+    "en": "Settlement account"
+  },
+  "7971398a0e": {
+    "es": "Elija la cuenta del banco",
+    "en": "Choose the bank account"
+  },
+  "827dbffce4": {
+    "es": "Registre antes la cuenta del banco",
+    "en": "Register the bank account first"
+  },
+  "b5db6566a8": {
+    "es": "El banco en que la procesadora deposita las ventas. La conciliación de esa cuenta ya sugiere la procesadora en la liquidación.",
+    "en": "The bank where the card processor deposits the sales. That account's reconciliation already suggests the processor at settlement."
+  },
+  "3c10e4e94b": {
+    "es": "Tercerizado · {name}",
+    "en": "Outsourced · {name}"
+  },
+  "7c649c133a": {
+    "es": "De quién la empresa compra este ítem. La cuenta por pagar sale con este proveedor cuando se aprueba la venta; después no cambia por aquí.",
+    "en": "Who the company buys this item from. The payable is created with this supplier when the sale is approved; after that it does not change here."
   }
 }

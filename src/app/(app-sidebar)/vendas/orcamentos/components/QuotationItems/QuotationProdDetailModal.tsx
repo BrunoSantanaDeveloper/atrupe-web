@@ -69,6 +69,7 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { SaleCompositionFields } from './SaleCompositionFields'
+import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PrintCountPanel } from './PrintCountPanel'
 import type { PrintSpec } from '@/actions/print'
 
@@ -150,6 +151,9 @@ export function QuotationProdDetailModal({
   const [printSpec, setPrintSpec] = React.useState<
     PrintSpec | null | undefined
   >()
+  // O fornecedor do produto terceirizado nesta venda (12/11/2026):
+  // undefined = não mexeu
+  const [supplierId, setSupplierId] = React.useState<string | undefined>()
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
   // const { data: unitOfMeasure } = useUnitOfMeasure()
@@ -619,6 +623,9 @@ export function QuotationProdDetailModal({
     if (printSpec !== undefined) {
       Object.assign(newFormData, { printSpec })
     }
+    if (supplierId !== undefined) {
+      Object.assign(newFormData, { supplierId })
+    }
 
     // console.info('SUBMIT:', newFormData)
 
@@ -956,6 +963,36 @@ export function QuotationProdDetailModal({
                     />
                   </div>
                 </FeatureGate>
+                {/* O fornecedor do terceirizado (12/11/2026): com mais de
+                    um no cadastro do produto, o vendedor escolhe de qual
+                    compra; a conta a pagar sai com ele */}
+                {product?.isOutsourced &&
+                (product?.suppliers?.length ?? 0) > 1 ? (
+                  <div className="w-full space-y-1.5">
+                    <SelectBasic
+                      name="outsourced-supplier"
+                      label="Fornecedor"
+                      options={(product?.suppliers ?? []).map((supplier) => ({
+                        value: supplier.id,
+                        label: supplier.name,
+                      }))}
+                      value={
+                        supplierId ??
+                        (editMode ? data?.supplier?.id : undefined) ??
+                        product?.suppliers?.[0]?.id ??
+                        ''
+                      }
+                      onChange={(value) =>
+                        value && setSupplierId(String(value))
+                      }
+                    />
+                    <p className="text-xs text-gray">
+                      De quem a empresa compra este item. A conta a pagar sai
+                      com este fornecedor quando a venda é aprovada; depois
+                      disso ele não muda por aqui.
+                    </p>
+                  </div>
+                ) : null}
                 {/* A contagem de folhas da gráfica rápida (12/11/2026),
                     com Papéis no plano */}
                 <FeatureGate features={[FEATURES.PRODUCTS.PAPER_REGISTER]}>

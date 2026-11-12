@@ -378,6 +378,7 @@ export function BankAccounts({ searchParams }: SearchParamsType) {
             open={dialogOpen}
             account={editing}
             methods={methods}
+            accounts={accounts}
             onOpenChange={setDialogOpen}
             onSaved={refresh}
           />

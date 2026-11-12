@@ -18,6 +18,8 @@ export type ProductListType = {
   hasComposition?: boolean
   // Produto terceirizado (T-5): comprado de fornecedor e revendido
   isOutsourced?: boolean
+  // Os fornecedores do produto terceirizado: o item escolhe de qual compra
+  suppliers?: { id: string; name: string }[]
   compositionStatus?: 'DRAFT' | 'RELEASED' | 'PART' | null
   hasVariations?: boolean
   // As variações, para a lista mostrar sob o produto (LITE part3, item 4).

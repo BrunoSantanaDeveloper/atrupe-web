@@ -411,7 +411,9 @@ export function QuotationItems({ data }: Props) {
                             {/* Marca discreta do produto terceirizado (T-3) */}
                             {item.product?.isOutsourced ? (
                               <Badge status variant="warningLight">
-                                Terceirizado
+                                {item.supplier?.name
+                                  ? `Terceirizado · ${item.supplier.name}`
+                                  : 'Terceirizado'}
                               </Badge>
                             ) : null}
                             {isItemInactive(item) && (

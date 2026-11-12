@@ -71,6 +71,10 @@ export type BankAccount = {
   openingDate: string
   balance: number
   rules: MethodRule[]
+  // Só na operadora de cartão: a conta do banco em que ela deposita
+  // (12/11/2026). A conciliação dessa conta já sugere a operadora
+  settlementAccountId?: string | null
+  settlementAccountName?: string | null
 }
 
 export type MovementKind =

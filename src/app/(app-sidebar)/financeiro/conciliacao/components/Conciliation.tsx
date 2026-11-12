@@ -111,9 +111,15 @@ export function Conciliation() {
   const accounts = (accountsRes?.data || []).filter(
     (account) => account.isActive && account.kind !== 'CARD',
   )
-  const cards = (accountsRes?.data || []).filter(
-    (account) => account.isActive && account.kind === 'CARD',
-  )
+  // As operadoras que depositam nesta conta vêm primeiro: a liquidação já
+  // abre com a certa (conta onde cai, 12/11/2026)
+  const cards = (accountsRes?.data || [])
+    .filter((account) => account.isActive && account.kind === 'CARD')
+    .sort(
+      (a, b) =>
+        Number(b.settlementAccountId === accountId) -
+        Number(a.settlementAccountId === accountId),
+    )
 
   useEffect(() => {
     if (!accountId && accounts.length) {

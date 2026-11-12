@@ -84,6 +84,8 @@ const toAccount = (row: Raw): BankAccount => ({
   openingDate: row.openingDate ?? '',
   balance: row.balance ?? 0,
   rules: (row.bankAccountCashControl ?? []).map(toRule),
+  settlementAccountId: row.settlementAccountId ?? null,
+  settlementAccountName: row.settlementAccount?.name ?? null,
 })
 
 /* ---------------------------------------------------------------------------
@@ -144,7 +146,12 @@ export const saveBankAccount = async (
   const data = {
     name: input.name,
     ...(bankId ? { bankId } : {}),
-    ...(card ? { operator: input.bankName.trim() || null } : {}),
+    ...(card
+      ? {
+          operator: input.bankName.trim() || null,
+          settlementAccountId: input.settlementAccountId ?? null,
+        }
+      : {}),
     kind: input.kind,
     cashControl: input.cashControl,
     blindCount: input.blindCount,

@@ -31,6 +31,10 @@ export interface IProduct {
   // Quantidade mínima na unidade comercial (0,5 m², 3 un): abaixo dela o
   // item é cobrado pelo mínimo
   minQuantity?: number | null
+  // Produto terceirizado (T-5) e os fornecedores dele: o item do orçamento
+  // escolhe de qual compra (12/11/2026)
+  isOutsourced?: boolean
+  suppliers?: { id: string; name: string }[]
 }
 
 const QUERY_KEY = 'product'

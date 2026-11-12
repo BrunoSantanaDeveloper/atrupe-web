@@ -55,6 +55,8 @@ export type QuotationItemType = {
   // Gráfica rápida (12/11/2026): o que o item muda (sangria, bloco,
   // apostila) e a contagem de folhas, uma por parte impressa
   printSpec?: import('@/actions/print').PrintSpec | null
+  // O fornecedor do terceirizado escolhido no item; nulo = o primeiro
+  supplier?: { id: string; name: string } | null
   sheetCounts?: import('@/actions/print').PrintCount[]
   // As linhas acrescentadas dentro do item (ORC-5) e a soma delas, que já
   // está no valor final; o preço só vem com a permissão de valores

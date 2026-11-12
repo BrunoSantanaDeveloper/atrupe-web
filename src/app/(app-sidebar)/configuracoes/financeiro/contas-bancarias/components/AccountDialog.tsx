@@ -128,6 +128,8 @@ interface Props {
   open: boolean
   account?: BankAccount
   methods: { id: string; name: string }[]
+  // As contas da empresa: a operadora escolhe a conta onde cai
+  accounts?: BankAccount[]
   onOpenChange: (open: boolean) => void
   onSaved: () => void
 }
@@ -136,9 +138,17 @@ export function AccountDialog({
   open,
   account,
   methods,
+  accounts = [],
   onOpenChange,
   onSaved,
 }: Props) {
+  // Onde a operadora pode depositar: as contas ativas que não são cartão
+  const settlementOptions = accounts
+    .filter(
+      (item) =>
+        item.isActive && item.kind !== 'CARD' && item.id !== account?.id,
+    )
+    .map((item) => ({ value: item.id, label: item.name }))
   // Custo e preço só para quem tem a permissão de valores (§9)
   const money = useMoney()
   const [draft, setDraft] = useState<Draft>(empty(methods))
@@ -247,6 +257,34 @@ export function AccountDialog({
                     value={draft.bankName}
                     onChange={(event) => set('bankName', event.target.value)}
                   />
+                </div>
+              )}
+              {draft.kind === 'CARD' && (
+                <div className="space-y-1.5">
+                  <SelectBasic
+                    name="account-settlement"
+                    label="Conta onde cai"
+                    placeholder={
+                      settlementOptions.length
+                        ? 'Escolha a conta do banco'
+                        : 'Cadastre antes a conta do banco'
+                    }
+                    options={[
+                      { value: 'none', label: 'Não informada' },
+                      ...settlementOptions,
+                    ]}
+                    value={draft.settlementAccountId || 'none'}
+                    onChange={(value) =>
+                      set(
+                        'settlementAccountId',
+                        value && value !== 'none' ? String(value) : null,
+                      )
+                    }
+                  />
+                  <p className="text-xs text-gray">
+                    O banco em que a operadora deposita as vendas. A conciliação
+                    dessa conta já sugere a operadora na liquidação.
+                  </p>
                 </div>
               )}
               {draft.kind === 'BANK' && (
