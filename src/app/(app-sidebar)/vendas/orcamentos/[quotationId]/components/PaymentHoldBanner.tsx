@@ -48,6 +48,8 @@ export function PaymentHoldBanner({ data }: { data: QuotationType }) {
 
   if (!hold?.pending) return null
 
+  // Sem a permissão de valores, a API não manda os valores (MoneyFields)
+  const showValues = typeof hold.amount === 'number'
   const amount = formatCurrencyToBrl(hold.amount ?? 0)
   const canSeeFinancial = hasAnyPermission([
     'financial:flow:view',
@@ -60,9 +62,13 @@ export function PaymentHoldBanner({ data }: { data: QuotationType }) {
       icon={IconAlertTriangle}
       className="rounded-lg border"
       title={
-        hold.reason === 'PREPAYMENT'
-          ? `⚠️ Pendente: aguarda o pagamento antecipado de ${amount}`
-          : `⚠️ Pendente: aguarda a entrada de ${amount}`
+        !showValues
+          ? hold.reason === 'PREPAYMENT'
+            ? '⚠️ Pendente: aguarda o pagamento antecipado'
+            : '⚠️ Pendente: aguarda a entrada'
+          : hold.reason === 'PREPAYMENT'
+            ? `⚠️ Pendente: aguarda o pagamento antecipado de ${amount}`
+            : `⚠️ Pendente: aguarda a entrada de ${amount}`
       }
       description={
         <div className="space-y-1">
@@ -71,7 +77,9 @@ export function PaymentHoldBanner({ data }: { data: QuotationType }) {
               ? 'Este cliente exige pagamento antecipado. A venda vira ordem de serviço, e entra na produção, quando o total for recebido no financeiro.'
               : 'A venda passava do limite de crédito do cliente e foi aprovada com entrada. Ela vira ordem de serviço quando a entrada for recebida no financeiro.'}
           </p>
-          <p>{`Recebido até agora: ${formatCurrencyToBrl(hold.paid)} de ${amount}.`}</p>
+          {showValues ? (
+            <p>{`Recebido até agora: ${formatCurrencyToBrl(hold.paid)} de ${amount}.`}</p>
+          ) : null}
           {hold.since ? (
             <p>{`Aprovada com pendência em ${formatToLocaleDate(hold.since)}.`}</p>
           ) : null}
