@@ -61,6 +61,8 @@ import { useCancelReason } from '@/hooks/queries/useCancelReason'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
+import { IconArrowsLeftRight } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -136,25 +138,29 @@ export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
   )
 }
 
-interface MovementProps extends BaseProps {
-  kind: 'WITHDRAWAL' | 'SUPPLY'
+interface TransferProps extends BaseProps {
+  // O nome do caixa aberto, o lado fixo da transferência
+  drawerName: string
 }
 
-export function CashMovementDialog({
-  kind,
+// Transferência (PAD-1, 02/10/2026; construída em 14/11): o que se chamava
+// sangria e suprimento é dinheiro mudando de lugar, entre a gaveta e uma
+// conta da empresa. Não é receita nem despesa. A gaveta vem marcada num lado
+// e a seta troca o sentido; o motivo é opcional.
+export function CashTransferDialog({
+  drawerName,
   open,
   onDone,
   onOpenChange,
-}: MovementProps) {
+}: TransferProps) {
   const [amount, setAmount] = useState(0)
   const [reason, setReason] = useState('')
   const [accountId, setAccountId] = useState('')
+  // Sai da gaveta para a conta (o mais comum: tirar o excesso) ou o contrário
+  const [fromDrawer, setFromDrawer] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  const sangria = kind === 'WITHDRAWAL'
-
-  // Dinheiro que entra ou sai tem origem e destino: uma conta da empresa.
-  // Padrão é a conta Caixa (a gaveta principal, o cofre)
+  // O outro lado é uma conta da empresa; o padrão é a conta Caixa (o cofre)
   const { data: accountsRes } = useQuery({
     enabled: open,
     staleTime: Infinity,
@@ -171,6 +177,7 @@ export function CashMovementDialog({
     setAmount(0)
     setReason('')
     setAccountId('')
+    setFromDrawer(true)
   }, [open])
 
   useEffect(() => {
@@ -185,58 +192,80 @@ export function CashMovementDialog({
   const save = async () => {
     const account = accounts.find((item) => item.id === accountId)
     setSaving(true)
-    const res = await addCashMovement(kind, amount, reason, account?.id)
+    const res = await addCashMovement(
+      fromDrawer ? 'WITHDRAWAL' : 'SUPPLY',
+      amount,
+      // Até o patch 42 a API exige o motivo: o vazio vai como "Transferência"
+      reason.trim() || 'Transferência',
+      account?.id,
+    )
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
 
-    toast.success(sangria ? 'Sangria registrada' : 'Suprimento registrado')
+    toast.success('Transferência registrada')
     onDone()
     onOpenChange(false)
   }
 
+  const drawer = (
+    <div className="space-y-1.5">
+      <p className="text-sm font-medium">{fromDrawer ? 'De' : 'Para'}</p>
+      <p className="flex h-10 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700">
+        {`Gaveta · ${drawerName}`}
+      </p>
+    </div>
+  )
+  const account = (
+    <SelectBasic
+      name="transfer-account"
+      label={fromDrawer ? 'Para' : 'De'}
+      className="w-full"
+      options={accounts.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }))}
+      value={accountId}
+      onChange={setAccountId}
+    />
+  )
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            {/* O mesmo desenho de "Nova despesa" e "Nova receita" do Fluxo
-                financeiro: sai em vermelho, entra em verde */}
-
-            <div>
-              <DialogTitle>{sangria ? 'Sangria' : 'Suprimento'}</DialogTitle>
-              <DialogDescription>
-                {sangria
-                  ? 'Dinheiro que sai do caixa durante o expediente e vai para uma conta da empresa. Não é despesa: é dinheiro mudando de lugar.'
-                  : 'Dinheiro que entra no caixa, vindo de uma conta da empresa, normalmente para ter troco. Não é receita: é dinheiro mudando de lugar.'}
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle>Transferência</DialogTitle>
+          <DialogDescription>
+            Dinheiro mudando de lugar entre a gaveta e uma conta da empresa. Não
+            é receita nem despesa.
+          </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <MoneyInput
-              autoFocus
-              id="amount"
-              label="Valor"
-              value={amount}
-              onChange={setAmount}
-            />
-            <SelectBasic
-              name="movement-account"
-              label={sangria ? 'Para onde vai' : 'De onde vem'}
-              className="w-full"
-              options={accounts.map((account) => ({
-                value: account.id,
-                label: account.name,
-              }))}
-              value={accountId}
-              onChange={setAccountId}
-            />
+          <div className="grid items-end gap-3 sm:grid-cols-[1fr_auto_1fr]">
+            {fromDrawer ? drawer : account}
+            <Button
+              type="button"
+              size="none"
+              variant="neutralOutline"
+              className="size-10"
+              aria-label="Trocar o sentido"
+              title="Trocar o sentido"
+              onClick={() => setFromDrawer((value) => !value)}
+            >
+              <IconArrowsLeftRight aria-hidden="true" size={ICON_SIZE.md} />
+            </Button>
+            {fromDrawer ? account : drawer}
           </div>
+          <MoneyInput
+            autoFocus
+            id="amount"
+            label="Valor"
+            value={amount}
+            onChange={setAmount}
+          />
           <div className="space-y-1.5">
             <label htmlFor="reason" className="text-sm font-medium">
-              Motivo
+              Motivo (opcional)
             </label>
             <Textarea
               id="reason"
@@ -244,15 +273,11 @@ export function CashMovementDialog({
               value={reason}
               onChange={(event) => setReason(event.target.value)}
               placeholder={
-                sangria
+                fromDrawer
                   ? 'Ex.: acima do limite de dinheiro em gaveta'
                   : 'Ex.: reforço de troco, notas pequenas'
               }
             />
-            <p className="text-sm text-gray">
-              O motivo é obrigatório: é ele que explica a diferença quando o
-              caixa é conferido.
-            </p>
           </div>
         </DialogBody>
         <DialogFooter>
@@ -265,12 +290,11 @@ export function CashMovementDialog({
           </Button>
           <Button
             type="button"
-            variant={sangria ? 'error' : 'success'}
             isLoading={saving}
-            disabled={!amount || !reason.trim() || !accountId}
+            disabled={!amount || !accountId}
             onClick={save}
           >
-            {sangria ? 'Registrar sangria' : 'Registrar suprimento'}
+            Registrar transferência
           </Button>
         </DialogFooter>
       </DialogContent>

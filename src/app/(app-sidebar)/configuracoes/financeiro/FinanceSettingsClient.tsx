@@ -2,6 +2,7 @@
 
 // Components
 import { CreditLimit } from './limite-de-credito/CreditLimit'
+import { CashFrontSettings } from './frente-de-caixa/CashFrontSettings'
 import { CompanySettingsList } from '../components/CompanySettingsList'
 
 // Hooks
@@ -18,12 +19,13 @@ import {
   IconBuildingBank,
   IconCreditCardPay,
   IconCalendarDollar,
+  IconCashRegister,
 } from '@tabler/icons-react'
 
 const defaultPath = 'financeiro'
 
 export function FinanceSettingsClient() {
-  const { hasFinancialModule } = usePlanFeatures()
+  const { hasFinancialModule, hasFeature } = usePlanFeatures()
 
   const settings: CompanySettingsType[] = [
     {
@@ -74,6 +76,19 @@ export function FinanceSettingsClient() {
                   'Defina o padrão de limite de crédito para os clientes',
                 cta: <CreditLimit />,
                 permission: 'financial_settings:credit_limits:edit',
+              },
+            ]
+          : []),
+        // Saiu da tela do caixa (14/11/2026): configurar é do administrador
+        ...(hasFeature('pdv_screen')
+          ? [
+              {
+                title: 'Frente de caixa',
+                icon: IconCashRegister,
+                description:
+                  'Cadastre os caixas e defina a conferência do fechamento, a tolerância, o arredondamento e as contas de cada forma',
+                cta: <CashFrontSettings />,
+                permission: 'financial:pdv_settings:edit',
               },
             ]
           : []),

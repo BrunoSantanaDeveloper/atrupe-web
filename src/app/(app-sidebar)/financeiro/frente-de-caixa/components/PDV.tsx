@@ -32,7 +32,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import {
   OpenCashDialog,
   CloseCashDialog,
-  CashMovementDialog,
+  CashTransferDialog,
   ReverseSaleDialog,
   RejectSaleDialog,
   DiscardPickupDialog,
@@ -74,9 +74,8 @@ import {
   IconSettings,
   IconPrinter,
   IconArrowBackUp,
-  IconTrendingUp,
   IconPackage,
-  IconTrendingDown,
+  IconArrowsLeftRight,
   IconPackageExport,
   IconSortAscending,
   IconSortDescending,
@@ -254,8 +253,10 @@ export function PDV() {
               </PermissionGate>
             )
           }
-          // A engrenagem fica de fora da sessão: a frente (gaveta, contas do
-          // PIX e do cartão) é configurada antes de abrir o primeiro caixa
+          // A engrenagem só até o primeiro caixa: a frente (gaveta, contas do
+          // PIX e do cartão) é configurada antes de abrir. Depois a
+          // configuração fica em Configurações › Financeiro › Frente de caixa
+          // (14/11/2026); a API devolve a última sessão, aberta ou fechada
           secondaryCta={
             isLoading ? undefined : (
               <div className="flex items-center gap-2">
@@ -267,15 +268,17 @@ export function PDV() {
                     </Link>
                   </Button>
                 </PermissionGate>
-                <PermissionGate permissions={['financial:pdv_settings:edit']}>
-                  <ActionButton
-                    size="iconMd"
-                    variant="neutralOutline"
-                    tooltip="Configurar frente de caixa"
-                    Icon={IconSettings}
-                    onClick={() => setDialog('configurar')}
-                  />
-                </PermissionGate>
+                {!session && (
+                  <PermissionGate permissions={['financial:pdv_settings:edit']}>
+                    <ActionButton
+                      size="iconMd"
+                      variant="neutralOutline"
+                      tooltip="Configurar frente de caixa"
+                      Icon={IconSettings}
+                      onClick={() => setDialog('configurar')}
+                    />
+                  </PermissionGate>
+                )}
                 {/* Ordem da fila, com o mesmo botão do Fluxo financeiro */}
                 {session && aba === 'receber' && (
                   <ActionButton
@@ -298,27 +301,18 @@ export function PDV() {
                     }
                   />
                 )}
-                {/* O mesmo desenho de "Nova despesa" e "Nova receita" do
-                    Fluxo financeiro: o que sai em vermelho, o que entra em
-                    verde. Mas não é receita nem despesa: é dinheiro mudando
-                    de lugar, com origem e destino */}
+                {/* Transferência (PAD-1): dinheiro mudando de lugar entre a
+                    gaveta e uma conta, com origem e destino. Não é receita
+                    nem despesa */}
                 {canOperate && (
                   <PermissionGate permissions={['financial:pdv:edit']}>
                     <Button
                       type="button"
-                      variant="errorOutline"
-                      LeftIcon={IconTrendingDown}
-                      onClick={() => setDialog('sangria')}
+                      variant="neutralOutline"
+                      LeftIcon={IconArrowsLeftRight}
+                      onClick={() => setDialog('transferencia')}
                     >
-                      Sangria
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="successOutline"
-                      LeftIcon={IconTrendingUp}
-                      onClick={() => setDialog('suprimento')}
-                    >
-                      Suprimento
+                      Transferência
                     </Button>
                   </PermissionGate>
                 )}
@@ -825,9 +819,9 @@ export function PDV() {
           onDone={refresh}
           onOpenChange={() => setDialog('')}
         />
-        <CashMovementDialog
-          kind={dialog === 'sangria' ? 'WITHDRAWAL' : 'SUPPLY'}
-          open={dialog === 'sangria' || dialog === 'suprimento'}
+        <CashTransferDialog
+          drawerName={session?.name || 'Caixa'}
+          open={dialog === 'transferencia'}
           onDone={refresh}
           onOpenChange={() => setDialog('')}
         />

@@ -44,8 +44,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Origem de contato | Origen del contacto | Lead source | |
 | Série de venda | Serie de venta | Sales series | |
 | Frente de caixa | Punto de venta | Point of sale | |
-| Sangria | Retiro de caja | Cash withdrawal | |
-| Suprimento | Ingreso de caja | Cash deposit | |
+| Transferência (frente de caixa) | Transferencia | Transfer | Dinheiro entre a gaveta e uma conta da empresa. Substitui "sangria" e "suprimento", que não se usam mais (PAD-1, 14/11/2026). |
 | Pagamento antecipado / "Exigir pagamento antecipado" | Pago anticipado / "Exigir pago anticipado" | Prepayment / "Require prepayment" | Opção do cliente: a venda só vira ordem de serviço depois de paga (PA, 12/11/2026). |
 | Entrada (da condição de pagamento) | Anticipo | Down payment | |
 | Pendente (venda à espera do pagamento) | Pendiente | On hold | A aba "⚠️ Pendente" de Orçamentos (PA-4). Não confundir com a pendência da tarefa de produção. |

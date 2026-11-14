@@ -17546,5 +17546,33 @@
   "1eec2dd5a4": {
     "es": "Cobrar en la venta (el vendedor cobra al contado)",
     "en": "Charge at sale (the seller collects upfront)"
+  },
+  "8017082aea": {
+    "es": "Registre las cajas y defina la conferencia del cierre, la tolerancia, el redondeo y las cuentas de cada forma",
+    "en": "Register the cash registers and set the closing check, tolerance, rounding and the accounts for each method"
+  },
+  "ad17497afc": {
+    "es": "Transferencia registrada",
+    "en": "Transfer recorded"
+  },
+  "6f87d00486": {
+    "es": "Cajón · {drawerName}",
+    "en": "Drawer · {drawerName}"
+  },
+  "d8da0fdb86": {
+    "es": "Dinero que cambia de lugar entre el cajón y una cuenta de la empresa. No es ingreso ni gasto.",
+    "en": "Money moving between the drawer and a company account. It is neither income nor expense."
+  },
+  "757176f81b": {
+    "es": "Invertir el sentido",
+    "en": "Swap direction"
+  },
+  "6f8d314693": {
+    "es": "Motivo (opcional)",
+    "en": "Reason (optional)"
+  },
+  "3ad02492c8": {
+    "es": "Registrar transferencia",
+    "en": "Record transfer"
   }
 }

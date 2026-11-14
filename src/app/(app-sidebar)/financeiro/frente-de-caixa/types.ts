@@ -41,8 +41,9 @@ export type CashMovementKind = 'SALE' | 'WITHDRAWAL' | 'SUPPLY' | 'REVERSAL'
 
 export const cashMovementLabel: Record<CashMovementKind, string> = {
   SALE: 'Recebimento',
-  WITHDRAWAL: 'Sangria',
-  SUPPLY: 'Suprimento',
+  // Transferência (PAD-1): sai da gaveta para uma conta, ou entra nela
+  WITHDRAWAL: 'Transferência · saída',
+  SUPPLY: 'Transferência · entrada',
   REVERSAL: 'Estorno',
 }
 
