@@ -100,29 +100,36 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     .map((p: { profile: SellerProfileType }) => p.profile)
     .filter((p: SellerProfileType) => p.isActive)
 
-  useEffect(() => {
-    if (open) {
-      setSelectedProfileIds(rowData?.allowedProfiles?.map((p) => p.id) ?? [])
-    }
-  }, [open, rowData])
+  // Os valores atuais da série. O formulário é preenchido a cada abertura:
+  // antes ele se esvaziava ao fechar e, reaberta a mesma série depois de
+  // salvar, vinha em branco (teste do LITE, 14/11/2026)
+  const currentValues = (): FormType => ({
+    code: rowData?.code || '',
+    description: rowData?.description || '',
+    title: rowData?.title || '',
+    currentBudgetNumber: rowData?.currentBudgetNumber || 0,
+    proposalValidity: rowData?.proposalValidity || 0,
+    deliveryDeadline: rowData?.deliveryDeadline || 0,
+    billing: rowData?.billing?.value || '',
+    sendToProduction: rowData?.sendToProduction?.value || '',
+    productionStatus: rowData?.productionStatus?.value || '',
+    isDefault: rowData?.isDefault || false,
+  })
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
-    values: {
-      code: rowData?.code || '',
-      description: rowData?.description || '',
-      title: rowData?.title || '',
-      currentBudgetNumber: rowData?.currentBudgetNumber || 0,
-      proposalValidity: rowData?.proposalValidity || 0,
-      deliveryDeadline: rowData?.deliveryDeadline || 0,
-      billing: rowData?.billing?.value || '',
-      sendToProduction: rowData?.sendToProduction?.value || '',
-      productionStatus: rowData?.productionStatus?.value || '',
-      isDefault: rowData?.isDefault || false,
-    },
+    defaultValues: currentValues(),
   })
 
   const { handleSubmit, reset } = form
+
+  useEffect(() => {
+    if (open) {
+      reset(currentValues())
+      setSelectedProfileIds(rowData?.allowedProfiles?.map((p) => p.id) ?? [])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, rowData])
 
   const onSubmit = async (data: FormType) => {
     if (!isAdmin) {
@@ -145,7 +152,6 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
   const handleOpenChange = (openDialog: boolean) => {
     setOpen?.(openDialog ? 'edit' : '')
-    reset({})
   }
 
   const toggleProfile = (id: string) => {
