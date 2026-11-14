@@ -17538,5 +17538,13 @@
   "6523f3793e": {
     "es": "Agendar próximo contacto",
     "en": "Schedule next contact"
+  },
+  "eeec9dcea4": {
+    "es": "Facturar en el punto de venta (cobra la caja)",
+    "en": "Bill at the cash register (the cashier collects)"
+  },
+  "1eec2dd5a4": {
+    "es": "Cobrar en la venta (el vendedor cobra al contado)",
+    "en": "Charge at sale (the seller collects upfront)"
   }
 }

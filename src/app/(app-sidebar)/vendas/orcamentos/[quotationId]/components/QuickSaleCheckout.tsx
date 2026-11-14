@@ -1,13 +1,13 @@
 'use client'
 
-// O recebimento da venda cuja série fatura na frente de caixa, visto pelo
-// vendedor: o lugar das condições de pagamento.
+// O recebimento da venda cuja série fatura na frente de caixa ou cobra na
+// venda, visto pelo vendedor: o lugar das condições de pagamento.
 //
-// Nessa série o vendedor não monta condição de pagamento (FC-1). Ele cobra
-// na hora, à vista (dinheiro, PIX ou cartão), ou envia ao caixa, e quem
-// recebe é o caixa (VR-5, revista em 26/10/2026: vale para a venda rápida e
-// para o orçamento comum). Enviar é aprovar (FC-12), e a venda enviada trava
-// (FC-11).
+// Nessas séries o vendedor não monta condição de pagamento (FC-1). Uma série
+// é um ou outro (VR-10, 14/11/2026): "Faturar na frente de caixa" só envia
+// ao caixa, e quem recebe é o caixa; "Cobrar na venda" só cobra na hora, à
+// vista (dinheiro, PIX ou cartão). Vale para a venda rápida e para o
+// orçamento comum. Enviar é aprovar (FC-12), e a venda enviada trava (FC-11).
 //
 // Os dados vêm da API (Fase 7.3): a situação no caixa, o "Cobrar" e o
 // enviar ao caixa passam por `src/actions/cash-front.ts`.
@@ -123,13 +123,22 @@ export function useQuickSale(data: QuotationType) {
   })
 
   const settings = settingsRes?.success ? settingsRes.data : undefined
-  // O vendedor com "Somente enviar ao caixa" no perfil (FC-12.1) não cobra:
-  // a venda vai sempre para a frente de caixa
+  // A série decide o gesto, um ou outro (VR-10, 14/11/2026)
+  const billing = data?.paymentConditions?.billing
+  // O vendedor com "Somente enviar ao caixa" no perfil (FC-12.1) não cobra
   const onlySendToCash = !!data?.seller?.onlySendToCash
-  // Sem a frente de caixa no plano, só resta cobrar na hora: a venda enviada
-  // ficaria numa fila que ninguém atende
-  const canSend = hasFeature(FEATURES.FINANCIAL.PDV_SCREEN)
-  const canCharge = !onlySendToCash || !canSend
+  // Sem a frente de caixa no plano a venda enviada ficaria numa fila que
+  // ninguém atende
+  const hasCashFront = hasFeature(FEATURES.FINANCIAL.PDV_SCREEN)
+  const canSend = billing === 'ON_CHECKOUT' && hasCashFront
+  const canCharge = billing === 'ON_SALE' && !onlySendToCash
+  // Nenhum dos dois: a trava diz o porquê e o que fazer
+  const unavailable =
+    canSend || canCharge
+      ? null
+      : billing === 'ON_CHECKOUT'
+        ? 'A frente de caixa não está no seu plano, então esta venda não pode ser enviada ao caixa. Troque a série da venda por uma que cobra na venda ou fatura no pedido.'
+        : 'Seu perfil só envia a venda ao caixa, e esta série cobra na venda. Troque a série da venda por uma que fatura na frente de caixa.'
 
   // Cliente bloqueado no limite de crédito: nem cobra nem envia ao caixa
   // (decisão de 24/10/2026)
@@ -149,6 +158,7 @@ export function useQuickSale(data: QuotationType) {
   return {
     canSend,
     canCharge,
+    unavailable,
     // O cliente padrão da configuração: a venda com ele não tem "cliente
     // informado", então não há proposta a mostrar (26/10/2026)
     defaultClientId: settings?.clientId || null,
@@ -335,14 +345,18 @@ export function QuickSaleCheckoutButton({
       },
     })
 
-  // Os dois gestos da série da frente de caixa (VR-5): cobrar à vista agora
-  // ou enviar ao caixa. O perfil e o plano podem deixar só um deles
+  // O gesto da série (VR-10): enviar ao caixa ou cobrar à vista agora
   return (
     <PermissionGate permissions={['sale:order:create']}>
       {sale.blocked && (
         <p className="mb-2 text-sm text-error-600">
           Cliente bloqueado no cadastro: esta venda não pode ser cobrada nem
           enviada ao caixa.
+        </p>
+      )}
+      {sale.unavailable && (
+        <p className="mb-2 max-w-md text-sm text-warning-700">
+          {sale.unavailable}
         </p>
       )}
       <div className="flex flex-wrap gap-3">

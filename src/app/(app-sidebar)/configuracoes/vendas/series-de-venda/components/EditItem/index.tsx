@@ -55,7 +55,12 @@ export const billingOptions = [
   },
   {
     value: 'ON_CHECKOUT',
-    label: 'Faturar na frente de caixa ',
+    label: 'Faturar na frente de caixa (o caixa recebe)',
+  },
+  // Separado da frente de caixa (VR-10, 14/11/2026): uma série é um ou outro
+  {
+    value: 'ON_SALE',
+    label: 'Cobrar na venda (o vendedor recebe à vista)',
   },
   {
     value: 'NO_INVOICE',
@@ -166,7 +171,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
       option.value === rowData?.billing?.value ||
       (option.value === 'ON_CHECKOUT'
         ? canBillOnCheckout()
-        : option.value === 'ON_DELIVERY'
+        : option.value === 'ON_DELIVERY' || option.value === 'ON_SALE'
           ? canBillOnDeliveryAndCheckout()
           : true),
   )

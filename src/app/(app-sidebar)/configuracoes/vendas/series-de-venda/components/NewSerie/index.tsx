@@ -106,7 +106,7 @@ export function NewSerieDialog({ open, setOpen }: Props) {
   const filteredBillingOptions = billingOptions.filter((o) =>
     o.value === 'ON_CHECKOUT'
       ? canBillOnCheckout()
-      : o.value === 'ON_DELIVERY'
+      : o.value === 'ON_DELIVERY' || o.value === 'ON_SALE'
         ? canBillOnDeliveryAndCheckout()
         : true,
   )

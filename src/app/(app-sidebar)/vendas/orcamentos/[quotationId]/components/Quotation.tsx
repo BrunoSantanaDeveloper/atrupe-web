@@ -129,7 +129,10 @@ export function Quotation({ id }: Props) {
   // O recebimento é da série (VR-5, 26/10/2026): a série que fatura na frente
   // de caixa troca as condições de pagamento pelo Cobrar / Enviar ao caixa,
   // na venda rápida ou no orçamento comum
-  if (data.paymentConditions?.billing === 'ON_CHECKOUT') {
+  if (
+    data.paymentConditions?.billing === 'ON_CHECKOUT' ||
+    data.paymentConditions?.billing === 'ON_SALE'
+  ) {
     return <QuickSaleQuotation data={data} previousUrl={previousUrl} />
   }
 
