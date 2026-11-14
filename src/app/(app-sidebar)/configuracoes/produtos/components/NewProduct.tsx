@@ -52,6 +52,7 @@ import { InactivateProductDialog } from './InactivateProductDialog'
 import { OutsourcedProductFields } from './OutsourcedProductFields'
 import { NewGroupInline } from './NewGroupInline'
 import { ProductPriceTiers } from './ProductPriceTiers'
+import { ProductionStagesSection } from './ProductionStagesSection'
 import {
   saveProductVariations,
   setPriceTiers,
@@ -723,99 +724,6 @@ function NewProductModal({
                                 </div>
                               </div>
                             )}
-
-                          {/* Variações do LITE em diante (PV-6, 05/10/2026;
-                              plano revisto em 27/10/2026). No PRO elas vivem
-                              na aba Composição */}
-                          {showVariations && (
-                            <div className="w-full rounded-xl border border-gray-200 p-4">
-                              <ProductVariations
-                                productId={
-                                  editMode ? (productId ?? null) : null
-                                }
-                                unitKind={watch('items.0.unitKind')}
-                                onLocalChange={setPendingVariations}
-                                onCountChange={setVariationCount}
-                                basePriceCents={Math.round(
-                                  convertRawToUnitCost(
-                                    watch('items.0.unitKind') || 'UNITY',
-                                    Number(watch('items.0.unitCost')) || 0,
-                                  ),
-                                )}
-                              />
-                            </div>
-                          )}
-                          {/* Impressão da gráfica rápida (12/11/2026):
-                              sangria e folhas de acerto, com Papéis no plano */}
-                          {hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER) &&
-                            (editMode && productId ? (
-                              <ProductPrintSettings productId={productId} />
-                            ) : (
-                              <p className="w-full text-xs text-gray">
-                                Salve o produto para configurar a impressão:
-                                sangria e folhas de acerto.
-                              </p>
-                            ))}
-                          {/* Quantidade mínima (27/10/2026), na unidade do
-                              produto, do LITE em diante: abaixo dela o item é
-                              cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).
-                              No PRO é também a base mínima dos materiais */}
-                          {showMinQuantity && (
-                            <div className="w-full space-y-4 rounded-xl border border-gray-200 p-4">
-                              <div>
-                                <h4 className="type-card-title">
-                                  Quantidade mínima
-                                </h4>
-                                <p className="text-sm text-gray">
-                                  <MinimumExample
-                                    unitKind={
-                                      (watch('items.0.unitKind') as UnitKind) ||
-                                      'UNITY'
-                                    }
-                                  />
-                                </p>
-                              </div>
-                              <FormInput
-                                name="minQuantity"
-                                label={`Quantidade mínima (${
-                                  unitSymbol[
-                                    (watch('items.0.unitKind') as UnitKind) ||
-                                      'UNITY'
-                                  ] || 'un'
-                                })`}
-                                type="number"
-                                step="0.001"
-                                width="flex-[1_0_160px]"
-                              />
-                            </div>
-                          )}
-                          {/* Faixas de quantidade do LITE em diante (FQ-1;
-                              decisão do produto, 26/10/2026). No PRO elas vivem
-                              na aba Composição, com custo e margem por faixa */}
-                          {/* Com variações, os valores por quantidade são de
-                              cada variação (correção do LITE, 11/11/2026): a
-                              tabela do produto só aparece se já tiver faixas,
-                              avisando que não vale, para serem apagadas */}
-                          {showVariations && (
-                            <ProductPriceTiers
-                              className="rounded-xl border border-gray-200 p-4"
-                              productId={editMode ? (productId ?? null) : null}
-                              unitKind={watch('items.0.unitKind')}
-                              basePriceCents={Math.round(
-                                convertRawToUnitCost(
-                                  watch('items.0.unitKind') || 'UNITY',
-                                  Number(watch('items.0.unitCost')) || 0,
-                                ),
-                              )}
-                              onLocalChange={setPendingTiers}
-                              hideWhenEmpty={variationCount > 0}
-                              notice={
-                                variationCount > 0
-                                  ? 'Com variações, vale a tabela de cada variação: esta não entra no orçamento. Apague as faixas daqui e cadastre em cada variação.'
-                                  : undefined
-                              }
-                            />
-                          )}
                         </>
                       )}
                       {items?.fields?.length > 1 &&
@@ -934,8 +842,122 @@ function NewProductModal({
                         </div>
                       </div>
                       <OutsourcedProductFields />
+                      {/* Configurações de venda (14/11/2026): o produto é
+                          composto acima (dados e unidades de venda); aqui
+                          ficam, separadas, as regras de venda dele */}
+                      {items?.fields?.length === 1 &&
+                        (showVariations ||
+                          showMinQuantity ||
+                          hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER)) && (
+                          <section className="mt-4 flex w-full flex-col gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                            <div>
+                              <h3 className="type-card-title">
+                                Configurações de venda
+                              </h3>
+                              <p className="text-sm text-gray">
+                                Como este produto é vendido: variações,
+                                quantidade mínima e preço por quantidade.
+                              </p>
+                            </div>
+                            {/* Variações do LITE em diante (PV-6, 05/10/2026;
+                              plano revisto em 27/10/2026). No PRO elas vivem
+                              na aba Composição */}
+                            {showVariations && (
+                              <div className="w-full rounded-xl border border-gray-200 bg-white p-4">
+                                <ProductVariations
+                                  productId={
+                                    editMode ? (productId ?? null) : null
+                                  }
+                                  unitKind={watch('items.0.unitKind')}
+                                  onLocalChange={setPendingVariations}
+                                  onCountChange={setVariationCount}
+                                  basePriceCents={Math.round(
+                                    convertRawToUnitCost(
+                                      watch('items.0.unitKind') || 'UNITY',
+                                      Number(watch('items.0.unitCost')) || 0,
+                                    ),
+                                  )}
+                                />
+                              </div>
+                            )}
+                            {/* Impressão da gráfica rápida (12/11/2026):
+                              sangria e folhas de acerto, com Papéis no plano */}
+                            {hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER) &&
+                              (editMode && productId ? (
+                                <ProductPrintSettings productId={productId} />
+                              ) : (
+                                <p className="w-full text-xs text-gray">
+                                  Salve o produto para configurar a impressão:
+                                  sangria e folhas de acerto.
+                                </p>
+                              ))}
+                            {/* Quantidade mínima (27/10/2026), na unidade do
+                              produto, do LITE em diante: abaixo dela o item é
+                              cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).
+                              No PRO é também a base mínima dos materiais */}
+                            {showMinQuantity && (
+                              <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
+                                <div>
+                                  <h4 className="type-card-title">
+                                    Quantidade mínima
+                                  </h4>
+                                  <p className="text-sm text-gray">
+                                    <MinimumExample
+                                      unitKind={
+                                        (watch(
+                                          'items.0.unitKind',
+                                        ) as UnitKind) || 'UNITY'
+                                      }
+                                    />
+                                  </p>
+                                </div>
+                                <FormInput
+                                  name="minQuantity"
+                                  label={`Quantidade mínima (${
+                                    unitSymbol[
+                                      (watch('items.0.unitKind') as UnitKind) ||
+                                        'UNITY'
+                                    ] || 'un'
+                                  })`}
+                                  type="number"
+                                  step="0.001"
+                                  width="flex-[1_0_160px]"
+                                />
+                              </div>
+                            )}
+                            {/* Faixas de quantidade do LITE em diante (FQ-1;
+                              decisão do produto, 26/10/2026). No PRO elas vivem
+                              na aba Composição, com custo e margem por faixa */}
+                            {/* Com variações, os valores por quantidade são de
+                              cada variação (correção do LITE, 11/11/2026): a
+                              tabela do produto só aparece se já tiver faixas,
+                              avisando que não vale, para serem apagadas */}
+                            {showVariations && (
+                              <ProductPriceTiers
+                                className="rounded-xl border border-gray-200 bg-white p-4"
+                                productId={
+                                  editMode ? (productId ?? null) : null
+                                }
+                                unitKind={watch('items.0.unitKind')}
+                                basePriceCents={Math.round(
+                                  convertRawToUnitCost(
+                                    watch('items.0.unitKind') || 'UNITY',
+                                    Number(watch('items.0.unitCost')) || 0,
+                                  ),
+                                )}
+                                onLocalChange={setPendingTiers}
+                                hideWhenEmpty={variationCount > 0}
+                                notice={
+                                  variationCount > 0
+                                    ? 'Com variações, vale a tabela de cada variação: esta não entra no orçamento. Apague as faixas daqui e cadastre em cada variação.'
+                                    : undefined
+                                }
+                              />
+                            )}
+                          </section>
+                        )}
                       {canShowProductionStages && !showCompositionTab && (
-                        <ProductionStages />
+                        <ProductionStagesSection />
                       )}
                     </form>
                   </Form>

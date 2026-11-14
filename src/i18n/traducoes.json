@@ -17574,5 +17574,21 @@
   "3ad02492c8": {
     "es": "Registrar transferencia",
     "en": "Record transfer"
+  },
+  "2fbe478152": {
+    "es": "Configuración de venta",
+    "en": "Sales settings"
+  },
+  "ae866c8bb5": {
+    "es": "Cómo se vende este producto: variaciones, cantidad mínima y precio por cantidad.",
+    "en": "How this product is sold: variations, minimum quantity and quantity pricing."
+  },
+  "31218d19ae": {
+    "es": "{active} de {valor} etapas usadas por este producto",
+    "en": "{active} of {valor} stages used by this product"
+  },
+  "efdf968116": {
+    "es": "Los sectores por los que pasa el producto en la producción",
+    "en": "The departments the product goes through in production"
   }
 }

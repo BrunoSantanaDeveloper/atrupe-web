@@ -77,7 +77,7 @@ export function ProductPrintSettings({ productId }: { productId: string }) {
   }
 
   return (
-    <div className="w-full space-y-4 rounded-xl border border-gray-200 p-4">
+    <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
       <div>
         <h4 className="type-card-title">Impressão</h4>
         <p className="text-sm text-gray">

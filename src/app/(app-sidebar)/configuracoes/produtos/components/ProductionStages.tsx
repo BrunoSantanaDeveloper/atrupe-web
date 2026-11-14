@@ -8,8 +8,14 @@ import { Reorder } from 'motion/react'
 import { ProductionStageItem } from './ProductionStage/ProductionStageItem'
 
 import { useSector } from '@/hooks/queries/useSector'
+import { cn } from '@/lib/utils'
 
-export function ProductionStages() {
+// Sem título dentro da sanfona (ProductionStagesSection), que já o mostra
+export function ProductionStages({
+  hideTitle = false,
+}: {
+  hideTitle?: boolean
+}) {
   const { control } = useFormContext<NewProductsFormType>()
   const [draggingIndex, setDraggingIndex] = useState<null | number>(null)
   const hasInitialized = useRef(false)
@@ -93,10 +99,17 @@ export function ProductionStages() {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full border-t border-gray-300 select-none">
-      <p className="font-semibold text-base text-gray-700 my-4">
-        Etapas de produção
-      </p>
+    <div
+      className={cn(
+        'flex flex-col gap-4 w-full select-none',
+        !hideTitle && 'border-t border-gray-300',
+      )}
+    >
+      {!hideTitle && (
+        <p className="font-semibold text-base text-gray-700 my-4">
+          Etapas de produção
+        </p>
+      )}
 
       <Table>
         <TableHeader>
