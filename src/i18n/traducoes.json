@@ -17534,5 +17534,9 @@
   "587de4b24c": {
     "es": "Pendiente de pago",
     "en": "Awaiting payment"
+  },
+  "6523f3793e": {
+    "es": "Agendar próximo contacto",
+    "en": "Schedule next contact"
   }
 }

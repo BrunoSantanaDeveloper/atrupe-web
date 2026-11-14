@@ -50,6 +50,7 @@ import { nextContactLabel, nextContactState } from '@/lib/nextContact'
 import { contactOutcomeLabel } from '@/types/sales/followUp'
 import { focusParam } from './AwaitingFocus'
 import { ContactDialog } from '../FollowUp/ContactDialog'
+import { NextContactDialog } from '../FollowUp/NextContactDialog'
 import { WhatsAppButton } from '../FollowUp/WhatsAppButton'
 
 // Third-party
@@ -74,6 +75,7 @@ import {
   IconHistory,
   IconTrash,
   IconMessageCircle,
+  IconCalendarPlus,
 } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
@@ -117,6 +119,8 @@ export function QuotationsData({
   const followUp = hasFeature(FEATURES.SALES.SALES_FOLLOW_UP)
   const isResumeTab = isAwaitingTab && followUp
   const [contacting, setContacting] = useState<QuotationType | null>(null)
+  // Agendar o próximo contato direto da lista, sem abrir o orçamento
+  const [scheduling, setScheduling] = useState<QuotationType | null>(null)
   const { hasAllPermissions } = usePermissions()
   const canViewValues = hasAllPermissions(['values:values:view'])
 
@@ -451,6 +455,17 @@ export function QuotationsData({
                                             ]}
                                           >
                                             <ActionButton
+                                              Icon={IconCalendarPlus}
+                                              tooltip={
+                                                quotation?.nextContactAt
+                                                  ? 'Alterar próximo contato'
+                                                  : 'Agendar próximo contato'
+                                              }
+                                              onClick={() =>
+                                                setScheduling(quotation)
+                                              }
+                                            />
+                                            <ActionButton
                                               Icon={IconMessageCircle}
                                               tooltip="Registrar contato"
                                               onClick={() =>
@@ -545,6 +560,11 @@ export function QuotationsData({
                   )}
                 </TableBody>
               </Table>
+              <NextContactDialog
+                open={followUp && !!scheduling}
+                onOpenChange={(open) => !open && setScheduling(null)}
+                quotation={scheduling}
+              />
               <ContactDialog
                 open={followUp && !!contacting}
                 onOpenChange={(open) => !open && setContacting(null)}
