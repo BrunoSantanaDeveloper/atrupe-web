@@ -59,6 +59,17 @@ export interface NfePrepareItem {
   totalValue: number
   isService: boolean
   needsConfiguration: boolean
+  /** O.S. de origem do item na NF-e consolidada. */
+  sourceOrderId?: string
+  sourceOrderCode?: string
+  /**
+   * A linha da O.S. contada em peças e, quando tem medida, medida (com a
+   * unidade dela). O diálogo do item usa a razão entre as duas para converter
+   * a quantidade quando a unidade muda.
+   */
+  pieceQuantity?: number
+  measureQuantity?: number
+  measureUnit?: string
 }
 
 export interface NfePrepareTransportadora {
@@ -149,6 +160,16 @@ export interface NfePrepareResponse {
   // Draft fields
   draftId?: string
   isDraft?: boolean
+  /**
+   * Os itens do rascunho foram editados na tela (e a O.S. não mudou depois):
+   * não são os da O.S.
+   */
+  itensEditados?: boolean
+  /**
+   * Impressão da O.S. de onde saíram os itens. Volta no PATCH dos itens, para
+   * o backend saber se a O.S. mudou depois que a tela os recebeu.
+   */
+  origemItens?: string
   // Client reference (used for "update client" feature in recipient dialog)
   clientId?: string
   selectedAddressId?: string | null

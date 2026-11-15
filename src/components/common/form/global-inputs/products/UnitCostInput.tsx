@@ -104,21 +104,121 @@ export function convertRawToUnitCost(
   }
 }
 
+/** "Unidade comercial" no formato de uCom: "m²" vira "M2". */
+function normalizarUnidade(unidade?: string | null): string {
+  return (unidade || '')
+    .split('²')
+    .join('2')
+    .replace(/[^A-Za-z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 6)
+}
+
 /**
- * Preço de venda do produto em REAIS, por unidade comercial.
- *
- * `salePrice` fica em centavos e, nas unidades medidas, por unidade pequena
- * (R$/mm², R$/mg...). Quem lê o campo cru mostra cem vezes o valor: um banner
- * de R$ 42,00 aparecia como R$ 4.200,00 na busca de produtos da nota fiscal, e
- * entrava na nota com esse valor. É a mesma conta que a tela de produtos faz
- * para exibir a coluna de preço.
+ * Grandeza da "Unidade comercial" do cadastro fiscal: M2 é área, M é
+ * comprimento… O que não é unidade de medida (UN, PC, CX, KIT…) é peça.
+ * Contraparte de `kindFromUnitCode` no backend
+ * (atrupe-back/src/core/fiscal/utils/commercial-quantity.util.ts).
  */
-export function salePriceToReais(product: {
+export function unitKindFromCommercialUnit(unidade?: string | null): string {
+  switch (normalizarUnidade(unidade)) {
+    case 'M2':
+    case 'MT2':
+      return 'AREA'
+    case 'M':
+    case 'MT':
+    case 'ML':
+      return 'LENGTH'
+    case 'L':
+    case 'LT':
+      return 'CAPACITY'
+    case 'KG':
+      return 'WEIGHT'
+    case 'KM':
+      return 'DISTANCE'
+    case 'H':
+    case 'HR':
+    case 'HH':
+    case 'HORA':
+      return 'DURATION'
+    // Medidas que a composição não guarda nessa escala (m³, cm, g…): não há
+    // conversão, e usá-las como rótulo de peça faria 4 peças saírem "4 M3".
+    case 'M3':
+    case 'CM':
+    case 'CM2':
+    case 'MM':
+    case 'G':
+    case 'MG':
+    case 'TON':
+      return 'OTHER'
+    default:
+      return 'UNITY'
+  }
+}
+
+const UNIDADE_DA_MEDIDA: Record<string, string> = {
+  AREA: 'M2',
+  LENGTH: 'M',
+  CAPACITY: 'L',
+  WEIGHT: 'KG',
+  DISTANCE: 'KM',
+  DURATION: 'H',
+}
+
+/**
+ * Valor unitário (em REAIS) e unidade com que um produto do catálogo entra
+ * na nota fiscal.
+ *
+ * Nos itens do produto, `unitCost` é a taxa por unidade bruta (centavos por
+ * mm², por mg…) e `salePrice` é o TOTAL do item em centavos: numa área, o
+ * preço da peça nas medidas padrão, e nulo quando não há medida padrão. A
+ * busca da nota lia `salePrice` como taxa e multiplicava o preço da peça por
+ * um milhão — ou dava R$ 0,00 sem medida. A tela de produtos já usava a taxa.
+ *
+ * A nota segue a "Unidade comercial" do cadastro, como no backend:
+ * - unidade da mesma grandeza (M2 numa área): a taxa, em R$/m²;
+ * - peça (UN, PC…): o preço da peça;
+ * - peça sem preço de peça (área sem medida padrão): a taxa, na unidade da
+ *   medida, para o usuário informar a medida vendida.
+ */
+export function precoDoProdutoNaNota(product: {
   salePrice?: number | null
-  items?: { unitKind?: string | null }[] | null
-}): number {
-  const unitKind = product.items?.[0]?.unitKind || 'UNITY'
-  return convertRawToUnitCost(unitKind, product.salePrice || 0) / 100
+  items?:
+    | {
+        unitKind?: string | null
+        unitCost?: number | null
+        salePrice?: number | null
+      }[]
+    | null
+  fiscalData?: { commercialUnit?: string | null } | null
+}): { valor: number; unidade: string } {
+  const itens = product.items || []
+  const composicao = itens.length === 1 ? itens[0] : null
+  const tipo = composicao?.unitKind || 'UNITY'
+  const cadastrada = normalizarUnidade(product.fiscalData?.commercialUnit)
+  const unidadeDaPeca =
+    cadastrada && unitKindFromCommercialUnit(cadastrada) === 'UNITY'
+      ? cadastrada
+      : 'UN'
+  const taxa = () => convertRawToUnitCost(tipo, composicao?.unitCost || 0) / 100
+
+  if (tipo === 'UNITY') {
+    // Produto por unidade, ou composto: o preço é o total dos itens.
+    const total =
+      product.salePrice ??
+      itens.reduce((soma, item) => soma + (item.salePrice || 0), 0)
+    return { valor: (total || 0) / 100, unidade: unidadeDaPeca }
+  }
+
+  if (unitKindFromCommercialUnit(cadastrada) === tipo) {
+    return { valor: taxa(), unidade: UNIDADE_DA_MEDIDA[tipo] }
+  }
+
+  if (composicao?.salePrice) {
+    return { valor: composicao.salePrice / 100, unidade: unidadeDaPeca }
+  }
+
+  return { valor: taxa(), unidade: UNIDADE_DA_MEDIDA[tipo] || unidadeDaPeca }
 }
 
 // Função para calcular a quantidade total baseada na unidade (usando valores brutos)

@@ -65,6 +65,7 @@ import {
 
 // Actions
 import { createItemNew, getItem } from '@/actions/_cruds'
+import { totaisDosItensNaNota } from '@/lib/nota-fiscal-valores'
 
 // Components - shared
 import { CustomButton } from '@/components/common/CustomButton'
@@ -320,14 +321,10 @@ export function StandaloneNfeForm() {
   const computedTotais = data
     ? (() => {
         const productItems = data.items.filter((item) => !item.isService)
-        const valorProdutos = productItems.reduce(
-          (sum, item) => sum + item.unitValue * item.quantity,
-          0,
-        )
-        const valorDesconto = productItems.reduce(
-          (sum, item) => sum + item.discount,
-          0,
-        )
+        // Itens arredondados como vão ao XML: a soma crua podia diferir um
+        // centavo do vNF.
+        const { valorProdutos, valorDesconto } =
+          totaisDosItensNaNota(productItems)
         const valorFrete = productItems.reduce(
           (sum, item) => sum + item.freight,
           0,

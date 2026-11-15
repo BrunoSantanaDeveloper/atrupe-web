@@ -23,7 +23,7 @@ import { IconPlus, IconLoader2, IconPackage } from '@tabler/icons-react'
 
 // Actions
 import { getData } from '@/actions/_cruds'
-import { salePriceToReais } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import { precoDoProdutoNaNota } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Types
 import type { NfePrepareItem } from '@/types/fiscal/nfe-prepare'
@@ -38,6 +38,7 @@ interface ProductFiscalData {
   icmsCst?: string
   pisCst?: string
   cofinsCst?: string
+  commercialUnit?: string | null
 }
 
 interface ProductSearchResult {
@@ -45,9 +46,17 @@ interface ProductSearchResult {
   name: string
   code?: string
   salePrice: number
-  /** Composições: a primeira diz a unidade em que `salePrice` foi gravado. */
-  items?: { unitKind?: string | null }[] | null
-  unitOfMeasureCode?: string
+  /**
+   * Composições: `unitCost` é a taxa por unidade bruta e `salePrice` o total
+   * do item (ver `precoDoProdutoNaNota`).
+   */
+  items?:
+    | {
+        unitKind?: string | null
+        unitCost?: number | null
+        salePrice?: number | null
+      }[]
+    | null
   fiscalData?: ProductFiscalData | null
 }
 
@@ -135,6 +144,9 @@ export function ProductSelector({
 
   const handleSelect = (product: ProductSearchResult) => {
     const fiscal = product.fiscalData
+    // Valor e unidade pela "Unidade comercial" do cadastro: R$/m² com M2,
+    // preço da peça com UN.
+    const preco = precoDoProdutoNaNota(product)
 
     const newItem: NfePrepareItem = {
       itemNumber: nextItemNumber,
@@ -147,16 +159,16 @@ export function ProductSelector({
       cstIpi: '',
       cstPis: fiscal?.pisCst || '',
       cstCofins: fiscal?.cofinsCst || '',
-      unit: product.unitOfMeasureCode || 'UN',
-      uCom: product.unitOfMeasureCode || 'UN',
+      unit: preco.unidade,
+      uCom: preco.unidade,
       ean: '',
       ceantrib: '',
       quantity: 1,
-      unitValue: salePriceToReais(product),
+      unitValue: preco.valor,
       discount: 0,
       freight: 0,
       insurance: 0,
-      totalValue: salePriceToReais(product),
+      totalValue: preco.valor,
       isService: false,
       needsConfiguration: !fiscal?.ncm,
     }
@@ -227,13 +239,16 @@ export function ProductSelector({
                       </span>
                       <div className="flex items-center gap-2 text-xs text-gray-400">
                         {product.code && <span>CÓD: {product.code}</span>}
-                        {product.salePrice > 0 && (
+                        {precoDoProdutoNaNota(product).valor > 0 && (
                           <>
                             {product.code && (
                               <span className="text-gray-300">·</span>
                             )}
                             <span className="text-gray-600 font-medium">
-                              {formatCurrency(salePriceToReais(product))}
+                              {formatCurrency(
+                                precoDoProdutoNaNota(product).valor,
+                              )}{' '}
+                              / {precoDoProdutoNaNota(product).unidade}
                             </span>
                           </>
                         )}

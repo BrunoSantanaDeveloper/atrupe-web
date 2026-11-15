@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -70,6 +70,7 @@ import {
 
 // Actions
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
+import { totaisDosItensNaNota } from '@/lib/nota-fiscal-valores'
 
 // Types
 import type {
@@ -80,6 +81,44 @@ import type {
 } from '@/types/fiscal/nfe-prepare'
 import type { NfePreview } from '@/types/fiscal/nfe-preview'
 import type { ClientData } from '../../avulsa/components/ClientSelect'
+
+/**
+ * Item no formato que o PATCH do rascunho aceita (NfeDraftItemDto). A API
+ * recusa campo que não conhece, e o CFOP vai como número, como na emissão.
+ */
+function itemParaRascunho(item: NfePrepareItem) {
+  const cfop = Number(String(item.cfop ?? '').replace(/\D/g, ''))
+  return {
+    itemNumber: item.itemNumber,
+    productId: item.productId,
+    productCode: item.productCode || undefined,
+    description: item.description,
+    ncm: item.ncm,
+    cfop: Number.isInteger(cfop) && cfop > 0 ? cfop : undefined,
+    cstIcms: item.cstIcms,
+    cstIpi: item.cstIpi,
+    cstPis: item.cstPis,
+    cstCofins: item.cstCofins,
+    unit: item.unit,
+    uCom: item.uCom,
+    ean: item.ean,
+    ceantrib: item.ceantrib,
+    quantity: item.quantity,
+    unitValue: item.unitValue,
+    discount: item.discount,
+    freight: item.freight,
+    insurance: item.insurance,
+    totalValue: item.totalValue,
+    isService: !!item.isService,
+    needsConfiguration: !!item.needsConfiguration,
+    sourceOrderId: item.sourceOrderId,
+    sourceOrderCode: item.sourceOrderCode,
+    // Para o diálogo ainda converter a unidade depois de reabrir a nota.
+    pieceQuantity: item.pieceQuantity,
+    measureQuantity: item.measureQuantity,
+    measureUnit: item.measureUnit,
+  }
+}
 
 interface Props {
   id?: string
@@ -102,6 +141,16 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
   const [isClientChangeOpen, setIsClientChangeOpen] = useState(false)
   const [correctionDialogOpen, setCorrectionDialogOpen] = useState(false)
+  // Gravação dos itens no rascunho (ver salvarItensNoRascunho): só a lista
+  // mais recente espera, e vai uma gravação por vez.
+  const itensPendentes = useRef<{
+    draftId: string
+    origemItens?: string
+    items: NfePrepareItem[]
+  } | null>(null)
+  const gravandoItens = useRef(false)
+  // A linha deixou de ser rascunho (emissão tentada): não adianta gravar.
+  const rascunhoFechado = useRef(false)
   const isConsolidated = Boolean(orderIds?.length)
 
   // Fetch data on mount - create or get draft
@@ -143,6 +192,8 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
       setOriginalItems(
         preparedData.items.map((item: NfePrepareItem) => ({ ...item })),
       )
+      // Rascunho recarregado: volta a gravar as edições.
+      rascunhoFechado.current = false
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao carregar dados'
@@ -161,14 +212,10 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
   const computedTotais = data
     ? (() => {
         const productItems = data.items.filter((item) => !item.isService)
-        const valorProdutos = productItems.reduce(
-          (sum, item) => sum + item.unitValue * item.quantity,
-          0,
-        )
-        const valorDesconto = productItems.reduce(
-          (sum, item) => sum + item.discount,
-          0,
-        )
+        // Itens arredondados como vão ao XML: a soma crua podia diferir um
+        // centavo do vNF.
+        const { valorProdutos, valorDesconto } =
+          totaisDosItensNaNota(productItems)
         const valorFrete = productItems.reduce(
           (sum, item) => sum + item.freight,
           0,
@@ -190,21 +237,24 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
       })()
     : null
 
-  // Check if any item value was manually edited vs original
+  // Check if any item value was manually edited vs original. Edição gravada
+  // no rascunho volta marcada pelo backend (`itensEditados`): sem isso o aviso
+  // sumia ao reabrir a nota, com os valores ainda diferentes dos da O.S.
   const valuesModified =
-    originalItems != null &&
-    data != null &&
-    data.items.some((item) => {
-      const orig = originalItems.find((o) => o.itemNumber === item.itemNumber)
-      if (!orig) return false
-      return (
-        item.unitValue !== orig.unitValue ||
-        item.quantity !== orig.quantity ||
-        item.discount !== orig.discount ||
-        item.freight !== orig.freight ||
-        item.insurance !== orig.insurance
-      )
-    })
+    data?.itensEditados === true ||
+    (originalItems != null &&
+      data != null &&
+      data.items.some((item) => {
+        const orig = originalItems.find((o) => o.itemNumber === item.itemNumber)
+        if (!orig) return false
+        return (
+          item.unitValue !== orig.unitValue ||
+          item.quantity !== orig.quantity ||
+          item.discount !== orig.discount ||
+          item.freight !== orig.freight ||
+          item.insurance !== orig.insurance
+        )
+      }))
 
   /**
    * Pré-checagens que valem tanto para emitir quanto para pré-visualizar.
@@ -605,13 +655,98 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     })
   }
 
+  /**
+   * Grava no rascunho a lista de itens que estiver esperando, uma gravação
+   * por vez. Edições seguidas viram uma gravação só (cada uma leva a lista
+   * inteira), e uma falha não impede as próximas.
+   */
+  const gravarItensPendentes = async () => {
+    if (gravandoItens.current) return
+    gravandoItens.current = true
+    try {
+      while (itensPendentes.current) {
+        const { draftId, origemItens, items } = itensPendentes.current
+        itensPendentes.current = null
+        try {
+          const result = await updateItemNew({
+            route: `/fiscal/nfe/draft/${draftId}`,
+            data: {
+              items: items.map(itemParaRascunho),
+              ...(origemItens ? { origemItens } : {}),
+            },
+          })
+          if (result.success) continue
+          if (result.code === 404) {
+            // A linha deixou de ser rascunho: uma emissão foi tentada e
+            // falhou. A edição vale para a próxima tentativa nesta tela.
+            rascunhoFechado.current = true
+            itensPendentes.current = null
+            toast.info(
+              'Esta nota já passou por uma tentativa de emissão: as alterações valem para emitir daqui, mas não ficam guardadas se você sair da tela.',
+            )
+            return
+          }
+          toast.error(
+            result.message ||
+              'Não foi possível guardar os itens no rascunho da nota.',
+          )
+        } catch {
+          toast.error('Não foi possível guardar os itens no rascunho da nota.')
+        }
+      }
+    } finally {
+      gravandoItens.current = false
+    }
+  }
+
+  /**
+   * Grava os itens no rascunho. As edições ficavam só na tela: reabrir a nota
+   * trazia de volta os valores de antes ("altera e volta para o valor
+   * errado"). O backend guarda os itens até a O.S. mudar; aí vale a O.S. A
+   * impressão da O.S. que veio com os itens volta junto: com ela, uma aba
+   * aberta antes de a O.S. ser corrigida não faz a edição velha valer.
+   */
+  const salvarItensNoRascunho = (items: NfePrepareItem[]) => {
+    const draftId = data?.draftId
+    if (!draftId || rascunhoFechado.current) return
+
+    const invalido = items.find(
+      (item) =>
+        !(item.quantity >= 0.001) ||
+        !(item.unitValue >= 0) ||
+        !((item.discount ?? 0) >= 0),
+    )
+    if (invalido) {
+      toast.error(
+        `O item "${invalido.description}" tem quantidade ou valor inválido; corrija para a edição ficar guardada na nota.`,
+      )
+      return
+    }
+
+    itensPendentes.current = {
+      draftId,
+      origemItens: data?.origemItens,
+      items,
+    }
+    // Não rejeita: as falhas viram toast lá dentro.
+    gravarItensPendentes()
+  }
+
+  // Item editado na tabela
+  const handleItemsChange = (updatedData: NfePrepareResponse) => {
+    setData(updatedData)
+    salvarItensNoRascunho(updatedData.items)
+  }
+
   // Handle add product
   const handleAddProduct = (item: NfePrepareItem) => {
     if (!data) return
+    const newItems = [...data.items, item]
     setData({
       ...data,
-      items: [...data.items, item],
+      items: newItems,
     })
+    salvarItensNoRascunho(newItems)
     toast.success(`Produto "${item.description}" adicionado`)
   }
 
@@ -625,6 +760,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
         itemNumber: idx + 1,
       }))
     setData({ ...data, items: newItems })
+    salvarItensNoRascunho(newItems)
   }
 
   // Loading state
@@ -749,7 +885,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
 
           <InvoiceItems
             data={data}
-            onUpdate={setData}
+            onUpdate={handleItemsChange}
             onAddProduct={handleAddProduct}
             onRemoveItem={handleRemoveItem}
           />

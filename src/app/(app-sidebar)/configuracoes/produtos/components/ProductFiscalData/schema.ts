@@ -69,6 +69,85 @@ export const defaultFiscalDataValues: ProductFiscalDataFormType = {
   cfopExport: '7102',
 }
 
+const textoGravado = (valor: unknown, padrao: string): string =>
+  valor === null || valor === undefined || valor === '' ? padrao : String(valor)
+
+const numeroGravado = (valor: unknown): number | undefined =>
+  valor === null || valor === undefined || valor === ''
+    ? undefined
+    : Number(valor)
+
+/**
+ * Cadastro fiscal gravado (GET /fiscal/product/:id) no formato deste
+ * formulário. Os números vão com o zero preservado: alíquota ou redução 0 é
+ * valor legítimo e, lida como vazia, o próximo save apagaria o que estava
+ * gravado.
+ */
+export function fiscalDataToFormValues(
+  data?: Record<string, unknown> | null,
+): ProductFiscalDataFormType {
+  if (!data) return { ...defaultFiscalDataValues }
+  return {
+    productCode: textoGravado(data.productCode, ''),
+    commercialUnit: textoGravado(data.commercialUnit, 'UN'),
+    ncm: textoGravado(data.ncm, ''),
+    cean: textoGravado(data.cean, ''),
+    icmsOrigin: textoGravado(data.icmsOrigin, '0'),
+    icmsCst: textoGravado(data.icmsCst, '102'),
+    icmsRate: numeroGravado(data.icmsRate),
+    icmsReducao: numeroGravado(data.icmsReducao),
+    icmsCreditRate: numeroGravado(data.icmsCreditRate),
+    icmsBaseModality: textoGravado(data.icmsBaseModality, '3'),
+    icmsStMva: numeroGravado(data.icmsStMva),
+    icmsStReducao: numeroGravado(data.icmsStReducao),
+    icmsStRate: numeroGravado(data.icmsStRate),
+    fcpRate: numeroGravado(data.fcpRate),
+    fcpStRate: numeroGravado(data.fcpStRate),
+    pisCst: textoGravado(data.pisCst, '07'),
+    pisRate: numeroGravado(data.pisRate),
+    cofinsCst: textoGravado(data.cofinsCst, '07'),
+    cofinsRate: numeroGravado(data.cofinsRate),
+    ipiFramework: textoGravado(data.ipiFramework, '0'),
+    ipiCst: textoGravado(data.ipiCst, ''),
+    ipiRate: numeroGravado(data.ipiRate),
+    cfopInState: textoGravado(data.cfopInState, '5102'),
+    cfopOutState: textoGravado(data.cfopOutState, '6102'),
+    cfopExport: textoGravado(data.cfopExport, '7102'),
+  }
+}
+
+/**
+ * Campos do cadastro fiscal que este formulário não mostra: CEST, os de
+ * serviço (NFS-e) e os da Reforma Tributária. O upsert substitui o cadastro
+ * inteiro, então quem salva pelo formulário tem de reenviá-los, senão voltam
+ * a vazio.
+ */
+const CAMPOS_FISCAIS_FORA_DO_FORMULARIO = [
+  'cest',
+  'codigoServico',
+  'aliquotaIss',
+  'discriminacao',
+  'codTribMunicipio',
+  'cnae',
+  'nbs',
+  'codTribNacional',
+  'cstIbsCbs',
+  'codClassificacao',
+] as const
+
+export function camposFiscaisForaDoFormulario(
+  data?: Record<string, unknown> | null,
+): Record<string, unknown> {
+  const campos: Record<string, unknown> = {}
+  for (const campo of CAMPOS_FISCAIS_FORA_DO_FORMULARIO) {
+    const valor = data?.[campo]
+    if (valor !== null && valor !== undefined && valor !== '') {
+      campos[campo] = valor
+    }
+  }
+  return campos
+}
+
 // ICMS Origin options
 export const icmsOriginOptions = [
   {

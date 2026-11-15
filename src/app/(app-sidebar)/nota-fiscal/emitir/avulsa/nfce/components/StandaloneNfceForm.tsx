@@ -39,6 +39,7 @@ import {
 import { getItem, createItemNew } from '@/actions/_cruds'
 import { NfcePreviewDialog } from '@/components/common/fiscal/preview/NfcePreviewDialog'
 import type { NfcePreview } from '@/types/fiscal/nfce-preview'
+import { arredondar, totaisDosItensNaNota } from '@/lib/nota-fiscal-valores'
 
 // Types
 import type {
@@ -256,14 +257,16 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
     [items],
   )
 
-  // Compute Totals
-  const subtotal = items.reduce(
-    (acc, item) => acc + item.quantity * item.unitValue,
-    0,
+  // Compute Totals — somando os itens já arredondados, como o vNF do XML. A
+  // soma crua podia ficar um centavo abaixo da nota e o pagamento informado
+  // aqui seria recusado.
+  const { valorProdutos: subtotal, valorDesconto: descontos } =
+    totaisDosItensNaNota(items)
+  const totalNota = Math.max(0, arredondar(subtotal - descontos, 2))
+  const totalPago = arredondar(
+    pagamentos.reduce((acc, p) => acc + p.valor, 0),
+    2,
   )
-  const descontos = items.reduce((acc, item) => acc + item.discount, 0)
-  const totalNota = Math.max(0, subtotal - descontos)
-  const totalPago = pagamentos.reduce((acc, p) => acc + p.valor, 0)
 
   /** Pré-checagens comuns a emitir e pré-visualizar. */
   const validarAntesDeEnviar = (): boolean => {
