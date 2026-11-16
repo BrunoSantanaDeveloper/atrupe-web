@@ -6,9 +6,10 @@
 // impressora (LC-7). Daí vêm o preço sugerido de cada período e o resultado
 // por bem.
 //
-// A validar com o Maicol (proposta de 16/11): composição só com o bem; lote
-// como um patrimônio; receita do contrato longo dividida pelos dias; e a
-// ocupação do LED medida em cotas.
+// Cada período é uma variação do produto, e a composição por variação dá o
+// custo de cada período (revisão de 16/11). A validar com o Maicol:
+// composição só com o bem; lote como um patrimônio; receita do contrato
+// longo dividida pelos dias; e a ocupação do LED medida em cotas.
 
 import { useState } from 'react'
 
@@ -47,7 +48,7 @@ import {
   depreciationOf,
   formatBrl,
   monthlyCostOf,
-  unitOfMode,
+  unitOf,
   type RentalAsset,
   type RentalProduct,
 } from '../data'
@@ -81,7 +82,7 @@ export function RentalComposition({
   const monthly = monthlyCostOf(asset)
   const daily = dailyCostOf(asset, product.capacity)
   const realized = Math.round(average(asset.occupancy))
-  const unit = unitOfMode(product.mode)
+  const unit = unitOf(product)
   const perUnit = unit ? ` por ${unit}` : ''
 
   return (
@@ -167,8 +168,7 @@ export function RentalComposition({
               <div className="w-40 space-y-1.5">
                 <Label htmlFor="reference-days">
                   Dias alugados por mês
-                  {product.mode === 'QUANTITY' ? ', por peça' : ''}
-                  {product.mode === 'AD' ? ', por cota' : ''}
+                  {unit ? `, por ${unit}` : ''}
                 </Label>
                 <Input
                   id="reference-days"
@@ -232,7 +232,7 @@ export function RentalComposition({
               <p className="text-sm text-gray-700">
                 {formatBrl(monthly)} ÷ {asset.referenceDays} dias
                 {product.capacity > 1
-                  ? ` ÷ ${product.capacity} ${unitOfMode(product.mode, product.capacity)}`
+                  ? ` ÷ ${product.capacity} ${unitOf(product, product.capacity)}`
                   : ''}
               </p>
               <p className="text-xl font-semibold text-gray-900">

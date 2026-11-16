@@ -1,8 +1,10 @@
 'use client'
 
-// Cadastro do produto de locação. No START é só isto: o bem, o modo e o
-// valor por período (LC-14, 16/11/2026). O saldo de peças e de cotas entra
-// com a reserva, no LITE; o custo do bem, com a composição, no PRO.
+// Cadastro do produto de locação, com as regras que o sistema já tem
+// (revisão de 16/11/2026). É um produto comum marcado como locação. START:
+// um período (dias) e um valor. LITE: cada período é uma variação do produto
+// (PV-6), como P, M e G, e a quantidade disponível entra com a reserva. PRO:
+// a composição com os custos do patrimônio.
 
 import { IconPhoto, IconPlus, IconTrash } from '@tabler/icons-react'
 
@@ -16,7 +18,6 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
 import {
   Table,
@@ -29,28 +30,15 @@ import {
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { BrlInput } from '@/components/common/BrlInput'
-import { RadioCard } from '@/components/common/radio-card'
 
 import {
-  MODE_HINT,
-  MODE_LABEL,
-  formatBrl,
-  unitOfMode,
+  planHas,
+  unitOf,
   type Plan,
-  type RentalMode,
   type RentalPeriod,
   type RentalProduct,
 } from '../data'
 import { PlanLock } from './PlanLock'
-
-const MODES: RentalMode[] = ['INDIVIDUAL', 'QUANTITY', 'AD']
-
-const priceLabel = (mode: RentalMode) =>
-  mode === 'QUANTITY'
-    ? 'Valor do período por peça'
-    : mode === 'AD'
-      ? 'Valor do período por cota'
-      : 'Valor do período'
 
 export function RentalProductForm({
   plan,
@@ -71,16 +59,14 @@ export function RentalProductForm({
       ),
     })
 
-  const spot = product.spot || {
-    address: '',
-    face: '',
-    lit: false,
-    artSize: '',
-  }
-  const patchSpot = (changes: Partial<typeof spot>) =>
-    patch({ spot: { ...spot, ...changes } })
+  const spot = product.spot
+  const patchSpot = (changes: Partial<NonNullable<typeof spot>>) =>
+    spot && patch({ spot: { ...spot, ...changes } })
 
-  const hasSpot = product.mode !== 'QUANTITY'
+  const withVariations = planHas(plan, 'LITE')
+  const first = product.periods[0]
+  const unit = unitOf(product)
+  const priceLabel = unit ? `Valor do período por ${unit}` : 'Valor do período'
 
   return (
     <TooltipProvider>
@@ -89,199 +75,226 @@ export function RentalProductForm({
           <CardHeader>
             <CardTitle>Produto de locação</CardTitle>
             <CardDescription>
-              Configurações › Produtos › Novo produto, com o tipo
-              &quot;Locação&quot;. O produto nasce no setor Locação.
+              Configurações › Produtos › Novo produto. É o cadastro comum de
+              produto, com a marca &quot;Produto de locação&quot;, no setor
+              Locação.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-5 px-6 pb-6">
-            <div className="space-y-1.5">
-              <Label htmlFor="rental-name">Nome</Label>
-              <Input
-                id="rental-name"
-                value={product.name}
-                onChange={(event) => patch({ name: event.target.value })}
-              />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto]">
+              <div className="space-y-1.5">
+                <Label htmlFor="rental-name">Nome</Label>
+                <Input
+                  id="rental-name"
+                  value={product.name}
+                  onChange={(event) => patch({ name: event.target.value })}
+                />
+              </div>
+              <div className="flex items-center gap-3 md:pt-6">
+                <Switch id="rental-flag" checked disabled />
+                <Label htmlFor="rental-flag">Produto de locação</Label>
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label>Como este produto é alugado</Label>
-              <RadioGroup
-                value={product.mode}
-                onValueChange={(mode) => patch({ mode: mode as RentalMode })}
-                className="grid grid-cols-1 gap-3 md:grid-cols-3"
-              >
-                {MODES.map((mode) => (
-                  <RadioCard key={mode} value={mode}>
-                    <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-gray-900">
-                        {MODE_LABEL[mode]}
-                      </p>
-                      <p className="text-sm font-normal text-gray">
-                        {MODE_HINT[mode]}
-                      </p>
-                    </div>
-                  </RadioCard>
-                ))}
-              </RadioGroup>
-            </div>
-
-            {product.mode !== 'INDIVIDUAL' && (
-              <PlanLock
-                plan={plan}
-                from="LITE"
-                title={
-                  product.mode === 'QUANTITY'
-                    ? 'Saldo de peças'
-                    : 'Saldo de cotas do painel'
-                }
-                locked={
-                  product.mode === 'QUANTITY'
-                    ? 'No Start você aluga a quantidade que digitar. No Lite o sistema sabe quantas peças existem e não deixa alugar além do que está livre no período.'
-                    : 'No Start você vende a cota sem controle de saldo. No Lite o sistema sabe quantas cotas o painel tem e não deixa vender além do que está livre no período.'
-                }
-              >
-                <div className="max-w-xs space-y-1.5">
-                  <Label htmlFor="rental-capacity">
-                    {product.mode === 'QUANTITY'
-                      ? 'Peças disponíveis para locar'
-                      : 'Cotas de exibição do painel'}
-                  </Label>
-                  <Input
-                    id="rental-capacity"
-                    type="number"
-                    min={1}
-                    value={product.capacity}
-                    onChange={(event) =>
-                      patch({ capacity: Number(event.target.value) || 1 })
-                    }
-                  />
-                  <p className="text-sm text-gray">
-                    A reserva desconta deste saldo em cada período.
-                  </p>
+            {!withVariations && first && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="period-name">Período da locação</Label>
+                    <Input
+                      id="period-name"
+                      placeholder="Diária, bissemana, mês"
+                      value={first.name}
+                      onChange={(event) =>
+                        patchPeriod(first.id, { name: event.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="period-days">Dias do período</Label>
+                    <Input
+                      id="period-days"
+                      type="number"
+                      min={1}
+                      value={first.days}
+                      onChange={(event) =>
+                        patchPeriod(first.id, {
+                          days: Number(event.target.value) || 1,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="period-price">{priceLabel}</Label>
+                    <BrlInput
+                      id="period-price"
+                      value={first.priceCents}
+                      onChange={(priceCents) =>
+                        patchPeriod(first.id, { priceCents })
+                      }
+                    />
+                  </div>
                 </div>
-              </PlanLock>
+                <p className="text-sm text-gray">
+                  É o preço de venda do produto, como em qualquer outro. No
+                  orçamento, a locação começa na data de início e termina depois
+                  dos dias do período.
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="space-y-1.5">
-                <CardTitle>Valor por período</CardTitle>
-                <CardDescription>
-                  Cadastre os períodos que você vende. No orçamento, o total sai
-                  do número de dias: vale o valor por dia do maior período que
-                  cabe.
-                </CardDescription>
+        <PlanLock
+          plan={plan}
+          from="LITE"
+          title="Vários períodos no mesmo produto"
+          locked="No Start cada produto tem um período e um valor: para vender o mesmo outdoor por bissemana e por mês, cadastre dois produtos. No Lite os períodos são variações do produto, como P, M e G: um cadastro só, e o vendedor escolhe o período na venda."
+        >
+          <Card>
+            <CardHeader>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="space-y-1.5">
+                  <CardTitle>Variações: os períodos da locação</CardTitle>
+                  <CardDescription>
+                    É a mesma tabela de variações dos outros produtos, com os
+                    dias de cada período. Cada variação pode ter o seu preço por
+                    quantidade.
+                  </CardDescription>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  LeftIcon={IconPlus}
+                  onClick={() =>
+                    patch({
+                      periods: [
+                        ...product.periods,
+                        {
+                          id: `p${Date.now()}`,
+                          name: '',
+                          days: 1,
+                          priceCents: 0,
+                        },
+                      ],
+                    })
+                  }
+                >
+                  Nova variação
+                </Button>
               </div>
-              <Button
-                type="button"
-                size="sm"
-                variant="neutralOutline"
-                LeftIcon={IconPlus}
-                onClick={() =>
-                  patch({
-                    periods: [
-                      ...product.periods,
-                      {
-                        id: `p${Date.now()}`,
-                        name: '',
-                        days: 1,
-                        priceCents: 0,
-                      },
-                    ],
-                  })
-                }
-              >
-                Novo período
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-[30%]">Período</TableHead>
-                  <TableHead className="w-[15%]">Dias</TableHead>
-                  <TableHead className="w-[25%]">
-                    {priceLabel(product.mode)}
-                  </TableHead>
-                  <TableHead className="w-[20%]">Sai por dia</TableHead>
-                  <TableHead className="w-[10%]" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {product.periods.map((period) => (
-                  <TableRow key={period.id}>
-                    <TableCell>
-                      <Input
-                        aria-label="Nome do período"
-                        placeholder="Diária, bissemana, mês"
-                        value={period.name}
-                        onChange={(event) =>
-                          patchPeriod(period.id, { name: event.target.value })
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        min={1}
-                        aria-label="Dias do período"
-                        value={period.days}
-                        onChange={(event) =>
-                          patchPeriod(period.id, {
-                            days: Number(event.target.value) || 1,
-                          })
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <BrlInput
-                        aria-label={priceLabel(product.mode)}
-                        value={period.priceCents}
-                        onChange={(priceCents) =>
-                          patchPeriod(period.id, { priceCents })
-                        }
-                      />
-                    </TableCell>
-                    <TableCell className="text-sm text-gray-700">
-                      {formatBrl(period.priceCents / Math.max(period.days, 1))}
-                      {product.mode !== 'INDIVIDUAL'
-                        ? ` por ${unitOfMode(product.mode)}`
-                        : ''}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end">
-                        <ActionButton
-                          Icon={IconTrash}
-                          variant="errorGhost"
-                          tooltip="Remover período"
-                          onClick={() =>
-                            patch({
-                              periods: product.periods.filter(
-                                (item) => item.id !== period.id,
-                              ),
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[40%]">Variação</TableHead>
+                    <TableHead className="w-[20%]">Dias do período</TableHead>
+                    <TableHead className="w-[30%]">{priceLabel}</TableHead>
+                    <TableHead className="w-[10%]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {product.periods.map((period) => (
+                    <TableRow key={period.id}>
+                      <TableCell>
+                        <Input
+                          aria-label="Nome da variação"
+                          placeholder="Diária, bissemana, mês"
+                          value={period.name}
+                          onChange={(event) =>
+                            patchPeriod(period.id, {
+                              name: event.target.value,
                             })
                           }
                         />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                      </TableCell>
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min={1}
+                          aria-label="Dias do período"
+                          value={period.days}
+                          onChange={(event) =>
+                            patchPeriod(period.id, {
+                              days: Number(event.target.value) || 1,
+                            })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <BrlInput
+                          aria-label={priceLabel}
+                          value={period.priceCents}
+                          onChange={(priceCents) =>
+                            patchPeriod(period.id, { priceCents })
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end">
+                          <ActionButton
+                            Icon={IconTrash}
+                            variant="errorGhost"
+                            tooltip="Remover variação"
+                            disabled={product.periods.length === 1}
+                            onClick={() =>
+                              patch({
+                                periods: product.periods.filter(
+                                  (item) => item.id !== period.id,
+                                ),
+                              })
+                            }
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </PlanLock>
 
-        {hasSpot && (
+        <PlanLock
+          plan={plan}
+          from="LITE"
+          title="Quantidade disponível para locar"
+          locked="No Start o sistema não confere o que já está alugado. No Lite você informa quantas unidades existem (1 outdoor, 20 peças, 6 cotas do painel) e a reserva não deixa alugar além do que está livre no período."
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Quantidade disponível para locar</CardTitle>
+              <CardDescription>
+                Quantas unidades deste produto existem. A reserva desconta deste
+                saldo em cada período: o outdoor tem 1, o lote de box truss tem
+                20 peças, o painel de LED tem 6 cotas.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <div className="max-w-[200px]">
+                <Input
+                  type="number"
+                  min={1}
+                  aria-label="Quantidade disponível para locar"
+                  value={product.capacity}
+                  onChange={(event) =>
+                    patch({ capacity: Number(event.target.value) || 1 })
+                  }
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </PlanLock>
+
+        {spot && (
           <Card>
             <CardHeader>
               <CardTitle>Dados do ponto</CardTitle>
               <CardDescription>
-                Entram na proposta e no contrato: o cliente escolhe o ponto pela
-                foto e pelo endereço.
+                Opcional. Entram na proposta e no contrato: o cliente escolhe o
+                ponto pela foto e pelo endereço.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-4 px-6 pb-6 lg:grid-cols-[1fr_220px]">

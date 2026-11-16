@@ -48,8 +48,8 @@ export const dynamic = 'force-dynamic'
 
 const PLAN_SUMMARY: Record<Plan, string> = {
   START:
-    'Cadastra o bem com o valor por período, faz a locação no orçamento e imprime o contrato. Sem reserva.',
-  LITE: 'Reserva a partir do Aguardando, cobrança mensal, contratos que vencem e resultado de caixa por bem.',
+    'Cadastra o bem com um período e um valor, faz a locação no orçamento e imprime o contrato. Sem reserva.',
+  LITE: 'Os períodos viram variações do produto. Reserva a partir do Aguardando, cobrança mensal, contratos que vencem e resultado de caixa por bem.',
   PRO: 'O produto ganha a composição com os custos do patrimônio: custo por dia, preço sugerido e resultado por bem.',
   ELITE:
     'Instalação, retirada e manutenção viram tarefas, com a foto de comprovação enviada ao cliente.',
@@ -63,9 +63,10 @@ export default function LocacaoSandbox() {
   const [modelId, setModelId] = useState(CONTRACT_MODELS[0].id)
   const [draft, setDraft] = useState<RentalDraft>({
     productId: PRODUCTS[0].id,
+    periodId: PRODUCTS[0].periods[0].id,
     start: addDays(today(), 20),
-    end: addDays(today(), 33),
-    count: 1,
+    quantity: 1,
+    valueCents: null,
     status: 'DRAFT',
     validUntil: addDays(today(), 7),
     monthly: false,

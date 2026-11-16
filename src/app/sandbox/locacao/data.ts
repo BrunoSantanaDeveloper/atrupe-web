@@ -15,24 +15,11 @@ export const PLAN_NAME: Record<Plan, string> = {
 export const planHas = (plan: Plan, from: Plan) =>
   PLANS.indexOf(plan) >= PLANS.indexOf(from)
 
-// LC-6: bem individual (outdoor, painel), por quantidade (box truss,
-// mobiliário) e, no LED, o anúncio vendido por cota de exibição (LC-9)
-export type RentalMode = 'INDIVIDUAL' | 'QUANTITY' | 'AD'
-
-export const MODE_LABEL: Record<RentalMode, string> = {
-  INDIVIDUAL: 'Bem individual',
-  QUANTITY: 'Por quantidade',
-  AD: 'Anúncio em painel de LED',
-}
-
-export const MODE_HINT: Record<RentalMode, string> = {
-  INDIVIDUAL: 'Um outdoor ou painel: aluga o bem inteiro por um período.',
-  QUANTITY: 'Box truss, mobiliário: aluga tantas peças por um período.',
-  AD: 'Vende cotas de exibição do painel entre vários anunciantes.',
-}
-
-// LC-5: períodos configuráveis por produto. O valor é o do período inteiro,
-// em centavos; por quantidade e por cota, é o valor de uma peça ou uma cota
+// Revisão de 16/11/2026: a locação usa as regras que o sistema já tem. Não há
+// modos nem regra de preço própria. O produto de locação é um produto comum
+// com um período (dias) e um valor; do LITE em diante cada período é uma
+// variação (PV-6), como P, M e G. A quantidade do item é a quantidade comum:
+// 1 outdoor, 14 peças de box truss, 2 cotas do painel de LED.
 export interface RentalPeriod {
   id: string
   name: string
@@ -50,11 +37,17 @@ export interface RentalSpot {
 export interface RentalProduct {
   id: string
   name: string
-  mode: RentalMode
+  // START: vale só o primeiro. LITE: são as variações do produto
   periods: RentalPeriod[]
-  // Por quantidade: peças do lote. Anúncio: cotas do painel
+  // Quantidade disponível para locar (LITE, com a reserva): 1 outdoor, 20
+  // peças, 6 cotas
   capacity: number
+  // Nome da unidade quando há mais de uma: [singular, plural]
+  unit?: [string, string]
+  // Tem ponto (endereço, face, arte): outdoor e painel
   spot?: RentalSpot
+  // Gera tarefas de entrega e montagem, e não de veiculação (ELITE)
+  event?: boolean
   // PRO: o patrimônio que entra na composição
   assetId?: string
 }
@@ -63,12 +56,12 @@ export const PRODUCTS: RentalProduct[] = [
   {
     id: 'outdoor-brasil',
     name: 'Outdoor Av. Brasil, 1200',
-    mode: 'INDIVIDUAL',
     capacity: 1,
     periods: [
-      { id: 'd', name: 'Diária', days: 1, priceCents: 9000 },
       { id: 'b', name: 'Bissemana', days: 14, priceCents: 84000 },
+      { id: 'd', name: 'Diária', days: 1, priceCents: 9000 },
       { id: 'm', name: 'Mês', days: 30, priceCents: 150000 },
+      { id: 't', name: 'Trimestre', days: 90, priceCents: 405000 },
     ],
     spot: {
       address: 'Av. Brasil, 1200 - Centro, Balneário Camboriú/SC',
@@ -81,7 +74,6 @@ export const PRODUCTS: RentalProduct[] = [
   {
     id: 'outdoor-br101',
     name: 'Outdoor BR-101, km 132',
-    mode: 'INDIVIDUAL',
     capacity: 1,
     periods: [
       { id: 'b', name: 'Bissemana', days: 14, priceCents: 70000 },
@@ -98,10 +90,12 @@ export const PRODUCTS: RentalProduct[] = [
   {
     id: 'truss-2m',
     name: 'Box truss Q30 2 m',
-    mode: 'QUANTITY',
     capacity: 20,
+    unit: ['peça', 'peças'],
+    event: true,
     periods: [
       { id: 'd', name: 'Diária', days: 1, priceCents: 2500 },
+      { id: 'f', name: 'Fim de semana', days: 3, priceCents: 6000 },
       { id: 's', name: 'Semana', days: 7, priceCents: 10500 },
     ],
     assetId: 'asset-truss',
@@ -109,8 +103,8 @@ export const PRODUCTS: RentalProduct[] = [
   {
     id: 'led-centro',
     name: 'Anúncio no painel de LED Centro',
-    mode: 'AD',
     capacity: 6,
+    unit: ['cota', 'cotas'],
     periods: [
       { id: 's', name: 'Semana', days: 7, priceCents: 35000 },
       { id: 'm', name: 'Mês', days: 30, priceCents: 120000 },
@@ -125,16 +119,12 @@ export const PRODUCTS: RentalProduct[] = [
   },
 ]
 
-export const unitOfMode = (mode: RentalMode, count = 1) =>
-  mode === 'QUANTITY'
-    ? count === 1
-      ? 'peça'
-      : 'peças'
-    : mode === 'AD'
-      ? count === 1
-        ? 'cota'
-        : 'cotas'
-      : ''
+export const unitOf = (product: RentalProduct, count = 1) =>
+  product.unit ? product.unit[count === 1 ? 0 : 1] : ''
+
+// Os períodos que o plano enxerga: no START o produto tem um período só
+export const periodsOf = (product: RentalProduct, plan: Plan) =>
+  planHas(plan, 'LITE') ? product.periods : product.periods.slice(0, 1)
 
 const DAY = 24 * 60 * 60 * 1000
 
@@ -159,36 +149,14 @@ export const formatDate = (date?: Date) =>
 export const formatBrl = (cents: number) =>
   (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
-export interface RentalPrice {
-  days: number
-  period: RentalPeriod | null
-  // Valor de um dia na faixa do período, em centavos
-  perDayCents: number
-  totalCents: number
-}
+// Cada linha do orçamento é um período: quem locou a bissemana paga o valor
+// da bissemana e leva os 14 dias. O fim sai do início e dos dias do período.
+// O valor é o preço do período vezes a quantidade, como em qualquer produto
+export const periodOf = (product: RentalProduct, periodId?: string) =>
+  product.periods.find((period) => period.id === periodId) || product.periods[0]
 
-// O total sai do número de dias (LC-5), no espírito do preço por faixa de
-// quantidade: vale o valor por dia do maior período que cabe nos dias, para
-// todos os dias. Menos dias que o menor período cobram o menor período inteiro
-export const priceOf = (
-  product: RentalProduct,
-  days: number,
-  count = 1,
-): RentalPrice => {
-  const sorted = [...product.periods].sort((a, b) => a.days - b.days)
-  if (!days || !sorted.length)
-    return { days, period: null, perDayCents: 0, totalCents: 0 }
-  const fits = sorted.filter((period) => period.days <= days)
-  const period = fits.at(-1) || sorted[0]
-  const perDayCents = period.priceCents / period.days
-  const billedDays = Math.max(days, period.days)
-  return {
-    days,
-    period,
-    perDayCents,
-    totalCents: Math.round(perDayCents * billedDays * count),
-  }
-}
+export const endOf = (start: Date | undefined, period: RentalPeriod) =>
+  start ? addDays(start, period.days - 1) : undefined
 
 // Reserva (LC-8 ajustada em 16/11): Digitação não reserva; Aguardando reserva
 // até a proposta vencer; Aprovado confirma

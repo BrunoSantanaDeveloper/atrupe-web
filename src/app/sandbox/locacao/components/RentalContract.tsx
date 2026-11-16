@@ -31,19 +31,17 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 
 import {
-  daysBetween,
   formatBrl,
   formatDate,
   planHas,
-  priceOf,
   today,
-  unitOfMode,
+  unitOf,
   type ContractModel,
   type Plan,
   type RentalProduct,
 } from '../data'
 import { PlanLock } from './PlanLock'
-import { installmentsOf, type RentalDraft } from './RentalQuotationItem'
+import { installmentsOf, lineOf, type RentalDraft } from './RentalQuotationItem'
 
 const COMPANY = {
   name: 'Atrupe Comunicação Visual Ltda.',
@@ -94,10 +92,10 @@ export function RentalContract({
   const model =
     (manyModels && models.find((item) => item.id === modelId)) || models[0]
 
-  const days = daysBetween(draft.start, draft.end)
-  const price = priceOf(product, days, draft.count)
+  const line = lineOf(product, draft, plan)
+  const days = draft.start ? line.period.days : 0
   const installments =
-    manyModels && draft.monthly ? installmentsOf(product, draft) : []
+    manyModels && draft.monthly ? installmentsOf(draft, line) : []
 
   const patchClause = (
     index: number,
@@ -177,12 +175,12 @@ export function RentalContract({
 
               <div className="rounded border border-gray-300 px-4 py-2">
                 <Row label="Bem locado">
-                  {product.mode !== 'INDIVIDUAL'
-                    ? `${draft.count} ${unitOfMode(product.mode, draft.count)} · `
+                  {product.capacity > 1
+                    ? `${draft.quantity} ${unitOf(product, draft.quantity)} · `
                     : ''}
                   {product.name}
                 </Row>
-                {product.mode !== 'QUANTITY' && product.spot && (
+                {product.spot && (
                   <>
                     <Row label="Endereço do ponto">{product.spot.address}</Row>
                     <Row label="Face">
@@ -194,10 +192,10 @@ export function RentalContract({
                 )}
                 <Row label="Período">
                   {days
-                    ? `${formatDate(draft.start)} a ${formatDate(draft.end)} (${days} ${days === 1 ? 'dia' : 'dias'})`
+                    ? `${line.period.name}: ${formatDate(draft.start)} a ${formatDate(line.end)} (${days} ${days === 1 ? 'dia' : 'dias'})`
                     : 'Sem datas no orçamento'}
                 </Row>
-                <Row label="Valor total">{formatBrl(price.totalCents)}</Row>
+                <Row label="Valor total">{formatBrl(line.totalCents)}</Row>
                 <Row label="Pagamento">
                   {installments.length
                     ? `${installments.length} parcelas mensais, conforme abaixo`

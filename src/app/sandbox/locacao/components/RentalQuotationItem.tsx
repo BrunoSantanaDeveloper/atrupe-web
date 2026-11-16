@@ -1,10 +1,12 @@
 'use client'
 
-// O item de locação no orçamento: o bem, a data de início e a de fim, e o
-// total pelo número de dias (LC-4, LC-5). No START é só isto. No LITE entra a
-// reserva (LC-8, ajustada em 16/11/2026): Digitação não reserva, Aguardando
-// reserva até a proposta vencer, Aprovado confirma. A cobrança mensal
-// recorrente (LC-12) também é do LITE.
+// O item de locação no orçamento, com as regras que o sistema já tem
+// (revisão de 16/11/2026): o produto, o período (no LITE, a variação), a
+// quantidade comum do item e a data de início. Cada linha é um período: o fim
+// sai do início e dos dias do período, e o valor é o preço do período vezes a
+// quantidade. O vendedor edita o valor dentro do limite de desconto do perfil.
+// No LITE entra a reserva (LC-8): Digitação não reserva, Aguardando reserva
+// até a proposta vencer, Aprovado confirma. A cobrança mensal (LC-12) também.
 
 import {
   IconAlertTriangle,
@@ -41,6 +43,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { BrlInput } from '@/components/common/BrlInput'
 import { DatePicker } from '@/components/common/date-picker'
 import { cn } from '@/lib/utils'
 
@@ -49,28 +52,63 @@ import {
   STATUS_LABEL,
   addDays,
   availabilityOf,
-  daysBetween,
+  endOf,
   formatBrl,
   formatDate,
   holds,
+  periodOf,
+  periodsOf,
   planHas,
-  priceOf,
   today,
-  unitOfMode,
+  unitOf,
   type Plan,
   type QuotationStatus,
+  type RentalPeriod,
   type RentalProduct,
 } from '../data'
 import { PlanLock } from './PlanLock'
 
 export interface RentalDraft {
   productId: string
+  periodId: string
   start?: Date
-  end?: Date
-  count: number
+  quantity: number
+  // Valor do item editado pelo vendedor; nulo vale o da tabela
+  valueCents: number | null
   status: QuotationStatus
   validUntil: Date
   monthly: boolean
+}
+
+// Limite de desconto do perfil do vendedor (Configurações › Vendas › Perfil
+// de vendedor), o mesmo que vale para qualquer item
+export const MAX_DISCOUNT = 0.1
+
+export interface RentalLine {
+  period: RentalPeriod
+  end?: Date
+  tableCents: number
+  totalCents: number
+  minCents: number
+}
+
+export const lineOf = (
+  product: RentalProduct,
+  draft: RentalDraft,
+  plan: Plan,
+): RentalLine => {
+  // No START o produto só tem o período dele
+  const period = planHas(plan, 'LITE')
+    ? periodOf(product, draft.periodId)
+    : product.periods[0]
+  const tableCents = period.priceCents * draft.quantity
+  return {
+    period,
+    end: endOf(draft.start, period),
+    tableCents,
+    totalCents: draft.valueCents ?? tableCents,
+    minCents: Math.round(tableCents * (1 - MAX_DISCOUNT)),
+  }
 }
 
 export interface Installment {
@@ -80,15 +118,14 @@ export interface Installment {
   cents: number
 }
 
-// Cobrança mensal (LC-12): uma parcela a cada 30 dias de locação, com o
-// valor dos dias daquele trecho
+// Cobrança mensal (LC-12): uma parcela a cada 30 dias de locação, com a
+// parte do valor daquele trecho
 export const installmentsOf = (
-  product: RentalProduct,
   draft: RentalDraft,
+  line: RentalLine,
 ): Installment[] => {
-  const days = daysBetween(draft.start, draft.end)
-  if (!draft.start || !days) return []
-  const price = priceOf(product, days, draft.count)
+  const days = line.period.days
+  if (!draft.start || days <= 30) return []
   const list: Installment[] = []
   for (let offset = 0; offset < days; offset += 30) {
     const block = Math.min(30, days - offset)
@@ -97,7 +134,7 @@ export const installmentsOf = (
       due: from,
       from,
       to: addDays(from, block - 1),
-      cents: Math.round(price.perDayCents * block * draft.count),
+      cents: Math.round((line.totalCents * block) / days),
     })
   }
   return list
@@ -166,20 +203,17 @@ export function RentalQuotationItem({
   const patch = (changes: Partial<RentalDraft>) =>
     onChange({ ...draft, ...changes })
 
-  const days = daysBetween(draft.start, draft.end)
-  const price = priceOf(product, days, draft.count)
-  const unit = unitOfMode(product.mode)
+  const line = lineOf(product, draft, plan)
+  const periods = periodsOf(product, plan)
+  const unit = unitOf(product)
   const hasReserve = planHas(plan, 'LITE')
+  const hasDates = !!draft.start
 
-  const availability = availabilityOf(product, draft.start, draft.end)
-  const blocked =
-    hasReserve &&
-    days > 0 &&
-    (product.mode === 'INDIVIDUAL'
-      ? availability.conflicts.length > 0
-      : draft.count > availability.free)
+  const availability = availabilityOf(product, draft.start, line.end)
+  const blocked = hasReserve && hasDates && draft.quantity > availability.free
+  const belowLimit = line.totalCents < line.minCents
   const editable = draft.status === 'DRAFT'
-  const installments = draft.monthly ? installmentsOf(product, draft) : []
+  const installments = draft.monthly ? installmentsOf(draft, line) : []
 
   const productReservations = RESERVATIONS.filter(
     (reservation) => reservation.productId === product.id,
@@ -206,7 +240,7 @@ export function RentalQuotationItem({
               {draft.status === 'DRAFT' && (
                 <Button
                   type="button"
-                  disabled={blocked || !days}
+                  disabled={blocked || belowLimit || !hasDates}
                   onClick={() =>
                     patch({
                       status: 'WAITING',
@@ -258,7 +292,9 @@ export function RentalQuotationItem({
                 <Button
                   type="button"
                   variant="neutralGhost"
-                  onClick={() => patch({ status: 'DRAFT' })}
+                  onClick={() =>
+                    patch({ status: 'DRAFT', validUntil: addDays(today(), 7) })
+                  }
                 >
                   Voltar para digitação
                 </Button>
@@ -269,13 +305,22 @@ export function RentalQuotationItem({
 
         <CardContent className="space-y-5 px-6 pb-6">
           <div className="rounded-lg border border-gray-200 p-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[2fr_1fr_1fr_120px]">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[2fr_1.2fr_110px_1fr_1fr]">
               <div className="space-y-1.5">
-                <Label>Produto de locação</Label>
+                <Label>Produto</Label>
                 <Select
                   value={product.id}
                   disabled={!editable}
-                  onValueChange={(productId) => patch({ productId, count: 1 })}
+                  onValueChange={(productId) => {
+                    const next = products.find((item) => item.id === productId)
+                    patch({
+                      productId,
+                      periodId: next?.periods[0].id || '',
+                      quantity: 1,
+                      valueCents: null,
+                      monthly: false,
+                    })
+                  }}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -289,75 +334,102 @@ export function RentalQuotationItem({
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-1.5">
+                <Label>{hasReserve ? 'Variação (período)' : 'Período'}</Label>
+                <Select
+                  value={line.period.id}
+                  disabled={!editable || periods.length === 1}
+                  onValueChange={(periodId) =>
+                    patch({ periodId, valueCents: null, monthly: false })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {periods.map((period) => (
+                      <SelectItem key={period.id} value={period.id}>
+                        {period.name} · {period.days}{' '}
+                        {period.days === 1 ? 'dia' : 'dias'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="rental-quantity">Quantidade</Label>
+                <Input
+                  id="rental-quantity"
+                  type="number"
+                  min={1}
+                  disabled={!editable}
+                  value={draft.quantity}
+                  onChange={(event) =>
+                    patch({
+                      quantity: Number(event.target.value) || 1,
+                      valueCents: null,
+                    })
+                  }
+                />
+              </div>
               <DatePicker
                 label="Início"
                 value={draft.start}
                 disabled={!editable}
                 onChange={(start) => patch({ start })}
               />
-              <DatePicker
-                label="Fim"
-                value={draft.end}
-                disabled={!editable}
-                onChange={(end) => patch({ end })}
-                calendarProps={{
-                  disabled: draft.start ? { before: draft.start } : undefined,
-                }}
-              />
-              {product.mode !== 'INDIVIDUAL' && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="rental-count">
-                    {product.mode === 'QUANTITY' ? 'Peças' : 'Cotas'}
-                  </Label>
-                  <Input
-                    id="rental-count"
-                    type="number"
-                    min={1}
-                    disabled={!editable}
-                    value={draft.count}
-                    onChange={(event) =>
-                      patch({ count: Number(event.target.value) || 1 })
-                    }
-                  />
+              <div className="space-y-1.5">
+                <Label>Fim</Label>
+                <div className="flex h-10 items-center rounded-lg border border-gray-200 bg-gray-50 px-3.5 text-sm text-gray-700">
+                  {formatDate(line.end)}
                 </div>
-              )}
+              </div>
             </div>
 
             <div className="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-gray-200 pt-4">
-              <div className="text-sm text-gray-700">
-                {days > 0 && price.period ? (
-                  <>
-                    <p>
-                      <span className="font-semibold">
-                        {days} {days === 1 ? 'dia' : 'dias'}
-                      </span>
-                      {product.mode !== 'INDIVIDUAL'
-                        ? ` × ${draft.count} ${unitOfMode(product.mode, draft.count)}`
-                        : ''}{' '}
-                      · faixa {price.period.name} (
-                      {formatBrl(price.perDayCents)} por dia
-                      {unit ? ` por ${unit}` : ''})
-                    </p>
-                    {days < price.period.days && (
-                      <p className="text-gray">
-                        Menos dias que o menor período: cobra o período inteiro
-                        ({price.period.name}).
-                      </p>
-                    )}
-                  </>
-                ) : (
-                  <p className="text-gray">
-                    Escolha a data de início e a de fim para ver o valor.
-                  </p>
-                )}
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray">Total da locação</p>
-                <p className="text-xl font-semibold text-gray-900">
-                  {formatBrl(price.totalCents)}
+              <div className="space-y-1 text-sm text-gray-700">
+                <p>
+                  <span className="font-semibold">{line.period.name}</span> ·{' '}
+                  {draft.quantity}
+                  {unit ? ` ${unitOf(product, draft.quantity)}` : ''} ×{' '}
+                  {formatBrl(line.period.priceCents)} ={' '}
+                  {formatBrl(line.tableCents)}
+                </p>
+                <p className="text-gray">
+                  Cada linha é um período. Para um tempo maior, acrescente outra
+                  linha com o início seguinte
+                  {hasReserve ? ' ou escolha uma variação maior' : ''}.
                 </p>
               </div>
+              <div className="w-56 space-y-1.5">
+                <Label htmlFor="rental-value">Valor do item</Label>
+                <BrlInput
+                  id="rental-value"
+                  disabled={!editable}
+                  value={line.totalCents}
+                  onChange={(valueCents) => patch({ valueCents })}
+                />
+                {draft.valueCents !== null &&
+                  draft.valueCents !== line.tableCents && (
+                    <button
+                      type="button"
+                      className="text-sm text-brand-700 underline"
+                      onClick={() => patch({ valueCents: null })}
+                    >
+                      Voltar ao valor da tabela
+                    </button>
+                  )}
+              </div>
             </div>
+
+            {belowLimit && (
+              <p role="alert" className="mt-3 text-sm text-error-700">
+                O seu perfil de vendedor permite até{' '}
+                {Math.round(MAX_DISCOUNT * 100)}% de desconto: o mínimo deste
+                item é {formatBrl(line.minCents)}. Aumente o valor ou peça a um
+                gestor para liberar.
+              </p>
+            )}
           </div>
 
           <p className="text-sm text-gray">
@@ -376,15 +448,15 @@ export function RentalQuotationItem({
                 tone="error"
                 icon={IconCalendarOff}
                 title={
-                  product.mode === 'INDIVIDUAL'
+                  product.capacity === 1
                     ? 'Este período já está reservado'
-                    : `Só ${availability.free} ${unitOfMode(product.mode, availability.free)} livres neste período`
+                    : `Só ${availability.free} de ${product.capacity} ${unitOf(product, product.capacity)} livres neste período`
                 }
               >
                 {availability.conflicts.map((conflict) => (
                   <p key={conflict.id}>
-                    {product.mode !== 'INDIVIDUAL'
-                      ? `${conflict.count} ${unitOfMode(product.mode, conflict.count)} · `
+                    {product.capacity > 1
+                      ? `${conflict.count} ${unitOf(product, conflict.count)} · `
                       : ''}
                     {formatDate(conflict.start)} a {formatDate(conflict.end)} ·
                     orçamento {conflict.quotation}, {conflict.client} (
@@ -395,9 +467,9 @@ export function RentalQuotationItem({
                   </p>
                 ))}
                 <p className="mt-1">
-                  {product.mode === 'INDIVIDUAL'
-                    ? 'Escolha outro período ou outro bem para enviar ao cliente.'
-                    : `Diminua a quantidade para até ${availability.free} ou escolha outro período.`}
+                  {availability.free > 0
+                    ? `Diminua a quantidade para até ${availability.free} ou escolha outra data de início.`
+                    : 'Escolha outra data de início ou outro produto para enviar ao cliente.'}
                 </p>
               </Notice>
             ) : draft.status === 'DRAFT' ? (
@@ -406,11 +478,11 @@ export function RentalQuotationItem({
                 icon={IconInfoCircle}
                 title="Em digitação o bem não fica reservado"
               >
-                {days > 0
-                  ? product.mode === 'INDIVIDUAL'
+                {!hasDates
+                  ? 'A reserva começa quando o orçamento vai para Aguardando.'
+                  : product.capacity === 1
                     ? 'O período está livre. A reserva começa quando o orçamento vai para Aguardando.'
-                    : `${availability.free} de ${product.capacity} ${unitOfMode(product.mode, product.capacity)} livres no período. A reserva começa quando o orçamento vai para Aguardando.`
-                  : 'A reserva começa quando o orçamento vai para Aguardando.'}
+                    : `${availability.free} de ${product.capacity} ${unitOf(product, product.capacity)} livres no período. A reserva começa quando o orçamento vai para Aguardando.`}
               </Notice>
             ) : draft.status === 'WAITING' ? (
               <Notice
@@ -427,7 +499,7 @@ export function RentalQuotationItem({
                 icon={IconCalendarCheck}
                 title="Reserva confirmada"
               >
-                {formatDate(draft.start)} a {formatDate(draft.end)}. O bem só
+                {formatDate(draft.start)} a {formatDate(line.end)}. O bem só
                 volta a ficar livre no fim do período ou se o contrato for
                 encerrado antes.
               </Notice>
@@ -447,14 +519,14 @@ export function RentalQuotationItem({
             plan={plan}
             from="LITE"
             title="Cobrança mensal da locação longa"
-            locked="No Start a locação é cobrada pela condição de pagamento do orçamento. No Lite, o contrato longo pode gerar uma cobrança por mês em Contas a receber, enquanto a locação durar."
+            locked="No Start a locação é cobrada pela condição de pagamento do orçamento. No Lite, o período de mais de 30 dias pode gerar uma cobrança por mês em Contas a receber, enquanto a locação durar."
           >
             <div className="space-y-3 rounded-lg border border-gray-200 p-4">
               <div className="flex items-start gap-3">
                 <Switch
                   id="rental-monthly"
-                  checked={draft.monthly}
-                  disabled={!editable || days <= 30}
+                  checked={draft.monthly && line.period.days > 30}
+                  disabled={!editable || line.period.days <= 30}
                   onCheckedChange={(monthly) => patch({ monthly })}
                 />
                 <div>
@@ -462,8 +534,8 @@ export function RentalQuotationItem({
                     Cobrar todo mês enquanto a locação durar
                   </Label>
                   <p className="text-sm text-gray">
-                    {days <= 30
-                      ? 'Vale para a locação de mais de 30 dias. Esta usa a condição de pagamento do orçamento.'
+                    {line.period.days <= 30
+                      ? 'Vale para o período de mais de 30 dias. Este usa a condição de pagamento do orçamento.'
                       : 'Uma parcela a cada 30 dias de locação. Encerrar o contrato antes cancela as parcelas que ainda não venceram.'}
                   </p>
                 </div>
@@ -519,11 +591,7 @@ export function RentalQuotationItem({
                     <TableHead>Período</TableHead>
                     <TableHead>Orçamento</TableHead>
                     <TableHead>Cliente</TableHead>
-                    {product.mode !== 'INDIVIDUAL' && (
-                      <TableHead>
-                        {product.mode === 'QUANTITY' ? 'Peças' : 'Cotas'}
-                      </TableHead>
-                    )}
+                    <TableHead>Quantidade</TableHead>
                     <TableHead>Situação</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -536,11 +604,9 @@ export function RentalQuotationItem({
                       </TableCell>
                       <TableCell>{reservation.quotation}</TableCell>
                       <TableCell>{reservation.client}</TableCell>
-                      {product.mode !== 'INDIVIDUAL' && (
-                        <TableCell>
-                          {reservation.count} de {product.capacity}
-                        </TableCell>
-                      )}
+                      <TableCell>
+                        {reservation.count} de {product.capacity}
+                      </TableCell>
                       <TableCell>
                         {reservation.status === 'APPROVED' ? (
                           <Badge variant="successLight">Confirmada</Badge>

@@ -19,7 +19,14 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 
-import { addDays, formatDate, today, type RentalProduct } from '../data'
+import {
+  addDays,
+  endOf,
+  formatDate,
+  periodOf,
+  today,
+  type RentalProduct,
+} from '../data'
 import type { RentalDraft } from './RentalQuotationItem'
 
 export function RentalProduction({
@@ -34,8 +41,8 @@ export function RentalProduction({
   const [sent, setSent] = useState(false)
 
   const start = draft.start || today()
-  const end = draft.end || addDays(start, 13)
-  const isMedia = product.mode !== 'QUANTITY'
+  const end = endOf(start, periodOf(product, draft.periodId)) || start
+  const isMedia = !product.event
 
   const tasks = isMedia
     ? [
