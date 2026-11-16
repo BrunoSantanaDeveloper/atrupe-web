@@ -9,7 +9,7 @@
 // Cada período é uma variação do produto, e a composição por variação dá o
 // custo de cada período (revisão de 16/11). A validar com o Maicol:
 // composição só com o bem; lote como um patrimônio; receita do contrato
-// longo dividida pelos dias; e a ocupação do LED medida em cotas.
+// longo dividida pelos dias; e a ocupação do painel de LED pelos anúncios que ele costuma ter.
 
 import { useState } from 'react'
 

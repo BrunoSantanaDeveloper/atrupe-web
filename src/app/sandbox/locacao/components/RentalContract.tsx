@@ -3,8 +3,9 @@
 // Contrato de locação para imprimir e assinar (LC-15, 16/11/2026). Sai do
 // orçamento, como a impressão da proposta: as partes, o bem, o período e os
 // valores vêm sozinhos; as cláusulas são o modelo que a empresa edita em
-// Configurações. START: um modelo. LITE: mais de um modelo e as parcelas
-// mensais da cobrança recorrente.
+// Configurações. O contrato descreve a negociação inteira: todos os itens,
+// os prazos, os valores e a forma de pagamento. START: um modelo. LITE:
+// mais de um modelo e as parcelas mensais da cobrança recorrente.
 
 import { IconPlus, IconPrinter, IconTrash } from '@tabler/icons-react'
 import { toast } from 'sonner'
@@ -31,6 +32,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 
 import {
+  addDays,
   formatBrl,
   formatDate,
   planHas,
@@ -96,6 +98,79 @@ export function RentalContract({
   const days = draft.start ? line.period.days : 0
   const installments =
     manyModels && draft.monthly ? installmentsOf(draft, line) : []
+
+  // O contrato descreve a negociação inteira (Maicol, 16/11/2026): todos os
+  // itens do orçamento, os prazos, os valores e a forma de pagamento
+  const start = draft.start
+  const extras: { name: string; term: string; cents: number }[] = !start
+    ? []
+    : product.event
+      ? [
+          {
+            name: 'Entrega, montagem e desmontagem',
+            term: `${formatDate(start)} e ${formatDate(line.end)}`,
+            cents: 35000,
+          },
+        ]
+      : product.capacity === 1
+        ? [
+            {
+              name: `Impressão da lona ${product.spot?.artSize || ''}`.trim(),
+              term: `Pronta até ${formatDate(addDays(start, -2))}`,
+              cents: 32000,
+            },
+            {
+              name: 'Instalação e retirada',
+              term: `${formatDate(start)} e ${formatDate(line.end)}`,
+              cents: 18000,
+            },
+          ]
+        : []
+  const extrasCents = extras.reduce((sum, item) => sum + item.cents, 0)
+  const totalCents = line.totalCents + extrasCents
+
+  // Forma de pagamento: a condição do orçamento. Com a cobrança mensal
+  // (LITE), a locação vai nas parcelas mensais e o resto na entrada
+  const payments: {
+    label: string
+    method: string
+    due?: Date
+    cents: number
+  }[] = !start
+    ? []
+    : installments.length
+      ? [
+          ...(extrasCents
+            ? [
+                {
+                  label: 'Entrada (serviços)',
+                  method: 'PIX',
+                  due: today(),
+                  cents: extrasCents,
+                },
+              ]
+            : []),
+          ...installments.map((installment, index) => ({
+            label: `Locação ${index + 1}/${installments.length}`,
+            method: 'Boleto',
+            due: installment.due,
+            cents: installment.cents,
+          })),
+        ]
+      : [
+          {
+            label: 'Parcela 1/2',
+            method: 'Boleto',
+            due: today(),
+            cents: Math.ceil(totalCents / 2),
+          },
+          {
+            label: 'Parcela 2/2',
+            method: 'Boleto',
+            due: addDays(today(), 30),
+            cents: Math.floor(totalCents / 2),
+          },
+        ]
 
   const patchClause = (
     index: number,
@@ -195,43 +270,89 @@ export function RentalContract({
                     ? `${line.period.name}: ${formatDate(draft.start)} a ${formatDate(line.end)} (${days} ${days === 1 ? 'dia' : 'dias'})`
                     : 'Sem datas no orçamento'}
                 </Row>
-                <Row label="Valor total">{formatBrl(line.totalCents)}</Row>
-                <Row label="Pagamento">
-                  {installments.length
-                    ? `${installments.length} parcelas mensais, conforme abaixo`
-                    : 'Conforme a condição de pagamento do orçamento'}
-                </Row>
               </div>
 
-              {installments.length > 0 && (
+              <div className="space-y-1">
+                <p className="font-semibold text-gray-900">
+                  Itens da negociação
+                </p>
+                <table className="w-full border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-gray-300 text-gray-500">
+                      <th className="py-1 font-medium">Item</th>
+                      <th className="py-1 font-medium">Prazo</th>
+                      <th className="py-1 text-right font-medium">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-gray-200">
+                      <td className="py-1">
+                        Locação: {draft.quantity}
+                        {product.unit
+                          ? ` ${unitOf(product, draft.quantity)}`
+                          : ''}{' '}
+                        × {line.period.name}
+                      </td>
+                      <td className="py-1">
+                        {days
+                          ? `${formatDate(draft.start)} a ${formatDate(line.end)}`
+                          : '-'}
+                      </td>
+                      <td className="py-1 text-right">
+                        {formatBrl(line.totalCents)}
+                      </td>
+                    </tr>
+                    {extras.map((item) => (
+                      <tr key={item.name} className="border-b border-gray-200">
+                        <td className="py-1">{item.name}</td>
+                        <td className="py-1">{item.term}</td>
+                        <td className="py-1 text-right">
+                          {formatBrl(item.cents)}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className="font-semibold text-gray-900">
+                      <td className="py-1" colSpan={2}>
+                        Total
+                      </td>
+                      <td className="py-1 text-right">
+                        {formatBrl(totalCents)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="space-y-1">
+                <p className="font-semibold text-gray-900">
+                  Forma de pagamento
+                </p>
                 <table className="w-full border-collapse text-left">
                   <thead>
                     <tr className="border-b border-gray-300 text-gray-500">
                       <th className="py-1 font-medium">Parcela</th>
-                      <th className="py-1 font-medium">Período</th>
+                      <th className="py-1 font-medium">Forma</th>
                       <th className="py-1 font-medium">Vencimento</th>
                       <th className="py-1 text-right font-medium">Valor</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {installments.map((installment, index) => (
-                      <tr key={index} className="border-b border-gray-200">
-                        <td className="py-1">
-                          {index + 1}/{installments.length}
-                        </td>
-                        <td className="py-1">
-                          {formatDate(installment.from)} a{' '}
-                          {formatDate(installment.to)}
-                        </td>
-                        <td className="py-1">{formatDate(installment.due)}</td>
+                    {payments.map((payment) => (
+                      <tr
+                        key={payment.label}
+                        className="border-b border-gray-200"
+                      >
+                        <td className="py-1">{payment.label}</td>
+                        <td className="py-1">{payment.method}</td>
+                        <td className="py-1">{formatDate(payment.due)}</td>
                         <td className="py-1 text-right">
-                          {formatBrl(installment.cents)}
+                          {formatBrl(payment.cents)}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              )}
+              </div>
 
               <div className="space-y-3">
                 {model.clauses.map((clause, index) => (

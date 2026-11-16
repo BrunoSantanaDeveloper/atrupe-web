@@ -19,7 +19,7 @@ export const planHas = (plan: Plan, from: Plan) =>
 // modos nem regra de preço própria. O produto de locação é um produto comum
 // com um período (dias) e um valor; do LITE em diante cada período é uma
 // variação (PV-6), como P, M e G. A quantidade do item é a quantidade comum:
-// 1 outdoor, 14 peças de box truss, 2 cotas do painel de LED.
+// 1 outdoor, 14 peças de box truss, 2 anúncios no painel de LED.
 export interface RentalPeriod {
   id: string
   name: string
@@ -40,7 +40,7 @@ export interface RentalProduct {
   // START: vale só o primeiro. LITE: são as variações do produto
   periods: RentalPeriod[]
   // Quantidade disponível para locar (LITE, com a reserva): 1 outdoor, 20
-  // peças, 6 cotas
+  // peças, 6 anúncios ao mesmo tempo
   capacity: number
   // Nome da unidade quando há mais de uma: [singular, plural]
   unit?: [string, string]
@@ -104,7 +104,7 @@ export const PRODUCTS: RentalProduct[] = [
     id: 'led-centro',
     name: 'Anúncio no painel de LED Centro',
     capacity: 6,
-    unit: ['cota', 'cotas'],
+    unit: ['anúncio', 'anúncios'],
     periods: [
       { id: 's', name: 'Semana', days: 7, priceCents: 35000 },
       { id: 'm', name: 'Mês', days: 30, priceCents: 120000 },
@@ -261,7 +261,7 @@ export interface Availability {
 }
 
 // Bem individual: qualquer reserva no período bloqueia. Por quantidade e por
-// cota: sobra o saldo do período (LC-6, LC-9)
+// anúncio: sobra o saldo do período (LC-6, LC-9)
 export const availabilityOf = (
   product: RentalProduct,
   start?: Date,
@@ -389,9 +389,9 @@ export const monthlyCostOf = (asset: RentalAsset) =>
   depreciationOf(asset) +
   asset.fixedCosts.reduce((sum, cost) => sum + cost.monthlyCents, 0)
 
-// Custo de um dia do bem inteiro. Por quantidade e por cota, o custo do dia
-// se divide pelas peças ou pelas cotas (a ocupação de referência já é a média
-// de dias por peça ou por cota)
+// A mesma conta para todos, como a da máquina: custo mensal ÷ média mensal.
+// A média mensal do bem de locação é quanto ele costuma estar alugado: dias
+// por mês de cada unidade (o outdoor, cada peça, cada espaço de anúncio)
 export const dailyCostOf = (asset: RentalAsset, capacity = 1) =>
   monthlyCostOf(asset) / Math.max(asset.referenceDays, 1) / capacity
 

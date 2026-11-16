@@ -261,7 +261,7 @@ export function RentalProductForm({
           plan={plan}
           from="LITE"
           title="Quantidade disponível para locar"
-          locked="No Start o sistema não confere o que já está alugado. No Lite você informa quantas unidades existem (1 outdoor, 20 peças, 6 cotas do painel) e a reserva não deixa alugar além do que está livre no período."
+          locked="No Start o sistema não confere o que já está alugado. No Lite você informa quantas unidades existem (1 outdoor, 20 peças, 6 anúncios no painel) e a reserva não deixa alugar além do que está livre no período."
         >
           <Card>
             <CardHeader>
@@ -269,7 +269,7 @@ export function RentalProductForm({
               <CardDescription>
                 Quantas unidades deste produto existem. A reserva desconta deste
                 saldo em cada período: o outdoor tem 1, o lote de box truss tem
-                20 peças, o painel de LED tem 6 cotas.
+                20 peças, o painel de LED comporta 6 anúncios ao mesmo tempo.
               </CardDescription>
             </CardHeader>
             <CardContent className="px-6 pb-6">
