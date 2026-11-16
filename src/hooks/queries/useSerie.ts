@@ -11,6 +11,9 @@ interface ISeries {
     isActive: boolean
     isTraining: boolean
     isDefault: boolean
+    // Como a série fatura (VR-5): ON_ORDER, ON_DELIVERY, ON_CHECKOUT,
+    // ON_SALE ou NO_INVOICE
+    billing?: { value: string; label: string }
   }[]
 }
 

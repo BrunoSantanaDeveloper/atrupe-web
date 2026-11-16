@@ -19,6 +19,8 @@ export type PaymentConditionsType = {
   paymentMethod: {
     id: string
     name: string
+    // Tipo da forma: DIN, PIX, CRD, DEB, BOL, CHQ, DEP, LKP, PGM, PER
+    code?: string
   }
   generateInvoice?: boolean
   invoiceType?: 'NFE' | 'NFSE' | 'NFCE'

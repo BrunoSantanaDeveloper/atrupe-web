@@ -64,6 +64,7 @@ import { getQuickSaleSettings } from '@/actions/quick-sale'
 
 // Third-party
 import { toast } from 'sonner'
+import { ToStandardSaleDialog } from './ToStandardSaleDialog'
 import { useSession } from 'next-auth/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -158,6 +159,9 @@ export function useQuickSale(data: QuotationType) {
   return {
     canSend,
     canCharge,
+    client: data?.client?.id
+      ? { id: data.client.id, name: data.client.name }
+      : null,
     unavailable,
     // O cliente padrão da configuração: a venda com ele não tem "cliente
     // informado", então não há proposta a mostrar (26/10/2026)
@@ -405,6 +409,7 @@ export function QuickSaleCheckoutButton({
 
 export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
   const money = useMoney()
+  const [toStandard, setToStandard] = useState(false)
   if (sale.isLoading) return <Skeleton className="h-40 w-full" />
 
   const both = sale.canSend && sale.canCharge
@@ -443,11 +448,28 @@ export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
                 ))}
               </div>
             )}
+            {/* Boleto ou faturar (VR-11): o balcão só recebe à vista */}
             <p className="text-sm text-gray">
-              {sale.canSend
-                ? 'Parcelar ou faturar para o cliente? Envie ao caixa.'
-                : 'Parcelar ou faturar para o cliente? Use uma série que fatura no pedido.'}
+              Cliente cadastrado quer boleto ou faturar?{' '}
+              <PermissionGate permissions={['sale:quotation:edit']}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="link"
+                  className="h-auto p-0"
+                  onClick={() => setToStandard(true)}
+                >
+                  Passar para venda padrão
+                </Button>
+              </PermissionGate>
             </p>
+            <ToStandardSaleDialog
+              open={toStandard}
+              onOpenChange={setToStandard}
+              quotationId={sale.origin.quotationId}
+              client={sale.client}
+              defaultClientId={sale.defaultClientId}
+            />
           </div>
         </div>
 

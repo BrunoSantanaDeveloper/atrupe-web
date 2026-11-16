@@ -177,7 +177,7 @@
     "deliveryDate": "Data de entrega",
     "filterPeriodBy": "Filtrar período por",
     "services": "Serviços",
-    "stage2": "Fase atual",
+    "saleStage": "Etapa da venda",
     "customerTotal": "Total do cliente",
     "salespersonTotal": "Total do Vendedor",
     "approved4": "Aprovadas ({approvedCount})",

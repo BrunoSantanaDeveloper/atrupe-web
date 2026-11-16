@@ -17606,5 +17606,45 @@
   "ccab241884": {
     "es": "{client} - {reference} · al contado, por el total. Para pagar en cuotas o cobrar después, use una serie que factura en el pedido.",
     "en": "{client} - {reference} · paid in full, now. To split or charge later, use a series that bills on the order."
+  },
+  "1a71d8ba18": {
+    "es": "Pasar a venta estándar",
+    "en": "Switch to standard sale"
+  },
+  "7ae79c77a0": {
+    "es": "Elija el cliente registrado",
+    "en": "Choose the registered customer"
+  },
+  "37732f6fc5": {
+    "es": "Elija la serie",
+    "en": "Choose the series"
+  },
+  "2d4dadf041": {
+    "es": "Elija el registro del cliente, no el consumidor de la venta rápida",
+    "en": "Choose the customer record, not the quick sale walk-in customer"
+  },
+  "b905e75c0c": {
+    "es": "Ahora es una venta estándar: complete las condiciones de pago y apruebe.",
+    "en": "It is now a standard sale: fill in the payment terms and approve."
+  },
+  "64029cebc7": {
+    "es": "Serie que factura en el pedido o en la entrega",
+    "en": "Series that bills on the order or on delivery"
+  },
+  "071dd0fde1": {
+    "es": "Ninguna serie activa factura en el pedido o en la entrega. Registre una en Configuración › Ventas › Series de venta.",
+    "en": "No active series bills on the order or on delivery. Create one in Settings › Sales › Sales series."
+  },
+  "d0afa50ebc": {
+    "es": "La venta deja de ser venta rápida y recibe el número de la nueva serie.",
+    "en": "The sale is no longer a quick sale and gets the new series number."
+  },
+  "cd32f4e16f": {
+    "es": "¿El cliente registrado quiere boleto o facturar?",
+    "en": "Registered customer wants a boleto or to be invoiced?"
+  },
+  "2816bf47af": {
+    "es": "Para el cliente registrado que quiere boleto o facturar. El mostrador solo cobra al contado; en la venta estándar usted elige las condiciones de pago, aprueba, y el boleto sigue por el Flujo financiero.",
+    "en": "For the registered customer who wants a boleto or to be invoiced. The counter only takes payment in full; in the standard sale you choose the payment terms, approve, and the boleto continues in the Cash flow."
   }
 }

@@ -65,21 +65,23 @@ import { cn, formatMoney } from '@/lib/utils'
 
 export const allPaymentMethods: PaymentMethod[] = ['CASH', 'PIX', 'CARD']
 
-// A forma de pagamento do cadastro vira a forma do caixa pelo nome: o caixa
-// só precisa saber se é dinheiro (vai para a gaveta), PIX ou cartão
-export const methodOfCondition = (name?: string): PaymentMethod => {
-  const lower = (name || '').toLowerCase()
-  if (lower.includes('pix')) return 'PIX'
-  if (
-    lower.includes('cart') ||
-    lower.includes('crédito') ||
-    lower.includes('credito') ||
-    lower.includes('débito') ||
-    lower.includes('debito')
-  ) {
-    return 'CARD'
+// A forma de pagamento do cadastro vira a forma do caixa pelo tipo do
+// cadastro (VR-11, 16/11/2026), não pelo nome: pelo nome, "Boleto" virava
+// dinheiro. O balcão só recebe à vista: dinheiro, PIX e cartão. Os outros
+// tipos (boleto, cheque, depósito, permuta, link...) ficam fora: o cliente
+// que paga assim vai para a venda padrão
+export const methodOfCode = (code?: string | null): PaymentMethod | null => {
+  switch ((code || '').toUpperCase()) {
+    case 'DIN':
+      return 'CASH'
+    case 'PIX':
+      return 'PIX'
+    case 'CRD':
+    case 'DEB':
+      return 'CARD'
+    default:
+      return null
   }
-  return 'CASH'
 }
 
 const partSchema = z.object({
@@ -134,20 +136,29 @@ export function useCashReceipt(
   // para a gaveta e, no fechamento, para a conta Caixa. PIX ou cartão sem
   // conta não têm onde dar baixa
   const conditionOptions = useMemo(() => {
-    const list = conditions?.length
-      ? conditions.map((condition) => ({
-          value: condition.id,
-          label: condition.name,
-        }))
-      : [{ value: 'CASH', label: paymentMethodLabel.CASH }]
+    const list: { value: string; label: string; method: PaymentMethod }[] =
+      conditions?.length
+        ? conditions.flatMap((condition) => {
+            const method = methodOfCode(condition.paymentMethod?.code)
+            return method
+              ? [{ value: condition.id, label: condition.name, method }]
+              : []
+          })
+        : [
+            {
+              value: 'CASH',
+              label: paymentMethodLabel.CASH,
+              method: 'CASH' as PaymentMethod,
+            },
+          ]
     if (!options.methods) return list
-    return list.filter((option) =>
-      options.methods!.includes(methodOfCondition(option.label)),
-    )
+    return list.filter((option) => options.methods!.includes(option.method))
   }, [conditions, options.methods])
 
   const conditionName = (id: string) =>
     conditionOptions.find((option) => option.value === id)?.label
+  const methodOf = (id: string): PaymentMethod =>
+    conditionOptions.find((option) => option.value === id)?.method ?? 'CASH'
 
   const parts = watch('parts') || []
   // O balcão abre em Dinheiro (CX-2; decisão do produto, 26/10/2026): a
@@ -157,9 +168,8 @@ export function useCashReceipt(
   useEffect(() => {
     if (firstConditionId || !conditionOptions.length) return
     const cash =
-      conditionOptions.find(
-        (option) => methodOfCondition(option.label) === 'CASH',
-      ) ?? conditionOptions[0]
+      conditionOptions.find((option) => option.method === 'CASH') ??
+      conditionOptions[0]
     setValue('parts.0.paymentConditionId', cash.value)
   }, [firstConditionId, conditionOptions, setValue])
   const totalValue = watch('totalValue') || 0
@@ -177,7 +187,7 @@ export function useCashReceipt(
     let changeLeft = change
     return parts
       .map((part) => {
-        const method = methodOfCondition(conditionName(part.paymentConditionId))
+        const method = methodOf(part.paymentConditionId)
         let amount = part.amount || 0
         if (method === 'CASH' && changeLeft > 0) {
           const taken = Math.min(amount, changeLeft)
@@ -241,6 +251,7 @@ export function useCashReceipt(
     removePart: (index: number) => fields.remove(index),
     conditionOptions,
     conditionName,
+    methodOf,
     direct: !!options.direct,
   }
 }
@@ -267,9 +278,7 @@ function PartRow({
   // a escolher. PIX e cartão vão para a conta, como na baixa do Fluxo. No
   // "Cobrar na venda" não há gaveta: o dinheiro também vai para a conta
   const isCash =
-    !receipt.direct &&
-    !!conditionId &&
-    methodOfCondition(receipt.conditionName(conditionId)) === 'CASH'
+    !receipt.direct && !!conditionId && receipt.methodOf(conditionId) === 'CASH'
 
   const { data: banks } = useBankFilterCondition(conditionId)
   const { data: bankAccounts } = useBankAccount({
