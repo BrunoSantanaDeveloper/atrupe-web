@@ -29,14 +29,6 @@ import { z } from 'zod'
 // Actions
 import { createItemNew } from '@/actions/_cruds'
 
-const cancelSchema = z.object({
-  reason: z
-    .string()
-    .min(15, 'A justificativa deve ter pelo menos 15 caracteres'),
-})
-
-type CancelFormType = z.infer<typeof cancelSchema>
-
 interface NfeItem {
   id: string
   number: number
@@ -57,6 +49,29 @@ const DOC_ROUTE: Record<FiscalDocType, string> = {
   NFSE: 'nfse',
 }
 
+// O limite de 100 vale para a NFS-e: EveMotivo e' C(100) no layout de eventos
+// do InvoiCy, e o texto vai inteiro para o registro da prefeitura. NF-e e
+// NFC-e seguem o limite da SEFAZ, bem maior, entao nao ganham teto aqui.
+const LIMITE_JUSTIFICATIVA_NFSE = 100
+
+const montarSchema = (docType: FiscalDocType) =>
+  z.object({
+    reason:
+      docType === 'NFSE'
+        ? z
+            .string()
+            .min(15, 'A justificativa deve ter pelo menos 15 caracteres')
+            .max(
+              LIMITE_JUSTIFICATIVA_NFSE,
+              `A justificativa deve ter no máximo ${LIMITE_JUSTIFICATIVA_NFSE} caracteres`,
+            )
+        : z
+            .string()
+            .min(15, 'A justificativa deve ter pelo menos 15 caracteres'),
+  })
+
+type CancelFormType = { reason: string }
+
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -74,7 +89,7 @@ export function CancelNfeDialog({
 }: Props) {
   const docLabel = DOC_LABEL[docType]
   const form = useForm<CancelFormType>({
-    resolver: zodResolver(cancelSchema),
+    resolver: zodResolver(montarSchema(docType)),
     defaultValues: {
       reason: '',
     },
@@ -157,8 +172,15 @@ export function CancelNfeDialog({
               <FormTextarea
                 name="reason"
                 label="Justificativa do Cancelamento"
-                placeholder="Informe o motivo do cancelamento (mínimo 15 caracteres)"
+                placeholder={
+                  docType === 'NFSE'
+                    ? `Informe o motivo do cancelamento (de 15 a ${LIMITE_JUSTIFICATIVA_NFSE} caracteres)`
+                    : 'Informe o motivo do cancelamento (mínimo 15 caracteres)'
+                }
                 rows={4}
+                {...(docType === 'NFSE'
+                  ? { maxLength: LIMITE_JUSTIFICATIVA_NFSE }
+                  : {})}
               />
             </form>
           </Form>
