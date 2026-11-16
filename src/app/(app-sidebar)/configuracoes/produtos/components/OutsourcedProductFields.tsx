@@ -80,7 +80,7 @@ export function OutsourcedProductFields() {
   const unit = UNIT_NAME[unitKind] || 'unidade'
 
   return (
-    <div className="w-full rounded-xl border border-gray-200 p-4 space-y-4">
+    <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex items-center gap-1.5">
         <FormSwitch name="isOutsourced" label="Produto terceirizado" />
       </div>

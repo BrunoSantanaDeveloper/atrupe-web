@@ -17590,5 +17590,17 @@
   "efdf968116": {
     "es": "Los sectores por los que pasa el producto en la producción",
     "en": "The departments the product goes through in production"
+  },
+  "7f10cd159a": {
+    "es": "Configuración avanzada de venta",
+    "en": "Advanced sales settings"
+  },
+  "78dbc3fd2a": {
+    "es": "Producto tercerizado, variaciones, cantidad mínima y precio por cantidad.",
+    "en": "Outsourced product, variations, minimum quantity and quantity pricing."
+  },
+  "0a14cbfdd4": {
+    "es": "Producto tercerizado: comprado al proveedor y revendido.",
+    "en": "Outsourced product: bought from a supplier and resold."
   }
 }

@@ -13,16 +13,10 @@ import { useFormContext, useWatch } from 'react-hook-form'
 
 // Components
 import { ProductionStages } from './ProductionStages'
+import { ProductFormAccordion } from './ProductFormAccordion'
 
 // Types
 import type { NewProductsFormType } from './schema'
-
-// Icons
-import { IconChevronDown } from '@tabler/icons-react'
-import { ICON_SIZE } from '@/components/ui/icon'
-
-// Libs
-import { cn } from '@/lib/utils'
 
 export function ProductionStagesSection() {
   const [open, setOpen] = useState(false)
@@ -31,33 +25,17 @@ export function ProductionStagesSection() {
   const active = stages.filter((stage) => stage?.isActive).length
 
   return (
-    <section className="mt-4 w-full rounded-2xl border border-gray-200 bg-gray-50">
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
-        className="flex w-full items-center justify-between gap-4 p-5 text-left"
-      >
-        <div>
-          <h3 className="type-card-title">Etapas de produção</h3>
-          <p className="text-sm text-gray">
-            {stages.length
-              ? `${active} de ${stages.length} etapas usadas por este produto`
-              : 'Os setores por onde o produto passa na produção'}
-          </p>
-        </div>
-        <IconChevronDown
-          aria-hidden="true"
-          size={ICON_SIZE.md}
-          className={cn(
-            'shrink-0 text-gray-500 transition-transform',
-            open && 'rotate-180',
-          )}
-        />
-      </button>
-      <div className={cn('px-5 pb-5', !open && 'hidden')}>
-        <ProductionStages hideTitle />
-      </div>
-    </section>
+    <ProductFormAccordion
+      title="Etapas de produção"
+      description={
+        stages.length
+          ? `${active} de ${stages.length} etapas usadas por este produto`
+          : 'Os setores por onde o produto passa na produção'
+      }
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <ProductionStages hideTitle />
+    </ProductFormAccordion>
   )
 }
