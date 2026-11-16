@@ -17602,5 +17602,9 @@
   "0a14cbfdd4": {
     "es": "Producto tercerizado: comprado al proveedor y revendido.",
     "en": "Outsourced product: bought from a supplier and resold."
+  },
+  "ccab241884": {
+    "es": "{client} - {reference} · al contado, por el total. Para pagar en cuotas o cobrar después, use una serie que factura en el pedido.",
+    "en": "{client} - {reference} · paid in full, now. To split or charge later, use a series that bills on the order."
   }
 }

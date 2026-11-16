@@ -203,9 +203,13 @@ export function PDV() {
           supportText={
             isLoading
               ? undefined
-              : session
+              : isOpen && session
                 ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
-                : 'Nenhum caixa aberto'
+                : // A API devolve a última sessão também fechada (16/11/2026):
+                  // o topo não pode dizer "aberto" de um caixa já fechado
+                  session
+                  ? `Nenhum caixa aberto · o último, ${session.name} nº ${session.number}, foi fechado${session.closedBy ? ` por ${session.closedBy}` : ''}`
+                  : 'Nenhum caixa aberto'
           }
           // As abas ficam na URL (design.md §5.1), com a contagem de cada uma
           paramName="aba"
@@ -634,7 +638,12 @@ export function PDV() {
                           </p>
                           <p className="text-sm text-gray">
                             {cashMovementLabel[movement.kind]}
-                            {movement.reason ? ` · ${movement.reason}` : ''}
+                            {/* A transferência sem motivo grava o motivo
+                                "Transferência": não se repete na linha */}
+                            {movement.reason &&
+                            movement.reason !== 'Transferência'
+                              ? ` · ${movement.reason}`
+                              : ''}
                             {movement.responsible
                               ? ` · ${movement.responsible}`
                               : ''}

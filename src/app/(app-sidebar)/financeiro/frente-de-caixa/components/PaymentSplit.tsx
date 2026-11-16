@@ -105,6 +105,9 @@ export function useCashReceipt(
     // Formas aceitas (a venda rápida "cobrar na hora" restringe)
     methods?: readonly PaymentMethod[]
     rounding?: boolean
+    // Cobrar na venda (VR-10): não há gaveta, o dinheiro entra direto numa
+    // conta da empresa, então ele também mostra banco e conta
+    direct?: boolean
   } = {},
 ) {
   const roundingLimit = options.roundingLimit ?? DEFAULT_ROUNDING_LIMIT
@@ -238,6 +241,7 @@ export function useCashReceipt(
     removePart: (index: number) => fields.remove(index),
     conditionOptions,
     conditionName,
+    direct: !!options.direct,
   }
 }
 
@@ -260,8 +264,10 @@ function PartRow({
   const bankId = watch(`parts.${index}.bankId`) || ''
   const bankAccountId = watch(`parts.${index}.bankAccountId`) || ''
   // Dinheiro fica na gaveta do caixa até o fechamento: não há banco nem conta
-  // a escolher. PIX e cartão vão para a conta, como na baixa do Fluxo
+  // a escolher. PIX e cartão vão para a conta, como na baixa do Fluxo. No
+  // "Cobrar na venda" não há gaveta: o dinheiro também vai para a conta
   const isCash =
+    !receipt.direct &&
     !!conditionId &&
     methodOfCondition(receipt.conditionName(conditionId)) === 'CASH'
 

@@ -215,6 +215,7 @@ function ChargeNowDialog({
     methods: sale.methods,
     roundingLimit: sale.roundingLimit,
     rounding,
+    direct: true,
   })
   const refresh = useRefresh(sale.origin.quotationId)
 
@@ -256,7 +257,8 @@ function ChargeNowDialog({
               <DialogTitle className="mb-1">Recebimento</DialogTitle>
               <DialogDescription className="truncate">
                 {sale.origin.client} - {sale.origin.reference} · à vista, pelo
-                total. Para parcelar ou cobrar depois, envie ao caixa.
+                total. Para parcelar ou cobrar depois, use uma série que fatura
+                no pedido.
               </DialogDescription>
             </div>
           </div>
