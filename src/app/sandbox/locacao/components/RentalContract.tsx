@@ -49,6 +49,11 @@ const COMPANY = {
   name: 'Atrupe Comunicação Visual Ltda.',
   document: '12.345.678/0001-90',
   address: 'Rua das Palmeiras, 450 - Centro, Balneário Camboriú/SC',
+  street: 'Rua das Palmeiras, 450',
+  district: 'Centro, Balneário Camboriú, SC.',
+  site: 'www.atrupe.com.br',
+  phone: '(47) 3333-0000',
+  email: 'contato@atrupe.com.br',
 }
 
 const CLIENT = {
@@ -223,16 +228,28 @@ export function RentalContract({
           </CardHeader>
           <CardContent className="bg-gray-100 px-6 py-6">
             <div className="mx-auto max-w-[760px] space-y-5 bg-white p-10 text-sm leading-relaxed text-gray-800 shadow-sm">
-              <div className="flex items-center justify-between border-b border-gray-300 pb-4">
-                <div>
-                  <p className="text-base font-semibold text-gray-900">
-                    {COMPANY.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    CNPJ {COMPANY.document} · {COMPANY.address}
-                  </p>
+              {/* Cabeçalho como o do orçamento (PdfHeader): faixa cinza, a
+                  logo da empresa, os dados e os contatos */}
+              <div className="-mx-10 -mt-10 flex min-h-[76px] items-center justify-between gap-4 bg-[#F2F4F7] px-[30px] py-2.5">
+                <div className="w-[35%]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/logo/logo.png"
+                    alt="Logo da empresa"
+                    className="h-14 w-20 object-contain"
+                  />
                 </div>
-                <p className="text-xs text-gray-500">Orçamento 41-T1</p>
+                <div className="flex w-1/2 flex-col gap-1 text-[8px] leading-tight text-gray-800">
+                  <p className="text-[9px] font-bold">{COMPANY.name}</p>
+                  <p>{COMPANY.document}</p>
+                  <p>{COMPANY.street}</p>
+                  <p>{COMPANY.district}</p>
+                </div>
+                <div className="flex w-1/4 flex-col items-end gap-0.5 text-[7px] text-gray-800">
+                  <p>{COMPANY.site}</p>
+                  <p>{COMPANY.phone}</p>
+                  <p>{COMPANY.email}</p>
+                </div>
               </div>
 
               <h2 className="text-center text-base font-semibold uppercase tracking-wide text-gray-900">
