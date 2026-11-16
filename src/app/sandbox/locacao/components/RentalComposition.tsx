@@ -7,9 +7,9 @@
 // por bem.
 //
 // Cada período é uma variação do produto, e a composição por variação dá o
-// custo de cada período (revisão de 16/11). A validar com o Maicol:
-// composição só com o bem; lote como um patrimônio; receita do contrato
-// longo dividida pelos dias; e a ocupação do painel de LED pelos anúncios que ele costuma ter.
+// custo de cada período (revisão de 16/11). A composição segue as regras de
+// hoje, iguais para todos. No resultado por bem, a receita é a do financeiro
+// (o recebido no mês); o vendido fica no relatório de vendas.
 
 import { useState } from 'react'
 
@@ -329,9 +329,10 @@ export function RentalComposition({
         <CardHeader>
           <CardTitle>Resultado por bem, neste mês</CardTitle>
           <CardDescription>
-            Qual ponto dá mais e qual dá menos. A receita do contrato longo
-            entra pelos dias do mês, e o custo é o realizado: depreciação mais
-            as despesas do ponto lançadas.
+            Qual ponto dá mais e qual dá menos. A receita é a do financeiro: o
+            que o bem recebeu no mês, nas datas das parcelas. O total vendido no
+            mês fica no relatório de vendas, por produto. O custo é o realizado:
+            depreciação mais as despesas do ponto lançadas.
           </CardDescription>
         </CardHeader>
         <CardContent className="px-6 pb-6">
@@ -340,7 +341,7 @@ export function RentalComposition({
               <TableRow className="bg-gray-50">
                 <TableHead>Bem</TableHead>
                 <TableHead>Ocupação do mês</TableHead>
-                <TableHead className="text-right">Receita</TableHead>
+                <TableHead className="text-right">Recebido</TableHead>
                 <TableHead className="text-right">Custo</TableHead>
                 <TableHead className="text-right">Resultado</TableHead>
               </TableRow>

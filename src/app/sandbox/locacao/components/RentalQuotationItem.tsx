@@ -210,7 +210,13 @@ export function RentalQuotationItem({
   const hasDates = !!draft.start
 
   const availability = availabilityOf(product, draft.start, line.end)
-  const blocked = hasReserve && hasDates && draft.quantity > availability.free
+  // Decisão de 16/11/2026: a reserva vale para o bem único (outdoor, painel
+  // inteiro). O produto com várias unidades (peças, anúncios no painel de
+  // LED) aceita várias locações no período; o saldo fica para o estudo do
+  // controle de estoque
+  const single = product.capacity === 1
+  const blocked =
+    hasReserve && hasDates && single && availability.conflicts.length > 0
   const belowLimit = line.totalCents < line.minCents
   const editable = draft.status === 'DRAFT'
   const installments = draft.monthly ? installmentsOf(draft, line) : []
@@ -441,23 +447,26 @@ export function RentalQuotationItem({
             plan={plan}
             from="LITE"
             title="Reserva do bem"
-            locked="No Start o sistema não confere se este bem já está alugado no período: o controle é seu. No Lite, o orçamento em Aguardando reserva o bem até a proposta vencer, e o sistema não deixa alugar o mesmo período duas vezes."
+            locked="No Start o sistema não confere se este bem já está alugado no período: o controle é seu. No Lite, o orçamento em Aguardando reserva o bem único (o outdoor, o painel) até a proposta vencer, e o sistema não deixa alugar o mesmo período duas vezes."
           >
-            {blocked ? (
+            {!single ? (
+              <Notice
+                tone="info"
+                icon={IconInfoCircle}
+                title="Este produto aceita várias locações no mesmo período"
+              >
+                O sistema não controla quantas unidades estão livres: confira o
+                que já foi locado na lista abaixo. O controle do saldo entra com
+                o controle de estoque.
+              </Notice>
+            ) : blocked ? (
               <Notice
                 tone="error"
                 icon={IconCalendarOff}
-                title={
-                  product.capacity === 1
-                    ? 'Este período já está reservado'
-                    : `Só ${availability.free} de ${product.capacity} ${unitOf(product, product.capacity)} livres neste período`
-                }
+                title="Este período já está reservado"
               >
                 {availability.conflicts.map((conflict) => (
                   <p key={conflict.id}>
-                    {product.capacity > 1
-                      ? `${conflict.count} ${unitOf(product, conflict.count)} · `
-                      : ''}
                     {formatDate(conflict.start)} a {formatDate(conflict.end)} ·
                     orçamento {conflict.quotation}, {conflict.client} (
                     {conflict.status === 'WAITING'
@@ -467,9 +476,8 @@ export function RentalQuotationItem({
                   </p>
                 ))}
                 <p className="mt-1">
-                  {availability.free > 0
-                    ? `Diminua a quantidade para até ${availability.free} ou escolha outra data de início.`
-                    : 'Escolha outra data de início ou outro produto para enviar ao cliente.'}
+                  Escolha outra data de início ou outro produto para enviar ao
+                  cliente.
                 </p>
               </Notice>
             ) : draft.status === 'DRAFT' ? (
@@ -478,11 +486,9 @@ export function RentalQuotationItem({
                 icon={IconInfoCircle}
                 title="Em digitação o bem não fica reservado"
               >
-                {!hasDates
-                  ? 'A reserva começa quando o orçamento vai para Aguardando.'
-                  : product.capacity === 1
-                    ? 'O período está livre. A reserva começa quando o orçamento vai para Aguardando.'
-                    : `${availability.free} de ${product.capacity} ${unitOf(product, product.capacity)} livres no período. A reserva começa quando o orçamento vai para Aguardando.`}
+                {hasDates
+                  ? 'O período está livre. A reserva começa quando o orçamento vai para Aguardando.'
+                  : 'A reserva começa quando o orçamento vai para Aguardando.'}
               </Notice>
             ) : draft.status === 'WAITING' ? (
               <Notice
@@ -577,10 +583,15 @@ export function RentalQuotationItem({
       {hasReserve && (
         <Card>
           <CardHeader>
-            <CardTitle>Reservas de {product.name}</CardTitle>
+            <CardTitle>
+              {single ? 'Reservas' : 'Locações'} de {product.name}
+            </CardTitle>
             <CardDescription>
-              O que já segura este bem. A tela de agenda, com a ocupação de
-              todos os bens, fica para depois do Elite.
+              {single
+                ? 'O que já segura este bem.'
+                : 'O que já foi locado deste produto, para conferir o saldo.'}{' '}
+              A tela de agenda, com a ocupação de todos os bens, fica para
+              depois do Elite.
             </CardDescription>
           </CardHeader>
           <CardContent className="px-6 pb-6">
@@ -605,7 +616,10 @@ export function RentalQuotationItem({
                       <TableCell>{reservation.quotation}</TableCell>
                       <TableCell>{reservation.client}</TableCell>
                       <TableCell>
-                        {reservation.count} de {product.capacity}
+                        {reservation.count}
+                        {product.unit
+                          ? ` ${unitOf(product, reservation.count)}`
+                          : ''}
                       </TableCell>
                       <TableCell>
                         {reservation.status === 'APPROVED' ? (

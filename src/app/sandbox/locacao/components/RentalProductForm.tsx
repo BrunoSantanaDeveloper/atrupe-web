@@ -260,29 +260,36 @@ export function RentalProductForm({
         <PlanLock
           plan={plan}
           from="LITE"
-          title="Quantidade disponível para locar"
-          locked="No Start o sistema não confere o que já está alugado. No Lite você informa quantas unidades existem (1 outdoor, 20 peças, 6 anúncios no painel) e a reserva não deixa alugar além do que está livre no período."
+          title="Reserva do bem único"
+          locked="No Start o sistema não confere o que já está alugado. No Lite, o bem único (um outdoor, um painel) fica reservado no período e não pode ser alugado duas vezes."
         >
           <Card>
             <CardHeader>
-              <CardTitle>Quantidade disponível para locar</CardTitle>
+              <CardTitle>Reserva</CardTitle>
               <CardDescription>
-                Quantas unidades deste produto existem. A reserva desconta deste
-                saldo em cada período: o outdoor tem 1, o lote de box truss tem
-                20 peças, o painel de LED comporta 6 anúncios ao mesmo tempo.
+                O controle de quantas peças estão livres (box truss, brindes)
+                fica para o controle de estoque, a estudar.
               </CardDescription>
             </CardHeader>
             <CardContent className="px-6 pb-6">
-              <div className="max-w-[200px]">
-                <Input
-                  type="number"
-                  min={1}
-                  aria-label="Quantidade disponível para locar"
-                  value={product.capacity}
-                  onChange={(event) =>
-                    patch({ capacity: Number(event.target.value) || 1 })
+              <div className="flex items-start gap-3">
+                <Switch
+                  id="rental-single"
+                  checked={product.capacity === 1}
+                  onCheckedChange={(single) =>
+                    patch({ capacity: single ? 1 : 10 })
                   }
                 />
+                <div>
+                  <Label htmlFor="rental-single">
+                    Bem único: não alugar o mesmo período duas vezes
+                  </Label>
+                  <p className="text-sm text-gray">
+                    Ligado para o outdoor e o painel inteiro. Desligado para o
+                    que aceita várias locações no mesmo período: peças de box
+                    truss, anúncios no painel de LED.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
