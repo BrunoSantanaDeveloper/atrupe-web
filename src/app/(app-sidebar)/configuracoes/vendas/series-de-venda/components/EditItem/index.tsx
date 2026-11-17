@@ -41,6 +41,7 @@ import type { SellerProfileType } from '@/types/settings/sellerProfile'
 // Actions
 import { getDataOld, updateItemNew } from '@/actions/_cruds'
 import { DisableSerieAlertDialog } from './DisableSerie'
+import { ProposalTextsFields } from '../ProposalTextsFields'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useState, useEffect } from 'react'
@@ -117,6 +118,8 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
       sendToProduction: rowData?.sendToProduction?.value || '',
       productionStatus: rowData?.productionStatus?.value || '',
       isDefault: rowData?.isDefault || false,
+      textBeforeItems: rowData?.textBeforeItems ?? '',
+      textAfterItems: rowData?.textAfterItems ?? '',
     },
   })
 
@@ -294,6 +297,8 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                     </div>
                   )}
                 </div>
+                <Separator className="bg-gray-300" />
+                <ProposalTextsFields />
               </form>
             </Form>
           </DialogBody>

@@ -34,6 +34,7 @@ import { createItemNew } from '@/actions/_cruds'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { billingOptions } from '../EditItem'
+import { ProposalTextsFields } from '../ProposalTextsFields'
 
 const schema = z.object({
   code: z.string().min(1, 'Informe o código da série'),
@@ -50,6 +51,8 @@ const schema = z.object({
   billing: z.string().min(1, 'Informe o tipo de faturamento'),
   sendToProduction: z.string().min(1, 'Informe o envio para produção'),
   productionStatus: z.string().min(1, 'Informe o status de produção'),
+  textBeforeItems: z.string().optional(),
+  textAfterItems: z.string().optional(),
 })
 
 type FormType = z.infer<typeof schema>
@@ -75,6 +78,8 @@ export function NewSerieDialog({ open, setOpen }: Props) {
       billing: 'ON_ORDER',
       sendToProduction: 'DIRECT',
       productionStatus: 'MANAGE_PRODUCTION',
+      textBeforeItems: '',
+      textAfterItems: '',
     },
   })
 
@@ -196,6 +201,8 @@ export function NewSerieDialog({ open, setOpen }: Props) {
                     />
                   </>
                 )}
+                <Separator className="bg-gray-300" />
+                <ProposalTextsFields />
               </form>
             </Form>
           </DialogBody>

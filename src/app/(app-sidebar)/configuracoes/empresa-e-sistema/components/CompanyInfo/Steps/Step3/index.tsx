@@ -86,9 +86,15 @@ export function Step3() {
         />
       </div>
       <div className="border border-gray-300 w-full my-7" />
-      <p className="text-md font-semibold text-gray-700 mb-4">
-        Textos da proposta comercial
-      </p>
+      <div className="w-full mb-4">
+        <p className="text-md font-semibold text-gray-700">
+          Textos da proposta comercial
+        </p>
+        <p className="text-sm text-gray-500">
+          Valem para as séries de venda sem texto próprio. Cada série pode ter
+          os seus em Configurações › Vendas › Séries de venda.
+        </p>
+      </div>
       <FormTextarea<CompanyFormType>
         name="personalization.textsBeforeItems"
         label="Texto antes dos itens"

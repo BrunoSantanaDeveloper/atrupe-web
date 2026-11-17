@@ -21,8 +21,9 @@ export type SaleSeriesType = {
     value: string
     label: string
   }
-  textBeforeItems: string
-  textAfterItems: string
+  // Textos da proposta próprios da série; null usa os da empresa.
+  textBeforeItems: string | null
+  textAfterItems: string | null
   companyId: string
   isTraining: boolean
   isDefault: boolean
