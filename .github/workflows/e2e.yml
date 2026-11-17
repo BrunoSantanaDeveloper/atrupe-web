@@ -7,7 +7,9 @@ on:
 
 jobs:
   e2e-tests:
-    runs-on: ubuntu-latest
+    # O ubuntu-latest virou 26.04 (17/11/2026) e o Playwright do projeto não
+    # instala o Chromium nele: o e2e caía antes do primeiro teste
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       actions: read

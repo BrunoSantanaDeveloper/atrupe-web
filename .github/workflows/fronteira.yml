@@ -13,7 +13,10 @@ on:
 
 jobs:
   fronteira:
-    runs-on: ubuntu-latest
+    # O ubuntu-latest virou 26.04 (17/11/2026) e o Playwright do projeto não
+    # instala o Chromium nele (também barra o deploy de produção, que usa
+    # esta fronteira)
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
       NEXT_PUBLIC_DEMO_DATA: 'off'
