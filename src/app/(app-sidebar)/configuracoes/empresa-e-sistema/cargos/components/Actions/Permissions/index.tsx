@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 // Components
 import {
@@ -54,6 +55,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePlanCatalog } from '@/hooks/usePlanCatalog'
 import { useSession } from 'next-auth/react'
 
 // Actions
@@ -160,7 +162,10 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   // Telas do PRO, do ELITE e do FULL
   'cost.base': ['cost_base'],
   'cost.pricing': ['pricing_center'],
-  'production.production': ['production_manager'],
+  // O gerenciador do ELITE ou o quadro do setor do PRO, como no menu
+  'production.production': ['production_manager', 'sector_board'],
+  'production.time_entry': ['production_manager', 'sector_board'],
+  'production.productivity': ['productivity_tracking'],
   'stock.stock': ['stock_control'],
   'stock.invoice_entry': ['invoice_entry'],
 }
@@ -184,6 +189,18 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
   const { data: session } = useSession()
   const { hasAnyFeature } = usePlanFeatures()
+  const { getAvailableFrom } = usePlanCatalog()
+
+  // O plano que liberou a permissão (17/11/2026): a cada plano novo entram
+  // permissões novas, e a etiqueta diz de onde cada uma veio. As do START
+  // não levam etiqueta; sem o mapa de planos, nenhuma leva
+  const planOf = (section: string, item: string) => {
+    const features = PERMISSION_FEATURES[`${section}.${item}`]
+    if (!features) return null
+    const plan = getAvailableFrom(features)
+    if (!plan || plan.planType === 'START') return null
+    return plan.name
+  }
 
   // Só aparece a permissão de uma tela que o plano da empresa inclui.
   const _shouldShowPermission = (section: string, item: string) => {
@@ -372,7 +389,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                 <span>Permissões do cargo {rowData?.name || ''}</span>
               </div>
             </DialogTitle>
-            <DialogDescription className="sr-only"></DialogDescription>
+            <DialogDescription>
+              A etiqueta ao lado da permissão mostra o plano que a liberou.
+            </DialogDescription>
           </DialogHeader>
           <DialogBody>
             <Form {...form}>
@@ -537,7 +556,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                               return (
                                 <TableRow key={baseKey}>
                                   <TableCell className="font-medium">
-                                    {item.name}
+                                    <span className="inline-flex flex-wrap items-center gap-2">
+                                      {item.name}
+                                      {planOf(section.key, item.key) && (
+                                        <Badge variant="emerald" size="sm">
+                                          {planOf(section.key, item.key)}
+                                        </Badge>
+                                      )}
+                                    </span>
                                   </TableCell>
                                   <TableCell className="text-center">
                                     <FormCheckbox<FormType>

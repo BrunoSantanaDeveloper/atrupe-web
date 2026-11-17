@@ -17742,5 +17742,9 @@
   "411fbc928b": {
     "es": "La empresa indica el porcentaje de cada equipo. No se actualiza solo cuando el sector cambia: revíselo al comprar, vender o cambiar el volumen mensual previsto de un activo.",
     "en": "The company sets each piece of equipment's percentage. It doesn't update on its own when the department changes: review it when you buy, sell, or change an asset's planned monthly volume."
+  },
+  "8babea29dc": {
+    "es": "La etiqueta junto al permiso muestra el plan que lo habilitó.",
+    "en": "The tag next to the permission shows the plan that unlocked it."
   }
 }
