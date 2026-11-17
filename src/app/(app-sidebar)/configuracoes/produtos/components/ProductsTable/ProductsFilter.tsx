@@ -81,17 +81,21 @@ export function ProductsFilter({ searchParams }: SearchParamsType) {
         value={searchParams?.ordem || 'all'}
         onChange={(value) => set('ordem', String(value))}
       />
-      <SelectBasic
-        name="variacoes"
-        label="Variações"
-        className="w-full sm:w-[220px]"
-        options={[
-          { value: 'all', label: 'Só os produtos' },
-          { value: 'mostrar', label: 'Mostrar as variações' },
-        ]}
-        value={searchParams?.variacoes || 'all'}
-        onChange={(value) => set('variacoes', String(value))}
-      />
+      {/* Variações são do LITE em diante (PV-6, revista em 27/10/2026): no
+          START o filtro não aparece (decisão de 17/11/2026, D1) */}
+      <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+        <SelectBasic
+          name="variacoes"
+          label="Variações"
+          className="w-full sm:w-[220px]"
+          options={[
+            { value: 'all', label: 'Só os produtos' },
+            { value: 'mostrar', label: 'Mostrar as variações' },
+          ]}
+          value={searchParams?.variacoes || 'all'}
+          onChange={(value) => set('variacoes', String(value))}
+        />
+      </FeatureGate>
       <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
         <SelectBasic
           name="composicao"
