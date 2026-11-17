@@ -227,7 +227,7 @@ export function AssetForm({
           <p className="text-sm font-medium">Detalhar custos deste bem</p>
           <p className="text-sm text-gray">
             Desligado, o bem entra só com a depreciação no custo do setor, sem
-            unidade, produtividade, configurações ou custos próprios.
+            unidade, volume mensal, configurações ou custos próprios.
           </p>
         </div>
         <Switch
@@ -416,7 +416,7 @@ export function AssetForm({
                 htmlFor="asset-productivity"
                 className="text-sm font-medium"
               >
-                Produtividade de referência ({assetUnitShort[form.unit]}/mês)
+                Volume mensal previsto ({assetUnitShort[form.unit]}/mês)
               </label>
               <Input
                 id="asset-productivity"

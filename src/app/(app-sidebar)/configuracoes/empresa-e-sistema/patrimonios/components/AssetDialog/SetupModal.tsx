@@ -133,7 +133,7 @@ export function SetupModal({
                 : 'Nova configuração produtiva'}
             </DialogTitle>
             <DialogDescription className="sr-only">
-              Modo de trabalho do bem, com tempo e produtividade próprios.
+              Modo de trabalho do bem, com tempo e volume mensal próprios.
             </DialogDescription>
           </div>
         </DialogHeader>
@@ -180,7 +180,7 @@ export function SetupModal({
                 htmlFor="setup-productivity"
                 className="text-sm font-medium"
               >
-                Produtividade de referência ({unit}/mês)
+                Volume mensal previsto ({unit}/mês)
               </label>
               <Input
                 id="setup-productivity"
@@ -198,13 +198,14 @@ export function SetupModal({
               {activityHours} h/mês
             </p>
             <p className="text-sm text-gray">
-              Tempo por {unit} × produtividade. É a base do rateio do custo da
-              máquina entre as configurações.
+              Tempo por {unit} × volume mensal previsto. É a base do rateio do
+              custo da máquina entre as configurações.
             </p>
           </div>
 
           <p className="text-sm text-gray">
-            A produtividade do bem passa a ser a soma das configurações.
+            O volume mensal previsto do bem passa a ser a soma das
+            configurações.
           </p>
         </DialogBody>
         <DialogFooter>

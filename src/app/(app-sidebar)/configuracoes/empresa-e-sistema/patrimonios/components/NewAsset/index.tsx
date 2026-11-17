@@ -181,7 +181,7 @@ export function NewAssetModal({ sectors, groups, onCreated }: Props) {
               <p className="text-sm font-medium">Detalhar custos deste bem</p>
               <p className="text-sm text-gray">
                 Desligado, o bem entra só com a depreciação no custo do setor,
-                sem unidade, produtividade ou configurações.
+                sem unidade, volume mensal ou configurações.
               </p>
             </div>
             <Switch
@@ -315,7 +315,7 @@ export function NewAssetModal({ sectors, groups, onCreated }: Props) {
                     htmlFor="asset-productivity"
                     className="text-sm font-medium"
                   >
-                    Produtividade de referência ({assetUnitShort[unit]}/mês)
+                    Volume mensal previsto ({assetUnitShort[unit]}/mês)
                   </label>
                   <Input
                     id="asset-productivity"

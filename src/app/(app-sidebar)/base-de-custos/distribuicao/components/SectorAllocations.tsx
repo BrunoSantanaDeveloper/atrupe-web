@@ -76,7 +76,7 @@ export function SectorAllocations() {
         <ListDataTotalEmpty
           icon={IconArrowsSplit2}
           title="Nenhum setor com equipamento detalhado"
-          description="Cadastre os equipamentos com produtividade em Patrimônios para escolher como o custo do setor é repartido entre eles."
+          description="Cadastre os equipamentos com volume mensal previsto em Patrimônios para escolher como o custo do setor é repartido entre eles."
         />
       ) : (
         <CardContent className="px-6 pb-6">

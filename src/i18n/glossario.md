@@ -131,7 +131,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Liberar próxima etapa | Liberar siguiente etapa | Release next step |
 | Ficha de produção | Hoja de producción | Job ticket |
 | Projeto | Proyecto | Project |
-| Produtividade | Productividad | Productivity |
+| Produtividade (só o percentual: realizado ÷ previsto; 17/11/2026) | Productividad | Productivity |
 | Colaborador | Colaborador | Team member |
 | Veículo / frota | Vehículo / flota | Vehicle / fleet |
 | Anexo / versão válida | Adjunto / versión vigente | Attachment / current version |
@@ -148,6 +148,9 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Custo unitário | Costo unitario | Unit cost |
 | Markup | Markup | Markup |
 | Margem | Margen | Margin |
+| Margem desejada · margem atual | Margen deseado · margen actual | Target margin · current margin |
+| Lucro (valor em R$ no detalhamento do preço) | Ganancia | Profit |
+| Volume mensal previsto · realizado (o volume do bem no mês; 17/11/2026, substitui "produtividade de referência" e "média de venda") | Volumen mensual previsto · real | Planned · actual monthly volume |
 | Rateio | Prorrateo | Allocation |
 | Rateio manual | Prorrateo manual | Manual allocation |
 | Patrimônio (bem) | Activo | Asset |

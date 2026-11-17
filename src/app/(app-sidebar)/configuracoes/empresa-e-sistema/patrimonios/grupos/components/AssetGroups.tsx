@@ -120,9 +120,9 @@ export function AssetGroups() {
           <CardHeader>
             <CardTitle>Grupos</CardTitle>
             <CardDescription>
-              O grupo responde pela média do custo dos bens e pela soma da
-              produtividade. Máquinas diferentes continuam sendo escolhidas uma
-              a uma: o grupo é opcional.
+              O grupo responde pela média do custo dos bens e pela soma do
+              volume mensal previsto. Máquinas diferentes continuam sendo
+              escolhidas uma a uma: o grupo é opcional.
             </CardDescription>
           </CardHeader>
           <>
@@ -140,7 +140,7 @@ export function AssetGroups() {
                       Custo médio
                     </TableHead>
                     <TableHead className="w-[16%] text-right">
-                      Produtividade somada
+                      Volume previsto somado
                     </TableHead>
                     <TableHead className="w-[6%]" />
                   </TableRow>

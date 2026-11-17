@@ -62,13 +62,13 @@ export const allocationCriteria = [
     value: 'ACTIVITY_TIME',
     label: 'Tempo de atividade',
     description:
-      'Pelo tempo que cada equipamento ocupa o setor no mês: tempo por unidade × produtividade de cada configuração.',
+      'Pelo tempo que cada equipamento ocupa o setor no mês: tempo por unidade × volume mensal previsto de cada configuração.',
   },
   {
     value: 'MANUAL',
     label: 'Manual',
     description:
-      'A empresa informa o percentual de cada equipamento. Não se atualiza sozinho quando o setor muda: revise ao comprar, vender ou mudar a produtividade de um bem.',
+      'A empresa informa o percentual de cada equipamento. Não se atualiza sozinho quando o setor muda: revise ao comprar, vender ou mudar o volume mensal previsto de um bem.',
   },
 ] as const
 

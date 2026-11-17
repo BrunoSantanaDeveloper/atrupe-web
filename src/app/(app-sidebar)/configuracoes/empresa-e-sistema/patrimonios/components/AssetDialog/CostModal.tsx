@@ -273,7 +273,7 @@ export function CostModal({
             <p className="text-sm text-gray">
               {isFixed
                 ? 'O valor é diluído pela periodicidade informada.'
-                : `Multiplicado pela produtividade de referência ${isSetup ? 'da configuração' : 'do bem'} (${productivity} ${unit}/mês).`}
+                : `Multiplicado pelo volume mensal previsto ${isSetup ? 'da configuração' : 'do bem'} (${productivity} ${unit}/mês).`}
             </p>
           </div>
         </DialogBody>

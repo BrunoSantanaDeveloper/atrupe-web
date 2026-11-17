@@ -171,7 +171,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                         <TableHead className="w-[14%]">Setor</TableHead>
                         <TableHead className="w-[12%]">Unidade</TableHead>
                         <TableHead className="w-[14%] text-right">
-                          Produtividade
+                          Volume previsto
                         </TableHead>
                         <TableHead className="w-[14%] text-right">
                           Depreciação mensal

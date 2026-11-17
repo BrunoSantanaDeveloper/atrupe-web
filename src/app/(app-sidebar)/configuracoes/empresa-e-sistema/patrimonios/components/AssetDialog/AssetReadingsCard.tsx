@@ -204,7 +204,7 @@ export function AssetReadingsCard({
         ) : (
           <p className="text-sm text-gray">
             Nenhuma leitura registrada. Sem leituras, o comparativo usa o
-            vendido pelas composições ou a produtividade do cadastro.
+            vendido pelas composições ou o volume mensal previsto do cadastro.
           </p>
         )}
       </CardContent>

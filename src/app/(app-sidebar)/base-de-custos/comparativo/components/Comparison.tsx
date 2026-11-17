@@ -318,7 +318,7 @@ export function Comparison({ searchParams }: SearchParamsType) {
                     : ''}
                   O previsto soma os custos dos patrimônios pelo volume do
                   período (as leituras do contador, o que foi vendido pelas
-                  composições ou a produtividade do cadastro), o custo
+                  composições ou o volume mensal previsto do cadastro), o custo
                   financeiro sobre o recebido e o material das composições
                   vendidas. Períodos maiores são mais precisos: a compra não
                   acontece no mesmo mês do consumo. A depreciação não aparece

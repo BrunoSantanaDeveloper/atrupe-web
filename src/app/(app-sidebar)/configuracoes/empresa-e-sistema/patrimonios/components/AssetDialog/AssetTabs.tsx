@@ -115,9 +115,9 @@ export function SetupsTab({
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <p className="max-w-[720px] text-sm text-gray">
-          Os modos de trabalho do bem, com tempo e produtividade próprios. A
-          produtividade do bem é a soma das configurações, e o custo da máquina
-          é repartido entre elas pelo tempo de atividade.
+          Os modos de trabalho do bem, com tempo e volume mensal próprios. O
+          volume mensal previsto do bem é a soma das configurações, e o custo da
+          máquina é repartido entre elas pelo tempo de atividade.
         </p>
         {!isInactive && (
           <PermissionGate permissions={EDIT}>
@@ -132,7 +132,7 @@ export function SetupsTab({
               <TableHead className="w-[24%]">Configuração</TableHead>
               <TableHead className="w-[16%]">Tempo por unidade</TableHead>
               <TableHead className="w-[16%] text-right">
-                Produtividade
+                Volume previsto
               </TableHead>
               <TableHead className="w-[14%] text-right">
                 Tempo em atividade
@@ -195,8 +195,8 @@ export function SetupsTab({
         </Table>
       ) : (
         <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray">
-          Nenhuma configuração produtiva cadastrada. Sem ela, o bem usa a
-          produtividade de referência da aba Patrimônio, em {unit}/mês.
+          Nenhuma configuração produtiva cadastrada. Sem ela, o bem usa o volume
+          mensal previsto da aba Patrimônio, em {unit}/mês.
         </p>
       )}
       <SetupModal

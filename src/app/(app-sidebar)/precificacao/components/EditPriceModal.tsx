@@ -228,9 +228,9 @@ export function EditPriceModal({
     rule !== 'VARIABLE' || cost === null
       ? ''
       : profitTenths < 0
-        ? 'Informe um lucro maior ou igual a zero.'
+        ? 'Informe uma margem desejada maior ou igual a zero.'
         : variablePrice === null
-          ? 'O lucro e os encargos passam de 100% do preço.'
+          ? 'A margem desejada e os encargos passam de 100% do preço.'
           : ''
 
   const invalidate = (...keys: string[]) =>
@@ -378,8 +378,10 @@ export function EditPriceModal({
                   <Input id="pricing-unit" value={unit} disabled />
                 </div>
                 <div className="flex flex-col">
+                  {/* Volume mensal (17/11/2026, P-21): o mesmo número do
+                      patrimônio, aqui só para simular o mês; não grava */}
                   <Label htmlFor="pricing-volume" className="mb-2">
-                    Média de venda
+                    Volume mensal
                   </Label>
                   <Input
                     id="pricing-volume"
@@ -387,7 +389,7 @@ export function EditPriceModal({
                     min={0}
                     step="0.01"
                     inputMode="decimal"
-                    placeholder="no mês"
+                    placeholder="para simular o mês"
                     endAdornment={
                       <span className="text-sm text-gray">{unit}</span>
                     }
@@ -399,8 +401,10 @@ export function EditPriceModal({
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col">
+                  {/* Margem desejada no preço variável; no fixo, a margem
+                      que o preço dá (17/11/2026). "Lucro" fica para o R$ */}
                   <Label htmlFor="pricing-profit" className="mb-2">
-                    Lucro
+                    {rule === 'FIXED' ? 'Margem atual' : 'Margem desejada'}
                   </Label>
                   <Input
                     id="pricing-profit"
@@ -450,7 +454,7 @@ export function EditPriceModal({
                   {needsCost
                     ? 'Este item ainda não tem custo calculado. O preço pode ser definido quando o custo aparecer.'
                     : rule === 'VARIABLE'
-                      ? 'Sem custo não há como calcular o preço pelo lucro. Use o preço fixo, ou monte a composição para o custo aparecer.'
+                      ? 'Sem custo não há como calcular o preço pela margem desejada. Use o preço fixo, ou monte a composição para o custo aparecer.'
                       : 'Sem custo, o resumo não mostra a margem. O preço fixo pode ser gravado mesmo assim.'}
                 </p>
               )}

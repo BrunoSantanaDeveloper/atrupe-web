@@ -17646,5 +17646,101 @@
   "2816bf47af": {
     "es": "Para el cliente registrado que quiere boleto o facturar. El mostrador solo cobra al contado; en la venta estándar usted elige las condiciones de pago, aprueba, y el boleto sigue por el Flujo financiero.",
     "en": "For the registered customer who wants a boleto or to be invoiced. The counter only takes payment in full; in the standard sale you choose the payment terms, approve, and the boleto continues in the Cash flow."
+  },
+  "d6d2345a36": {
+    "es": "Lo previsto suma los costos de los activos por el volumen del período (las lecturas del contador, lo vendido por las composiciones o el volumen mensual previsto del registro), el costo financiero sobre lo cobrado y el material de las composiciones vendidas. Los períodos más largos son más precisos: la compra no ocurre en el mismo mes que el consumo. La depreciación no aparece aquí, porque no tiene un movimiento financiero correspondiente.",
+    "en": "The planned amount adds up asset costs by the period's volume (counter readings, what was sold through compositions, or the planned monthly volume on record), the financial cost on what was received, and the material of the compositions sold. Longer periods are more accurate: purchases don't happen in the same month as consumption. Depreciation doesn't appear here because it has no matching financial entry."
+  },
+  "be47170eee": {
+    "es": "Registre los equipos con volumen mensual previsto en Activos para elegir cómo se reparte entre ellos el costo del sector.",
+    "en": "Add equipment with a planned monthly volume in Assets to choose how the department's cost is split among them."
+  },
+  "b99a5d2e46": {
+    "es": "El costo por hora es el costo del sector dividido por la carga de producción.",
+    "en": "The hourly cost is the department's cost divided by the production load."
+  },
+  "215feee833": {
+    "es": "El precio de la hora está en",
+    "en": "The hourly price is in"
+  },
+  "1c65430297": {
+    "es": "Registre los sectores de la empresa para calcular el costo por hora de mano de obra.",
+    "en": "Add the company's departments to calculate the hourly labor cost."
+  },
+  "14dafc591e": {
+    "es": "Carga de producción",
+    "en": "Production load"
+  },
+  "b0eb591660": {
+    "es": "Desactivado, el activo entra solo con la depreciación en el costo del sector, sin unidad, volumen mensual, configuraciones ni costos propios.",
+    "en": "When off, the asset only adds its depreciation to the department's cost, with no unit, monthly volume, setups, or costs of its own."
+  },
+  "54c28601d6": {
+    "es": "Volumen mensual previsto ({valor}/mes)",
+    "en": "Planned monthly volume ({valor}/month)"
+  },
+  "7fbd0bb81a": {
+    "es": "No hay lecturas registradas. Sin lecturas, la comparación usa lo vendido por las composiciones o el volumen mensual previsto del registro.",
+    "en": "No readings logged. Without readings, the comparison uses what was sold through compositions or the planned monthly volume on record."
+  },
+  "7a8dae0f3f": {
+    "es": "Los modos de trabajo del activo, con tiempo y volumen mensual propios. El volumen mensual previsto del activo es la suma de las configuraciones, y el costo de la máquina se reparte entre ellas por el tiempo de actividad.",
+    "en": "The asset's work modes, each with its own time and monthly volume. The asset's planned monthly volume is the sum of its setups, and the machine's cost is split among them by run time."
+  },
+  "a864127b85": {
+    "es": "Volumen previsto",
+    "en": "Planned volume"
+  },
+  "615b59289d": {
+    "es": "No hay configuraciones productivas registradas. Sin ellas, el activo usa el volumen mensual previsto de la pestaña Activo, en {unit}/mes.",
+    "en": "No production setups added. Without one, the asset uses the planned monthly volume from the Asset tab, in {unit}/month."
+  },
+  "a3f763a4e7": {
+    "es": "Multiplicado por el volumen mensual previsto {valor} ({productivity} {unit}/mes).",
+    "en": "Multiplied by the planned monthly volume {valor} ({productivity} {unit}/month)."
+  },
+  "ccb4afaefe": {
+    "es": "Modo de trabajo del activo, con tiempo y volumen mensual propios.",
+    "en": "The asset's work mode, with its own time and monthly volume."
+  },
+  "4ac5494e45": {
+    "es": "Volumen mensual previsto ({unit}/mes)",
+    "en": "Planned monthly volume ({unit}/month)"
+  },
+  "5557729101": {
+    "es": "Tiempo por {unit} × volumen mensual previsto. Es la base del prorrateo del costo de la máquina entre las configuraciones.",
+    "en": "Time per {unit} × planned monthly volume. This is the basis for allocating the machine's cost across setups."
+  },
+  "4b9a830aba": {
+    "es": "El volumen mensual previsto del activo pasa a ser la suma de las configuraciones.",
+    "en": "The asset's planned monthly volume becomes the sum of its setups."
+  },
+  "e3ee0f8dda": {
+    "es": "Desactivado, el activo entra solo con la depreciación en el costo del sector, sin unidad, volumen mensual ni configuraciones.",
+    "en": "When off, the asset only adds its depreciation to the department's cost, with no unit, monthly volume, or setups."
+  },
+  "021df91c2c": {
+    "es": "El grupo responde por el promedio del costo de los activos y por la suma del volumen mensual previsto. Las máquinas diferentes se siguen eligiendo una por una: el grupo es opcional.",
+    "en": "The group covers the average cost of the assets and the sum of the planned monthly volume. Different machines are still chosen one by one: the group is optional."
+  },
+  "29fabdc127": {
+    "es": "Volumen previsto sumado",
+    "en": "Combined planned volume"
+  },
+  "e5c8101d2a": {
+    "es": "Volumen mensual",
+    "en": "Monthly volume"
+  },
+  "8068e44dc3": {
+    "es": "para simular el mes",
+    "en": "to simulate the month"
+  },
+  "45c5afa3a5": {
+    "es": "Por el tiempo que cada equipo ocupa el sector en el mes: tiempo por unidad × volumen mensual previsto de cada configuración.",
+    "en": "By the time each piece of equipment takes up in the department each month: time per unit × planned monthly volume of each setup."
+  },
+  "411fbc928b": {
+    "es": "La empresa indica el porcentaje de cada equipo. No se actualiza solo cuando el sector cambia: revíselo al comprar, vender o cambiar el volumen mensual previsto de un activo.",
+    "en": "The company sets each piece of equipment's percentage. It doesn't update on its own when the department changes: review it when you buy, sell, or change an asset's planned monthly volume."
   }
 }
