@@ -105,6 +105,40 @@ import { FEATURES } from '@/consts/features'
 import { cn } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
+// O código sugerido pelo nome (18/11/2026): duas letras da primeira palavra
+// e três da segunda, mais a inicial das seguintes, sem acento nem palavras
+// curtas ("de", "com"). "Lona impressa com bainha e ilhós" → LOIMPBI
+const CODE_STOP = new Set([
+  'de',
+  'da',
+  'do',
+  'das',
+  'dos',
+  'com',
+  'e',
+  'em',
+  'para',
+  'a',
+  'o',
+  'sem',
+])
+export function suggestProductCode(name: string) {
+  const words = name
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9 ]/g, ' ')
+    .split(/\s+/)
+    .filter((word) => word && !CODE_STOP.has(word.toLowerCase()))
+  if (!words.length) return ''
+  const [first, second, ...rest] = words
+  const code =
+    first.slice(0, second ? 2 : 6) +
+    (second ? second.slice(0, 3) : '') +
+    rest.map((word) => word[0]).join('')
+  return code.slice(0, 10)
+}
+
 export type ProductTab = 'general' | 'composition' | 'fiscal'
 
 interface Props {
@@ -389,7 +423,24 @@ function NewProductModal({
     return null
   }
 
+  // O código nasce do nome no produto novo (18/11/2026): a pessoa não
+  // precisa inventar um; depois de criado, pode ser editado. Se já existir
+  // (inclusive em produto inativo), ganha um número no fim
+  const uniqueCode = async (base: string) => {
+    let candidate = base
+    for (let n = 2; n < 50 && (await codeOwner(candidate)); n++) {
+      candidate = `${base}${n}`
+    }
+    return candidate
+  }
+
   const onSubmit = async (data: NewProductsFormType) => {
+    if (!editMode) {
+      const base = data.code || suggestProductCode(data.name)
+      const code = await uniqueCode(base)
+      if (code !== data.code) form.setValue('code', code)
+      data = { ...data, code }
+    }
     // Produto terceirizado (T-5): fornecedor e custo são obrigatórios
     if (data.isOutsourced) {
       if (!data.suppliers?.length) {
@@ -711,12 +762,39 @@ function NewProductModal({
                           if (items?.fields?.length === 1) {
                             form.setValue('items.0.name', String(value))
                           }
+                          if (!editMode) {
+                            form.setValue(
+                              'code',
+                              suggestProductCode(String(value || '')),
+                              { shouldValidate: !!value },
+                            )
+                          }
                         }}
                       />
                       <FormInput
                         name="code"
                         label="Código"
+                        labelSuffix={
+                          <span className="ml-1 inline-flex align-middle">
+                            <InfoHint title="Código do produto">
+                              <p>
+                                No produto novo, o código é criado sozinho a
+                                partir do nome: as primeiras letras das palavras
+                                principais. Se já existir, ganha um número no
+                                fim.
+                              </p>
+                              <p>
+                                Depois de salvar, o código pode ser editado. Ele
+                                é único na empresa e serve para achar o produto
+                                rápido na busca e na planilha.
+                              </p>
+                            </InfoHint>
+                          </span>
+                        }
                         width="flex-[1_0_250px]"
+                        readOnly={!editMode}
+                        className={cn(!editMode && 'bg-gray-50 text-gray-600')}
+                        placeholder={editMode ? undefined : 'Criado pelo nome'}
                         additionalOnChange={(value) => {
                           form.setValue('code', String(value).toUpperCase())
                         }}

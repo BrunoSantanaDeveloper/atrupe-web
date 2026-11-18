@@ -18630,5 +18630,21 @@
   "88b789b316": {
     "es": "Toda venta rápida nace en este cliente. Suele ser la propia empresa o un cliente genérico, como &quot;Consumidor&quot;: créelo una vez en Registros y elíjalo aquí.",
     "en": "Every quick sale starts with this customer. It is usually the company itself or a generic customer such as &quot;Consumer&quot;: create it once in Records and pick it here."
+  },
+  "5e2d603d05": {
+    "es": "Código del producto",
+    "en": "Product code"
+  },
+  "06b6c0e746": {
+    "es": "En el producto nuevo, el código se crea solo a partir del nombre: las primeras letras de las palabras principales. Si ya existe, recibe un número al final.",
+    "en": "On a new product, the code is created from the name: the first letters of the main words. If it already exists, a number is added at the end."
+  },
+  "4fb1d8c452": {
+    "es": "Después de guardar, el código se puede editar. Es único en la empresa y sirve para encontrar el producto rápido en la búsqueda y en la planilla.",
+    "en": "After saving, the code can be edited. It is unique in the company and helps find the product quickly in search and in the spreadsheet."
+  },
+  "0344595e2c": {
+    "es": "Creado a partir del nombre",
+    "en": "Created from the name"
   }
 }
