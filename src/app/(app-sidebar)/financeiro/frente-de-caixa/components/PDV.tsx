@@ -4,6 +4,7 @@
 // A tela implementa as regras FC-1 a FC-20 lendo `src/actions/cash-front.ts`.
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -682,11 +683,18 @@ export function PDV() {
                   </TableBody>
                 </Table>
                 <CardFooter>
-                  <p className="max-w-xl text-sm text-gray">
-                    O cartão entra pelo <strong>valor cheio</strong>; no
-                    fechamento vai para a operadora, e a taxa só aparece na
-                    liquidação. Os totais do caixa aparecem no fechamento.
-                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray">
+                    Como funciona
+                    <InfoHint title="Cartão no caixa">
+                      <p>O cartão entra no caixa pelo valor cheio da venda.</p>
+                      <p>
+                        No fechamento, o valor vai para a conta da operadora; a
+                        taxa da operadora só aparece quando o dinheiro cai
+                        (liquidação).
+                      </p>
+                      <p>Os totais do caixa aparecem no fechamento.</p>
+                    </InfoHint>
+                  </div>
                 </CardFooter>
               </Card>
             )}
@@ -783,13 +791,25 @@ export function PDV() {
                   />
                 )}
                 <CardFooter>
-                  <p className="text-sm text-gray">
-                    Esta lista responde <strong>para quem ligar</strong>. A
-                    venda chega aqui quando o trabalho fica pronto sem ser
-                    entregue; sai quando o cliente busca e paga o restante, ou
-                    quando a empresa descarta e lança a perda, com o sinal
-                    abatendo. Não há prazo no sistema.
-                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray">
+                    Como funciona
+                    <InfoHint title="Aguardando retirada">
+                      <p>
+                        Esta lista serve para saber{' '}
+                        <strong>para quem ligar</strong>.
+                      </p>
+                      <p>
+                        A venda entra aqui quando o trabalho fica pronto e o
+                        cliente ainda não buscou. Sai quando o cliente busca e
+                        paga o restante, ou quando a empresa descarta e lança a
+                        perda (o sinal pago é abatido).
+                      </p>
+                      <p>
+                        O sistema não tem prazo para isso: a lista mostra há
+                        quantos dias cada venda espera.
+                      </p>
+                    </InfoHint>
+                  </div>
                 </CardFooter>
               </Card>
             )}

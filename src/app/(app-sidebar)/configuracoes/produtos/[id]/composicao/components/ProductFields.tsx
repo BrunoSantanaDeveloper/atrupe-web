@@ -9,6 +9,7 @@
 // inteiro por padrão (nº de letras, ilhoses); fracionado quando marcado
 // (metros).
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
@@ -22,7 +23,6 @@ import {
   CardHeader,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -295,10 +295,19 @@ export function ProductFields({
             {newValueError || valueError}
           </p>
         )}
-        <p className="text-xs text-gray">
-          Inteiro por padrão (nº de letras, ilhoses): a venda recusa decimal.
-          Ligue &quot;Aceita fração&quot; para medidas (metros).
-        </p>
+        <div className="flex items-center gap-1.5 text-xs text-gray">
+          Inteiro ou fração
+          <InfoHint title="Aceita fração">
+            <p>
+              Por padrão o campo aceita só número inteiro, como número de letras
+              ou de ilhoses: o orçamento recusa decimal.
+            </p>
+            <p>
+              Ligue &quot;Aceita fração&quot; quando o campo for uma medida,
+              como metros.
+            </p>
+          </InfoHint>
+        </div>
       </PermissionGate>
     </>
   )
@@ -306,9 +315,11 @@ export function ProductFields({
   if (bare) {
     return (
       <div className="space-y-3">
-        <div>
+        <div className="flex items-center gap-1.5">
           <p className="text-sm font-semibold text-gray-700">{title}</p>
-          <p className="text-sm text-gray">{help}</p>
+          <InfoHint title={title}>
+            <p>{help}</p>
+          </InfoHint>
         </div>
         {body}
       </div>
@@ -318,8 +329,12 @@ export function ProductFields({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{help}</CardDescription>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>{title}</CardTitle>
+          <InfoHint title={title}>
+            <p>{help}</p>
+          </InfoHint>
+        </div>
       </CardHeader>
       <CardContent className="space-y-3 px-6 pb-6">{body}</CardContent>
       <CardFooter className="text-sm text-gray">

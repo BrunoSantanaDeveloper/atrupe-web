@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect } from 'react'
 
 // UI
@@ -183,10 +184,13 @@ export function CfopConfigForm() {
         <FeaturedIcon tone="brand" Icon={IconArrowsSplit} />
         <div>
           <h2 className="type-section-title">Natureza de Operação e CFOP</h2>
-          <p className="text-sm text-gray-500">
-            Configure o CFOP e natureza da operação padrão para emissão de NF-e.
-            Estas configurações podem ser sobrescritas em cada produto.
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-gray">
+            Como funciona
+            <InfoHint title="CFOP padrão">
+              <p>O CFOP e a natureza da operação padrão para emitir NF-e.</p>
+              <p>Cada produto pode ter os seus, que valem no lugar destes.</p>
+            </InfoHint>
+          </div>
         </div>
       </div>
 

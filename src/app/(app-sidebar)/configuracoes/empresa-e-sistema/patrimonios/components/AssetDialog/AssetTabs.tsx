@@ -5,6 +5,7 @@
 // um rendimento digitado errado não tinha conserto pela tela.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
@@ -114,11 +115,20 @@ export function SetupsTab({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <p className="max-w-[720px] text-sm text-gray">
-          Os modos de trabalho do bem, com tempo e volume mensal próprios. O
-          volume mensal previsto do bem é a soma das configurações, e o custo da
-          máquina é repartido entre elas pelo tempo de atividade.
-        </p>
+        <div className="flex items-center gap-1.5 text-xs text-gray">
+          Como funciona
+          <InfoHint title="Configurações produtivas">
+            <p>
+              Os modos de trabalho do equipamento, cada um com o seu tempo e o
+              seu volume mensal. Exemplo: uma impressora em alta qualidade e em
+              modo rápido.
+            </p>
+            <p>
+              O volume mensal previsto do bem é a soma das configurações, e o
+              custo da máquina é repartido entre elas pelo tempo de atividade.
+            </p>
+          </InfoHint>
+        </div>
         {!isInactive && (
           <PermissionGate permissions={EDIT}>
             <SetupModal asset={asset} />
@@ -250,10 +260,20 @@ export function CostsTab({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <p className="max-w-[720px] text-sm text-gray">
-          Cada custo aponta para uma conta do plano de contas, o que permite
-          comparar o estimado com o realizado.
-        </p>
+        <div className="flex items-center gap-1.5 text-xs text-gray">
+          Como funciona
+          <InfoHint title="Custos do bem">
+            <p>
+              Os custos próprios do equipamento: manutenção, energia, peças,
+              seguro.
+            </p>
+            <p>
+              Cada custo aponta para uma conta do plano de contas. Assim o
+              comparativo da base de custos mostra o previsto e o que foi
+              lançado de verdade.
+            </p>
+          </InfoHint>
+        </div>
         {!isInactive && (
           <PermissionGate permissions={EDIT}>
             <CostModal asset={asset} />

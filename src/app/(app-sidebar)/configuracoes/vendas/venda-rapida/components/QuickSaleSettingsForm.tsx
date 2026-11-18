@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -14,7 +15,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -152,13 +152,17 @@ export function QuickSaleSettingsForm() {
       <Card>
         <CardContent className="flex flex-wrap items-start justify-between gap-4 px-6 py-5">
           <div className="max-w-2xl">
-            <p className="font-medium">Usar venda rápida</p>
-            <p className="text-sm text-gray">
-              Ligada, ela aparece no menu de Vendas. O vendedor não passa pelo
-              cadastro do orçamento: cai direto na escolha do item, que é onde a
-              venda acontece — uma cópia, um par de impressões, o atendimento de
-              balcão.
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="font-medium">Usar venda rápida</p>
+              <InfoHint title="Venda rápida">
+                <p>Ligada, a venda rápida aparece no menu de Vendas.</p>
+                <p>
+                  O vendedor não passa pelo cadastro do orçamento: cai direto na
+                  escolha do item. Serve para a venda pequena de balcão: uma
+                  cópia, um par de impressões.
+                </p>
+              </InfoHint>
+            </div>
           </div>
           <PermissionGate permissions={['sales_settings:series:edit']}>
             <Switch
@@ -172,11 +176,15 @@ export function QuickSaleSettingsForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>O que o sistema preenche sozinho</CardTitle>
-          <CardDescription>
-            São os campos do modal de novo orçamento. Definidos aqui uma vez,
-            eles deixam de ser perguntados a cada venda.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>O que o sistema preenche sozinho</CardTitle>
+            <InfoHint title="O que o sistema preenche sozinho">
+              <p>
+                São os campos do modal de novo orçamento. Definidos aqui uma
+                vez, eles deixam de ser perguntados a cada venda.
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         <CardContent className="px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -194,14 +202,20 @@ export function QuickSaleSettingsForm() {
                 label="Cliente padrão"
                 placeholder="Busque o cliente da venda de balcão"
               />
-              <p className="text-sm text-gray">
-                Toda venda rápida nasce neste cliente. Costuma ser a própria
-                empresa ou um cliente final genérico, tipo
-                &quot;Consumidor&quot; — crie uma vez em Cadastros e escolha
-                aqui. Se a venda precisar de nota ou parcelamento, o vendedor
-                troca o cliente dentro do orçamento, e o pré-cadastro continua
-                disponível ali.
-              </p>
+              <div className="flex items-center gap-1.5 text-xs text-gray">
+                Sobre o cliente padrão
+                <InfoHint title="Cliente padrão">
+                  <p>
+                    Toda venda rápida nasce neste cliente. Costuma ser a própria
+                    empresa ou um cliente genérico, como &quot;Consumidor&quot;:
+                    crie uma vez em Cadastros e escolha aqui.
+                  </p>
+                  <p>
+                    Se a venda precisar de nota ou de parcelamento, o vendedor
+                    troca o cliente na própria venda.
+                  </p>
+                </InfoHint>
+              </div>
             </div>
 
             <div className="space-y-1.5">
@@ -252,11 +266,15 @@ export function QuickSaleSettingsForm() {
           </div>
         </CardContent>
         <CardFooter className="justify-between flex-wrap gap-3">
-          <p className="text-sm text-gray">
-            A venda rápida continua sendo um orçamento comum, marcado como
-            rápida: ela segue o mesmo caminho para aprovação, ordem de serviço e
-            financeiro.
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-gray">
+            Sobre a venda rápida
+            <InfoHint title="O que é a venda rápida">
+              <p>
+                A venda rápida é um orçamento comum, marcado como rápido: segue
+                o mesmo caminho de aprovação, ordem de serviço e financeiro.
+              </p>
+            </InfoHint>
+          </div>
           <PermissionGate permissions={['sales_settings:series:edit']}>
             <Button isLoading={isPending} onClick={() => save()}>
               Salvar
@@ -270,24 +288,33 @@ export function QuickSaleSettingsForm() {
           frente de caixa" (VR-5). Fica só o sinal (FC-17) */}
       <Card>
         <CardHeader>
-          <CardTitle>Sinal na retirada</CardTitle>
-          <CardDescription>
-            Vale para a venda enviada à frente de caixa, quando o cliente paga
-            agora e busca depois. Onde a venda é recebida é definido pela série
-            de venda, em Configurações › Vendas › Séries de venda.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Sinal na retirada</CardTitle>
+            <InfoHint title="Sinal na retirada">
+              <p>
+                Vale para a venda enviada à frente de caixa, quando o cliente
+                paga agora e busca depois. Onde a venda é recebida é definido
+                pela série de venda, em Configurações › Vendas › Séries de
+                venda.
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         <CardContent className="px-6 pb-6 space-y-4">
           <div className="space-y-4 rounded-lg border border-gray-200 p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="max-w-2xl">
-                <p className="font-medium">Entrada obrigatória (sinal)</p>
-                <p className="text-sm text-gray">
-                  Quando o cliente deixa o trabalho para buscar depois, o caixa
-                  só libera com a entrada mínima paga. O restante é cobrado na
-                  retirada. Quem tem permissão pode dispensar o sinal caso a
-                  caso.
-                </p>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-medium">Entrada obrigatória (sinal)</p>
+                  <InfoHint title="Entrada obrigatória (sinal)">
+                    <p>
+                      Quando o cliente deixa o trabalho para buscar depois, o
+                      caixa só libera com a entrada mínima paga. O restante é
+                      cobrado na retirada. Quem tem permissão pode dispensar o
+                      sinal caso a caso.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
               <PermissionGate permissions={['sales_settings:series:edit']}>
                 <Switch

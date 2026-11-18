@@ -7,6 +7,7 @@
 // servidor; card com ícone de destaque (design.md §18.4).
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/hooks/useRouter'
@@ -24,13 +25,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -125,11 +120,15 @@ export function Projects() {
             <div className="flex items-center gap-3">
               <FeaturedIcon tone="neutral" Icon={IconClipboardList} />
               <div>
-                <CardTitle>Projetos</CardTitle>
-                <CardDescription>
-                  O projeto nasce quando a venda é aprovada: uma tarefa para
-                  cada etapa da composição dos itens.
-                </CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Projetos</CardTitle>
+                  <InfoHint title="Projetos">
+                    <p>
+                      O projeto nasce quando a venda é aprovada: uma tarefa para
+                      cada etapa da composição dos itens.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
             </div>
             <Input

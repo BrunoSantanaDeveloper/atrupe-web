@@ -5,6 +5,7 @@
 // e os dias para o cliente contar como sem compra. O caminho da venda não
 // fica aqui: é da série.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -124,9 +125,20 @@ export function FollowUpSettingsForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Modelos de mensagem</CardTitle>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Modelos de mensagem</CardTitle>
+            <InfoHint title="Modelos de mensagem">
+              <p>
+                O botão &quot;Chamar no WhatsApp&quot; e o e-mail de
+                acompanhamento usam estes textos.
+              </p>
+              <p>
+                O que está entre chaves o sistema troca pelo dado do orçamento
+                na hora de enviar.
+              </p>
+            </InfoHint>
+          </div>
           <CardDescription>
-            O botão &quot;Chamar no WhatsApp&quot; e o e-mail usam estes textos.
             Entre chaves, o que o sistema preenche:{' '}
             {TEMPLATE_VARS.map((item) => `{${item.key}}`).join(' ')}.
           </CardDescription>
@@ -153,12 +165,16 @@ export function FollowUpSettingsForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Lembrete por e-mail</CardTitle>
-          <CardDescription>
-            Todo dia, na hora escolhida, cada vendedor recebe a lista dos
-            orçamentos para retomar: contato marcado para hoje, atrasado ou
-            proposta vencendo. Só quem tem e-mail no cadastro recebe.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Lembrete por e-mail</CardTitle>
+            <InfoHint title="Lembrete por e-mail">
+              <p>
+                Todo dia, na hora escolhida, cada vendedor recebe a lista dos
+                orçamentos para retomar: contato marcado para hoje, atrasado ou
+                proposta vencendo. Só quem tem e-mail no cadastro recebe.
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         <CardContent className="px-6 pb-6 space-y-4">
           <div className="flex items-start justify-between gap-4">
@@ -194,11 +210,15 @@ export function FollowUpSettingsForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Cliente sem compra</CardTitle>
-          <CardDescription>
-            Quantos dias sem comprar para o cliente entrar no relatório
-            &quot;Clientes sem compra&quot;, em Relatórios › Vendas.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Cliente sem compra</CardTitle>
+            <InfoHint title="Cliente sem compra">
+              <p>
+                Quantos dias sem comprar para o cliente entrar no relatório
+                &quot;Clientes sem compra&quot;, em Relatórios › Vendas.
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         <CardContent className="px-6 pb-6">
           <div className="w-full max-w-[200px] space-y-1.5">

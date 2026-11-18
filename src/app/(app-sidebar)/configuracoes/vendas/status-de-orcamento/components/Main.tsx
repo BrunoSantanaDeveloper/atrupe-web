@@ -1,5 +1,6 @@
 'use client'
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { Fragment, useState } from 'react'
 
 // Components
@@ -64,13 +65,20 @@ export function Main() {
       {/* O andamento (digitação, aguardando, vencido, rejeitado, aprovado) o
           sistema controla sozinho; estes são marcadores de acompanhamento da
           negociação (CRM fase 1, 24/10/2026) */}
-      <p className="text-sm text-gray">
-        Marcadores para acompanhar a negociação: em que pé está cada orçamento
-        enquanto o cliente não decide (ex.: proposta enviada, em negociação). A
-        lista de orçamentos filtra por eles. O andamento do orçamento
-        (digitação, aguardando, vencido, rejeitado, aprovado) o sistema controla
-        sozinho.
-      </p>
+      <div className="flex items-center gap-1.5 text-xs text-gray">
+        Para que serve
+        <InfoHint title="Status de orçamento">
+          <p>
+            Marcadores para acompanhar a negociação: em que pé está cada
+            orçamento enquanto o cliente não decide (proposta enviada, em
+            negociação).
+          </p>
+          <p>
+            A lista de orçamentos filtra por eles. O andamento do orçamento
+            (digitação, aguardando, aprovado) é outra coisa e é do sistema.
+          </p>
+        </InfoHint>
+      </div>
       <div className="space-y-2">
         <Card>
           {!isLoading && !hasData ? (

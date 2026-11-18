@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Image from 'next/image'
 import { useRef, useState } from 'react'
 
@@ -178,11 +179,21 @@ export function NewAssetModal({ sectors, groups, onCreated }: Props) {
         <DialogBody className="space-y-5">
           <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
             <div>
-              <p className="text-sm font-medium">Detalhar custos deste bem</p>
-              <p className="text-sm text-gray">
-                Desligado, o bem entra só com a depreciação no custo do setor,
-                sem unidade, volume mensal ou configurações.
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-medium">Detalhar custos deste bem</p>
+                <InfoHint title="Cadastro detalhado">
+                  <p>
+                    Ligado, o bem ganha unidade, volume mensal previsto e
+                    configurações produtivas. É o caso das máquinas que
+                    produzem.
+                  </p>
+                  <p>
+                    Desligado, o bem entra no custo do setor só pela
+                    depreciação. É o caso de móveis e equipamentos que não
+                    produzem.
+                  </p>
+                </InfoHint>
+              </div>
             </div>
             <Switch
               checked={detailed}
@@ -212,10 +223,16 @@ export function NewAssetModal({ sectors, groups, onCreated }: Props) {
               )}
             </div>
             <div className="space-y-1.5">
-              <p className="text-sm font-medium">Foto do patrimônio</p>
-              <p className="text-sm text-gray">
-                Ajuda a reconhecer o equipamento na lista e na produção.
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-medium">Foto do patrimônio</p>
+                <InfoHint title="Apelido">
+                  <p>
+                    Um nome curto para reconhecer o equipamento na lista e na
+                    produção, como &quot;Plotter grande&quot; ou &quot;Router
+                    2&quot;.
+                  </p>
+                </InfoHint>
+              </div>
               <div className="flex items-center gap-2">
                 <Button
                   size="sm"
@@ -340,11 +357,18 @@ export function NewAssetModal({ sectors, groups, onCreated }: Props) {
             )}
           </div>
 
-          <p className="text-sm text-gray">
-            Vida útil e valor residual entram com os padrões do sistema (60
-            meses e 30%) e podem ser revisados na aba Patrimônio, que abre ao
-            cadastrar.
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-gray">
+            Vida útil e valor residual
+            <InfoHint title="Vida útil e valor residual">
+              <p>
+                Entram com os padrões do sistema: 60 meses de vida útil e 30% de
+                valor residual.
+              </p>
+              <p>
+                Dá para revisar na aba Patrimônio, que abre depois de cadastrar.
+              </p>
+            </InfoHint>
+          </div>
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>

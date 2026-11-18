@@ -1,17 +1,13 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 
 // UI
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 
 // Components
 import { DepreciationData } from './DepreciationData'
@@ -95,11 +91,15 @@ export function Depreciation({ searchParams }: SearchParamsType) {
       />
       <Card>
         <CardHeader>
-          <CardTitle>Relatório de depreciação</CardTitle>
-          <CardDescription>
-            De onde vem a depreciação que entra no custo dos setores. A edição
-            acontece no cadastro do patrimônio.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Relatório de depreciação</CardTitle>
+            <InfoHint title="Relatório de depreciação">
+              <p>
+                De onde vem a depreciação que entra no custo dos setores. A
+                edição acontece no cadastro do patrimônio.
+              </p>
+            </InfoHint>
+          </div>
           <Tabs value={tab} className="overflow-x-auto pt-4">
             <TabsList>
               {assetStatusTabs.map((item) => (

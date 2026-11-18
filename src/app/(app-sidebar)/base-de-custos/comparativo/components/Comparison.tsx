@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 import { Fragment, useState } from 'react'
 
@@ -22,7 +23,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -108,13 +108,17 @@ export function Comparison({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <Card>
         <CardHeader>
-          <CardTitle>Previsto e realizado</CardTitle>
-          <CardDescription>
-            As contas do plano de contas que não são despesa administrativa —
-            essas já entram na aba própria, com custo mensal de referência. Aqui
-            a empresa vê o que está previsto no sistema, o que ainda não está, e
-            se o previsto está acontecendo.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Previsto e realizado</CardTitle>
+            <InfoHint title="Previsto e realizado">
+              <p>
+                As contas do plano de contas que não são despesa administrativa
+                — essas já entram na aba própria, com custo mensal de
+                referência. Aqui a empresa vê o que está previsto no sistema, o
+                que ainda não está, e se o previsto está acontecendo.
+              </p>
+            </InfoHint>
+          </div>
           <div className="flex flex-wrap items-center gap-3 pt-4">
             <Tabs value={status} className="overflow-x-auto">
               <TabsList>

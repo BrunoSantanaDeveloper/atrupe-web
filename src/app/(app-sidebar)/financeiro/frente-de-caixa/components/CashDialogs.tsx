@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState, useMemo } from 'react'
 
 // UI
@@ -496,12 +497,23 @@ export function CloseCashDialog({
                       <span>{money(sale.total)}</span>
                     </p>
                   ))}
-                  <p className="text-xs text-gray">
-                    Chegaram como venda rápida e foram faturadas pelo caixa. Não
-                    entram no caixa nem na conferência: já estão no fluxo
-                    financeiro como títulos a receber. Saem daqui com o
-                    fechamento e ficam no relatório do dia.
-                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray">
+                    Como funciona
+                    <InfoHint title="Vendas faturadas pelo caixa">
+                      <p>
+                        São vendas rápidas que o caixa faturou para o cliente
+                        pagar depois (boleto, faturamento mensal).
+                      </p>
+                      <p>
+                        Elas não entram no dinheiro do caixa nem na conferência:
+                        já estão no fluxo financeiro como títulos a receber.
+                      </p>
+                      <p>
+                        Saem desta lista com o fechamento e ficam no relatório
+                        do dia.
+                      </p>
+                    </InfoHint>
+                  </div>
                 </div>
               )}
 

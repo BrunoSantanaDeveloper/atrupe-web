@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -203,10 +204,15 @@ export function SetupModal({
             </p>
           </div>
 
-          <p className="text-sm text-gray">
-            O volume mensal previsto do bem passa a ser a soma das
-            configurações.
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-gray">
+            Como funciona
+            <InfoHint title="Volume mensal do bem">
+              <p>
+                Com configurações, o volume mensal previsto do bem passa a ser a
+                soma do volume de cada configuração.
+              </p>
+            </InfoHint>
+          </div>
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>

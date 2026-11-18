@@ -1,3 +1,4 @@
+import { InfoHint } from '@/components/common/InfoHint'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { Switch } from '@/components/ui/switch'
@@ -134,19 +135,27 @@ export function CreditLimitTab() {
               setValue('creditLimit.requirePrepayment', checked)
             }}
           />
-          <div className="space-y-1">
+          <div className="flex items-center gap-1.5">
             <label
               htmlFor="requirePrepayment"
               className="type-label peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               Exigir pagamento antecipado
             </label>
-            <p className="text-sm text-gray">
-              A venda deste cliente só vira ordem de serviço depois de paga.
-              Aprovada, ela fica em Orçamentos, na aba ⚠️ Pendente, e o
-              financeiro recebe o total num título marcado ⚠️ Pendência. Quando
-              ele é baixado, a venda é aprovada sozinha.
-            </p>
+            <InfoHint title="Exigir pagamento antecipado">
+              <p>
+                Para o cliente que precisa pagar antes. A venda pode ser
+                aprovada, mas só vai para a produção depois do pagamento.
+              </p>
+              <p>
+                Aprovada, ela espera em Orçamentos, na aba ⚠️ Pendente, e o
+                financeiro recebe o total num título marcado ⚠️ Pendência.
+              </p>
+              <p>
+                Quando o título é baixado, a venda segue sozinha para a
+                produção.
+              </p>
+            </InfoHint>
           </div>
         </div>
       </div>

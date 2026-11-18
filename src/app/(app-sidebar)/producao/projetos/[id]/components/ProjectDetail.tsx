@@ -6,6 +6,7 @@
 // e quem faz. Cards com ícone de destaque (design.md §18.4).
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 import { Fragment, useState } from 'react'
 
@@ -346,11 +347,16 @@ export function ProjectDetail({ id }: { id: string }) {
             <div className="flex items-center gap-3">
               <FeaturedIcon tone="neutral" Icon={IconListCheck} />
               <div>
-                <CardTitle>Tarefas</CardTitle>
-                <CardDescription>
-                  Uma para cada etapa da composição dos itens, na medida
-                  vendida. O acabamento espera a base quando o tipo dele manda.
-                </CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Tarefas</CardTitle>
+                  <InfoHint title="Tarefas">
+                    <p>
+                      Uma para cada etapa da composição dos itens, na medida
+                      vendida. O acabamento espera a base quando o tipo dele
+                      manda.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
             </div>
           </CardHeader>

@@ -1,6 +1,7 @@
 'use client'
 
 // UI
+import { InfoHint } from '@/components/common/InfoHint'
 import { toast } from 'sonner'
 import {
   Dialog,
@@ -275,13 +276,17 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                 )}
                 <Separator className="bg-gray-300" />
                 <div className="w-full space-y-3">
-                  <p className="text-md font-semibold text-gray-700">
-                    Restrição por perfil de vendedor
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Selecione os perfis que podem usar esta série. Se nenhum for
-                    selecionado, todos os vendedores terão acesso.
-                  </p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-md font-semibold text-gray-700">
+                      Restrição por perfil de vendedor
+                    </p>
+                    <InfoHint title="Restrição por perfil de vendedor">
+                      <p>
+                        Selecione os perfis que podem usar esta série. Se nenhum
+                        for selecionado, todos os vendedores terão acesso.
+                      </p>
+                    </InfoHint>
+                  </div>
                   {isLoadingProfiles ? (
                     <div className="flex gap-4 flex-wrap">
                       {Array.from({ length: 3 }).map((_, i) => (

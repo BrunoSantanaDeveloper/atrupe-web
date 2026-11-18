@@ -1,16 +1,11 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 
 // UI
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Types
 import type { CostSummary } from '../../types'
@@ -30,16 +25,21 @@ export function CostBySectorChart({ sectors }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Custo por setor</CardTitle>
-        <CardDescription>
-          Do maior para o menor.{' '}
-          <Link
-            href="/base-de-custos/por-setor"
-            className="text-brand hover:underline"
-          >
-            Ver de onde vem cada valor
-          </Link>
-        </CardDescription>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>Custo por setor</CardTitle>
+          <InfoHint title="Custo por setor">
+            <p>
+              Do maior para o menor.{' '}
+              <Link
+                href="/base-de-custos/por-setor"
+                className="text-brand hover:underline"
+              >
+                {' '}
+                Ver de onde vem cada valor{' '}
+              </Link>
+            </p>
+          </InfoHint>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4 px-6 pb-6">
         {sectors.map((sector) => (

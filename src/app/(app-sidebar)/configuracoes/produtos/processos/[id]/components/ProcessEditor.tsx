@@ -10,6 +10,8 @@
 // aceita uma base simulada (§9.1); as fórmulas entram pelas linhas (IP-2).
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
+import { RiskHint } from '@/components/common/RiskHint'
 import Link from 'next/link'
 import { useRouter } from '@/hooks/useRouter'
 import { useEffect, useMemo, useState } from 'react'
@@ -37,7 +39,6 @@ import {
   CardHeader,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -596,13 +597,18 @@ export function ProcessEditor({
             aria-label="Simular depois de outra etapa"
           />
           <span>
-            <span className="block text-sm font-medium text-gray-800">
-              Simular depois de outra etapa
-            </span>
-            <span className="block text-sm text-gray">
-              Aplica as regras da etapa: acompanhar a quantidade da base, usar a
-              medida dela e quantas cabem nela.
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium text-gray-800">
+                Simular depois de outra etapa
+              </span>
+              <InfoHint title="Simular com as regras">
+                <p>
+                  Aplica as regras da etapa na simulação: acompanhar a
+                  quantidade da base, usar a medida dela e quantas peças cabem
+                  nela.
+                </p>
+              </InfoHint>
+            </div>
           </span>
         </label>
         {baseMeasure && (
@@ -662,11 +668,15 @@ export function ProcessEditor({
               <Card className={cn(!embedded && 'lg:col-span-2')}>
                 <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
                   <div>
-                    <CardTitle>Processo</CardTitle>
-                    <CardDescription>
-                      Os mesmos campos do cadastro do processo. O que a etapa
-                      usa fica na Composição.
-                    </CardDescription>
+                    <div className="flex items-center gap-1.5">
+                      <CardTitle>Processo</CardTitle>
+                      <InfoHint title="Processo">
+                        <p>
+                          Os mesmos campos do cadastro do processo. O que a
+                          etapa usa fica na Composição.
+                        </p>
+                      </InfoHint>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 gap-4 px-6 sm:grid-cols-3">
@@ -762,12 +772,16 @@ export function ProcessEditor({
         {show('resources') && (
           <Card>
             <CardHeader>
-              <CardTitle>Composição</CardTitle>
-              <CardDescription>
-                A etapa de um setor: a máquina, o material e a mão de obra que
-                ele usa, cada um com o seu tipo de cálculo. O produto que
-                incluir o processo acompanha esta montagem.
-              </CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Composição</CardTitle>
+                <InfoHint title="Composição">
+                  <p>
+                    A etapa de um setor: a máquina, o material e a mão de obra
+                    que ele usa, cada um com o seu tipo de cálculo. O produto
+                    que incluir o processo acompanha esta montagem.
+                  </p>
+                </InfoHint>
+              </div>
               {/* Os valores das linhas são de uma medida: a tela diz qual
                   (28/10/2026) */}
               <p className="text-xs text-gray">
@@ -1248,12 +1262,16 @@ export function ProcessEditor({
         {show('usage') && (
           <Card>
             <CardHeader>
-              <CardTitle>Usado em</CardTitle>
-              <CardDescription>
-                Os produtos acompanham este processo: mudar a montagem aqui muda
-                todos eles. O que cada produto ajustou só para ele continua como
-                está, e os orçamentos já feitos não mudam.
-              </CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Usado em</CardTitle>
+                <RiskHint title="Mudar o processo muda os produtos">
+                  <p>
+                    Os produtos acompanham este processo: mudar a montagem aqui
+                    muda todos eles. O que cada produto ajustou só para ele
+                    continua como está, e os orçamentos já feitos não mudam.
+                  </p>
+                </RiskHint>
+              </div>
             </CardHeader>
             <CardContent className="px-6 pb-6">
               {detail.usedIn.length ? (
@@ -1284,14 +1302,18 @@ export function ProcessEditor({
         {show('steps') && (
           <Card>
             <CardHeader>
-              <CardTitle>Etapas anteriores e seguintes</CardTitle>
-              <CardDescription>
-                São sugestões, não uma ordem obrigatória. Ao montar um produto,
-                &quot;+ etapa seguinte&quot; mostra primeiro o que está marcado
-                aqui; o resto fica em &quot;ver todos&quot;. Marcar de um lado
-                aparece no outro. Sem marcação, valem os acabamentos do mesmo
-                setor.
-              </CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Etapas anteriores e seguintes</CardTitle>
+                <InfoHint title="Etapas anteriores e seguintes">
+                  <p>
+                    São sugestões, não uma ordem obrigatória. Ao montar um
+                    produto, &quot;+ etapa seguinte&quot; mostra primeiro o que
+                    está marcado aqui; o resto fica em &quot;ver todos&quot;.
+                    Marcar de um lado aparece no outro. Sem marcação, valem os
+                    acabamentos do mesmo setor.
+                  </p>
+                </InfoHint>
+              </div>
             </CardHeader>
             <CardContent className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
               <UsualStepsPicker

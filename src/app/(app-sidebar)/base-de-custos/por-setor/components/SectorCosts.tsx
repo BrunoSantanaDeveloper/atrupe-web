@@ -1,13 +1,8 @@
 'use client'
 
 // UI
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-  CardDescription,
-} from '@/components/ui/card'
+import { InfoHint } from '@/components/common/InfoHint'
+import { Card, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 
 // Components
 import { SectorCostsData } from './SectorCostsData'
@@ -46,13 +41,17 @@ export function SectorCosts() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Custo por setor</CardTitle>
-        <CardDescription>
-          Quanto custa cada setor por mês e de onde veio cada valor. Abra a
-          linha para ver os colaboradores, os bens e os lançamentos que formam o
-          número.
-          {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
-        </CardDescription>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>Custo por setor</CardTitle>
+          <InfoHint title="Custo por setor">
+            <p>
+              Quanto custa cada setor por mês e de onde veio cada valor. Abra a
+              linha para ver os colaboradores, os bens e os lançamentos que
+              formam o número.{' '}
+              {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
+            </p>
+          </InfoHint>
+        </div>
       </CardHeader>
       {isLoading ? (
         <TableSkeleton cols={8} rows={8} />

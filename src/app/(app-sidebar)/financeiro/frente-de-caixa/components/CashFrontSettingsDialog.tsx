@@ -6,6 +6,7 @@
 // "Configurar frente de caixa", que só o administrador tem por padrão.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useMemo, useState } from 'react'
 
 // UI
@@ -295,11 +296,20 @@ export function CashFrontSettingsDialog({
                 options={receivingAccounts}
               />
             </div>
-            <p className="text-xs text-gray">
-              Onde o operador não escolhe a conta, o PIX e o cartão desta frente
-              vão para estas contas e, sem elas, para a padrão da forma em
-              Contas bancárias.
-            </p>
+            <div className="flex items-center gap-1.5 text-xs text-gray">
+              Como funciona
+              <InfoHint title="Contas de recebimento">
+                <p>
+                  Quando o operador não escolhe a conta, o PIX e o cartão
+                  recebidos nesta frente de caixa caem nas contas escolhidas
+                  aqui.
+                </p>
+                <p>
+                  Sem conta escolhida, vale a conta padrão da forma de
+                  pagamento, em Configurações › Financeiro › Contas bancárias.
+                </p>
+              </InfoHint>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-6">

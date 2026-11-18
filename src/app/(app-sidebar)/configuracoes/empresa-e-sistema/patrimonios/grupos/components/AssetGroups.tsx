@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
@@ -21,7 +22,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -118,12 +118,16 @@ export function AssetGroups() {
         />
         <Card>
           <CardHeader>
-            <CardTitle>Grupos</CardTitle>
-            <CardDescription>
-              O grupo responde pela média do custo dos bens e pela soma do
-              volume mensal previsto. Máquinas diferentes continuam sendo
-              escolhidas uma a uma: o grupo é opcional.
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Grupos</CardTitle>
+              <InfoHint title="Grupos">
+                <p>
+                  O grupo responde pela média do custo dos bens e pela soma do
+                  volume mensal previsto. Máquinas diferentes continuam sendo
+                  escolhidas uma a uma: o grupo é opcional.
+                </p>
+              </InfoHint>
+            </div>
           </CardHeader>
           <>
             <CardContent>

@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -13,13 +14,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
@@ -69,24 +64,29 @@ export function LaborCosts() {
     <TooltipProvider>
       <Card>
         <CardHeader>
-          <CardTitle>Mão de obra por setor</CardTitle>
-          <CardDescription>
-            O custo hora sai do custo do setor dividido pela carga de produção.
-            {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
-            {/* Custo aqui, preço na Precificação (decisão de 17/11/2026): a
-                Base de custos para no custo, para não repetir o legado */}
-            <FeatureGate features={[FEATURES.COSTS.PRICING_CENTER]}>
-              {' '}
-              O preço da hora fica na{' '}
-              <Link
-                href={pricingGroupPath.labor}
-                className="font-semibold text-brand-700 hover:underline"
-              >
-                Precificação
-              </Link>
-              .
-            </FeatureGate>
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Mão de obra por setor</CardTitle>
+            <InfoHint title="Mão de obra por setor">
+              <p>
+                O custo hora sai do custo do setor dividido pela carga de
+                produção.{' '}
+                {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}{' '}
+                {/* Custo aqui, preço na Precificação (decisão de 17/11/2026): a Base de custos para no custo, para não repetir o legado */}{' '}
+                <FeatureGate features={[FEATURES.COSTS.PRICING_CENTER]}>
+                  {' '}
+                  O preço da hora fica na{' '}
+                  <Link
+                    href={pricingGroupPath.labor}
+                    className="font-semibold text-brand-700 hover:underline"
+                  >
+                    {' '}
+                    Precificação{' '}
+                  </Link>{' '}
+                  .{' '}
+                </FeatureGate>
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         {isLoading ? (
           <TableSkeleton cols={5} rows={6} />

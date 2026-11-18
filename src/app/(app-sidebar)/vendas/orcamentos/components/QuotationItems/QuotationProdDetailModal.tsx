@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
+import { InfoHint } from '@/components/common/InfoHint'
 import React, { useCallback, useEffect } from 'react'
 // UI component Imports
 import { discountOverBase } from '@/lib/discountLimit'
@@ -986,11 +987,17 @@ export function QuotationProdDetailModal({
                         value && setSupplierId(String(value))
                       }
                     />
-                    <p className="text-xs text-gray">
-                      De quem a empresa compra este item. A conta a pagar sai
-                      com este fornecedor quando a venda é aprovada; depois
-                      disso ele não muda por aqui.
-                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-gray">
+                      Sobre o fornecedor
+                      <InfoHint title="Fornecedor do terceirizado">
+                        <p>De quem a empresa compra este item.</p>
+                        <p>
+                          Quando a venda é aprovada, a conta a pagar sai para
+                          este fornecedor. Depois disso ele não muda por aqui: a
+                          mudança é feita na conta a pagar.
+                        </p>
+                      </InfoHint>
+                    </div>
                   </div>
                 ) : null}
                 {/* A contagem de folhas da gráfica rápida (12/11/2026),

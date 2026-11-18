@@ -9,6 +9,7 @@
 // pela entrega, e a tarefa só se conclui. Sem relógio, pessoas nem agenda.
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/hooks/useRouter'
@@ -526,10 +527,12 @@ export function SectorScreen({ id }: { id: string }) {
             {collective && (
               <Card className="h-fit">
                 <CardHeader>
-                  <CardTitle>Colaboradores</CardTitle>
-                  <CardDescription>
-                    {timeModeObj[board.manager.timeMode].help}
-                  </CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Colaboradores</CardTitle>
+                    <InfoHint title="Colaboradores">
+                      <p>{timeModeObj[board.manager.timeMode].help}</p>
+                    </InfoHint>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-2 px-4 pb-4">
                   {people.map((worker) => {

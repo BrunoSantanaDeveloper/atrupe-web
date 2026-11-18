@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useMemo, useState } from 'react'
 
 // UI
@@ -352,11 +353,15 @@ export function NewMaterialModal({ material }: Props) {
 
           <div className="space-y-3">
             <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
-              <div>
+              <div className="flex items-center gap-1.5">
                 <p className="text-sm font-medium">Venda direta</p>
-                <p className="text-sm text-gray">
-                  Aparece na busca do orçamento para ser revendido.
-                </p>
+                <InfoHint title="Venda direta">
+                  <p>
+                    Ligada, o material aparece na busca do orçamento e pode ser
+                    vendido sozinho, como revenda (uma chapa, um rolo de
+                    adesivo).
+                  </p>
+                </InfoHint>
               </div>
               <Switch
                 checked={directSale}
@@ -365,11 +370,14 @@ export function NewMaterialModal({ material }: Props) {
               />
             </div>
             <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
-              <div>
+              <div className="flex items-center gap-1.5">
                 <p className="text-sm font-medium">Material de produção</p>
-                <p className="text-sm text-gray">
-                  Fica disponível para compor produtos e processos.
-                </p>
+                <InfoHint title="Material de produção">
+                  <p>
+                    Ligada, o material pode ser escolhido na composição dos
+                    produtos e dos processos, e entra no custo deles.
+                  </p>
+                </InfoHint>
               </div>
               <Switch
                 checked={productionMaterial}
@@ -391,14 +399,21 @@ export function NewMaterialModal({ material }: Props) {
                 onCheckedChange={setShowAdvanced}
                 aria-label="Configuração avançada"
               />
-              <span>
+              <span className="flex items-center gap-1.5">
                 <span className="block text-sm font-medium">
                   Configuração avançada
                 </span>
-                <span className="block text-sm text-gray">
-                  Medidas e peso que as fórmulas da composição, o aproveitamento
-                  e o plano de corte leem.
-                </span>
+                <InfoHint title="Configuração avançada">
+                  <p>
+                    O formato do material (chapa, rolo, folha, perfil), as
+                    medidas e o peso.
+                  </p>
+                  <p>
+                    As fórmulas da composição, o aproveitamento da chapa ou da
+                    folha e o plano de corte usam essas informações. Sem elas, o
+                    material é cobrado só pela quantidade.
+                  </p>
+                </InfoHint>
               </span>
             </label>
             {showAdvanced && (
@@ -412,10 +427,19 @@ export function NewMaterialModal({ material }: Props) {
                 />
                 {shape === 'PROFILE' && (
                   <>
-                    <p className="text-sm text-gray">
-                      Como está no catálogo: em 50 × 30, X é 50 e Y é 30. Qual
-                      lado entra na conta é escolha de quem escreve a fórmula.
-                    </p>
+                    <div className="flex items-center gap-1.5 text-sm text-gray-700">
+                      Medidas do perfil
+                      <InfoHint title="Medidas do perfil (X e Y)">
+                        <p>
+                          Informe como está no catálogo do fornecedor: num
+                          perfil 50 × 30, X é 50 e Y é 30.
+                        </p>
+                        <p>
+                          Qual dos dois lados entra na conta é escolhido na
+                          fórmula da composição.
+                        </p>
+                      </InfoHint>
+                    </div>
                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                       <div className="space-y-1.5">
                         <label htmlFor="adv-x" className="text-sm font-medium">
@@ -582,14 +606,21 @@ export function NewMaterialModal({ material }: Props) {
                     {/* AP-4 (05/10/2026): o padrão da cobrança fica no
                       material; a etapa do produto pode trocar */}
                     <label className="flex items-start justify-between gap-4">
-                      <span>
+                      <span className="flex items-center gap-1.5">
                         <span className="block text-sm font-medium">
                           Cobrar a folha inteira
                         </span>
-                        <span className="block text-sm text-gray">
-                          Desligado, o aproveitamento cobra só a fração usada,
-                          como no ACM. A etapa do produto pode trocar.
-                        </span>
+                        <InfoHint title="Cobrar a folha inteira">
+                          <p>
+                            Ligado, o orçamento cobra a folha ou chapa inteira,
+                            mesmo que o trabalho use só uma parte.
+                          </p>
+                          <p>
+                            Desligado, cobra só a parte usada, como é comum no
+                            ACM, em que a sobra volta para o estoque.
+                          </p>
+                          <p>Cada etapa do produto pode trocar essa escolha.</p>
+                        </InfoHint>
                       </span>
                       <Switch
                         checked={wholeSheets}
@@ -630,13 +661,23 @@ export function NewMaterialModal({ material }: Props) {
               cada combinação pelo R$ da lista */}
           {isEdit && material ? (
             <div className="space-y-3 rounded-lg border border-gray-200 p-3">
-              <div>
+              <div className="flex items-center gap-1.5">
                 <p className="text-sm font-medium">Variações</p>
-                <p className="text-sm text-gray">
-                  Marcas e cores separadas por vírgula. O sistema cria uma
-                  combinação para cada marca × cor, com o mesmo custo, e a venda
-                  passa a exigir a escolha da variação.
-                </p>
+                <InfoHint title="Variações do material">
+                  <p>
+                    Digite as marcas e as cores separadas por vírgula. O sistema
+                    cria uma variação para cada combinação de marca e cor, todas
+                    com o mesmo custo.
+                  </p>
+                  <p>
+                    Exemplo: marcas 3M, Oracal e cores branco, preto criam
+                    quatro variações.
+                  </p>
+                  <p>
+                    Com variações, o orçamento passa a pedir a escolha de uma
+                    delas.
+                  </p>
+                </InfoHint>
               </div>
               {material.variations.length > 0 && (
                 <div className="flex flex-wrap gap-1">

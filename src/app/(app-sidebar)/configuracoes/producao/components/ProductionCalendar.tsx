@@ -6,6 +6,7 @@
 // entrega. Sem cadastro, vale segunda a sexta, das 08:00 às 18:00.
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -22,7 +23,6 @@ import {
   CardHeader,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -103,11 +103,15 @@ export function ProductionCalendarCard({
         <div className="flex items-center gap-3">
           <FeaturedIcon tone="neutral" Icon={IconCalendarTime} />
           <div>
-            <CardTitle>Expediente</CardTitle>
-            <CardDescription>
-              Os dias e o horário de trabalho da produção, e os feriados. Os
-              alertas de entrega em risco contam só esse tempo.
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Expediente</CardTitle>
+              <InfoHint title="Expediente">
+                <p>
+                  Os dias e o horário de trabalho da produção, e os feriados. Os
+                  alertas de entrega em risco contam só esse tempo.
+                </p>
+              </InfoHint>
+            </div>
           </div>
         </div>
       </CardHeader>

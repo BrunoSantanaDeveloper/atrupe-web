@@ -12,7 +12,7 @@
     "en": "One-off outsourced"
   },
   "2145787003": {
-    "es": "Ningún contacto registrado. Los contactos se registran en el presupuesto, con el botón \"Registrar contacto\".",
+    "es": "Ningún contacto registrado. Los contactos se registran en el cotización, con el botón \"Registrar contacto\".",
     "en": "No contact logged. Contacts are logged on the quote, with the \"Log contact\" button."
   },
   "2457716835": {
@@ -4080,7 +4080,7 @@
     "en": "E.g., Ink, preventive maintenance"
   },
   "438115a438": {
-    "es": "Informe por qué el cliente no cerró. El motivo aparece en el presupuesto y en el informe de pérdidas.",
+    "es": "Informe por qué el cliente no cerró. El motivo aparece en el cotización y en el informe de pérdidas.",
     "en": "Say why the customer did not close. The reason shows on the quotation and in the losses report."
   },
   "4383a94559": {
@@ -6792,7 +6792,7 @@
     "en": "Costs and pricing"
   },
   "6db7d67dc8": {
-    "es": "En el presupuesto, el vendedor informa el costo del proveedor y el sistema propone el precio de venta: costo + este porcentaje. El porcentaje aparece junto al precio y el vendedor puede cambiar el valor en el momento. El tercerizado no recibe prorrateo ni costo de estructura: el precio es solo el costo más el recargo.",
+    "es": "En el cotización, el vendedor informa el costo del proveedor y el sistema propone el precio de venta: costo + este porcentaje. El porcentaje aparece junto al precio y el vendedor puede cambiar el valor en el momento. El tercerizado no recibe prorrateo ni costo de estructura: el precio es solo el costo más el recargo.",
     "en": "In the quotation, the seller enters the supplier cost and the system suggests the sale price: cost + this percentage. The percentage shows next to the price and the seller can change the value on the spot. Outsourced work gets no overhead allocation: the price is just the cost plus the markup."
   },
   "6dbca7a9f4": {
@@ -8104,7 +8104,7 @@
     "en": "Add your first team member"
   },
   "81ce9f4068": {
-    "es": "Un servicio contratado a un proveedor solo para esta venta. Al aprobar el presupuesto, se genera la cuenta por pagar al proveedor con el costo informado. El costo no aparece en el presupuesto.",
+    "es": "Un servicio contratado a un proveedor solo para esta venta. Al aprobar el cotización, se genera la cuenta por pagar al proveedor con el costo informado. El costo no aparece en el cotización.",
     "en": "A service hired from a supplier for this sale only. When the quotation is approved, the payable to the supplier is created with the cost entered. The cost does not show on the quotation."
   },
   "81d7594875": {
@@ -13136,7 +13136,7 @@
     "en": "Video: {title}"
   },
   "d3c1f89af7": {
-    "es": "Registrar en el presupuesto",
+    "es": "Registrar en el cotización",
     "en": "Add to quotation"
   },
   "d3d4a49322": {
@@ -14832,7 +14832,7 @@
     "en": "Draft"
   },
   "f205491fc9": {
-    "es": "Cuándo retomar la conversación con el cliente y qué quedó acordado. El presupuesto aparece en \"Para retomar\" ese día.",
+    "es": "Cuándo retomar la conversación con el cliente y qué quedó acordado. El cotización aparece en \"Para retomar\" ese día.",
     "en": "When to resume the conversation with the customer and what was agreed. The quotation shows under \"To follow up\" on that day."
   },
   "f2128af52e": {
@@ -15680,7 +15680,7 @@
     "en": "Boleto"
   },
   "ff043bea26": {
-    "es": "Marcadores para acompañar la negociación: en qué punto está cada presupuesto mientras el cliente no decide (ej.: propuesta enviada, en negociación). La lista de presupuestos filtra por ellos. El avance del presupuesto (digitación, en espera, vencido, rechazado, aprobado) lo controla el sistema solo.",
+    "es": "Marcadores para acompañar la negociación: en qué punto está cada cotización mientras el cliente no decide (ej.: propuesta enviada, en negociación). La lista de presupuestos filtra por ellos. El avance del cotización (digitación, en espera, vencido, rechazado, aprobado) lo controla el sistema solo.",
     "en": "Markers to track the negotiation: where each quotation stands while the customer has not decided (e.g. proposal sent, negotiating). The quotation list filters by them. The quotation progress (drafting, waiting, expired, rejected, approved) is handled by the system."
   },
   "ff0c8a88ef": {
@@ -15768,7 +15768,7 @@
     "en": "Reject {reference}?"
   },
   "9fe0136682": {
-    "es": "La venta sale de la fila y el presupuesto queda como rechazado, con la orden de servicio cancelada. No se recibió nada, así que no hay devolución.",
+    "es": "La venta sale de la fila y el cotización queda como rechazado, con la orden de servicio cancelada. No se recibió nada, así que no hay devolución.",
     "en": "The sale leaves the queue and the quote is marked as rejected, with the work order cancelled. Nothing was received, so there is no refund."
   },
   "cfbd271682": {
@@ -15784,7 +15784,7 @@
     "en": "Last purchase"
   },
   "10072e870c": {
-    "es": "Nuevo presupuesto a partir del último pedido",
+    "es": "Nuevo cotización a partir del último pedido",
     "en": "New quote from the last order"
   },
   "c27e42eb89": {
@@ -15944,7 +15944,7 @@
     "en": "Days to close"
   },
   "100b6be6e3": {
-    "es": "Ningún presupuesto en el período.",
+    "es": "Ningún cotización en el período.",
     "en": "No quotes in the period."
   },
   "f113549996": {
@@ -15996,7 +15996,7 @@
     "en": "Next week"
   },
   "29a99ae49e": {
-    "es": "{clientName} · {reference}. Qué pasó y cuándo volver a hablar: el presupuesto aparece en \"Para retomar\" ese día.",
+    "es": "{clientName} · {reference}. Qué pasó y cuándo volver a hablar: el cotización aparece en \"Para retomar\" ese día.",
     "en": "{clientName} · {reference}. What happened and when to talk again: the quote shows up under \"To follow up\" on that day."
   },
   "61f21e6ff9": {
@@ -16024,7 +16024,7 @@
     "en": "Reminder (e.g.: call after lunch)"
   },
   "8711446fa8": {
-    "es": "Sin fecha, el presupuesto queda sin próximo contacto y aparece así en la pestaña En espera.",
+    "es": "Sin fecha, el cotización queda sin próximo contacto y aparece así en la pestaña En espera.",
     "en": "Without a date, the quote has no next contact and shows up that way in the Waiting tab."
   },
   "75e36d64da": {
@@ -16080,7 +16080,7 @@
     "en": "customer name"
   },
   "3f19e2bff5": {
-    "es": "número del presupuesto",
+    "es": "número del cotización",
     "en": "quote number"
   },
   "6d0ff32d2e": {
@@ -16140,7 +16140,7 @@
     "en": "Select this client's payment methods one by one; the credit limit stays as it is."
   },
   "e2169962db": {
-    "es": "Variaciones no guardadas: {message}",
+    "es": "Variantes no guardadas: {message}",
     "en": "Variations not saved: {message}"
   },
   "3a561c0b57": {
@@ -16184,7 +16184,7 @@
     "en": "Below it, the item is charged by the minimum quantity: at R$ 80.00 per hour with a 1 h minimum, the item costs R$ 80.00 even at 30 minutes. The typed time stays, and the total points to the minimum in red."
   },
   "9d8460e52f": {
-    "es": "El ítem ya nace con esa cantidad en el presupuesto y, por debajo de ella, se cobra por la cantidad mínima: a R$ 1,00 la unidad con mínimo de 100 un, el ítem sale por R$ 100,00 aunque se pidan 50. La cantidad digitada permanece, y el total señala el mínimo en rojo.",
+    "es": "El ítem ya nace con esa cantidad en el cotización y, por debajo de ella, se cobra por la cantidad mínima: a R$ 1,00 la unidad con mínimo de 100 un, el ítem sale por R$ 100,00 aunque se pidan 50. La cantidad digitada permanece, y el total señala el mínimo en rojo.",
     "en": "The item starts with that quantity in the quote and, below it, is charged by the minimum quantity: at R$ 1.00 per unit with a 100 un minimum, the item costs R$ 100.00 even when 50 are ordered. The typed quantity stays, and the total points to the minimum in red."
   },
   "01a97151e3": {
@@ -16192,7 +16192,7 @@
     "en": "Minimum sale per item"
   },
   "e6248b2bdc": {
-    "es": "El menor valor que un ítem del presupuesto puede tener; por debajo, se cobra el mínimo.",
+    "es": "El menor valor que un ítem del cotización puede tener; por debajo, se cobra el mínimo.",
     "en": "The lowest value a quote item can have; below it, the minimum is charged."
   },
   "4d23d470c2": {
@@ -16220,7 +16220,7 @@
     "en": "You do not have permission to set the minimum sale."
   },
   "202ae61039": {
-    "es": "El menor valor que un ítem del presupuesto puede tener.",
+    "es": "El menor valor que un ítem del cotización puede tener.",
     "en": "The lowest value a quote item can have."
   },
   "25b7f41633": {
@@ -16496,11 +16496,11 @@
     "en": "Logging contacts, scheduling the next contact and remembering who to follow up are part of the sales follow-up."
   },
   "bc87d5ab14": {
-    "es": "El presupuesto pasa a Rechazados. No se borra: se puede reabrir después.",
+    "es": "El cotización pasa a Rechazados. No se borra: se puede reabrir después.",
     "en": "The quote moves to Rejected. It is not deleted: it can be reopened later."
   },
   "34fff5acd5": {
-    "es": "¿Rechazar presupuesto?",
+    "es": "¿Rechazar cotización?",
     "en": "Reject quote?"
   },
   "1ef19d608c": {
@@ -16756,7 +16756,7 @@
     "en": "Ask about operations, reports and how to use the system. What it proposes, you review and apply."
   },
   "1545175a06": {
-    "es": "Pregunte sobre caja, ventas, clientes, informes o uso del sistema. Pida un presupuesto a partir del pedido del cliente.",
+    "es": "Pregunte sobre caja, ventas, clientes, informes o uso del sistema. Pida un cotización a partir del pedido del cliente.",
     "en": "Ask about cash, sales, customers, reports or how to use the system. Ask for a quote from the customer request."
   },
   "dc5187b780": {
@@ -16788,7 +16788,7 @@
     "en": "Customer (choose among the similar ones)"
   },
   "0e0607c565": {
-    "es": "· el presupuesto se abre sin cliente",
+    "es": "· el cotización se abre sin cliente",
     "en": "· the quote opens without a customer"
   },
   "2061d8a312": {
@@ -16804,7 +16804,7 @@
     "en": "Destination"
   },
   "1370eaf41e": {
-    "es": "Los ítems entran en el presupuesto abierto",
+    "es": "Los ítems entran en el cotización abierto",
     "en": "The items go into the open quote"
   },
   "7d109e50e0": {
@@ -16884,7 +16884,7 @@
     "en": "Nothing is saved until you apply. Valid for 24 hours."
   },
   "b00b359ec5": {
-    "es": "Abrir el presupuesto",
+    "es": "Abrir el cotización",
     "en": "Open the quote"
   },
   "8e4ee5ded2": {
@@ -17596,8 +17596,8 @@
     "en": "Advanced sales settings"
   },
   "78dbc3fd2a": {
-    "es": "Producto tercerizado, variaciones, cantidad mínima y precio por cantidad.",
-    "en": "Outsourced product, variations, minimum quantity and quantity pricing."
+    "es": "Producto tercerizado, variantes, cantidad mínima y precio por cantidad.",
+    "en": "Outsourced product, variants, minimum quantity and quantity pricing."
   },
   "0a14cbfdd4": {
     "es": "Producto tercerizado: comprado al proveedor y revendido.",
@@ -17816,11 +17816,11 @@
     "en": "The smallest size the company charges for this product, even if the order is smaller."
   },
   "f74027c841": {
-    "es": "Los sectores por donde pasa el producto. La Agenda de entrega usa esta lista para mostrar en qué sector está cada pedido.",
+    "es": "Los sectores por donde pasa el producto. La Agenda de entregas usa esta lista para mostrar en qué sector está cada pedido.",
     "en": "The departments the product goes through. The Delivery schedule uses this list to show which department each order is in."
   },
   "3a860e5900": {
-    "es": "En el PRO, la composición de arriba también tiene las etapas. Por ahora la Agenda de entrega sigue leyendo esta lista.",
+    "es": "En el PRO, la composición de arriba también tiene las etapas. Por ahora la Agenda de entregas sigue leyendo esta lista.",
     "en": "In PRO, the composition above also has the steps. For now the Delivery schedule still reads this list."
   },
   "eeb81755b0": {
@@ -17840,12 +17840,12 @@
     "en": "Quantity prices"
   },
   "bcad258d7c": {
-    "es": "Valores por cantidad de la variación",
-    "en": "Quantity prices for the variation"
+    "es": "Valores por cantidad de la variante",
+    "en": "Quantity prices for the variant"
   },
   "7c75f6491b": {
-    "es": "Rangos de precio solo de esta variación. Sin rangos, vale el precio de la variación.",
-    "en": "Price ranges for this variation only. With no ranges, the variation price applies."
+    "es": "Rangos de precio solo de esta variante. Sin rangos, vale el precio de la variante.",
+    "en": "Price ranges for this variant only. With no ranges, the variant price applies."
   },
   "9774f20c63": {
     "es": "Un precio para cada rango de cantidad. Ejemplo: hasta 100 unidades, R$ 2,00 cada una; de 101 a 500, R$ 1,50 cada una.",
@@ -17860,7 +17860,7 @@
     "en": "With no ranges, the product's sale price applies."
   },
   "acc2d1735a": {
-    "es": "Es cómo el presupuesto cuenta cuántas hojas gasta este producto. Ve cuántas piezas caben en la hoja del papel, ya con el sangrado, y suma las hojas de ajuste.",
+    "es": "Es cómo el cotización cuenta cuántas hojas gasta este producto. Ve cuántas piezas caben en la hoja del papel, ya con el sangrado, y suma las hojas de arranque.",
     "en": "It is how the quote counts how many sheets this product uses. It checks how many pieces fit on the paper sheet, with the bleed, and adds the make-ready sheets."
   },
   "d174bf28d3": {
@@ -17868,7 +17868,7 @@
     "en": "the margin the piece gets on each side so the cut does not leave a white edge."
   },
   "3a19b816d4": {
-    "es": "Hojas de ajuste:",
+    "es": "Hojas de arranque:",
     "en": "Make-ready sheets:"
   },
   "f6b20cff3b": {
@@ -17876,19 +17876,759 @@
     "en": "the ones the press uses to adjust color and position, on each job."
   },
   "32be391f90": {
-    "es": "El papel viene de la variación del producto. Deje el campo vacío para usar el valor del sector.",
-    "en": "The paper comes from the product variation. Leave the field empty to use the department value."
+    "es": "El papel viene de la variante del producto. Deje el campo vacío para usar el valor del sector.",
+    "en": "The paper comes from the product variant. Leave the field empty to use the department value."
   },
   "840eea270e": {
     "es": "El mismo producto en versiones diferentes, como los tamaños P, M y G o los colores 4x0, 4x1 y 4x4.",
     "en": "The same product in different versions, such as sizes S, M and L or colors 4x0, 4x1 and 4x4."
   },
   "ca4d54415a": {
-    "es": "Cada variación puede tener su precio y sus valores por cantidad. Una variación sin precio usa el valor del producto.",
-    "en": "Each variation can have its own price and quantity prices. A variation without a price uses the product value."
+    "es": "Cada variante puede tener su precio y sus valores por cantidad. Una variante sin precio usa el valor del producto.",
+    "en": "Each variant can have its own price and quantity prices. A variant without a price uses the product value."
   },
   "167b588f45": {
-    "es": "En el presupuesto, el vendedor elige la variación al agregar el ítem.",
-    "en": "In the quote, the salesperson picks the variation when adding the item."
+    "es": "En el cotización, el vendedor elige la variante al agregar el ítem.",
+    "en": "In the quote, the salesperson picks the variant when adding the item."
+  },
+  "4f66261ea8": {
+    "es": "Para el cliente que necesita pagar antes. La venta puede aprobarse, pero solo va a producción después del pago.",
+    "en": "For customers who must pay first. The sale can be approved, but it only goes to production after payment."
+  },
+  "34d5c0456f": {
+    "es": "Aprobada, espera en Cotizaciones, en la pestaña ⚠️ Pendiente, y el financiero recibe el total en una cuenta por cobrar marcada ⚠️ Pendiente de pago.",
+    "en": "Once approved, it waits in Quotes, on the ⚠️ On hold tab, and finance receives the total as a receivable marked ⚠️ Payment hold."
+  },
+  "5841f24b58": {
+    "es": "Cuando se da de baja la cuenta por cobrar, la venta sigue sola a producción.",
+    "en": "When the receivable is settled, the sale moves to production on its own."
+  },
+  "5f90b7180f": {
+    "es": "Cómo suele cobrar este proveedor: clave PIX, banco, agencia y cuenta.",
+    "en": "How this supplier usually gets paid: PIX key, bank, branch and account."
+  },
+  "03d643615b": {
+    "es": "Estos datos aparecen en sus cuentas por pagar, para que quien pague no tenga que buscarlos.",
+    "en": "These details show on their bills, so whoever pays does not have to look for them."
+  },
+  "7d7c1b4ccc": {
+    "es": "La parte de la hoja que la impresora realmente imprime. Muchas impresoras no imprimen un borde de algunos milímetros.",
+    "en": "The part of the sheet the printer actually prints. Many printers leave a border of a few millimeters unprinted."
+  },
+  "fe8df28b31": {
+    "es": "La cotización usa el área útil para contar cuántas piezas caben en la hoja. Déjela vacía para usar la hoja entera.",
+    "en": "The quote uses the printable area to count how many pieces fit on the sheet. Leave it empty to use the whole sheet."
+  },
+  "7482b8f422": {
+    "es": "Papel activo",
+    "en": "Active paper"
+  },
+  "b5b28748f8": {
+    "es": "Inactivo, el papel deja de aparecer en las listas y en las composiciones. Las cotizaciones ya hechas no cambian.",
+    "en": "When inactive, the paper no longer shows in lists and build-ups. Existing quotes do not change."
+  },
+  "3596c54797": {
+    "es": "La imagen de la firma aparece en las cotizaciones y órdenes de trabajo impresas por esta persona.",
+    "en": "The signature image shows on the quotes and work orders printed by this person."
+  },
+  "1320b7d443": {
+    "es": "Activado, el activo recibe unidad, volumen mensual previsto, configuraciones productivas y costos propios (mantenimiento, energía). Es el caso de las máquinas que producen.",
+    "en": "When on, the asset gets a unit, planned monthly volume, production setups and its own costs (maintenance, power). This is for machines that produce."
+  },
+  "6002f48f13": {
+    "es": "Desactivado, el activo entra en el costo del sector solo por la depreciación. Es el caso de muebles y equipos que no producen.",
+    "en": "When off, the asset enters the department cost only through depreciation. This is for furniture and equipment that do not produce."
+  },
+  "e790b461b8": {
+    "es": "Apodo",
+    "en": "Nickname"
+  },
+  "fae4b54695": {
+    "es": "Un nombre corto para reconocer el equipo en la lista y en producción, como \"Plotter grande\" o \"Router 2\".",
+    "en": "A short name to recognize the equipment in the list and in production, such as \"Large plotter\" or \"Router 2\"."
+  },
+  "cb71ef9e95": {
+    "es": "Los modos de trabajo del equipo, cada uno con su tiempo y su volumen mensual. Ejemplo: una impresora en alta calidad y en modo rápido.",
+    "en": "The equipment's working modes, each with its own time and monthly volume. Example: a printer in high quality and in fast mode."
+  },
+  "afe5b6e6fd": {
+    "es": "El volumen mensual previsto del activo es la suma de las configuraciones, y el costo de la máquina se reparte entre ellas por el tiempo de actividad.",
+    "en": "The asset's planned monthly volume is the sum of the setups, and the machine cost is split among them by active time."
+  },
+  "2ea26218a4": {
+    "es": "Costos del activo",
+    "en": "Asset costs"
+  },
+  "761dcbf472": {
+    "es": "Los costos propios del equipo: mantenimiento, energía, piezas, seguro.",
+    "en": "The equipment's own costs: maintenance, power, parts, insurance."
+  },
+  "39ebf4f7cb": {
+    "es": "Cada costo apunta a una cuenta del plan de cuentas. Así el comparativo de la base de costos muestra lo previsto y lo que realmente se registró.",
+    "en": "Each cost points to an account in the chart of accounts, so the cost base comparison shows the planned and the actually recorded amounts."
+  },
+  "34d816fd53": {
+    "es": "Para qué sirve",
+    "en": "What it is for"
+  },
+  "72873205f1": {
+    "es": "Próxima fecha",
+    "en": "Next date"
+  },
+  "831ada74ff": {
+    "es": "Sirve para que el sistema avise cuando se acerque el próximo cambio, mantenimiento o pago.",
+    "en": "Lets the system warn you when the next replacement, maintenance or payment is coming up."
+  },
+  "56545474cb": {
+    "es": "Sobre esta lista",
+    "en": "About this list"
+  },
+  "933f2dcbf6": {
+    "es": "Procesos del activo",
+    "en": "Asset processes"
+  },
+  "d056bd0a04": {
+    "es": "Los procesos que usan este equipo.",
+    "en": "The processes that use this equipment."
+  },
+  "f73e4b2ab3": {
+    "es": "El proceso se crea en Registros › Procesos, no aquí.",
+    "en": "Processes are created in Records › Processes, not here."
+  },
+  "e9c9f400f3": {
+    "es": "Volumen mensual del activo",
+    "en": "Asset monthly volume"
+  },
+  "26788357a9": {
+    "es": "Con configuraciones, el volumen mensual previsto del activo pasa a ser la suma del volumen de cada configuración.",
+    "en": "With setups, the asset's planned monthly volume becomes the sum of each setup's volume."
+  },
+  "20b9833d9f": {
+    "es": "Activado, el activo recibe unidad, volumen mensual previsto y configuraciones productivas. Es el caso de las máquinas que producen.",
+    "en": "When on, the asset gets a unit, planned monthly volume and production setups. This is for machines that produce."
+  },
+  "50d575a465": {
+    "es": "Vida útil y valor residual",
+    "en": "Useful life and residual value"
+  },
+  "8b154f7f9f": {
+    "es": "Entran con los valores estándar del sistema: 60 meses de vida útil y 30% de valor residual.",
+    "en": "They start with the system defaults: 60 months of useful life and 30% residual value."
+  },
+  "b282864385": {
+    "es": "Se pueden revisar en la pestaña Activo, que se abre después de registrar.",
+    "en": "You can review them on the Asset tab, which opens after saving."
+  },
+  "d981784ec4": {
+    "es": "Dónde aparece el color",
+    "en": "Where the color shows"
+  },
+  "b15f06ed5c": {
+    "es": "Color del sector",
+    "en": "Department color"
+  },
+  "163217ca0a": {
+    "es": "El color identifica el sector en el gestor de producción, en la ficha de producción, en la Agenda de entregas y en la composición del producto.",
+    "en": "The color identifies the department on the production board, the production sheet, the delivery schedule and the product build-up."
+  },
+  "6442daa4ad": {
+    "es": "Venta y hora del sector",
+    "en": "Department sale and hourly rate"
+  },
+  "ecc94073c5": {
+    "es": "Cómo vende el sector (por hora o por la unidad del equipo) y cuánto vale su hora.",
+    "en": "How the department sells (by the hour or by the equipment unit) and what its hour is worth."
+  },
+  "7341651be5": {
+    "es": "Los procesos y las composiciones usan estos valores para el costo de la mano de obra y de la preparación, hasta que la Base de costos calcule la hora real.",
+    "en": "Processes and build-ups use these values for labor and setup cost until the cost base calculates the real hourly cost."
+  },
+  "faeefbf689": {
+    "es": "Impresión del sector",
+    "en": "Department printing"
+  },
+  "77dbc46c61": {
+    "es": "El sangrado y las hojas de arranque que valen para los productos de este sector en el conteo de hojas.",
+    "en": "The bleed and make-ready sheets that apply to this department's products in the sheet count."
+  },
+  "55695b0e0c": {
+    "es": "El producto y el ítem de la cotización pueden cambiarlos. Vacío, vale un sangrado de 2 mm por lado y ninguna hoja de arranque.",
+    "en": "The product and the quote item can change them. Empty means a 2 mm bleed per side and no make-ready sheets."
+  },
+  "b1a1453f34": {
+    "es": "Tasa por cuotas",
+    "en": "Fee by installments"
+  },
+  "096a80eb22": {
+    "es": "La operadora cobra según el número de cuotas de la venta: la línea 3x vale para la venta en 3 cuotas.",
+    "en": "The card processor charges by the number of installments: the 3x row applies to a sale in 3 installments."
+  },
+  "d3aa145cae": {
+    "es": "La tasa es sobre el total pagado con esta forma de pago.",
+    "en": "The fee is on the total paid with this payment method."
+  },
+  "fb72593d91": {
+    "es": "Tasa y traslado",
+    "en": "Fee and pass-through"
+  },
+  "8a04053d1a": {
+    "es": "Tasa de la operadora:",
+    "en": "Card processor fee:"
+  },
+  "6920b91ed8": {
+    "es": "es el costo de la empresa. Queda guardada para el cálculo de costos (PRO).",
+    "en": "is the company's cost. It is kept for cost calculation (PRO)."
+  },
+  "0760a14cb1": {
+    "es": "es lo que el cliente paga de más por usar la forma. Entra en la cotización como recargo.",
+    "en": "is what the customer pays extra for using the method. It goes into the quote as a surcharge."
+  },
+  "12edf5a5ae": {
+    "es": "Banco de la operadora",
+    "en": "Card processor bank"
+  },
+  "a974c17344": {
+    "es": "El banco donde la operadora de tarjeta deposita las ventas.",
+    "en": "The bank where the card processor deposits the sales."
+  },
+  "57ea887ab3": {
+    "es": "La conciliación de esa cuenta ya sugiere la operadora cuando cae el depósito (liquidación).",
+    "en": "Reconciling that account already suggests the processor when the deposit arrives (settlement)."
+  },
+  "89b9b58cf9": {
+    "es": "Sobre el saldo inicial",
+    "en": "About the opening balance"
+  },
+  "050384ad55": {
+    "es": "Es el único saldo escrito a mano, en la fecha elegida.",
+    "en": "It is the only balance typed by hand, on the chosen date."
+  },
+  "751263fcc8": {
+    "es": "Desde ahí, el saldo de la cuenta siempre se calcula con los movimientos.",
+    "en": "From then on, the account balance is always calculated from the entries."
+  },
+  "7e535b90ee": {
+    "es": "Cuenta de operadora",
+    "en": "Card processor account"
+  },
+  "ebad4fd52b": {
+    "es": "La cuenta de la operadora de tarjeta no abre ni cierra caja: el día muestra solo el total que entró, por el valor completo.",
+    "en": "The card processor account does not open or close a register: the day shows only the total that came in, at full value."
+  },
+  "5c81a5443b": {
+    "es": "La conferencia ocurre en la liquidación, cuando el dinero cae en el banco ya con la tasa descontada.",
+    "en": "The check happens at settlement, when the money reaches the bank with the fee already deducted."
+  },
+  "c4ac406b51": {
+    "es": "Conteo a ciegas",
+    "en": "Blind count"
+  },
+  "62608691f2": {
+    "es": "Activado, quien cierra la caja escribe lo que contó sin ver cuánto se esperaba. Así no se ajusta el conteo al número de la pantalla.",
+    "en": "When on, whoever closes the register types what they counted without seeing the expected amount, so the count is not adjusted to the screen."
+  },
+  "e1f406b29b": {
+    "es": "El estándar es la conferencia simple, con lo esperado a la vista.",
+    "en": "The default is the simple check, with the expected amount visible."
+  },
+  "51214f2b33": {
+    "es": "Tolerancia",
+    "en": "Tolerance"
+  },
+  "d28a1e76c7": {
+    "es": "Desactivada, cualquier diferencia en el cierre se registra como faltante de caja.",
+    "en": "When off, any difference at closing is recorded as a cash discrepancy."
+  },
+  "187027b17a": {
+    "es": "Activada, la diferencia hasta el valor informado aparece en el cierre, pero no se registra.",
+    "en": "When on, a difference up to the given amount shows at closing but is not recorded."
+  },
+  "4836a0aeec": {
+    "es": "Formas de pago de la cuenta",
+    "en": "Account payment methods"
+  },
+  "fa8b3837ae": {
+    "es": "Las formas de pago que esta cuenta recibe y paga. El dinero de esas formas cae aquí.",
+    "en": "The payment methods this account receives and pays. Money from those methods lands here."
+  },
+  "ca45012899": {
+    "es": "La cuenta nueva viene con todo desmarcado: marque las formas que usa.",
+    "en": "A new account comes with everything unchecked: check the methods it uses."
+  },
+  "e30cfbd266": {
+    "es": "Sobre el valor estándar",
+    "en": "About the default value"
+  },
+  "af876e5604": {
+    "es": "El valor estándar entra en la nómina de quien reciba el ítem de aquí en adelante.",
+    "en": "The default value goes into the payroll of whoever gets the item from now on."
+  },
+  "5910c15fae": {
+    "es": "Quien ya tiene el ítem sigue con el valor que tiene.",
+    "en": "People who already have the item keep their current value."
+  },
+  "a47aa31ce6": {
+    "es": "Costo de los colaboradores",
+    "en": "Employee cost"
+  },
+  "499867ff29": {
+    "es": "El costo de los colaboradores es lo que alimenta el costo de los sectores en la Base de costos.",
+    "en": "Employee cost is what feeds department cost in the cost base."
+  },
+  "c7bfc0c5f7": {
+    "es": "Para agregar un ítem a alguien, haga clic en el nombre de la persona.",
+    "en": "To add an item to someone, click the person's name."
+  },
+  "74ccc7f2ab": {
+    "es": "Costo del colaborador",
+    "en": "Employee cost"
+  },
+  "64c66aa299": {
+    "es": "El costo del colaborador es lo que alimenta el costo del sector en la Base de costos.",
+    "en": "Employee cost is what feeds the department cost in the cost base."
+  },
+  "8045a22d7b": {
+    "es": "La nómina a pagar es menor que el costo porque la provisión de vacaciones, aguinaldo y FGTS es costo ahora y se paga después.",
+    "en": "The payroll to pay is lower than the cost because the provision for vacation, 13th salary and FGTS is a cost now and is paid later."
+  },
+  "1b03e2757a": {
+    "es": "El tipo se elige en la etapa de la composición del producto o del proceso. Por él la tarea sabe por dónde pasa en producción.",
+    "en": "The type is chosen in the build-up step of the product or process. It tells the task where it goes in production."
+  },
+  "a123af34be": {
+    "es": "Quién ve qué es configuración de acceso: el perfil dice si la persona ve todo, y el acceso a cada gestor dice qué ve el operador en él.",
+    "en": "Who sees what is an access setting: the profile says whether the person sees everything, and access to each board says what the operator sees there."
+  },
+  "053fdc7cc5": {
+    "es": "Los vehículos que la instalación y la entrega ocupan en la agenda. Un vehículo ocupado no aparece libre para otra salida en el mismo horario.",
+    "en": "The vehicles that installation and delivery take up on the schedule. A busy vehicle does not show as free for another trip at the same time."
+  },
+  "ba4498228a": {
+    "es": "Qué es",
+    "en": "What it is"
+  },
+  "305e46274f": {
+    "es": "Intervalo entre tareas",
+    "en": "Interval between tasks"
+  },
+  "c65b77a158": {
+    "es": "El tiempo entre una tarea y la siguiente en el mismo equipo: cambio de material, limpieza.",
+    "en": "The time between one task and the next on the same equipment: material change, cleaning."
+  },
+  "9d94d5963c": {
+    "es": "No es la preparación de la tarea. Quien ya cuenta el cambio dentro de la preparación deja cero.",
+    "en": "It is not the task setup. If you already count the change in the setup, leave zero."
+  },
+  "9da5551f44": {
+    "es": "Reloj",
+    "en": "Clock"
+  },
+  "852a444587": {
+    "es": "Activado, el reloj mide el tiempo registrado en las tareas de este tipo. Es ese tiempo el que la productividad compara con lo vendido.",
+    "en": "When on, the clock measures the time logged on tasks of this type. Productivity compares that time with what was sold."
+  },
+  "e5d4af72d3": {
+    "es": "Sobre X, Y y peso",
+    "en": "About X, Y and weight"
+  },
+  "f2b42be85d": {
+    "es": "X, Y y peso en la fórmula",
+    "en": "X, Y and weight in the formula"
+  },
+  "19e31d4ff4": {
+    "es": "X e Y son los lados del perfil elegido en la línea, en metros. El peso es por unidad de venta del material.",
+    "en": "X and Y are the sides of the profile chosen on the line, in meters. Weight is per material sales unit."
+  },
+  "4a5df6c395": {
+    "es": "Si el vendedor cambia el material en la cotización, la fórmula usa las medidas del nuevo material.",
+    "en": "If the salesperson changes the material in the quote, the formula uses the new material's dimensions."
+  },
+  "2a1c920c9e": {
+    "es": "Ítem opcional",
+    "en": "Optional item"
+  },
+  "ed9063ff91": {
+    "es": "El producto puede salir con o sin este ítem: en la cotización, el vendedor marca si el trabajo lo lleva.",
+    "en": "The product can go with or without this item: in the quote, the salesperson checks whether the job includes it."
+  },
+  "f91ad59855": {
+    "es": "Sin esta opción, el ítem siempre entra.",
+    "en": "Without this option, the item is always included."
+  },
+  "31c0e9b9bc": {
+    "es": "Viene marcado",
+    "en": "Checked by default"
+  },
+  "b10d649841": {
+    "es": "Activado, el ítem ya viene marcado en la cotización y entra en el costo y en el precio sugerido que se muestran aquí.",
+    "en": "When on, the item comes checked in the quote and counts in the cost and suggested price shown here."
+  },
+  "f669d863f2": {
+    "es": "Desactivado, empieza desmarcado y solo entra si el vendedor lo marca.",
+    "en": "When off, it starts unchecked and only counts if the salesperson checks it."
+  },
+  "d5ce1be289": {
+    "es": "Cómo cuenta",
+    "en": "How it counts"
+  },
+  "6992a3117a": {
+    "es": "El número de personas multiplica el tiempo: dos personas por 30 minutos son 60 minutos de mano de obra.",
+    "en": "The number of people multiplies the time: two people for 30 minutes is 60 minutes of labor."
+  },
+  "808469ee66": {
+    "es": "Activado, cobra la hoja o la placa entera.",
+    "en": "When on, it charges the whole sheet or board."
+  },
+  "590415371e": {
+    "es": "Desactivado, cobra solo la parte usada, cuando el sobrante vuelve al stock. El estándar viene del registro del material.",
+    "en": "When off, it charges only the part used, when the leftover goes back to stock. The default comes from the material record."
+  },
+  "e18ef6ae7a": {
+    "es": "Sobre el consumo",
+    "en": "About consumption"
+  },
+  "fb301f6fce": {
+    "es": "Consumo por opción",
+    "en": "Consumption per option"
+  },
+  "9e486d4901": {
+    "es": "En el mismo grupo de opciones, cada material puede tener su consumo, pérdida y mínimo. Ejemplo: el ACM usa 1,0 y el PVC 1,2, con mínimo de 0,5.",
+    "en": "In the same option group, each material can have its own consumption, waste and minimum. Example: ACM uses 1.0 and PVC 1.2, with a 0.5 minimum."
+  },
+  "b499497acc": {
+    "es": "En blanco, vale el de la línea.",
+    "en": "Blank means the line's value applies."
+  },
+  "54b7839dca": {
+    "es": "Dónde cambia",
+    "en": "Where it changes"
+  },
+  "cfd9bcd505": {
+    "es": "El nombre cambia solo en este producto. El proceso sigue con su nombre.",
+    "en": "The name changes only in this product. The process keeps its own name."
+  },
+  "2986dc784e": {
+    "es": "Activado, las reglas valen solo en esta etapa de este producto.",
+    "en": "When on, the rules apply only to this step of this product."
+  },
+  "6754563c9b": {
+    "es": "Desactivado, la etapa sigue las reglas del proceso.",
+    "en": "When off, the step follows the process rules."
+  },
+  "bf1b700f0e": {
+    "es": "Cada etapa es el trabajo de un sector: la máquina, el material y la mano de obra que usa, cada uno con su cálculo.",
+    "en": "Each step is a department's work: the machine, material and labor it uses, each with its own calculation."
+  },
+  "0526758ec0": {
+    "es": "El orden de las etapas es el orden de la producción.",
+    "en": "The order of the steps is the production order."
+  },
+  "364207fac3": {
+    "es": "El costo del producto es la suma de las etapas, en la medida vendida.",
+    "en": "The product cost is the sum of the steps, at the size sold."
+  },
+  "a00a649121": {
+    "es": "El dibujo de las etapas en el orden de la producción. Cada caja es la etapa de un sector.",
+    "en": "The drawing of the steps in production order. Each box is a department's step."
+  },
+  "f3dfb7c0c8": {
+    "es": "El &quot;+&quot; agrega la etapa siguiente; el menú de la caja activa, desactiva y cambia la etapa. Se puede dividir el flujo en caminos que avanzan al mismo tiempo.",
+    "en": "The &quot;+&quot; adds the next step; the box menu turns the step on, off or swaps it. You can split the flow into paths that run at the same time."
+  },
+  "0e00906769": {
+    "es": "Entero o fracción",
+    "en": "Whole or fraction"
+  },
+  "fc9887947a": {
+    "es": "Por defecto el campo acepta solo números enteros, como el número de letras o de ojales: la cotización rechaza decimales.",
+    "en": "By default the field takes only whole numbers, such as the number of letters or grommets: the quote rejects decimals."
+  },
+  "744393ddc5": {
+    "es": "Active &quot;Acepta fracción&quot; cuando el campo sea una medida, como metros.",
+    "en": "Turn on &quot;Accepts fraction&quot; when the field is a measurement, such as meters."
+  },
+  "6c525be326": {
+    "es": "Activada, el material aparece en la búsqueda de la cotización y puede venderse solo, como reventa (una placa, un rollo de vinilo).",
+    "en": "When on, the material shows in the quote search and can be sold on its own, as resale (a board, a roll of vinyl)."
+  },
+  "9054204616": {
+    "es": "Activada, el material puede elegirse en la composición de los productos y de los procesos, y entra en su costo.",
+    "en": "When on, the material can be chosen in product and process build-ups, and counts in their cost."
+  },
+  "7b806fe36e": {
+    "es": "El formato del material (placa, rollo, hoja, perfil), las medidas y el peso.",
+    "en": "The material format (board, roll, sheet, profile), dimensions and weight."
+  },
+  "9b26ce2784": {
+    "es": "Las fórmulas de la composición, el aprovechamiento de la placa o de la hoja y el plan de corte usan esta información. Sin ella, el material se cobra solo por la cantidad.",
+    "en": "Build-up formulas, board or sheet yield and the cutting plan use this information. Without it, the material is charged by quantity only."
+  },
+  "7688331636": {
+    "es": "Medidas del perfil",
+    "en": "Profile dimensions"
+  },
+  "c9139de7c0": {
+    "es": "Medidas del perfil (X e Y)",
+    "en": "Profile dimensions (X and Y)"
+  },
+  "4456010334": {
+    "es": "Informe como está en el catálogo del proveedor: en un perfil 50 × 30, X es 50 e Y es 30.",
+    "en": "Enter them as in the supplier catalog: in a 50 × 30 profile, X is 50 and Y is 30."
+  },
+  "14ff696db6": {
+    "es": "Cuál de los dos lados entra en la cuenta se elige en la fórmula de la composición.",
+    "en": "Which of the two sides goes into the calculation is chosen in the build-up formula."
+  },
+  "ad2473f705": {
+    "es": "Activado, la cotización cobra la hoja o la placa entera, aunque el trabajo use solo una parte.",
+    "en": "When on, the quote charges the whole sheet or board, even if the job uses only part of it."
+  },
+  "c3e88f3bec": {
+    "es": "Desactivado, cobra solo la parte usada, como es común en el ACM, donde el sobrante vuelve al stock.",
+    "en": "When off, it charges only the part used, as is common with ACM, where the leftover goes back to stock."
+  },
+  "12c09860cc": {
+    "es": "Cada etapa del producto puede cambiar esta elección.",
+    "en": "Each product step can change this choice."
+  },
+  "a65247e935": {
+    "es": "Variantes del material",
+    "en": "Material variants"
+  },
+  "806636920e": {
+    "es": "Escriba las marcas y los colores separados por coma. El sistema crea una variante para cada combinación de marca y color, todas con el mismo costo.",
+    "en": "Type the brands and colors separated by commas. The system creates a variant for each brand and color combination, all with the same cost."
+  },
+  "ceac05bc6f": {
+    "es": "Ejemplo: marcas 3M, Oracal y colores blanco, negro crean cuatro variantes.",
+    "en": "Example: brands 3M, Oracal and colors white, black create four variants."
+  },
+  "16b7ac41b4": {
+    "es": "Con variantes, la cotización pasa a pedir la elección de una de ellas.",
+    "en": "With variants, the quote asks you to choose one of them."
+  },
+  "dc58dff6f3": {
+    "es": "Cómo editar",
+    "en": "How to edit"
+  },
+  "7cf14ac90e": {
+    "es": "Costo y precio de las variantes",
+    "en": "Variant cost and price"
+  },
+  "219ec3ad0f": {
+    "es": "El costo de cada variante se cambia directamente en la tabla.",
+    "en": "Each variant's cost is changed directly in the table."
+  },
+  "001907f557": {
+    "es": "El precio de venta viene de Precios: use el R$ de cada línea.",
+    "en": "The sale price comes from Pricing: use the R$ on each row."
+  },
+  "47b7845001": {
+    "es": "Para agregar marcas y colores, use la edición del material.",
+    "en": "To add brands and colors, edit the material."
+  },
+  "95ceb4773a": {
+    "es": "Simular con las reglas",
+    "en": "Simulate with the rules"
+  },
+  "e1c472fa61": {
+    "es": "Aplica las reglas de la etapa en la simulación: seguir la cantidad de la base, usar su medida y cuántas piezas caben en ella.",
+    "en": "Applies the step rules to the simulation: follow the base quantity, use its size and how many pieces fit in it."
+  },
+  "800a12ff89": {
+    "es": "Cambiar el proceso cambia los productos",
+    "en": "Changing the process changes the products"
+  },
+  "6eabceabc4": {
+    "es": "El botón &quot;Llamar por WhatsApp&quot; y el correo de seguimiento usan estos textos.",
+    "en": "The &quot;Call on WhatsApp&quot; button and the follow-up email use these texts."
+  },
+  "28e9001dae": {
+    "es": "Lo que está entre llaves el sistema lo cambia por el dato de la cotización al enviar.",
+    "en": "Whatever is in braces is replaced by the quote data when sending."
+  },
+  "0c318803bf": {
+    "es": "Entre llaves, lo que el sistema completa: {valor}.",
+    "en": "In braces, what the system fills in: {valor}."
+  },
+  "a644892566": {
+    "es": "Marcadores para seguir la negociación: en qué punto está cada cotización mientras el cliente no decide (propuesta enviada, en negociación).",
+    "en": "Tags to track the negotiation: where each quote stands while the customer decides (proposal sent, negotiating)."
+  },
+  "7a6c539e2e": {
+    "es": "La lista de cotizaciones filtra por ellos. El avance de la cotización (elaboración, esperando, aprobada) es otra cosa y es del sistema.",
+    "en": "The quote list filters by them. The quote's progress (draft, waiting, approved) is different and comes from the system."
+  },
+  "1927922008": {
+    "es": "Activada, la venta rápida aparece en el menú de Ventas.",
+    "en": "When on, quick sale shows in the Sales menu."
+  },
+  "84ecd807e9": {
+    "es": "El vendedor no pasa por el registro de la cotización: va directo a elegir el ítem. Sirve para la venta pequeña de mostrador: una copia, un par de impresiones.",
+    "en": "The salesperson skips the quote form and goes straight to picking the item. It is for small counter sales: a copy, a couple of prints."
+  },
+  "7c6549a7db": {
+    "es": "Sobre el cliente estándar",
+    "en": "About the default customer"
+  },
+  "a81e89d760": {
+    "es": "Toda venta rápida nace en este cliente. Suele ser la propia empresa o un cliente genérico, como \"Consumidor\": créelo una vez en Registros y elíjalo aquí.",
+    "en": "Every quick sale starts with this customer. It is usually the company itself or a generic customer such as \"Consumer\": create it once in Records and pick it here."
+  },
+  "c0e30433cc": {
+    "es": "Si la venta necesita factura o cuotas, el vendedor cambia el cliente en la propia venta.",
+    "en": "If the sale needs an invoice or installments, the salesperson changes the customer in the sale itself."
+  },
+  "77f443a305": {
+    "es": "Sobre la venta rápida",
+    "en": "About quick sale"
+  },
+  "8fb2339e93": {
+    "es": "Qué es la venta rápida",
+    "en": "What quick sale is"
+  },
+  "71c2b9dc37": {
+    "es": "La venta rápida es una cotización común, marcada como rápida: sigue el mismo camino de aprobación, orden de trabajo y financiero.",
+    "en": "A quick sale is a regular quote marked as quick: it follows the same path through approval, work order and finance."
+  },
+  "f12ed17119": {
+    "es": "Qué cuentas aparecen",
+    "en": "Which accounts show"
+  },
+  "38dad3158f": {
+    "es": "Solo aparecen las cuentas con el control de caja activado. Tienen caja diaria: abrir, registrar, conferir y cerrar.",
+    "en": "Only accounts with cash control turned on show. They have a daily register: open, record, check and close."
+  },
+  "d22c75153b": {
+    "es": "Las demás cuentas reciben y pagan sin abrir caja. El control se activa en Configuración › Financiero › Cuentas bancarias.",
+    "en": "Other accounts receive and pay without opening a register. Cash control is turned on in Settings › Finance › Bank accounts."
+  },
+  "1c6792fb46": {
+    "es": "Ventas facturadas por la caja",
+    "en": "Sales billed by the register"
+  },
+  "144fd2ec64": {
+    "es": "Son ventas rápidas que la caja facturó para que el cliente pague después (boleto, facturación mensual).",
+    "en": "These are quick sales the register billed for the customer to pay later (boleto, monthly billing)."
+  },
+  "4694ed1851": {
+    "es": "No entran en el dinero de la caja ni en la conferencia: ya están en el flujo financiero como cuentas por cobrar.",
+    "en": "They are not part of the register cash or the check: they are already in the cash flow as receivables."
+  },
+  "b9e2ca6205": {
+    "es": "Salen de esta lista con el cierre y quedan en el informe del día.",
+    "en": "They leave this list at closing and stay in the day's report."
+  },
+  "2571895afd": {
+    "es": "Cuentas de recepción",
+    "en": "Receiving accounts"
+  },
+  "a3dc3f938d": {
+    "es": "Cuando el operador no elige la cuenta, el PIX y la tarjeta recibidos en este punto de venta caen en las cuentas elegidas aquí.",
+    "en": "When the operator does not choose the account, PIX and card payments at this point of sale go to the accounts chosen here."
+  },
+  "48a72c9bb6": {
+    "es": "Sin cuenta elegida, vale la cuenta estándar de la forma de pago, en Configuración › Financiero › Cuentas bancarias.",
+    "en": "With no account chosen, the payment method's default account applies, in Settings › Finance › Bank accounts."
+  },
+  "055c2a0200": {
+    "es": "Tarjeta en la caja",
+    "en": "Card at the register"
+  },
+  "e3ec45bcf2": {
+    "es": "La tarjeta entra en la caja por el valor completo de la venta.",
+    "en": "Card payments enter the register at the full sale value."
+  },
+  "0d56826be4": {
+    "es": "En el cierre, el valor va a la cuenta de la operadora; la tasa de la operadora solo aparece cuando cae el dinero (liquidación).",
+    "en": "At closing, the amount goes to the processor account; the processor fee only shows when the money arrives (settlement)."
+  },
+  "c6c7db8c24": {
+    "es": "Los totales de la caja aparecen en el cierre.",
+    "en": "Register totals show at closing."
+  },
+  "c9a23d8bc1": {
+    "es": "Esta lista sirve para saber",
+    "en": "This list tells you"
+  },
+  "ddcd42821b": {
+    "es": "La venta entra aquí cuando el trabajo está listo y el cliente aún no lo retiró. Sale cuando el cliente retira y paga el resto, o cuando la empresa descarta y registra la pérdida (se descuenta la seña pagada).",
+    "en": "A sale lands here when the job is ready and the customer has not picked it up. It leaves when the customer picks up and pays the rest, or when the company discards it and records the loss (the deposit paid is deducted)."
+  },
+  "4814787bbe": {
+    "es": "El sistema no tiene plazo para esto: la lista muestra hace cuántos días espera cada venta.",
+    "en": "The system sets no deadline for this: the list shows how many days each sale has been waiting."
+  },
+  "e3f34d2a15": {
+    "es": "Marcado, el trabajo se entrega junto con el pago.",
+    "en": "When checked, the job is delivered along with the payment."
+  },
+  "4453d4618e": {
+    "es": "Desmarque cuando el cliente pague solo la seña y retire después: el trabajo va a la lista Esperando retiro.",
+    "en": "Uncheck when the customer pays only the deposit and picks up later: the job goes to the Awaiting pickup list."
+  },
+  "8ae1598dd3": {
+    "es": "Dónde aparece el costo",
+    "en": "Where the cost shows"
+  },
+  "d2148cf548": {
+    "es": "El costo informado aquí sirve para calcular el precio de venta y generar la cuenta por pagar al proveedor.",
+    "en": "The cost entered here is used to calculate the sale price and create the bill to the supplier."
+  },
+  "318af42119": {
+    "es": "En la pantalla de la cotización y en la propuesta aparece solo el precio de venta.",
+    "en": "The quote screen and the proposal show only the sale price."
+  },
+  "22ba04045f": {
+    "es": "Costo y margen",
+    "en": "Cost and margin"
+  },
+  "65ac47fefd": {
+    "es": "Este informe muestra lo que lleva el ítem, sin valores de costo.",
+    "en": "This report shows what the item contains, without cost values."
+  },
+  "08978dd66f": {
+    "es": "El costo y el margen están en el Resultado previsto de la venta, para quien tiene el permiso de ver valores.",
+    "en": "Cost and margin are in the sale's Expected result, for those allowed to see values."
+  },
+  "d96bbefd98": {
+    "es": "Conteo de hojas",
+    "en": "Sheet count"
+  },
+  "f551243a30": {
+    "es": "Cuántas hojas gasta el ítem: la cuenta usa el tamaño final de la pieza más el sangrado de los dos lados, ve cuántas caben en la hoja y suma las hojas de arranque.",
+    "en": "How many sheets the item uses: it takes the piece's final size plus bleed on both sides, sees how many fit on the sheet and adds the make-ready sheets."
+  },
+  "273a2a50fe": {
+    "es": "Cada caja es una etapa del ítem. Use el &quot;+&quot; después de una caja para agregar la etapa siguiente.",
+    "en": "Each box is a step of the item. Use the &quot;+&quot; after a box to add the next step."
+  },
+  "beb86923c6": {
+    "es": "Haga clic en la caja para ver y cambiar sus recursos.",
+    "en": "Click a box to see and change its resources."
+  },
+  "c70148d7dd": {
+    "es": "Sobre el proveedor",
+    "en": "About the supplier"
+  },
+  "444f79601c": {
+    "es": "Proveedor del tercerizado",
+    "en": "Outsourced item supplier"
+  },
+  "252dbc2ee0": {
+    "es": "De quién compra la empresa este ítem.",
+    "en": "Who the company buys this item from."
+  },
+  "d8b2dbb9c4": {
+    "es": "Cuando se aprueba la venta, la cuenta por pagar sale para este proveedor. Después no cambia desde aquí: el cambio se hace en la cuenta por pagar.",
+    "en": "When the sale is approved, the bill goes to this supplier. After that it cannot be changed here: change it on the bill."
+  },
+  "4f5a1ec0c2": {
+    "es": "Un nombre corto para reconocer el equipo en la lista y en producción, como &quot;Plotter grande&quot; o &quot;Router 2&quot;.",
+    "en": "A short name to recognize the equipment in the list and in production, such as &quot;Large plotter&quot; or &quot;Router 2&quot;."
+  },
+  "88b789b316": {
+    "es": "Toda venta rápida nace en este cliente. Suele ser la propia empresa o un cliente genérico, como &quot;Consumidor&quot;: créelo una vez en Registros y elíjalo aquí.",
+    "en": "Every quick sale starts with this customer. It is usually the company itself or a generic customer such as &quot;Consumer&quot;: create it once in Records and pick it here."
   }
 }

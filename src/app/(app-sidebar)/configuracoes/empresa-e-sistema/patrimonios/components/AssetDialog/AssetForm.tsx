@@ -6,6 +6,7 @@
 // depreciação). Não tem botão próprio: o Salvar do rodapé grava (PAD-5).
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -224,11 +225,20 @@ export function AssetForm({
     <fieldset disabled={!canEdit} className="space-y-5">
       <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
         <div>
-          <p className="text-sm font-medium">Detalhar custos deste bem</p>
-          <p className="text-sm text-gray">
-            Desligado, o bem entra só com a depreciação no custo do setor, sem
-            unidade, volume mensal, configurações ou custos próprios.
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium">Detalhar custos deste bem</p>
+            <InfoHint title="Cadastro detalhado">
+              <p>
+                Ligado, o bem ganha unidade, volume mensal previsto,
+                configurações produtivas e custos próprios (manutenção,
+                energia). É o caso das máquinas que produzem.
+              </p>
+              <p>
+                Desligado, o bem entra no custo do setor só pela depreciação. É
+                o caso de móveis e equipamentos que não produzem.
+              </p>
+            </InfoHint>
+          </div>
         </div>
         <Switch
           checked={form.detailed}
@@ -262,10 +272,16 @@ export function AssetForm({
           )}
         </div>
         <div className="space-y-1.5">
-          <p className="text-sm font-medium">Foto do patrimônio</p>
-          <p className="text-sm text-gray">
-            Ajuda a reconhecer o equipamento na lista e na produção.
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-sm font-medium">Foto do patrimônio</p>
+            <InfoHint title="Apelido">
+              <p>
+                Um nome curto para reconhecer o equipamento na lista e na
+                produção, como &quot;Plotter grande&quot; ou &quot;Router
+                2&quot;.
+              </p>
+            </InfoHint>
+          </div>
           <div className="flex items-center gap-2">
             <Button
               size="sm"

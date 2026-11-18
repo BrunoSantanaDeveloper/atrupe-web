@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState, useEffect } from 'react'
 
 // UI
@@ -331,11 +332,20 @@ export function NewPaymentCondition({
 
                   {canManageTaxInput && costType === 'PERCENT' ? (
                     <>
-                      <p className="w-full text-sm text-gray">
-                        A operadora cobra pela quantidade de parcelas da venda:
-                        a linha 3x vale para a venda parcelada em 3 vezes, sobre
-                        o total pago nesta forma.
-                      </p>
+                      <div className="flex items-center gap-1.5 text-xs text-gray">
+                        Como funciona
+                        <InfoHint title="Taxa por parcelas">
+                          <p>
+                            A operadora cobra conforme o número de parcelas da
+                            venda: a linha 3x vale para a venda parcelada em 3
+                            vezes.
+                          </p>
+                          <p>
+                            A taxa é sobre o total pago nesta forma de
+                            pagamento.
+                          </p>
+                        </InfoHint>
+                      </div>
                       {Array.from({ length: maxInstallmentsLength }).map(
                         (_, index) => (
                           <div key={index} className="w-full">
@@ -424,11 +434,19 @@ export function NewPaymentCondition({
                 )}
 
               {canManageTaxInput && (
-                <p className="w-full text-sm text-gray">
-                  A taxa da operadora é o seu custo: fica guardada para o
-                  cálculo de custos (PRO). O repasse é o que o cliente paga a
-                  mais, somado ao orçamento como acréscimo.
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-gray">
+                  Taxa e repasse
+                  <InfoHint title="Taxa e repasse">
+                    <p>
+                      <b>Taxa da operadora:</b> é o custo da empresa. Fica
+                      guardada para o cálculo de custos (PRO).
+                    </p>
+                    <p>
+                      <b>Repasse:</b> é o que o cliente paga a mais por usar a
+                      forma. Entra no orçamento como acréscimo.
+                    </p>
+                  </InfoHint>
+                </div>
               )}
 
               {hasFiscalModule && (

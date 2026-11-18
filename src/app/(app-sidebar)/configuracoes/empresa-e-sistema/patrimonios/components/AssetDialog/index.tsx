@@ -8,6 +8,7 @@
 // as ações do bem (vender, inativar) no rodapé, como no processo.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -103,10 +104,13 @@ function UsedInLine({ processes }: { processes: AssetRecord['processes'] }) {
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[320px] space-y-2" align="start">
-        <p className="text-xs text-gray">
-          Processos que usam este bem. O processo é criado em Produtos ›
-          Processos, não aqui.
-        </p>
+        <div className="flex items-center gap-1.5 text-xs text-gray">
+          Sobre esta lista
+          <InfoHint title="Processos do bem">
+            <p>Os processos que usam este equipamento.</p>
+            <p>O processo é criado em Cadastros › Processos, não aqui.</p>
+          </InfoHint>
+        </div>
         <ul className="max-h-[240px] space-y-1 overflow-y-auto">
           {processes.map((process) => (
             <li

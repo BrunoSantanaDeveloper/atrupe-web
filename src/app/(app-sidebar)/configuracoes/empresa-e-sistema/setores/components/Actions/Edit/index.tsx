@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -298,20 +299,34 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                     </label>
                   </div>
                 </div>
-                <p className="text-xs text-gray">
-                  Aparece no gerenciador, na ficha de produção, na Agenda de
-                  entrega e na composição do produto.
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-gray">
+                  Onde a cor aparece
+                  <InfoHint title="Cor do setor">
+                    <p>
+                      A cor identifica o setor no gerenciador de produção, na
+                      ficha de produção, na Agenda de entrega e na composição do
+                      produto.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
               {composition && (
                 <div className="w-full space-y-3 rounded-lg border border-gray-200 p-3">
                   <div>
-                    <p className="text-sm font-medium">Composição</p>
-                    <p className="text-xs text-gray">
-                      Como o setor vende e quanto vale a hora dele. Os processos
-                      e as composições custeiam a mão de obra e o preparo por
-                      estes valores, até a Base de custos calcular a hora.
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-medium">Composição</p>
+                      <InfoHint title="Venda e hora do setor">
+                        <p>
+                          Como o setor vende (por hora ou pela unidade do
+                          equipamento) e quanto vale a hora dele.
+                        </p>
+                        <p>
+                          Os processos e as composições usam estes valores para
+                          o custo da mão de obra e do preparo, até a Base de
+                          custos calcular a hora de verdade.
+                        </p>
+                      </InfoHint>
+                    </div>
                   </div>
                   <SelectBasic
                     name="sector-sale-unit"
@@ -365,12 +380,20 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
               {printing && (
                 <div className="w-full space-y-3 rounded-lg border border-gray-200 p-3">
                   <div>
-                    <p className="text-sm font-medium">Impressão</p>
-                    <p className="text-xs text-gray">
-                      O padrão dos produtos deste setor na contagem de folhas. O
-                      produto e o item do orçamento podem mudar. Vazio, vale a
-                      sangria de 2 mm por lado e nenhuma folha de acerto.
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-medium">Impressão</p>
+                      <InfoHint title="Impressão do setor">
+                        <p>
+                          A sangria e as folhas de acerto que valem para os
+                          produtos deste setor na contagem de folhas.
+                        </p>
+                        <p>
+                          O produto e o item do orçamento podem trocar. Vazio,
+                          vale a sangria de 2 mm por lado e nenhuma folha de
+                          acerto.
+                        </p>
+                      </InfoHint>
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex-[1_0_160px] space-y-1.5">

@@ -6,6 +6,7 @@
 // o arredondamento (FC-18) — entra por baixo dos campos.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -175,12 +176,15 @@ export function ReceiveSaleDialog({
                   checked={deliver}
                   onCheckedChange={(checked) => setDeliver(!!checked)}
                 />
-                <span>
+                <span className="flex items-center gap-1.5">
                   <span className="text-sm font-medium">Entregar agora</span>
-                  <span className="mt-0.5 block text-sm text-gray">
-                    Desmarque quando o cliente pagar o sinal e buscar depois: o
-                    trabalho vai para a lista de aguardando retirada.
-                  </span>
+                  <InfoHint title="Entregar agora">
+                    <p>Marcado, o trabalho é entregue junto com o pagamento.</p>
+                    <p>
+                      Desmarque quando o cliente pagar só o sinal e buscar
+                      depois: o trabalho vai para a lista Aguardando retirada.
+                    </p>
+                  </InfoHint>
                 </span>
               </label>
 

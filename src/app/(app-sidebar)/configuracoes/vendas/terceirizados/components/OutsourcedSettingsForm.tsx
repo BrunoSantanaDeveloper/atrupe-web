@@ -8,6 +8,7 @@
 // outsourcedMarkup.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -20,7 +21,6 @@ import {
   CardHeader,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -81,14 +81,18 @@ export function OutsourcedSettingsForm() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Acréscimo sobre o custo do terceirizado</CardTitle>
-          <CardDescription>
-            No orçamento, o vendedor informa o custo do fornecedor e o sistema
-            propõe o preço de venda: custo + este percentual. O percentual
-            aparece ao lado do preço e o vendedor pode alterar o valor na hora.
-            O terceirizado não recebe rateio nem custo de estrutura: o preço é
-            só o custo mais o acréscimo.
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Acréscimo sobre o custo do terceirizado</CardTitle>
+            <InfoHint title="Acréscimo sobre o custo do terceirizado">
+              <p>
+                No orçamento, o vendedor informa o custo do fornecedor e o
+                sistema propõe o preço de venda: custo + este percentual. O
+                percentual aparece ao lado do preço e o vendedor pode alterar o
+                valor na hora. O terceirizado não recebe rateio nem custo de
+                estrutura: o preço é só o custo mais o acréscimo.
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         <CardContent className="px-6 pb-6">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

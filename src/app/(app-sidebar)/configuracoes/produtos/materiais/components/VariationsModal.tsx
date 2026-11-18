@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
@@ -131,11 +132,16 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
           </div>
         </DialogHeader>
         <DialogBody className="space-y-5">
-          <p className="text-sm text-gray">
-            O custo é alterado direto na tabela. O preço de venda sai da
-            precificação, pelo R$ de cada linha. Para incluir marcas e cores,
-            use a edição do material.
-          </p>
+          <div className="flex items-center gap-1.5 text-sm text-gray-700">
+            Como editar
+            <InfoHint title="Custo e preço das variações">
+              <p>O custo de cada variação é alterado direto na tabela.</p>
+              <p>
+                O preço de venda vem da precificação: use o R$ de cada linha.
+              </p>
+              <p>Para incluir marcas e cores, use a edição do material.</p>
+            </InfoHint>
+          </div>
 
           {material && material.variations.length > 0 && (
             <div className="space-y-2">

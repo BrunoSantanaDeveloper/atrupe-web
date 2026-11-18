@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useMemo, useState } from 'react'
 
 // UI
@@ -12,7 +13,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -156,14 +156,18 @@ export function Distribution() {
       <DistributionSummaryCards totals={totals} isLoading={isLoading} />
       <Card>
         <CardHeader>
-          <CardTitle>Distribuição dos custos indiretos</CardTitle>
-          <CardDescription>
-            Escolha quanto do custo administrativo cada setor produtivo recebe.
-            Distribuir é opcional: pelo método do custo puro, o padrão é deixar
-            o administrativo fora do custo dos setores e cobri-lo com o
-            resultado das vendas.
-            {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
-          </CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Distribuição dos custos indiretos</CardTitle>
+            <InfoHint title="Distribuição dos custos indiretos">
+              <p>
+                Escolha quanto do custo administrativo cada setor produtivo
+                recebe. Distribuir é opcional: pelo método do custo puro, o
+                padrão é deixar o administrativo fora do custo dos setores e
+                cobri-lo com o resultado das vendas.{' '}
+                {referenceMonth ? ` Mês de referência: ${referenceMonth}.` : ''}
+              </p>
+            </InfoHint>
+          </div>
         </CardHeader>
         {isLoading ? (
           <TableSkeleton cols={5} rows={8} />

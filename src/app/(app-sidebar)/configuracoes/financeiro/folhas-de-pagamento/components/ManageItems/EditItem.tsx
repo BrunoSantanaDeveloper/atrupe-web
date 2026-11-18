@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect } from 'react'
 
 // UI
@@ -209,10 +210,16 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                         width="flex-[1_0_160px]"
                       />
                     )}
-                    <p className="w-full text-sm text-gray">
-                      O valor padrão entra na folha de quem recebe o item daqui
-                      em diante; o de quem já tem continua como está.
-                    </p>
+                    <div className="flex items-center gap-1.5 text-xs text-gray">
+                      Sobre o valor padrão
+                      <InfoHint title="Valor padrão">
+                        <p>
+                          O valor padrão entra na folha de quem receber o item
+                          daqui em diante.
+                        </p>
+                        <p>Quem já tem o item continua com o valor que tem.</p>
+                      </InfoHint>
+                    </div>
                   </div>
                 )}
               </div>

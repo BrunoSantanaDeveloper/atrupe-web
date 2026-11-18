@@ -4,6 +4,7 @@
 // exige disciplina está aqui, e só aparece nas contas com controle ligado.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -188,10 +189,19 @@ export function OpenDayDialog({
           onChange={(event) => setDate(event.target.value)}
         />
       </div>
-      <p className="text-sm text-gray">
-        Só aparecem as contas com controle de caixa. As livres recebem e pagam
-        sem abrir caixa.
-      </p>
+      <div className="flex items-center gap-1.5 text-xs text-gray">
+        Como funciona
+        <InfoHint title="Quais contas aparecem">
+          <p>
+            Só aparecem as contas com o controle de caixa ligado. Elas têm caixa
+            diário: abrir, lançar, conferir e fechar.
+          </p>
+          <p>
+            As demais contas recebem e pagam sem abrir caixa. O controle é
+            ligado em Configurações › Financeiro › Contas bancárias.
+          </p>
+        </InfoHint>
+      </div>
     </Shell>
   )
 }

@@ -7,6 +7,7 @@
 // e filtra.
 
 // Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 
 // React
@@ -619,11 +620,19 @@ export function PayrollStructure() {
                   </Table>
                 </div>
                 <CardFooter className="flex-wrap justify-between gap-3">
-                  <p className="max-w-xl text-sm text-gray">
-                    O <strong>custo dos colaboradores</strong> é o que alimenta
-                    o custo dos setores na Base de custos. Para acrescentar um
-                    item a alguém, clique no nome da pessoa.
-                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray">
+                    Como funciona
+                    <InfoHint title="Custo dos colaboradores">
+                      <p>
+                        O custo dos colaboradores é o que alimenta o custo dos
+                        setores na Base de custos.
+                      </p>
+                      <p>
+                        Para acrescentar um item a alguém, clique no nome da
+                        pessoa.
+                      </p>
+                    </InfoHint>
+                  </div>
                   <div className="flex flex-wrap gap-6 text-sm">
                     <div>
                       <p className="text-gray">Sai na folha a pagar</p>
@@ -761,12 +770,19 @@ export function PayrollStructure() {
                 </div>
 
                 <CardFooter className="flex-wrap justify-between gap-3">
-                  <p className="max-w-xl text-sm text-gray">
-                    O <strong>custo do colaborador</strong> é o que alimenta o
-                    custo do setor na Base de custos. A folha a pagar é menor
-                    porque a provisão de férias, 13º e FGTS custa agora e é paga
-                    depois.
-                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray">
+                    Como funciona
+                    <InfoHint title="Custo do colaborador">
+                      <p>
+                        O custo do colaborador é o que alimenta o custo do setor
+                        na Base de custos.
+                      </p>
+                      <p>
+                        A folha a pagar é menor que o custo porque a provisão de
+                        férias, 13º e FGTS é custo agora e é paga depois.
+                      </p>
+                    </InfoHint>
+                  </div>
                   <div className="flex flex-wrap gap-6 text-sm">
                     <div>
                       <p className="text-gray">Sai na folha a pagar</p>

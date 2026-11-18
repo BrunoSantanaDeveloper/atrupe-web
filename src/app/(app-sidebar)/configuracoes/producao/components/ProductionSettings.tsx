@@ -10,6 +10,7 @@
 // múltiplos) saiu, porque o quadro é um só, com os seis estados.
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { Fragment, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
@@ -33,7 +34,6 @@ import {
   CardHeader,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -252,11 +252,15 @@ export function ProductionSettings() {
               <div className="flex items-center gap-3">
                 <FeaturedIcon tone="neutral" Icon={IconBuildingFactory2} />
                 <div>
-                  <CardTitle>Gerenciadores</CardTitle>
-                  <CardDescription>
-                    Um por setor que produz. A cor é a do setor, no cadastro de
-                    setores.
-                  </CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Gerenciadores</CardTitle>
+                    <InfoHint title="Gerenciadores">
+                      <p>
+                        Um por setor que produz. A cor é a do setor, no cadastro
+                        de setores.
+                      </p>
+                    </InfoHint>
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -425,12 +429,16 @@ export function ProductionSettings() {
               <div className="flex items-center gap-3">
                 <FeaturedIcon tone="neutral" Icon={IconListNumbers} />
                 <div>
-                  <CardTitle>Tipos de tarefa</CardTitle>
-                  <CardDescription>
-                    O tipo é escolhido na etapa da composição do produto ou do
-                    processo (IP-23); é por ele que a tarefa sabe por onde
-                    passa.
-                  </CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Tipos de tarefa</CardTitle>
+                    <InfoHint title="Tipos de tarefa">
+                      <p>
+                        O tipo é escolhido na etapa da composição do produto ou
+                        do processo. É por ele que a tarefa sabe por onde passa
+                        na produção.
+                      </p>
+                    </InfoHint>
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -543,12 +551,16 @@ export function ProductionSettings() {
               <div className="flex items-center gap-3">
                 <FeaturedIcon tone="neutral" Icon={IconUsers} />
                 <div>
-                  <CardTitle>Colaboradores na produção</CardTitle>
-                  <CardDescription>
-                    Quem vê o quê é configuração de acesso (GP-11): o perfil diz
-                    se a pessoa vê tudo; o acesso a cada gerenciador diz o que o
-                    operador vê nele.
-                  </CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Colaboradores na produção</CardTitle>
+                    <InfoHint title="Colaboradores na produção">
+                      <p>
+                        Quem vê o quê é configuração de acesso: o perfil diz se
+                        a pessoa vê tudo, e o acesso a cada gerenciador diz o
+                        que o operador vê nele.
+                      </p>
+                    </InfoHint>
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -653,11 +665,16 @@ export function ProductionSettings() {
               <div className="flex items-center gap-3">
                 <FeaturedIcon tone="neutral" Icon={IconTruck} />
                 <div>
-                  <CardTitle>Veículos</CardTitle>
-                  <CardDescription>
-                    A frota que a instalação e a entrega ocupam na agenda
-                    (VS-7).
-                  </CardDescription>
+                  <div className="flex items-center gap-1.5">
+                    <CardTitle>Veículos</CardTitle>
+                    <InfoHint title="Veículos">
+                      <p>
+                        Os veículos que a instalação e a entrega ocupam na
+                        agenda. Um veículo ocupado não aparece livre para outra
+                        saída no mesmo horário.
+                      </p>
+                    </InfoHint>
+                  </div>
                 </div>
               </div>
             </CardHeader>

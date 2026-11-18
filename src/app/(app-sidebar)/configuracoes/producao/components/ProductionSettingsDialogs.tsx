@@ -5,6 +5,7 @@
 // de tarefa (sem cor: usa a do setor), as etapas dele e os veículos.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -198,10 +199,19 @@ export function ManagerDialog({
                   }))
                 }
               />
-              <p className="text-xs text-gray">
-                Troca de material, limpeza. Não é o preparo da tarefa: quem já
-                embute a troca no preparo deixa zero.
-              </p>
+              <div className="flex items-center gap-1.5 text-xs text-gray">
+                O que é
+                <InfoHint title="Intervalo entre tarefas">
+                  <p>
+                    O tempo entre uma tarefa e a seguinte no mesmo equipamento:
+                    troca de material, limpeza.
+                  </p>
+                  <p>
+                    Não é o preparo da tarefa. Quem já conta a troca dentro do
+                    preparo deixa zero.
+                  </p>
+                </InfoHint>
+              </div>
             </div>
           </div>
           <div className="space-y-2">
@@ -540,12 +550,18 @@ export function TaskTypeDialog({
           </div>
           <label className="flex items-start justify-between gap-6 rounded-lg border border-gray-200 p-4">
             <span>
-              <span className="block text-sm font-medium text-gray-800">
-                Controla tempo
-              </span>
-              <span className="block text-sm text-gray">
-                O relógio mede o tempo apontado das tarefas deste tipo.
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-medium text-gray-800">
+                  Controla tempo
+                </span>
+                <InfoHint title="Relógio">
+                  <p>
+                    Ligado, o relógio mede o tempo apontado nas tarefas deste
+                    tipo. É esse tempo que a produtividade compara com o
+                    vendido.
+                  </p>
+                </InfoHint>
+              </div>
             </span>
             <Switch
               checked={values.timeControl}

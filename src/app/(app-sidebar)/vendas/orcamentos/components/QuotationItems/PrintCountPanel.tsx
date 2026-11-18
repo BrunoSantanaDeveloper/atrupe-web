@@ -8,6 +8,7 @@
 // precisa. A sangria mudada vai no `printSpec` do item.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useMemo, useState } from 'react'
 
 // UI
@@ -92,11 +93,15 @@ export function PrintCountPanel({
 
   return (
     <div className="w-full space-y-3 rounded-xl border border-gray-200 p-4">
-      <div>
+      <div className="flex items-center gap-1.5">
         <p className="type-card-title">Folhas</p>
-        <p className="text-xs text-gray">
-          A conta usa o tamanho final mais a sangria dos dois lados.
-        </p>
+        <InfoHint title="Contagem de folhas">
+          <p>
+            Quantas folhas o item gasta: a conta usa o tamanho final da peça
+            mais a sangria dos dois lados, vê quantas cabem na folha e soma as
+            folhas de acerto.
+          </p>
+        </InfoHint>
       </div>
 
       <ul className="space-y-1 text-sm">

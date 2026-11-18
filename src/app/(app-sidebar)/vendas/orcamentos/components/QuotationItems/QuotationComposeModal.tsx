@@ -12,6 +12,7 @@
 // ("Lona 440 g – R$ 25,00"). Nunca o custo (ORC-7).
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -466,14 +467,17 @@ export function QuotationComposeModal({
             {/* 2. O fluxo: o mesmo editor do produto (FL-5) */}
             <div className="space-y-3">
               <div className="flex flex-wrap items-end justify-between gap-3">
-                <div>
+                <div className="flex items-center gap-1.5">
                   <p className="text-sm font-medium text-gray-800">
                     Etapas da produção
                   </p>
-                  <p className="text-xs text-gray">
-                    Use o &quot;+&quot; depois de uma caixa para a etapa
-                    seguinte. Clique na caixa para ver os recursos.
-                  </p>
+                  <InfoHint title="Etapas da produção">
+                    <p>
+                      Cada caixa é uma etapa do item. Use o &quot;+&quot; depois
+                      de uma caixa para acrescentar a etapa seguinte.
+                    </p>
+                    <p>Clique na caixa para ver e mudar os recursos dela.</p>
+                  </InfoHint>
                 </div>
                 {attention && (
                   <p className="text-sm text-warning-700">

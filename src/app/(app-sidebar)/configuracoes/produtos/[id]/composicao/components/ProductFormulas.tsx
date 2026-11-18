@@ -5,6 +5,7 @@
 // produto, porque dependem dos campos dele; para reaproveitar, copia-se a
 // composição de outro produto.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
@@ -121,12 +122,16 @@ export function ProductFormulas({
   const header = (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0 flex-1 basis-80">
-        {bare ? (
-          <p className="text-sm font-semibold text-gray-700">{title}</p>
-        ) : (
-          <CardTitle>{title}</CardTitle>
-        )}
-        <p className="text-sm text-gray">{description}</p>
+        <div className="flex items-center gap-1.5">
+          {bare ? (
+            <p className="text-sm font-semibold text-gray-700">{title}</p>
+          ) : (
+            <CardTitle>{title}</CardTitle>
+          )}
+          <InfoHint title={title}>
+            <p>{description}</p>
+          </InfoHint>
+        </div>
       </div>
       <PermissionGate permissions={EDIT}>
         <Button

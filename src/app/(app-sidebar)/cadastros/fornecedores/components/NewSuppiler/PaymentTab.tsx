@@ -4,16 +4,26 @@
 // pagar as contas a pagar dele — inclusive as que o terceirizado gera ao
 // aprovar a venda. Tudo opcional; é informação para quem paga.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { FormInput } from '@/components/common/form/FormInput'
 import type { NewSupplierFormType } from './schema'
 
 export function PaymentTab() {
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray">
-        Como este fornecedor costuma receber. Aparece nas contas a pagar dele
-        para quem for pagar.
-      </p>
+      <div className="flex items-center gap-1.5">
+        <p className="text-sm font-medium text-gray-700">Dados de pagamento</p>
+        <InfoHint title="Dados de pagamento">
+          <p>
+            Como este fornecedor costuma receber: chave PIX, banco, agência e
+            conta.
+          </p>
+          <p>
+            Esses dados aparecem nas contas a pagar dele, para quem for pagar
+            não precisar procurar.
+          </p>
+        </InfoHint>
+      </div>
       <div className="flex flex-wrap gap-4">
         <FormInput<NewSupplierFormType>
           name="payment.pixKey"

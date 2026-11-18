@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -258,9 +259,15 @@ export function CostModal({
               value={lastOccurrence}
               onChange={(event) => setLastOccurrence(event.target.value)}
             />
-            <p className="text-sm text-gray">
-              Serve para avisar quando a próxima troca ou pagamento se aproxima.
-            </p>
+            <div className="flex items-center gap-1.5 text-xs text-gray">
+              Para que serve
+              <InfoHint title="Próxima data">
+                <p>
+                  Serve para o sistema avisar quando a próxima troca, manutenção
+                  ou pagamento estiver chegando.
+                </p>
+              </InfoHint>
+            </div>
           </div>
 
           <div className="rounded-lg border border-gray-200 p-3">

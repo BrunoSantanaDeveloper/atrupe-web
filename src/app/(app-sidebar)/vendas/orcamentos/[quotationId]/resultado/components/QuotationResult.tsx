@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { Fragment, useState } from 'react'
 
 // UI
@@ -153,12 +154,16 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
           <CardHeader>
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <CardTitle>Resultado da venda</CardTitle>
-                <CardDescription>
-                  O que sobra depois do custo de produção e do que a venda leva
-                  embora. Enquanto não houver produção apontada, tudo aqui é
-                  previsto.
-                </CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Resultado da venda</CardTitle>
+                  <InfoHint title="Resultado da venda">
+                    <p>
+                      O que sobra depois do custo de produção e do que a venda
+                      leva embora. Enquanto não houver produção apontada, tudo
+                      aqui é previsto.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
               <PermissionGate permissions={['sale:quotation_result:export']}>
                 <Button

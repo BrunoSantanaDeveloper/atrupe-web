@@ -4,6 +4,7 @@
 // pensa: que conta é, se ela quer controle nela, e o que ela recebe e paga.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -281,10 +282,18 @@ export function AccountDialog({
                       )
                     }
                   />
-                  <p className="text-xs text-gray">
-                    O banco em que a operadora deposita as vendas. A conciliação
-                    dessa conta já sugere a operadora na liquidação.
-                  </p>
+                  <div className="flex items-center gap-1.5 text-xs text-gray">
+                    Para que serve
+                    <InfoHint title="Banco da operadora">
+                      <p>
+                        O banco onde a operadora de cartão deposita as vendas.
+                      </p>
+                      <p>
+                        A conciliação dessa conta já sugere a operadora quando o
+                        depósito cai (liquidação).
+                      </p>
+                    </InfoHint>
+                  </div>
                 </div>
               )}
               {draft.kind === 'BANK' && (
@@ -328,10 +337,16 @@ export function AccountDialog({
                     onChange={(event) => set('openingDate', event.target.value)}
                   />
                 </div>
-                <p className="text-sm text-gray sm:col-span-2">
-                  É o único saldo digitado. Daí em diante o saldo é sempre
-                  calculado pelos lançamentos.
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-gray">
+                  Sobre o saldo inicial
+                  <InfoHint title="Saldo inicial">
+                    <p>É o único saldo digitado à mão, na data escolhida.</p>
+                    <p>
+                      Daí em diante o saldo da conta é sempre calculado pelos
+                      lançamentos.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
             ) : (
               <p className="text-sm text-gray">
@@ -351,13 +366,19 @@ export function AccountDialog({
               cegas e a tolerância da quebra (4.1) */}
           {draft.kind === 'CARD' ? (
             <section className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-              <p className="font-semibold text-gray-800">Sem fechamento</p>
-              <p className="mt-1 max-w-xl text-sm text-gray">
-                A operadora não abre nem fecha caixa: o dia mostra só o total
-                que entrou, pelo valor cheio. A conferência acontece na
-                liquidação, quando o dinheiro cai no banco já com a taxa
-                descontada.
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-gray-800">Sem fechamento</p>
+                <InfoHint title="Conta de operadora">
+                  <p>
+                    A conta da operadora de cartão não abre nem fecha caixa: o
+                    dia mostra só o total que entrou, pelo valor cheio.
+                  </p>
+                  <p>
+                    A conferência acontece na liquidação, quando o dinheiro cai
+                    no banco já com a taxa descontada.
+                  </p>
+                </InfoHint>
+              </div>
             </section>
           ) : (
             <section className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
@@ -384,13 +405,22 @@ export function AccountDialog({
                 <div className="space-y-4 border-t border-gray-200 pt-4">
                   <div className="flex items-start justify-between gap-6">
                     <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        Contagem às cegas
-                      </p>
-                      <p className="text-sm text-gray">
-                        Quem fecha digita o que contou sem ver o esperado. O
-                        padrão é a conferência simples, com o esperado à vista.
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-gray-800">
+                          Contagem às cegas
+                        </p>
+                        <InfoHint title="Conferência às cegas">
+                          <p>
+                            Ligada, quem fecha o caixa digita o que contou sem
+                            ver quanto era esperado. Isso evita ajustar a
+                            contagem ao número da tela.
+                          </p>
+                          <p>
+                            O padrão é a conferência simples, com o esperado à
+                            vista.
+                          </p>
+                        </InfoHint>
+                      </div>
                     </div>
                     <Switch
                       checked={draft.blindCount}
@@ -400,14 +430,21 @@ export function AccountDialog({
                   </div>
                   <div className="flex items-start justify-between gap-6">
                     <div>
-                      <p className="text-sm font-medium text-gray-800">
-                        Tolerância da quebra
-                      </p>
-                      <p className="text-sm text-gray">
-                        Desligada, toda diferença é lançada como quebra. Ligada,
-                        a diferença até o valor aparece no fechamento, mas não é
-                        lançada.
-                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-gray-800">
+                          Tolerância da quebra
+                        </p>
+                        <InfoHint title="Tolerância">
+                          <p>
+                            Desligada, qualquer diferença no fechamento é
+                            lançada como quebra de caixa.
+                          </p>
+                          <p>
+                            Ligada, a diferença até o valor informado aparece no
+                            fechamento, mas não é lançada.
+                          </p>
+                        </InfoHint>
+                      </div>
                     </div>
                     <Switch
                       checked={draft.shortageTolerance !== null}
@@ -435,11 +472,21 @@ export function AccountDialog({
           {/* 3. O que recebe e o que paga (CX-2) */}
           <section className="space-y-3">
             <div>
-              <p className="font-semibold text-gray-800">Formas de pagamento</p>
-              <p className="text-sm text-gray">
-                O que esta conta recebe e paga. A conta nova vem com tudo
-                desmarcado: marque as formas que ela usa.
-              </p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-gray-800">
+                  Formas de pagamento
+                </p>
+                <InfoHint title="Formas de pagamento da conta">
+                  <p>
+                    As formas de pagamento que esta conta recebe e paga. O
+                    dinheiro dessas formas cai aqui.
+                  </p>
+                  <p>
+                    A conta nova vem com tudo desmarcado: marque as formas que
+                    ela usa.
+                  </p>
+                </InfoHint>
+              </div>
             </div>
             <div className="overflow-x-auto rounded-lg border border-gray-200">
               <Table>

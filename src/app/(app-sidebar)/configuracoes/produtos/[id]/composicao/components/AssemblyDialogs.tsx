@@ -4,6 +4,7 @@
 // venda do processo dentro do produto.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useRef, useState } from 'react'
 
 // Next
@@ -341,11 +342,19 @@ export function FormulaDialog({
                 <div className="flex flex-wrap gap-1.5">
                   {lineRefs.map((ref) => chip(ref))}
                 </div>
-                <p className="text-xs text-gray">
-                  X e Y são os lados do perfil escolhido na linha, em metros; o
-                  peso é por unidade de venda do material. Se o vendedor trocar
-                  o material, a fórmula acompanha.
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-gray">
+                  Sobre X, Y e peso
+                  <InfoHint title="X, Y e peso na fórmula">
+                    <p>
+                      X e Y são os lados do perfil escolhido na linha, em
+                      metros. O peso é por unidade de venda do material.
+                    </p>
+                    <p>
+                      Se o vendedor trocar o material no orçamento, a fórmula
+                      usa as medidas do novo material.
+                    </p>
+                  </InfoHint>
+                </div>
               </>
             )}
             <p className="type-eyebrow pt-1">Operações</p>
@@ -472,13 +481,18 @@ function OptionalFields({
           aria-label="Marcar como item opcional"
         />
         <span>
-          <span className="block text-sm font-medium text-gray-800">
-            Marcar como item opcional
-          </span>
-          <span className="block text-sm text-gray">
-            O produto pode sair com ou sem este item. No orçamento, o vendedor
-            marca se o trabalho leva. Sem esta marcação, o item sempre entra.
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-medium text-gray-800">
+              Marcar como item opcional
+            </span>
+            <InfoHint title="Item opcional">
+              <p>
+                O produto pode sair com ou sem este item: no orçamento, o
+                vendedor marca se o trabalho leva.
+              </p>
+              <p>Sem esta opção, o item sempre entra.</p>
+            </InfoHint>
+          </div>
         </span>
       </label>
       {optional && (
@@ -492,14 +506,20 @@ function OptionalFields({
             aria-label="Normalmente vai com"
           />
           <span>
-            <span className="block text-sm font-medium text-gray-800">
-              Normalmente vai com
-            </span>
-            <span className="block text-sm text-gray">
-              Ligado, o item já vem marcado no orçamento e entra no custo e no
-              preço sugerido mostrados aqui. Desligado, começa desmarcado e só
-              entra se o vendedor marcar.
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm font-medium text-gray-800">
+                Normalmente vai com
+              </span>
+              <InfoHint title="Vem marcado">
+                <p>
+                  Ligado, o item já vem marcado no orçamento e entra no custo e
+                  no preço sugerido mostrados aqui.
+                </p>
+                <p>
+                  Desligado, começa desmarcado e só entra se o vendedor marcar.
+                </p>
+              </InfoHint>
+            </div>
           </span>
         </label>
       )}
@@ -924,10 +944,15 @@ export function NewLineDialog({
                 )}
               </div>
               {values.kind === 'LABOR' && (
-                <p className="-mt-2 text-sm text-gray">
-                  Pessoas multiplicam o tempo: duas pessoas por 30 minutos são
-                  60 minutos de mão de obra.
-                </p>
+                <div className="flex items-center gap-1.5 text-xs text-gray">
+                  Como conta
+                  <InfoHint title="Pessoas">
+                    <p>
+                      O número de pessoas multiplica o tempo: duas pessoas por
+                      30 minutos são 60 minutos de mão de obra.
+                    </p>
+                  </InfoHint>
+                </div>
               )}
             </>
           )}
@@ -1295,13 +1320,19 @@ export function LineDialog({
                 </div>
                 <label className="flex items-start justify-between gap-6">
                   <span>
-                    <span className="block text-sm font-medium text-gray-800">
-                      Cobrar a folha inteira
-                    </span>
-                    <span className="block text-sm text-gray">
-                      Desligado, cobra só a fração aproveitada — quando a sobra
-                      volta para o estoque. O padrão vem do material.
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-medium text-gray-800">
+                        Cobrar a folha inteira
+                      </span>
+                      <InfoHint title="Cobrar a folha inteira">
+                        <p>Ligado, cobra a folha ou chapa inteira.</p>
+                        <p>
+                          Desligado, cobra só a parte usada, quando a sobra
+                          volta para o estoque. O padrão vem do cadastro do
+                          material.
+                        </p>
+                      </InfoHint>
+                    </div>
                   </span>
                   <Switch
                     checked={values.chargeWholeSheets !== false}
@@ -1453,10 +1484,17 @@ export function LineDialog({
                   </tbody>
                 </table>
               </div>
-              <p className="text-sm text-gray">
-                No mesmo grupo, cada material pode consumir diferente: o ACM usa
-                1,0 e o PVC 1,2 com mínimo de 0,5.
-              </p>
+              <div className="flex items-center gap-1.5 text-xs text-gray">
+                Sobre o consumo
+                <InfoHint title="Consumo por opção">
+                  <p>
+                    No mesmo grupo de opções, cada material pode ter o seu
+                    consumo, perda e mínimo. Exemplo: o ACM usa 1,0 e o PVC 1,2,
+                    com mínimo de 0,5.
+                  </p>
+                  <p>Em branco, vale o da linha.</p>
+                </InfoHint>
+              </div>
             </div>
           )}
           {!variationName && (
@@ -1557,9 +1595,15 @@ export function RulesDialog({
               onChange={(event) => setName(event.target.value)}
             />
             {!own && (
-              <p className="text-sm text-gray">
-                Muda só aqui; o processo continua com o nome dele.
-              </p>
+              <div className="flex items-center gap-1.5 text-xs text-gray">
+                Onde muda
+                <InfoHint title="Nome da etapa">
+                  <p>
+                    O nome muda só neste produto. O processo continua com o nome
+                    dele.
+                  </p>
+                </InfoHint>
+              </div>
             )}
           </div>
 
@@ -1595,13 +1639,17 @@ export function RulesDialog({
 
               <label className="flex items-start justify-between gap-6">
                 <span>
-                  <span className="block font-medium text-gray-800">
-                    Usar regras próprias neste produto
-                  </span>
-                  <span className="block text-sm text-gray">
-                    Valem só aqui. Desligado, a etapa segue as regras do
-                    processo.
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-medium text-gray-800">
+                      Usar regras próprias neste produto
+                    </span>
+                    <InfoHint title="Regras próprias">
+                      <p>
+                        Ligado, as regras valem só nesta etapa deste produto.
+                      </p>
+                      <p>Desligado, a etapa segue as regras do processo.</p>
+                    </InfoHint>
+                  </div>
                 </span>
                 <Switch
                   checked={useLocal}

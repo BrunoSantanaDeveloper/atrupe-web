@@ -7,6 +7,7 @@
 // vem por `children`; os valores mostrados vêm por `results`, porque o
 // produto compara custo, preço e margem e o processo só custo e venda.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import type { ReactNode } from 'react'
 
 // UI
@@ -18,7 +19,6 @@ import {
   CardHeader,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -93,8 +93,12 @@ export function SimulationCard({
     <Card className={cn(hideHeader && 'border-0 shadow-none', className)}>
       {!hideHeader && (
         <CardHeader>
-          <CardTitle>Simulação</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <div className="flex items-center gap-1.5">
+            <CardTitle>Simulação</CardTitle>
+            <InfoHint title="Simulação">
+              <p>{description}</p>
+            </InfoHint>
+          </div>
         </CardHeader>
       )}
       <CardContent className={cn('space-y-4 px-6 pb-6', hideHeader && 'p-0')}>

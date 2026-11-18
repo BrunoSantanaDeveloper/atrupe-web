@@ -5,6 +5,7 @@
 // de custos usa esse volume antes do vendido e da produtividade do cadastro
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
@@ -16,13 +17,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -119,12 +114,16 @@ export function AssetReadingsCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Leituras do contador</CardTitle>
-        <CardDescription>
-          Hodômetro, horímetro ou contador de m². A diferença entre as leituras
-          é o volume do bem no período, e o comparativo da base de custos usa
-          esse volume para prever os custos por unidade.
-        </CardDescription>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>Leituras do contador</CardTitle>
+          <InfoHint title="Leituras do contador">
+            <p>
+              Hodômetro, horímetro ou contador de m². A diferença entre as
+              leituras é o volume do bem no período, e o comparativo da base de
+              custos usa esse volume para prever os custos por unidade.
+            </p>
+          </InfoHint>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4 px-6 pb-6">
         <PermissionGate permissions={['cost:base:edit']}>

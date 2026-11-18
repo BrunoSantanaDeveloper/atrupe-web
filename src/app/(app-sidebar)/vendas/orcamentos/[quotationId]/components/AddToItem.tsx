@@ -21,6 +21,7 @@
 // O preço de cada caminho vem da prévia do servidor (POST …/line/preview,
 // contrato do módulo 2): a tela não calcula preço nem recebe custo.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useMemo, useState } from 'react'
 
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -599,9 +600,19 @@ export function AddToItem({
                 startAdornment={<span className="text-sm">R$</span>}
                 onChange={(event) => setCost(event.target.value)}
               />
-              <p className="text-xs text-gray">
-                O custo não fica na tela do orçamento: só o preço de venda.
-              </p>
+              <div className="flex items-center gap-1.5 text-xs text-gray">
+                Onde o custo aparece
+                <InfoHint title="Custo do fornecedor">
+                  <p>
+                    O custo informado aqui serve para calcular o preço de venda
+                    e gerar a conta a pagar ao fornecedor.
+                  </p>
+                  <p>
+                    Na tela do orçamento e na proposta aparece só o preço de
+                    venda.
+                  </p>
+                </InfoHint>
+              </div>
             </div>
             {/* O preço de venda pelo acréscimo sobre o custo, com o percentual
                 escrito ao lado; o vendedor pode alterar (MS-16, T-4). Só para

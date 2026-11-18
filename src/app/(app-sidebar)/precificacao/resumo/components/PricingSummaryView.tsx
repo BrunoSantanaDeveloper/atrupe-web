@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -8,13 +9,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Components
 import { EditParametersModal } from './EditParametersModal'
@@ -203,12 +198,18 @@ export function PricingSummaryView() {
       <Card>
         <CardHeader className="gap-4 space-y-0 sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1.5">
-            <CardTitle>Parâmetros de referência</CardTitle>
-            <CardDescription>
-              Usados para calcular o preço sugerido. O preço praticado pode ser
-              ajustado conforme o mercado.
-              {referenceMonth ? ` Custo apurado até ${referenceMonth}.` : ''}
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Parâmetros de referência</CardTitle>
+              <InfoHint title="Parâmetros de referência">
+                <p>
+                  Usados para calcular o preço sugerido. O preço praticado pode
+                  ser ajustado conforme o mercado.{' '}
+                  {referenceMonth
+                    ? ` Custo apurado até ${referenceMonth}.`
+                    : ''}
+                </p>
+              </InfoHint>
+            </div>
           </div>
           <PermissionGate permissions={['cost:pricing:edit']}>
             <Button
@@ -286,11 +287,15 @@ export function PricingSummaryView() {
       <Card>
         <CardHeader className="flex-row items-center justify-between">
           <div>
-            <CardTitle>Precificação por grupo</CardTitle>
-            <CardDescription>
-              O total de cada grupo é a soma dos itens com preço, dos pendentes
-              e dos que ainda não têm custo.
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Precificação por grupo</CardTitle>
+              <InfoHint title="Precificação por grupo">
+                <p>
+                  O total de cada grupo é a soma dos itens com preço, dos
+                  pendentes e dos que ainda não têm custo.
+                </p>
+              </InfoHint>
+            </div>
           </div>
           {pendingGroup && (
             <Link

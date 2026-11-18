@@ -8,6 +8,7 @@
 // mostra o trabalho, não o desempenho.
 
 // UI
+import { InfoHint } from '@/components/common/InfoHint'
 import {
   Table,
   TableRow,
@@ -23,7 +24,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -72,11 +72,15 @@ export function Productivity() {
           <div className="flex items-center gap-3">
             <FeaturedIcon tone="neutral" Icon={IconChartBar} />
             <div>
-              <CardTitle>Por setor</CardTitle>
-              <CardDescription>
-                Tarefas finalizadas. O vendido vem da composição; o apontado, do
-                relógio. Produtividade = vendido ÷ apontado.
-              </CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Por setor</CardTitle>
+                <InfoHint title="Por setor">
+                  <p>
+                    Tarefas finalizadas. O vendido vem da composição; o
+                    apontado, do relógio. Produtividade = vendido ÷ apontado.
+                  </p>
+                </InfoHint>
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -155,12 +159,16 @@ export function Productivity() {
             <div className="flex items-center gap-3">
               <FeaturedIcon tone="neutral" Icon={IconUsers} />
               <div>
-                <CardTitle>Por colaborador</CardTitle>
-                <CardDescription>
-                  O tempo vendido repartido na proporção do tempo que cada um
-                  trabalhou na tarefa. Serve para calibrar a estimativa e a
-                  bonificação, não para ranquear pessoas.
-                </CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Por colaborador</CardTitle>
+                  <InfoHint title="Por colaborador">
+                    <p>
+                      O tempo vendido repartido na proporção do tempo que cada
+                      um trabalhou na tarefa. Serve para calibrar a estimativa e
+                      a bonificação, não para ranquear pessoas.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
             </div>
           </CardHeader>

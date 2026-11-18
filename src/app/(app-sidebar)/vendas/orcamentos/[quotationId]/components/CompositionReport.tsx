@@ -6,6 +6,7 @@
 // e sem preço de recurso: isso é tela de método (ORC-7, ORC-8).
 
 // UI
+import { InfoHint } from '@/components/common/InfoHint'
 import {
   Dialog,
   DialogBody,
@@ -251,9 +252,18 @@ export function CompositionReport({ item, onOpenChange }: Props) {
           })}
         </DialogBody>
         <DialogFooter className="flex-wrap justify-between gap-3">
-          <p className="text-sm text-gray">
-            Custo e margem ficam no Resultado previsto, para quem tem permissão.
-          </p>
+          <div className="flex items-center gap-1.5 text-xs text-gray">
+            Custo e margem
+            <InfoHint title="Custo e margem">
+              <p>
+                Este relatório mostra o que o item leva, sem valores de custo.
+              </p>
+              <p>
+                O custo e a margem ficam no Resultado previsto da venda, para
+                quem tem a permissão de ver valores.
+              </p>
+            </InfoHint>
+          </div>
           <Button
             type="button"
             variant="outline"

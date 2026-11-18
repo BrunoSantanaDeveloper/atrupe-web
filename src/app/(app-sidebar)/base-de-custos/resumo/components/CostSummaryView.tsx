@@ -1,17 +1,12 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 
 // UI
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Components
 import { CostBySectorChart } from './CostBySectorChart'
@@ -143,11 +138,15 @@ export function CostSummaryView() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Produtivo e administrativo</CardTitle>
-            <CardDescription>
-              Pelo método do custo puro, o administrativo fica fora do custo dos
-              setores produtivos e é coberto pelo resultado das vendas.
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Produtivo e administrativo</CardTitle>
+              <InfoHint title="Produtivo e administrativo">
+                <p>
+                  Pelo método do custo puro, o administrativo fica fora do custo
+                  dos setores produtivos e é coberto pelo resultado das vendas.
+                </p>
+              </InfoHint>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4 px-6 pb-6">
             <div className="flex items-center gap-3">

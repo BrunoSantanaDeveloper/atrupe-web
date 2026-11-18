@@ -1,5 +1,6 @@
 'use client'
 
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -2136,12 +2137,25 @@ function AssemblyEditorBody({
         <Card className={cn(embedded && 'order-first')}>
           <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
             <div className="min-w-0 flex-1 basis-80">
-              <CardTitle>Composição</CardTitle>
-              <CardDescription>
-                {inVariation
-                  ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
-                  : 'Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa. A ordem das etapas é a ordem da produção.'}
-              </CardDescription>
+              <div className="flex items-center gap-1.5">
+                <CardTitle>Composição</CardTitle>
+                <InfoHint title="Composição">
+                  <p>
+                    Cada etapa é o trabalho de um setor: a máquina, o material e
+                    a mão de obra que ele usa, cada um com o seu cálculo.
+                  </p>
+                  <p>A ordem das etapas é a ordem da produção.</p>
+                  <p>
+                    O custo do produto é a soma das etapas, na medida vendida.
+                  </p>
+                </InfoHint>
+              </div>
+              {inVariation && (
+                <CardDescription>
+                  O que você acrescentar aqui existe só em {variation?.name}. As
+                  etapas da base continuam valendo.
+                </CardDescription>
+              )}
             </div>
             {assembly.blocks.length > 1 && (
               <Button
@@ -2228,12 +2242,25 @@ function AssemblyEditorBody({
           <Card className={cn(embedded && 'order-first')}>
             <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
               <div className="min-w-0">
-                <CardTitle>Fluxo de produção</CardTitle>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Fluxo de produção</CardTitle>
+                  <InfoHint title="Fluxo de produção">
+                    <p>
+                      O desenho das etapas na ordem da produção. Cada caixa é a
+                      etapa de um setor.
+                    </p>
+                    <p>
+                      O &quot;+&quot; acrescenta a etapa seguinte; o menu da
+                      caixa liga, desliga e troca a etapa. Dá para dividir o
+                      fluxo em caminhos que andam ao mesmo tempo.
+                    </p>
+                  </InfoHint>
+                </div>
                 <CardDescription>
                   {flowOpen
                     ? inVariation
                       ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
-                      : 'Cada caixa é a etapa de um setor. O "+" acrescenta a etapa seguinte; o menu da caixa liga, desliga e troca.'
+                      : null
                     : flowSummary}
                 </CardDescription>
               </div>
@@ -2319,11 +2346,15 @@ function AssemblyEditorBody({
           <Card className={cn(embedded && 'order-first')}>
             <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
               <div className="min-w-0">
-                <CardTitle>Resumo por recurso</CardTitle>
-                <CardDescription>
-                  Cada recurso uma vez, somado de todas as etapas, na medida
-                  simulada. É a lista do que o produto consome.
-                </CardDescription>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Resumo por recurso</CardTitle>
+                  <InfoHint title="Resumo por recurso">
+                    <p>
+                      Cada recurso uma vez, somado de todas as etapas, na medida
+                      simulada. É a lista do que o produto consome.
+                    </p>
+                  </InfoHint>
+                </div>
               </div>
               <Button
                 type="button"

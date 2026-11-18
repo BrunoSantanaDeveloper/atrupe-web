@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import Link from 'next/link'
 
 // UI
@@ -22,7 +23,6 @@ import {
   CardTitle,
   CardFooter,
   CardContent,
-  CardDescription,
 } from '@/components/ui/card'
 
 // Components
@@ -116,11 +116,15 @@ export function Stock({ searchParams }: SearchParamsType) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Saldo dos materiais</CardTitle>
-            <CardDescription>
-              A entrada vem da nota conciliada e a baixa vem do gerenciador de
-              produção, pelo consumo real das etapas.
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Saldo dos materiais</CardTitle>
+              <InfoHint title="Saldo dos materiais">
+                <p>
+                  A entrada vem da nota conciliada e a baixa vem do gerenciador
+                  de produção, pelo consumo real das etapas.
+                </p>
+              </InfoHint>
+            </div>
             <Tabs value={status} className="overflow-x-auto pt-4">
               <TabsList>
                 {statusTabs.map((tab) => (
@@ -269,10 +273,15 @@ export function Stock({ searchParams }: SearchParamsType) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Últimas movimentações</CardTitle>
-            <CardDescription>
-              Entrada pela nota, consumo pela produção e ajustes de inventário.
-            </CardDescription>
+            <div className="flex items-center gap-1.5">
+              <CardTitle>Últimas movimentações</CardTitle>
+              <InfoHint title="Últimas movimentações">
+                <p>
+                  Entrada pela nota, consumo pela produção e ajustes de
+                  inventário.
+                </p>
+              </InfoHint>
+            </div>
           </CardHeader>
           <CardContent>
             <Table className="min-w-[720px]">

@@ -1,6 +1,7 @@
 'use client'
 
 // UI
+import { InfoHint } from '@/components/common/InfoHint'
 import {
   Dialog,
   DialogBody,
@@ -346,11 +347,17 @@ export function EditEmployeeDialog({
                   />
 
                   <div>
-                    <p className="font-semibold">Assinatura para orçamentos</p>
-                    <p className="text-sm text-gray">
-                      Será utilizada na assinatura de orçamentos e ordens de
-                      serviço.
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-semibold">
+                        Assinatura para orçamentos
+                      </p>
+                      <InfoHint title="Assinatura">
+                        <p>
+                          A imagem da assinatura aparece nos orçamentos e nas
+                          ordens de serviço impressos por esta pessoa.
+                        </p>
+                      </InfoHint>
+                    </div>
                   </div>
 
                   <FormImageUpload<FormType>

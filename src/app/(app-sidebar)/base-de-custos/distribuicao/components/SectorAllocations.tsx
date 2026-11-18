@@ -1,16 +1,11 @@
 'use client'
 
 // React / Next
+import { InfoHint } from '@/components/common/InfoHint'
 import { useState } from 'react'
 
 // UI
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableRow,
@@ -61,12 +56,17 @@ export function SectorAllocations() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Rateio entre os equipamentos do setor</CardTitle>
-        <CardDescription>
-          Dentro de cada setor, o custo que não é de um equipamento é repartido
-          entre os equipamentos detalhados: pelo valor de aquisição (regra
-          base), pelo tempo de atividade ou por percentual informado à mão.
-        </CardDescription>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>Rateio entre os equipamentos do setor</CardTitle>
+          <InfoHint title="Rateio entre os equipamentos do setor">
+            <p>
+              Dentro de cada setor, o custo que não é de um equipamento é
+              repartido entre os equipamentos detalhados: pelo valor de
+              aquisição (regra base), pelo tempo de atividade ou por percentual
+              informado à mão.
+            </p>
+          </InfoHint>
+        </div>
       </CardHeader>
       {isLoading ? (
         <TableSkeleton cols={5} rows={3} />

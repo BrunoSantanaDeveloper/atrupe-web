@@ -5,6 +5,7 @@
 // área útil, menor ou igual à folha. Área útil vazia é a folha inteira.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useMemo, useState } from 'react'
 
 // UI
@@ -238,12 +239,18 @@ export function PaperDialog({ paper }: { paper?: Paper }) {
 
           {/* GR-2: a borda que a impressora não imprime sai daqui */}
           <div className="space-y-3 rounded-lg border border-gray-200 p-3">
-            <div>
+            <div className="flex items-center gap-1.5">
               <p className="text-sm font-medium">Área útil</p>
-              <p className="text-sm text-gray">
-                O que a impressora imprime de verdade, descontada a borda.
-                Vazia, vale a folha inteira.
-              </p>
+              <InfoHint title="Área útil">
+                <p>
+                  A parte da folha que a impressora imprime de verdade. Muitas
+                  impressoras não imprimem uma borda de alguns milímetros.
+                </p>
+                <p>
+                  O orçamento usa a área útil para contar quantas peças cabem na
+                  folha. Deixe vazia para usar a folha inteira.
+                </p>
+              </InfoHint>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
@@ -292,11 +299,14 @@ export function PaperDialog({ paper }: { paper?: Paper }) {
 
           {isEdit && (
             <label className="flex items-center justify-between gap-4">
-              <span>
+              <span className="flex items-center gap-1.5">
                 <span className="block text-sm font-medium">Ativo</span>
-                <span className="block text-sm text-gray">
-                  Inativo, o papel sai das listas e das composições.
-                </span>
+                <InfoHint title="Papel ativo">
+                  <p>
+                    Inativo, o papel deixa de aparecer nas listas e nas
+                    composições. Os orçamentos já feitos não mudam.
+                  </p>
+                </InfoHint>
               </span>
               <Switch
                 checked={active}
