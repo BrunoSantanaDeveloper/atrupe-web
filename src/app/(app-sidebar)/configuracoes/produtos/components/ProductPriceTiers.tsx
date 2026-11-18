@@ -5,6 +5,7 @@
 // e a faixa vale para o total da venda. Grava a cada ação, como o resto do
 // cadastro. No PRO, a composição mostra o custo e a margem de cada faixa.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -125,18 +126,33 @@ export function ProductPriceTiers({
       <div className={cn('w-full space-y-3', className)}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           {variationId ? (
-            <p className="text-sm text-gray">
-              Valores por quantidade desta variação. Sem faixas, vale o preço da
-              variação.
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-medium text-gray-700">
+                Valores por quantidade
+              </p>
+              <InfoHint title="Valores por quantidade da variação">
+                <p>
+                  Faixas de preço só desta variação. Sem faixas, vale o preço da
+                  variação.
+                </p>
+              </InfoHint>
+            </div>
           ) : (
             <div>
-              <h4 className="type-card-title">Preço por quantidade</h4>
-              <p className="text-sm text-gray">
-                Até 100 um valor, de 101 a 500 outro. A faixa vale para o total:
-                150 unidades saem todas pelo valor da segunda faixa. Sem faixas,
-                vale o valor de venda do produto.
-              </p>
+              <div className="flex items-center gap-1.5">
+                <h4 className="type-card-title">Preço por quantidade</h4>
+                <InfoHint title="Preço por quantidade">
+                  <p>
+                    Um preço para cada faixa de quantidade. Exemplo: até 100
+                    unidades, R$ 2,00 cada; de 101 a 500, R$ 1,50 cada.
+                  </p>
+                  <p>
+                    A faixa vale para o pedido inteiro: 150 unidades saem todas
+                    a R$ 1,50, não só as que passam de 100.
+                  </p>
+                  <p>Sem faixas, vale o valor de venda do produto.</p>
+                </InfoHint>
+              </div>
               {notice ? (
                 <p className="mt-1 text-sm text-warning-700">{notice}</p>
               ) : null}

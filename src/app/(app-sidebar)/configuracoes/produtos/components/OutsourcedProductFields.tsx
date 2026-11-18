@@ -6,6 +6,7 @@
 // venda continua o campo de sempre, com a sugestão pelo acréscimo sobre o
 // custo. Cada venda aprovada gera a conta a pagar ao fornecedor.
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
@@ -83,11 +84,21 @@ export function OutsourcedProductFields() {
     <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex items-center gap-1.5">
         <FormSwitch name="isOutsourced" label="Produto terceirizado" />
+        <InfoHint title="Produto terceirizado">
+          <p>
+            É o produto que a empresa compra pronto de um fornecedor e revende.
+          </p>
+          <p>
+            Ao aprovar a venda, o sistema gera a conta a pagar ao fornecedor com
+            o custo informado aqui. O cliente não vê que o produto é
+            terceirizado.
+          </p>
+          <p>
+            O preço de venda pode vir do custo mais o acréscimo padrão da
+            empresa (Configurações › Vendas).
+          </p>
+        </InfoHint>
       </div>
-      <p className="text-sm text-gray">
-        Comprado de fornecedor e revendido: ao aprovar a venda, o sistema gera a
-        conta a pagar ao fornecedor com o custo informado aqui.
-      </p>
       {on ? (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-4">

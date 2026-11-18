@@ -13,8 +13,11 @@ import { cn } from '@/lib/utils'
 // Sem título dentro da sanfona (ProductionStagesSection), que já o mostra
 export function ProductionStages({
   hideTitle = false,
+  hint,
 }: {
   hideTitle?: boolean
+  // O (i) ao lado do título (18/11/2026)
+  hint?: React.ReactNode
 }) {
   const { control } = useFormContext<NewProductsFormType>()
   const [draggingIndex, setDraggingIndex] = useState<null | number>(null)
@@ -106,9 +109,12 @@ export function ProductionStages({
       )}
     >
       {!hideTitle && (
-        <p className="font-semibold text-base text-gray-700 my-4">
-          Etapas de produção
-        </p>
+        <div className="my-4 flex items-center gap-1.5">
+          <p className="font-semibold text-base text-gray-700">
+            Etapas de produção
+          </p>
+          {hint}
+        </div>
       )}
 
       <Table>

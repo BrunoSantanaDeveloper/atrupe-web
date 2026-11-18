@@ -10,6 +10,7 @@
 // couché 300 e em reciclado é o mesmo produto, e o orçamento conta as folhas
 // do papel escolhido (12/11/2026).
 
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -137,14 +138,21 @@ export function ProductVariations({
     <TooltipProvider>
       <div className="w-full space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="flex items-center gap-1.5">
             <h4 className="type-card-title">Variações</h4>
-            <p className="text-sm text-gray">
-              O mesmo produto em tamanhos ou cores, como P, M e G ou 4x0, 4x1 e
-              4x4, cada um com o seu preço e os seus valores por quantidade. Na
-              venda, o vendedor escolhe a variação. Sem preço, vale o valor do
-              produto.
-            </p>
+            <InfoHint title="Variações">
+              <p>
+                O mesmo produto em versões diferentes, como os tamanhos P, M e G
+                ou as cores 4x0, 4x1 e 4x4.
+              </p>
+              <p>
+                Cada variação pode ter o seu preço e os seus valores por
+                quantidade. Variação sem preço usa o valor do produto.
+              </p>
+              <p>
+                No orçamento, o vendedor escolhe a variação ao lançar o item.
+              </p>
+            </InfoHint>
           </div>
           <PermissionGate permissions={EDIT}>
             <Button

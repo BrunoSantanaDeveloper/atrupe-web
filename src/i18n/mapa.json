@@ -1934,7 +1934,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/NewCategoryDialog/index.tsx:218 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:413 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:156 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1075 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1092 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/DangerActionProductGroupDialog.tsx:79 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:160 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:725 (jsx)",
@@ -9067,7 +9067,7 @@
    "src/app/(app-sidebar)/cadastros/clientes/components/NewClient/index.tsx:371 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/NewItem/index.tsx:145 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/NewEmployee/index.tsx:136 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1062 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1079 (atributo:label)"
   ]
  },
  "cadastros.clientes.lastPurchase": {
@@ -10104,6 +10104,7 @@
    "title"
   ],
   "usos": [
+   "src/components/common/InfoHint.tsx:32 (atributo:aria-label)",
    "src/components/common/RiskHint.tsx:29 (atributo:aria-label)"
   ]
  },
@@ -14069,7 +14070,7 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/NaturezaListClient.tsx:256 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorListItem.tsx:594 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:250 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:119 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:125 (jsx)",
    "src/app/sandbox/table-cells/page.tsx:276 (jsx)"
   ]
  },
@@ -14309,7 +14310,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/Actions/EditSubcategoryDialog/index.tsx:218 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/NewCategoryDialog/index.tsx:218 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:156 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1075 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1092 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/DangerActionProductGroupDialog.tsx:79 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:160 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/EditItem/DisableSerie.tsx:70 (jsx)",
@@ -14437,7 +14438,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:309 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1660 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2139 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:652 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:653 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:102 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:765 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:283 (jsx)",
@@ -14632,7 +14633,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:468 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:146 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewGroupInline.tsx:118 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1086 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1103 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/BulkNcmDialog.tsx:272 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/ProductStRules.tsx:270 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/index.tsx:217 (jsx)",
@@ -15058,7 +15059,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/Actions/NewSubcategoryDialog/index.tsx:114 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/NewCategoryDialog/index.tsx:188 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/CfopListClient.tsx:232 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:712 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:713 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/ProductFiscalTab.tsx:38 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/EditItem/index.tsx:210 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/NewSerie/index.tsx:143 (atributo:label)",
@@ -15469,7 +15470,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:476 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:152 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:297 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:679 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:680 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:270 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:53 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:142 (atributo:label)",
@@ -15869,7 +15870,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/sistema/migracao/page.tsx:518 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:118 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:124 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:362 (jsx)"
   ]
  },
@@ -16531,7 +16532,7 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:805 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:292 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:648 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:177 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:185 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:136 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/ProductsGroupData.tsx:78 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:306 (jsx)",
@@ -16862,7 +16863,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/cadastros/papeis/components/Papers.tsx:108 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:228 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:236 (jsx)",
    "src/app/sandbox/offset/components/OffsetItem.tsx:191 (jsx)",
    "src/app/sandbox/offset/components/OffsetItem.tsx:366 (jsx)"
   ]
@@ -17112,7 +17113,8 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:368 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:82 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:83 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:84 (atributo:title)",
    "src/app/sandbox/offset/components/OffsetItem.tsx:399 (jsx)",
    "src/consts/sectors.ts:117 (propriedade:text)"
   ]
@@ -17153,7 +17155,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/CompositionsWarning.tsx:21 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1743 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:127 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:643 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:644 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/index.tsx:197 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:269 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/InactivateMaterialDialog.tsx:131 (jsx)",
@@ -17276,11 +17278,11 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:270 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1878 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:169 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:749 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:814 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:102 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:207 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:206 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:750 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:815 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:113 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:223 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:214 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:346 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:685 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:166 (jsx)",
@@ -17719,7 +17721,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1696 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2444 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2889 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1108 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1125 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/index.tsx:226 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:179 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialFiscalDialog.tsx:223 (jsx)",
@@ -18020,7 +18022,7 @@
   "pt": "Fornecedor",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:208 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:96 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:107 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/TransactionDetails/EditTransaction/EditData.tsx:165 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/NewTransaction/index.tsx:253 (atributo:label)",
    "src/app/(app-sidebar)/relatorios/financeiro/components/FiltersBar.tsx:60 (atributo:label)",
@@ -18355,8 +18357,8 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:248 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfseListClient.tsx:239 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:417 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:748 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:813 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:749 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:814 (atributo:label)",
    "src/app/(app-sidebar)/dashboard/components/TopClients/Chart.tsx:29 (propriedade:label)",
    "src/app/(app-sidebar)/dashboard/components/TopClients/Chart.tsx:39 (jsx)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/Compensate/index.tsx:225 (atributo:label)",
@@ -19275,7 +19277,7 @@
   "pt": "Sangria por lado (mm)",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:381 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:92 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:108 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/PrintCountPanel.tsx:118 (jsx)"
   ]
  },
@@ -28198,6 +28200,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2470 (atributo:description)"
   ]
  },
+ "configuracoes.produtos.aPriceForEachQuantity": {
+  "pt": "Um preço para cada faixa de quantidade. Exemplo: até 100 unidades, R$ 2,00 cada; de 101 a 500, R$ 1,50 cada.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:146 (jsx)"
+  ]
+ },
  "configuracoes.produtos.aProcessIsADepartment": {
   "pt": "O processo é a etapa de um setor que se repete em vários produtos: a impressão, a bainha, o ilhós.",
   "usos": [
@@ -28257,7 +28265,7 @@
  "configuracoes.produtos.addAnotherSalesUnit": {
   "pt": "Adicionar outra unidade de venda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:833 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:834 (jsx)"
   ]
  },
  "configuracoes.produtos.addAsNewMaterial": {
@@ -28371,7 +28379,7 @@
  "configuracoes.produtos.advancedSalesSettings": {
   "pt": "Configurações avançadas de venda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:878 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:879 (atributo:title)"
   ]
  },
  "configuracoes.produtos.advancedSettings": {
@@ -28498,14 +28506,14 @@
  "configuracoes.produtos.allowEditingTheDescription": {
   "pt": "Permitir editar descrição",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:868 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:869 (atributo:label)",
    "src/components/common/RiskHint.tsx:62 (atributo:title)"
   ]
  },
  "configuracoes.produtos.allowEditingTheValue": {
   "pt": "Permitir editar valor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:861 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:862 (atributo:label)",
    "src/components/common/RiskHint.tsx:46 (atributo:title)"
   ]
  },
@@ -28661,43 +28669,37 @@
  "configuracoes.produtos.belowItTheItemIs": {
   "pt": "Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 100,00 o m² com mínimo de 0,5 m², o item sai por R$ 50,00 mesmo com 0,2 m² de arte. A medida digitada permanece, e a área total aparece em vermelho apontando o mínimo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1138 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1155 (jsx)"
   ]
  },
  "configuracoes.produtos.belowItTheItemIs2": {
   "pt": "Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 20,00 o metro com mínimo de 0,5 m, o item sai por R$ 10,00 mesmo com 0,3 m. A medida digitada permanece, e o total aponta o mínimo em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1147 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1164 (jsx)"
   ]
  },
  "configuracoes.produtos.belowItTheItemIs3": {
   "pt": "Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 40,00 o quilo com mínimo de 0,5 kg, o item sai por R$ 20,00 mesmo com 0,2 kg. O peso digitado permanece, e o total aponta o mínimo em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1155 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1172 (jsx)"
   ]
  },
  "configuracoes.produtos.belowItTheItemIs4": {
   "pt": "Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 30,00 o litro com mínimo de 0,5 l, o item sai por R$ 15,00 mesmo com 0,2 l. A quantidade digitada permanece, e o total aponta o mínimo em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1163 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1180 (jsx)"
   ]
  },
  "configuracoes.produtos.belowItTheItemIs5": {
   "pt": "Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 5,00 o quilômetro com mínimo de 10 km, o item sai por R$ 50,00 mesmo com 4 km. A distância digitada permanece, e o total aponta o mínimo em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1171 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1188 (jsx)"
   ]
  },
  "configuracoes.produtos.belowItTheItemIs6": {
   "pt": "Abaixo dela, o item é cobrado pela quantidade mínima: a R$ 80,00 a hora com mínimo de 1 h, o item sai por R$ 80,00 mesmo com 30 minutos. O tempo digitado permanece, e o total aponta o mínimo em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1180 (jsx)"
-  ]
- },
- "configuracoes.produtos.boughtFromASupplierAnd": {
-  "pt": "Comprado de fornecedor e revendido: ao aprovar a venda, o sistema gera a conta a pagar ao fornecedor com o custo informado aqui.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:88 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1197 (jsx)"
   ]
  },
  "configuracoes.produtos.brandAndColorAreAdded": {
@@ -28913,7 +28915,7 @@
  "configuracoes.produtos.checkTheProductSRequired": {
   "pt": "Verifique os campos obrigatórios do produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:579 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:580 (aviso)"
   ]
  },
  "configuracoes.produtos.checkTheUsageForA": {
@@ -28926,7 +28928,7 @@
  "configuracoes.produtos.chooseAtLeastOneSupplier": {
   "pt": "Escolha pelo menos um fornecedor.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:130 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:141 (jsx)"
   ]
  },
  "configuracoes.produtos.chooseTheDepartment": {
@@ -29303,7 +29305,7 @@
    "fiscal-br"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:662 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:663 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceItemEditDialog.tsx:356 (jsx)"
   ]
  },
@@ -29422,7 +29424,7 @@
  "configuracoes.produtos.eGS4x0": {
   "pt": "Ex.: P, 4x0",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:182 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:190 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.eGSML": {
@@ -29473,6 +29475,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2143 (jsx)"
   ]
  },
+ "configuracoes.produtos.eachVariationCanHaveIts": {
+  "pt": "Cada variação pode ter o seu preço e os seus valores por quantidade. Variação sem preço usa o valor do produto.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:149 (jsx)"
+  ]
+ },
  "configuracoes.produtos.editMaterial": {
   "pt": "Editar material",
   "usos": [
@@ -29512,13 +29520,13 @@
  "configuracoes.produtos.enterAtLeastOneSupplier": {
   "pt": "Informe pelo menos um fornecedor do terceirizado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:390 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:391 (aviso)"
   ]
  },
  "configuracoes.produtos.enterTheSupplierCost": {
   "pt": "Informe o custo do fornecedor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:394 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:395 (aviso)"
   ]
  },
  "configuracoes.produtos.enteredAtSale": {
@@ -29607,7 +29615,7 @@
    "valor2"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:567 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:568 (aviso)"
   ]
  },
  "configuracoes.produtos.errorUpdatingTheVariant": {
@@ -29653,7 +29661,7 @@
  "configuracoes.produtos.fillInTheProductTab": {
   "pt": "Preencha a aba Produto e salve. O produto reabre nesta aba para você montar as etapas, com os processos, materiais e tempos de cada uma.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1032 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1049 (jsx)"
   ]
  },
  "configuracoes.produtos.fitInTheOtherOrientation": {
@@ -29721,13 +29729,13 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:124 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:149 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:189 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:205 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.fromQuantity": {
   "pt": "A partir de (quantidade)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:173 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:189 (jsx)"
   ]
  },
  "configuracoes.produtos.fromTheList": {
@@ -29783,19 +29791,13 @@
  "configuracoes.produtos.hideQuantityBasedPrices": {
   "pt": "Ocultar valores por quantidade",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:288 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:296 (jsx)"
   ]
  },
  "configuracoes.produtos.howItWorks": {
   "pt": "Como funciona",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:686 (atributo:label)"
-  ]
- },
- "configuracoes.produtos.howTheQuoteCountsThis": {
-  "pt": "Como o orçamento conta as folhas deste produto. O papel vem da variação; aqui ficam a sangria e as folhas de acerto.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:84 (jsx)"
   ]
  },
  "configuracoes.produtos.howThisStepAppearsTo": {
@@ -29852,10 +29854,22 @@
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/ImportMaterialsDialog.tsx:296 (jsx)"
   ]
  },
+ "configuracoes.produtos.inProTheCompositionAbove": {
+  "pt": "No PRO, a composição acima também tem as etapas. Por enquanto a Agenda de entrega continua lendo esta lista.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1030 (jsx)"
+  ]
+ },
  "configuracoes.produtos.inTheQuoteTheSalesperson": {
   "pt": "No orçamento, o vendedor vê só estes campos. A composição, as etapas e os insumos ficam fora da tela dele.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields.tsx:326 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.inTheQuoteTheSalesperson2": {
+  "pt": "No orçamento, o vendedor escolhe a variação ao lançar o item.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:153 (jsx)"
   ]
  },
  "configuracoes.produtos.inTheSale": {
@@ -29910,6 +29924,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1915 (jsx)"
   ]
  },
+ "configuracoes.produtos.itIsHowTheQuote": {
+  "pt": "É como o orçamento conta quantas folhas este produto gasta. Ele vê quantas peças cabem na folha do papel, já com a sangria, e soma as folhas de acerto.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:86 (jsx)"
+  ]
+ },
  "configuracoes.produtos.itIsNotPartOf": {
   "pt": "Ele não é parte de nenhum outro produto. Fica indisponível para novos orçamentos e vendas.",
   "usos": [
@@ -29924,6 +29944,12 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:110 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.itIsTheProductThe": {
+  "pt": "É o produto que a empresa compra pronto de um fornecedor e revende.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:89 (jsx)"
   ]
  },
  "configuracoes.produtos.itIsnTInAny": {
@@ -30122,9 +30148,15 @@
   ]
  },
  "configuracoes.produtos.makeReadySheets": {
+  "pt": "Folhas de acerto:",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:95 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.makeReadySheets2": {
   "pt": "Folhas de acerto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:108 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:124 (jsx)"
   ]
  },
  "configuracoes.produtos.marca": {
@@ -30248,7 +30280,8 @@
  "configuracoes.produtos.minimumQuantity": {
   "pt": "Quantidade mínima",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:938 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:939 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:941 (atributo:title)"
   ]
  },
  "configuracoes.produtos.minimumQuantity2": {
@@ -30257,7 +30290,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:952 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:960 (atributo:label)"
   ]
  },
  "configuracoes.produtos.minimumTime": {
@@ -30393,7 +30426,7 @@
  "configuracoes.produtos.newProduct": {
   "pt": "Novo produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1229 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1246 (jsx)"
   ]
  },
  "configuracoes.produtos.newProductFormula": {
@@ -30412,7 +30445,7 @@
   "pt": "Nova faixa",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:252 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:163 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:179 (jsx)"
   ]
  },
  "configuracoes.produtos.newStepAfter": {
@@ -30431,7 +30464,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2847 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:162 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:170 (jsx)",
    "src/app/sandbox/locacao/components/RentalProductForm.tsx:184 (jsx)"
   ]
  },
@@ -30520,8 +30553,8 @@
  "configuracoes.produtos.noPaper": {
   "pt": "Sem papel",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:249 (atributo:placeholder)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:252 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:257 (atributo:placeholder)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:260 (jsx)"
   ]
  },
  "configuracoes.produtos.noPrice": {
@@ -30714,7 +30747,7 @@
  "configuracoes.produtos.onCost": {
   "pt": "% sobre o custo:",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:135 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:146 (jsx)"
   ]
  },
  "configuracoes.produtos.onTheItemComesAlready": {
@@ -30877,20 +30910,21 @@
  "configuracoes.produtos.outsourcedProduct": {
   "pt": "Produto terceirizado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1217 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:85 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1234 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:86 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:87 (atributo:title)"
   ]
  },
  "configuracoes.produtos.outsourcedProductBoughtFromA": {
   "pt": "Produto terceirizado: comprado de fornecedor e revendido.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:883 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:884 (atributo:description)"
   ]
  },
  "configuracoes.produtos.outsourcedProductVariationsMinimumQuantity": {
   "pt": "Produto terceirizado, variações, quantidade mínima e preço por quantidade.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:882 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:883 (atributo:description)"
   ]
  },
  "configuracoes.produtos.overwriteProductsWithTheSame": {
@@ -31020,13 +31054,20 @@
  "configuracoes.produtos.priceByQuantity": {
   "pt": "Preço por quantidade",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:134 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:143 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:144 (atributo:title)"
   ]
  },
  "configuracoes.produtos.priceByQuantityRange": {
   "pt": "Preço por faixa de quantidade",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:108 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.priceRangesForThisVariation": {
+  "pt": "Faixas de preço só desta variação. Sem faixas, vale o preço da variação.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:135 (jsx)"
   ]
  },
  "configuracoes.produtos.processCreated": {
@@ -31089,13 +31130,13 @@
  "configuracoes.produtos.productCreated": {
   "pt": "Produto criado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:488 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:489 (aviso)"
   ]
  },
  "configuracoes.produtos.productGroup": {
   "pt": "Grupo de produtos",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:685 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:686 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:421 (atributo:label)"
   ]
  },
@@ -31116,7 +31157,7 @@
  "configuracoes.produtos.productName": {
   "pt": "Nome do produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:702 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:703 (atributo:label)"
   ]
  },
  "configuracoes.produtos.productNotFound": {
@@ -31140,7 +31181,7 @@
  "configuracoes.produtos.productPrintingSaved": {
   "pt": "Impressão do produto salva",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:75 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:76 (aviso)"
   ]
  },
  "configuracoes.produtos.productSavedButThereWas": {
@@ -31149,7 +31190,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:531 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:532 (aviso)"
   ]
  },
  "configuracoes.produtos.productSettings": {
@@ -31161,8 +31202,8 @@
  "configuracoes.produtos.productSizeStandard": {
   "pt": "Padrão de medidas do produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:738 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:801 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:739 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:802 (jsx)"
   ]
  },
  "configuracoes.produtos.productTotal": {
@@ -31174,13 +31215,13 @@
  "configuracoes.produtos.productUpdated": {
   "pt": "Produto atualizado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:485 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:486 (aviso)"
   ]
  },
  "configuracoes.produtos.productValue": {
   "pt": "Valor do produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:205 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:213 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.productionMaterial": {
@@ -31193,7 +31234,8 @@
  "configuracoes.produtos.productionSteps": {
   "pt": "Etapas de produção",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:110 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1023 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:114 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStagesSection.tsx:29 (atributo:title)"
   ]
  },
@@ -31227,16 +31269,22 @@
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:78 (propriedade:label)"
   ]
  },
- "configuracoes.produtos.quantityBasedPricesForThis": {
-  "pt": "Valores por quantidade desta variação. Sem faixas, vale o preço da variação.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:129 (jsx)"
-  ]
- },
  "configuracoes.produtos.quantityCostAndSaleOf": {
   "pt": "Quantidade, custo e venda das linhas calculados em",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:774 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.quantityPrices": {
+  "pt": "Valores por quantidade",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:131 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.quantityPricesForTheVariation": {
+  "pt": "Valores por quantidade da variação",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:133 (atributo:title)"
   ]
  },
  "configuracoes.produtos.quoteFields": {
@@ -31248,7 +31296,7 @@
  "configuracoes.produtos.rangeSellingPrice": {
   "pt": "Preço de venda da faixa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:206 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:222 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.rangeTableSaved": {
@@ -31354,7 +31402,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:113 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:124 (atributo:aria-label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:646 (atributo:tooltip)"
   ]
  },
@@ -31371,7 +31419,7 @@
   "pt": "Remover faixa",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:211 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:226 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:242 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.removeTheVariant": {
@@ -31396,7 +31444,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2814 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields.tsx:229 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFormulas.tsx:209 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:266 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:274 (atributo:tooltip)",
    "src/app/sandbox/fluxo/page.tsx:128 (aviso)"
   ]
  },
@@ -31491,7 +31539,7 @@
  "configuracoes.produtos.salePriceSuggestedByThe": {
   "pt": "Preço de venda sugerido pelo acréscimo de",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:135 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:146 (jsx)"
   ]
  },
  "configuracoes.produtos.salesDetails": {
@@ -31503,7 +31551,7 @@
  "configuracoes.produtos.salesUnitName": {
   "pt": "Nome da unidade de venda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:779 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:780 (atributo:label)"
   ]
  },
  "configuracoes.produtos.salespersonCanRename": {
@@ -31549,7 +31597,7 @@
  "configuracoes.produtos.savePrinting": {
   "pt": "Salvar impressão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:132 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:148 (jsx)"
   ]
  },
  "configuracoes.produtos.saveRanges": {
@@ -31561,13 +31609,13 @@
  "configuracoes.produtos.saveTheProductToSet": {
   "pt": "Salve o produto para configurar a impressão: sangria e folhas de acerto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:926 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:927 (jsx)"
   ]
  },
  "configuracoes.produtos.saveTheProductToSet2": {
   "pt": "Salve o produto para cadastrar os valores por quantidade desta variação.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:306 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:314 (jsx)"
   ]
  },
  "configuracoes.produtos.saveToSeeTheCost": {
@@ -31672,8 +31720,8 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:125 (frase)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:175 (frase)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:190 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:191 (frase)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:198 (frase)"
   ]
  },
  "configuracoes.produtos.semGtin": {
@@ -31700,7 +31748,7 @@
    "fiscal-br"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:117 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:123 (jsx)",
    "src/components/common/fiscal/CorrectionHistorySection.tsx:93 (jsx)"
   ]
  },
@@ -32003,7 +32051,7 @@
    "unit"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:101 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:112 (atributo:label)"
   ]
  },
  "configuracoes.produtos.task": {
@@ -32044,7 +32092,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1663 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1673 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:845 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:846 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1012 (atributo:label)"
   ]
  },
@@ -32508,7 +32556,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:475 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:476 (aviso)"
   ]
  },
  "configuracoes.produtos.theBoxStaysInThe": {
@@ -32530,6 +32578,12 @@
   ]
  },
  "configuracoes.produtos.theDepartmentsTheProductGoes": {
+  "pt": "Os setores por onde o produto passa. A Agenda de entrega usa esta lista para mostrar em que setor está cada pedido.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1025 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.theDepartmentsTheProductGoes2": {
   "pt": "Os setores por onde o produto passa na produção",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStagesSection.tsx:33 (atributo:description)"
@@ -32568,7 +32622,7 @@
  "configuracoes.produtos.theItemStartsWithThat": {
   "pt": "O item já nasce com essa quantidade no orçamento e, abaixo dela, é cobrado pela quantidade mínima: a R$ 1,00 a unidade com mínimo de 100 un, o item sai por R$ 100,00 mesmo com 50 pedidas. A quantidade digitada permanece, e o total aponta o mínimo em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1189 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1206 (jsx)"
   ]
  },
  "configuracoes.produtos.theLineS": {
@@ -32578,6 +32632,12 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1845 (atributo:placeholder)"
+  ]
+ },
+ "configuracoes.produtos.theMarginThePieceGets": {
+  "pt": "a margem que a peça ganha de cada lado para o corte não deixar filete branco.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:91 (jsx)"
   ]
  },
  "configuracoes.produtos.theMinimumTimeKeepsA": {
@@ -32598,10 +32658,22 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields.tsx:279 (atributo:aria-label)"
   ]
  },
+ "configuracoes.produtos.theOnesThePressUses": {
+  "pt": "as que a máquina gasta para acertar cor e posição, a cada trabalho.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:95 (jsx)"
+  ]
+ },
  "configuracoes.produtos.theOptionsOfAChoice": {
   "pt": "As opções de uma escolha precisam ter a mesma unidade.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:778 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.thePaperComesFromThe": {
+  "pt": "O papel vem da variação do produto. Deixe o campo vazio para usar o valor do setor.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:99 (jsx)"
   ]
  },
  "configuracoes.produtos.theProcessCardHasnT": {
@@ -32640,6 +32712,18 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:834 (jsx)"
   ]
  },
+ "configuracoes.produtos.theRangeAppliesToThe": {
+  "pt": "A faixa vale para o pedido inteiro: 150 unidades saem todas a R$ 1,50, não só as que passam de 100.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:150 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.theSalePriceCanCome": {
+  "pt": "O preço de venda pode vir do custo mais o acréscimo padrão da empresa (Configurações › Vendas).",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:97 (jsx)"
+  ]
+ },
  "configuracoes.produtos.theSalespersonEntersInThe": {
   "pt": "O vendedor informa no orçamento quanto usou de cada uma.",
   "usos": [
@@ -32665,10 +32749,16 @@
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:667 (jsx)"
   ]
  },
- "configuracoes.produtos.theSameProductInSizes": {
-  "pt": "O mesmo produto em tamanhos ou cores, como P, M e G ou 4x0, 4x1 e 4x4, cada um com o seu preço e os seus valores por quantidade. Na venda, o vendedor escolhe a variação. Sem preço, vale o valor do produto.",
+ "configuracoes.produtos.theSameProductInDifferent": {
+  "pt": "O mesmo produto em versões diferentes, como os tamanhos P, M e G ou as cores 4x0, 4x1 e 4x4.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:143 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:145 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.theSmallestSizeTheCompany": {
+  "pt": "O menor tamanho que a empresa cobra por este produto, mesmo que o pedido seja menor.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:943 (jsx)"
   ]
  },
  "configuracoes.produtos.theStepBelongsToThis": {
@@ -32680,7 +32770,7 @@
  "configuracoes.produtos.theStepFlowAppearsAfter": {
   "pt": "O fluxo de etapas vem depois de salvar",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1029 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1046 (jsx)"
   ]
  },
  "configuracoes.produtos.theStepNowAlsoDepends": {
@@ -32779,7 +32869,7 @@
    "message"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:507 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:508 (aviso)"
   ]
  },
  "configuracoes.produtos.time": {
@@ -32821,7 +32911,7 @@
  "configuracoes.produtos.trigger": {
   "pt": "Trigger",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1098 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1115 (jsx)"
   ]
  },
  "configuracoes.produtos.tryAgain": {
@@ -32833,7 +32923,7 @@
  "configuracoes.produtos.typeHere": {
   "pt": "Digite aqui.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:846 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:847 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.ufDeDestino": {
@@ -32877,22 +32967,10 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:293 (propriedade:label)"
   ]
  },
- "configuracoes.produtos.untilTheDeliveryScheduleReads": {
-  "pt": "Enquanto a Agenda de entrega não lê o fluxo, ela usa esta lista de setores. As caixas do fluxo acima são as etapas que vão substituí-la (ET-1).",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1015 (jsx)"
-  ]
- },
  "configuracoes.produtos.upTo100OneValue": {
   "pt": "Até 100 um valor, de 101 a 500 outro. A faixa vale para o total da venda: 150 unidades saem todas pelo valor da segunda faixa. Sem tabela, vale o valor de venda do produto.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:116 (jsx)"
-  ]
- },
- "configuracoes.produtos.upTo100OneValue2": {
-  "pt": "Até 100 um valor, de 101 a 500 outro. A faixa vale para o total: 150 unidades saem todas pelo valor da segunda faixa. Sem faixas, vale o valor de venda do produto.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:136 (jsx)"
   ]
  },
  "configuracoes.produtos.upToPeopleAtThe": {
@@ -32993,7 +33071,7 @@
  "configuracoes.produtos.useTheSuggestedOne": {
   "pt": "usar o sugerido",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:144 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:155 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:636 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationOutsourcedModal.tsx:234 (jsx)"
   ]
@@ -33091,7 +33169,8 @@
  "configuracoes.produtos.variants": {
   "pt": "Variações",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:141 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:142 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:143 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:89 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:634 (jsx)"
   ]
@@ -33102,7 +33181,7 @@
    "message"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:500 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:501 (aviso)"
   ]
  },
  "configuracoes.produtos.verServicos": {
@@ -33220,6 +33299,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:428 (jsx)"
   ]
  },
+ "configuracoes.produtos.whenTheSaleIsApproved": {
+  "pt": "Ao aprovar a venda, o sistema gera a conta a pagar ao fornecedor com o custo informado aqui. O cliente não vê que o produto é terceirizado.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/OutsourcedProductFields.tsx:92 (jsx)"
+  ]
+ },
  "configuracoes.produtos.whiteBlack": {
   "pt": "Branca, Preta",
   "usos": [
@@ -33251,6 +33336,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:106 (propriedade:label)"
   ]
  },
+ "configuracoes.produtos.withNoRangesTheProduct": {
+  "pt": "Sem faixas, vale o valor de venda do produto.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:153 (jsx)"
+  ]
+ },
  "configuracoes.produtos.withThisProductSStandard": {
   "pt": "Com a medida padrão deste produto, a fórmula dá {valor}.",
   "vars": [
@@ -33275,14 +33366,14 @@
  "configuracoes.produtos.writeDescriptionWithAi": {
   "pt": "Escrever descritivo com IA",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:852 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:853 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1020 (atributo:label)"
   ]
  },
  "configuracoes.produtos.writeTheTechnicalDescriptionOf": {
   "pt": "Escreva o descritivo técnico deste produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:853 (atributo:message)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:854 (atributo:message)"
   ]
  },
  "configuracoes.produtos.xAndYAreThe": {

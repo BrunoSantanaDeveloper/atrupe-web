@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import React, { useEffect, useState } from 'react'
 import { AiContextButton } from '@/components/ai/AiContextButton'
 
@@ -938,19 +939,26 @@ function NewProductModal({
                               No PRO é também a base mínima dos materiais */}
                               {showMinQuantity && (
                                 <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
-                                  <div>
+                                  <div className="flex items-center gap-1.5">
                                     <h4 className="type-card-title">
                                       Quantidade mínima
                                     </h4>
-                                    <p className="text-sm text-gray">
-                                      <MinimumExample
-                                        unitKind={
-                                          (watch(
-                                            'items.0.unitKind',
-                                          ) as UnitKind) || 'UNITY'
-                                        }
-                                      />
-                                    </p>
+                                    <InfoHint title="Quantidade mínima">
+                                      <p>
+                                        O menor tamanho que a empresa cobra por
+                                        este produto, mesmo que o pedido seja
+                                        menor.
+                                      </p>
+                                      <p>
+                                        <MinimumExample
+                                          unitKind={
+                                            (watch(
+                                              'items.0.unitKind',
+                                            ) as UnitKind) || 'UNITY'
+                                          }
+                                        />
+                                      </p>
+                                    </InfoHint>
                                   </div>
                                   <FormInput
                                     name="minQuantity"
@@ -1015,13 +1023,22 @@ function NewProductModal({
                           {canShowProductionStages && (
                             <Form {...form}>
                               <div className="space-y-1">
-                                <ProductionStages />
-                                <p className="text-sm text-gray">
-                                  Enquanto a Agenda de entrega não lê o fluxo,
-                                  ela usa esta lista de setores. As caixas do
-                                  fluxo acima são as etapas que vão substituí-la
-                                  (ET-1).
-                                </p>
+                                <ProductionStages
+                                  hint={
+                                    <InfoHint title="Etapas de produção">
+                                      <p>
+                                        Os setores por onde o produto passa. A
+                                        Agenda de entrega usa esta lista para
+                                        mostrar em que setor está cada pedido.
+                                      </p>
+                                      <p>
+                                        No PRO, a composição acima também tem as
+                                        etapas. Por enquanto a Agenda de entrega
+                                        continua lendo esta lista.
+                                      </p>
+                                    </InfoHint>
+                                  }
+                                />
                               </div>
                             </Form>
                           )}

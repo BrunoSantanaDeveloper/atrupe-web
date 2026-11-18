@@ -7,6 +7,7 @@
 // Salvar), depois que o produto existe.
 
 // React
+import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -78,12 +79,27 @@ export function ProductPrintSettings({ productId }: { productId: string }) {
 
   return (
     <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
-      <div>
+      <div className="flex items-center gap-1.5">
         <h4 className="type-card-title">Impressão</h4>
-        <p className="text-sm text-gray">
-          Como o orçamento conta as folhas deste produto. O papel vem da
-          variação; aqui ficam a sangria e as folhas de acerto.
-        </p>
+        <InfoHint title="Impressão">
+          <p>
+            É como o orçamento conta quantas folhas este produto gasta. Ele vê
+            quantas peças cabem na folha do papel, já com a sangria, e soma as
+            folhas de acerto.
+          </p>
+          <p>
+            <b>Sangria:</b> a margem que a peça ganha de cada lado para o corte
+            não deixar filete branco.
+          </p>
+          <p>
+            <b>Folhas de acerto:</b> as que a máquina gasta para acertar cor e
+            posição, a cada trabalho.
+          </p>
+          <p>
+            O papel vem da variação do produto. Deixe o campo vazio para usar o
+            valor do setor.
+          </p>
+        </InfoHint>
       </div>
 
       <div className="flex flex-wrap items-start gap-3">

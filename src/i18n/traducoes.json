@@ -17810,5 +17810,85 @@
   "2daab491f9": {
     "es": "Ya es el precio de venta.",
     "en": "It is already the sale price."
+  },
+  "da873cdd61": {
+    "es": "El tamaño mínimo que la empresa cobra por este producto, aunque el pedido sea menor.",
+    "en": "The smallest size the company charges for this product, even if the order is smaller."
+  },
+  "f74027c841": {
+    "es": "Los sectores por donde pasa el producto. La Agenda de entrega usa esta lista para mostrar en qué sector está cada pedido.",
+    "en": "The departments the product goes through. The Delivery schedule uses this list to show which department each order is in."
+  },
+  "3a860e5900": {
+    "es": "En el PRO, la composición de arriba también tiene las etapas. Por ahora la Agenda de entrega sigue leyendo esta lista.",
+    "en": "In PRO, the composition above also has the steps. For now the Delivery schedule still reads this list."
+  },
+  "eeb81755b0": {
+    "es": "Es el producto que la empresa compra listo a un proveedor y revende.",
+    "en": "It is the product the company buys ready-made from a supplier and resells."
+  },
+  "652f59044f": {
+    "es": "Al aprobar la venta, el sistema genera la cuenta por pagar al proveedor con el costo informado aquí. El cliente no ve que el producto es tercerizado.",
+    "en": "When the sale is approved, the system creates the bill to the supplier with the cost entered here. The customer does not see that the product is outsourced."
+  },
+  "09e252733d": {
+    "es": "El precio de venta puede venir del costo más el recargo estándar de la empresa (Configuración › Ventas).",
+    "en": "The sale price can come from the cost plus the company's standard markup (Settings › Sales)."
+  },
+  "b3693f93f9": {
+    "es": "Valores por cantidad",
+    "en": "Quantity prices"
+  },
+  "bcad258d7c": {
+    "es": "Valores por cantidad de la variación",
+    "en": "Quantity prices for the variation"
+  },
+  "7c75f6491b": {
+    "es": "Rangos de precio solo de esta variación. Sin rangos, vale el precio de la variación.",
+    "en": "Price ranges for this variation only. With no ranges, the variation price applies."
+  },
+  "9774f20c63": {
+    "es": "Un precio para cada rango de cantidad. Ejemplo: hasta 100 unidades, R$ 2,00 cada una; de 101 a 500, R$ 1,50 cada una.",
+    "en": "A price for each quantity range. Example: up to 100 units, R$ 2.00 each; from 101 to 500, R$ 1.50 each."
+  },
+  "e87c4383db": {
+    "es": "El rango vale para todo el pedido: 150 unidades salen todas a R$ 1,50, no solo las que pasan de 100.",
+    "en": "The range applies to the whole order: all 150 units go at R$ 1.50, not only the ones above 100."
+  },
+  "a803bd780b": {
+    "es": "Sin rangos, vale el precio de venta del producto.",
+    "en": "With no ranges, the product's sale price applies."
+  },
+  "acc2d1735a": {
+    "es": "Es cómo el presupuesto cuenta cuántas hojas gasta este producto. Ve cuántas piezas caben en la hoja del papel, ya con el sangrado, y suma las hojas de ajuste.",
+    "en": "It is how the quote counts how many sheets this product uses. It checks how many pieces fit on the paper sheet, with the bleed, and adds the make-ready sheets."
+  },
+  "d174bf28d3": {
+    "es": "el margen que gana la pieza de cada lado para que el corte no deje un filete blanco.",
+    "en": "the margin the piece gets on each side so the cut does not leave a white edge."
+  },
+  "3a19b816d4": {
+    "es": "Hojas de ajuste:",
+    "en": "Make-ready sheets:"
+  },
+  "f6b20cff3b": {
+    "es": "las que gasta la máquina para ajustar color y posición, en cada trabajo.",
+    "en": "the ones the press uses to adjust color and position, on each job."
+  },
+  "32be391f90": {
+    "es": "El papel viene de la variación del producto. Deje el campo vacío para usar el valor del sector.",
+    "en": "The paper comes from the product variation. Leave the field empty to use the department value."
+  },
+  "840eea270e": {
+    "es": "El mismo producto en versiones diferentes, como los tamaños P, M y G o los colores 4x0, 4x1 y 4x4.",
+    "en": "The same product in different versions, such as sizes S, M and L or colors 4x0, 4x1 and 4x4."
+  },
+  "ca4d54415a": {
+    "es": "Cada variación puede tener su precio y sus valores por cantidad. Una variación sin precio usa el valor del producto.",
+    "en": "Each variation can have its own price and quantity prices. A variation without a price uses the product value."
+  },
+  "167b588f45": {
+    "es": "En el presupuesto, el vendedor elige la variación al agregar el ítem.",
+    "en": "In the quote, the salesperson picks the variation when adding the item."
   }
 }
