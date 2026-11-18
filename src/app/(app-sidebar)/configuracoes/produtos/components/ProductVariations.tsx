@@ -71,6 +71,9 @@ interface Props {
   basePriceCents: number
   // Quantas variações há: com elas, a tabela de faixas do produto sai
   onCountChange?: (count: number) => void
+  // O papel da variação só no produto de impressão em folha (18/11/2026):
+  // na letra caixa ou na lona, o campo não tem sentido
+  showPaper?: boolean
 }
 
 export function ProductVariations({
@@ -79,6 +82,7 @@ export function ProductVariations({
   onLocalChange,
   basePriceCents,
   onCountChange,
+  showPaper = true,
 }: Props) {
   const queryClient = useQueryClient()
   const { data } = useQuery({
@@ -90,7 +94,10 @@ export function ProductVariations({
   const [rows, setRows] = useState<Row[]>([])
   // A variação com a tabela de faixas aberta
   const [openTiers, setOpenTiers] = useState<string | null>(null)
-  const { active: withPapers, papers } = usePapers()
+  const { active: papersInPlan, papers } = usePapers()
+  // Escondido, o papel não vai na gravação (indefinido não mexe no que já
+  // estiver gravado)
+  const withPapers = papersInPlan && showPaper
 
   useEffect(() => {
     onCountChange?.(rows.length)

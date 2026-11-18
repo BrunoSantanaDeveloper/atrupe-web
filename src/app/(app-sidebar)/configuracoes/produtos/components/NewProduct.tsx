@@ -986,6 +986,7 @@ function NewProductModal({
                                     unitKind={watch('items.0.unitKind')}
                                     onLocalChange={setPendingVariations}
                                     onCountChange={setVariationCount}
+                                    showPaper={passesSheetPrinting}
                                     basePriceCents={Math.round(
                                       convertRawToUnitCost(
                                         watch('items.0.unitKind') || 'UNITY',
