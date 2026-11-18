@@ -17762,5 +17762,21 @@
   "a42cdabbd2": {
     "es": "Usar precio sugerido",
     "en": "Use suggested price"
+  },
+  "dac8d74356": {
+    "es": "Datos de venta",
+    "en": "Sales details"
+  },
+  "7d32843614": {
+    "es": "Total del producto",
+    "en": "Product total"
+  },
+  "573efa37d9": {
+    "es": "Venta de los recursos",
+    "en": "Resource sales"
+  },
+  "21699eaedc": {
+    "es": "Ver el resumen",
+    "en": "View summary"
   }
 }

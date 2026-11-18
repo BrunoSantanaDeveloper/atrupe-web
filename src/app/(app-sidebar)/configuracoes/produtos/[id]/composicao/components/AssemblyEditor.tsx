@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import {
   Select,
@@ -400,7 +401,14 @@ function AssemblyEditorBody({
   const [flowOpen, setFlowOpen] = useState(false)
   // O bloco Produto já vem resolvido do cadastro: nasce recolhido, com um
   // resumo em linha, e abre para quem precisar mexer (03/10/2026)
-  const [productOpen, setProductOpen] = useState(false)
+  const [productOpen, setProductOpen] = useState(true)
+  // A página em abas (18/11/2026): a composição é o principal e abre
+  // primeiro; simulação, dados de venda e descritivo ficam nas suas abas.
+  // O principal de cada aba aberto, o secundário recolhido
+  const [pageTab, setPageTab] = useState<
+    'composition' | 'simulation' | 'sale' | 'description'
+  >('composition')
+  const [summaryOpen, setSummaryOpen] = useState(false)
   // A etapa em renomeação: o nome é editado no próprio título (03/10/2026)
   const [renamingId, setRenamingId] = useState<string | null>(null)
   // Hora da última gravação, para a tela dizer que já salvou (IP-40: cada
@@ -1324,34 +1332,37 @@ function AssemblyEditorBody({
                           : line.formula === 'CUSTOM'
                             ? `Fórmula · ${line.formulaName || '?'}`
                             : formulaLabel(line.formula, line.fieldName)}
+                        {/* As entradas da fórmula numa linha só (18/11/2026):
+                            "área × quantidade"; a zerada fica em vermelho */}
                         {line.mode !== 'LIST' &&
                           formulaInputs[line.formula]?.length > 0 && (
-                            <span className="mt-1 flex flex-wrap gap-1">
-                              {formulaInputs[line.formula].map((input) => {
-                                const zero = zeroInput(input, item, line)
-                                const label =
-                                  input === 'campo extra'
-                                    ? line.fieldName || 'campo'
-                                    : input
-                                return (
-                                  <span
-                                    key={input}
-                                    title={
-                                      zero
-                                        ? `A fórmula usa ${label}, e está zerado nesta etapa`
-                                        : `A fórmula usa ${label}`
-                                    }
-                                    className={cn(
-                                      'rounded px-1.5 py-0.5 text-xs',
-                                      zero
-                                        ? 'bg-error-50 text-error-700'
-                                        : 'bg-gray-100 text-gray-600',
-                                    )}
-                                  >
-                                    {label}
-                                  </span>
-                                )
-                              })}
+                            <span className="mt-0.5 block text-xs text-gray-500">
+                              {formulaInputs[line.formula].map(
+                                (input, index) => {
+                                  const zero = zeroInput(input, item, line)
+                                  const label =
+                                    input === 'campo extra'
+                                      ? line.fieldName || 'campo'
+                                      : input
+                                  return (
+                                    <span
+                                      key={input}
+                                      title={
+                                        zero
+                                          ? `A fórmula usa ${label}, e está zerado nesta etapa`
+                                          : `A fórmula usa ${label}`
+                                      }
+                                      className={cn(
+                                        zero &&
+                                          'rounded bg-error-50 px-1 text-error-700',
+                                      )}
+                                    >
+                                      {index > 0 && ' × '}
+                                      {label}
+                                    </span>
+                                  )
+                                },
+                              )}
                             </span>
                           )}
                         {line.sheetYield && (
@@ -1607,7 +1618,89 @@ function AssemblyEditorBody({
         <div className={cn(embedded && 'order-first')}>{variantTabs}</div>
       )}
 
+      {/* As abas da página (18/11/2026): a composição primeiro; simulação,
+          dados de venda e descritivo cada um na sua aba */}
       {!embedded && (
+        <Tabs
+          value={pageTab}
+          onValueChange={(value) => setPageTab(value as typeof pageTab)}
+        >
+          <TabsList>
+            <TabsTrigger value="composition">Composição</TabsTrigger>
+            <TabsTrigger value="simulation">Simulação</TabsTrigger>
+            <TabsTrigger value="sale">Dados de venda</TabsTrigger>
+            <TabsTrigger value="description">Descritivo técnico</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      )}
+
+      {/* O descritivo técnico é campo do cadastro do START (IP-24) */}
+      {!embedded && pageTab === 'description' && (
+        <Card>
+          <CardContent className="px-6 py-5">
+            <div className="space-y-2">
+              <Label htmlFor="technical-description">Descritivo técnico</Label>
+              <Textarea
+                id="technical-description"
+                rows={2}
+                placeholder="Aparece na proposta impressa, abaixo do nome do produto."
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+              <PermissionGate permissions={EDIT}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  disabled={description === assembly.technicalDescription}
+                  onClick={() =>
+                    run(
+                      updateAssembly({
+                        productId,
+                        values: { technicalDescription: description },
+                      }),
+                      'Descritivo salvo',
+                    )
+                  }
+                >
+                  Salvar descritivo
+                </Button>
+              </PermissionGate>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* O total do produto fica à vista enquanto a composição é montada
+          (18/11/2026): na medida padrão, a soma das etapas */}
+      {!embedded && pageTab === 'composition' && assembly.blocks.length > 0 && (
+        <div className="sticky top-0 z-10 flex flex-wrap items-center gap-x-6 gap-y-1 rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm shadow-sm">
+          <span className="font-medium text-gray-900">Total do produto</span>
+          <PermissionGate
+            permissions={['values:values:view']}
+            fallback={<span className="text-gray">•••</span>}
+          >
+            <span className="text-gray">
+              Custo{' '}
+              <strong className="text-gray-900">{money(assembly.cost)}</strong>
+            </span>
+            <span className="text-gray">
+              Venda dos recursos{' '}
+              <strong className="text-success-700">
+                {money(assembly.suggestedPrice)}
+              </strong>
+            </span>
+          </PermissionGate>
+          <span className="text-gray">
+            {assembly.blocks.length}{' '}
+            {assembly.blocks.length === 1 ? 'etapa' : 'etapas'} ·{' '}
+            {num(measure.quantity)} × {num(measure.width)} ×{' '}
+            {num(measure.height)} m
+          </span>
+        </div>
+      )}
+
+      {!embedded && pageTab === 'sale' && (
         <Card>
           <button
             type="button"
@@ -1886,39 +1979,6 @@ function AssemblyEditorBody({
                   fields={assembly.fields}
                 />
               </div>
-
-              {/* O descritivo técnico é campo do cadastro do START (IP-24) */}
-              <div className="mt-5 space-y-2">
-                <Label htmlFor="technical-description">
-                  Descritivo técnico
-                </Label>
-                <Textarea
-                  id="technical-description"
-                  rows={2}
-                  placeholder="Aparece na proposta impressa, abaixo do nome do produto."
-                  value={description}
-                  onChange={(event) => setDescription(event.target.value)}
-                />
-                <PermissionGate permissions={EDIT}>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="neutralOutline"
-                    disabled={description === assembly.technicalDescription}
-                    onClick={() =>
-                      run(
-                        updateAssembly({
-                          productId,
-                          values: { technicalDescription: description },
-                        }),
-                        'Descritivo salvo',
-                      )
-                    }
-                  >
-                    Salvar descritivo
-                  </Button>
-                </PermissionGate>
-              </div>
             </CardContent>
           )}
         </Card>
@@ -1928,96 +1988,98 @@ function AssemblyEditorBody({
           composição tem etapa com custo, custo, preço, sugerido e margem
           nessa medida. O mesmo desenho da Simulação do processo. A medida
           padrão do produto só muda pelo "Salvar como padrão" */}
-      <SimulationCard
-        className={cn(embedded && 'order-first')}
-        idPrefix="measure"
-        description="Confira custo, preço e margem numa medida. Não grava nada: o padrão do produto só muda com “Salvar como padrão”."
-        measure={measure}
-        onMeasureChange={setMeasure}
-        emptyText="Os valores aparecem quando houver etapa com custo."
-        results={
-          assembly.blocks.length > 0 && assembly.cost > 0
-            ? [
-                { label: 'Custo', value: money(assembly.cost) },
-                {
-                  label: 'Preço de venda',
-                  value: money(assembly.priceForMeasure),
-                },
-                {
-                  label: `Sugerido · por ${unitSymbol[assembly.unitKind]}`,
-                  value: money(assembly.suggestedUnitPrice),
-                  help: `${money(assembly.suggestedPrice)} nesta medida · soma do preço de venda de cada recurso`,
-                },
-                {
-                  label: 'Margem',
-                  value:
-                    assembly.margin === null
-                      ? '-'
-                      : `${num(assembly.margin, 1)}%`,
-                  tone:
-                    assembly.margin !== null && assembly.margin < 0
-                      ? 'error'
-                      : 'default',
-                },
-              ]
-            : []
-        }
-        footer={
-          measureChanged ||
-          (assembly.blocks.length > 0 && assembly.cost > 0) ? (
-            <>
-              <p className="text-sm text-gray">
-                {measureChanged
-                  ? `Simulando ${num(measure.quantity)} × ${num(measure.width)} × ${num(measure.height)} m. O padrão é ${num(saved.quantity)} × ${num(saved.width)} × ${num(saved.height)} m.`
-                  : assembly.margin !== null && assembly.margin < 0
-                    ? 'Nesta medida, o produto está sendo vendido abaixo do custo.'
-                    : 'Ter custo não muda o valor de venda: usar o sugerido é uma decisão sua.'}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {measureChanged && (
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    onClick={() => setMeasure(saved)}
-                  >
-                    Voltar ao padrão
-                  </Button>
-                )}
-                <PermissionGate permissions={EDIT}>
+      {(embedded || pageTab === 'simulation') && (
+        <SimulationCard
+          className={cn(embedded && 'order-first')}
+          idPrefix="measure"
+          description="Confira custo, preço e margem numa medida. Não grava nada: o padrão do produto só muda com “Salvar como padrão”."
+          measure={measure}
+          onMeasureChange={setMeasure}
+          emptyText="Os valores aparecem quando houver etapa com custo."
+          results={
+            assembly.blocks.length > 0 && assembly.cost > 0
+              ? [
+                  { label: 'Custo', value: money(assembly.cost) },
+                  {
+                    label: 'Preço de venda',
+                    value: money(assembly.priceForMeasure),
+                  },
+                  {
+                    label: `Sugerido · por ${unitSymbol[assembly.unitKind]}`,
+                    value: money(assembly.suggestedUnitPrice),
+                    help: `${money(assembly.suggestedPrice)} nesta medida · soma do preço de venda de cada recurso`,
+                  },
+                  {
+                    label: 'Margem',
+                    value:
+                      assembly.margin === null
+                        ? '-'
+                        : `${num(assembly.margin, 1)}%`,
+                    tone:
+                      assembly.margin !== null && assembly.margin < 0
+                        ? 'error'
+                        : 'default',
+                  },
+                ]
+              : []
+          }
+          footer={
+            measureChanged ||
+            (assembly.blocks.length > 0 && assembly.cost > 0) ? (
+              <>
+                <p className="text-sm text-gray">
+                  {measureChanged
+                    ? `Simulando ${num(measure.quantity)} × ${num(measure.width)} × ${num(measure.height)} m. O padrão é ${num(saved.quantity)} × ${num(saved.width)} × ${num(saved.height)} m.`
+                    : assembly.margin !== null && assembly.margin < 0
+                      ? 'Nesta medida, o produto está sendo vendido abaixo do custo.'
+                      : 'Ter custo não muda o valor de venda: usar o sugerido é uma decisão sua.'}
+                </p>
+                <div className="flex flex-wrap gap-2">
                   {measureChanged && (
                     <Button
                       type="button"
                       variant="neutralOutline"
-                      onClick={() =>
-                        run(
-                          updateAssembly({ productId, values: { measure } }),
-                          'Padrão de medidas salvo',
-                        )
-                      }
+                      onClick={() => setMeasure(saved)}
                     >
-                      Salvar como padrão
+                      Voltar ao padrão
                     </Button>
                   )}
-                  {assembly.blocks.length > 0 && assembly.cost > 0 && (
-                    <PermissionGate permissions={['values:values:view']}>
+                  <PermissionGate permissions={EDIT}>
+                    {measureChanged && (
                       <Button
                         type="button"
                         variant="neutralOutline"
-                        disabled={
-                          assembly.unitPrice === assembly.suggestedUnitPrice
+                        onClick={() =>
+                          run(
+                            updateAssembly({ productId, values: { measure } }),
+                            'Padrão de medidas salvo',
+                          )
                         }
-                        onClick={adoptSuggested}
                       >
-                        Usar preço sugerido
+                        Salvar como padrão
                       </Button>
-                    </PermissionGate>
-                  )}
-                </PermissionGate>
-              </div>
-            </>
-          ) : null
-        }
-      />
+                    )}
+                    {assembly.blocks.length > 0 && assembly.cost > 0 && (
+                      <PermissionGate permissions={['values:values:view']}>
+                        <Button
+                          type="button"
+                          variant="neutralOutline"
+                          disabled={
+                            assembly.unitPrice === assembly.suggestedUnitPrice
+                          }
+                          onClick={adoptSuggested}
+                        >
+                          Usar preço sugerido
+                        </Button>
+                      </PermissionGate>
+                    )}
+                  </PermissionGate>
+                </div>
+              </>
+            ) : null
+          }
+        />
+      )}
 
       {/* Segunda parte (decisão de 30/09 e 02/10/2026): a faixa de quantidade
           fica fora da tela enquanto a composição é acertada. O código
@@ -2032,235 +2094,262 @@ function AssemblyEditorBody({
           recursos, e uma linha "Nova etapa" embaixo de cada uma. A etapa nova
           entra depois da anterior, numa linha contínua; o fluxo acima é onde
           essa linha se altera */}
-      <Card className={cn(embedded && 'order-first')}>
-        <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
-          <div className="min-w-0 flex-1 basis-80">
-            <CardTitle>Composição</CardTitle>
-            <CardDescription>
-              {inVariation
-                ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
-                : 'Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa. A ordem das etapas é a ordem da produção.'}
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3 px-6 pb-6">
-          {/* No diálogo do produto não há o bloco Produto: os campos do
+      {(embedded || pageTab === 'composition') && (
+        <Card className={cn(embedded && 'order-first')}>
+          <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
+            <div className="min-w-0 flex-1 basis-80">
+              <CardTitle>Composição</CardTitle>
+              <CardDescription>
+                {inVariation
+                  ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
+                  : 'Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa. A ordem das etapas é a ordem da produção.'}
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3 px-6 pb-6">
+            {/* No diálogo do produto não há o bloco Produto: os campos do
               orçamento abrem a composição */}
-          {embedded && (
-            <div className="border-b border-gray-100 pb-5">
-              <ProductFields
+            {embedded && (
+              <div className="border-b border-gray-100 pb-5">
+                <ProductFields
+                  bare
+                  productId={productId}
+                  fields={assembly.fields}
+                />
+              </div>
+            )}
+            {assembly.blocks.length === 0 ? (
+              <PermissionGate permissions={EDIT} fallback={readOnlyEmpty}>
+                {ownStageEmpty}
+              </PermissionGate>
+            ) : (
+              assembly.blocks.map((item) => (
+                <div key={item.id} className="space-y-3">
+                  <div
+                    ref={item.id === selectedBlock?.id ? detailRef : undefined}
+                  >
+                    {stageDetail(item)}
+                  </div>
+                  {!inVariation && (
+                    <PermissionGate permissions={EDIT}>
+                      <Button
+                        type="button"
+                        variant="neutralOutline"
+                        className="w-full border-dashed"
+                        LeftIcon={IconPlus}
+                        onClick={() => addStageAfter(item)}
+                      >
+                        Nova etapa depois de {item.name}
+                      </Button>
+                    </PermissionGate>
+                  )}
+                </div>
+              ))
+            )}
+            {/* Fórmulas do produto: recurso avançado. A porta de entrada é
+              "Nova fórmula…" no tipo de cálculo da linha; a lista só aparece
+              depois da primeira, aqui dentro da Composição (03/10/2026) */}
+            {assembly.formulas.length > 0 && (
+              <ProductFormulas
                 bare
                 productId={productId}
                 fields={assembly.fields}
+                formulas={assembly.formulas}
+                lineRefs={Object.keys(allRefs)}
+                testVars={{ ...testVars, ...allRefs }}
               />
-            </div>
-          )}
-          {assembly.blocks.length === 0 ? (
-            <PermissionGate permissions={EDIT} fallback={readOnlyEmpty}>
-              {ownStageEmpty}
-            </PermissionGate>
-          ) : (
-            assembly.blocks.map((item) => (
-              <div key={item.id} className="space-y-3">
-                <div
-                  ref={item.id === selectedBlock?.id ? detailRef : undefined}
-                >
-                  {stageDetail(item)}
-                </div>
-                {!inVariation && (
-                  <PermissionGate permissions={EDIT}>
-                    <Button
-                      type="button"
-                      variant="neutralOutline"
-                      className="w-full border-dashed"
-                      LeftIcon={IconPlus}
-                      onClick={() => addStageAfter(item)}
-                    >
-                      Nova etapa depois de {item.name}
-                    </Button>
-                  </PermissionGate>
-                )}
-              </div>
-            ))
-          )}
-          {/* Fórmulas do produto: recurso avançado. A porta de entrada é
-              "Nova fórmula…" no tipo de cálculo da linha; a lista só aparece
-              depois da primeira, aqui dentro da Composição (03/10/2026) */}
-          {assembly.formulas.length > 0 && (
-            <ProductFormulas
-              bare
-              productId={productId}
-              fields={assembly.fields}
-              formulas={assembly.formulas}
-              lineRefs={Object.keys(allRefs)}
-              testVars={{ ...testVars, ...allRefs }}
-            />
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* 5. O fluxo de produção (FL-1 a FL-5): cada caixa é a etapa de um
           setor, ligada às que vêm antes dela. Nasce recolhido, em uma linha
           na ordem das etapas (03/10/2026); abre para quem quer mudar a ordem,
           dividir o fluxo ou juntar caminhos */}
-      {assembly.blocks.length > 0 && (
-        <Card className={cn(embedded && 'order-first')}>
-          <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
-            <div className="min-w-0">
-              <CardTitle>Fluxo de produção</CardTitle>
-              <CardDescription>
-                {flowOpen
-                  ? inVariation
-                    ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
-                    : 'Cada caixa é a etapa de um setor. O "+" acrescenta a etapa seguinte; o menu da caixa liga, desliga e troca.'
-                  : flowSummary}
-              </CardDescription>
-            </div>
-            <Button
-              type="button"
-              size="md"
-              variant="neutralOutline"
-              RightIcon={flowOpen ? IconChevronUp : IconChevronDown}
-              onClick={() => setFlowOpen((open) => !open)}
-            >
-              {flowOpen ? 'Recolher' : 'Ver e alterar o fluxo'}
-            </Button>
-          </CardHeader>
-          {flowOpen && (
-            <CardContent className="px-6 pb-6">
-              <PermissionGate
-                permissions={EDIT}
-                fallback={
+      {(embedded || pageTab === 'composition') &&
+        assembly.blocks.length > 0 && (
+          <Card className={cn(embedded && 'order-first')}>
+            <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
+              <div className="min-w-0">
+                <CardTitle>Fluxo de produção</CardTitle>
+                <CardDescription>
+                  {flowOpen
+                    ? inVariation
+                      ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
+                      : 'Cada caixa é a etapa de um setor. O "+" acrescenta a etapa seguinte; o menu da caixa liga, desliga e troca.'
+                    : flowSummary}
+                </CardDescription>
+              </div>
+              <Button
+                type="button"
+                size="md"
+                variant="neutralOutline"
+                RightIcon={flowOpen ? IconChevronUp : IconChevronDown}
+                onClick={() => setFlowOpen((open) => !open)}
+              >
+                {flowOpen ? 'Recolher' : 'Ver e alterar o fluxo'}
+              </Button>
+            </CardHeader>
+            {flowOpen && (
+              <CardContent className="px-6 pb-6">
+                <PermissionGate
+                  permissions={EDIT}
+                  fallback={
+                    <FlowCanvas
+                      readOnly
+                      nodes={flowNodes}
+                      selectedId={selectedBlock?.id}
+                      onSelect={setSelectedId}
+                      expandedPartId={expandedPart}
+                      onTogglePart={(id) =>
+                        setExpandedPart((current) =>
+                          current === id ? null : id,
+                        )
+                      }
+                      empty={readOnlyEmpty}
+                    />
+                  }
+                >
                   <FlowCanvas
-                    readOnly
                     nodes={flowNodes}
                     selectedId={selectedBlock?.id}
                     onSelect={setSelectedId}
+                    menu={stageMenu}
                     expandedPartId={expandedPart}
                     onTogglePart={(id) =>
                       setExpandedPart((current) => (current === id ? null : id))
                     }
-                    empty={readOnlyEmpty}
-                  />
-                }
-              >
-                <FlowCanvas
-                  nodes={flowNodes}
-                  selectedId={selectedBlock?.id}
-                  onSelect={setSelectedId}
-                  menu={stageMenu}
-                  expandedPartId={expandedPart}
-                  onTogglePart={(id) =>
-                    setExpandedPart((current) => (current === id ? null : id))
-                  }
-                  onAddAfter={(node) => {
-                    const after = assembly.blocks.find(
-                      (item) => item.id === node.id,
-                    )
-                    if (after) setDialog({ kind: 'next', after })
-                  }}
-                  onInsertBetween={
-                    inVariation
-                      ? undefined
-                      : (from, to) => {
-                          const after = assembly.blocks.find(
-                            (item) => item.id === from.id,
-                          )
-                          const before = assembly.blocks.find(
-                            (item) => item.id === to.id,
-                          )
-                          if (after && before) {
-                            setDialog({ kind: 'next', after, before })
+                    onAddAfter={(node) => {
+                      const after = assembly.blocks.find(
+                        (item) => item.id === node.id,
+                      )
+                      if (after) setDialog({ kind: 'next', after })
+                    }}
+                    onInsertBetween={
+                      inVariation
+                        ? undefined
+                        : (from, to) => {
+                            const after = assembly.blocks.find(
+                              (item) => item.id === from.id,
+                            )
+                            const before = assembly.blocks.find(
+                              (item) => item.id === to.id,
+                            )
+                            if (after && before) {
+                              setDialog({ kind: 'next', after, before })
+                            }
                           }
-                        }
-                  }
-                  onAddPath={
-                    inVariation
-                      ? undefined
-                      : () => setDialog({ kind: 'next', after: null })
-                  }
-                  addPathLabel={
-                    assembly.blocks.length ? 'Novo caminho' : 'Primeira etapa'
-                  }
-                  empty={ownStageEmpty}
-                />
-              </PermissionGate>
-            </CardContent>
-          )}
-        </Card>
-      )}
+                    }
+                    onAddPath={
+                      inVariation
+                        ? undefined
+                        : () => setDialog({ kind: 'next', after: null })
+                    }
+                    addPathLabel={
+                      assembly.blocks.length ? 'Novo caminho' : 'Primeira etapa'
+                    }
+                    empty={ownStageEmpty}
+                  />
+                </PermissionGate>
+              </CardContent>
+            )}
+          </Card>
+        )}
 
       {/* O que o produto consome, cada recurso uma vez (IP-34) */}
-      {assembly.resourceSummary.length > 0 && (
-        <Card className={cn(embedded && 'order-first')}>
-          <CardHeader>
-            <CardTitle>Resumo por recurso</CardTitle>
-            <CardDescription>
-              Cada recurso uma vez, somado de todas as etapas, na medida
-              simulada. É a lista do que o produto consome.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table className="min-w-[640px]">
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-[40%]">Recurso</TableHead>
-                  <TableHead className="w-[15%]">Tipo</TableHead>
-                  <TableHead numeric className="w-[15%]">
-                    Quantidade
-                  </TableHead>
-                  <TableHead numeric className="w-[15%]">
-                    Custo
-                  </TableHead>
-                  <TableHead className="w-[15%] text-right">Venda</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {assembly.resourceSummary.map((resource) => (
-                  <TableRow key={resource.id}>
-                    <TableCell className="text-sm font-medium text-gray-800">
-                      {resource.name}
-                    </TableCell>
-                    <TableCell className="text-sm text-gray">
-                      <ResourceKindLabel
-                        kind={resource.kind}
-                        label={resourceKindObj[resource.kind]}
-                      />
-                    </TableCell>
-                    <TableCell numeric className="whitespace-nowrap text-sm">
-                      {amount(resource.quantity, resource.unit)}
-                      {(resource.people || 1) > 1 && (
-                        <span className="block text-xs text-gray">
-                          até {resource.people} pessoas ao mesmo tempo
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell numeric className="whitespace-nowrap text-sm">
-                      <PermissionGate
-                        permissions={['values:values:view']}
-                        fallback={<span>•••</span>}
-                      >
-                        {money(resource.cost)}
-                      </PermissionGate>
-                    </TableCell>
-                    <TableCell
-                      numeric
-                      className="whitespace-nowrap text-sm font-medium text-success-700"
-                    >
-                      <PermissionGate
-                        permissions={['values:values:view']}
-                        fallback={<span>•••</span>}
-                      >
-                        {money(resource.sale)}
-                      </PermissionGate>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+      {(embedded || pageTab === 'composition') &&
+        assembly.resourceSummary.length > 0 && (
+          <Card className={cn(embedded && 'order-first')}>
+            <CardHeader className="flex-row flex-wrap items-center justify-between gap-4 space-y-0">
+              <div className="min-w-0">
+                <CardTitle>Resumo por recurso</CardTitle>
+                <CardDescription>
+                  Cada recurso uma vez, somado de todas as etapas, na medida
+                  simulada. É a lista do que o produto consome.
+                </CardDescription>
+              </div>
+              <Button
+                type="button"
+                size="md"
+                variant="neutralOutline"
+                RightIcon={summaryOpen ? IconChevronUp : IconChevronDown}
+                onClick={() => setSummaryOpen((open) => !open)}
+              >
+                {summaryOpen ? 'Recolher' : 'Ver o resumo'}
+              </Button>
+            </CardHeader>
+            {summaryOpen && (
+              <CardContent>
+                <Table className="min-w-[640px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-[40%]">Recurso</TableHead>
+                      <TableHead className="w-[15%]">Tipo</TableHead>
+                      <TableHead numeric className="w-[15%]">
+                        Quantidade
+                      </TableHead>
+                      <TableHead numeric className="w-[15%]">
+                        Custo
+                      </TableHead>
+                      <TableHead className="w-[15%] text-right">
+                        Venda
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {assembly.resourceSummary.map((resource) => (
+                      <TableRow key={resource.id}>
+                        <TableCell className="text-sm font-medium text-gray-800">
+                          {resource.name}
+                        </TableCell>
+                        <TableCell className="text-sm text-gray">
+                          <ResourceKindLabel
+                            kind={resource.kind}
+                            label={resourceKindObj[resource.kind]}
+                          />
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm"
+                        >
+                          {amount(resource.quantity, resource.unit)}
+                          {(resource.people || 1) > 1 && (
+                            <span className="block text-xs text-gray">
+                              até {resource.people} pessoas ao mesmo tempo
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm"
+                        >
+                          <PermissionGate
+                            permissions={['values:values:view']}
+                            fallback={<span>•••</span>}
+                          >
+                            {money(resource.cost)}
+                          </PermissionGate>
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm font-medium text-success-700"
+                        >
+                          <PermissionGate
+                            permissions={['values:values:view']}
+                            fallback={<span>•••</span>}
+                          >
+                            {money(resource.sale)}
+                          </PermissionGate>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            )}
+          </Card>
+        )}
 
       {/* Rodapé da página (pedido do time, 03/10/2026): mesmo com a gravação
           por ação (IP-40), a pessoa precisa de um Salvar e um Fechar para não
