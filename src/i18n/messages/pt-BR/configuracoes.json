@@ -1399,6 +1399,8 @@
     "unidadeComercial": "Unidade comercial",
     "totalArea": "Área total",
     "suggestedByTheComposition": "Sugerido pela composição:",
+    "per": "{suggestedUnitPrice} por {valor}",
+    "itIsAlreadyTheSale": "Já é o valor de venda.",
     "useSuggestedPrice": "Usar preço sugerido",
     "sizeInTheQuote": "Medida no orçamento",
     "sizeStandard": "Padrão de medidas:",

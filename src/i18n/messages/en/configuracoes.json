@@ -979,6 +979,8 @@
     "theImageIsTheOne": "The image is the one from the product record",
     "totalArea": "Total area",
     "suggestedByTheComposition": "Suggested by the composition:",
+    "per": "{suggestedUnitPrice} per {valor}",
+    "itIsAlreadyTheSale": "It is already the sale price.",
     "useSuggestedPrice": "Use suggested price",
     "sizeInTheQuote": "Size in the quote",
     "sizeStandard": "Size standard:",

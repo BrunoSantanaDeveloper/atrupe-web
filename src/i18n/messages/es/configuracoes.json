@@ -979,6 +979,8 @@
     "theImageIsTheOne": "La imagen es la del registro del producto",
     "totalArea": "Área total",
     "suggestedByTheComposition": "Sugerido por la composición:",
+    "per": "{suggestedUnitPrice} por {valor}",
+    "itIsAlreadyTheSale": "Ya es el precio de venta.",
     "useSuggestedPrice": "Usar precio sugerido",
     "sizeInTheQuote": "Medida en la cotización",
     "sizeStandard": "Estándar de medidas:",

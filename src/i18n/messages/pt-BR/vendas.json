@@ -500,6 +500,7 @@
   "vendasDeHoje": {
     "approved": "Aprovada",
     "rejectedAtCheckout": "Rejeitada no caixa",
+    "awaitingPayment": "Pendente de pagamento",
     "rejectedAtCheckout2": "Rejeitadas no caixa",
     "approvedSale": "venda aprovada",
     "approvedSales": "vendas aprovadas",

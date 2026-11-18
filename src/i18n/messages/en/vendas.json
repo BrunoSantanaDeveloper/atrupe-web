@@ -480,6 +480,7 @@
   "vendasDeHoje": {
     "approved": "Approved",
     "rejectedAtCheckout": "Rejected at checkout",
+    "awaitingPayment": "Awaiting payment",
     "rejectedAtCheckout2": "Rejected at checkout",
     "approvedSale": "approved sale",
     "approvedSales": "approved sales",

@@ -17802,5 +17802,13 @@
   "924979b814": {
     "es": "Por m²",
     "en": "Per m²"
+  },
+  "df06f2f999": {
+    "es": "{suggestedUnitPrice} por {valor}",
+    "en": "{suggestedUnitPrice} per {valor}"
+  },
+  "2daab491f9": {
+    "es": "Ya es el precio de venta.",
+    "en": "It is already the sale price."
   }
 }

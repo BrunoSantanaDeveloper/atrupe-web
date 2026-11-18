@@ -1805,6 +1805,7 @@ function AssemblyEditorBody({
                   <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                     <SelectBasic
                       name="assembly-unit"
+                      className="col-span-2 w-full"
                       label="Unidade comercial"
                       options={toOptions(unitKindObj)}
                       value={assembly.unitKind}
@@ -1900,27 +1901,33 @@ function AssemblyEditorBody({
                         {assembly.blocks.length > 0 &&
                           assembly.cost > 0 &&
                           assembly.suggestedUnitPrice !== null && (
-                            <p className="mt-1.5 text-xs text-gray">
-                              Sugerido pela composição:{' '}
-                              {money(assembly.suggestedUnitPrice)} por{' '}
-                              {unitSymbol[assembly.unitKind]}.{' '}
+                            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg bg-brand-25 px-3 py-2 text-xs text-gray-700">
+                              <span>
+                                Sugerido pela composição:{' '}
+                                <strong className="whitespace-nowrap text-gray-900">
+                                  {money(assembly.suggestedUnitPrice)} por{' '}
+                                  {unitSymbol[assembly.unitKind]}
+                                </strong>
+                              </span>
                               {assembly.unitPrice ===
                               assembly.suggestedUnitPrice ? (
-                                'Já é o valor de venda.'
+                                <span className="text-gray">
+                                  Já é o valor de venda.
+                                </span>
                               ) : (
                                 <PermissionGate permissions={EDIT}>
                                   <Button
                                     type="button"
                                     size="sm"
                                     variant="link"
-                                    className="h-auto p-0 text-xs"
+                                    className="h-auto p-0 text-xs font-semibold text-brand-600 underline underline-offset-2"
                                     onClick={adoptSuggested}
                                   >
                                     Usar preço sugerido
                                   </Button>
                                 </PermissionGate>
                               )}
-                            </p>
+                            </div>
                           )}
                       </div>
                       <div className="flex flex-col">
