@@ -320,6 +320,22 @@ function NewProductModal({
   // Configurações avançadas de venda (16/11/2026): a sanfona começa fechada
   // e abre sozinha no produto terceirizado (botão "Produto terceirizado" ou
   // edição de um), porque fornecedor e custo são obrigatórios
+  // As configurações do produto abrem pelo que ele é (PS-3, área 03,
+  // 17/11/2026): sangria, folhas de acerto e papel são da impressão em folha
+  // (gráfica rápida, offset), não de toda impressão. Provisório até o produto
+  // guardar as suas produções: o setor do produto ou de uma etapa ligada é o
+  // "Gráfica Rápida" (ícone printer)
+  const productSectorIds = [
+    watch('sectorId'),
+    ...(watch('productionStages') || [])
+      .filter((stage) => stage.isActive)
+      .map((stage) => stage.id),
+  ]
+  const passesSheetPrinting = (sectors || []).some(
+    (sector) =>
+      sector.icon === 'printer' && productSectorIds.includes(sector.id),
+  )
+
   const isOutsourced = watch('isOutsourced')
   useEffect(() => {
     if (isOutsourced) setAdvancedSaleOpen(true)
@@ -898,8 +914,11 @@ function NewProductModal({
                                 </div>
                               )}
                               {/* Impressão da gráfica rápida (12/11/2026):
-                              sangria e folhas de acerto, com Papéis no plano */}
+                              sangria e folhas de acerto, com Papéis no plano.
+                              Só no produto que passa por um setor de impressão
+                              em folha (17/11/2026): a letra caixa não vê */}
                               {hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER) &&
+                                passesSheetPrinting &&
                                 (editMode && productId ? (
                                   <ProductPrintSettings productId={productId} />
                                 ) : (
