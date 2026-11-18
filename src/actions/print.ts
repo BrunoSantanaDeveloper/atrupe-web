@@ -7,7 +7,14 @@
 
 import { getItem, putItemNew, createItemNew } from '@/actions/_cruds'
 
-export type BleedSource = 'ITEM' | 'PRODUCT' | 'SECTOR' | 'DEFAULT'
+// COMPOSITION: o item vendido pela composição do PRO, que conta pela linha de
+// papel dela (18/11/2026)
+export type BleedSource =
+  | 'ITEM'
+  | 'PRODUCT'
+  | 'SECTOR'
+  | 'DEFAULT'
+  | 'COMPOSITION'
 
 export type PrintSettings = {
   // Nulo = herda do setor

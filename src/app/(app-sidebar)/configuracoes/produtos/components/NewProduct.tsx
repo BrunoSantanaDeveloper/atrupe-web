@@ -331,10 +331,15 @@ function NewProductModal({
       .filter((stage) => stage.isActive)
       .map((stage) => stage.id),
   ]
-  const passesSheetPrinting = (sectors || []).some(
-    (sector) =>
-      sector.icon === 'printer' && productSectorIds.includes(sector.id),
-  )
+  // Com a composição aprovada (PRO), a contagem de folhas vem da linha de
+  // papel dela, e a sangria e as folhas de acerto do produto não valem
+  // (18/11/2026): o cartão sai
+  const passesSheetPrinting =
+    product?.compositionStatus !== 'RELEASED' &&
+    (sectors || []).some(
+      (sector) =>
+        sector.icon === 'printer' && productSectorIds.includes(sector.id),
+    )
 
   const isOutsourced = watch('isOutsourced')
   useEffect(() => {

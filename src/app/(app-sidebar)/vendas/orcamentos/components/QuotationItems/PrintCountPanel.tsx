@@ -34,6 +34,8 @@ const SOURCE_TEXT = {
   PRODUCT: 'do produto',
   SECTOR: 'padrão do setor',
   DEFAULT: 'padrão do sistema',
+  // O item vendido pela composição do PRO (18/11/2026)
+  COMPOSITION: 'da composição',
 } as const
 
 interface Props {
