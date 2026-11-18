@@ -18646,5 +18646,9 @@
   "0344595e2c": {
     "es": "Creado a partir del nombre",
     "en": "Created from the name"
+  },
+  "f4bd294613": {
+    "es": "En el producto nuevo, el código se crea solo a partir del nombre: las primeras letras de las palabras principales, con 5 letras. Si ya existe, recibe un número al final.",
+    "en": "On a new product, the code is created from the name: the first letters of the main words, 5 letters long. If it already exists, a number is added at the end."
   }
 }

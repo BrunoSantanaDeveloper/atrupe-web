@@ -105,9 +105,10 @@ import { FEATURES } from '@/consts/features'
 import { cn } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-// O código sugerido pelo nome (18/11/2026): duas letras da primeira palavra
-// e três da segunda, mais a inicial das seguintes, sem acento nem palavras
-// curtas ("de", "com"). "Lona impressa com bainha e ilhós" → LOIMPBI
+// O código sugerido pelo nome (18/11/2026): 5 letras, como os produtos
+// que vêm cadastrados (ADBLK). Duas da primeira palavra e três da segunda,
+// sem acento nem palavras curtas ("de", "com"); com uma palavra só, as
+// cinco primeiras. "Lona impressa com bainha e ilhós" → LOIMP
 const CODE_STOP = new Set([
   'de',
   'da',
@@ -131,12 +132,9 @@ export function suggestProductCode(name: string) {
     .split(/\s+/)
     .filter((word) => word && !CODE_STOP.has(word.toLowerCase()))
   if (!words.length) return ''
-  const [first, second, ...rest] = words
-  const code =
-    first.slice(0, second ? 2 : 6) +
-    (second ? second.slice(0, 3) : '') +
-    rest.map((word) => word[0]).join('')
-  return code.slice(0, 10)
+  const [first, second] = words
+  const code = second ? first.slice(0, 2) + second.slice(0, 3) : first
+  return code.slice(0, 5)
 }
 
 export type ProductTab = 'general' | 'composition' | 'fiscal'
@@ -780,8 +778,8 @@ function NewProductModal({
                               <p>
                                 No produto novo, o código é criado sozinho a
                                 partir do nome: as primeiras letras das palavras
-                                principais. Se já existir, ganha um número no
-                                fim.
+                                principais, com 5 letras. Se já existir, ganha
+                                um número no fim.
                               </p>
                               <p>
                                 Depois de salvar, o código pode ser editado. Ele

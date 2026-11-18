@@ -1613,7 +1613,7 @@
     "productGroup": "Grupo de produtos",
     "productName": "Nome do produto",
     "productCode": "Código do produto",
-    "onANewProductThe": "No produto novo, o código é criado sozinho a partir do nome: as primeiras letras das palavras principais. Se já existir, ganha um número no fim.",
+    "onANewProductThe": "No produto novo, o código é criado sozinho a partir do nome: as primeiras letras das palavras principais, com 5 letras. Se já existir, ganha um número no fim.",
     "afterSavingTheCodeCan": "Depois de salvar, o código pode ser editado. Ele é único na empresa e serve para achar o produto rápido na busca e na planilha.",
     "createdFromTheName": "Criado pelo nome",
     "productSizeStandard": "Padrão de medidas do produto",
