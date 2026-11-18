@@ -30,7 +30,7 @@ export const formulaObj: {
     help: 'O vendedor informa a quantidade no orçamento.',
   },
   PER_AREA: {
-    label: 'Por metro quadrado',
+    label: 'Por m²',
     help: 'Consumo × área do item × quantidade.',
   },
   PER_UNIT: {

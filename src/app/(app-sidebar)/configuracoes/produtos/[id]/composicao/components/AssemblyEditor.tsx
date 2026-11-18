@@ -409,6 +409,16 @@ function AssemblyEditorBody({
     'composition' | 'simulation' | 'sale' | 'description'
   >('composition')
   const [summaryOpen, setSummaryOpen] = useState(false)
+  // Etapas recolhidas (18/11/2026): todas nascem abertas (são o principal);
+  // a pessoa recolhe as que já acertou
+  const [closedStages, setClosedStages] = useState<Set<string>>(new Set())
+  const toggleStage = (id: string) =>
+    setClosedStages((current) => {
+      const next = new Set(current)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   // A etapa em renomeação: o nome é editado no próprio título (03/10/2026)
   const [renamingId, setRenamingId] = useState<string | null>(null)
   // Hora da última gravação, para a tela dizer que já salvou (IP-40: cada
@@ -1125,6 +1135,14 @@ function AssemblyEditorBody({
                 </span>
               </p>
             </PermissionGate>
+            <ActionButton
+              Icon={closedStages.has(item.id) ? IconChevronDown : IconChevronUp}
+              variant="neutralGhost"
+              tooltip={
+                closedStages.has(item.id) ? 'Abrir a etapa' : 'Recolher a etapa'
+              }
+              onClick={() => toggleStage(item.id)}
+            />
             {/* A estrutura é da base: a variação só muda linhas (PV-2) */}
             {!inVariation && (
               <PermissionGate permissions={EDIT}>
@@ -1142,379 +1160,392 @@ function AssemblyEditorBody({
             )}
           </div>
         </CardHeader>
-        <CardContent>
-          {/* Os botões de acrescentar ficam no topo da caixa, antes da
+        {!closedStages.has(item.id) && (
+          <CardContent>
+            {/* Os botões de acrescentar ficam no topo da caixa, antes da
               tabela (pedido do time, 03/10/2026) */}
-          {!inVariation && !item.part && (
-            <PermissionGate permissions={EDIT}>
-              <div className="px-6 pb-4">
-                <ResourceKindButtons
-                  disabled={
-                    sellsByEquipment(resources?.sectorSales, item.sector)
-                      ? {
-                          LABOR: `${item.sector} vende por ${resources?.sectorSales[item.sector]}: quem trabalha nele já está dentro do custo do equipamento. Não há linha de mão de obra deste setor; o acabamento feito por outro setor entra pela mão de obra dele.`,
-                        }
-                      : {}
-                  }
-                  onPick={(lineKind) =>
-                    setDialog({ kind: 'newLine', block: item, lineKind })
-                  }
-                />
-              </div>
-            </PermissionGate>
-          )}
-          {item.part ? (
-            <div className="mx-6 mb-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-25 px-4 py-3">
-              <p className="text-sm text-gray-700">
-                Outro produto usado aqui, com a composição dele (
-                {item.part.stages} {item.part.stages === 1 ? 'etapa' : 'etapas'}
-                ) calculada na medida desta etapa. Para mudar o que ele leva,
-                abra a composição dele.
-              </p>
-              <Button
-                size="sm"
-                variant="neutralOutline"
-                LeftIcon={IconSearch}
-                asChild
-              >
-                <Link
-                  href={`/configuracoes/produtos/${item.part.productId}/composicao`}
+            {!inVariation && !item.part && (
+              <PermissionGate permissions={EDIT}>
+                <div className="px-6 pb-4">
+                  <ResourceKindButtons
+                    disabled={
+                      sellsByEquipment(resources?.sectorSales, item.sector)
+                        ? {
+                            LABOR: `${item.sector} vende por ${resources?.sectorSales[item.sector]}: quem trabalha nele já está dentro do custo do equipamento. Não há linha de mão de obra deste setor; o acabamento feito por outro setor entra pela mão de obra dele.`,
+                          }
+                        : {}
+                    }
+                    onPick={(lineKind) =>
+                      setDialog({ kind: 'newLine', block: item, lineKind })
+                    }
+                  />
+                </div>
+              </PermissionGate>
+            )}
+            {item.part ? (
+              <div className="mx-6 mb-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-25 px-4 py-3">
+                <p className="text-sm text-gray-700">
+                  Outro produto usado aqui, com a composição dele (
+                  {item.part.stages}{' '}
+                  {item.part.stages === 1 ? 'etapa' : 'etapas'}) calculada na
+                  medida desta etapa. Para mudar o que ele leva, abra a
+                  composição dele.
+                </p>
+                <Button
+                  size="sm"
+                  variant="neutralOutline"
+                  LeftIcon={IconSearch}
+                  asChild
                 >
-                  Abrir a composição da parte
-                </Link>
-              </Button>
-            </div>
-          ) : (
-            <Table className="min-w-[760px]">
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-[18%]">Recurso</TableHead>
-                  <TableHead className="w-[24%]">Item</TableHead>
-                  <TableHead className="w-[12%]">Consumo</TableHead>
-                  <TableHead className="w-[16%]">Tipo de cálculo</TableHead>
-                  <TableHead numeric className="w-[10%]">
-                    Quantidade
-                  </TableHead>
-                  <TableHead numeric className="w-[8%]">
-                    Custo
-                  </TableHead>
-                  <TableHead className="w-[8%] text-right">Venda</TableHead>
-                  <TableHead className="w-[4%]" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {item.lines.map((line) => {
-                  const unit =
-                    line.selected?.unit || line.options[0]?.unit || ''
+                  <Link
+                    href={`/configuracoes/produtos/${item.part.productId}/composicao`}
+                  >
+                    Abrir a composição da parte
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <Table className="min-w-[760px]">
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[16%]">Recurso</TableHead>
+                    <TableHead className="w-[24%]">Item</TableHead>
+                    <TableHead className="w-[10%]">Consumo</TableHead>
+                    <TableHead className="w-[20%]">Cálculo</TableHead>
+                    <TableHead numeric className="w-[10%]">
+                      Quantidade
+                    </TableHead>
+                    <TableHead numeric className="w-[8%]">
+                      Custo
+                    </TableHead>
+                    <TableHead className="w-[8%] text-right">Venda</TableHead>
+                    <TableHead className="w-[4%]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {item.lines.map((line) => {
+                    const unit =
+                      line.selected?.unit || line.options[0]?.unit || ''
 
-                  return (
-                    <TableRow key={line.id}>
-                      <TableCell>
-                        <p className="font-medium text-gray-800">{line.name}</p>
-                        <p className="text-xs text-gray">
-                          <ResourceKindLabel
-                            kind={line.kind}
-                            label={resourceKindObj[line.kind]}
-                          />
-                          {line.overridden ? ' · ajustada neste produto' : ''}
-                          {line.addedHere ? ' · só neste produto' : ''}
-                        </p>
-                        {line.optional && (
-                          <Badge className="mt-1" variant="neutralLight">
-                            {line.optionalDefault
-                              ? 'Opcional · vem marcada'
-                              : 'Opcional · fora do custo padrão'}
-                          </Badge>
-                        )}
-                        {!line.options.length && (
-                          <Badge className="mt-1" variant="errorLight">
-                            Sem recurso: complete ou remova
-                          </Badge>
-                        )}
-                        {line.variationOverride && (
-                          <Badge
-                            className="mt-1"
-                            variant={
-                              assemblyOverrideObj.VARIATION_CHANGED.variant
-                            }
-                          >
-                            {assemblyOverrideObj.VARIATION_CHANGED.text}
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {line.mode === 'CHOOSE' ? (
-                          <SelectBasic
-                            name={`choose-${line.id}`}
-                            label=""
-                            className="w-full"
-                            options={line.options.map((option) => ({
-                              value: option.id,
-                              label: option.name,
-                            }))}
-                            value={line.selectedId}
-                            onChange={(value) =>
-                              run(
-                                updateAssemblyLine({
-                                  productId,
-                                  blockId: item.id,
-                                  lineId: line.id,
-                                  values: { selectedId: value },
-                                }),
-                              )
-                            }
-                          />
-                        ) : line.mode === 'LIST' ? (
-                          <div>
-                            <p className="text-sm text-gray-800">
-                              {line.options
-                                .map((option) => option.name)
-                                .join(' · ')}
-                            </p>
-                            <p className="text-xs text-gray">
-                              O vendedor preenche o que usou
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="text-sm text-gray-800">
-                            {line.selected?.name}
+                    return (
+                      <TableRow key={line.id}>
+                        <TableCell>
+                          <p className="font-medium text-gray-800">
+                            {line.name}
                           </p>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {line.mode === 'LIST' ? (
-                          '-'
-                        ) : (
-                          <>
-                            <p className="text-sm">
-                              {/* Estas fórmulas usam o tempo da etapa, não o
-                                consumo (IP-32) */}
-                              {line.formula === 'EQUAL_TIME' ||
-                              line.formula === 'PER_TIME'
-                                ? item.rules.timeFieldDefault
-                                  ? `tempo informado (${amount(item.rules.timeFieldDefault, 'min')})`
-                                  : `tempo padrão ${amount(line.effective.perUnit, 'min')}`
-                                : amount(line.effective.perUnit, unit)}
-                            </p>
-                            {(line.effective.lossPercent > 0 ||
-                              line.effective.minimum !== null) && (
-                              <p className="text-xs text-gray">
-                                {[
-                                  line.effective.lossPercent > 0
-                                    ? `+${num(line.effective.lossPercent, 1)}% de perda`
-                                    : null,
-                                  line.effective.minimum !== null
-                                    ? `mínimo ${num(line.effective.minimum)} ${unit}`
-                                    : null,
-                                ]
-                                  .filter(Boolean)
-                                  .join(' · ')}
-                              </p>
-                            )}
-                            {line.effective.own && (
-                              <p className="text-xs text-brand-700">
-                                desta opção
-                              </p>
-                            )}
-                            {/* Pessoas multiplicam o tempo (IP-13) */}
-                            {line.kind === 'LABOR' &&
-                              (line.people || 1) > 1 && (
-                                <p className="text-xs text-gray">
-                                  × {line.people} pessoas
-                                </p>
-                              )}
-                          </>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray">
-                        {line.mode === 'LIST'
-                          ? 'Informado na venda'
-                          : line.formula === 'CUSTOM'
-                            ? `Fórmula · ${line.formulaName || '?'}`
-                            : formulaLabel(line.formula, line.fieldName)}
-                        {/* As entradas da fórmula numa linha só (18/11/2026):
-                            "área × quantidade"; a zerada fica em vermelho */}
-                        {line.mode !== 'LIST' &&
-                          formulaInputs[line.formula]?.length > 0 && (
-                            <span className="mt-0.5 block text-xs text-gray-500">
-                              {formulaInputs[line.formula].map(
-                                (input, index) => {
-                                  const zero = zeroInput(input, item, line)
-                                  const label =
-                                    input === 'campo extra'
-                                      ? line.fieldName || 'campo'
-                                      : input
-                                  return (
-                                    <span
-                                      key={input}
-                                      title={
-                                        zero
-                                          ? `A fórmula usa ${label}, e está zerado nesta etapa`
-                                          : `A fórmula usa ${label}`
-                                      }
-                                      className={cn(
-                                        zero &&
-                                          'rounded bg-error-50 px-1 text-error-700',
-                                      )}
-                                    >
-                                      {index > 0 && ' × '}
-                                      {label}
-                                    </span>
-                                  )
-                                },
-                              )}
-                            </span>
+                          <p className="text-xs text-gray">
+                            <ResourceKindLabel
+                              kind={line.kind}
+                              label={resourceKindObj[line.kind]}
+                            />
+                            {line.overridden ? ' · ajustada neste produto' : ''}
+                            {line.addedHere ? ' · só neste produto' : ''}
+                          </p>
+                          {line.optional && (
+                            <Badge className="mt-1" variant="neutralLight">
+                              {line.optionalDefault
+                                ? 'Opcional · vem marcada'
+                                : 'Opcional · fora do custo padrão'}
+                            </Badge>
                           )}
-                        {line.sheetYield && (
-                          <span
-                            className="mt-0.5 block text-xs"
-                            title={`Na outra posição cabem ${Math.min(line.sheetYield.firstFit, line.sheetYield.secondFit)}`}
-                          >
-                            {line.sheetYield.perSheet} por folha ·{' '}
-                            {line.sheetYield.sheets} folhas
-                            {line.sheetYield.leftover
-                              ? ` · sobram ${line.sheetYield.leftover}`
-                              : ''}
-                            {line.sheetYield.charged !== line.sheetYield.sheets
-                              ? ` · cobra ${num(line.sheetYield.charged)}`
-                              : ''}
-                            {line.sheetYield.marginMm || line.sheetYield.gapMm
-                              ? ` · margem ${line.sheetYield.marginMm} mm, espaço ${line.sheetYield.gapMm} mm`
-                              : ''}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell numeric className="whitespace-nowrap text-sm">
-                        {line.quantity === null
-                          ? '-'
-                          : amount(line.quantity, unit)}
-                        {line.minimumApplied && (
-                          <span className="block text-xs text-warning-700">
-                            mínimo aplicado
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell
-                        numeric
-                        className="whitespace-nowrap text-sm font-medium"
-                      >
-                        <PermissionGate
-                          permissions={['values:values:view']}
-                          fallback={<span>•••</span>}
-                        >
-                          {money(line.cost)}
-                        </PermissionGate>
-                      </TableCell>
-                      <TableCell
-                        numeric
-                        className="whitespace-nowrap text-sm font-medium text-success-700"
-                      >
-                        <PermissionGate
-                          permissions={['values:values:view']}
-                          fallback={<span>•••</span>}
-                        >
-                          {money(line.sale)}
-                        </PermissionGate>
-                      </TableCell>
-                      <TableCell>
-                        <PermissionGate permissions={EDIT}>
-                          <div className="flex justify-end gap-1">
-                            {line.mode !== 'LIST' && (
-                              <ActionButton
-                                Icon={IconPencil}
-                                variant="neutralGhost"
-                                tooltip={`Ajustar ${line.name.toLowerCase()}`}
-                                onClick={() =>
-                                  setDialog({ kind: 'line', block: item, line })
-                                }
-                              />
-                            )}
-                            {!inVariation && line.mode !== 'SINGLE' && (
-                              <ActionButton
-                                Icon={IconListDetails}
-                                variant="neutralGhost"
-                                tooltip="Opções da linha"
-                                onClick={() =>
-                                  setDialog({
-                                    kind: 'options',
+                          {!line.options.length && (
+                            <Badge className="mt-1" variant="errorLight">
+                              Sem recurso: complete ou remova
+                            </Badge>
+                          )}
+                          {line.variationOverride && (
+                            <Badge
+                              className="mt-1"
+                              variant={
+                                assemblyOverrideObj.VARIATION_CHANGED.variant
+                              }
+                            >
+                              {assemblyOverrideObj.VARIATION_CHANGED.text}
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {line.mode === 'CHOOSE' ? (
+                            <SelectBasic
+                              name={`choose-${line.id}`}
+                              label=""
+                              className="w-full"
+                              options={line.options.map((option) => ({
+                                value: option.id,
+                                label: option.name,
+                              }))}
+                              value={line.selectedId}
+                              onChange={(value) =>
+                                run(
+                                  updateAssemblyLine({
+                                    productId,
                                     blockId: item.id,
                                     lineId: line.id,
-                                  })
-                                }
-                              />
+                                    values: { selectedId: value },
+                                  }),
+                                )
+                              }
+                            />
+                          ) : line.mode === 'LIST' ? (
+                            <div>
+                              <p className="text-sm text-gray-800">
+                                {line.options
+                                  .map((option) => option.name)
+                                  .join(' · ')}
+                              </p>
+                              <p className="text-xs text-gray">
+                                O vendedor preenche o que usou
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-800">
+                              {line.selected?.name}
+                            </p>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {line.mode === 'LIST' ? (
+                            '-'
+                          ) : (
+                            <>
+                              <p className="text-sm">
+                                {/* Estas fórmulas usam o tempo da etapa, não o
+                                consumo (IP-32) */}
+                                {line.formula === 'EQUAL_TIME' ||
+                                line.formula === 'PER_TIME'
+                                  ? item.rules.timeFieldDefault
+                                    ? `tempo informado (${amount(item.rules.timeFieldDefault, 'min')})`
+                                    : `tempo padrão ${amount(line.effective.perUnit, 'min')}`
+                                  : amount(line.effective.perUnit, unit)}
+                              </p>
+                              {(line.effective.lossPercent > 0 ||
+                                line.effective.minimum !== null) && (
+                                <p className="text-xs text-gray">
+                                  {[
+                                    line.effective.lossPercent > 0
+                                      ? `+${num(line.effective.lossPercent, 1)}% de perda`
+                                      : null,
+                                    line.effective.minimum !== null
+                                      ? `mínimo ${num(line.effective.minimum)} ${unit}`
+                                      : null,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                                </p>
+                              )}
+                              {line.effective.own && (
+                                <p className="text-xs text-brand-700">
+                                  desta opção
+                                </p>
+                              )}
+                              {/* Pessoas multiplicam o tempo (IP-13) */}
+                              {line.kind === 'LABOR' &&
+                                (line.people || 1) > 1 && (
+                                  <p className="text-xs text-gray">
+                                    × {line.people} pessoas
+                                  </p>
+                                )}
+                            </>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-gray">
+                          {line.mode === 'LIST'
+                            ? 'Informado na venda'
+                            : line.formula === 'CUSTOM'
+                              ? `Fórmula · ${line.formulaName || '?'}`
+                              : formulaLabel(line.formula, line.fieldName)}
+                          {/* As entradas da fórmula numa linha só (18/11/2026):
+                            "área × quantidade"; a zerada fica em vermelho */}
+                          {line.mode !== 'LIST' &&
+                            formulaInputs[line.formula]?.length > 0 && (
+                              <span className="mt-0.5 block text-xs text-gray-500">
+                                {formulaInputs[line.formula].map(
+                                  (input, index) => {
+                                    const zero = zeroInput(input, item, line)
+                                    const label =
+                                      input === 'campo extra'
+                                        ? line.fieldName || 'campo'
+                                        : input
+                                    return (
+                                      <span
+                                        key={input}
+                                        title={
+                                          zero
+                                            ? `A fórmula usa ${label}, e está zerado nesta etapa`
+                                            : `A fórmula usa ${label}`
+                                        }
+                                        className={cn(
+                                          zero &&
+                                            'rounded bg-error-50 px-1 text-error-700',
+                                        )}
+                                      >
+                                        {index > 0 && ' × '}
+                                        {label}
+                                      </span>
+                                    )
+                                  },
+                                )}
+                              </span>
                             )}
-                            {!inVariation && (
-                              <ActionButton
-                                Icon={IconTrash}
-                                variant="errorGhost"
-                                tooltip={`Remover ${line.name.toLowerCase()}`}
-                                onClick={() => removeLine(item, line)}
-                              />
-                            )}
-                            {line.overridden && !inVariation && (
-                              <ActionButton
-                                Icon={IconArrowBackUp}
-                                variant="neutralGhost"
-                                tooltip="Voltar a acompanhar o processo"
-                                onClick={() =>
-                                  run(
-                                    resetAssemblyLine({
-                                      productId,
+                          {line.sheetYield && (
+                            <span
+                              className="mt-0.5 block text-xs"
+                              title={`Na outra posição cabem ${Math.min(line.sheetYield.firstFit, line.sheetYield.secondFit)}`}
+                            >
+                              {line.sheetYield.perSheet} por folha ·{' '}
+                              {line.sheetYield.sheets} folhas
+                              {line.sheetYield.leftover
+                                ? ` · sobram ${line.sheetYield.leftover}`
+                                : ''}
+                              {line.sheetYield.charged !==
+                              line.sheetYield.sheets
+                                ? ` · cobra ${num(line.sheetYield.charged)}`
+                                : ''}
+                              {line.sheetYield.marginMm || line.sheetYield.gapMm
+                                ? ` · margem ${line.sheetYield.marginMm} mm, espaço ${line.sheetYield.gapMm} mm`
+                                : ''}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm"
+                        >
+                          {line.quantity === null
+                            ? '-'
+                            : amount(line.quantity, unit)}
+                          {line.minimumApplied && (
+                            <span className="block text-xs text-warning-700">
+                              mínimo aplicado
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm font-medium"
+                        >
+                          <PermissionGate
+                            permissions={['values:values:view']}
+                            fallback={<span>•••</span>}
+                          >
+                            {money(line.cost)}
+                          </PermissionGate>
+                        </TableCell>
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm font-medium text-success-700"
+                        >
+                          <PermissionGate
+                            permissions={['values:values:view']}
+                            fallback={<span>•••</span>}
+                          >
+                            {money(line.sale)}
+                          </PermissionGate>
+                        </TableCell>
+                        <TableCell>
+                          <PermissionGate permissions={EDIT}>
+                            <div className="flex justify-end gap-1">
+                              {line.mode !== 'LIST' && (
+                                <ActionButton
+                                  Icon={IconPencil}
+                                  variant="neutralGhost"
+                                  tooltip={`Ajustar ${line.name.toLowerCase()}`}
+                                  onClick={() =>
+                                    setDialog({
+                                      kind: 'line',
+                                      block: item,
+                                      line,
+                                    })
+                                  }
+                                />
+                              )}
+                              {!inVariation && line.mode !== 'SINGLE' && (
+                                <ActionButton
+                                  Icon={IconListDetails}
+                                  variant="neutralGhost"
+                                  tooltip="Opções da linha"
+                                  onClick={() =>
+                                    setDialog({
+                                      kind: 'options',
                                       blockId: item.id,
                                       lineId: line.id,
-                                    }),
-                                    'A linha voltou a acompanhar o processo',
-                                  )
-                                }
-                              />
-                            )}
-                          </div>
-                        </PermissionGate>
+                                    })
+                                  }
+                                />
+                              )}
+                              {!inVariation && (
+                                <ActionButton
+                                  Icon={IconTrash}
+                                  variant="errorGhost"
+                                  tooltip={`Remover ${line.name.toLowerCase()}`}
+                                  onClick={() => removeLine(item, line)}
+                                />
+                              )}
+                              {line.overridden && !inVariation && (
+                                <ActionButton
+                                  Icon={IconArrowBackUp}
+                                  variant="neutralGhost"
+                                  tooltip="Voltar a acompanhar o processo"
+                                  onClick={() =>
+                                    run(
+                                      resetAssemblyLine({
+                                        productId,
+                                        blockId: item.id,
+                                        lineId: line.id,
+                                      }),
+                                      'A linha voltou a acompanhar o processo',
+                                    )
+                                  }
+                                />
+                              )}
+                            </div>
+                          </PermissionGate>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                  {item.lines.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={8}
+                        className="py-6 text-center text-sm text-gray"
+                      >
+                        Esta etapa ainda não tem recursos. Acrescente acima a
+                        máquina, o material e a mão de obra que o setor de{' '}
+                        {item.sector.toLowerCase()} usa nela, cada um com o seu
+                        tipo de cálculo. O custo da etapa é a soma deles.
                       </TableCell>
                     </TableRow>
-                  )
-                })}
-                {item.lines.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="py-6 text-center text-sm text-gray"
-                    >
-                      Esta etapa ainda não tem recursos. Acrescente acima a
-                      máquina, o material e a mão de obra que o setor de{' '}
-                      {item.sector.toLowerCase()} usa nela, cada um com o seu
-                      tipo de cálculo. O custo da etapa é a soma deles.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          )}
-          {!inVariation && !!item.removedSourceLineIds?.length && (
-            <div className="flex flex-wrap items-center gap-2 px-6 pt-3 text-sm text-gray">
-              <span>
-                {item.removedSourceLineIds.length === 1
-                  ? '1 linha do processo foi tirada deste produto.'
-                  : `${item.removedSourceLineIds.length} linhas do processo foram tiradas deste produto.`}
-              </span>
-              <PermissionGate permissions={EDIT}>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="link"
-                  onClick={() =>
-                    run(
-                      restoreProcessLines({ productId, blockId: item.id }),
-                      'Linhas do processo restauradas',
-                    )
-                  }
-                >
-                  Restaurar
-                </Button>
-              </PermissionGate>
-            </div>
-          )}
-        </CardContent>
+                  )}
+                </TableBody>
+              </Table>
+            )}
+            {!inVariation && !!item.removedSourceLineIds?.length && (
+              <div className="flex flex-wrap items-center gap-2 px-6 pt-3 text-sm text-gray">
+                <span>
+                  {item.removedSourceLineIds.length === 1
+                    ? '1 linha do processo foi tirada deste produto.'
+                    : `${item.removedSourceLineIds.length} linhas do processo foram tiradas deste produto.`}
+                </span>
+                <PermissionGate permissions={EDIT}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="link"
+                    onClick={() =>
+                      run(
+                        restoreProcessLines({ productId, blockId: item.id }),
+                        'Linhas do processo restauradas',
+                      )
+                    }
+                  >
+                    Restaurar
+                  </Button>
+                </PermissionGate>
+              </div>
+            )}
+          </CardContent>
+        )}
         {item.setupMinutes > 0 && (
           <CardFooter className="justify-between text-sm text-gray">
             <span>Preparo: {item.setupMinutes} min, uma vez por pedido</span>
@@ -2105,6 +2136,24 @@ function AssemblyEditorBody({
                   : 'Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa. A ordem das etapas é a ordem da produção.'}
               </CardDescription>
             </div>
+            {assembly.blocks.length > 1 && (
+              <Button
+                type="button"
+                size="md"
+                variant="neutralOutline"
+                onClick={() =>
+                  setClosedStages(
+                    closedStages.size === assembly.blocks.length
+                      ? new Set()
+                      : new Set(assembly.blocks.map((block) => block.id)),
+                  )
+                }
+              >
+                {closedStages.size === assembly.blocks.length
+                  ? 'Abrir todas as etapas'
+                  : 'Recolher todas as etapas'}
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="space-y-3 px-6 pb-6">
             {/* No diálogo do produto não há o bloco Produto: os campos do

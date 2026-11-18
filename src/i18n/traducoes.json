@@ -17778,5 +17778,29 @@
   "21699eaedc": {
     "es": "Ver el resumen",
     "en": "View summary"
+  },
+  "e64bff012c": {
+    "es": "Abrir la etapa",
+    "en": "Open the step"
+  },
+  "563d7b2078": {
+    "es": "Contraer la etapa",
+    "en": "Collapse the step"
+  },
+  "a7a7abd29f": {
+    "es": "Cálculo",
+    "en": "Calculation"
+  },
+  "bc1de7f144": {
+    "es": "Abrir todas las etapas",
+    "en": "Open all steps"
+  },
+  "cf1191e6d1": {
+    "es": "Contraer todas las etapas",
+    "en": "Collapse all steps"
+  },
+  "924979b814": {
+    "es": "Por m²",
+    "en": "Per m²"
   }
 }
