@@ -17746,5 +17746,21 @@
   "8babea29dc": {
     "es": "La etiqueta junto al permiso muestra el plan que lo habilitó.",
     "en": "The tag next to the permission shows the plan that unlocked it."
+  },
+  "e44d490627": {
+    "es": "Sugerido por la composición:",
+    "en": "Suggested by the composition:"
+  },
+  "1589e192c7": {
+    "es": "Usar en 1 artículo",
+    "en": "Use on 1 item"
+  },
+  "c8969935b7": {
+    "es": "Usar en {valor} artículos",
+    "en": "Use on {valor} items"
+  },
+  "a42cdabbd2": {
+    "es": "Usar precio sugerido",
+    "en": "Use suggested price"
   }
 }

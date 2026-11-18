@@ -1,6 +1,6 @@
 'use client'
 
-// Aplicar o preço sugerido a vários itens de uma vez (CP-7, decisão do PO de
+// Usar preço sugerido em vários itens de uma vez (CP-7, decisão do PO de
 // 14/10/2026): abre com a prévia que a API calcula (preço e margem antes e
 // depois, e o motivo de quem fica de fora) e só grava na confirmação
 
@@ -98,8 +98,8 @@ export function ApplySuggestedDialog({
     }
     toast.success(
       result.data.applied === 1
-        ? 'Preço sugerido aplicado a 1 item'
-        : `Preço sugerido aplicado a ${result.data.applied} itens`,
+        ? '1 item passou a usar o preço sugerido'
+        : `${result.data.applied} itens passaram a usar o preço sugerido`,
     )
     onApplied()
     onOpenChange(false)
@@ -109,7 +109,7 @@ export function ApplySuggestedDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[880px]">
         <DialogHeader>
-          <DialogTitle>Aplicar preço sugerido</DialogTitle>
+          <DialogTitle>Usar preço sugerido</DialogTitle>
           <DialogDescription>
             {group === 'products'
               ? 'O preço passa a ser o da composição na medida padrão.'
@@ -183,8 +183,8 @@ export function ApplySuggestedDialog({
             isLoading={isSaving}
           >
             {toApply.length === 1
-              ? 'Aplicar a 1 item'
-              : `Aplicar a ${toApply.length} itens`}
+              ? 'Usar em 1 item'
+              : `Usar em ${toApply.length} itens`}
           </Button>
         </DialogFooter>
       </DialogContent>

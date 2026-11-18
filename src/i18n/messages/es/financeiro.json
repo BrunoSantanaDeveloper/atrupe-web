@@ -166,7 +166,6 @@
     "whatTheCardProcessorStill": "Lo que la operadora todavía debe, por el valor total. Verifique en la liquidación",
     "planned": "+ {pending} previstos",
     "turnOnControl": "Activar control",
-    "approve": "Aprobar",
     "adjustment": "Ajuste",
     "closeRegister": "Cerrar caja",
     "viewTheDay": "Ver el día",
@@ -303,7 +302,6 @@
     "customPeriod": "Período personalizado",
     "selectAnAccount": "Seleccione una cuenta",
     "selectTheStatus": "Seleccione el estado",
-    "paid": "Pagado",
     "provisioned": "Provisionado",
     "paymentHolds": "Pendientes de pago",
     "allTransactions": "Todos los movimientos",
@@ -318,8 +316,7 @@
     "noPaymentInThePeriod": "sin pago en el período",
     "dueInThePeriodAnd": "vence en el período y está abierto",
     "movedInThePeriod": "movido en el período",
-    "ofInvoicesDueInThe": "de títulos que vencen en el período",
-    "received": "Cobrado"
+    "ofInvoicesDueInThe": "de títulos que vencen en el período"
   },
   "folhaDePagamento": {
     "payrollOperation": "Operación en nómina",

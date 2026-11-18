@@ -190,7 +190,7 @@ export function PricingList({
               disabled={!selected.length}
               onClick={() => setApplying(true)}
             >
-              Aplicar preço sugerido
+              Usar preço sugerido
               {selected.length ? ` (${selected.length})` : ''}
             </Button>
           </PermissionGate>

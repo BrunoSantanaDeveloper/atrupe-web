@@ -613,13 +613,13 @@ function AssemblyEditorBody({
     ]
   }
 
-  // O sugerido já vem na unidade comercial: adotar é gravar como valor de
+  // O sugerido já vem na unidade comercial: usá-lo é gravar como valor de
   // venda, o mesmo campo do cadastro do START
   const adoptSuggested = () =>
     run(
       // O servidor calcula o sugerido na medida padrão (DC-14)
       adoptSuggestedPrice({ productId }),
-      'Preço sugerido adotado',
+      'Valor de venda atualizado para o sugerido',
     )
 
   // Salvar e Fechar da página (rodapé). O que pode estar pendente é só o
@@ -1770,6 +1770,34 @@ function AssemblyEditorBody({
                             )
                           }}
                         />
+                        {/* O sugerido ao lado de onde se define a cobrança
+                            (17/11/2026): quem olha o valor de venda vê o que
+                            a composição sugere, sem descer à simulação */}
+                        {assembly.blocks.length > 0 &&
+                          assembly.cost > 0 &&
+                          assembly.suggestedUnitPrice !== null && (
+                            <p className="mt-1.5 text-xs text-gray">
+                              Sugerido pela composição:{' '}
+                              {money(assembly.suggestedUnitPrice)} por{' '}
+                              {unitSymbol[assembly.unitKind]}.{' '}
+                              {assembly.unitPrice ===
+                              assembly.suggestedUnitPrice ? (
+                                'Já é o valor de venda.'
+                              ) : (
+                                <PermissionGate permissions={EDIT}>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="link"
+                                    className="h-auto p-0 text-xs"
+                                    onClick={adoptSuggested}
+                                  >
+                                    Usar preço sugerido
+                                  </Button>
+                                </PermissionGate>
+                              )}
+                            </p>
+                          )}
                       </div>
                       <div className="flex flex-col">
                         <Label className="mb-2">Preço de venda</Label>
@@ -1943,7 +1971,7 @@ function AssemblyEditorBody({
                   ? `Simulando ${num(measure.quantity)} × ${num(measure.width)} × ${num(measure.height)} m. O padrão é ${num(saved.quantity)} × ${num(saved.width)} × ${num(saved.height)} m.`
                   : assembly.margin !== null && assembly.margin < 0
                     ? 'Nesta medida, o produto está sendo vendido abaixo do custo.'
-                    : 'Ter custo não muda o valor de venda: adotar o sugerido é uma decisão sua.'}
+                    : 'Ter custo não muda o valor de venda: usar o sugerido é uma decisão sua.'}
               </p>
               <div className="flex flex-wrap gap-2">
                 {measureChanged && (
@@ -1980,7 +2008,7 @@ function AssemblyEditorBody({
                         }
                         onClick={adoptSuggested}
                       >
-                        Adotar preço sugerido
+                        Usar preço sugerido
                       </Button>
                     </PermissionGate>
                   )}

@@ -188,7 +188,6 @@
     "toDeactivateAPaperTurn": "To deactivate a paper, turn off the Active switch when editing it",
     "noPaperRegistered": "No paper registered",
     "addTheFirstPaperName": "Add the first paper: name, weight and the sheet",
-    "paper": "Paper",
     "weight2": "Weight",
     "sheet": "Sheet",
     "gM": "{grammage} g/m²",

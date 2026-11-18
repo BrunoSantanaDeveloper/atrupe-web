@@ -14,7 +14,6 @@
     "deliveryScheduleDate": "Delivery schedule date",
     "addTime": "Add time",
     "toInvoice": "To invoice",
-    "inProgress": "In progress",
     "closed": "Closed",
     "noDeliveriesWithStatus": "No deliveries with status: {statusLabel}",
     "noDeliveriesScheduled": "No deliveries scheduled",
@@ -170,6 +169,7 @@
     "finishingMovesTheTaskTo": "Finishing {name} moves the task to {name2}."
   },
   "produtividade": {
+    "productivity": "Productivity",
     "byDepartment": "By department",
     "completedTasksSoldTimeComes": "Completed tasks. Sold time comes from the build-up; logged time, from the clock. Productivity = sold ÷ logged.",
     "tasks": "Tasks",

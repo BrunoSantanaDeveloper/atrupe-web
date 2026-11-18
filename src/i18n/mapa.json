@@ -1387,10 +1387,12 @@
  "admin.clientes.cobranca": {
   "pt": "Cobrança",
   "marcas": [
-   "interno"
+   "interno",
+   "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Table/Filter.tsx:129 (atributo:label)"
+   "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Table/Filter.tsx:129 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:81 (jsx)"
   ]
  },
  "admin.clientes.cobrancaVencida": {
@@ -1844,16 +1846,6 @@
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/ResetDataDialog/index.tsx:297 (jsx)"
   ]
  },
- "admin.clientes.fim": {
-  "pt": "Fim",
-  "marcas": [
-   "interno"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/admin/clientes/acessos/components/Main.tsx:184 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:152 (jsx)"
-  ]
- },
  "admin.clientes.fiscalEmissoresENumeracaoDas": {
   "pt": "• Fiscal: emissores e numeração das notas",
   "marcas": [
@@ -2019,7 +2011,7 @@
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/[companyId]/components/AccountDetails.tsx:333 (jsx)",
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Table/Filter.tsx:102 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:388 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:407 (jsx)"
   ]
  },
  "admin.clientes.modulos": {
@@ -3833,17 +3825,6 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/sistema/planos/components/ComparisonEditor.tsx:115 (jsx)"
-  ]
- },
- "admin.sistema.concluida": {
-  "pt": "Concluída",
-  "marcas": [
-   "interno"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/admin/sistema/migracao/page.tsx:701 (jsx)",
-   "src/consts/orders.ts:9 (propriedade:text)",
-   "src/consts/quickSale.ts:10 (propriedade:text)"
   ]
  },
  "admin.sistema.configuracaoDoAsaas": {
@@ -7251,8 +7232,8 @@
    "src/app/(app-sidebar)/base-de-custos/comparativo/components/ComparisonSettingsDialog.tsx:65 (propriedade:label)"
   ]
  },
- "baseDeCustos.comparativo.thePlannedAmountAddsThe": {
-  "pt": "O previsto soma os custos dos patrimônios pelo volume do período (as leituras do contador, o que foi vendido pelas composições ou a produtividade do cadastro), o custo financeiro sobre o recebido e o material das composições vendidas. Períodos maiores são mais precisos: a compra não acontece no mesmo mês do consumo. A depreciação não aparece aqui, porque não tem lançamento financeiro correspondente.",
+ "baseDeCustos.comparativo.thePlannedAmountAddsUp": {
+  "pt": "O previsto soma os custos dos patrimônios pelo volume do período (as leituras do contador, o que foi vendido pelas composições ou o volume mensal previsto do cadastro), o custo financeiro sobre o recebido e o material das composições vendidas. Períodos maiores são mais precisos: a compra não acontece no mesmo mês do consumo. A depreciação não aparece aqui, porque não tem lançamento financeiro correspondente.",
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/comparativo/components/Comparison.tsx:319 (jsx)"
   ]
@@ -7556,8 +7537,8 @@
    "src/app/(app-sidebar)/base-de-custos/despesas-administrativas/components/ExpenseAllocationDialog.tsx:209 (jsx)"
   ]
  },
- "baseDeCustos.distribuicao.addEquipmentWithProductivityUnder": {
-  "pt": "Cadastre os equipamentos com produtividade em Patrimônios para escolher como o custo do setor é repartido entre eles.",
+ "baseDeCustos.distribuicao.addEquipmentWithAPlanned": {
+  "pt": "Cadastre os equipamentos com volume mensal previsto em Patrimônios para escolher como o custo do setor é repartido entre eles.",
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/distribuicao/components/SectorAllocations.tsx:79 (atributo:description)"
   ]
@@ -7698,13 +7679,6 @@
    "src/app/(app-sidebar)/base-de-custos/distribuicao/components/Distribution.tsx:110 (aviso)"
   ]
  },
- "baseDeCustos.distribuicao.inUse": {
-  "pt": "Em uso",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/distribuicao/components/SectorAllocationDialog.tsx:234 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/ManageItems/index.tsx:152 (jsx)"
-  ]
- },
  "baseDeCustos.distribuicao.indirectCostDistribution": {
   "pt": "Distribuição dos custos indiretos",
   "usos": [
@@ -7726,7 +7700,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/distribuicao/components/Distribution.tsx:165 (jsx)",
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:100 (jsx)",
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:75 (jsx)",
    "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCosts.tsx:54 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:183 (jsx)"
   ]
@@ -7867,9 +7841,13 @@
  },
  "baseDeCustos.distribuicao.totalCost": {
   "pt": "Custo total",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/distribuicao/components/DistributionData.tsx:90 (jsx)",
-   "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCostsData.tsx:82 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCostsData.tsx:82 (jsx)",
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:76 (jsx)"
   ]
  },
  "baseDeCustos.distribuicao.totalOverheadToDistribute": {
@@ -7908,23 +7886,16 @@
    "src/app/(app-sidebar)/base-de-custos/layout.tsx:40 (jsx)"
   ]
  },
- "baseDeCustos.maoDeObra.addYourCompanySDepartments": {
-  "pt": "Cadastre os setores da empresa para precificar a hora de mão de obra.",
+ "baseDeCustos.maoDeObra.addTheCompanySDepartments": {
+  "pt": "Cadastre os setores da empresa para calcular o custo da hora de mão de obra.",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:111 (atributo:description)"
-  ]
- },
- "baseDeCustos.maoDeObra.currentMargin": {
-  "pt": "Margem atual",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:132 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:251 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:99 (atributo:description)"
   ]
  },
  "baseDeCustos.maoDeObra.distributedCost": {
   "pt": "Custo distribuído",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:120 (jsx)",
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:108 (jsx)",
    "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/WorkloadModal.tsx:107 (jsx)"
   ]
  },
@@ -7932,12 +7903,6 @@
   "pt": "Informe quantas horas cada colaborador dedica à produção do setor.",
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/WorkloadModal.tsx:100 (jsx)"
-  ]
- },
- "baseDeCustos.maoDeObra.errorOpeningPricing": {
-  "pt": "Erro ao abrir a precificação",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:88 (aviso)"
   ]
  },
  "baseDeCustos.maoDeObra.errorSavingTheWorkload": {
@@ -7961,19 +7926,13 @@
  "baseDeCustos.maoDeObra.hourlyCost": {
   "pt": "Custo hora",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:126 (jsx)"
-  ]
- },
- "baseDeCustos.maoDeObra.hourlyPrice": {
-  "pt": "Preço hora",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:129 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:114 (jsx)"
   ]
  },
  "baseDeCustos.maoDeObra.laborByDepartment": {
   "pt": "Mão de obra por setor",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:95 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:72 (jsx)"
   ]
  },
  "baseDeCustos.maoDeObra.noActiveTeamMembersIn": {
@@ -7985,16 +7944,13 @@
  "baseDeCustos.maoDeObra.noProductionDepartmentsYet": {
   "pt": "Nenhum setor produtivo cadastrado",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:110 (atributo:title)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:98 (atributo:title)"
   ]
  },
- "baseDeCustos.maoDeObra.priceTheHourFor": {
-  "pt": "Precificar a hora de {name}",
-  "vars": [
-   "name"
-  ],
+ "baseDeCustos.maoDeObra.productionLoad": {
+  "pt": "Carga de produção",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:181 (atributo:tooltip)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:111 (jsx)"
   ]
  },
  "baseDeCustos.maoDeObra.productionWorkload": {
@@ -8003,7 +7959,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:171 (atributo:tooltip)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:138 (atributo:tooltip)"
   ]
  },
  "baseDeCustos.maoDeObra.productionWorkloadPerTeamMember": {
@@ -8018,20 +7974,16 @@
    "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/WorkloadModal.tsx:192 (jsx)"
   ]
  },
- "baseDeCustos.maoDeObra.texto": {
-  "pt": "{valor}%",
-  "vars": [
-   "valor"
-  ],
+ "baseDeCustos.maoDeObra.theHourlyCostIsThe": {
+  "pt": "O custo hora sai do custo do setor dividido pela carga de produção.",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:165 (jsx)",
-   "src/app/(app-sidebar)/relatorios/vendas/components/RankingExpandedDialog.tsx:89 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:74 (jsx)"
   ]
  },
- "baseDeCustos.maoDeObra.theHourlyCostComesFrom": {
-  "pt": "O custo hora sai do custo do setor dividido pela carga horária dos colaboradores. A margem mostra o resultado do preço praticado sobre esse custo.",
+ "baseDeCustos.maoDeObra.theHourlyPriceIsIn": {
+  "pt": "O preço da hora fica na",
   "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:97 (jsx)"
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:80 (jsx)"
   ]
  },
  "baseDeCustos.maoDeObra.toEstimateThisDepartmentS": {
@@ -8041,12 +7993,6 @@
   ]
  },
  "baseDeCustos.maoDeObra.workloadHours": {
-  "pt": "Carga horária",
-  "usos": [
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:123 (jsx)"
-  ]
- },
- "baseDeCustos.maoDeObra.workloadHours2": {
   "pt": "Carga horária — {name}",
   "vars": [
    "name"
@@ -8211,9 +8157,13 @@
  },
  "baseDeCustos.porSetor.depreciation": {
   "pt": "Depreciação",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCostsData.tsx:69 (jsx)",
-   "src/app/(app-sidebar)/base-de-custos/resumo/components/CostSummaryView.tsx:72 (propriedade:label)"
+   "src/app/(app-sidebar)/base-de-custos/resumo/components/CostSummaryView.tsx:72 (propriedade:label)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:127 (jsx)"
   ]
  },
  "baseDeCustos.porSetor.doesNotUpdateOnIts": {
@@ -9895,13 +9845,6 @@
    "src/app/(app-sidebar)/cadastros/papeis/components/Papers.tsx:98 (atributo:title)"
   ]
  },
- "cadastros.papeis.paper": {
-  "pt": "Papel",
-  "usos": [
-   "src/app/(app-sidebar)/cadastros/papeis/components/Papers.tsx:108 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:228 (jsx)"
-  ]
- },
  "cadastros.papeis.papers": {
   "pt": "Papéis",
   "usos": [
@@ -10555,12 +10498,6 @@
   ]
  },
  "comum.components.companyLogo": {
-  "pt": "Logo da empresa",
-  "usos": [
-   "src/components/layout/MobileSidebar.tsx:187 (atributo:alt)"
-  ]
- },
- "comum.components.companyLogo2": {
   "pt": "logo empresa",
   "usos": [
    "src/components/layout/SidebarComponent.tsx:217 (atributo:alt)",
@@ -11430,12 +11367,6 @@
   "pt": "Dentro de",
   "usos": [
    "src/components/common/FlowCanvas/FlowCanvas.tsx:419 (jsx)"
-  ]
- },
- "comum.components.installment": {
-  "pt": "Parcela",
-  "usos": [
-   "src/components/common/PrintQuotation/GeneratePdf.tsx:1828 (jsx)"
   ]
  },
  "comum.components.invalidDocument": {
@@ -13168,12 +13099,6 @@
    "src/consts/cost-base.ts:58 (propriedade:description)"
   ]
  },
- "comum.consts.basedOnTheTimeEach": {
-  "pt": "Pelo tempo que cada equipamento ocupa o setor no mês: tempo por unidade × produtividade de cada configuração.",
-  "usos": [
-   "src/consts/cost-base.ts:64 (propriedade:description)"
-  ]
- },
  "comum.consts.billed": {
   "pt": "Faturado",
   "usos": [
@@ -13254,6 +13179,12 @@
   "pt": "Por aproveitamento de folha",
   "usos": [
    "src/consts/processes.ts:108 (propriedade:label)"
+  ]
+ },
+ "comum.consts.byTheTimeEachPiece": {
+  "pt": "Pelo tempo que cada equipamento ocupa o setor no mês: tempo por unidade × volume mensal previsto de cada configuração.",
+  "usos": [
+   "src/consts/cost-base.ts:64 (propriedade:description)"
   ]
  },
  "comum.consts.byWidth": {
@@ -13942,12 +13873,6 @@
    "src/consts/cost-base.ts:109 (propriedade:label)"
   ]
  },
- "comum.consts.theCompanyEntersThePercentage": {
-  "pt": "A empresa informa o percentual de cada equipamento. Não se atualiza sozinho quando o setor muda: revise ao comprar, vender ou mudar a produtividade de um bem.",
-  "usos": [
-   "src/consts/cost-base.ts:70 (propriedade:description)"
-  ]
- },
  "comum.consts.theCompanyGainsClarityAbout": {
   "pt": "A empresa ganha clareza sobre sua operação, reduz sua linha de produtos para focar no que é mais lucrativo e padroniza processos, diminuindo a dependência exclusiva do dono.",
   "usos": [
@@ -13970,6 +13895,12 @@
   "pt": "A empresa atinge excelência operacional, com controle total sobre custos, estoques e processos, resultando em mais eficiência e lucratividade.",
   "usos": [
    "src/consts/plans.ts:195 (propriedade:text)"
+  ]
+ },
+ "comum.consts.theCompanySetsEachPiece": {
+  "pt": "A empresa informa o percentual de cada equipamento. Não se atualiza sozinho quando o setor muda: revise ao comprar, vender ou mudar o volume mensal previsto de um bem.",
+  "usos": [
+   "src/consts/cost-base.ts:70 (propriedade:description)"
   ]
  },
  "comum.consts.thisIsTheBigLeap": {
@@ -14268,6 +14199,18 @@
    "src/components/ai/AiProposalCard.tsx:657 (jsx)"
   ]
  },
+ "comum.geral.approve": {
+  "pt": "Aprovar",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:295 (jsx)",
+   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:123 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:367 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:279 (jsx)"
+  ]
+ },
  "comum.geral.approved": {
   "pt": "Aprovadas",
   "marcas": [
@@ -14290,6 +14233,7 @@
   "usos": [
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:238 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:295 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:474 (jsx)",
    "src/app/sandbox/tema/page.tsx:343 (jsx)",
    "src/app/sandbox/tipografia/page.tsx:136 (jsx)",
    "src/consts/financial.ts:7 (propriedade:text)",
@@ -14484,6 +14428,27 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskCard.tsx:153 (atributo:label)"
   ]
  },
+ "comum.geral.buildUp": {
+  "pt": "Composição",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:309 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2038 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:636 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:102 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:765 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:283 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:827 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:217 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:395 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:353 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:598 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:365 (jsx)",
+   "src/app/sandbox/locacao/page.tsx:115 (jsx)"
+  ]
+ },
  "comum.geral.buscandoDadosDoCnpj": {
   "pt": "Buscando dados do CNPJ...",
   "marcas": [
@@ -14608,7 +14573,7 @@
    "src/app/(app-sidebar)/cadastros/papeis/components/PaperDialog.tsx:312 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/RemoveModuleDialog.tsx:109 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Delete/index.tsx:92 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:616 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:642 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/NewItem/index.tsx:154 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveEmployee/index.tsx:105 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveUser/index.tsx:105 (jsx)",
@@ -14620,7 +14585,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetReadingsCard.tsx:105 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/CostModal.tsx:283 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SellAssetModal.tsx:262 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:213 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:214 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:369 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:352 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/NewGroup.tsx:114 (jsx)",
@@ -14659,8 +14624,8 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:648 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:665 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:686 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2562 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2708 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2590 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2736 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:365 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:442 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:468 (jsx)",
@@ -14727,7 +14692,7 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceRecipientEditDialog.tsx:768 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceEmissionConfigSection.tsx:329 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:176 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:536 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:540 (jsx)",
    "src/app/(app-sidebar)/precificacao/resumo/components/EditParametersModal.tsx:219 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/BillService.tsx:93 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/Notes/index.tsx:109 (jsx)",
@@ -14983,6 +14948,8 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/ToStandardSaleDialog.tsx:131 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/NewQuotation.tsx:278 (atributo:label)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/EditOrderInfo/index.tsx:240 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:79 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:604 (jsx)",
    "src/app/sandbox/microinteracoes/page.tsx:217 (jsx)",
    "src/app/sandbox/tema/page.tsx:334 (jsx)",
    "src/app/sandbox/tipografia/page.tsx:110 (jsx)",
@@ -15171,6 +15138,19 @@
    "src/consts/receivables.ts:43 (propriedade:text)"
   ]
  },
+ "comum.geral.concluida": {
+  "pt": "Concluída",
+  "marcas": [
+   "interno",
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/admin/sistema/migracao/page.tsx:701 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:92 (jsx)",
+   "src/consts/orders.ts:9 (propriedade:text)",
+   "src/consts/quickSale.ts:10 (propriedade:text)"
+  ]
+ },
  "comum.geral.concluido": {
   "pt": "Concluído",
   "marcas": [
@@ -15255,7 +15235,8 @@
  "comum.geral.conta": {
   "pt": "Conta",
   "marcas": [
-   "interno"
+   "interno",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/avaliacao/cadastros-incompletos/components/Table/Data.tsx:164 (jsx)",
@@ -15273,7 +15254,8 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:173 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit.tsx:314 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit.tsx:330 (atributo:label)",
-   "src/app/(app-sidebar)/relatorios/financeiro/components/print/AdvancedReportDialog/index.tsx:217 (atributo:label)"
+   "src/app/(app-sidebar)/relatorios/financeiro/components/print/AdvancedReportDialog/index.tsx:217 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:120 (jsx)"
   ]
  },
  "comum.geral.contato": {
@@ -15315,15 +15297,16 @@
  "comum.geral.cost": {
   "pt": "Custo",
   "marcas": [
-   "interno"
+   "interno",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/sistema/integracoes/components/AiUsageCard.tsx:91 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:141 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:270 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1191 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1913 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2185 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1941 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2213 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/ImportMaterialsDialog.tsx:293 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:194 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:147 (jsx)",
@@ -15331,10 +15314,14 @@
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:991 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:133 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:184 (propriedade:label)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:500 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:504 (jsx)",
    "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:113 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Delivery/index.tsx:397 (atributo:label)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:296 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:296 (jsx)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:119 (jsx)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:345 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:361 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:454 (jsx)"
   ]
  },
  "comum.geral.costBase": {
@@ -15464,7 +15451,7 @@
   "pt": "Setor",
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/distribuicao/components/SectorAllocations.tsx:86 (jsx)",
-   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:118 (jsx)",
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:106 (jsx)",
    "src/app/(app-sidebar)/base-de-custos/patrimonios/components/DepreciationData.tsx:56 (jsx)",
    "src/app/(app-sidebar)/cadastros/clientes/components/NewClient/tabs/ResponsibilitiesTab.tsx:58 (atributo:label)",
    "src/app/(app-sidebar)/cadastros/papeis/components/PaperDialog.tsx:175 (atributo:label)",
@@ -15941,7 +15928,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:709 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1814 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1183 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2179 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2207 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:983 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:579 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/CompositionReport.tsx:184 (jsx)",
@@ -15968,7 +15955,7 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:339 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:757 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1872 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2262 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2290 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:373 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:225 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1338 (jsx)",
@@ -15997,6 +15984,18 @@
    "src/components/ui/sheet.tsx:71 (jsx)"
   ]
  },
+ "comum.geral.fim": {
+  "pt": "Fim",
+  "marcas": [
+   "interno",
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/admin/clientes/acessos/components/Main.tsx:184 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:152 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:388 (jsx)"
+  ]
+ },
  "comum.geral.financeiro": {
   "pt": "Financeiro",
   "marcas": [
@@ -16009,6 +16008,7 @@
    "src/app/(app-sidebar)/relatorios/financeiro/components/FinancialReport.tsx:44 (atributo:title)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/Financial.tsx:64 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/Financial.tsx:86 (jsx)",
+   "src/app/sandbox/locacao/page.tsx:114 (jsx)",
    "src/app/sandbox/nav-menu/page.tsx:264 (propriedade:label)",
    "src/consts/nav.ts:123 (propriedade:title)",
    "src/consts/nav.ts:396 (propriedade:title)",
@@ -16155,6 +16155,28 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:398 (jsx)"
   ]
  },
+ "comum.geral.inProgress": {
+  "pt": "Em andamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:78 (propriedade:label)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:125 (jsx)",
+   "src/consts/productionManager.ts:62 (propriedade:text)"
+  ]
+ },
+ "comum.geral.inUse": {
+  "pt": "Em uso",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/base-de-custos/distribuicao/components/SectorAllocationDialog.tsx:234 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/ManageItems/index.tsx:152 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:489 (jsx)"
+  ]
+ },
  "comum.geral.inactive": {
   "pt": "Inativos",
   "usos": [
@@ -16265,6 +16287,19 @@
    "src/app/(blank-layout-pages)/(auth)/login/components/schema.ts:8 (validacao)"
   ]
  },
+ "comum.geral.item": {
+  "pt": "Item",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1184 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:984 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:132 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:237 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:299 (jsx)"
+  ]
+ },
  "comum.geral.itens": {
   "pt": "Itens",
   "marcas": [
@@ -16326,6 +16361,18 @@
    "src/components/fiscal/FiscalOnboardingModal.tsx:462 (jsx)"
   ]
  },
+ "comum.geral.margin": {
+  "pt": "Margem",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1952 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:132 (jsx)",
+   "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:122 (propriedade:label)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:283 (jsx)"
+  ]
+ },
  "comum.geral.material": {
   "pt": "Material",
   "usos": [
@@ -16335,6 +16382,17 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:823 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/MaterialItemDialog.tsx:124 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:531 (jsx)"
+  ]
+ },
+ "comum.geral.method": {
+  "pt": "Forma",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:448 (jsx)",
+   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:614 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:351 (jsx)"
   ]
  },
  "comum.geral.moduloFiscalAtivado": {
@@ -16448,7 +16506,8 @@
  "comum.geral.name": {
   "pt": "Nome",
   "marcas": [
-   "interno"
+   "interno",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/[companyId]/components/AccountDetails.tsx:368 (jsx)",
@@ -16479,6 +16538,8 @@
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:178 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:772 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/NewClient/PersonFields.tsx:61 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:86 (jsx)",
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:99 (atributo:label)",
    "src/components/common/form/global-inputs/NewContactModal.tsx:114 (atributo:label)",
    "src/components/common/form/global-inputs/PaymentMethodsSelectField.tsx:191 (jsx)",
    "src/components/common/form/global-inputs/SortSelectField.tsx:17 (propriedade:label)",
@@ -16779,6 +16840,31 @@
    "src/components/common/PrintQuotation/GeneratePdf.tsx:1771 (jsx)"
   ]
  },
+ "comum.geral.paid": {
+  "pt": "Pago",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:167 (propriedade:label)",
+   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TransactionsTotals.tsx:156 (jsx)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:187 (jsx)",
+   "src/components/common/PrintQuotation/GeneratePdf.tsx:1804 (jsx)",
+   "src/consts/financial.ts:12 (propriedade:text)"
+  ]
+ },
+ "comum.geral.paper": {
+  "pt": "Papel",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/cadastros/papeis/components/Papers.tsx:108 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:228 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:191 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:366 (jsx)"
+  ]
+ },
  "comum.geral.passwordConfirmationIsRequired": {
   "pt": "Confirmação de senha é obrigatória",
   "usos": [
@@ -16816,6 +16902,9 @@
  },
  "comum.geral.paymentMethod": {
   "pt": "Forma de pagamento",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
    "src/app/(app-sidebar)/cadastros/clientes/components/NewClient/tabs/CreditLimitTab.tsx:70 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/PaymentConditionsTable/PaymentConditionsData.tsx:109 (jsx)",
@@ -16838,7 +16927,8 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/Financial.tsx:119 (jsx)",
    "src/app/(blank-layout-pages)/assinatura/components/checkout/OrderSummary.tsx:178 (jsx)",
    "src/app/(blank-layout-pages)/assinatura/contratacao/components/PaymentStep.tsx:87 (jsx)",
-   "src/app/(blank-layout-pages)/assinatura/contratacao/components/RegularizationFlow.tsx:226 (jsx)"
+   "src/app/(blank-layout-pages)/assinatura/contratacao/components/RegularizationFlow.tsx:226 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:345 (jsx)"
   ]
  },
  "comum.geral.pendente": {
@@ -16896,7 +16986,13 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsFilter.tsx:110 (atributo:label)",
    "src/app/sandbox/forms/page.tsx:329 (atributo:label)",
    "src/app/sandbox/forms/page.tsx:331 (atributo:label)",
-   "src/app/sandbox/forms/page.tsx:337 (atributo:label)"
+   "src/app/sandbox/forms/page.tsx:337 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:278 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:285 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:80 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:344 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:554 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:602 (jsx)"
   ]
  },
  "comum.geral.pix": {
@@ -16980,6 +17076,15 @@
    "src/components/fiscal/FiscalOnboardingModal.tsx:336 (jsx)"
   ]
  },
+ "comum.geral.pricing": {
+  "pt": "Precificação",
+  "usos": [
+   "src/app/(app-sidebar)/base-de-custos/mao-de-obra/components/LaborCosts.tsx:85 (jsx)",
+   "src/app/(app-sidebar)/precificacao/layout.tsx:39 (propriedade:title)",
+   "src/app/(app-sidebar)/precificacao/layout.tsx:47 (atributo:title)",
+   "src/consts/nav.ts:216 (propriedade:title)"
+  ]
+ },
  "comum.geral.print": {
   "pt": "Imprimir",
   "usos": [
@@ -16998,11 +17103,24 @@
    "src/components/common/PrintQuotation/PrintQuotationDialog.tsx:473 (jsx)"
   ]
  },
+ "comum.geral.printing": {
+  "pt": "Impressão",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:368 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:82 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:399 (jsx)",
+   "src/consts/sectors.ts:117 (propriedade:text)"
+  ]
+ },
  "comum.geral.producao": {
   "pt": "Produção",
   "marcas": [
    "interno",
-   "fiscal-br"
+   "fiscal-br",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/sistema/integracoes/components/AsaasForm.tsx:141 (propriedade:label)",
@@ -17016,29 +17134,18 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceResultsTable.tsx:903 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:56 (propriedade:label)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:230 (jsx)",
+   "src/app/sandbox/locacao/page.tsx:116 (jsx)",
    "src/components/common/fiscal/FiscalEnvironmentBadge.tsx:74 (jsx)",
    "src/consts/nav.ts:227 (propriedade:title)",
    "src/consts/nav.ts:478 (propriedade:title)",
    "src/consts/sectors.ts:122 (propriedade:text)"
   ]
  },
- "comum.geral.productivity": {
-  "pt": "Produtividade",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:135 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/Assets.tsx:174 (jsx)",
-   "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:66 (atributo:title)",
-   "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:92 (jsx)",
-   "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:183 (jsx)",
-   "src/app/(app-sidebar)/producao/produtividade/page.tsx:9 (propriedade:title)",
-   "src/app/(app-sidebar)/producao/produtividade/page.tsx:25 (propriedade:title)",
-   "src/consts/nav.ts:267 (propriedade:title)"
-  ]
- },
  "comum.geral.produto": {
   "pt": "Produto",
   "marcas": [
-   "fiscal-br"
+   "fiscal-br",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/CompositionsWarning.tsx:21 (jsx)",
@@ -17052,6 +17159,7 @@
    "src/app/(app-sidebar)/relatorios/produtos/components/ProductsTable.tsx:61 (jsx)",
    "src/app/(app-sidebar)/relatorios/produtos/components/ProductsTable.tsx:92 (jsx)",
    "src/app/(app-sidebar)/relatorios/produtos/components/print/ProductsReportPdf.tsx:158 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:316 (jsx)",
    "src/components/ai/AiProposalCard.tsx:361 (atributo:label)",
    "src/components/ai/AiProposalCard.tsx:497 (jsx)"
   ]
@@ -17083,7 +17191,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1624 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1029 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1188 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2182 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2210 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:895 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:988 (jsx)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:285 (jsx)",
@@ -17100,6 +17208,10 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:800 (atributo:label)",
    "src/app/sandbox/aproveitamento/page.tsx:69 (jsx)",
    "src/app/sandbox/aproveitamento/page.tsx:72 (atributo:aria-label)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:366 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:605 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:156 (jsx)",
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:71 (jsx)",
    "src/components/ai/AiProposalCard.tsx:394 (jsx)",
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:104 (atributo:label)"
   ]
@@ -17119,11 +17231,15 @@
  },
  "comum.geral.quote": {
   "pt": "Orçamento",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/NewSerie/index.tsx:74 (propriedade:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Quotation.tsx:76 (atributo:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/page.tsx:12 (propriedade:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/page.tsx:13 (propriedade:description)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:603 (jsx)",
    "src/components/common/PrintQuotation/GeneratePdf.tsx:806 (jsx)"
   ]
  },
@@ -17183,7 +17299,7 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoicePayment.tsx:291 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoicePayment.tsx:468 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/nfse/components/StandaloneNfseForm.tsx:165 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:433 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:437 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:599 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:618 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/ItemActions/Values/index.tsx:252 (jsx)",
@@ -17340,7 +17456,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1787 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:664 (propriedade:confirmLabel)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:685 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2561 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2589 (propriedade:confirmLabel)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:475 (propriedade:confirmLabel)",
    "src/app/(app-sidebar)/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento/components/Actions/Delete/index.tsx:101 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/origens-de-contato/components/Actions/Delete/index.tsx:77 (jsx)",
@@ -17446,6 +17562,18 @@
    "src/app/sandbox/member-select/page.tsx:482 (atributo:label)"
   ]
  },
+ "comum.geral.result": {
+  "pt": "Resultado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/relatorios/resultado-por-setor/components/SectorCardsGrid.tsx:46 (jsx)",
+   "src/app/(app-sidebar)/relatorios/resultado-por-setor/components/SectorCardsGrid.tsx:72 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:187 (jsx)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:346 (jsx)"
+  ]
+ },
  "comum.geral.rg": {
   "pt": "RG",
   "usos": [
@@ -17470,6 +17598,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/CompositionReport.tsx:183 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/ImportQuotation/ImportQuotationModal.tsx:421 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:420 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:359 (jsx)",
    "src/app/sandbox/tema/page.tsx:363 (jsx)"
   ]
  },
@@ -17506,11 +17635,11 @@
   "pt": "Venda",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1193 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2187 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2215 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:577 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:993 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:416 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:508 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:512 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:268 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:163 (jsx)",
    "src/app/(app-sidebar)/relatorios/comissoes/components/CommissionTable.tsx:197 (jsx)",
@@ -17556,7 +17685,7 @@
    "src/app/(app-sidebar)/cadastros/components/Categories/NewItem/index.tsx:155 (jsx)",
    "src/app/(app-sidebar)/cadastros/fornecedores/components/NewSupplier.tsx:237 (jsx)",
    "src/app/(app-sidebar)/cadastros/papeis/components/PaperDialog.tsx:320 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:625 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:651 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/NewItem/index.tsx:163 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/EditEmployee/index.tsx:390 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/NewUser/index.tsx:302 (jsx)",
@@ -17564,7 +17693,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx:296 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog.tsx:216 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/CostModal.tsx:291 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:221 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:222 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:379 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:170 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:443 (jsx)",
@@ -17586,8 +17715,8 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:573 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:837 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1696 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2271 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2716 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2299 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2744 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1089 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/index.tsx:226 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:179 (jsx)",
@@ -17614,7 +17743,7 @@
    "src/app/(app-sidebar)/financeiro/_components/transactions/NewTransaction/index.tsx:372 (jsx)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/NewItem/index.tsx:185 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:336 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:552 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:556 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/Notes/index.tsx:117 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/ScheduleDate/index.tsx:193 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/Stages/StagePendingDialog.tsx:141 (jsx)",
@@ -17697,14 +17826,14 @@
   "pt": "Preço de venda",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:144 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1775 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1915 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1803 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1943 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:168 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:272 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:197 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:149 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:178 (propriedade:label)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:425 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:429 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:612 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:131 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:920 (atributo:label)"
@@ -17796,12 +17925,15 @@
  "comum.geral.situacao": {
   "pt": "Situação",
   "marcas": [
-   "interno"
+   "interno",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/[companyId]/components/AccountDetails.tsx:424 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:243 (jsx)",
-   "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:184 (jsx)"
+   "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:184 (jsx)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:82 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:606 (jsx)"
   ]
  },
  "comum.geral.sortBy": {
@@ -17814,6 +17946,17 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsFilter.tsx:147 (atributo:label)",
    "src/components/common/form/global-inputs/SortSelectField.tsx:38 (jsx)",
    "src/components/common/form/global-inputs/SortSelectField.tsx:41 (atributo:placeholder)"
+  ]
+ },
+ "comum.geral.start": {
+  "pt": "Início",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:139 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:855 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:382 (atributo:label)"
   ]
  },
  "comum.geral.status": {
@@ -17990,7 +18133,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/CfopFormModal.tsx:177 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/NaturezaFormModal.tsx:171 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2180 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2208 (jsx)",
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:661 (jsx)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:282 (jsx)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollItems.tsx:206 (jsx)",
@@ -18038,7 +18181,7 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:613 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:55 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:67 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:101 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:105 (propriedade:label)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:68 (propriedade:label)",
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:378 (propriedade:label)",
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:134 (propriedade:label)",
@@ -18066,6 +18209,9 @@
  },
  "comum.geral.total": {
   "pt": "Total",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
    "src/app/(app-sidebar)/base-de-custos/por-setor/components/SectorCostsData.tsx:177 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:599 (jsx)",
@@ -18074,6 +18220,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuickSaleCheckout.tsx:623 (jsx)",
    "src/app/(blank-layout-pages)/assinatura/components/checkout/OrderSummary.tsx:139 (jsx)",
    "src/app/(blank-layout-pages)/assinatura/contratacao/components/RegularizationFlow.tsx:212 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:333 (jsx)",
    "src/components/common/PrintQuotation/GeneratePdf.tsx:1666 (jsx)"
   ]
  },
@@ -18148,6 +18295,20 @@
    "src/app/(app-sidebar)/estoque/entrada-de-nota/components/InvoiceEntry.tsx:184 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceItemEditDialog.tsx:408 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:239 (jsx)"
+  ]
+ },
+ "comum.geral.usage": {
+  "pt": "Consumo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1334 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1838 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1185 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:985 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:360 (jsx)",
+   "src/consts/stock.ts:7 (propriedade:text)"
   ]
  },
  "comum.geral.usuarios": {
@@ -18226,6 +18387,9 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:422 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersData.tsx:184 (jsx)",
    "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:182 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:301 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:353 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:556 (jsx)",
    "src/app/sandbox/tema/page.tsx:336 (jsx)",
    "src/app/sandbox/tipografia/page.tsx:112 (jsx)",
    "src/components/common/charts/radial-progress-chart.tsx:15 (propriedade:label)"
@@ -18246,13 +18410,17 @@
  },
  "comum.geral.variant": {
   "pt": "Variação",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2607 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2635 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:441 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/MaterialItemDialog.tsx:140 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/MaterialItemDialog.tsx:143 (atributo:aria-label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:739 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:743 (atributo:aria-label)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:192 (jsx)",
    "src/components/ai/AiProposalCard.tsx:379 (atributo:label)"
   ]
  },
@@ -18260,7 +18428,8 @@
   "pt": "Vencimento",
   "marcas": [
    "interno",
-   "fiscal-br"
+   "fiscal-br",
+   "vitrine"
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/[companyId]/components/AccountDetails.tsx:421 (jsx)",
@@ -18275,7 +18444,9 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/DownPayment.tsx:84 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/Installments.tsx:120 (atributo:label)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/Financial.tsx:122 (jsx)",
-   "src/app/(blank-layout-pages)/assinatura/contratacao/components/RegularizationFlow.tsx:200 (jsx)"
+   "src/app/(blank-layout-pages)/assinatura/contratacao/components/RegularizationFlow.tsx:200 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:352 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:555 (jsx)"
   ]
  },
  "comum.geral.vendas": {
@@ -18887,7 +19058,7 @@
  "configuracoes.empresaESistema.addSetup": {
   "pt": "Cadastrar configuração",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:221 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:222 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.addUsers": {
@@ -18922,8 +19093,12 @@
  },
  "configuracoes.empresaESistema.agreement": {
   "pt": "Contrato",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/ContractSection.tsx:36 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/ContractSection.tsx:36 (jsx)",
+   "src/app/sandbox/locacao/page.tsx:113 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.alAlagoas": {
@@ -18958,7 +19133,7 @@
  "configuracoes.empresaESistema.anErrorOccurred": {
   "pt": "Ocorreu um erro.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:281 (aviso)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:298 (aviso)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveEmployee/index.tsx:49 (aviso)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveUser/index.tsx:64 (aviso)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/NewEmployee/index.tsx:75 (aviso)",
@@ -19102,22 +19277,6 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/PrintCountPanel.tsx:118 (jsx)"
   ]
  },
- "configuracoes.empresaESistema.buildUp": {
-  "pt": "Composição",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:309 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2010 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:636 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:98 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:765 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:283 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:827 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:217 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:395 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:353 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:598 (jsx)"
-  ]
- },
  "configuracoes.empresaESistema.by": {
   "pt": "por {name} ({email})",
   "vars": [
@@ -19223,8 +19382,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:278 (atributo:aria-label)"
   ]
  },
- "configuracoes.empresaESistema.combinedProductivity": {
-  "pt": "Produtividade somada",
+ "configuracoes.empresaESistema.combinedPlannedVolume": {
+  "pt": "Volume previsto somado",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:143 (jsx)"
   ]
@@ -19321,7 +19480,7 @@
  "configuracoes.empresaESistema.create": {
   "pt": "Cria",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:391 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:410 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.createTheFirstPosition": {
@@ -19372,7 +19531,7 @@
  "configuracoes.empresaESistema.delete": {
   "pt": "Exclui",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:392 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:411 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.delete2": {
@@ -19526,7 +19685,7 @@
  "configuracoes.empresaESistema.edit": {
   "pt": "Edita",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:390 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:409 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.editAsset": {
@@ -19698,7 +19857,7 @@
  "configuracoes.empresaESistema.export": {
   "pt": "Exporta",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:393 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:412 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.facebook": {
@@ -19845,12 +20004,6 @@
   "pt": "Hora vendida",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:349 (jsx)"
-  ]
- },
- "configuracoes.empresaESistema.howTheAssetWorksWith": {
-  "pt": "Modo de trabalho do bem, com tempo e produtividade próprios.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:136 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.howTheDepartmentSells": {
@@ -20089,8 +20242,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/Steps/Step2/index.tsx:37 (propriedade:label)"
   ]
  },
- "configuracoes.empresaESistema.multipliedByTheReferenceProductivity": {
-  "pt": "Multiplicado pela produtividade de referência {valor} ({productivity} {unit}/mês).",
+ "configuracoes.empresaESistema.multipliedByThePlannedMonthly": {
+  "pt": "Multiplicado pelo volume mensal previsto {valor} ({productivity} {unit}/mês).",
   "vars": [
    "valor",
    "productivity",
@@ -20271,8 +20424,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Main.tsx:83 (atributo:title)"
   ]
  },
- "configuracoes.empresaESistema.noProductionSetupRegisteredWithout": {
-  "pt": "Nenhuma configuração produtiva cadastrada. Sem ela, o bem usa a produtividade de referência da aba Patrimônio, em {unit}/mês.",
+ "configuracoes.empresaESistema.noProductionSetupsAddedWithout": {
+  "pt": "Nenhuma configuração produtiva cadastrada. Sem ela, o bem usa o volume mensal previsto da aba Patrimônio, em {unit}/mês.",
   "vars": [
    "unit"
   ],
@@ -20280,8 +20433,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:197 (frase)"
   ]
  },
- "configuracoes.empresaESistema.noReadingsRecordedWithoutReadings": {
-  "pt": "Nenhuma leitura registrada. Sem leituras, o comparativo usa o vendido pelas composições ou a produtividade do cadastro.",
+ "configuracoes.empresaESistema.noReadingsLoggedWithoutReadings": {
+  "pt": "Nenhuma leitura registrada. Sem leituras, o comparativo usa o vendido pelas composições ou o volume mensal previsto do cadastro.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetReadingsCard.tsx:206 (jsx)"
   ]
@@ -20492,8 +20645,12 @@
  },
  "configuracoes.empresaESistema.perMonth": {
   "pt": "Por mês",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:274 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:274 (jsx)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:121 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.perUnitOfEquipmentOutput": {
@@ -20505,7 +20662,7 @@
  "configuracoes.empresaESistema.permissionsSaved": {
   "pt": "Permissões salvas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:277 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:294 (aviso)"
   ]
  },
  "configuracoes.empresaESistema.personalDetails": {
@@ -20533,10 +20690,36 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/UsersQuotaNotice.tsx:58 (jsx)"
   ]
  },
+ "configuracoes.empresaESistema.plannedMonthlyVolumeMonth": {
+  "pt": "Volume mensal previsto ({valor}/mês)",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetForm.tsx:415 (frase)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:314 (frase)"
+  ]
+ },
+ "configuracoes.empresaESistema.plannedMonthlyVolumeMonth2": {
+  "pt": "Volume mensal previsto ({unit}/mês)",
+  "vars": [
+   "unit"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:179 (frase)"
+  ]
+ },
+ "configuracoes.empresaESistema.plannedVolume": {
+  "pt": "Volume previsto",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:135 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/Assets.tsx:174 (jsx)"
+  ]
+ },
  "configuracoes.empresaESistema.positionPermissions": {
   "pt": "Permissões do cargo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:372 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:389 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Main.tsx:157 (atributo:tooltip)"
   ]
  },
@@ -20609,14 +20792,6 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/ContractSection.tsx:75 (frase)"
-  ]
- },
- "configuracoes.empresaESistema.printing": {
-  "pt": "Impressão",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:368 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:82 (jsx)",
-   "src/consts/sectors.ts:117 (propriedade:text)"
   ]
  },
  "configuracoes.empresaESistema.process": {
@@ -20747,25 +20922,6 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetReadingsCard.tsx:178 (jsx)"
   ]
  },
- "configuracoes.empresaESistema.referenceProductivityMonth": {
-  "pt": "Produtividade de referência ({valor}/mês)",
-  "vars": [
-   "valor"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetForm.tsx:415 (frase)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:314 (frase)"
-  ]
- },
- "configuracoes.empresaESistema.referenceProductivityMonth2": {
-  "pt": "Produtividade de referência ({unit}/mês)",
-  "vars": [
-   "unit"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:179 (frase)"
-  ]
- },
  "configuracoes.empresaESistema.refunded": {
   "pt": "Reembolsada",
   "usos": [
@@ -20816,7 +20972,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:199 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2628 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2656 (atributo:tooltip)"
   ]
  },
  "configuracoes.empresaESistema.repeatThePassword": {
@@ -21218,7 +21374,7 @@
    "item"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:190 (validacao)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:207 (validacao)"
   ]
  },
  "configuracoes.empresaESistema.texto4": {
@@ -21245,14 +21401,20 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/CostModal.tsx:275 (jsx)"
   ]
  },
- "configuracoes.empresaESistema.theAssetSProductivityBecomes": {
-  "pt": "A produtividade do bem passa a ser a soma das configurações.",
+ "configuracoes.empresaESistema.theAssetSPlannedMonthly": {
+  "pt": "O volume mensal previsto do bem passa a ser a soma das configurações.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:207 (jsx)"
   ]
  },
- "configuracoes.empresaESistema.theAssetWorkingModesEach": {
-  "pt": "Os modos de trabalho do bem, com tempo e produtividade próprios. A produtividade do bem é a soma das configurações, e o custo da máquina é repartido entre elas pelo tempo de atividade.",
+ "configuracoes.empresaESistema.theAssetSWorkMode": {
+  "pt": "Modo de trabalho do bem, com tempo e volume mensal próprios.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:136 (jsx)"
+  ]
+ },
+ "configuracoes.empresaESistema.theAssetSWorkModes": {
+  "pt": "Os modos de trabalho do bem, com tempo e volume mensal próprios. O volume mensal previsto do bem é a soma das configurações, e o custo da máquina é repartido entre elas pelo tempo de atividade.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:118 (jsx)"
   ]
@@ -21284,16 +21446,16 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:370 (jsx)"
   ]
  },
+ "configuracoes.empresaESistema.theGroupCoversTheAverage": {
+  "pt": "O grupo responde pela média do custo dos bens e pela soma do volume mensal previsto. Máquinas diferentes continuam sendo escolhidas uma a uma: o grupo é opcional.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:123 (jsx)"
+  ]
+ },
  "configuracoes.empresaESistema.theGroupOnlyGathersEquivalent": {
   "pt": "O grupo só reúne bens equivalentes e não guarda histórico. Os bens não são afetados.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:74 (propriedade:description)"
-  ]
- },
- "configuracoes.empresaESistema.theGroupUsesTheAverage": {
-  "pt": "O grupo responde pela média do custo dos bens e pela soma da produtividade. Máquinas diferentes continuam sendo escolhidas uma a uma: o grupo é opcional.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:123 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.theIncomeWasRecordedIn": {
@@ -21340,6 +21502,12 @@
   "pt": "A configuração é usada em composições",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:98 (aviso)"
+  ]
+ },
+ "configuracoes.empresaESistema.theTagNextToThe": {
+  "pt": "A etiqueta ao lado da permissão mostra o plano que a liberou.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:393 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.thereAre": {
@@ -21399,8 +21567,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:165 (frase)"
   ]
  },
- "configuracoes.empresaESistema.timePerProductivityItIs": {
-  "pt": "Tempo por {unit} × produtividade. É a base do rateio do custo da máquina entre as configurações.",
+ "configuracoes.empresaESistema.timePerPlannedMonthlyVolume": {
+  "pt": "Tempo por {unit} × volume mensal previsto. É a base do rateio do custo da máquina entre as configurações.",
   "vars": [
    "unit"
   ],
@@ -21452,12 +21620,6 @@
   "pt": "Transferir entrega o ambiente inteiro — colaboradores, usuários, orçamentos, histórico e assinatura — a outra conta. Quem transfere perde o acesso.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/OwnershipSection.tsx:152 (jsx)"
-  ]
- },
- "configuracoes.empresaESistema.turnedOffTheAssetCounts": {
-  "pt": "Desligado, o bem entra só com a depreciação no custo do setor, sem unidade, produtividade, configurações ou custos próprios.",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetForm.tsx:229 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.type": {
@@ -21547,7 +21709,7 @@
  "configuracoes.empresaESistema.view": {
   "pt": "Visualiza",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:389 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx:408 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.viewAgreement": {
@@ -21605,8 +21767,14 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:165 (propriedade:description)"
   ]
  },
- "configuracoes.empresaESistema.whenOffTheAssetCounts": {
-  "pt": "Desligado, o bem entra só com a depreciação no custo do setor, sem unidade, produtividade ou configurações.",
+ "configuracoes.empresaESistema.whenOffTheAssetOnly": {
+  "pt": "Desligado, o bem entra só com a depreciação no custo do setor, sem unidade, volume mensal, configurações ou custos próprios.",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetForm.tsx:229 (jsx)"
+  ]
+ },
+ "configuracoes.empresaESistema.whenOffTheAssetOnly2": {
+  "pt": "Desligado, o bem entra só com a depreciação no custo do setor, sem unidade, volume mensal ou configurações.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:183 (jsx)"
   ]
@@ -22616,13 +22784,6 @@
   "pt": "Parcela máxima",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:317 (atributo:label)"
-  ]
- },
- "configuracoes.financeiro.method": {
-  "pt": "Forma",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:448 (jsx)",
-   "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:614 (jsx)"
   ]
  },
  "configuracoes.financeiro.minimumInstallment": {
@@ -27726,7 +27887,7 @@
   "pt": "Fluxo de produção",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:174 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2082 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2110 (jsx)"
   ]
  },
  "configuracoes.producao.productionSWorkingDaysAnd": {
@@ -27798,13 +27959,6 @@
   "pt": "Salvar expediente",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:222 (jsx)"
-  ]
- },
- "configuracoes.producao.start": {
-  "pt": "Início",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:139 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:855 (jsx)"
   ]
  },
  "configuracoes.producao.startingPausingAndTimingTasks": {
@@ -28039,7 +28193,7 @@
  "configuracoes.produtos.aPathThatStartsOn": {
   "pt": "Um caminho que começa sozinho — a estrutura que depois se encontra com a lona na instalação. Ligue-o a uma etapa pelo menu da caixa.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2297 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2325 (atributo:description)"
   ]
  },
  "configuracoes.produtos.aProcessIsADepartment": {
@@ -28143,7 +28297,7 @@
  "configuracoes.produtos.addVariant": {
   "pt": "Cadastrar variação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2717 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2745 (jsx)"
   ]
  },
  "configuracoes.produtos.addVariants": {
@@ -28210,12 +28364,6 @@
   "pt": "· ajustada neste produto",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1211 (jsx)"
-  ]
- },
- "configuracoes.produtos.adoptSuggestedPrice": {
-  "pt": "Adotar preço sugerido",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1983 (jsx)"
   ]
  },
  "configuracoes.produtos.advancedSalesSettings": {
@@ -28431,7 +28579,7 @@
  "configuracoes.produtos.appearsOnThePrintedProposal": {
   "pt": "Aparece na proposta impressa, abaixo do nome do produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1870 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1898 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.appliesOnlyToTheVariant": {
@@ -28498,7 +28646,7 @@
  "configuracoes.produtos.backToStandard": {
   "pt": "Voltar ao padrão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1955 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1983 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/PrintCountPanel.tsx:140 (jsx)"
   ]
  },
@@ -28752,7 +28900,7 @@
  "configuracoes.produtos.checkCostPriceAndMargin": {
   "pt": "Confira custo, preço e margem numa medida. Não grava nada: o padrão do produto só muda com “Salvar como padrão”.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1906 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1934 (atributo:description)"
   ]
  },
  "configuracoes.produtos.checkTheProductSRequired": {
@@ -28852,7 +29000,7 @@
  "configuracoes.produtos.collapse": {
   "pt": "Recolher",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2098 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2126 (jsx)"
   ]
  },
  "configuracoes.produtos.colors": {
@@ -29260,7 +29408,7 @@
  "configuracoes.produtos.eGSML": {
   "pt": "Ex.: P, M, G, GG",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2693 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2721 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.eGSolventPrintingHem": {
@@ -29290,7 +29438,7 @@
  "configuracoes.produtos.eachResourceOnceSummedAcross": {
   "pt": "Cada recurso uma vez, somado de todas as etapas, na medida simulada. É a lista do que o produto consome.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2171 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2199 (jsx)"
   ]
  },
  "configuracoes.produtos.eachRowIsMatchedAgainst": {
@@ -29302,7 +29450,7 @@
  "configuracoes.produtos.eachStepIsTheWork": {
   "pt": "Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa. A ordem das etapas é a ordem da produção.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2014 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2042 (jsx)"
   ]
  },
  "configuracoes.produtos.editMaterial": {
@@ -29429,7 +29577,7 @@
  "configuracoes.produtos.errorRemovingTheVariant": {
   "pt": "Erro ao remover a variação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2575 (propriedade:error)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2603 (propriedade:error)"
   ]
  },
  "configuracoes.produtos.errorTryingToProduct": {
@@ -29782,15 +29930,6 @@
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/InactivateProcessDialog.tsx:92 (jsx)"
   ]
  },
- "configuracoes.produtos.item": {
-  "pt": "Item",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1184 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:984 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:132 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:237 (jsx)"
-  ]
- },
  "configuracoes.produtos.itemMeasurements": {
   "pt": "Medidas do item",
   "usos": [
@@ -29953,7 +30092,7 @@
  "configuracoes.produtos.mToChangeItSimulate": {
   "pt": "m. Para mudar, simule outra medida e use &quot;Salvar como padrão&quot;.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1842 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1870 (jsx)"
   ]
  },
  "configuracoes.produtos.makeReadySheets": {
@@ -29973,14 +30112,6 @@
   ]
  },
  "configuracoes.produtos.margin": {
-  "pt": "Margem",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1924 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:132 (jsx)",
-   "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:122 (propriedade:label)"
-  ]
- },
- "configuracoes.produtos.margin2": {
   "pt": "margem {valor} %",
   "vars": [
    "valor"
@@ -30264,14 +30395,18 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2044 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2072 (frase)"
   ]
  },
  "configuracoes.produtos.newVariant": {
   "pt": "Nova variação",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2674 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:162 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2702 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:162 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:184 (jsx)"
   ]
  },
  "configuracoes.produtos.nextSteps": {
@@ -30289,7 +30424,7 @@
  "configuracoes.produtos.noBuildUp": {
   "pt": "Sem composição",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:103 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:107 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.noDepartmentsAvailable": {
@@ -30631,7 +30766,7 @@
  "configuracoes.produtos.optionAdded": {
   "pt": "Opção acrescentada",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2453 (aviso)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2481 (aviso)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1422 (aviso)"
   ]
  },
@@ -31029,7 +31164,7 @@
  "configuracoes.produtos.productsOnly": {
   "pt": "Só os produtos",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:89 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:92 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.profileBarOrTube": {
@@ -31191,7 +31326,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2558 (propriedade:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2586 (propriedade:title)"
   ]
  },
  "configuracoes.produtos.remover": {
@@ -31204,7 +31339,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1784 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2641 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2669 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields.tsx:229 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFormulas.tsx:209 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:266 (atributo:tooltip)",
@@ -31238,7 +31373,7 @@
  "configuracoes.produtos.renameVariant": {
   "pt": "Renomear variação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2673 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2701 (jsx)"
   ]
  },
  "configuracoes.produtos.replaceOrRemoveTheItem": {
@@ -31330,13 +31465,13 @@
  "configuracoes.produtos.saveAsStandard": {
   "pt": "Salvar como padrão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1970 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1998 (jsx)"
   ]
  },
  "configuracoes.produtos.saveDescription": {
   "pt": "Salvar descritivo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1890 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1918 (jsx)"
   ]
  },
  "configuracoes.produtos.saveFormula": {
@@ -31627,7 +31762,7 @@
  "configuracoes.produtos.show": {
   "pt": "Mostrar as variações",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:90 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:93 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.showsUpInTheQuote": {
@@ -31660,7 +31795,7 @@
    "height2"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1943 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1971 (jsx)"
   ]
  },
  "configuracoes.produtos.simulation": {
@@ -31690,13 +31825,13 @@
  "configuracoes.produtos.sizeInTheQuote": {
   "pt": "Medida no orçamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1788 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1816 (atributo:label)"
   ]
  },
  "configuracoes.produtos.sizeStandard": {
   "pt": "Padrão de medidas:",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1841 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1869 (jsx)"
   ]
  },
  "configuracoes.produtos.soldDirectly": {
@@ -31774,19 +31909,25 @@
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/ProductStRules.tsx:211 (jsx)"
   ]
  },
+ "configuracoes.produtos.suggestedByTheComposition": {
+  "pt": "Sugerido pela composição:",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1780 (jsx)"
+  ]
+ },
  "configuracoes.produtos.suggestedPer": {
   "pt": "Sugerido · por {valor}",
   "vars": [
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1919 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1947 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.summaryByResource": {
   "pt": "Resumo por recurso",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2169 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2197 (jsx)"
   ]
  },
  "configuracoes.produtos.supplierCostPer": {
@@ -31834,7 +31975,7 @@
  "configuracoes.produtos.technicalDescription": {
   "pt": "Descritivo técnico",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1865 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1893 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:829 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1012 (atributo:label)"
   ]
@@ -31842,7 +31983,7 @@
  "configuracoes.produtos.technicalDescriptionNotSavedYet": {
   "pt": "Descritivo técnico ainda não salvo. O resto já está gravado.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2251 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2279 (jsx)"
   ]
  },
  "configuracoes.produtos.texto": {
@@ -32305,7 +32446,7 @@
  "configuracoes.produtos.theBoxStaysInThe": {
   "pt": "A caixa continua no mesmo lugar do fluxo, com as mesmas ligações. O que muda é a montagem: recursos, tempo e regras passam a ser os do processo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2373 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2401 (atributo:description)"
   ]
  },
  "configuracoes.produtos.theBuildUpRowsAre": {
@@ -32380,7 +32521,7 @@
  "configuracoes.produtos.theNameAppearsOnThe": {
   "pt": "O nome aparece na aba e na escolha do vendedor.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2678 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2706 (jsx)"
   ]
  },
  "configuracoes.produtos.theNewFieldAcceptsFractions": {
@@ -32498,7 +32639,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2679 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2707 (jsx)"
   ]
  },
  "configuracoes.produtos.thereIsNoOtherStep": {
@@ -32561,7 +32702,7 @@
  "configuracoes.produtos.thisVariantSBuildUp": {
   "pt": "A composição desta variação some. As outras variações e a composição padrão não mudam.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2559 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2587 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.tiersNotSaved": {
@@ -32692,7 +32833,7 @@
    "people"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2205 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2233 (frase)"
   ]
  },
  "configuracoes.produtos.uploadFileCsvOrTxt": {
@@ -32730,16 +32871,6 @@
   ]
  },
  "configuracoes.produtos.usage4": {
-  "pt": "Consumo",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1334 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1838 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1185 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:985 (jsx)",
-   "src/consts/stock.ts:7 (propriedade:text)"
-  ]
- },
- "configuracoes.produtos.usage5": {
   "pt": "Consumo de {name}",
   "vars": [
    "name"
@@ -32748,7 +32879,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1385 (atributo:aria-label)"
   ]
  },
- "configuracoes.produtos.usage6": {
+ "configuracoes.produtos.usage5": {
   "pt": "Uso",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:192 (jsx)"
@@ -32774,6 +32905,15 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1599 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1609 (atributo:aria-label)"
+  ]
+ },
+ "configuracoes.produtos.useSuggestedPrice": {
+  "pt": "Usar preço sugerido",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1795 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2011 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:112 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:193 (jsx)"
   ]
  },
  "configuracoes.produtos.useTheProductTable": {
@@ -32840,7 +32980,7 @@
  "configuracoes.produtos.valuesAppearOnceThereIs": {
   "pt": "Os valores aparecem quando houver etapa com custo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1909 (atributo:emptyText)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1937 (atributo:emptyText)"
   ]
  },
  "configuracoes.produtos.variantCreatedAsACopy": {
@@ -32849,7 +32989,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2541 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2569 (aviso)"
   ]
  },
  "configuracoes.produtos.variantIsBackToThe": {
@@ -32860,14 +33000,18 @@
  },
  "configuracoes.produtos.variantName": {
   "pt": "Nome da variação",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2687 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2715 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:203 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.variantRemoved": {
   "pt": "Variação removida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2574 (propriedade:success)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2602 (propriedade:success)"
   ]
  },
  "configuracoes.produtos.variantUpdated": {
@@ -32880,7 +33024,7 @@
   "pt": "Variações",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:141 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:86 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:89 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:634 (jsx)"
   ]
  },
@@ -32905,7 +33049,7 @@
  "configuracoes.produtos.viewAndChangeTheFlow": {
   "pt": "Ver e alterar o fluxo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2098 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2126 (jsx)"
   ]
  },
  "configuracoes.produtos.viewVariantsOf": {
@@ -32967,7 +33111,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2013 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2041 (jsx)"
   ]
  },
  "configuracoes.produtos.whenAMaterialHasVariants": {
@@ -33017,7 +33161,7 @@
  "configuracoes.produtos.widthAndHeightDonT": {
   "pt": "Largura e altura não mudam o valor de venda: servem para calcular a composição.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1845 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1873 (jsx)"
   ]
  },
  "configuracoes.produtos.withANameTheSame": {
@@ -33030,7 +33174,7 @@
   "pt": "Com composição",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:309 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:102 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:106 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.withThisProductSStandard": {
@@ -36734,14 +36878,6 @@
    "src/consts/cost-base.ts:102 (propriedade:label)"
   ]
  },
- "financeiro.controleDeCaixa.approve": {
-  "pt": "Aprovar",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:295 (jsx)",
-   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:123 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:367 (jsx)"
-  ]
- },
  "financeiro.controleDeCaixa.approveAndClose": {
   "pt": "Aprovar e fechar {date}",
   "vars": [
@@ -37713,15 +37849,6 @@
    "src/app/sandbox/icones/page.tsx:112 (jsx)"
   ]
  },
- "financeiro.fluxoFinanceiro.paid": {
-  "pt": "Pago",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:167 (propriedade:label)",
-   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TransactionsTotals.tsx:156 (jsx)",
-   "src/components/common/PrintQuotation/GeneratePdf.tsx:1804 (jsx)",
-   "src/consts/financial.ts:12 (propriedade:text)"
-  ]
- },
  "financeiro.fluxoFinanceiro.paymentHolds": {
   "pt": "Pendências",
   "usos": [
@@ -37737,8 +37864,13 @@
  },
  "financeiro.fluxoFinanceiro.received": {
   "pt": "Recebido",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TransactionsTotals.tsx:150 (jsx)"
+   "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/TransactionsTotals.tsx:150 (jsx)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:344 (jsx)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:186 (jsx)"
   ]
  },
  "financeiro.fluxoFinanceiro.recordSCreated": {
@@ -43720,34 +43852,6 @@
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:348 (jsx)"
   ]
  },
- "precificacao.inicio.applySuggestedPrice": {
-  "pt": "Aplicar preço sugerido",
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:112 (jsx)",
-   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:193 (jsx)"
-  ]
- },
- "precificacao.inicio.applyTo1Item": {
-  "pt": "Aplicar a 1 item",
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:186 (jsx)"
-  ]
- },
- "precificacao.inicio.applyToItems": {
-  "pt": "Aplicar a {valor} itens",
-  "vars": [
-   "valor"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:187 (jsx)"
-  ]
- },
- "precificacao.inicio.averageSales": {
-  "pt": "Média de venda",
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:382 (jsx)"
-  ]
- },
  "precificacao.inicio.belowCost": {
   "pt": "Abaixo do custo",
   "usos": [
@@ -43781,6 +43885,13 @@
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:241 (jsx)"
   ]
  },
+ "precificacao.inicio.currentMargin": {
+  "pt": "Margem atual",
+  "usos": [
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:407 (jsx)",
+   "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:251 (jsx)"
+  ]
+ },
  "precificacao.inicio.currentPrice": {
   "pt": "Preço atual",
   "usos": [
@@ -43796,7 +43907,7 @@
  "precificacao.inicio.enterTheMonthSAverage": {
   "pt": "Informe a média de venda do mês para ver a estimativa.",
   "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:517 (jsx)"
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:521 (jsx)"
   ]
  },
  "precificacao.inicio.errorSavingThePrice": {
@@ -43808,7 +43919,7 @@
  "precificacao.inicio.estimateForTheMonth": {
   "pt": "Estimativa do mês",
   "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:497 (jsx)"
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:501 (jsx)"
   ]
  },
  "precificacao.inicio.financialCost": {
@@ -43834,6 +43945,12 @@
   "pt": "Margem antes",
   "usos": [
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:136 (jsx)"
+  ]
+ },
+ "precificacao.inicio.monthlyVolume": {
+  "pt": "Volume mensal",
+  "usos": [
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:384 (jsx)"
   ]
  },
  "precificacao.inicio.noCost": {
@@ -43865,12 +43982,6 @@
    "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:334 (jsx)"
   ]
  },
- "precificacao.inicio.perMonth": {
-  "pt": "no mês",
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:390 (atributo:placeholder)"
-  ]
- },
  "precificacao.inicio.priceCharged": {
   "pt": "Preço praticado",
   "usos": [
@@ -43897,25 +44008,16 @@
    "src/consts/pricing.ts:38 (propriedade:text)"
   ]
  },
- "precificacao.inicio.pricing": {
-  "pt": "Precificação",
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/layout.tsx:39 (propriedade:title)",
-   "src/app/(app-sidebar)/precificacao/layout.tsx:47 (atributo:title)",
-   "src/consts/nav.ts:216 (propriedade:title)"
-  ]
- },
  "precificacao.inicio.pricingSummary": {
   "pt": "Resumo de precificação",
   "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:467 (jsx)"
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:471 (jsx)"
   ]
  },
  "precificacao.inicio.profit": {
   "pt": "Lucro",
   "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:208 (propriedade:label)",
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:403 (jsx)"
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:208 (propriedade:label)"
   ]
  },
  "precificacao.inicio.select": {
@@ -43935,8 +44037,20 @@
  },
  "precificacao.inicio.suggestedPrice": {
   "pt": "Preço sugerido",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
-   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:135 (jsx)"
+   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:135 (jsx)",
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:281 (jsx)"
+  ]
+ },
+ "precificacao.inicio.targetMargin": {
+  "pt": "Margem desejada",
+  "usos": [
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:407 (jsx)",
+   "src/app/(app-sidebar)/precificacao/resumo/components/EditParametersModal.tsx:61 (propriedade:label)",
+   "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:145 (propriedade:label)"
   ]
  },
  "precificacao.inicio.taxation": {
@@ -44012,7 +44126,28 @@
  "precificacao.inicio.thisItemDoesnTHave": {
   "pt": "Este item ainda não tem custo calculado. O preço pode ser definido quando o custo aparecer.",
   "usos": [
-   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:451 (jsx)"
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:455 (jsx)"
+  ]
+ },
+ "precificacao.inicio.toSimulateTheMonth": {
+  "pt": "para simular o mês",
+  "usos": [
+   "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:392 (atributo:placeholder)"
+  ]
+ },
+ "precificacao.inicio.useOn1Item": {
+  "pt": "Usar em 1 item",
+  "usos": [
+   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:186 (jsx)"
+  ]
+ },
+ "precificacao.inicio.useOnItems": {
+  "pt": "Usar em {valor} itens",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:187 (jsx)"
   ]
  },
  "precificacao.inicio.variablePrice": {
@@ -44253,13 +44388,6 @@
    "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:253 (jsx)"
   ]
  },
- "precificacao.resumo.targetMargin": {
-  "pt": "Margem desejada",
-  "usos": [
-   "src/app/(app-sidebar)/precificacao/resumo/components/EditParametersModal.tsx:61 (propriedade:label)",
-   "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:145 (propriedade:label)"
-  ]
- },
  "precificacao.resumo.texto": {
   "pt": "{label}: {value}",
   "vars": [
@@ -44385,13 +44513,6 @@
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:156 (propriedade:title)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:423 (jsx)"
-  ]
- },
- "producao.agendaDeEntrega.inProgress": {
-  "pt": "Em andamento",
-  "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:78 (propriedade:label)",
-   "src/consts/productionManager.ts:62 (propriedade:text)"
   ]
  },
  "producao.agendaDeEntrega.invalidTimeExpectedFormatHh": {
@@ -45469,6 +45590,17 @@
   "pt": "Nenhuma tarefa finalizada ainda.",
   "usos": [
    "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:133 (jsx)"
+  ]
+ },
+ "producao.produtividade.productivity": {
+  "pt": "Produtividade",
+  "usos": [
+   "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:66 (atributo:title)",
+   "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:92 (jsx)",
+   "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:183 (jsx)",
+   "src/app/(app-sidebar)/producao/produtividade/page.tsx:9 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/produtividade/page.tsx:25 (propriedade:title)",
+   "src/consts/nav.ts:267 (propriedade:title)"
   ]
  },
  "producao.produtividade.productivityPerPersonIsVisible": {
@@ -46738,14 +46870,6 @@
    "src/app/(app-sidebar)/relatorios/resultado-por-setor/components/print/SectorReportPdf.tsx:138 (jsx)"
   ]
  },
- "relatorios.resultadoPorSetor.result2": {
-  "pt": "Resultado",
-  "usos": [
-   "src/app/(app-sidebar)/relatorios/resultado-por-setor/components/SectorCardsGrid.tsx:46 (jsx)",
-   "src/app/(app-sidebar)/relatorios/resultado-por-setor/components/SectorCardsGrid.tsx:72 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:187 (jsx)"
-  ]
- },
  "relatorios.resultadoPorSetor.resultByDepartment": {
   "pt": "Resultado por setor",
   "usos": [
@@ -47081,6 +47205,15 @@
   "pt": "FASE",
   "usos": [
    "src/app/(app-sidebar)/relatorios/vendas/components/print/SalesReportPdf.tsx:247 (jsx)"
+  ]
+ },
+ "relatorios.vendas.texto": {
+  "pt": "{valor}%",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/relatorios/vendas/components/RankingExpandedDialog.tsx:89 (jsx)"
   ]
  },
  "relatorios.vendas.total": {
@@ -49332,6 +49465,1861 @@
    "src/app/sandbox/list-item/page.tsx:180 (jsx)"
   ]
  },
+ "sandbox.locacao.a": {
+  "pt": "{name}: {start} a {end} ({days} {valor})",
+  "vars": [
+   "name",
+   "start",
+   "end",
+   "days",
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:287 (jsx)"
+  ]
+ },
+ "sandbox.locacao.a2": {
+  "pt": "{start} a {end}",
+  "vars": [
+   "start",
+   "end"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:315 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aArteEEntreguePela": {
+  "pt": "A arte é entregue pela LOCATÁRIA na medida indicada, com até 5 dias úteis de antecedência. O conteúdo veiculado é de responsabilidade da LOCATÁRIA e respeita a legislação e as normas do CONAR.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:421 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aBemIndisponivelParaReserva": {
+  "pt": "{valor} a {valor2} · bem indisponível para reserva",
+  "vars": [
+   "valor",
+   "valor2"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:168 (frase)"
+  ]
+ },
+ "sandbox.locacao.aEntregaSoConcluiCom": {
+  "pt": "A entrega só conclui com a foto da montagem e a conferência das quantidades.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:110 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aFazer": {
+  "pt": "A fazer",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:94 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aImpressaoDaLonaA": {
+  "pt": "A impressão da lona, a instalação e o frete entram como itens comuns do orçamento, ao lado da locação.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:442 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aInstalacaoEARetirada": {
+  "pt": "A instalação e a retirada do material são feitas pela LOCADORA, nas datas de início e de fim do período. A impressão do material, quando contratada, é cobrada à parte.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:425 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aInstalacaoSoConcluiCom": {
+  "pt": "A instalação só conclui com a foto do material no ponto. A foto vai para o cliente.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:109 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aLocacaoNoGerenciadorDe": {
+  "pt": "A locação no gerenciador de produção",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:201 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.aLocadoraAlugaALocataria": {
+  "pt": "A LOCADORA aluga à LOCATÁRIA as peças relacionadas neste contrato, nas quantidades, no período e pelo valor aqui indicados.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:447 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aLocadoraCedeALocataria": {
+  "pt": "A LOCADORA cede à LOCATÁRIA o espaço publicitário descrito neste contrato, pelo período e pelo valor aqui indicados, para a veiculação de mensagem publicitária de responsabilidade da LOCATÁRIA.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:417 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aLocadoraMantemAEstrutura": {
+  "pt": "A LOCADORA mantém a estrutura e a iluminação em condições de uso. Danos causados por vento, chuva ou terceiros são reparados pela LOCADORA em até 5 dias úteis, sem desconto no período.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:429 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aLocatariaRespondePelasPecas": {
+  "pt": "A LOCATÁRIA responde pelas peças do recebimento à devolução. Peças danificadas ou não devolvidas são cobradas pelo valor de reposição.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:455 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aOBemSoVolta": {
+  "pt": "{start} a {end}. O bem só volta a ficar livre no fim do período ou se o contrato for encerrado antes.",
+  "vars": [
+   "start",
+   "end"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:503 (frase)"
+  ]
+ },
+ "sandbox.locacao.aPartirDo": {
+  "pt": "A partir do {valor}",
+  "vars": [
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/PlanLock.tsx:43 (frase)"
+  ]
+ },
+ "sandbox.locacao.aPropostaVenceuEm": {
+  "pt": "A proposta venceu em {validUntil}",
+  "vars": [
+   "validUntil"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:516 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.aRescisaoAntesDoFim": {
+  "pt": "A rescisão antes do fim do período, por iniciativa da LOCATÁRIA, obriga ao pagamento de multa de 30% sobre o valor do período restante.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:433 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.aReservaComecaQuandoO": {
+  "pt": "A reserva começa quando o orçamento vai para Aguardando.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:491 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aReservaValeAteA": {
+  "pt": "A reserva vale até a validade da proposta. Se a proposta vencer sem aprovação, o bem volta a ficar livre.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:499 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aTarefaDeManutencaoTira": {
+  "pt": "A tarefa de manutenção tira o bem da reserva no período, como uma locação: ninguém vende o painel parado para conserto.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:157 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aTelaDeAgendaCom": {
+  "pt": "A tela de agenda, com a ocupação de todos os bens, fica para depois do Elite.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:593 (jsx)"
+  ]
+ },
+ "sandbox.locacao.aguardandoAPropostaVenceEm": {
+  "pt": "Aguardando, a proposta vence em {validUntil}",
+  "vars": [
+   "validUntil"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:473 (jsx)"
+  ]
+ },
+ "sandbox.locacao.anexarAFoto": {
+  "pt": "Anexar a foto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:122 (jsx)"
+  ]
+ },
+ "sandbox.locacao.anosDeResidual": {
+  "pt": "{valueCents}, {lifeYears} anos, {residualPercent}% de residual",
+  "vars": [
+   "valueCents",
+   "lifeYears",
+   "residualPercent"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:128 (frase)"
+  ]
+ },
+ "sandbox.locacao.arteEVeiculacao": {
+  "pt": "Arte e veiculação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:420 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.asPecasSaoEntreguesE": {
+  "pt": "As peças são entregues e retiradas no endereço do evento, com conferência das quantidades e do estado na entrega e na devolução, assinada pelas duas partes.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:451 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.asTelasDaLocacaoEm": {
+  "pt": "As telas da locação em cada plano, com dados de exemplo. Troque o plano para ver o que aparece e o que fica travado.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:84 (jsx)"
+  ]
+ },
+ "sandbox.locacao.atrasoNaDevolucao": {
+  "pt": "Atraso na devolução",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:458 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.balnearioCamboriuSc": {
+  "pt": "Balneário Camboriú/SC, {valor}.",
+  "vars": [
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:385 (frase)"
+  ]
+ },
+ "sandbox.locacao.bem": {
+  "pt": "Bem",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:342 (jsx)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:78 (jsx)",
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:184 (jsx)"
+  ]
+ },
+ "sandbox.locacao.bemLocado": {
+  "pt": "Bem locado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:269 (atributo:label)"
+  ]
+ },
+ "sandbox.locacao.bemUnicoNaoAlugarO": {
+  "pt": "Bem único: não alugar o mesmo período duas vezes",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:285 (jsx)"
+  ]
+ },
+ "sandbox.locacao.cadaDiaDeAtrasoNa": {
+  "pt": "Cada dia de atraso na devolução é cobrado pelo valor da diária de cada peça.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:459 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.cadaLinhaEUmPeriodo": {
+  "pt": "Cada linha é um período. Para um tempo maior, acrescente outra linha com o início seguinte",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:405 (jsx)"
+  ]
+ },
+ "sandbox.locacao.cadastroDoProduto": {
+  "pt": "Cadastro do produto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:111 (jsx)"
+  ]
+ },
+ "sandbox.locacao.clausula": {
+  "pt": "Cláusula",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:378 (jsx)"
+  ]
+ },
+ "sandbox.locacao.clienteLojaMundoKidsValidade": {
+  "pt": "Cliente: Loja Mundo Kids · validade da proposta até {validUntil}",
+  "vars": [
+   "validUntil"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:240 (frase)"
+  ]
+ },
+ "sandbox.locacao.cnpj": {
+  "pt": ", CNPJ",
+  "marcas": [
+   "pais-br",
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:260 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:264 (jsx)"
+  ]
+ },
+ "sandbox.locacao.cobrancaMensalDaLocacaoLonga": {
+  "pt": "Cobrança mensal da locação longa",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:527 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.cobrarTodoMesEnquantoA": {
+  "pt": "Cobrar todo mês enquanto a locação durar",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:540 (jsx)"
+  ]
+ },
+ "sandbox.locacao.comSedeEm": {
+  "pt": ", com sede em",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:261 (jsx)",
+   "src/app/sandbox/locacao/components/RentalContract.tsx:265 (jsx)"
+  ]
+ },
+ "sandbox.locacao.comecaEm": {
+  "pt": "Começa em {start}",
+  "vars": [
+   "start"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:121 (frase)"
+  ]
+ },
+ "sandbox.locacao.companyLogo": {
+  "pt": "Logo da empresa",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:238 (atributo:alt)",
+   "src/components/layout/MobileSidebar.tsx:187 (atributo:alt)"
+  ]
+ },
+ "sandbox.locacao.composicaoDoProdutoDeLocacao": {
+  "pt": "Composição do produto de locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:182 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.comprovacaoDeVeiculacao": {
+  "pt": "Comprovação de veiculação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:105 (jsx)"
+  ]
+ },
+ "sandbox.locacao.comprovacaoEnviadaAoCliente": {
+  "pt": "Comprovação enviada ao cliente.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:139 (aviso)"
+  ]
+ },
+ "sandbox.locacao.concluirAInstalacao": {
+  "pt": "Concluir a instalação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:130 (jsx)"
+  ]
+ },
+ "sandbox.locacao.conferenciaDasPecas": {
+  "pt": "Conferência das peças",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:105 (jsx)"
+  ]
+ },
+ "sandbox.locacao.configuracoesProdutosNovoProdutoE": {
+  "pt": "Configurações › Produtos › Novo produto. É o cadastro comum de produto, com a marca &quot;Produto de locação&quot;, no setor Locação.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:78 (jsx)"
+  ]
+ },
+ "sandbox.locacao.configuracoesVendasContratoDeLocacao": {
+  "pt": "Configurações › Vendas › Contrato de locação. As cláusulas valem para todos os contratos deste modelo.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:405 (jsx)"
+  ]
+ },
+ "sandbox.locacao.confirmada": {
+  "pt": "Confirmada",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:626 (jsx)"
+  ]
+ },
+ "sandbox.locacao.contratoDeLocacao": {
+  "pt": "Contrato de locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:211 (jsx)"
+  ]
+ },
+ "sandbox.locacao.contratoDeLocacaoN41": {
+  "pt": "Contrato de locação nº 41-T1",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:256 (jsx)"
+  ]
+ },
+ "sandbox.locacao.contratoEncerradoHojeOBem": {
+  "pt": "Contrato encerrado hoje: o bem ficou livre e as parcelas que ainda não venceram foram canceladas.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:153 (aviso)"
+  ]
+ },
+ "sandbox.locacao.contratosDeLocacao": {
+  "pt": "Contratos de locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:67 (jsx)"
+  ]
+ },
+ "sandbox.locacao.custo": {
+  "pt": "Custo{perUnit}",
+  "vars": [
+   "perUnit"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:280 (frase)"
+  ]
+ },
+ "sandbox.locacao.custoDoBemEPreco": {
+  "pt": "Custo do bem e preço sugerido",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:359 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.custoDoPatrimonio": {
+  "pt": "Custo do patrimônio",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:109 (jsx)"
+  ]
+ },
+ "sandbox.locacao.custoMensalDoBem": {
+  "pt": "Custo mensal do bem",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:148 (jsx)"
+  ]
+ },
+ "sandbox.locacao.custoPrecoSugeridoEMargem": {
+  "pt": "Custo, preço sugerido e margem de cada período",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:251 (jsx)"
+  ]
+ },
+ "sandbox.locacao.dadosDoPonto": {
+  "pt": "Dados do ponto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:301 (jsx)"
+  ]
+ },
+ "sandbox.locacao.danosEManutencao": {
+  "pt": "Danos e manutenção",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:428 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.despesasDoPonto": {
+  "pt": "Despesas do ponto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:185 (jsx)"
+  ]
+ },
+ "sandbox.locacao.diariaBissemanaMes": {
+  "pt": "Diária, bissemana, mês",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:106 (atributo:placeholder)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:204 (atributo:placeholder)"
+  ]
+ },
+ "sandbox.locacao.dias": {
+  "pt": "{value} dias",
+  "vars": [
+   "value"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:211 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.dias2": {
+  "pt": "Dias",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:279 (jsx)"
+  ]
+ },
+ "sandbox.locacao.diasAlugadosPorMes": {
+  "pt": "Dias alugados por mês",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:170 (jsx)"
+  ]
+ },
+ "sandbox.locacao.diasDoPeriodo": {
+  "pt": "Dias do período",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:114 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:193 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:217 (atributo:aria-label)"
+  ]
+ },
+ "sandbox.locacao.diasReferencia": {
+  "pt": "{month} dias · referência {referenceDays}",
+  "vars": [
+   "month",
+   "referenceDays"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:378 (frase)"
+  ]
+ },
+ "sandbox.locacao.eAMesmaTabelaDe": {
+  "pt": "É a mesma tabela de variações dos outros produtos, com os dias de cada período. Cada variação pode ter o seu preço por quantidade.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:160 (jsx)"
+  ]
+ },
+ "sandbox.locacao.eOCaixaDoMes": {
+  "pt": "É o caixa do mês, sem o desgaste do bem. No Pro, o resultado por bem inclui a depreciação e mostra a ocupação.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:221 (jsx)"
+  ]
+ },
+ "sandbox.locacao.eOPrecoDeVenda": {
+  "pt": "É o preço de venda do produto, como em qualquer outro. No orçamento, a locação começa na data de início e termina depois dos dias do período.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:139 (jsx)"
+  ]
+ },
+ "sandbox.locacao.emDigitacaoOBemNao": {
+  "pt": "Em digitação o bem não fica reservado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:487 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.emVerdeOsMesesQue": {
+  "pt": "Em verde, os meses que alcançaram a referência.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:227 (jsx)"
+  ]
+ },
+ "sandbox.locacao.encerradoParcelasFuturasCanceladas": {
+  "pt": "Encerrado · parcelas futuras canceladas",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:114 (jsx)"
+  ]
+ },
+ "sandbox.locacao.encerrarContrato": {
+  "pt": "Encerrar contrato",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:158 (jsx)"
+  ]
+ },
+ "sandbox.locacao.enderecoDoPonto": {
+  "pt": "Endereço do ponto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:277 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:310 (jsx)"
+  ]
+ },
+ "sandbox.locacao.entradaServicos": {
+  "pt": "Entrada (serviços)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:151 (propriedade:label)"
+  ]
+ },
+ "sandbox.locacao.entregaEDevolucao": {
+  "pt": "Entrega e devolução",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:450 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.enviadaAoCliente": {
+  "pt": "Enviada ao cliente",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:142 (jsx)"
+  ]
+ },
+ "sandbox.locacao.enviarAoCliente": {
+  "pt": "Enviar ao cliente",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:142 (jsx)"
+  ]
+ },
+ "sandbox.locacao.enviarParaOCliente": {
+  "pt": "Enviar para o cliente",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:257 (jsx)"
+  ]
+ },
+ "sandbox.locacao.escolhaOutraDataDeInicio": {
+  "pt": "Escolha outra data de início ou outro produto para enviar ao cliente.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:479 (jsx)"
+  ]
+ },
+ "sandbox.locacao.estePeriodoJaEstaReservado": {
+  "pt": "Este período já está reservado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:466 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.esteProdutoAceitaVariasLocacoes": {
+  "pt": "Este produto aceita várias locações no mesmo período",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:456 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.esteProdutoTemAComposicao": {
+  "pt": "Este produto tem a composição com os custos do patrimônio. O custo por dia e a margem de cada período estão na aba",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:363 (jsx)"
+  ]
+ },
+ "sandbox.locacao.face": {
+  "pt": "Face",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:278 (atributo:label)"
+  ]
+ },
+ "sandbox.locacao.faceESentido": {
+  "pt": "Face e sentido",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:320 (jsx)"
+  ]
+ },
+ "sandbox.locacao.faltaAFotoAnexePara": {
+  "pt": "Falta a foto: anexe para poder concluir a instalação.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:147 (jsx)"
+  ]
+ },
+ "sandbox.locacao.ficaEleitoOForoDa": {
+  "pt": "Fica eleito o foro da comarca da LOCADORA para resolver as questões deste contrato.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:437 (propriedade:text)",
+   "src/app/sandbox/locacao/data.ts:467 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.financeiroContratosDeLocacaoCada": {
+  "pt": "Financeiro › Contratos de locação. Cada contrato aprovado, a cobrança dele em Contas a receber e o aviso de quem está para vencer.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:69 (jsx)"
+  ]
+ },
+ "sandbox.locacao.financeiroDaLocacao": {
+  "pt": "Financeiro da locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:171 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.foro": {
+  "pt": "Foro",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:436 (propriedade:title)",
+   "src/app/sandbox/locacao/data.ts:466 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.fotoAnexada": {
+  "pt": "Foto anexada",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:122 (jsx)"
+  ]
+ },
+ "sandbox.locacao.fotosDoPonto": {
+  "pt": "Fotos do ponto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:350 (jsx)"
+  ]
+ },
+ "sandbox.locacao.iluminado": {
+  "pt": "Iluminado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:345 (jsx)"
+  ]
+ },
+ "sandbox.locacao.imprimirContrato": {
+  "pt": "Imprimir contrato",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:225 (jsx)"
+  ]
+ },
+ "sandbox.locacao.instalacaoERetirada": {
+  "pt": "Instalação e retirada",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:424 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.installment": {
+  "pt": "Parcela",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:350 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:553 (jsx)",
+   "src/components/common/PrintQuotation/GeneratePdf.tsx:1828 (jsx)"
+  ]
+ },
+ "sandbox.locacao.itensDaNegociacao": {
+  "pt": "Itens da negociação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:294 (jsx)"
+  ]
+ },
+ "sandbox.locacao.liberada": {
+  "pt": "Liberada",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:632 (jsx)"
+  ]
+ },
+ "sandbox.locacao.ligadoParaOOutdoorE": {
+  "pt": "Ligado para o outdoor e o painel inteiro. Desligado para o que aceita várias locações no mesmo período: peças de box truss, anúncios no painel de LED.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:288 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locacao": {
+  "pt": "Locação {valor}/{valor2}",
+  "vars": [
+   "valor",
+   "valor2"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:159 (propriedade:label)"
+  ]
+ },
+ "sandbox.locacao.locacao2": {
+  "pt": "Locação:",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:307 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locacao3": {
+  "pt": "Locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:82 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locacaoNoOrcamento": {
+  "pt": "Locação no orçamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:112 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locacoes": {
+  "pt": "Locações",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:587 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locadora": {
+  "pt": "LOCADORA",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:390 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locataria": {
+  "pt": "LOCATÁRIA:",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:264 (jsx)"
+  ]
+ },
+ "sandbox.locacao.locataria2": {
+  "pt": "LOCATÁRIA",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:394 (jsx)"
+  ]
+ },
+ "sandbox.locacao.maisDeUmModelo": {
+  "pt": "Mais de um modelo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:413 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.manutencaoDoBem": {
+  "pt": "Manutenção do bem",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:155 (jsx)"
+  ]
+ },
+ "sandbox.locacao.markup": {
+  "pt": "Markup",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:260 (jsx)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:341 (jsx)"
+  ]
+ },
+ "sandbox.locacao.medidaDaArte": {
+  "pt": "Medida da arte",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:282 (atributo:label)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:330 (jsx)"
+  ]
+ },
+ "sandbox.locacao.modeloDesteOrcamento": {
+  "pt": "Modelo deste orçamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:417 (jsx)"
+  ]
+ },
+ "sandbox.locacao.modeloDoContrato": {
+  "pt": "Modelo do contrato",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:403 (jsx)"
+  ]
+ },
+ "sandbox.locacao.naTelaRealAbreUm": {
+  "pt": "Na tela real, abre um novo orçamento com o mesmo bem a partir do dia seguinte ao fim.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:136 (aviso)"
+  ]
+ },
+ "sandbox.locacao.naTelaRealOContrato": {
+  "pt": "Na tela real, o contrato abre em PDF.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:222 (aviso)"
+  ]
+ },
+ "sandbox.locacao.nenhumaReservaParaEsteBem": {
+  "pt": "Nenhuma reserva para este bem.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:641 (jsx)"
+  ]
+ },
+ "sandbox.locacao.noOrcamentoAoLadoDe": {
+  "pt": "No orçamento, ao lado de &quot;Imprimir proposta&quot;. Sai em PDF, com o cabeçalho da empresa.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:213 (jsx)"
+  ]
+ },
+ "sandbox.locacao.novaClausula": {
+  "pt": "Nova cláusula",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:477 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oBemSaiuDaReserva": {
+  "pt": "O bem saiu da reserva e voltou a ficar livre. Para reservar de novo, renove a validade da proposta.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:518 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oCancelamentoComMenosDe": {
+  "pt": "O cancelamento com menos de 48 horas do início obriga ao pagamento de 50% do valor contratado.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:463 (propriedade:text)"
+  ]
+ },
+ "sandbox.locacao.oControleDeQuantasPecas": {
+  "pt": "O controle de quantas peças estão livres (box truss, brindes) fica para o controle de estoque, a estudar.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:270 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oCustoDoPeriodoE": {
+  "pt": "O custo do período é o custo por dia vezes os dias. O preço sugerido aplica o markup; a margem compara com o valor que você pratica.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:254 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oOrcamentoAprovadoGeraAs": {
+  "pt": "{name}. O orçamento aprovado gera as tarefas com as datas do período, cada uma no setor dela, com equipe e veículo.",
+  "vars": [
+   "name"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:72 (frase)"
+  ]
+ },
+ "sandbox.locacao.oPeriodoEstaLivreA": {
+  "pt": "O período está livre. A reserva começa quando o orçamento vai para Aguardando.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:490 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oQueCadaBemRecebeu": {
+  "pt": "O que cada bem recebeu de locação e o que pagou de despesas do ponto. A despesa entra aqui quando o lançamento de Contas a pagar indica o bem (o aluguel do terreno, a energia do painel).",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:175 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oQueJaFoiLocado": {
+  "pt": "O que já foi locado deste produto, para conferir o saldo.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:592 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oQueJaSeguraEste": {
+  "pt": "O que já segura este bem.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:591 (jsx)"
+  ]
+ },
+ "sandbox.locacao.oSeuPerfilDeVendedor": {
+  "pt": "O seu perfil de vendedor permite até {valor}% de desconto: o mínimo deste item é {minCents}. Aumente o valor ou peça a um gestor para liberar.",
+  "vars": [
+   "valor",
+   "minCents"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:432 (frase)"
+  ]
+ },
+ "sandbox.locacao.oSistemaNaoControlaQuantas": {
+  "pt": "O sistema não controla quantas unidades estão livres: confira o que já foi locado na lista abaixo. O controle do saldo entra com o controle de estoque.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:458 (jsx)"
+  ]
+ },
+ "sandbox.locacao.objeto": {
+  "pt": "Objeto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:416 (propriedade:title)",
+   "src/app/sandbox/locacao/data.ts:446 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.ocupacaoDeReferenciaECusto": {
+  "pt": "Ocupação de referência e custo por dia",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:160 (jsx)"
+  ]
+ },
+ "sandbox.locacao.ocupacaoDoMes": {
+  "pt": "Ocupação do mês",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:343 (jsx)"
+  ]
+ },
+ "sandbox.locacao.opcionalEntramNaPropostaE": {
+  "pt": "Opcional. Entram na proposta e no contrato: o cliente escolhe o ponto pela foto e pelo endereço.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:303 (jsx)"
+  ]
+ },
+ "sandbox.locacao.orcamento": {
+  "pt": "· orçamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:470 (jsx)"
+  ]
+ },
+ "sandbox.locacao.orcamento41T1": {
+  "pt": "Orçamento 41-T1",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:235 (jsx)"
+  ]
+ },
+ "sandbox.locacao.ouEscolhaUmaVariacaoMaior": {
+  "pt": "ou escolha uma variação maior",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:407 (jsx)"
+  ]
+ },
+ "sandbox.locacao.parcela12": {
+  "pt": "Parcela 1/2",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:167 (propriedade:label)"
+  ]
+ },
+ "sandbox.locacao.parcela22": {
+  "pt": "Parcela 2/2",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:173 (propriedade:label)"
+  ]
+ },
+ "sandbox.locacao.pelaCondicaoDoOrcamento": {
+  "pt": "Pela condição do orçamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:109 (jsx)"
+  ]
+ },
+ "sandbox.locacao.periodoDaLocacao": {
+  "pt": "Período da locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:103 (jsx)"
+  ]
+ },
+ "sandbox.locacao.por": {
+  "pt": ", por {unit}",
+  "vars": [
+   "unit"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:171 (jsx)"
+  ]
+ },
+ "sandbox.locacao.porDia": {
+  "pt": "{daily} por dia{perUnit}",
+  "vars": [
+   "daily",
+   "perUnit"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:238 (frase)"
+  ]
+ },
+ "sandbox.locacao.porMes": {
+  "pt": "{monthlyCents} por mês",
+  "vars": [
+   "monthlyCents"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:108 (jsx)"
+  ]
+ },
+ "sandbox.locacao.prazo": {
+  "pt": "Prazo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:300 (jsx)"
+  ]
+ },
+ "sandbox.locacao.produtoDeExemplo": {
+  "pt": "Produto de exemplo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:121 (jsx)"
+  ]
+ },
+ "sandbox.locacao.produtoDeLocacao": {
+  "pt": "Produto de locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:91 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:76 (jsx)",
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:95 (jsx)"
+  ]
+ },
+ "sandbox.locacao.qualPontoDaMaisE": {
+  "pt": "Qual ponto dá mais e qual dá menos. A receita é a do financeiro: o que o bem recebeu no mês, nas datas das parcelas. O total vendido no mês fica no relatório de vendas, por produto. O custo é o realizado: depreciação mais as despesas do ponto lançadas.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:332 (jsx)"
+  ]
+ },
+ "sandbox.locacao.quantosDiasPorMesO": {
+  "pt": "Quantos dias por mês o bem costuma estar alugado. O custo do mês é dividido por esses dias, para o preço cobrir os dias parados.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:162 (jsx)"
+  ]
+ },
+ "sandbox.locacao.realizadoNosUltimos12Meses": {
+  "pt": "Realizado nos últimos 12 meses: média de {realized} dias por mês",
+  "vars": [
+   "realized"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:201 (frase)"
+  ]
+ },
+ "sandbox.locacao.removerClausula": {
+  "pt": "Remover cláusula",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:452 (atributo:tooltip)"
+  ]
+ },
+ "sandbox.locacao.removerVariacao": {
+  "pt": "Remover variação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:240 (atributo:tooltip)"
+  ]
+ },
+ "sandbox.locacao.renovar": {
+  "pt": "Renovar",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:141 (jsx)"
+  ]
+ },
+ "sandbox.locacao.renovarAValidade": {
+  "pt": "Renovar a validade",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:294 (jsx)"
+  ]
+ },
+ "sandbox.locacao.rescisao": {
+  "pt": "Rescisão",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:432 (propriedade:title)",
+   "src/app/sandbox/locacao/data.ts:462 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.reserva": {
+  "pt": "Reserva",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:268 (jsx)"
+  ]
+ },
+ "sandbox.locacao.reservaDoBem": {
+  "pt": "Reserva do bem",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:449 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.reservaDoBemUnico": {
+  "pt": "Reserva do bem único",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:263 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.reservadoAte": {
+  "pt": "Reservado até {validUntil}",
+  "vars": [
+   "validUntil"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:497 (atributo:title)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:628 (frase)"
+  ]
+ },
+ "sandbox.locacao.reservas": {
+  "pt": "Reservas",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:587 (jsx)"
+  ]
+ },
+ "sandbox.locacao.resultadoDeCaixa": {
+  "pt": "Resultado de caixa",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:188 (jsx)"
+  ]
+ },
+ "sandbox.locacao.resultadoDeCaixaPorBem": {
+  "pt": "Resultado de caixa por bem, neste mês",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:173 (jsx)"
+  ]
+ },
+ "sandbox.locacao.resultadoPorBemNesteMes": {
+  "pt": "Resultado por bem, neste mês",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:330 (jsx)"
+  ]
+ },
+ "sandbox.locacao.semDatasNoOrcamento": {
+  "pt": "Sem datas no orçamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:288 (jsx)"
+  ]
+ },
+ "sandbox.locacao.semIluminacao": {
+  "pt": "sem iluminação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:280 (jsx)"
+  ]
+ },
+ "sandbox.locacao.simularPropostaVencida": {
+  "pt": "Simular proposta vencida",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:272 (jsx)"
+  ]
+ },
+ "sandbox.locacao.tarefasDaLocacao": {
+  "pt": "Tarefas da locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:71 (jsx)"
+  ]
+ },
+ "sandbox.locacao.texto": {
+  "pt": "÷ {capacity} {capacity2}",
+  "vars": [
+   "capacity",
+   "capacity2"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:235 (jsx)"
+  ]
+ },
+ "sandbox.locacao.texto2": {
+  "pt": "{quantity} {quantity2} ·",
+  "vars": [
+   "quantity",
+   "quantity2"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:271 (jsx)"
+  ]
+ },
+ "sandbox.locacao.texto3": {
+  "pt": "{quantity}",
+  "vars": [
+   "quantity"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:309 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:400 (jsx)"
+  ]
+ },
+ "sandbox.locacao.texto4": {
+  "pt": "ª -",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:378 (jsx)"
+  ]
+ },
+ "sandbox.locacao.texto5": {
+  "pt": "ª",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:440 (jsx)"
+  ]
+ },
+ "sandbox.locacao.texto6": {
+  "pt": "{count}",
+  "vars": [
+   "count"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:621 (jsx)"
+  ]
+ },
+ "sandbox.locacao.textoDaClausula": {
+  "pt": "Texto da cláusula {valor}",
+  "vars": [
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:459 (atributo:aria-label)"
+  ]
+ },
+ "sandbox.locacao.tituloDaClausula": {
+  "pt": "Título da cláusula {valor}",
+  "vars": [
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalContract.tsx:443 (atributo:aria-label)"
+  ]
+ },
+ "sandbox.locacao.trocaDosRefletores": {
+  "pt": "Troca dos refletores",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProduction.tsx:166 (jsx)"
+  ]
+ },
+ "sandbox.locacao.umaParcelaACada30": {
+  "pt": "Uma parcela a cada 30 dias de locação. Encerrar o contrato antes cancela as parcelas que ainda não venceram.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:545 (jsx)"
+  ]
+ },
+ "sandbox.locacao.usarAMediaRealizadaDias": {
+  "pt": "Usar a média realizada ({realized} dias)",
+  "vars": [
+   "realized"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:190 (frase)"
+  ]
+ },
+ "sandbox.locacao.usoEConservacao": {
+  "pt": "Uso e conservação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/data.ts:454 (propriedade:title)"
+  ]
+ },
+ "sandbox.locacao.valeParaOPeriodoDe": {
+  "pt": "Vale para o período de mais de 30 dias. Este usa a condição de pagamento do orçamento.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:544 (jsx)"
+  ]
+ },
+ "sandbox.locacao.valorDoItem": {
+  "pt": "Valor do item",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:411 (jsx)"
+  ]
+ },
+ "sandbox.locacao.valorPraticado": {
+  "pt": "Valor praticado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:282 (jsx)"
+  ]
+ },
+ "sandbox.locacao.variacaoPeriodo": {
+  "pt": "Variação (período)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:344 (jsx)"
+  ]
+ },
+ "sandbox.locacao.variacoesOsPeriodosDaLocacao": {
+  "pt": "Variações: os períodos da locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:158 (jsx)"
+  ]
+ },
+ "sandbox.locacao.variosPeriodosNoMesmoProduto": {
+  "pt": "Vários períodos no mesmo produto",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalProductForm.tsx:151 (atributo:title)"
+  ]
+ },
+ "sandbox.locacao.vemDoCadastroDePatrimonios": {
+  "pt": "{name}. Vem do cadastro de patrimônios: o valor do bem e os custos próprios do ponto.",
+  "vars": [
+   "name"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalComposition.tsx:110 (frase)"
+  ]
+ },
+ "sandbox.locacao.venceEm": {
+  "pt": "Vence em",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalFinance.tsx:118 (jsx)"
+  ]
+ },
+ "sandbox.locacao.verComoOPlano": {
+  "pt": "Ver como o plano",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/page.tsx:92 (jsx)"
+  ]
+ },
+ "sandbox.locacao.voltarAoValorDaTabela": {
+  "pt": "Voltar ao valor da tabela",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:425 (jsx)"
+  ]
+ },
  "sandbox.memberSelect.aSemLabelNomeApenas": {
   "pt": "A — Sem label · Nome apenas",
   "marcas": [
@@ -50922,6 +52910,963 @@
   ],
   "usos": [
    "src/app/sandbox/nav-menu/page.tsx:570 (jsx)"
+  ]
+ },
+ "sandbox.offset.aDeMenorCustoPara": {
+  "pt": "· a de menor custo para este trabalho",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:286 (jsx)"
+  ]
+ },
+ "sandbox.offset.aIaExplicaComOs": {
+  "pt": "A IA explica com os números do cálculo. O preço não sai do modelo.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:555 (jsx)"
+  ]
+ },
+ "sandbox.offset.aPecaDeCmNao": {
+  "pt": "A peça de {width} × {height} cm não cabe em nenhuma máquina offset cadastrada com este papel. Diminua a medida, troque o papel ou cadastre uma máquina de formato maior em Patrimônios.",
+  "vars": [
+   "width",
+   "height"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:267 (frase)"
+  ]
+ },
+ "sandbox.offset.aPecaNaoCabeEm": {
+  "pt": "A peça não cabe em nenhuma máquina.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:118 (jsx)"
+  ]
+ },
+ "sandbox.offset.aPecaNaoCabeNo": {
+  "pt": "A peça não cabe no formato desta máquina ( {maxWidth} × {maxHeight} cm)",
+  "vars": [
+   "maxWidth",
+   "maxHeight"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:514 (frase)"
+  ]
+ },
+ "sandbox.offset.aPorHora": {
+  "pt": "{setupMinutes} a {hourCents} por hora",
+  "vars": [
+   "setupMinutes",
+   "hourCents"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:390 (frase)"
+  ]
+ },
+ "sandbox.offset.aceitaTiraERetira": {
+  "pt": "Aceita tira e retira",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:140 (jsx)"
+  ]
+ },
+ "sandbox.offset.acertoDaMaquina": {
+  "pt": "Acerto da máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:389 (jsx)"
+  ]
+ },
+ "sandbox.offset.ajustadaNesteItem": {
+  "pt": "Ajustada neste item",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:216 (jsx)"
+  ]
+ },
+ "sandbox.offset.alturaFinalCm": {
+  "pt": "Altura final (cm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:141 (jsx)"
+  ]
+ },
+ "sandbox.offset.asTelasDaOffsetNo": {
+  "pt": "As telas da offset no Pro, com o cálculo de verdade e dados de exemplo. Começa no caso do cliente: 50.000 panfletos 10 × 21 cm, 4x4, em couché 90 g.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/page.tsx:48 (jsx)"
+  ]
+ },
+ "sandbox.offset.bordaDaFolhaQueA": {
+  "pt": "Borda da folha que a máquina segura e não imprime.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:122 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.chapa": {
+  "pt": "Chapa",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:161 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.chapas": {
+  "pt": "Chapas",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:317 (atributo:label)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:453 (jsx)"
+  ]
+ },
+ "sandbox.offset.chapasAcertoEProducao": {
+  "pt": "Chapas, acerto e produção",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:152 (jsx)"
+  ]
+ },
+ "sandbox.offset.chapasEGravacao": {
+  "pt": "Chapas e gravação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:376 (jsx)"
+  ]
+ },
+ "sandbox.offset.cm": {
+  "pt": "{short} × {long} cm",
+  "vars": [
+   "short",
+   "long"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:474 (frase)"
+  ]
+ },
+ "sandbox.offset.comAparaEmCinza": {
+  "pt": ", com apara (em cinza)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:93 (jsx)"
+  ]
+ },
+ "sandbox.offset.coresFrenteVerso": {
+  "pt": "Cores (frente × verso)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:168 (jsx)"
+  ]
+ },
+ "sandbox.offset.coresPorPassada": {
+  "pt": "Cores por passada",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:128 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.corteCompartilhado": {
+  "pt": "· corte compartilhado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:217 (jsx)"
+  ]
+ },
+ "sandbox.offset.custoDoTrabalhoPorPeca": {
+  "pt": "Custo do trabalho · {valor} por peça",
+  "vars": [
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:411 (frase)"
+  ]
+ },
+ "sandbox.offset.custoEPrecoSugerido": {
+  "pt": "Custo e preço sugerido",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:334 (jsx)"
+  ]
+ },
+ "sandbox.offset.custoFixo": {
+  "pt": "Custo fixo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:75 (jsx)"
+  ]
+ },
+ "sandbox.offset.custoFixoEODas": {
+  "pt": "Custo fixo é o das chapas, da gravação e do preparo: não muda com a quantidade. No Lite, sem custo, a mesma queda de preço é cadastrada à mão nas faixas de quantidade do produto.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:126 (jsx)"
+  ]
+ },
+ "sandbox.offset.custoPorPeca": {
+  "pt": "Custo por peça",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:77 (jsx)"
+  ]
+ },
+ "sandbox.offset.deAcerto": {
+  "pt": "{runSheets} + {makereadySheets} de acerto",
+  "vars": [
+   "runSheets",
+   "makereadySheets"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:309 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.deChapasEPreparoE": {
+  "pt": "de chapas e preparo e",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:214 (jsx)"
+  ]
+ },
+ "sandbox.offset.deMaquina": {
+  "pt": "de máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:92 (jsx)"
+  ]
+ },
+ "sandbox.offset.deMaquinaPorFolha": {
+  "pt": "{perFullSheet} de máquina por folha",
+  "vars": [
+   "perFullSheet"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:314 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.escolhidaPorVoce": {
+  "pt": "· escolhida por você",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:285 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhaDeCm": {
+  "pt": "folha de {short} × {long} cm",
+  "vars": [
+   "short",
+   "long"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:304 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.folhaDeMaquina": {
+  "pt": "Folha de máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:451 (jsx)",
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:138 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhaDeMaquinaComAs": {
+  "pt": "Folha de máquina com as peças",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:102 (atributo:aria-label)"
+  ]
+ },
+ "sandbox.offset.folhaInteira": {
+  "pt": "Folha inteira",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:90 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhaInteiraA": {
+  "pt": "Folha inteira a {costCents}.",
+  "vars": [
+   "costCents"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:204 (frase)"
+  ]
+ },
+ "sandbox.offset.folhaInteiraCortadaEmFolhas": {
+  "pt": "Folha inteira cortada em folhas de máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:68 (atributo:aria-label)"
+  ]
+ },
+ "sandbox.offset.folhas": {
+  "pt": "folhas ×",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:401 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhasDeAcertoAntesDa": {
+  "pt": "folhas de acerto, antes da primeira peça.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:214 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhasDeAcertoPorChapa": {
+  "pt": "Folhas de acerto por chapa",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:179 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.folhasDeMaquina": {
+  "pt": "Folhas de máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:307 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.folhasEChapas": {
+  "pt": "Folhas e chapas",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:281 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhasInteiras": {
+  "pt": "Folhas inteiras",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:312 (atributo:label)",
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:74 (jsx)"
+  ]
+ },
+ "sandbox.offset.folhasInteiras2": {
+  "pt": "{fullSheets} folhas inteiras × {costCents}",
+  "vars": [
+   "fullSheets",
+   "costCents"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:367 (frase)"
+  ]
+ },
+ "sandbox.offset.folhasPorHora": {
+  "pt": "Folhas por hora",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:189 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.formatoEImpressao": {
+  "pt": "Formato e impressão",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:91 (jsx)"
+  ]
+ },
+ "sandbox.offset.formatoMaximoAlturaCm": {
+  "pt": "Formato máximo: altura (cm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:110 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.formatoMaximoLarguraCm": {
+  "pt": "Formato máximo: largura (cm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:107 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.formatoMinimoAlturaCm": {
+  "pt": "Formato mínimo: altura (cm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:116 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.formatoMinimoLarguraCm": {
+  "pt": "Formato mínimo: largura (cm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:113 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.frenteEVersoComAs": {
+  "pt": "Frente e verso com as mesmas cores na mesma folha: um jogo de chapas em vez de dois.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:255 (jsx)"
+  ]
+ },
+ "sandbox.offset.frenteEVersoComUm": {
+  "pt": "Frente e verso com um só jogo de chapas, quando as cores dos dois lados são as mesmas.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:142 (jsx)"
+  ]
+ },
+ "sandbox.offset.graficaOffset": {
+  "pt": "Gráfica offset",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/page.tsx:46 (jsx)"
+  ]
+ },
+ "sandbox.offset.gravacaoPorChapa": {
+  "pt": "Gravação por chapa",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:170 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.itemDeOffset": {
+  "pt": "Item de offset",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:118 (jsx)"
+  ]
+ },
+ "sandbox.offset.itemNoOrcamento": {
+  "pt": "Item no orçamento",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/page.tsx:56 (jsx)"
+  ]
+ },
+ "sandbox.offset.larguraFinalCm": {
+  "pt": "Largura final (cm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:128 (jsx)"
+  ]
+ },
+ "sandbox.offset.maisCaroQueNa": {
+  "pt": "mais caro que na",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:528 (jsx)"
+  ]
+ },
+ "sandbox.offset.maisCoresQueIssoPedem": {
+  "pt": "Mais cores que isso pedem outra passada.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:129 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.maquina": {
+  "pt": "Máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:450 (jsx)",
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:73 (jsx)"
+  ]
+ },
+ "sandbox.offset.maquinaDeMenorCusto": {
+  "pt": "Máquina de menor custo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:72 (jsx)"
+  ]
+ },
+ "sandbox.offset.maquinaOffset": {
+  "pt": "Máquina offset",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/page.tsx:57 (jsx)"
+  ]
+ },
+ "sandbox.offset.maquinasParaEsteTrabalho": {
+  "pt": "Máquinas para este trabalho",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:440 (jsx)"
+  ]
+ },
+ "sandbox.offset.margemDePincaMm": {
+  "pt": "Margem de pinça (mm)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:121 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.menorCusto": {
+  "pt": "Menor custo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:470 (jsx)"
+  ]
+ },
+ "sandbox.offset.noOrcamentoAoAdicionarUm": {
+  "pt": "No orçamento, ao adicionar um produto de impressão offset. O vendedor digita o tamanho final; a sangria e o resto ficam por conta do cálculo.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:120 (jsx)"
+  ]
+ },
+ "sandbox.offset.oCalculoTestaTodasAs": {
+  "pt": "O cálculo testa todas as máquinas offset do patrimônio e fica com a de menor custo. Você pode trocar.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:442 (jsx)"
+  ]
+ },
+ "sandbox.offset.oCorteORefileE": {
+  "pt": "O corte, o refile e os acabamentos entram como outras etapas da composição, como hoje.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:432 (jsx)"
+  ]
+ },
+ "sandbox.offset.oCustoFixoDeCada": {
+  "pt": "O custo fixo de cada trabalho: é o que faz o unitário cair quando a tiragem sobe.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:154 (jsx)"
+  ]
+ },
+ "sandbox.offset.oMaterialDaChapaPor": {
+  "pt": "O material da chapa, por chapa.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:162 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.oPapelCresceComA": {
+  "pt": "O papel cresce com a tiragem; as chapas e o acerto são do trabalho e se diluem na quantidade.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:336 (jsx)"
+  ]
+ },
+ "sandbox.offset.padraoDoSetor": {
+  "pt": "Padrão do setor",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:216 (jsx)"
+  ]
+ },
+ "sandbox.offset.patrimoniosMaquinaDoTipoImpressora": {
+  "pt": "Patrimônios › máquina do tipo &quot;Impressora offset&quot;. É o que diz se o trabalho cabe e quantas passadas ele pede.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:93 (jsx)"
+  ]
+ },
+ "sandbox.offset.pecaDeCmXA": {
+  "pt": "Peça de {width} × {height} cm, {frontColors}x{backColors}, {name}. A linha em verde é a quantidade do item.",
+  "vars": [
+   "width",
+   "height",
+   "frontColors",
+   "backColors",
+   "name"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:61 (frase)"
+  ]
+ },
+ "sandbox.offset.pecasDe": {
+  "pt": "peças de",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:139 (jsx)"
+  ]
+ },
+ "sandbox.offset.pecasPorFolha": {
+  "pt": "Peças por folha",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:302 (atributo:label)",
+   "src/app/sandbox/offset/components/OffsetItem.tsx:452 (jsx)",
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:73 (jsx)"
+  ]
+ },
+ "sandbox.offset.pincaDeMmEmAmarelo": {
+  "pt": "; pinça de {gripperMm} mm em amarelo",
+  "vars": [
+   "gripperMm"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:142 (jsx)"
+  ]
+ },
+ "sandbox.offset.porPassadaNaMaquina": {
+  "pt": "Por passada na máquina.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:190 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.porQueEstaMaquina": {
+  "pt": "Por que esta máquina",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:547 (jsx)"
+  ]
+ },
+ "sandbox.offset.precoPorPeca": {
+  "pt": "Preço por peça",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:78 (jsx)"
+  ]
+ },
+ "sandbox.offset.precoSugeridoPorPeca": {
+  "pt": "Preço sugerido · {valor} por peça",
+  "vars": [
+   "valor"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:420 (frase)"
+  ]
+ },
+ "sandbox.offset.preparoPorChapaMin": {
+  "pt": "Preparo por chapa (min)",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:184 (atributo:label)"
+  ]
+ },
+ "sandbox.offset.sangriaDeMmPorLado": {
+  "pt": "Sangria de {bleedMm} mm por lado",
+  "vars": [
+   "bleedMm"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:212 (frase)"
+  ]
+ },
+ "sandbox.offset.sangriaPorLadoEmMm": {
+  "pt": "Sangria por lado, em mm",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:225 (atributo:aria-label)"
+  ]
+ },
+ "sandbox.offset.semTiraERetira": {
+  "pt": "{backColors} sem tira e retira",
+  "vars": [
+   "backColors"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:321 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.somadasATiragemUmaVez": {
+  "pt": "Somadas à tiragem, uma vez por trabalho.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:180 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.tiraERetira": {
+  "pt": "Tira e retira",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:291 (jsx)",
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:95 (jsx)"
+  ]
+ },
+ "sandbox.offset.tiraERetira2": {
+  "pt": "· tira e retira",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:480 (jsx)"
+  ]
+ },
+ "sandbox.offset.tiragemValorPorPeca": {
+  "pt": "Tiragem × valor por peça",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetRuns.tsx:60 (jsx)"
+  ]
+ },
+ "sandbox.offset.tiragens": {
+  "pt": "Tiragens",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/page.tsx:58 (jsx)"
+  ]
+ },
+ "sandbox.offset.umTrabalho4x4NestaMaquina": {
+  "pt": "Um trabalho 4x4 nesta máquina, sem tira e retira, começa com",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:206 (jsx)"
+  ]
+ },
+ "sandbox.offset.umaPorCorDeCada": {
+  "pt": "uma por cor de cada lado",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:322 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.usarEsta": {
+  "pt": "Usar esta",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:502 (jsx)"
+  ]
+ },
+ "sandbox.offset.usarTiraERetiraQuando": {
+  "pt": "Usar tira e retira quando der",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:253 (jsx)"
+  ]
+ },
+ "sandbox.offset.vemDosCustosDoPatrimonio": {
+  "pt": "Vem dos custos do patrimônio, como nas outras máquinas.",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetMachines.tsx:197 (atributo:hint)"
+  ]
+ },
+ "sandbox.offset.verdeEFrenteEAzul": {
+  "pt": "; verde é frente e azul é verso",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/SheetDiagram.tsx:144 (jsx)"
+  ]
+ },
+ "sandbox.offset.voceTrocouAMaquinaO": {
+  "pt": "Você trocou a máquina: o trabalho sai",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:526 (jsx)"
+  ]
+ },
+ "sandbox.offset.voltarAoPadraoDoSetor": {
+  "pt": "Voltar ao padrão do setor ({SECTOR_BLEED_MM} mm)",
+  "vars": [
+   "SECTOR_BLEED_MM"
+  ],
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:234 (frase)"
+  ]
+ },
+ "sandbox.offset.voltarParaADeMenor": {
+  "pt": "Voltar para a de menor custo",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/sandbox/offset/components/OffsetItem.tsx:534 (jsx)"
   ]
  },
  "sandbox.orcamento.bannerLona440ComBastao": {
@@ -54136,9 +57081,13 @@
  },
  "vendas.orcamentos.moveBackToDraft": {
   "pt": "Voltar para digitação",
+  "marcas": [
+   "vitrine"
+  ],
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/OpenQuotation.tsx:85 (atributo:title)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/OpenQuotation.tsx:116 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/OpenQuotation.tsx:116 (jsx)",
+   "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:305 (jsx)"
   ]
  },
  "vendas.orcamentos.moveTheSaleBackTo": {

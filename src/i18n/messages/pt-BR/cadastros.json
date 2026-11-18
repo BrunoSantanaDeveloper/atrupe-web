@@ -196,7 +196,6 @@
     "toDeactivateAPaperTurn": "Para inativar um papel, desligue a chave Ativo na edição dele",
     "noPaperRegistered": "Nenhum papel cadastrado",
     "addTheFirstPaperName": "Cadastre o primeiro papel: nome, gramatura e a folha",
-    "paper": "Papel",
     "weight2": "Gramatura",
     "sheet": "Folha",
     "gM": "{grammage} g/m²",

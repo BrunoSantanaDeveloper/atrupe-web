@@ -166,7 +166,6 @@
     "whatTheCardProcessorStill": "What the card processor still owes, at full value. Check it at settlement",
     "planned": "+ {pending} planned",
     "turnOnControl": "Turn on control",
-    "approve": "Approve",
     "adjustment": "Adjustment",
     "closeRegister": "Close register",
     "viewTheDay": "View the day",
@@ -303,7 +302,6 @@
     "customPeriod": "Custom period",
     "selectAnAccount": "Select an account",
     "selectTheStatus": "Select the status",
-    "paid": "Paid",
     "provisioned": "Provisioned",
     "paymentHolds": "Payment holds",
     "allTransactions": "All transactions",
@@ -318,8 +316,7 @@
     "noPaymentInThePeriod": "no payment in the period",
     "dueInThePeriodAnd": "due in the period and still open",
     "movedInThePeriod": "moved in the period",
-    "ofInvoicesDueInThe": "of invoices due in the period",
-    "received": "Received"
+    "ofInvoicesDueInThe": "of invoices due in the period"
   },
   "folhaDePagamento": {
     "payrollOperation": "Payroll operation",

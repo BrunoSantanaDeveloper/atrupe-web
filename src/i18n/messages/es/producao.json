@@ -14,7 +14,6 @@
     "deliveryScheduleDate": "Fecha de la agenda de entregas",
     "addTime": "Agregar hora",
     "toInvoice": "Por facturar",
-    "inProgress": "En curso",
     "closed": "Finalizados",
     "noDeliveriesWithStatus": "Ninguna entrega con el estado: {statusLabel}",
     "noDeliveriesScheduled": "Ninguna entrega agendada",
@@ -170,6 +169,7 @@
     "finishingMovesTheTaskTo": "Finalizar {name} pasa la tarea a {name2}."
   },
   "produtividade": {
+    "productivity": "Productividad",
     "byDepartment": "Por sector",
     "completedTasksSoldTimeComes": "Tareas finalizadas. Lo vendido viene de la composición; lo registrado, del reloj. Productividad = vendido ÷ registrado.",
     "tasks": "Tareas",

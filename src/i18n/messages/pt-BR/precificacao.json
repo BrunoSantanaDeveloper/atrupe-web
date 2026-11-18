@@ -1,6 +1,5 @@
 {
   "inicio": {
-    "applySuggestedPrice": "Aplicar preço sugerido",
     "thePriceBecomesTheBuild": "O preço passa a ser o da composição na medida padrão.",
     "thePriceBecomesCostMarkup": "O preço passa a ser custo × markup, como preço variável: ele acompanha o custo e preserva o lucro desejado.",
     "currentPrice": "Preço atual",
@@ -8,8 +7,8 @@
     "marginBefore": "Margem antes",
     "marginAfter": "Margem depois",
     "alreadyAtTheSuggestedPrice": "Já está no preço sugerido.",
-    "applyTo1Item": "Aplicar a 1 item",
-    "applyToItems": "Aplicar a {valor} itens",
+    "useOn1Item": "Usar em 1 item",
+    "useOnItems": "Usar em {valor} itens",
     "taxation": "Tributação",
     "financialCost": "Custo financeiro",
     "profit": "Lucro",
@@ -20,8 +19,10 @@
     "editPricing": "Editar precificação",
     "texto": "· {code}",
     "couldnTReadThePricing": "Não foi possível ler os parâmetros da precificação ( {parametersError}). A simulação abaixo está sem os encargos; o preço é conferido ao salvar.",
-    "averageSales": "Média de venda",
-    "perMonth": "no mês",
+    "monthlyVolume": "Volume mensal",
+    "toSimulateTheMonth": "para simular o mês",
+    "currentMargin": "Margem atual",
+    "targetMargin": "Margem desejada",
     "thisItemDoesnTHave": "Este item ainda não tem custo calculado. O preço pode ser definido quando o custo aparecer.",
     "pricingSummary": "Resumo de precificação",
     "estimateForTheMonth": "Estimativa do mês",
@@ -46,7 +47,6 @@
     "thePriceIsTheOne": "O preço é o do cadastro do produto: a margem mostra o resultado.",
     "thePriceChargedIsUp": "Preço praticado é livre: a margem mostra o resultado.",
     "youDonTHavePermission": "Você não tem permissão para visualizar a precificação.",
-    "pricing": "Precificação",
     "bringsLaborMachineMaterialAnd": "Reúne o preço de mão de obra, máquinas, materiais e produtos num lugar só."
   },
   "maoDeObra": {
@@ -68,7 +68,6 @@
     "averageCommissionPercentageConsidered": "Percentual médio de comissão considerado.",
     "referenceFinancialCost": "Custo financeiro de referência",
     "costOfPaymentMethodsFees": "Custo das formas de pagamento, taxas e antecipações.",
-    "targetMargin": "Margem desejada",
     "theProfitMarginYouWant": "Margem de lucro que você deseja obter.",
     "parametersSaved": "Parâmetros salvos",
     "errorSavingTheParameters": "Erro ao salvar os parâmetros",
