@@ -11,6 +11,10 @@
     "es": "Tercerizado puntual",
     "en": "One-off outsourced"
   },
+  "1927922008": {
+    "es": "Activada, la venta rápida aparece en el menú de Ventas.",
+    "en": "When on, quick sale shows in the Sales menu."
+  },
   "2145787003": {
     "es": "Ningún contacto registrado. Los contactos se registran en el cotización, con el botón \"Registrar contacto\".",
     "en": "No contact logged. Contacts are logged on the quote, with the \"Log contact\" button."
@@ -18459,10 +18463,6 @@
     "es": "La lista de cotizaciones filtra por ellos. El avance de la cotización (elaboración, esperando, aprobada) es otra cosa y es del sistema.",
     "en": "The quote list filters by them. The quote's progress (draft, waiting, approved) is different and comes from the system."
   },
-  "1927922008": {
-    "es": "Activada, la venta rápida aparece en el menú de Ventas.",
-    "en": "When on, quick sale shows in the Sales menu."
-  },
   "84ecd807e9": {
     "es": "El vendedor no pasa por el registro de la cotización: va directo a elegir el ítem. Sirve para la venta pequeña de mostrador: una copia, un par de impresiones.",
     "en": "The salesperson skips the quote form and goes straight to picking the item. It is for small counter sales: a copy, a couple of prints."
@@ -18650,5 +18650,53 @@
   "f4bd294613": {
     "es": "En el producto nuevo, el código se crea solo a partir del nombre: las primeras letras de las palabras principales, con 5 letras. Si ya existe, recibe un número al final.",
     "en": "On a new product, the code is created from the name: the first letters of the main words, 5 letters long. If it already exists, a number is added at the end."
+  },
+  "790a19d05d": {
+    "es": "Mejora",
+    "en": "Improvement"
+  },
+  "1e916f0c72": {
+    "es": "Corrección",
+    "en": "Fix"
+  },
+  "6ccc54e5bc": {
+    "es": "Novedades del sistema",
+    "en": "System updates"
+  },
+  "7294188fdf": {
+    "es": "Entendido",
+    "en": "Got it"
+  },
+  "867e0ab3cd": {
+    "es": "Novedades",
+    "en": "What's new"
+  },
+  "cbb15954e3": {
+    "es": "Ninguna novedad por ahora",
+    "en": "No updates yet"
+  },
+  "b8f88bd992": {
+    "es": "Cuando se libere una actualización para su plan, aparece aquí y en la campana de arriba.",
+    "en": "When an update is released for your plan, it shows up here and in the bell at the top."
+  },
+  "b1a315ad54": {
+    "es": "Qué cambió: {title}",
+    "en": "What changed: {title}"
+  },
+  "d0d4530850": {
+    "es": "Ver todas las novedades",
+    "en": "See all updates"
+  },
+  "583a2b612d": {
+    "es": "Novedades: {unread} sin ver",
+    "en": "Updates: {unread} unseen"
+  },
+  "4f09a5a221": {
+    "es": "Las actualizaciones liberadas para su plan",
+    "en": "The updates released for your plan"
+  },
+  "1ca650f59b": {
+    "es": "Ninguna novedad por ahora.",
+    "en": "No updates yet."
   }
 }

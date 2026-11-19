@@ -22,6 +22,7 @@ import { Skeleton } from '../ui/skeleton'
 
 // Components
 import { HelpButton } from './HelpButton'
+import { ReleaseNotesBell } from './ReleaseNotes/ReleaseNotesBell'
 
 // Hooks
 import { useHelpData } from '@/hooks/queries/useHelpData'
@@ -133,6 +134,8 @@ export function Topbar({
           {hasHelpContent && !label ? <HelpButton data={helpData} /> : null}
           {secondaryCta || null}
           {primaryCta || null}
+          {/* As novidades do sistema (19/11/2026), no topo de toda tela */}
+          {!label ? <ReleaseNotesBell /> : null}
         </div>
       </div>
       {tabs?.length ? (

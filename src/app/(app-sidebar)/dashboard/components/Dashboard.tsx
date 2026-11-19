@@ -27,6 +27,8 @@ import { DashboardPeriod, DashboardPeriodFilter } from './DashboardPeriodFilter'
 import { DashboardTopClients } from './TopClients'
 import { DashboardSalesBySeller } from './SalesBySeller'
 import { DashboardSalesEvolution } from './SalesEvolution'
+import { ReleaseNotesBell } from '@/components/common/ReleaseNotes/ReleaseNotesBell'
+import { ReleaseAnnouncement } from '@/components/common/ReleaseNotes/ReleaseAnnouncement'
 
 function formatDateToISO(date: Date) {
   const year = date.getFullYear()
@@ -98,12 +100,15 @@ function DashboardContent() {
   return (
     <div className="space-y-4 mt-1 w-full">
       <FiscalOnboardingBanner />
+      {/* "O que mudou" na primeira abertura depois de uma atualização */}
+      <ReleaseAnnouncement />
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Heading as="h1">Painel</Heading>
         <div className="flex items-center gap-2">
           <DashboardPeriodFilter value={period} onChange={setPeriod} />
           <ToggleValuesButton />
+          <ReleaseNotesBell />
         </div>
       </div>
 

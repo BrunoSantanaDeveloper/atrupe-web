@@ -25,6 +25,7 @@ import {
   IconTargetArrow,
   IconListSearch,
   IconDatabaseImport,
+  IconSparkles,
   IconLayoutGrid,
   IconUserDollar,
   IconTrendingUp,
@@ -601,6 +602,13 @@ export const adminMainNavigation: MainNavigationType[] = [
         icon: IconDatabaseImport,
         title: 'Migração do legado',
         path: '/admin/sistema/migracao',
+      },
+      // As novidades do sistema: o sino, o aviso do painel e a página
+      // Novidades dos clientes (19/11/2026)
+      {
+        icon: IconSparkles,
+        title: 'Novidades',
+        path: '/admin/sistema/novidades',
       },
     ],
   },
