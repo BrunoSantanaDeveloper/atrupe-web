@@ -92,6 +92,8 @@ export interface BotSettings {
   /** Um bloco por perfil declarado; ausente nas camadas gravadas antes dos perfis, e então tudo vale o global. */
   profiles?: Record<string, ProfileSettings>;
   suggest_on_open: boolean;
+  /** No modo automático, depois que a equipe assume, o robô sugere a resposta numa nota interna (D32). Ausente: desligado. */
+  suggest_after_takeover?: boolean;
   share_contact_name: boolean;
 }
 

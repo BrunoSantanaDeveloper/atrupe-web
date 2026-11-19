@@ -642,6 +642,14 @@ export function RoboAtendimento({
                     })
                   }
                 />
+                <Toggle
+                  label="Sugerir respostas depois que a equipe assume"
+                  hint="Com o robô respondendo sozinho: quando alguém da equipe assume a conversa, o robô para de responder e passa a sugerir a resposta numa nota interna. Nada vai para o cliente sem a pessoa enviar."
+                  checked={settings.suggest_after_takeover === true}
+                  onChange={(checked) =>
+                    update({ suggest_after_takeover: checked })
+                  }
+                />
               </>
             ) : null}
             {can('mensagens') ? (

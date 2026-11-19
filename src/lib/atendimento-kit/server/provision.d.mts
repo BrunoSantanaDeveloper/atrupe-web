@@ -89,7 +89,11 @@ export function ensureStaffUser(input: {
   chatwootUrl: string;
   platformToken: string;
   state: SupportState;
-  person: { key: string; email: string; name: string };
+  /**
+   * chatwootUserId: o usuário que o kit já criou para a mesma pessoa em outro cliente. Sem ele, um e-mail que já
+   * existe no Chatwoot é recusado com staff_email_in_use, sem tocar no dono do e-mail.
+   */
+  person: { key: string; email: string; name: string; chatwootUserId?: number | null };
   /** Mescladas ao perfil a cada chamada. */
   uiSettings?: Record<string, unknown> | null;
   /** Mescladas só na primeira vez da pessoa na equipe, para não desfazer a escolha dela. */

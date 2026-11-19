@@ -56,6 +56,8 @@ export function defaultSettings(brand = "") {
     // O que muda conforme o perfil de quem escreve (D30), um bloco por perfil que o projeto declara; vazio vale o padrão.
     profiles: {},
     suggest_on_open: true,
+    // D32: no modo automático, depois que a equipe assume, o robô sugere a resposta numa nota interna. Desligado no padrão.
+    suggest_after_takeover: false,
     share_contact_name: true,
   };
 }
@@ -103,7 +105,7 @@ const GROUP_FIELDS = {
   conhecimento: ["knowledge"],
   horario: ["hours"],
   mensagens: ["messages"],
-  transferencia: ["handoff", "suggest_on_open", "share_contact_name"],
+  transferencia: ["handoff", "suggest_on_open", "suggest_after_takeover", "share_contact_name"],
   consultas: ["tools_enabled"],
   modo: ["mode"],
   grupos: ["groups"],
@@ -230,6 +232,9 @@ export function validateSettings(settings, { declaredTools = [], declaredProfile
     // Arquivos chegaram depois (D29): uma configuração salva antes não tem o campo e vale como ligado.
     if (media.documents !== undefined && typeof media.documents !== "boolean") add("media.documents", "Escolha sim ou não para PDF, planilha e documento.");
   }
+  if (settings.suggest_after_takeover !== undefined && typeof settings.suggest_after_takeover !== "boolean") {
+    add("suggest_after_takeover", "Escolha sim ou não para as sugestões depois que a equipe assume.");
+  }
 
   validateProfiles(settings.profiles, declaredProfiles, add);
 
@@ -354,6 +359,8 @@ export function botConfig({ model = "por-cliente", platform, client, state, tool
     profiles: profileBlocks({ model, base, layer, permissions, declared: profiles }),
     tools: tools.filter((tool) => enabled.has(tool.name)).map(({ name, description, input_schema }) => ({ name, description, input_schema })),
     suggest_on_open: (permissions.transferencia && layer ? layer.suggest_on_open : base.suggest_on_open) !== false,
+    suggest_after_takeover:
+      (permissions.transferencia && layer && typeof layer.suggest_after_takeover === "boolean" ? layer.suggest_after_takeover : base.suggest_after_takeover) === true,
     history_from_project: true,
     privacy: { share_contact_name: (permissions.transferencia && layer ? layer.share_contact_name : base.share_contact_name) !== false },
     learning: { enabled: base.learning?.enabled !== false },
