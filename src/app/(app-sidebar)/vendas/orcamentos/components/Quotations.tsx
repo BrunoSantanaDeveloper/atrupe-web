@@ -40,16 +40,23 @@ import type { ExportColumn } from '@/lib/export-excel'
 import type { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { createItemNew, getData, getDataOld, getItem } from '@/actions/_cruds'
+import {
+  createItemNew,
+  getData,
+  getDataOld,
+  getItem,
+  getItemOld,
+} from '@/actions/_cruds'
 
 // Third-party
 import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import { IconReportOff } from '@tabler/icons-react'
 import { quotationsStatusObj } from '@/consts/quotations'
 import { usePermissions } from '@/hooks/usePermissions'
+import { prefetchSectorsWithProducts } from '@/hooks/queries/useSectorWithProducts'
 
 type QuotationExportType = QuotationType & {
   groupDate?: string
@@ -183,6 +190,20 @@ export function Quotations({ searchParams }: SearchParamsType) {
   // e o orçamento nasce direto, abrindo na tela dos itens
   const isQuickSale = quickSaleRequested
   const [creatingQuickSale, setCreatingQuickSale] = useState(false)
+  const queryClient = useQueryClient()
+
+  // Lista Lite 19/11, item 10: a venda rápida abria com a página recarregada
+  // inteira (window.location), o que somava segundos. Agora navega por dentro
+  // do app e já busca o orçamento enquanto a navegação acontece: a tela dos
+  // itens abre com os dados na mão. A chave é a de Quotation.tsx
+  const openQuickSale = (id: string) => {
+    queryClient.prefetchQuery({
+      staleTime: Infinity,
+      queryKey: ['quotation-data', id],
+      queryFn: () => getItemOld({ route: 'quotationRoute', id }),
+    })
+    router.push(`/vendas/orcamentos/${id}?adicionar=1`)
+  }
 
   // Fora da URL da venda rápida, a próxima entrada pelo menu tenta de novo
   useEffect(() => {
@@ -194,6 +215,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
     const createQuickSale = async () => {
       setCreatingQuickSale(true)
+      // A grade de setores do modal vem junto, enquanto a venda é criada
+      prefetchSectorsWithProducts(queryClient)
 
       // Abrir o menu criava uma venda vazia a cada visita e a lista enchia
       // de lixo (decisão do produto, 26/10/2026): a venda rápida vazia do
@@ -209,7 +232,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           sale?.status === 'OPEN' &&
           !(sale?.quotationItems?.length > 0)
         ) {
-          window.location.href = `/vendas/orcamentos/${previous}?adicionar=1`
+          openQuickSale(previous)
           return
         }
         window.localStorage.removeItem(emptyKey)
@@ -232,10 +255,11 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
       window.localStorage.setItem(emptyKey, res.data.id)
       // Já com o modal "Qual item deseja adicionar?" aberto (VR-4)
-      window.location.href = `/vendas/orcamentos/${res.data.id}?adicionar=1`
+      openQuickSale(res.data.id)
     }
 
     createQuickSale()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isQuickSale, creatingQuickSale, router, pathname, session?.user?.userId])
   const { hasAllPermissions } = usePermissions()
 

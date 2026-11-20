@@ -1,5 +1,5 @@
 import { getDataOld } from '@/actions/_cruds'
-import { useQuery } from '@tanstack/react-query'
+import { type QueryClient, useQuery } from '@tanstack/react-query'
 
 export interface ISector {
   id: string
@@ -21,4 +21,17 @@ export function useSectorWithProducts() {
     staleTime: Infinity,
   })
   return { data, isError, isLoading }
+}
+
+/**
+ * Busca a grade de setores antes do modal "Qual item deseja adicionar?"
+ * abrir (Lista Lite 19/11, item 10): a venda rápida abria o modal estreito,
+ * com o carregando, e ele crescia quando os setores chegavam.
+ */
+export function prefetchSectorsWithProducts(queryClient: QueryClient) {
+  return queryClient.prefetchQuery({
+    queryKey: ['sectors-with-products'],
+    queryFn: () => fetchData(),
+    staleTime: Infinity,
+  })
 }
