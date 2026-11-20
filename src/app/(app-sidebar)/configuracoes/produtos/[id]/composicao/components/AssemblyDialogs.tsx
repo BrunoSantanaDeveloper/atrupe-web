@@ -26,14 +26,15 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectBasic } from '@/components/common/form/FormSelect'
-import { DurationInput } from '@/components/common/DurationInput'
+import {
+  DurationInput,
+  formatDuration,
+} from '@/components/common/DurationInput'
 
 // Types
 import {
   TASK_TYPES,
   lineModeObj,
-  hhmmToMinutes,
-  minutesToHhmm,
   quantityModeObj,
   type QuoteField,
   type ProductFormula,
@@ -602,6 +603,9 @@ export function NewLineDialog({
   // Mão de obra é tempo: o consumo e o mínimo entram em h:mm, com o relógio,
   // e não há perda (03/10/2026)
   const isTime = values.kind === 'LABOR' || unit === 'min'
+  // A máquina por hora também é tempo, em hh:mm, mas com perda (20/11/2026)
+  const hoursUnit = !isTime && unit === 'h'
+  const timeField = isTime || hoursUnit
   const list = values.mode === 'LIST'
   const mixedUnits =
     values.mode === 'CHOOSE' && new Set(chosen.map((i) => i.unit)).size > 1
@@ -866,11 +870,14 @@ export function NewLineDialog({
                 <div className="space-y-2">
                   <Label htmlFor="new-line-per-unit">
                     {isTime
-                      ? 'Tempo (h:mm)'
-                      : `Consumo${unit ? ` (${unit})` : ''}`}
+                      ? 'Tempo (hh:mm)'
+                      : hoursUnit
+                        ? 'Consumo (hh:mm)'
+                        : `Consumo${unit ? ` (${unit})` : ''}`}
                   </Label>
-                  {isTime ? (
+                  {timeField ? (
                     <DurationInput
+                      unit={hoursUnit ? 'h' : 'min'}
                       id="new-line-per-unit"
                       value={values.perUnit}
                       onChange={(minutes) => set('perUnit', minutes ?? 0)}
@@ -906,11 +913,14 @@ export function NewLineDialog({
                 <div className="space-y-2">
                   <Label htmlFor="new-line-minimum">
                     {isTime
-                      ? 'Tempo mínimo (h:mm)'
-                      : `Mínimo${unit ? ` (${unit})` : ''}`}
+                      ? 'Tempo mínimo (hh:mm)'
+                      : hoursUnit
+                        ? 'Mínimo (hh:mm)'
+                        : `Mínimo${unit ? ` (${unit})` : ''}`}
                   </Label>
-                  {isTime ? (
+                  {timeField ? (
                     <DurationInput
+                      unit={hoursUnit ? 'h' : 'min'}
                       id="new-line-minimum"
                       placeholder="Sem mínimo"
                       value={values.minimum}
@@ -1086,6 +1096,9 @@ export function LineDialog({
   const unit = line?.selected?.unit || line?.options[0]?.unit || ''
   // Mão de obra é tempo: h:mm com o relógio, sem perda (03/10/2026)
   const isTime = line?.kind === 'LABOR' || unit === 'min'
+  // A máquina por hora também é tempo, em hh:mm, mas com perda (20/11/2026)
+  const hoursUnit = !isTime && unit === 'h'
+  const timeField = isTime || hoursUnit
 
   return (
     <Dialog open={!!line} onOpenChange={onOpenChange}>
@@ -1169,10 +1182,15 @@ export function LineDialog({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="line-per-unit">
-                {isTime ? 'Tempo (h:mm)' : `Consumo (${unit})`}
+                {isTime
+                  ? 'Tempo (hh:mm)'
+                  : hoursUnit
+                    ? 'Consumo (hh:mm)'
+                    : `Consumo (${unit})`}
               </Label>
-              {isTime ? (
+              {timeField ? (
                 <DurationInput
+                  unit={hoursUnit ? 'h' : 'min'}
                   id="line-per-unit"
                   value={values.perUnit}
                   onChange={(minutes) =>
@@ -1220,10 +1238,15 @@ export function LineDialog({
                 )}
                 <div className="space-y-2">
                   <Label htmlFor="line-minimum">
-                    {isTime ? 'Tempo mínimo (h:mm)' : `Mínimo (${unit})`}
+                    {isTime
+                      ? 'Tempo mínimo (hh:mm)'
+                      : hoursUnit
+                        ? 'Mínimo (hh:mm)'
+                        : `Mínimo (${unit})`}
                   </Label>
-                  {isTime ? (
+                  {timeField ? (
                     <DurationInput
+                      unit={hoursUnit ? 'h' : 'min'}
                       id="line-minimum"
                       placeholder="Sem mínimo"
                       value={values.minimum}
@@ -1399,10 +1422,15 @@ export function LineDialog({
                             {option.name}
                           </td>
                           <td className="px-3 py-2">
-                            {isTime ? (
+                            {timeField ? (
                               <DurationInput
+                                unit={hoursUnit ? 'h' : 'min'}
                                 aria-label={`Tempo de ${option.name}`}
-                                placeholder={minutesToHhmm(values.perUnit)}
+                                placeholder={formatDuration(
+                                  hoursUnit
+                                    ? values.perUnit * 60
+                                    : values.perUnit,
+                                )}
                                 value={current?.perUnit ?? null}
                                 onChange={(minutes) =>
                                   setOption('perUnit', minutes ?? undefined)
@@ -1444,13 +1472,18 @@ export function LineDialog({
                             </td>
                           )}
                           <td className="px-3 py-2">
-                            {isTime ? (
+                            {timeField ? (
                               <DurationInput
+                                unit={hoursUnit ? 'h' : 'min'}
                                 aria-label={`Tempo mínimo de ${option.name}`}
                                 placeholder={
                                   values.minimum === null
                                     ? '-'
-                                    : minutesToHhmm(values.minimum)
+                                    : formatDuration(
+                                        hoursUnit
+                                          ? values.minimum * 60
+                                          : values.minimum,
+                                      )
                                 }
                                 value={current?.minimum ?? null}
                                 onChange={(minutes) =>
@@ -1534,7 +1567,7 @@ const describe = (rules: SaleRules) =>
     rules.followsBase ? 'acompanha a quantidade da base' : 'uma vez por pedido',
     dimensionRuleOptions.find((item) => item.value === rules.dimension)?.label,
     rules.timeField
-      ? `com campo tempo (${minutesToHhmm(rules.timeFieldDefault || 0)})`
+      ? `com campo tempo (${formatDuration(rules.timeFieldDefault || 0)})`
       : null,
   ]
     .filter(Boolean)
@@ -1703,14 +1736,11 @@ export function RulesDialog({
             </label>
             {rules.timeField && (
               <div className="space-y-2">
-                <Label htmlFor="rules-time-default">Tempo padrão (h:mm)</Label>
-                <Input
+                <Label htmlFor="rules-time-default">Tempo padrão (hh:mm)</Label>
+                <DurationInput
                   id="rules-time-default"
-                  placeholder="1:00"
-                  defaultValue={minutesToHhmm(rules.timeFieldDefault || 0)}
-                  onBlur={(event) =>
-                    set('timeFieldDefault', hhmmToMinutes(event.target.value))
-                  }
+                  value={rules.timeFieldDefault || 0}
+                  onChange={(minutes) => set('timeFieldDefault', minutes ?? 0)}
                 />
               </div>
             )}

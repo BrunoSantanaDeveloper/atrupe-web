@@ -18906,5 +18906,25 @@
   "0ffb0faf38": {
     "es": "Aprovechamiento de hoja",
     "en": "Sheet yield"
+  },
+  "99aa3884fa": {
+    "es": "Tiempo (hh:mm)",
+    "en": "Time (hh:mm)"
+  },
+  "726b22f7ff": {
+    "es": "Tiempo mínimo (hh:mm)",
+    "en": "Minimum time (hh:mm)"
+  },
+  "ef1bc8b8e0": {
+    "es": "Tiempo estándar (hh:mm)",
+    "en": "Standard time (hh:mm)"
+  },
+  "8a5b38d4d1": {
+    "es": "Preparación (hh:mm)",
+    "en": "Setup (hh:mm)"
+  },
+  "5bb451dd2d": {
+    "es": "{name} (hh:mm)",
+    "en": "{name} (hh:mm)"
   }
 }

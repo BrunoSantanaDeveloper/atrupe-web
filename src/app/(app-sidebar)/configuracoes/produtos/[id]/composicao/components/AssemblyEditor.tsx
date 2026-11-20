@@ -66,6 +66,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { durationText } from '@/components/common/DurationInput'
 import {
   LineDialog,
   NewLineDialog,
@@ -221,11 +222,12 @@ const num = (value: number, digits = 3) =>
   value.toLocaleString('pt-BR', { maximumFractionDigits: digits })
 
 // Tempo em horas e minutos, como o legado mostra: 90 min → 1h30 (IP-33)
+// Tempo sempre em hh:mm:ss (20/11/2026): a mão de obra guarda minutos e a
+// máquina por hora, horas
 const amount = (value: number, unit: string) => {
-  if (unit !== 'min' || value < 60) return `${num(value)} ${unit}`
-  const hours = Math.floor(value / 60)
-  const minutes = Math.round(value - hours * 60)
-  return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
+  if (unit === 'min') return durationText(value)
+  if (unit === 'h') return durationText(value * 60)
+  return `${num(value)} ${unit}`
 }
 
 // O campo que a fórmula consome está zerado nesta etapa? (IP-35)
@@ -1332,7 +1334,7 @@ function AssemblyEditorBody({
                                       ? `+${num(line.effective.lossPercent, 1)}% de perda`
                                       : null,
                                     line.effective.minimum !== null
-                                      ? `mínimo ${num(line.effective.minimum)} ${unit}`
+                                      ? `mínimo ${amount(line.effective.minimum, unit)}`
                                       : null,
                                   ]
                                     .filter(Boolean)

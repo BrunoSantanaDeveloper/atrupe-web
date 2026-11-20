@@ -66,7 +66,7 @@ import {
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select'
-import { DurationInput } from '@/components/common/DurationInput'
+import { DurationInput, durationText } from '@/components/common/DurationInput'
 import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Types
@@ -146,11 +146,12 @@ const num = (value: number, digits = 3) =>
   value.toLocaleString('pt-BR', { maximumFractionDigits: digits })
 
 // Tempo em horas e minutos, como a composição mostra (IP-33)
+// Tempo sempre em hh:mm:ss (20/11/2026): a mão de obra guarda minutos e a
+// máquina por hora, horas
 const amount = (value: number, unit: string) => {
-  if (unit !== 'min' || value < 60) return `${num(value)} ${unit}`
-  const hours = Math.floor(value / 60)
-  const minutes = Math.round(value - hours * 60)
-  return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
+  if (unit === 'min') return durationText(value)
+  if (unit === 'h') return durationText(value * 60)
+  return `${num(value)} ${unit}`
 }
 
 // O campo que a fórmula consome está zerado na simulação? (IP-35)
@@ -721,7 +722,7 @@ export function ProcessEditor({
                   />
                   <div className="flex flex-col">
                     <Label htmlFor="process-setup" className="mb-2">
-                      Preparo (h:mm)
+                      Preparo (hh:mm)
                     </Label>
                     <DurationInput
                       id="process-setup"
@@ -1108,7 +1109,7 @@ export function ProcessEditor({
                                       ? `+${num(line.effective.lossPercent, 1)}% de perda`
                                       : null,
                                     line.effective.minimum !== null
-                                      ? `mínimo ${num(line.effective.minimum)} ${unit}`
+                                      ? `mínimo ${amount(line.effective.minimum, unit)}`
                                       : null,
                                   ]
                                     .filter(Boolean)

@@ -25,9 +25,9 @@ import type { SaleSheetUsage } from '@/app/(app-sidebar)/configuracoes/produtos/
 // A composição do produto vem da API (contrato, módulo 1, parte A)
 import { getSaleForm, getSaleSheetUsage } from '@/actions/assembly'
 import {
-  hhmmToMinutes,
-  minutesToHhmm,
-} from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
+  DurationInput,
+  formatDuration,
+} from '@/components/common/DurationInput'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -180,7 +180,7 @@ export function SaleCompositionFields({
       ? [
           ...saleForm.times.map(
             (time) =>
-              `${time.name}: ${minutesToHhmm(
+              `${time.name}: ${formatDuration(
                 times.find((item) => item.blockId === time.blockId)?.minutes ??
                   time.defaultMinutes,
               )}`,
@@ -248,24 +248,20 @@ export function SaleCompositionFields({
                   htmlFor={`time-${time.blockId}`}
                   className="text-sm font-medium"
                 >
-                  {time.name} (h:mm)
+                  {time.name} (hh:mm)
                 </label>
-                <Input
+                <DurationInput
                   id={`time-${time.blockId}`}
-                  placeholder="1:00"
-                  defaultValue={minutesToHhmm(
+                  value={
                     times.find((item) => item.blockId === time.blockId)
-                      ?.minutes ?? time.defaultMinutes,
-                  )}
-                  onBlur={(event) =>
+                      ?.minutes ?? time.defaultMinutes
+                  }
+                  onChange={(minutes) =>
                     setTimes((current) => [
                       ...current.filter(
                         (item) => item.blockId !== time.blockId,
                       ),
-                      {
-                        blockId: time.blockId,
-                        minutes: hhmmToMinutes(event.target.value),
-                      },
+                      { blockId: time.blockId, minutes: minutes ?? 0 },
                     ])
                   }
                 />
