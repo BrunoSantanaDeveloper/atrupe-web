@@ -60,6 +60,8 @@ export type CashMovement = {
   account?: string
   // Arredondamento no balcão (FC-18), registrado como desconto na venda
   discount?: number
+  // A venda do recebimento, para reimprimir o comprovante (Lista Lite 19/11)
+  quotationId?: string
   parts: PaymentPart[]
 }
 
@@ -75,6 +77,8 @@ export type PendingSale = {
   quotationId?: string
   reference: string
   client: string
+  // O cliente da venda, para o "Faturar para o cliente" já vir preenchido
+  clientId?: string | null
   seller: string
   kind: SaleKind
   total: number

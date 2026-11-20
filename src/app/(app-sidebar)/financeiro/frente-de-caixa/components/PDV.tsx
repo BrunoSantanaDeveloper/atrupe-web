@@ -520,7 +520,9 @@ export function PDV() {
                                   onClick={() => setPrinting(sale.quotationId)}
                                 />
                               )}
-                              {canBill && sale.paid === 0 && (
+                              {/* Com entrada recebida, fatura o restante (Lista Lite
+                                  19/11, item 14) */}
+                              {canBill && sale.paid < sale.total && (
                                 <ActionButton
                                   gesto="faturar"
                                   variant="neutralGhost"
@@ -654,9 +656,26 @@ export function PDV() {
                           </p>
                         </TableCell>
                         <TableCell className="text-sm text-gray">
-                          {movement.parts
-                            .map((part) => paymentMethodLabel[part.method])
-                            .join(' + ')}
+                          <div className="flex items-center gap-2">
+                            <span>
+                              {movement.parts
+                                .map((part) => paymentMethodLabel[part.method])
+                                .join(' + ')}
+                            </span>
+                            {/* O comprovante continua depois de recebida a
+                                venda (Lista Lite 19/11, item 13) */}
+                            {movement.kind === 'SALE' &&
+                              movement.quotationId && (
+                                <ActionButton
+                                  Icon={IconPrinter}
+                                  variant="neutralGhost"
+                                  tooltip="Comprovante"
+                                  onClick={() =>
+                                    setPrinting(movement.quotationId)
+                                  }
+                                />
+                              )}
+                          </div>
                         </TableCell>
                         <TableCell
                           className={cn(

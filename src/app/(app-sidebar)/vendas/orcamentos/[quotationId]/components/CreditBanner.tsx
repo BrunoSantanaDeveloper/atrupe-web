@@ -58,6 +58,9 @@ export function CreditBanner({ data }: { data: QuotationType }) {
     (issue) => issue.code !== 'CREDIT_LIMIT_EXCEEDED',
   )
   const suggested = limitIssue?.suggestedDownPayment ?? 0
+  // Lista Lite 19/11, item 3: a "entrada" que é a venda inteira é pagamento
+  // integral à vista, e o texto diz isso
+  const fullPayment = !!limitIssue?.fullPayment
 
   // Sem bloqueio: o que a aprovação fará, se a venda vai esperar o pagamento
   if (!credit.issues?.length) {
@@ -94,7 +97,9 @@ export function CreditBanner({ data }: { data: QuotationType }) {
         title={
           registryIssues.length
             ? 'A aprovação está bloqueada pelo crédito do cliente'
-            : 'Esta venda passa do limite de crédito do cliente'
+            : fullPayment
+              ? 'Atenção! Limite de crédito excedido'
+              : 'Esta venda passa do limite de crédito do cliente'
         }
         description={
           <div className="space-y-1">
@@ -118,7 +123,9 @@ export function CreditBanner({ data }: { data: QuotationType }) {
                 LeftIcon={IconCash}
                 onClick={() => setOpenPayment(true)}
               >
-                {`Usar ${formatCurrencyToBrl(suggested)} como entrada`}
+                {fullPayment
+                  ? `Receber ${formatCurrencyToBrl(suggested)} à vista`
+                  : `Usar ${formatCurrencyToBrl(suggested)} como entrada`}
               </Button>
             </PermissionGate>
           ) : null

@@ -319,6 +319,33 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
               generateTransaction={handleGenerateTransaction}
             />
           </TableFiltersHeader>
+          {/* Lista Lite 19/11, item 4: o total do filtro inteiro (não só da
+              página), sem o cliente somar as linhas */}
+          {data?.summary ? (
+            <div className="flex flex-wrap gap-x-10 gap-y-3 border-b px-6 py-4">
+              <div>
+                <p className="text-xs text-gray">
+                  Total programado
+                  {` (${data.summary.count} ${data.summary.count === 1 ? 'despesa' : 'despesas'})`}
+                </p>
+                <p className="text-xl font-semibold">
+                  {formatCurrencyToBrl(data.summary.scheduled)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray">Lançado no mês</p>
+                <p className="text-xl font-semibold">
+                  {formatCurrencyToBrl(data.summary.launched)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray">Pago no mês</p>
+                <p className="text-xl font-semibold text-success-700">
+                  {formatCurrencyToBrl(data.summary.paid)}
+                </p>
+              </div>
+            </div>
+          ) : null}
           <CardContent>
             <FetchingRegion isFetching={isPlaceholderData}>
               {isLoading || hasData ? (

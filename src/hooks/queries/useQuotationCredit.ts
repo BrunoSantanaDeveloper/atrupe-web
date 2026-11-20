@@ -16,6 +16,8 @@ export type CreditIssue = {
   // No limite (PA-2): quanto passa e a entrada que resolve (centavos)
   excess?: number
   suggestedDownPayment?: number
+  // A entrada cobre toda a parte a prazo: é pagamento integral à vista
+  fullPayment?: boolean
 }
 
 /**

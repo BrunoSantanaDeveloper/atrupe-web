@@ -21,6 +21,7 @@ export type CreditRefusalIssue = {
   requested?: number
   excess?: number
   suggestedDownPayment?: number
+  fullPayment?: boolean
 }
 
 const getEmbeddedError = (payload: any) => {
@@ -119,6 +120,8 @@ export const getData = async ({
       page: res.data.page,
       lastPage: res.data.lastPage || res.data.totalPages,
       total: res.data.total,
+      // Os totais do filtro inteiro, quando a lista manda (ex.: despesas fixas)
+      summary: res.data.summary,
       data: res.data.data || res.data,
     }
   } catch (error: any) {

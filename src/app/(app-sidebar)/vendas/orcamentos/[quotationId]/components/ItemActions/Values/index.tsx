@@ -115,7 +115,9 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     if (discountType === 'VALUE') {
       newDiscount = baseValue - totalValue
     } else if (discountType === 'PERCENT') {
-      newDiscount = ((baseValue - totalValue) / baseValue) * 100
+      // Sem valor base não há percentual (evita NaN)
+      newDiscount =
+        baseValue > 0 ? ((baseValue - totalValue) / baseValue) * 100 : 0
     }
 
     setValue('discount', Number(newDiscount.toFixed(4)))
@@ -161,7 +163,15 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
   // arredondar. Para mais, a diferença é valor agregado e vai no acréscimo do
   // item (ALT-25); para menos, é desconto e vale o limite do perfil
   const surcharge = Math.max(finalValue - baseValue, 0)
-  const surchargePercent = baseValue > 0 ? (surcharge / baseValue) * 100 : 0
+  // Sem valor base (item que vale só pelos acréscimos) o percentual não
+  // existe: o texto mostra só o valor (Lista Lite 19/11, item 1)
+  const surchargePercentText =
+    baseValue > 0
+      ? ` (${((surcharge / baseValue) * 100).toLocaleString('pt-BR', {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        })}%)`
+      : ''
 
   const roundTotal = (direction: 'down' | 'up') => {
     // Arredonda para o real inteiro; valores em centavos
@@ -296,6 +306,11 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   width="w-full"
                   additionalOnChange={handleTotalValueChange}
                 />
+                {linesTotal > 0 && (
+                  <p className="text-xs text-gray">
+                    {`Sem os R$ ${parseCurrencyToBrl(linesTotal)} acrescentados ao item, que entram no valor final.`}
+                  </p>
+                )}
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -333,7 +348,7 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   )}
                 >
                   {surcharge > 0
-                    ? `+ R$ ${parseCurrencyToBrl(surcharge)} (${surchargePercent.toFixed(1)}%) sobre o valor base. Fica embutido no valor do item e não conta como desconto.`
+                    ? `+ R$ ${parseCurrencyToBrl(surcharge)}${surchargePercentText} sobre o valor base. Fica embutido no valor do item e não conta como desconto.`
                     : 'Nenhum. Suba o valor total para registrar um acréscimo; ele fica embutido no valor do item, sem linha própria na proposta.'}
                 </p>
               </div>

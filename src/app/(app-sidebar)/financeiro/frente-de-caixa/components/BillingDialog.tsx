@@ -4,9 +4,17 @@
 // define o boleto ou o faturamento é o caixa: a venda sai da fila e vai para o
 // fluxo financeiro, no nome do cliente. Os campos são os mesmos do lançamento
 // a receber do Fluxo financeiro, para as duas telas não divergirem.
+//
+// Lista Lite 19/11: o cliente da venda já vem escolhido (item 11), a lista
+// mostra só as formas liberadas para ele (item 12) e, com o limite curto, a
+// janela diz a entrada mínima: recebida no caixa, o restante é faturado
+// (item 14). Escolher a forma não é receber: a entrada entra pelo Receber.
 
 // React
 import { useEffect, useState } from 'react'
+
+// Third-party
+import { useQuery } from '@tanstack/react-query'
 
 // UI
 import {
@@ -21,6 +29,8 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 
+import { AlertBanner } from '@/components/ui/alert-banner'
+
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
@@ -32,7 +42,9 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 import type { PendingSale } from '../types'
 
 // Actions
+import { getItem } from '@/actions/_cruds'
 import { reverseToBilling } from '@/actions/cash-front'
+import type { QuotationCredit } from '@/hooks/queries/useQuotationCredit'
 
 // Hooks / Store / Consts
 import { useMoney } from '@/hooks/useMoney'
@@ -42,6 +54,7 @@ import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 
 // Icons
+import { IconAlertTriangle } from '@tabler/icons-react'
 
 interface Props {
   sale?: PendingSale
@@ -74,9 +87,48 @@ export function BillingDialog({ sale, onDone, onOpenChange }: Props) {
   useEffect(() => {
     if (!sale) return
 
-    setClient(null)
+    // O cliente da venda (da OS ou do orçamento) já vem escolhido
+    setClient(
+      sale.clientId ? { value: sale.clientId, label: sale.client } : null,
+    )
     form.reset(defaults)
   }, [sale, form])
+
+  // A situação de crédito do cliente: formas liberadas e limite disponível
+  const { data: credit } = useQuery({
+    queryKey: ['billing-client-credit', client?.value],
+    queryFn: async () => {
+      const result = await getItem({
+        route: `/sale/quotation/client-credit/${client?.value}`,
+      })
+      return result.success ? ((result.data ?? null) as QuotationCredit) : null
+    },
+    enabled: !!client?.value,
+    staleTime: 30_000,
+  })
+
+  const allowedIds = credit?.allowedConditionIds ?? null
+  const conditionId = form.watch('paymentConditionId')
+  // Trocou o cliente e a forma escolhida não vale para ele: limpa
+  useEffect(() => {
+    if (conditionId && allowedIds && !allowedIds.includes(conditionId)) {
+      form.setValue('paymentConditionId', '')
+    }
+  }, [allowedIds, conditionId, form])
+
+  // O que vai a prazo: o total menos a entrada já recebida no caixa
+  const paid = sale?.paid ?? 0
+  const remainder = Math.max((sale?.total ?? 0) - paid, 0)
+  const available =
+    credit?.applies && credit.enforcing && typeof credit.available === 'number'
+      ? credit.available
+      : null
+  // Entrada mínima para o restante caber no limite
+  const minEntry =
+    available !== null && remainder > available
+      ? remainder - Math.max(available, 0)
+      : 0
+  const blockedByCredit = minEntry > 0 || !!credit?.blockClient
 
   const save = form.handleSubmit(async (values) => {
     if (!sale || !client) return
@@ -97,7 +149,10 @@ export function BillingDialog({ sale, onDone, onOpenChange }: Props) {
   })
 
   const ready =
-    !!client && !!form.watch('paymentConditionId') && !!form.watch('dueDate')
+    !!client &&
+    !!form.watch('paymentConditionId') &&
+    !!form.watch('dueDate') &&
+    !blockedByCredit
 
   return (
     <Dialog open={!!sale} onOpenChange={onOpenChange}>
@@ -111,8 +166,9 @@ export function BillingDialog({ sale, onDone, onOpenChange }: Props) {
                     Faturar {sale?.reference} para o cliente
                   </DialogTitle>
                   <DialogDescription>
-                    {money(sale?.total)} · a venda sai do caixa e vai para o
-                    fluxo financeiro, no nome do cliente.
+                    {paid > 0
+                      ? `${money(remainder)} a prazo (de ${money(sale?.total)}, com ${money(paid)} de entrada recebida) · vai para o fluxo financeiro, no nome do cliente.`
+                      : `${money(sale?.total)} · a venda sai do caixa e vai para o fluxo financeiro, no nome do cliente.`}
                   </DialogDescription>
                 </div>
               </div>
@@ -128,10 +184,36 @@ export function BillingDialog({ sale, onDone, onOpenChange }: Props) {
                   label="Cliente"
                   placeholder="Busque o cliente"
                 />
+                {credit?.blockClient ? (
+                  <AlertBanner
+                    variant="error"
+                    icon={IconAlertTriangle}
+                    className="w-full rounded-lg border"
+                    title="Este cliente está bloqueado para faturamento"
+                    description="Quem pode desbloquear faz isso no cadastro do cliente. Enquanto isso, receba a venda no caixa."
+                  />
+                ) : minEntry > 0 ? (
+                  <AlertBanner
+                    variant="warning"
+                    icon={IconAlertTriangle}
+                    className="w-full rounded-lg border"
+                    title={
+                      minEntry >= remainder
+                        ? 'Atenção! Limite de crédito excedido'
+                        : `Entrada mínima de ${money(minEntry)}`
+                    }
+                    description={
+                      minEntry >= remainder
+                        ? `O cliente não tem limite disponível. Para concluir, receba ${money(remainder)} à vista no caixa, ou peça ao financeiro uma revisão do limite de crédito.`
+                        : `O cliente tem ${money(Math.max(available ?? 0, 0))} de limite disponível. Receba pelo menos ${money(minEntry)} de entrada no caixa (Receber, valor parcial) e volte aqui para faturar o restante. Escolher a forma não conta como recebido.`
+                    }
+                  />
+                ) : null}
                 <PaymentConditionsSelectField
                   name="paymentConditionId"
                   label="Forma de pagamento"
                   width="flex-[1_0_260px]"
+                  allowedIds={allowedIds}
                 />
                 <FormInput
                   type="number"

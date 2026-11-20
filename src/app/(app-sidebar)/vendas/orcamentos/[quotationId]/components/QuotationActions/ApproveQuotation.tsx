@@ -84,6 +84,8 @@ export function ApproveQuotation({ data }: Props) {
   const [approvedAt, setApprovedAt] = useState('')
   // A entrada da diferença do limite (centavos), da recusa (PA-2)
   const [suggestedDownPayment, setSuggestedDownPayment] = useState(0)
+  // A entrada que é toda a parte a prazo: pagamento integral (Lista Lite 19/11)
+  const [fullPayment, setFullPayment] = useState(false)
 
   const queryClient = useQueryClient()
   const router = useRouter()
@@ -175,6 +177,7 @@ export function ApproveQuotation({ data }: Props) {
         setSuggestedDownPayment(
           issues.length === 1 ? (limit?.suggestedDownPayment ?? 0) : 0,
         )
+        setFullPayment(!!limit?.fullPayment)
         setOpenBlocked('credit')
         queryClient.invalidateQueries({ queryKey: ['quotation-credit'] })
         return
@@ -250,7 +253,9 @@ export function ApproveQuotation({ data }: Props) {
             <AlertDialogTitle>
               {openBlocked === 'credit'
                 ? suggestedDownPayment > 0
-                  ? 'Esta venda passa do limite de crédito do cliente'
+                  ? fullPayment
+                    ? 'Atenção! Limite de crédito excedido'
+                    : 'Esta venda passa do limite de crédito do cliente'
                   : 'Aprovação bloqueada pelo crédito do cliente'
                 : openBlocked === 'inactive'
                   ? 'Este orçamento não pode ser aprovado'
@@ -300,7 +305,9 @@ export function ApproveQuotation({ data }: Props) {
                   setOpenPayment(true)
                 }}
               >
-                {`Usar ${formatCurrencyToBrl(suggestedDownPayment)} como entrada`}
+                {fullPayment
+                  ? `Receber ${formatCurrencyToBrl(suggestedDownPayment)} à vista`
+                  : `Usar ${formatCurrencyToBrl(suggestedDownPayment)} como entrada`}
               </Button>
             )}
             {openBlocked === 'payment' && (
