@@ -1,5 +1,6 @@
 'use client'
 
+import { RecipientCheckBanner } from '@/components/common/fiscal/RecipientCheckBanner'
 import { useRouter } from '@/hooks/useRouter'
 import { useState, useEffect, useCallback, useRef } from 'react'
 
@@ -908,6 +909,22 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           servicesTotal={formatCurrency(getServicesTotal())}
           onEditClick={() => setIsTomadorEditOpen(true)}
         />
+
+        {/* O que falta do tomador, antes de tentar emitir (Lista Lite 19/11,
+            item 9) */}
+        {clientComOverride ? (
+          <RecipientCheckBanner
+            doc="NFSE"
+            data={{
+              document: clientComOverride.cnpj || clientComOverride.cpf,
+              name: clientComOverride.corporateName || clientComOverride.name,
+              zipcode: clientComOverride.address?.[0]?.zipcode,
+            }}
+            clientId={clientComOverride.id}
+            clientName={clientComOverride.name}
+            onEdit={() => setIsTomadorEditOpen(true)}
+          />
+        ) : null}
 
         <InvoiceDeliveryAddressSection
           entrega={entrega}

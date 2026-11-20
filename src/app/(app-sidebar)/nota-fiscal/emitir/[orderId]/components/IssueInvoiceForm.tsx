@@ -1,5 +1,6 @@
 'use client'
 
+import { RecipientCheckBanner } from '@/components/common/fiscal/RecipientCheckBanner'
 import { useRouter } from '@/hooks/useRouter'
 import { useState, useEffect, useCallback } from 'react'
 
@@ -738,6 +739,29 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
             destinatario={data.destinatario}
             onEditClick={() => setIsRecipientEditOpen(true)}
             onChangeClientClick={() => setIsClientChangeOpen(true)}
+          />
+
+          {/* O que falta do destinatário, antes de tentar emitir (Lista Lite
+              19/11, item 9) */}
+          <RecipientCheckBanner
+            doc="NFE"
+            data={{
+              document: data.destinatario.cnpjCpf,
+              name: data.destinatario.razaoSocial,
+              zipcode: data.destinatario.cep,
+              state: data.destinatario.estado,
+              city: data.destinatario.cidade,
+              neighborhood: data.destinatario.bairro,
+              street: data.destinatario.endereco,
+              number: data.destinatario.numero,
+              indicadorIE: data.destinatario.indIEDest,
+              stateRegistration: data.destinatario.ie,
+              foreign:
+                !!data.destinatario.pais && data.destinatario.pais !== '1058',
+            }}
+            clientId={data.clientId}
+            clientName={data.destinatario.razaoSocial}
+            onEdit={() => setIsRecipientEditOpen(true)}
           />
 
           <InvoiceDeliveryAddressSection
