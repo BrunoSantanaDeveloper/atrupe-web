@@ -43,6 +43,7 @@ import { BillingDialog } from './BillingDialog'
 import { CashFrontSettingsDialog } from './CashFrontSettingsDialog'
 import { nearWorkdayEnd } from '@/lib/workday'
 import { SaleReceiptDialog } from './SaleReceiptDialog'
+import { SaleNfceDialog, openNfceThermal } from './SaleNfceDialog'
 
 // Types
 import {
@@ -59,6 +60,7 @@ import {
   releaseSale,
   getCashFront,
   markSaleReady,
+  getPdvNfceStatus,
 } from '@/actions/cash-front'
 
 // Third-party
@@ -82,6 +84,7 @@ import {
   IconSortDescending,
   IconDeviceImacCancel,
   IconX,
+  IconFileInvoice,
 } from '@tabler/icons-react'
 
 // Consts
@@ -155,6 +158,32 @@ export function PDV() {
   const forgotten = data?.data?.forgotten || []
   // O comprovante sai a pedido, não automático (FC-16)
   const [printing, setPrinting] = useState<string>()
+
+  // NFC-e (pedido do Maicol, 20/11/2026): sempre à mão, na linha do
+  // recebimento. Sem a NFC-e ativa, o ícone fica apagado e diz o motivo, para
+  // a pessoa saber que existe
+  const canEmitNfce = hasPermission('nota_fiscal:emitir:create')
+  const { data: nfceRes } = useQuery({
+    staleTime: 5 * 60_000,
+    queryKey: ['pdv-nfce-status'],
+    queryFn: () => getPdvNfceStatus(),
+  })
+  const nfceStatus = nfceRes?.data
+  const [nfceSale, setNfceSale] = useState<{
+    saleId: string
+    description: string
+  }>()
+  // O ícone vai só no último recebimento de cada venda (o sinal e o resto
+  // são dois recebimentos da mesma venda)
+  const lastReceiptOfSale = new Set(
+    Object.values(
+      Object.fromEntries(
+        (session?.movements || [])
+          .filter((movement) => movement.kind === 'SALE' && movement.saleId)
+          .map((movement) => [movement.saleId as string, movement.id]),
+      ),
+    ),
+  )
   const [closingForgotten, setClosingForgotten] = useState<
     (typeof forgotten)[number] | undefined
   >()
@@ -675,6 +704,73 @@ export function PDV() {
                                   }
                                 />
                               )}
+                            {lastReceiptOfSale.has(movement.id) &&
+                              movement.saleId &&
+                              (movement.nfce &&
+                              ['AUTHORIZED', 'CONTINGENCY'].includes(
+                                movement.nfce.status,
+                              ) ? (
+                                <ActionButton
+                                  Icon={IconFileInvoice}
+                                  variant="neutralGhost"
+                                  tooltip={`Cupom da NFC-e${movement.nfce.numero ? ` ${movement.nfce.numero}` : ''}`}
+                                  onClick={() =>
+                                    openNfceThermal(
+                                      (movement.nfce as { id: string }).id,
+                                    )
+                                  }
+                                />
+                              ) : movement.nfce &&
+                                movement.nfce.status !== 'REJECTED' &&
+                                movement.nfce.status !== 'CANCELLED' ? (
+                                <ActionButton
+                                  Icon={IconFileInvoice}
+                                  variant="neutralGhost"
+                                  className="opacity-60"
+                                  tooltip="NFC-e aguardando a Sefaz"
+                                  onClick={() =>
+                                    toast.info(
+                                      'A NFC-e aguarda a resposta da Sefaz. Acompanhe em Nota fiscal › Notas emitidas.',
+                                    )
+                                  }
+                                />
+                              ) : !nfceStatus?.enabled ? (
+                                <ActionButton
+                                  Icon={IconFileInvoice}
+                                  variant="neutralGhost"
+                                  className="opacity-40"
+                                  tooltip="NFC-e não ativa"
+                                  onClick={() =>
+                                    toast.info(
+                                      nfceStatus?.reason ||
+                                        'A NFC-e não está ativa. Ative em Configurações › Nota fiscal.',
+                                    )
+                                  }
+                                />
+                              ) : canEmitNfce ? (
+                                <ActionButton
+                                  Icon={IconFileInvoice}
+                                  variant="neutralGhost"
+                                  className={cn(
+                                    !movement.paidInFull && 'opacity-40',
+                                  )}
+                                  tooltip={
+                                    movement.paidInFull
+                                      ? 'Emitir NFC-e'
+                                      : 'Receba a venda inteira para emitir a NFC-e'
+                                  }
+                                  onClick={() =>
+                                    movement.paidInFull
+                                      ? setNfceSale({
+                                          saleId: movement.saleId as string,
+                                          description: movement.description,
+                                        })
+                                      : toast.info(
+                                          'Receba a venda inteira para emitir a NFC-e',
+                                        )
+                                  }
+                                />
+                              ) : null)}
                           </div>
                         </TableCell>
                         <TableCell
@@ -885,6 +981,11 @@ export function PDV() {
             onOpenChange={(open) => !open && setClosingForgotten(undefined)}
           />
         )}
+        <SaleNfceDialog
+          sale={nfceSale}
+          onDone={refresh}
+          onOpenChange={(open) => !open && setNfceSale(undefined)}
+        />
         <SaleReceiptDialog
           quotationId={printing || ''}
           open={!!printing}

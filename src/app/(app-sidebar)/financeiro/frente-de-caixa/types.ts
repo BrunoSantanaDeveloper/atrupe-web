@@ -62,6 +62,10 @@ export type CashMovement = {
   discount?: number
   // A venda do recebimento, para reimprimir o comprovante (Lista Lite 19/11)
   quotationId?: string
+  // NFC-e (20/11/2026): a venda já foi recebida inteira, e a nota dela
+  saleId?: string
+  paidInFull?: boolean
+  nfce?: { id: string; status: string; numero: number | null } | null
   parts: PaymentPart[]
 }
 

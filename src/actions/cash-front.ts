@@ -312,3 +312,26 @@ export const chargeQuickSaleNow = async (
   if (!res.success) return fail(res.message, null)
   return ok<QuickSaleCheckout>(res.data)
 }
+
+/* ---------------------------------------------------------------------------
+ * NFC-e na frente de caixa (pedido do Maicol, 20/11/2026): sempre à mão,
+ * pelo CNPJ cadastrado, com o CPF opcional
+ * ------------------------------------------------------------------------- */
+
+export type PdvNfceStatus = { enabled: boolean; reason: string | null }
+
+export const getPdvNfceStatus = async () => {
+  const res: ApiResult = await getItem({ route: '/financial/pdv/nfce' })
+  if (!res.success)
+    return fail(res.message, { enabled: false, reason: res.message })
+  return ok<PdvNfceStatus>(res.data)
+}
+
+export const emitSaleNfce = async (saleId: string, cpf?: string) => {
+  const res: ApiResult = await createItemNew({
+    route: `/financial/pdv/sale/${saleId}/nfce`,
+    data: cpf ? { cpf } : {},
+  })
+  if (!res.success) return fail(res.message, null)
+  return ok<{ id: string; status: string; numero: number | null }>(res.data)
+}
