@@ -18698,5 +18698,81 @@
   "1ca650f59b": {
     "es": "Ninguna novedad por ahora.",
     "en": "No updates yet."
+  },
+  "75262b94ae": {
+    "es": "Variantes, cantidad mínima, precio por cantidad e impresión en hojas.",
+    "en": "Variants, minimum quantity, quantity pricing and sheet printing."
+  },
+  "f229434c3e": {
+    "es": "Variantes, cantidad mínima y precio por cantidad.",
+    "en": "Variants, minimum quantity and quantity pricing."
+  },
+  "a01cc74b4b": {
+    "es": "Cantidad mínima e impresión en hojas.",
+    "en": "Minimum quantity and sheet printing."
+  },
+  "17ea9745de": {
+    "es": "Cantidad mínima.",
+    "en": "Minimum quantity."
+  },
+  "1a8f0c8658": {
+    "es": "Impresión en hojas: sangrado y hojas de arranque.",
+    "en": "Sheet printing: bleed and make-ready sheets."
+  },
+  "15ce45ca63": {
+    "es": "Proveedor y costo",
+    "en": "Supplier and cost"
+  },
+  "9d56a48ccf": {
+    "es": "Medida, material y servicio. También servicio por hora.",
+    "en": "Size, material and service. Hourly service too."
+  },
+  "86339bd863": {
+    "es": "Impreso en hojas",
+    "en": "Sheet-printed"
+  },
+  "d30302d10a": {
+    "es": "Papel, sangrado y hojas de arranque, como en la imprenta rápida.",
+    "en": "Paper stock, bleed and make-ready sheets, as in quick printing."
+  },
+  "ce66771654": {
+    "es": "Offset",
+    "en": "Offset"
+  },
+  "93648e87e8": {
+    "es": "Impreso en hojas, con tiraje, colores y planchas.",
+    "en": "Sheet-printed, with print run, colors and plates."
+  },
+  "55400227d7": {
+    "es": "Período, agenda y ubicación.",
+    "en": "Period, schedule and site."
+  },
+  "a44ae7f573": {
+    "es": "Comprado listo a un proveedor y revendido.",
+    "en": "Bought ready-made from a supplier and resold."
+  },
+  "8a3efe3cb9": {
+    "es": "El proveedor y el costo del tercerizado quedan guardados. Si el producto vuelve a ser tercerizado, vuelven.",
+    "en": "The outsourced supplier and cost are kept. If the product becomes outsourced again, they come back."
+  },
+  "45b35fa01f": {
+    "es": "El sangrado, las hojas de arranque y el papel de las variantes quedan guardados. Si el producto vuelve a ser impreso en hojas, vuelven.",
+    "en": "The bleed, the make-ready sheets and the variants' paper stock are kept. If the product becomes sheet-printed again, they come back."
+  },
+  "d83211d2d2": {
+    "es": "Estructura del producto",
+    "en": "Product structure"
+  },
+  "228215a116": {
+    "es": "Indica cómo se hace y se vende el producto. El registro abre solo los campos de esa estructura: el impreso en hojas pide papel, sangrado y hojas de arranque; el tercerizado pide proveedor y costo.",
+    "en": "Says how the product is made and sold. The form opens only the fields of that structure: sheet-printed asks for paper stock, bleed and make-ready sheets; outsourced asks for supplier and cost."
+  },
+  "8e4dccd924": {
+    "es": "No es el tipo de producto ni el sector. La mayoría de los productos de comunicación visual es Estándar.",
+    "en": "It is not the product type or the department. Most visual communication products are Standard."
+  },
+  "81c09c8bcb": {
+    "es": "Se puede cambiar después. Lo que tenía la estructura anterior queda guardado y vuelve si ella vuelve.",
+    "en": "You can change it later. What the previous structure had is kept and comes back if it returns."
   }
 }

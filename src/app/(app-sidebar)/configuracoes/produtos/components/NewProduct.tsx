@@ -51,6 +51,7 @@ import { SelectProductGroupWithSectorField } from '@/components/common/form/glob
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 import { InactivateProductDialog } from './InactivateProductDialog'
 import { OutsourcedProductFields } from './OutsourcedProductFields'
+import { ProductStructureField } from './ProductStructureField'
 import { NewGroupInline } from './NewGroupInline'
 import { ProductPriceTiers } from './ProductPriceTiers'
 import { ProductionStagesSection } from './ProductionStagesSection'
@@ -69,6 +70,7 @@ import {
   defaultNewProductValues,
   NewProductsFormType,
   newProductsSchema,
+  type ProductStructure,
 } from './schema'
 import {
   productFiscalDataSchema,
@@ -290,6 +292,10 @@ function NewProductModal({
   }, [existingFiscalData, productId, fiscalForm])
 
   const isActive = product?.isActive ?? true
+  // A estrutura gravada (EP-1). Produto de antes dela: o terceirizado é
+  // Terceirizado e o resto, Padrão (a API já classifica na migração)
+  const savedStructure: ProductStructure =
+    product?.structure ?? (product?.isOutsourced ? 'OUTSOURCED' : 'STANDARD')
 
   // Filtrar etapas de produção para manter apenas as dos setores ativos, preservando isActive
   const getFilteredProductionStages = () => {
@@ -323,7 +329,7 @@ function NewProductModal({
           ...product,
           // O custo do fornecedor vem na base da API (por mm², mm…) e a
           // tela mostra por m², metro… (T-5)
-          isOutsourced: product?.isOutsourced ?? false,
+          structure: savedStructure,
           outsourcedCost: product?.outsourcedCost
             ? convertRawToUnitCost(
                 product?.items?.[0]?.unitKind || 'UNITY',
@@ -350,34 +356,24 @@ function NewProductModal({
 
   const { handleSubmit, control, reset, watch, setError } = form
 
-  // Configurações avançadas de venda (16/11/2026): a sanfona começa fechada
-  // e abre sozinha no produto terceirizado (botão "Produto terceirizado" ou
-  // edição de um), porque fornecedor e custo são obrigatórios
-  // As configurações do produto abrem pelo que ele é (PS-3, área 03,
-  // 17/11/2026): sangria, folhas de acerto e papel são da impressão em folha
-  // (gráfica rápida, offset), não de toda impressão. Provisório até o produto
-  // guardar as suas produções: o setor do produto ou de uma etapa ligada é o
-  // "Gráfica Rápida" (ícone printer)
-  const productSectorIds = [
-    watch('sectorId'),
-    ...(watch('productionStages') || [])
-      .filter((stage) => stage.isActive)
-      .map((stage) => stage.id),
-  ]
+  // As configurações do produto abrem pela estrutura (EP-1, 18/11/2026):
+  // papel, sangria e folhas de acerto são do impresso em folha e do offset.
   // Com a composição aprovada (PRO), a contagem de folhas vem da linha de
   // papel dela, e a sangria e as folhas de acerto do produto não valem
   // (18/11/2026): o cartão sai
+  const structure = watch('structure') || 'STANDARD'
+  const isOutsourced = structure === 'OUTSOURCED'
   const passesSheetPrinting =
-    product?.compositionStatus !== 'RELEASED' &&
-    (sectors || []).some(
-      (sector) =>
-        sector.icon === 'printer' && productSectorIds.includes(sector.id),
-    )
-
-  const isOutsourced = watch('isOutsourced')
-  useEffect(() => {
-    if (isOutsourced) setAdvancedSaleOpen(true)
-  }, [isOutsourced])
+    (structure === 'SHEET' || structure === 'OFFSET') &&
+    product?.compositionStatus !== 'RELEASED'
+  const hasPaperRegister = hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER)
+  // Configurações avançadas de venda (16/11/2026): variações, quantidade
+  // mínima, preço por quantidade e a impressão em folha, numa sanfona
+  // fechada. O terceirizado saiu dela: abre pela estrutura
+  const showSheetPrinting = hasPaperRegister && passesSheetPrinting
+  const showAdvancedSale =
+    items?.fields?.length === 1 &&
+    (showVariations || showMinQuantity || showSheetPrinting)
   useEffect(() => {
     if (!open) setAdvancedSaleOpen(false)
   }, [open])
@@ -440,7 +436,8 @@ function NewProductModal({
       data = { ...data, code }
     }
     // Produto terceirizado (T-5): fornecedor e custo são obrigatórios
-    if (data.isOutsourced) {
+    const outsourced = data.structure === 'OUTSOURCED'
+    if (outsourced) {
       if (!data.suppliers?.length) {
         toast.error('Informe pelo menos um fornecedor do terceirizado')
         return
@@ -458,17 +455,21 @@ function NewProductModal({
     } else if (editMode) {
       minimums.minQuantity = null
     }
-    const body = {
-      isOutsourced: !!data.isOutsourced,
-      outsourcedCost: data.isOutsourced
-        ? convertUnitCostToRaw(
+    // A estrutura manda (EP-3): fora do terceirizado, fornecedor e custo
+    // não vão no corpo, e a API os guarda para quando ele voltar
+    const outsourcedBlock = outsourced
+      ? {
+          outsourcedCost: convertUnitCostToRaw(
             data.items?.[0]?.unitKind || 'UNITY',
             Number(data.outsourcedCost) || 0,
-          )
-        : null,
-      supplierIds: data.isOutsourced
-        ? (data.suppliers || []).map((supplier) => supplier.id)
-        : [],
+          ),
+          supplierIds: (data.suppliers || []).map((supplier) => supplier.id),
+        }
+      : {}
+    const body = {
+      structure: data.structure || 'STANDARD',
+      isOutsourced: outsourced,
+      ...outsourcedBlock,
       name: data.name,
       code: data.code,
       categoryId: data.categoryId,
@@ -670,10 +671,10 @@ function NewProductModal({
               <div className="flex items-center gap-4">
                 <span>
                   {editMode
-                    ? watch('isOutsourced')
+                    ? isOutsourced
                       ? 'Editar produto terceirizado'
                       : 'Editar produto'
-                    : watch('isOutsourced')
+                    : isOutsourced
                       ? 'Novo produto terceirizado'
                       : 'Novo produto'}
                 </span>
@@ -729,6 +730,10 @@ function NewProductModal({
                       className="flex flex-wrap gap-4"
                       noValidate
                     >
+                      <ProductStructureField
+                        saved={editMode ? savedStructure : undefined}
+                        sheetAvailable={hasPaperRegister}
+                      />
                       <SelectSectorField
                         name="sectorId"
                         label="Setor"
@@ -917,6 +922,7 @@ function NewProductModal({
                           </Button>
                         </div>
                       )}
+                      {isOutsourced && <OutsourcedProductFields />}
                       <FormImageUploadBigSmall
                         control={control}
                         imageName="imageUrl"
@@ -956,134 +962,129 @@ function NewProductModal({
                           produto é composto acima (dados e unidades de
                           venda); numa sanfona ficam o terceirizado e as
                           regras de venda dele */}
-                      <ProductFormAccordion
-                        title="Configurações avançadas de venda"
-                        description={
-                          items?.fields?.length === 1 &&
-                          (showVariations || showMinQuantity)
-                            ? 'Produto terceirizado, variações, quantidade mínima e preço por quantidade.'
-                            : 'Produto terceirizado: comprado de fornecedor e revendido.'
-                        }
-                        open={advancedSaleOpen}
-                        onOpenChange={setAdvancedSaleOpen}
-                        contentClassName="flex flex-col gap-4"
-                      >
-                        <OutsourcedProductFields />
-                        {items?.fields?.length === 1 &&
-                          (showVariations ||
-                            showMinQuantity ||
-                            hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER)) && (
-                            <>
-                              {/* Variações do LITE em diante (PV-6, 05/10/2026;
+                      {showAdvancedSale && (
+                        <ProductFormAccordion
+                          title="Configurações avançadas de venda"
+                          description={
+                            <AdvancedSaleDescription
+                              variations={showVariations}
+                              minQuantity={showMinQuantity}
+                              sheetPrinting={showSheetPrinting}
+                            />
+                          }
+                          open={advancedSaleOpen}
+                          onOpenChange={setAdvancedSaleOpen}
+                          contentClassName="flex flex-col gap-4"
+                        >
+                          <>
+                            {/* Variações do LITE em diante (PV-6, 05/10/2026;
                               plano revisto em 27/10/2026). No PRO elas vivem
                               na aba Composição */}
-                              {showVariations && (
-                                <div className="w-full rounded-xl border border-gray-200 bg-white p-4">
-                                  <ProductVariations
-                                    productId={
-                                      editMode ? (productId ?? null) : null
-                                    }
-                                    unitKind={watch('items.0.unitKind')}
-                                    onLocalChange={setPendingVariations}
-                                    onCountChange={setVariationCount}
-                                    showPaper={passesSheetPrinting}
-                                    basePriceCents={Math.round(
-                                      convertRawToUnitCost(
-                                        watch('items.0.unitKind') || 'UNITY',
-                                        Number(watch('items.0.unitCost')) || 0,
-                                      ),
-                                    )}
-                                  />
-                                </div>
-                              )}
-                              {/* Impressão da gráfica rápida (12/11/2026):
-                              sangria e folhas de acerto, com Papéis no plano.
-                              Só no produto que passa por um setor de impressão
-                              em folha (17/11/2026): a letra caixa não vê */}
-                              {hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER) &&
-                                passesSheetPrinting &&
-                                (editMode && productId ? (
-                                  <ProductPrintSettings productId={productId} />
-                                ) : (
-                                  <p className="w-full text-xs text-gray">
-                                    Salve o produto para configurar a impressão:
-                                    sangria e folhas de acerto.
-                                  </p>
-                                ))}
-                              {/* Quantidade mínima (27/10/2026), na unidade do
-                              produto, do LITE em diante: abaixo dela o item é
-                              cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).
-                              No PRO é também a base mínima dos materiais */}
-                              {showMinQuantity && (
-                                <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
-                                  <div className="flex items-center gap-1.5">
-                                    <h4 className="type-card-title">
-                                      Quantidade mínima
-                                    </h4>
-                                    <InfoHint title="Quantidade mínima">
-                                      <p>
-                                        O menor tamanho que a empresa cobra por
-                                        este produto, mesmo que o pedido seja
-                                        menor.
-                                      </p>
-                                      <p>
-                                        <MinimumExample
-                                          unitKind={
-                                            (watch(
-                                              'items.0.unitKind',
-                                            ) as UnitKind) || 'UNITY'
-                                          }
-                                        />
-                                      </p>
-                                    </InfoHint>
-                                  </div>
-                                  <FormInput
-                                    name="minQuantity"
-                                    label={`Quantidade mínima (${
-                                      unitSymbol[
-                                        (watch(
-                                          'items.0.unitKind',
-                                        ) as UnitKind) || 'UNITY'
-                                      ] || 'un'
-                                    })`}
-                                    type="number"
-                                    step="0.001"
-                                    width="flex-[1_0_160px]"
-                                  />
-                                </div>
-                              )}
-                              {/* Faixas de quantidade do LITE em diante (FQ-1;
-                              decisão do produto, 26/10/2026). No PRO elas vivem
-                              na aba Composição, com custo e margem por faixa */}
-                              {/* Com variações, os valores por quantidade são de
-                              cada variação (correção do LITE, 11/11/2026): a
-                              tabela do produto só aparece se já tiver faixas,
-                              avisando que não vale, para serem apagadas */}
-                              {showVariations && (
-                                <ProductPriceTiers
-                                  className="rounded-xl border border-gray-200 bg-white p-4"
+                            {showVariations && (
+                              <div className="w-full rounded-xl border border-gray-200 bg-white p-4">
+                                <ProductVariations
                                   productId={
                                     editMode ? (productId ?? null) : null
                                   }
                                   unitKind={watch('items.0.unitKind')}
+                                  onLocalChange={setPendingVariations}
+                                  onCountChange={setVariationCount}
+                                  showPaper={passesSheetPrinting}
                                   basePriceCents={Math.round(
                                     convertRawToUnitCost(
                                       watch('items.0.unitKind') || 'UNITY',
                                       Number(watch('items.0.unitCost')) || 0,
                                     ),
                                   )}
-                                  onLocalChange={setPendingTiers}
-                                  hideWhenEmpty={variationCount > 0}
-                                  notice={
-                                    variationCount > 0
-                                      ? 'Com variações, vale a tabela de cada variação: esta não entra no orçamento. Apague as faixas daqui e cadastre em cada variação.'
-                                      : undefined
-                                  }
                                 />
-                              )}
-                            </>
-                          )}
-                      </ProductFormAccordion>
+                              </div>
+                            )}
+                            {/* Impressão da gráfica rápida (12/11/2026):
+                              sangria e folhas de acerto, com Papéis no plano.
+                              Só no produto que passa por um setor de impressão
+                              em folha (17/11/2026): a letra caixa não vê */}
+                            {showSheetPrinting &&
+                              (editMode && productId ? (
+                                <ProductPrintSettings productId={productId} />
+                              ) : (
+                                <p className="w-full text-xs text-gray">
+                                  Salve o produto para configurar a impressão:
+                                  sangria e folhas de acerto.
+                                </p>
+                              ))}
+                            {/* Quantidade mínima (27/10/2026), na unidade do
+                              produto, do LITE em diante: abaixo dela o item é
+                              cobrado pelo mínimo (0,5 m² a R$ 100 o m² = R$ 50).
+                              No PRO é também a base mínima dos materiais */}
+                            {showMinQuantity && (
+                              <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
+                                <div className="flex items-center gap-1.5">
+                                  <h4 className="type-card-title">
+                                    Quantidade mínima
+                                  </h4>
+                                  <InfoHint title="Quantidade mínima">
+                                    <p>
+                                      O menor tamanho que a empresa cobra por
+                                      este produto, mesmo que o pedido seja
+                                      menor.
+                                    </p>
+                                    <p>
+                                      <MinimumExample
+                                        unitKind={
+                                          (watch(
+                                            'items.0.unitKind',
+                                          ) as UnitKind) || 'UNITY'
+                                        }
+                                      />
+                                    </p>
+                                  </InfoHint>
+                                </div>
+                                <FormInput
+                                  name="minQuantity"
+                                  label={`Quantidade mínima (${
+                                    unitSymbol[
+                                      (watch('items.0.unitKind') as UnitKind) ||
+                                        'UNITY'
+                                    ] || 'un'
+                                  })`}
+                                  type="number"
+                                  step="0.001"
+                                  width="flex-[1_0_160px]"
+                                />
+                              </div>
+                            )}
+                            {/* Faixas de quantidade do LITE em diante (FQ-1;
+                              decisão do produto, 26/10/2026). No PRO elas vivem
+                              na aba Composição, com custo e margem por faixa */}
+                            {/* Com variações, os valores por quantidade são de
+                              cada variação (correção do LITE, 11/11/2026): a
+                              tabela do produto só aparece se já tiver faixas,
+                              avisando que não vale, para serem apagadas */}
+                            {showVariations && (
+                              <ProductPriceTiers
+                                className="rounded-xl border border-gray-200 bg-white p-4"
+                                productId={
+                                  editMode ? (productId ?? null) : null
+                                }
+                                unitKind={watch('items.0.unitKind')}
+                                basePriceCents={Math.round(
+                                  convertRawToUnitCost(
+                                    watch('items.0.unitKind') || 'UNITY',
+                                    Number(watch('items.0.unitCost')) || 0,
+                                  ),
+                                )}
+                                onLocalChange={setPendingTiers}
+                                hideWhenEmpty={variationCount > 0}
+                                notice={
+                                  variationCount > 0
+                                    ? 'Com variações, vale a tabela de cada variação: esta não entra no orçamento. Apague as faixas daqui e cadastre em cada variação.'
+                                    : undefined
+                                }
+                              />
+                            )}
+                          </>
+                        </ProductFormAccordion>
+                      )}
                       {canShowProductionStages && !showCompositionTab && (
                         <ProductionStagesSection />
                       )}
@@ -1292,6 +1293,31 @@ function MinimumExample({ unitKind }: { unitKind: UnitKind }) {
         </>
       )
   }
+}
+
+// O que a sanfona "Configurações avançadas de venda" tem neste plano e
+// nesta estrutura (18/11/2026). Em JSX para a biblioteca de idiomas (IN-7)
+function AdvancedSaleDescription({
+  variations,
+  minQuantity,
+  sheetPrinting,
+}: {
+  variations: boolean
+  minQuantity: boolean
+  sheetPrinting: boolean
+}) {
+  if (variations && sheetPrinting)
+    return (
+      <>
+        Variações, quantidade mínima, preço por quantidade e impressão em folha.
+      </>
+    )
+  if (variations)
+    return <>Variações, quantidade mínima e preço por quantidade.</>
+  if (minQuantity && sheetPrinting)
+    return <>Quantidade mínima e impressão em folha.</>
+  if (minQuantity) return <>Quantidade mínima.</>
+  return <>Impressão em folha: sangria e folhas de acerto.</>
 }
 
 export function NewProductTriggerButton({

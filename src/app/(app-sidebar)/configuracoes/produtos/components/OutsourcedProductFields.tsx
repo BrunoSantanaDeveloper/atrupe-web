@@ -4,7 +4,8 @@
 // e revendido. Fornecedor obrigatório (um ou mais, de Cadastros ›
 // Fornecedores) e o custo do fornecedor por unidade de venda; o preço de
 // venda continua o campo de sempre, com a sugestão pelo acréscimo sobre o
-// custo. Cada venda aprovada gera a conta a pagar ao fornecedor.
+// custo. Cada venda aprovada gera a conta a pagar ao fornecedor. Desde
+// 18/11/2026 o bloco abre pela estrutura Terceirizado (EP-1), sem a chave.
 
 import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect } from 'react'
@@ -15,7 +16,6 @@ import { IconX } from '@tabler/icons-react'
 import { Badge } from '@/components/ui/badge'
 import { Icon } from '@/components/ui/icon'
 import { Button } from '@/components/ui/button'
-import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 import { convertUnitCostToRaw } from '@/components/common/form/global-inputs/products/UnitCostInput'
@@ -39,7 +39,6 @@ type Pick = { value?: string; label?: string } | null | undefined
 export function OutsourcedProductFields() {
   const form = useFormContext<NewProductsFormType>()
   const { watch, setValue } = form
-  const on = watch('isOutsourced')
   const suppliers = watch('suppliers') || []
   const cost = watch('outsourcedCost') || 0
   const unitKind = watch('items.0.unitKind') || 'UNITY'
@@ -65,7 +64,6 @@ export function OutsourcedProductFields() {
     queryKey: ['sales-settings'],
     queryFn: () => getSalesSettings(),
     staleTime: Infinity,
-    enabled: !!on,
   })
   const markup = settings?.success ? settings.data.outsourcedMarkup : null
   const suggested =
@@ -83,7 +81,7 @@ export function OutsourcedProductFields() {
   return (
     <div className="w-full space-y-4 rounded-xl border border-gray-200 bg-white p-4">
       <div className="flex items-center gap-1.5">
-        <FormSwitch name="isOutsourced" label="Produto terceirizado" />
+        <h4 className="type-card-title">Fornecedor e custo</h4>
         <InfoHint title="Produto terceirizado">
           <p>
             É o produto que a empresa compra pronto de um fornecedor e revende.
@@ -99,65 +97,63 @@ export function OutsourcedProductFields() {
           </p>
         </InfoHint>
       </div>
-      {on ? (
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-4">
-            <SupplierSelector
-              name="supplierPick"
-              label="Fornecedor"
-              width="flex-[1_0_280px]"
-            />
-            <FormBrlInput<NewProductsFormType>
-              name="outsourcedCost"
-              label={`Custo do fornecedor por ${unit}`}
-              startAdornment={<>R$</>}
-              width="flex-[1_0_200px]"
-            />
-          </div>
-          {suppliers.length ? (
-            <div className="flex flex-wrap gap-2">
-              {suppliers.map((supplier) => (
-                <Badge key={supplier.id} variant="neutralLight">
-                  {supplier.name}
-                  <button
-                    type="button"
-                    aria-label={`Retirar ${supplier.name}`}
-                    className="ml-1 inline-flex"
-                    onClick={() =>
-                      setValue(
-                        'suppliers',
-                        suppliers.filter((item) => item.id !== supplier.id),
-                        { shouldDirty: true },
-                      )
-                    }
-                  >
-                    <Icon icon={IconX} size="sm" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-error">
-              Escolha pelo menos um fornecedor.
-            </p>
-          )}
-          {suggested !== null ? (
-            <p className="text-xs text-gray">
-              Preço de venda sugerido pelo acréscimo de {markup} % sobre o
-              custo: {formatCurrencyToBrl(suggested)} por {unit}.{' '}
-              <Button
-                type="button"
-                size="sm"
-                variant="link"
-                className="h-auto p-0 text-xs"
-                onClick={useSuggested}
-              >
-                usar o sugerido
-              </Button>
-            </p>
-          ) : null}
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <SupplierSelector
+            name="supplierPick"
+            label="Fornecedor"
+            width="flex-[1_0_280px]"
+          />
+          <FormBrlInput<NewProductsFormType>
+            name="outsourcedCost"
+            label={`Custo do fornecedor por ${unit}`}
+            startAdornment={<>R$</>}
+            width="flex-[1_0_200px]"
+          />
         </div>
-      ) : null}
+        {suppliers.length ? (
+          <div className="flex flex-wrap gap-2">
+            {suppliers.map((supplier) => (
+              <Badge key={supplier.id} variant="neutralLight">
+                {supplier.name}
+                <button
+                  type="button"
+                  aria-label={`Retirar ${supplier.name}`}
+                  className="ml-1 inline-flex"
+                  onClick={() =>
+                    setValue(
+                      'suppliers',
+                      suppliers.filter((item) => item.id !== supplier.id),
+                      { shouldDirty: true },
+                    )
+                  }
+                >
+                  <Icon icon={IconX} size="sm" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-error">
+            Escolha pelo menos um fornecedor.
+          </p>
+        )}
+        {suggested !== null ? (
+          <p className="text-xs text-gray">
+            Preço de venda sugerido pelo acréscimo de {markup} % sobre o custo:{' '}
+            {formatCurrencyToBrl(suggested)} por {unit}.{' '}
+            <Button
+              type="button"
+              size="sm"
+              variant="link"
+              className="h-auto p-0 text-xs"
+              onClick={useSuggested}
+            >
+              usar o sugerido
+            </Button>
+          </p>
+        ) : null}
+      </div>
     </div>
   )
 }

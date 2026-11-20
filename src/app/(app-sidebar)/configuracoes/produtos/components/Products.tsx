@@ -322,11 +322,11 @@ export function Products({ searchParams }: SearchParamsType) {
             }
           }}
         />
-        {/* O produto terceirizado (T-5): o mesmo formulário com o bloco
-            do terceirizado aberto */}
+        {/* O produto terceirizado (T-5): o mesmo formulário, já com a
+            estrutura Terceirizado (EP-1) */}
         <NewProduct
           open={openDialog === 'new-outsourced'}
-          initialValues={{ isOutsourced: true }}
+          initialValues={{ structure: 'OUTSOURCED' }}
           onOpenChange={() => setOpenDialog('')}
           onSuccess={(product) => {
             if (canCompose || canConfigureProductFiscalData) {

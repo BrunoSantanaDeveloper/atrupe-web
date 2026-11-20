@@ -1,5 +1,17 @@
 import { z } from 'zod'
 
+// A estrutura do produto (EP-1, 18/11/2026): define os blocos do cadastro.
+// O terceirizado é a estrutura OUTSOURCED (a API guarda isOutsourced como
+// espelho dela)
+export const PRODUCT_STRUCTURES = [
+  'STANDARD',
+  'SHEET',
+  'OFFSET',
+  'RENTAL',
+  'OUTSOURCED',
+] as const
+export type ProductStructure = (typeof PRODUCT_STRUCTURES)[number]
+
 export const newProductsSchema = z.object({
   id: z.string().optional(),
   name: z
@@ -29,9 +41,9 @@ export const newProductsSchema = z.object({
   allowEditDescription: z.boolean().default(false),
   imageUrl: z.string().optional().nullable(),
   imageSize: z.string().optional().nullable(),
+  structure: z.enum(PRODUCT_STRUCTURES).default('STANDARD'),
   // Produto terceirizado (T-5, 24/10/2026): fornecedores e custo do
   // fornecedor por unidade de venda (centavos, na unidade da tela)
-  isOutsourced: z.boolean().default(false),
   outsourcedCost: z.number().optional().nullable(),
   // Quantidade mínima (27/10/2026), na unidade comercial do produto: abaixo
   // dela o item é cobrado pelo mínimo; por unidade, o item nasce com ela
@@ -163,7 +175,7 @@ export const defaultNewProductValues: NewProductsFormType = {
   allowEditDescription: false,
   imageUrl: null,
   imageSize: 'small',
-  isOutsourced: false,
+  structure: 'STANDARD',
   outsourcedCost: null,
   minQuantity: null,
   suppliers: [],
