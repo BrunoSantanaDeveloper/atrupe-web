@@ -25,6 +25,10 @@ import { VariationsModal } from './VariationsModal'
 import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
 import { ImportMaterialsDialog } from './ImportMaterialsDialog'
 import { MaterialFiscalDialog } from './MaterialFiscalDialog'
+import { MaterialsFilter, filterMaterials } from './MaterialsFilter'
+import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { PaperDialog } from '@/app/(app-sidebar)/cadastros/papeis/components/PaperDialog'
+import type { Paper } from '@/app/(app-sidebar)/cadastros/papeis/types'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeletonRows } from '@/components/common/TableSkeleton'
@@ -44,6 +48,7 @@ import { materialUnitSymbol } from '@/consts/materials'
 // Hooks / Store / Consts
 
 import { assetUnitShort } from '@/consts/assets'
+import { cn } from '@/lib/utils'
 
 // Hooks
 import { useMoney } from '@/hooks/useMoney'
@@ -71,6 +76,23 @@ const tabs: TabNavType[] = [
   { value: 'ativos', tab: 'ativos', label: 'Ativos' },
   { value: 'inativos', tab: 'inativos', label: 'Inativos' },
 ]
+
+// O material com forma folha é o papel (GR-0): a cópia usa o cadastro de
+// Papéis, com a folha vinda da configuração avançada
+const paperOf = (material: Material): Paper => ({
+  id: material.id,
+  code: material.code,
+  name: material.name,
+  sectorId: material.sectorId,
+  sector: material.sector,
+  grammage: material.grammage ?? null,
+  sheetFormat: material.sheetFormat ?? null,
+  sheetWidth: material.advanced?.width ?? null,
+  sheetHeight: material.advanced?.height ?? null,
+  usableWidth: material.usableWidth ?? null,
+  usableHeight: material.usableHeight ?? null,
+  active: material.active,
+})
 
 // Sem custo ou preço mostra `-`, nunca R$ 0,00 (design.md §7)
 export function Materials({ searchParams }: SearchParamsType) {
@@ -122,7 +144,12 @@ export function Materials({ searchParams }: SearchParamsType) {
     queryFn: () => getMaterials({ filters: searchParams }),
   })
 
-  const materials = data?.data || []
+  const allMaterials = data?.data || []
+  // Setor, busca e papel vêm filtrados da API; tipo e uso, daqui
+  const materials = filterMaterials(allMaterials, searchParams)
+  const filtering = ['search', 'sectorId', 'tipo', 'uso'].some(
+    (key) => !!searchParams?.[key],
+  )
 
   const sectors = Array.from(
     new Set(materials.map((material) => material.sector)),
@@ -164,7 +191,7 @@ export function Materials({ searchParams }: SearchParamsType) {
         />
         <Card>
           <FetchingRegion isFetching={isPlaceholderData}>
-            {!isLoading && !materials.length ? (
+            {!isLoading && !allMaterials.length && !filtering ? (
               status === 'inativos' ? (
                 <ListDataTotalEmpty
                   icon={IconBoxSeam}
@@ -180,8 +207,21 @@ export function Materials({ searchParams }: SearchParamsType) {
               )
             ) : (
               <>
+                <TableFiltersHeader searchParams={searchParams || {}}>
+                  <MaterialsFilter searchParams={searchParams} />
+                </TableFiltersHeader>
                 <CardContent>
-                  <Table className="min-w-[980px]">
+                  {!isLoading && !materials.length && (
+                    <p className="py-10 text-center text-sm text-gray">
+                      Nenhum material com esses filtros.
+                    </p>
+                  )}
+                  <Table
+                    className={cn(
+                      'min-w-[980px]',
+                      !isLoading && !materials.length && 'hidden',
+                    )}
+                  >
                     <TableHeader>
                       <TableRow className="bg-gray-50">
                         <TableHead className="w-[4%]" />
@@ -321,6 +361,15 @@ export function Materials({ searchParams }: SearchParamsType) {
                                             <NewMaterialModal
                                               material={material}
                                             />
+                                            {/* Duplicar o papel (20/11/2026):
+                                            no PRO os papéis vivem aqui */}
+                                            {material.sheetFormat && (
+                                              <PaperDialog
+                                                duplicateFrom={paperOf(
+                                                  material,
+                                                )}
+                                              />
+                                            )}
                                             <ActionButton
                                               Icon={IconCurrencyReal}
                                               tooltip={

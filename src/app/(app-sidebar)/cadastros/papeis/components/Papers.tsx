@@ -4,8 +4,9 @@
 // gramatura, a folha e a área útil que o aproveitamento lê. Sem custo nem
 // preço: no LITE o papel não tem dinheiro; no PRO ele vive em Materiais.
 
-// React
-import { Fragment } from 'react'
+// React / Next
+import { Fragment, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 // UI
 import {
@@ -54,6 +55,13 @@ export function Papers({ searchParams }: SearchParamsType) {
   const status = searchParams?.status || 'ativos'
   const { hasFeature } = usePlanFeatures()
   const inMaterials = hasFeature(FEATURES.COSTS.COST_BASE)
+  // No PRO os papéis ficam em Materiais (20/11/2026): o endereço antigo
+  // leva ao filtro Tipo › Papéis
+  const router = useRouter()
+  useEffect(() => {
+    if (inMaterials)
+      router.replace('/configuracoes/produtos/materiais?tipo=papel')
+  }, [inMaterials, router])
 
   const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,

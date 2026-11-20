@@ -146,6 +146,11 @@ export function SidebarComponent(props: Props) {
       return false
     }
 
+    // A tela foi para outro lugar neste plano (Papéis em Materiais no PRO)
+    if (item.hiddenWithFeature && hasFeature(item.hiddenWithFeature)) {
+      return false
+    }
+
     // Controle de Colaboradores e Usuários - baseado no limite de usuários
     // (-1 e a chave ausente são ilimitados; só o limite 0 esconde)
     if (item.path?.includes('/colaboradores-e-usuarios')) {

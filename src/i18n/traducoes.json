@@ -18794,5 +18794,17 @@
   "b8f729c34f": {
     "es": "Un papel nuevo con los datos de {name}. Cambie el gramaje o la hoja y regístrelo: el nombre acompaña el cambio.",
     "en": "A new paper stock with the data of {name}. Change the weight or the sheet and save it: the name follows the change."
+  },
+  "e4e4fdaddc": {
+    "es": "Ningún material con esos filtros.",
+    "en": "No materials match these filters."
+  },
+  "e355568756": {
+    "es": "Planchas y bobinas",
+    "en": "Boards and rolls"
+  },
+  "38ab0a551c": {
+    "es": "Perfiles y barras",
+    "en": "Profiles and bars"
   }
 }

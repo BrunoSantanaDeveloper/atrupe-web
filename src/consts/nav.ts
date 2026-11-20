@@ -68,6 +68,9 @@ export interface MainNavigationType {
   // Recurso do plano necessário para exibir o item (com lista, basta um). A
   // composição dos planos é configurada pelo superadmin.
   requiredFeature?: string | string[]
+  // Recurso do plano que esconde o item: a tela foi para outro lugar nesse
+  // plano (Papéis vai para Materiais no PRO, 20/11/2026)
+  hiddenWithFeature?: string
   // Tela que ainda roda sobre dados de exemplo: o item só aparece com a flag
   // de demonstração (src/lib/demo.ts). Sai junto com a rota de DEMO_ROUTES
   demo?: boolean
@@ -302,14 +305,16 @@ export const defaultMainNavigation: MainNavigationType[] = [
       // configuração: ficavam escondidos em abas dentro de Configurações.
       // Ordem pedida pelo time (03/10/2026): materiais → processos →
       // produtos, a ordem em que a composição é montada
-      // Papéis (GR-0, 13/10/2026): o papel do LITE, com menos campos; no
-      // PRO o mesmo registro vive também em Materiais
+      // Papéis (GR-0, 13/10/2026): o papel do LITE, com menos campos. No
+      // PRO o menu sai e os papéis ficam em Materiais, no filtro Tipo ›
+      // Papéis (20/11/2026)
       {
         icon: IconFiles,
         title: 'Papéis',
         path: '/cadastros/papeis',
         permission: 'product_settings:products:view',
-        requiredFeature: ['paper_register', 'cost_base'],
+        requiredFeature: 'paper_register',
+        hiddenWithFeature: 'cost_base',
       },
       {
         icon: IconPackages,

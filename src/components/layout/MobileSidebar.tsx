@@ -66,6 +66,7 @@ interface NavigationItem {
   requireAllPermissions?: boolean
   requiredModule?: string
   requiredFeature?: string | string[]
+  hiddenWithFeature?: string
   demo?: boolean
   children?: NavigationItem[]
 }
@@ -143,6 +144,11 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
           : [item.requiredFeature],
       )
     ) {
+      return false
+    }
+
+    // A tela foi para outro lugar neste plano (Papéis em Materiais no PRO)
+    if (item.hiddenWithFeature && hasFeature(item.hiddenWithFeature)) {
       return false
     }
 

@@ -93,6 +93,9 @@ export const getMaterials = async ({
     active: filters?.status === 'inativos' ? 'false' : 'true',
     ...(search ? { search } : {}),
     ...(filters?.sectorId ? { sectorId: filters.sectorId } : {}),
+    // O tipo "Papéis" de Materiais (20/11/2026): o filtro da própria API,
+    // o mesmo da tela Papéis
+    ...(filters?.tipo === 'papel' ? { paper: 'true' } : {}),
   }
 
   const data: Material[] = []
