@@ -18774,5 +18774,25 @@
   "81c09c8bcb": {
     "es": "Se puede cambiar después. Lo que tenía la estructura anterior queda guardado y vuelve si ella vuelve.",
     "en": "You can change it later. What the previous structure had is kept and comes back if it returns."
+  },
+  "4a4114cc88": {
+    "es": "Papel actualizado",
+    "en": "Paper stock updated"
+  },
+  "807f12af56": {
+    "es": "Papel registrado a partir de {name}",
+    "en": "Paper stock added from {name}"
+  },
+  "5d53b7a618": {
+    "es": "Papel registrado",
+    "en": "Paper stock added"
+  },
+  "d4fe5a755c": {
+    "es": "Duplicar papel",
+    "en": "Duplicate paper stock"
+  },
+  "b8f729c34f": {
+    "es": "Un papel nuevo con los datos de {name}. Cambie el gramaje o la hoja y regístrelo: el nombre acompaña el cambio.",
+    "en": "A new paper stock with the data of {name}. Change the weight or the sheet and save it: the name follows the change."
   }
 }

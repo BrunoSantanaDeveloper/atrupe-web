@@ -104,13 +104,13 @@ export function Papers({ searchParams }: SearchParamsType) {
                 <Table className="min-w-[760px]">
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="w-[36%] min-w-[200px]">
+                      <TableHead className="w-[32%] min-w-[200px]">
                         Papel
                       </TableHead>
                       <TableHead className="w-[14%]">Gramatura</TableHead>
                       <TableHead className="w-[22%]">Folha</TableHead>
                       <TableHead className="w-[22%]">Área útil</TableHead>
-                      <TableHead className="w-[6%]" />
+                      <TableHead className="w-[10%]" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -170,7 +170,10 @@ export function Papers({ searchParams }: SearchParamsType) {
                                       'product_settings:products:edit',
                                     ]}
                                   >
-                                    <PaperDialog paper={paper} />
+                                    <div className="flex justify-end gap-1">
+                                      <PaperDialog duplicateFrom={paper} />
+                                      <PaperDialog paper={paper} />
+                                    </div>
                                   </PermissionGate>
                                 </TableCell>
                               </TableRow>
