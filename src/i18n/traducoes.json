@@ -18838,5 +18838,25 @@
   "f1fba813c8": {
     "es": "Ninguna etapa usa este campo",
     "en": "No step uses this field"
+  },
+  "7ce83daf0a": {
+    "es": "Incluir por defecto",
+    "en": "Include by default"
+  },
+  "dc533fac6a": {
+    "es": "Sí: el ítem ya entra en la cotización, en el costo y en el precio sugerido que se muestran aquí.",
+    "en": "Yes: the item is already in the quote, in the cost and in the suggested price shown here."
+  },
+  "3d37999fc2": {
+    "es": "No: queda fuera y solo entra si el vendedor lo marca.",
+    "en": "No: it stays out and only goes in if the salesperson ticks it."
+  },
+  "df994122f0": {
+    "es": "Opcional · incluido por defecto",
+    "en": "Optional · included by default"
+  },
+  "117e43135f": {
+    "es": "Opcional · fuera por defecto",
+    "en": "Optional · left out by default"
   }
 }

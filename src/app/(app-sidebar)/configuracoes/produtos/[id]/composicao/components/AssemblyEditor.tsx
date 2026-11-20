@@ -1250,8 +1250,8 @@ function AssemblyEditorBody({
                           {line.optional && (
                             <Badge className="mt-1" variant="neutralLight">
                               {line.optionalDefault
-                                ? 'Opcional · vem marcada'
-                                : 'Opcional · fora do custo padrão'}
+                                ? 'Opcional · incluído por padrão'
+                                : 'Opcional · fora por padrão'}
                             </Badge>
                           )}
                           {!line.options.length && (

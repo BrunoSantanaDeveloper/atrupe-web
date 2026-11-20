@@ -503,21 +503,21 @@ function OptionalFields({
             onCheckedChange={(checked) =>
               onChange({ optional, optionalDefault: checked })
             }
-            aria-label="Normalmente vai com"
+            aria-label="Incluir por padrão"
           />
           <span>
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-medium text-gray-800">
-                Normalmente vai com
+                Incluir por padrão
               </span>
-              <InfoHint title="Vem marcado">
+              {/* Era "Normalmente vai com" (20/11/2026): o nome diz o que
+                  acontece no orçamento */}
+              <InfoHint title="Incluir por padrão">
                 <p>
-                  Ligado, o item já vem marcado no orçamento e entra no custo e
-                  no preço sugerido mostrados aqui.
+                  Sim: o item já entra no orçamento, no custo e no preço
+                  sugerido mostrados aqui.
                 </p>
-                <p>
-                  Desligado, começa desmarcado e só entra se o vendedor marcar.
-                </p>
+                <p>Não: fica de fora e só entra se o vendedor marcar.</p>
               </InfoHint>
             </div>
           </span>

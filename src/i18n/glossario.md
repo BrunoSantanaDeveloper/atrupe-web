@@ -85,6 +85,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Etapas anteriores / etapas seguintes (era "Costuma vir depois de" / "Etapas seguintes usuais", 28/10) | Etapas anteriores / etapas siguientes | Previous steps / next steps | Sugestões ao montar o produto, não ordem obrigatória |
 | Instruções ao vendedor | Instrucciones para el vendedor | Notes for the salesperson | |
 | Padrão de medidas | Estándar de medidas | Size standard | |
+| Incluir por padrão (item opcional; era "Normalmente vai com" / "Vem marcado", 20/11/2026) | Incluir por defecto | Include by default | O opcional que já entra no orçamento; o vendedor pode tirar. |
 
 ## Termos do ramo (comunicação visual)
 
