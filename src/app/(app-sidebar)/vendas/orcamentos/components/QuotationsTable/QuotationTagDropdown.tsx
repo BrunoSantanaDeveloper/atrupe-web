@@ -84,7 +84,15 @@ function QuotationTag({ quotation, tagsList }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" size="none" variant="none">
+        {/* O "+" sem status tem 20 px: no celular a área de toque cresce
+            sem mudar o desenho */}
+        <Button
+          type="button"
+          size="none"
+          variant="none"
+          aria-label={status?.text ? undefined : 'Escolher status'}
+          className="relative max-sm:after:absolute max-sm:after:-inset-2.5 max-sm:after:content-['']"
+        >
           <Badge
             size={status ? 'default' : 'roundSm'}
             LeftIcon={status ? undefined : IconPlus}

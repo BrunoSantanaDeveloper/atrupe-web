@@ -16,6 +16,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { useRouter } from '@/hooks/useRouter'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
+import { cn } from '@/lib/utils'
 
 // Type
 import { QuotationType } from '@/types/sales/quotation'
@@ -70,8 +71,18 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
 
   return (
     <>
-      <div className="flex flex-wrap justify-between gap-4">
-        <div className="flex flex-wrap gap-4">
+      {/* No celular, as ações viram só ícones lado a lado, numa linha: os
+          cartões com texto ocupavam meia tela antes do resumo (20/11/2026).
+          O nome continua no aria-label e no title do botão */}
+      <div
+        className={cn(
+          'flex flex-wrap justify-between gap-4',
+          'max-sm:justify-start max-sm:gap-2',
+          'max-sm:[&_[data-slot=custom-button-label]]:sr-only',
+          'max-sm:[&_[data-slot=custom-button]]:size-14 max-sm:[&_[data-slot=custom-button]]:justify-center max-sm:[&_[data-slot=custom-button]]:p-0',
+        )}
+      >
+        <div className="flex flex-wrap gap-4 max-sm:gap-2">
           {setClient}
           {!hidePrint && (
             <PermissionGate permissions={['sale:quotation:view']}>
@@ -104,7 +115,7 @@ export function QuotationActions({ data, primaryAction, hidePrint }: Props) {
             </PermissionGate>
           ) : null}
         </div>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 max-sm:gap-2">
           {canReject ? (
             <PermissionGate permissions={['sale:quotation:edit']}>
               <RejectQuotation data={data} />

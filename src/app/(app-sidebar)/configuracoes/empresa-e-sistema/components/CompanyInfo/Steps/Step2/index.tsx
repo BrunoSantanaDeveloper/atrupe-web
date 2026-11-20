@@ -55,7 +55,7 @@ const BRAZIL_STATES = [
 
 export function Step2() {
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="grid grid-cols-4 gap-4 max-sm:[&>*]:col-span-full">
       <div className="mt-auto col-span-2">
         <ZipcodeField />
       </div>

@@ -315,7 +315,7 @@ export function QuotationsData({
                                       />
                                     ) : null}
                                   </TableCell>
-                                  <TableCell>
+                                  <TableCell className="min-w-[180px]">
                                     <p className="font-medium">
                                       {quotation?.client?.name ||
                                         'Cliente não informado'}
@@ -324,7 +324,7 @@ export function QuotationsData({
                                     <PermissionGate
                                       permissions={['sale:quotation:edit']}
                                       fallback={
-                                        <p className="flex min-w-0 items-center gap-2 text-gray">
+                                        <p className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-gray">
                                           <span className="truncate">
                                             {description}
                                           </span>
@@ -336,7 +336,7 @@ export function QuotationsData({
                                     >
                                       <Link
                                         href={link}
-                                        className="flex min-w-0 items-center gap-2 text-gray hover:opacity-80 active:opacity-95 transition-opacity"
+                                        className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-gray hover:opacity-80 active:opacity-95 transition-opacity"
                                       >
                                         <span className="truncate">
                                           {description}

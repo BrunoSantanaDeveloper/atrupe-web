@@ -56,7 +56,7 @@ export function ProductFiscalTab() {
             label="CEAN (EAN/GTIN)"
             placeholder="SEM GTIN"
           />
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <FormInput
               name="cfopInState"
               label="CFOP Estadual"

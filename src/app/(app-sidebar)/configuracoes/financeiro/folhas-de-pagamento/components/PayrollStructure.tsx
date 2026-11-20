@@ -8,6 +8,7 @@
 
 // Next
 import { InfoHint } from '@/components/common/InfoHint'
+import { CollapsibleFilters } from '@/components/common/CollapsibleFilters'
 import Link from 'next/link'
 
 // React
@@ -471,7 +472,35 @@ export function PayrollStructure() {
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-end gap-3">
+              {/* No celular os filtros ficam atrás do funil e a busca atrás
+                  da lupa: abertos, empurravam a tabela para fora da tela */}
+              <CollapsibleFilters
+                className="max-sm:w-full sm:flex sm:flex-wrap sm:items-end sm:gap-3 sm:space-y-0"
+                contentClassName="flex flex-wrap items-end gap-3 sm:contents"
+                searchClassName="sm:order-2 sm:flex sm:flex-[1_0_200px]"
+                searchActive={!!search}
+                activeCount={
+                  [sector, employeeId, costType].filter(
+                    (value) => value !== TODOS,
+                  ).length
+                }
+                search={
+                  <div className="flex flex-[1_0_200px] flex-col">
+                    <label
+                      htmlFor="payroll-search"
+                      className="mb-2 text-sm font-medium text-gray-700"
+                    >
+                      Buscar
+                    </label>
+                    <Input
+                      id="payroll-search"
+                      value={search}
+                      placeholder="Buscar por..."
+                      onChange={(event) => setSearch(event.target.value)}
+                    />
+                  </div>
+                }
+              >
                 <SelectBasic
                   name="sector"
                   label="Setor"
@@ -503,21 +532,7 @@ export function PayrollStructure() {
                   onChange={setCostType}
                   className="flex-[1_0_200px]"
                 />
-                <div className="flex flex-[1_0_200px] flex-col">
-                  <label
-                    htmlFor="payroll-search"
-                    className="mb-2 text-sm font-medium text-gray-700"
-                  >
-                    Buscar
-                  </label>
-                  <Input
-                    id="payroll-search"
-                    value={search}
-                    placeholder="Buscar por..."
-                    onChange={(event) => setSearch(event.target.value)}
-                  />
-                </div>
-              </div>
+              </CollapsibleFilters>
             </CardContent>
 
             {/* Sem a forma de contratação, o servidor não gera INSS, FGTS,

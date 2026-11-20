@@ -134,13 +134,13 @@ export function NewProductGroup({
                   <FormInput<NewProductsGroupFormType>
                     name="name"
                     label="Nome"
-                    width="flex-[1_0_400px]"
+                    width="flex-[1_0_100%] sm:flex-[1_0_400px]"
                     disabled={isLoading || (editMode && !group)}
                   />
                   <SelectSectorField<NewProductsGroupFormType>
                     name="sectorId"
                     label="Setor"
-                    width="flex-[1_0_400px]"
+                    width="flex-[1_0_100%] sm:flex-[1_0_400px]"
                   />
                 </form>
               </Form>

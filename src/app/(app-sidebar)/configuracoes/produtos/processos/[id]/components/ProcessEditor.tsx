@@ -1364,7 +1364,7 @@ export function ProcessEditor({
             grava o card Processo e volta para a lista; Fechar avisa se
             houver pendência. No diálogo o rodapé é o dele */}
         {!embedded && (
-          <Card className="sticky bottom-0 z-10">
+          <Card className="sticky bottom-0 z-10 max-sm:-bottom-20">
             <CardContent className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
               <p className="inline-flex items-center gap-1.5 text-sm text-gray">
                 <IconClock size={ICON_SIZE.sm} aria-hidden="true" />

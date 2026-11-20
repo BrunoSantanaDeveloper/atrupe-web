@@ -102,8 +102,10 @@ export function Main() {
             series.map((item) => (
               <Card key={item.id} className="w-full">
                 <CardHeader>
-                  <div className="flex justify-between">
-                    <div className="flex gap-3 items-center">
+                  {/* No celular título, selos e ações não cabem numa
+                      linha: as ações descem em vez de passar da borda */}
+                  <div className="flex flex-wrap justify-between gap-3">
+                    <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
                       <CardTitle>
                         {`${item?.code || ''} - ${item?.description || ''}`}
                       </CardTitle>

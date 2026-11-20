@@ -71,7 +71,9 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.className} min-h-screen flex flex-col`}>
+      <body
+        className={`${inter.className} min-h-screen supports-[height:100dvh]:min-h-dvh flex flex-col`}
+      >
         {/* Google Tag Manager (noscript) */}
         <noscript
           dangerouslySetInnerHTML={{

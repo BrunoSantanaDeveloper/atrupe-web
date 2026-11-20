@@ -102,7 +102,7 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
           </div>
         </DialogHeader>
         <DialogBody>
-          <div className="grid grid-cols-3 gap-4 pb-5">
+          <div className="grid grid-cols-3 gap-4 pb-5 max-sm:grid-cols-2">
             <div>
               <p className="type-kpi-label">Custo distribuído</p>
               <p className="type-kpi-value">

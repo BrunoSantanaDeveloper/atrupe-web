@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 const switchVariants = cva(
-  'peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:focus-visible:ring-[#f4ebff] data-[state=unchecked]:focus-visible:ring-gray-100',
+  // No celular a área de toque ganha altura sem mudar o desenho
+  'relative max-sm:after:absolute max-sm:after:inset-x-0 max-sm:after:-inset-y-2.5 max-sm:after:content-[""] peer inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:focus-visible:ring-[#f4ebff] data-[state=unchecked]:focus-visible:ring-gray-100',
   {
     variants: {
       sizing: {

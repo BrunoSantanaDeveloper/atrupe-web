@@ -1595,7 +1595,9 @@ function AssemblyEditorBody({
           supportText={topbar.supportText}
           previousPage={topbar.previousPage}
           primaryCta={
-            <div className="flex items-center gap-2">
+            // No celular os três não cabem numa linha: quebra, e o
+            // "Aprovar composição" desce ocupando a largura
+            <div className="flex flex-wrap items-center gap-2">
               {topbarExtra}
               <PermissionGate
                 permissions={EDIT}
@@ -1612,6 +1614,7 @@ function AssemblyEditorBody({
                     <Button
                       type="button"
                       LeftIcon={IconCircleCheck}
+                      className="max-sm:grow"
                       title={assemblyStatusObj.RELEASED.help}
                       onClick={() =>
                         run(
@@ -2497,7 +2500,7 @@ function AssemblyEditorBody({
           No diálogo do produto o rodapé já existe */}
 
       {!embedded && (
-        <Card className="sticky bottom-0 z-10">
+        <Card className="sticky bottom-0 z-10 max-sm:-bottom-20">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
             {/* A gravação é por ação (IP-40): a situação aparece só aqui,
                 com o relógio, para não repetir no cabeçalho (03/10/2026) */}

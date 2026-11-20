@@ -216,7 +216,7 @@ export function NewCompany({
           </DialogHeader>
           <DialogBody className="max-h-[calc(100vh-200px)]">
             <Tabs defaultValue="general">
-              <TabsList className="grid w-full grid-cols-5 mb-6">
+              <TabsList className="grid w-full grid-cols-5 mb-6 max-sm:flex max-sm:justify-start max-sm:overflow-x-auto">
                 <TabsTrigger value="general">
                   <span className={cn(hasGeneralErrors && errorTabStyle)}>
                     Gerais

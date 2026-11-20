@@ -760,7 +760,7 @@ function NewProductModal({
                       <FormInput
                         name="name"
                         label="Nome do produto"
-                        width="flex-[1_0_400px]"
+                        width="flex-[1_0_100%] sm:flex-[1_0_400px]"
                         additionalOnChange={(value) => {
                           if (items?.fields?.length === 1) {
                             form.setValue('items.0.name', String(value))

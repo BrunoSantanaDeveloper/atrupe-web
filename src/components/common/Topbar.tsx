@@ -92,7 +92,9 @@ export function Topbar({
           classNames?.label,
         )}
       >
-        <div className="flex min-w-0 items-center gap-2">
+        {/* A seta acompanha a primeira linha: no celular o título, o status
+            e o cliente quebram em linhas e a seta ficava no meio do bloco */}
+        <div className="flex min-w-0 items-start gap-2">
           {previousPage ? (
             <Button
               asChild
@@ -127,7 +129,15 @@ export function Topbar({
             ) : null}
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        {/* No celular os botões ocupam a linha e o principal estica: se ele
+            descer de linha, vira um botão largo e não fica solto pela metade */}
+        <div
+          className={cn(
+            'flex flex-wrap items-center gap-3',
+            !label && 'max-sm:w-full',
+            primaryCta && !label && 'max-sm:[&>*:last-child]:grow',
+          )}
+        >
           {label ? (
             <p className="font-semibold text-white opacity-60">{label}</p>
           ) : null}

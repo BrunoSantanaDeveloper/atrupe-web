@@ -29,6 +29,7 @@ import {
   IconArrowLeft,
   IconCircleCheck,
   IconHelpCircle,
+  IconPhoto,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -155,6 +156,9 @@ export function QuotationProdDetailModal({
   // O fornecedor do produto terceirizado nesta venda (12/11/2026):
   // undefined = não mexeu
   const [supplierId, setSupplierId] = React.useState<string | undefined>()
+  // No celular a imagem fica fechada atrás de um botão: os dados do item vêm
+  // primeiro (ajuste de mobile, 20/11/2026)
+  const [showImage, setShowImage] = React.useState(false)
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
   // const { data: unitOfMeasure } = useUnitOfMeasure()
@@ -708,10 +712,26 @@ export function QuotationProdDetailModal({
             <form
               id="new-product"
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-row gap-5"
+              className="flex flex-col gap-5 sm:flex-row"
               noValidate
             >
-              <div className="w-[300px] h-[300px] flex items-stretch justify-stretch">
+              <Button
+                type="button"
+                variant="neutralOutline"
+                size="sm"
+                LeftIcon={IconPhoto}
+                className="self-start sm:hidden"
+                aria-expanded={showImage}
+                onClick={() => setShowImage((value) => !value)}
+              >
+                {showImage ? 'Ocultar imagem' : 'Imagem do produto'}
+              </Button>
+              <div
+                className={cn(
+                  'flex h-[300px] w-full shrink-0 items-stretch justify-stretch sm:w-[300px]',
+                  !showImage && 'max-sm:hidden',
+                )}
+              >
                 <ProductImageUpload<ProductsFormType>
                   control={control}
                   name="imageUrl"
@@ -724,7 +744,7 @@ export function QuotationProdDetailModal({
                 <FormInput<ProductsFormType>
                   name="description"
                   label="Descrição do item"
-                  width="flex-[1_0_380px]"
+                  width="flex-[1_0_100%] sm:flex-[1_0_380px]"
                   placeholder="Digite aqui"
                   disabled={!canEditDescription}
                 />
@@ -830,7 +850,9 @@ export function QuotationProdDetailModal({
                           </Tooltip>
                         </TooltipProvider>
                       }
-                      width="flex-[1_0_130px]"
+                      // 100 px no celular: quantidade, largura e altura
+                      // cabem na mesma linha em 390 px
+                      width="flex-[1_0_100px] sm:flex-[1_0_130px]"
                       additionalOnChange={() => {
                         const { total, measurementValue } =
                           calculateSalesValue(index)
@@ -861,10 +883,17 @@ export function QuotationProdDetailModal({
                   )
                   return (
                     <div
-                      className="flex flex-wrap gap-4 relative"
+                      className="relative flex w-full min-w-0 flex-wrap gap-4"
                       key={item.id}
                     >
-                      <span className="text-sm font-semibold text-gray-700 leading-4 w-[100%] my-2">
+                      {/* Com um item só, o nome repete o título e a
+                          descrição: no celular sai, para sobrar espaço */}
+                      <span
+                        className={cn(
+                          'text-sm font-semibold text-gray-700 leading-4 w-[100%] my-2',
+                          items.fields.length === 1 && 'max-sm:hidden',
+                        )}
+                      >
                         {item?.name}
                       </span>
                       {/* Item por unidade (26/10/2026): com largura ou altura
@@ -885,7 +914,9 @@ export function QuotationProdDetailModal({
                         // seguinte, sem quebra entre elas
                         <>
                           <div className="flex w-full gap-4">{unitField}</div>
-                          <div className="flex w-full flex-nowrap gap-4">
+                          {/* No celular a área total desce para a linha de
+                              baixo: os quatro não cabem em 390 px */}
+                          <div className="flex w-full flex-wrap gap-4 sm:flex-nowrap">
                             {quantityField}
                             {measureField}
                           </div>
@@ -947,7 +978,7 @@ export function QuotationProdDetailModal({
                 {/* As escolhas da composição do produto (IP-36), lidas da
                     API; a variação com composição própria troca o form */}
                 <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
-                  <div className="w-full">
+                  <div className="w-full empty:hidden">
                     {/* A composição em montagem não manda campos ao item
                         (IP-14 revisto): sem este aviso, os campos do
                         orçamento sumiam sem explicação (20/11/2026) */}
@@ -1060,8 +1091,10 @@ export function QuotationProdDetailModal({
             do limite do vendedor ({maxDiscount}%). Suba o preço para salvar.
           </p>
         )}
-        <DialogFooter className="sm:justify-between">
-          <div className="flex flex-col">
+        {/* No celular: o valor final em cima e os botões embaixo, dividindo
+            a largura (o valor ficava abaixo dos botões) */}
+        <DialogFooter className="sm:justify-between max-sm:flex-col">
+          <div className="flex flex-col max-sm:flex-row max-sm:items-baseline max-sm:gap-2">
             <PermissionGate permissions={['values:values:view']}>
               <strong className="font-semibold text-lg text-gray-900">
                 R$ {parseCurrencyToBrl(calculateFinalValue())}
@@ -1071,7 +1104,7 @@ export function QuotationProdDetailModal({
               </span>
             </PermissionGate>
           </div>
-          <div className="space-x-4">
+          <div className="flex gap-4 max-sm:w-full max-sm:flex-wrap max-sm:gap-3 max-sm:[&>button]:flex-1">
             {process.env.NODE_ENV === 'development' && (
               <Button
                 type="button"

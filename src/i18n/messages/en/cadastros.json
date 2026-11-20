@@ -170,9 +170,15 @@
     "youDonTHavePermission5": "You don't have permission to view the suppliers page."
   },
   "papeis": {
+    "paperStockUpdated": "Paper stock updated",
+    "paperStockAddedFrom": "Paper stock added from {name}",
+    "paperStockAdded": "Paper stock added",
     "edit": "Edit {name}",
+    "duplicate": "Duplicate {name}",
     "newPaper": "New paper",
+    "duplicatePaperStock": "Duplicate paper stock",
     "editPaper": "Edit paper",
+    "aNewPaperStockWith": "A new paper stock with the data of {name}. Change the weight or the sheet and save it: the name follows the change.",
     "theSheetAndTheUsable": "The sheet and the usable area feed the sheet count and the imposition. Measurements in millimetres.",
     "matteCoated300G": "Matte coated 300 g",
     "chooseTheDepartment": "Choose the department",
@@ -188,7 +194,6 @@
     "activePaper": "Active paper",
     "whenInactiveThePaperNo": "When inactive, the paper no longer shows in lists and build-ups. Existing quotes do not change.",
     "addPaper": "Add paper",
-    "papers": "Papers",
     "noInactivePaper": "No inactive paper",
     "toDeactivateAPaperTurn": "To deactivate a paper, turn off the Active switch when editing it",
     "noPaperRegistered": "No paper registered",

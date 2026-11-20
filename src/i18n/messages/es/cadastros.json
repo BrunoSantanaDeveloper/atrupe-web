@@ -170,9 +170,15 @@
     "youDonTHavePermission5": "Usted no tiene permiso para ver la página de proveedores."
   },
   "papeis": {
+    "paperStockUpdated": "Papel actualizado",
+    "paperStockAddedFrom": "Papel registrado a partir de {name}",
+    "paperStockAdded": "Papel registrado",
     "edit": "Editar {name}",
+    "duplicate": "Duplicar {name}",
     "newPaper": "Nuevo papel",
+    "duplicatePaperStock": "Duplicar papel",
     "editPaper": "Editar papel",
+    "aNewPaperStockWith": "Un papel nuevo con los datos de {name}. Cambie el gramaje o la hoja y regístrelo: el nombre acompaña el cambio.",
     "theSheetAndTheUsable": "La hoja y el área útil alimentan el conteo de hojas y el aprovechamiento. Medidas en milímetros.",
     "matteCoated300G": "Couché mate 300 g",
     "chooseTheDepartment": "Elija el sector",
@@ -188,7 +194,6 @@
     "activePaper": "Papel activo",
     "whenInactiveThePaperNo": "Inactivo, el papel deja de aparecer en las listas y en las composiciones. Las cotizaciones ya hechas no cambian.",
     "addPaper": "Registrar papel",
-    "papers": "Papeles",
     "noInactivePaper": "Ningún papel inactivo",
     "toDeactivateAPaperTurn": "Para inactivar un papel, apague la llave Activo en su edición",
     "noPaperRegistered": "Ningún papel registrado",

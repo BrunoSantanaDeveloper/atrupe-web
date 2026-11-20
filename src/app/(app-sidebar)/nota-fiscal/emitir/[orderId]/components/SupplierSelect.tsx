@@ -186,7 +186,11 @@ export function SupplierSelect({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="p-0 w-[380px]" align="end" sideOffset={6}>
+      <PopoverContent
+        className="p-0 w-[380px] max-w-[calc(100vw-2rem)]"
+        align="end"
+        sideOffset={6}
+      >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder={placeholder}

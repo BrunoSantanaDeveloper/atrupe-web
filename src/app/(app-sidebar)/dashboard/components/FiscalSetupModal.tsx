@@ -562,7 +562,7 @@ export function FiscalSetupModal() {
                     {/* Endereço */}
                     <div className="space-y-3">
                       <h3 className="type-body-strong">Endereço</h3>
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-3 gap-3 max-sm:[&>*]:col-span-full">
                         <div className="space-y-1">
                           <Label htmlFor="m-cep">CEP</Label>
                           <Input
@@ -585,7 +585,7 @@ export function FiscalSetupModal() {
                           />
                         </div>
                       </div>
-                      <div className="grid grid-cols-4 gap-3">
+                      <div className="grid grid-cols-4 gap-3 max-sm:grid-cols-2">
                         <div className="space-y-1">
                           <Label htmlFor="m-numero">Número</Label>
                           <Input

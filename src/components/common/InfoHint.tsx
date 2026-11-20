@@ -30,12 +30,12 @@ export function InfoHint({
         <button
           type="button"
           aria-label={`Sobre: ${title}`}
-          className="inline-flex shrink-0 items-center justify-center rounded-full align-middle text-gray-400 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+          className="inline-flex shrink-0 items-center justify-center rounded-full max-sm:-m-2 max-sm:p-2 align-middle text-gray-400 hover:text-brand-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
         >
           <Icon icon={IconInfoCircle} size="sm" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 space-y-2 text-sm text-gray-700">
+      <PopoverContent className="w-80 max-w-[calc(100vw-2rem)] space-y-2 text-sm text-gray-700">
         <p className="font-semibold text-gray-900">{title}</p>
         {children}
       </PopoverContent>

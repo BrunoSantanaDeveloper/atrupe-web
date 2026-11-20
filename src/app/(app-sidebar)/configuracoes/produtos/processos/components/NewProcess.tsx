@@ -325,7 +325,7 @@ export function ProcessDialog({
                   // Os três campos de abertura, na ordem em que fazem
                   // sentido (MS-1). O resto se monta depois de salvar
                   <div className="flex flex-wrap gap-4">
-                    <div className="flex flex-[1_0_400px] flex-col">
+                    <div className="flex flex-[1_0_100%] flex-col sm:flex-[1_0_400px]">
                       <Label htmlFor="process-name" className="mb-2">
                         Nome do processo
                       </Label>

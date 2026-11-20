@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input-uncontrolled'
+import { CollapsibleFilters } from '@/components/common/CollapsibleFilters'
 
 // Icon Imports
 import { IconSearch } from '@tabler/icons-react'
@@ -20,9 +21,34 @@ import { ICON_SIZE } from '@/components/ui/icon'
 // Type Imports
 import type { SearchParamsType } from '@/types/coreTypes'
 
-interface Props extends PropsWithChildren, SearchParamsType {}
+interface Props extends PropsWithChildren, SearchParamsType {
+  // Quantos filtros estão aplicados, para o número no funil do celular.
+  // Sem ele, conta os parâmetros da URL que não são busca, aba, página nem
+  // ordenação
+  activeCount?: number
+}
 
-export function TableFiltersHeader({ searchParams, children }: Props) {
+// Parâmetros da URL que não são filtro: não contam no número do funil.
+// `endDate` anda junto com `startDate` (o período conta uma vez)
+const NOT_FILTERS = new Set([
+  'search',
+  'page',
+  'perPage',
+  'limit',
+  'status',
+  'tab',
+  'aba',
+  'view',
+  'orderBy',
+  'sort',
+  'endDate',
+])
+
+export function TableFiltersHeader({
+  searchParams,
+  children,
+  activeCount,
+}: Props) {
   const [search, setSearch] = useState(searchParams.search || '')
 
   const router = useRouter()
@@ -50,32 +76,53 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
     router.push(queryString ? `${pathname}?${queryString}` : pathname)
   }
 
+  const filtersApplied =
+    activeCount ??
+    Object.entries(searchParams || {}).filter(
+      ([key, value]) => !NOT_FILTERS.has(key) && value && value !== 'all',
+    ).length
+
+  // No celular, os filtros e a busca ficam fechados atrás do funil e da lupa,
+  // e a lista aparece primeiro (ajuste de mobile, 20/11/2026). A partir de
+  // `sm` o wrapper some (display: contents) e a grade fica como sempre
   return (
     <CardHeader className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-end">
-      <div className="flex flex-wrap gap-4 items-end">{children}</div>
-      <form
-        onSubmit={handleSearch}
-        className="flex items-end gap-2 w-full lg:w-auto"
+      <CollapsibleFilters
+        className="sm:contents"
+        contentClassName="sm:order-1"
+        searchClassName="sm:order-2"
+        activeCount={filtersApplied}
+        searchActive={!!searchParams.search}
+        search={
+          <form
+            onSubmit={handleSearch}
+            className="flex items-end gap-2 w-full lg:w-auto"
+          >
+            <div className="flex flex-col flex-1 lg:flex-none lg:w-64 gap-2">
+              <Label htmlFor="search">Buscar</Label>
+              <Input
+                id="search"
+                type="search"
+                value={search}
+                placeholder="Buscar por..."
+                startAdornment={<IconSearch aria-hidden size={ICON_SIZE.md} />}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <Button
+              type="submit"
+              size="icon"
+              title="Buscar"
+              aria-label="Buscar"
+              LeftIcon={IconSearch}
+            />
+          </form>
+        }
       >
-        <div className="flex flex-col flex-1 lg:flex-none lg:w-64 gap-2">
-          <Label htmlFor="search">Buscar</Label>
-          <Input
-            id="search"
-            type="search"
-            value={search}
-            placeholder="Buscar por..."
-            startAdornment={<IconSearch aria-hidden size={ICON_SIZE.md} />}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <Button
-          type="submit"
-          size="icon"
-          title="Buscar"
-          aria-label="Buscar"
-          LeftIcon={IconSearch}
-        />
-      </form>
+        {children ? (
+          <div className="flex flex-wrap gap-4 items-end">{children}</div>
+        ) : null}
+      </CollapsibleFilters>
     </CardHeader>
   )
 }

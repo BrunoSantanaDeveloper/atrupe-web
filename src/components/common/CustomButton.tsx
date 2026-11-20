@@ -43,12 +43,17 @@ export const CustomButton = forwardRef<HTMLButtonElement, Props>(
           className,
         )}
         disabled={isLoading}
+        // Onde o cartão vira só ícone (ações do orçamento no celular), o nome
+        // da ação continua para o leitor de tela e no toque longo
+        aria-label={title}
+        title={title}
+        data-slot="custom-button"
         {...props}
       >
         {icon && (
           <FeaturedIcon tone={iconTone} Icon={icon} isLoading={isLoading} />
         )}
-        <div className="text-start">
+        <div className="text-start" data-slot="custom-button-label">
           <p className="type-body-strong">{title}</p>
           {caption ? <p className="type-caption">{caption}</p> : null}
         </div>

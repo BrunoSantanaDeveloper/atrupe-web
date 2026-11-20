@@ -7,7 +7,13 @@
 // (ORG-1).
 
 // React
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from 'react'
 
 // UI
 import {
@@ -30,6 +36,7 @@ import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 // Components
 import { Form } from '@/components/ui/form'
 import { FeatureGate } from '@/components/common/FeatureGate'
+import { CollapsibleFilters } from '@/components/common/CollapsibleFilters'
 import { CategorySelectField } from '@/components/common/form/global-inputs/CategorySelectField'
 import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
@@ -279,9 +286,17 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
     sectors.length +
     (hasFeature(FEATURES.COSTS.COST_BASE) ? 1 : 0) +
     (showOutsourced ? 1 : 0)
-  const rows = Math.max(1, Math.ceil(tiles / 4))
-  const perRow = Math.max(1, Math.ceil(tiles / rows))
+  const balanced = (max: number) =>
+    Math.max(1, Math.ceil(tiles / Math.max(1, Math.ceil(tiles / max))))
+  const perRow = balanced(4)
   const gridMaxWidth = perRow * TILE_PX + (perRow - 1) * GAP_PX
+  // No celular, até 3 por linha, com a mesma conta (6 → 3 + 3, 8 → 3 + 3 + 2),
+  // e o cartão encolhe para caber: 120 px fixos estouravam a tela (20/11/2026)
+  const perRowMobile = balanced(3)
+  // Classe literal: o Tailwind não gera classe montada com variável. O 12px
+  // é o GAP_PX (gap-3)
+  const tileSize =
+    'h-[120px] w-[120px] max-sm:aspect-square max-sm:h-auto max-sm:w-[calc((100%_-_12px_*_(var(--per-row)_-_1))_/_var(--per-row))]'
 
   if (step === 'sectors') {
     return (
@@ -305,15 +320,20 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
               </div>
             ) : (
               <div
-                className="mx-auto flex flex-wrap justify-center gap-3"
-                style={{ maxWidth: gridMaxWidth }}
+                className="mx-auto flex flex-wrap justify-center gap-3 sm:max-w-[var(--grid-max)]"
+                style={
+                  {
+                    '--grid-max': `${gridMaxWidth}px`,
+                    '--per-row': perRowMobile,
+                  } as CSSProperties
+                }
               >
                 {sectors.map((sector) => (
                   <Button
                     key={sector.id}
                     type="button"
                     variant="neutralOutline"
-                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border-none p-2 text-gray-600 shadow-sm [&_svg]:!size-10"
+                    className={`${tileSize} flex-col overflow-hidden rounded-xl border-none p-2 text-gray-600 shadow-sm [&_svg]:!size-10`}
                     onClick={() => {
                       setSectorId(sector.id)
                       form.setValue('categoryId', '')
@@ -341,7 +361,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                   <Button
                     type="button"
                     variant="neutralOutline"
-                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border border-dashed border-brand-200 bg-brand-50 p-2 text-brand-600 shadow-none hover:bg-brand-100 [&_svg]:!size-10"
+                    className={`${tileSize} flex-col overflow-hidden rounded-xl border border-dashed border-brand-200 bg-brand-50 p-2 text-brand-600 shadow-none hover:bg-brand-100 [&_svg]:!size-10`}
                     title="Montar um item que não existe pronto"
                     onClick={() => openChangeModal(true, 'composeItem')}
                   >
@@ -359,7 +379,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                   <Button
                     type="button"
                     variant="neutralOutline"
-                    className="h-[120px] w-[120px] flex-col overflow-hidden rounded-xl border border-dashed border-brand-200 bg-brand-50 p-2 text-brand-600 shadow-none hover:bg-brand-100 [&_svg]:!size-10"
+                    className={`${tileSize} flex-col overflow-hidden rounded-xl border border-dashed border-brand-200 bg-brand-50 p-2 text-brand-600 shadow-none hover:bg-brand-100 [&_svg]:!size-10`}
                     title="Serviço contratado de fornecedor só para esta venda"
                     onClick={() => openChangeModal(true, 'outsourcedItem')}
                   >
@@ -393,24 +413,34 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <div className="flex flex-wrap items-end gap-4">
-            <div className="flex-[1_0_260px] space-y-1.5">
-              <label
-                htmlFor="quotation-item-search"
-                className="text-sm font-medium text-gray-700"
-              >
-                Buscar pelo nome
-              </label>
-              <Input
-                id="quotation-item-search"
-                autoFocus
-                value={search}
-                placeholder="Nome ou código do produto"
-                startAdornment={<Icon icon={IconSearch} size="md" />}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </div>
-            {sectorId !== ALL && (
+          {/* No celular, a busca e o grupo ficam atrás da lupa e do funil, e a
+              lista aparece primeiro (ajuste de mobile, 20/11/2026) */}
+          <CollapsibleFilters
+            className="sm:flex sm:flex-wrap sm:items-end sm:gap-4 sm:space-y-0"
+            searchClassName="sm:flex-[1_0_260px]"
+            contentClassName="sm:flex-[1_0_200px]"
+            searchActive={!!search}
+            activeCount={categoryId ? 1 : 0}
+            search={
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="quotation-item-search"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Buscar pelo nome
+                </label>
+                <Input
+                  id="quotation-item-search"
+                  autoFocus
+                  value={search}
+                  placeholder="Nome ou código do produto"
+                  startAdornment={<Icon icon={IconSearch} size="md" />}
+                  onChange={(event) => setSearch(event.target.value)}
+                />
+              </div>
+            }
+          >
+            {sectorId !== ALL ? (
               <Form {...form}>
                 <form
                   className="flex flex-[1_0_200px]"
@@ -424,8 +454,8 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                   />
                 </form>
               </Form>
-            )}
-          </div>
+            ) : null}
+          </CollapsibleFilters>
 
           {/* Os setores como filtro (ORC-1): abas segmentadas, na ordem fixa */}
           <Tabs
@@ -486,7 +516,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                         key={item.id}
                         {...rowProps(() => handleSelectProduct(item))}
                       >
-                        <TableCell className="w-[15%] truncate font-normal text-gray-600">
+                        <TableCell className="w-[15%] truncate font-normal text-gray-600 max-sm:hidden">
                           {item.code}
                         </TableCell>
                         <TableCell className="truncate text-left text-gray-900">
@@ -523,7 +553,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                         key={`material-${material.id}`}
                         {...rowProps(() => handleSelectMaterial(material.id))}
                       >
-                        <TableCell className="w-[15%] truncate font-normal text-gray-600">
+                        <TableCell className="w-[15%] truncate font-normal text-gray-600 max-sm:hidden">
                           {material.code}
                         </TableCell>
                         <TableCell className="truncate text-left text-gray-900">
@@ -567,7 +597,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
             )}
           </div>
         </DialogBody>
-        <DialogFooter className="sm:justify-between">
+        <DialogFooter className="sm:justify-between max-sm:flex-row max-sm:flex-wrap max-sm:justify-between">
           {/* Composição é o último botão, e é a exceção (ORC-1, ORC-11): para
               quando o produto não existe pronto. Tracejado, para não
               disputar atenção com a busca. O item montado vai para a API

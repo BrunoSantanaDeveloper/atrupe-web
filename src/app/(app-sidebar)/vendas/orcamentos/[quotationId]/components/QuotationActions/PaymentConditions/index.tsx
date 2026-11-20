@@ -381,8 +381,10 @@ export function PaymentConditionsDialog({
             </Form>
           </AllowedConditionsContext.Provider>
         </DialogBody>
-        <DialogFooter className="sm:justify-between">
-          <div className="flex gap-6">
+        {/* No celular: os totais em cima, "Adicionar comissão" numa linha
+            própria e os botões embaixo, dividindo a largura (20/11/2026) */}
+        <DialogFooter className="sm:justify-between max-sm:flex-col">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <PermissionGate permissions={['values:values:view']}>
               <div>
                 <p className="text-lg font-semibold text-gray-500 text-nowrap">
@@ -403,9 +405,14 @@ export function PaymentConditionsDialog({
               />
             </PermissionGate>
 
-            <CommissionDialog paymentConditionsForm={form} disabled={isBusy} />
+            <div className="max-sm:w-full max-sm:[&>button]:w-full">
+              <CommissionDialog
+                paymentConditionsForm={form}
+                disabled={isBusy}
+              />
+            </div>
           </div>
-          <div className="space-x-4">
+          <div className="flex gap-4 max-sm:w-full max-sm:gap-3 max-sm:[&>button]:flex-1">
             {process.env.NODE_ENV === 'development' && (
               <Button type="button" variant="neutral" onClick={onTest}>
                 Teste

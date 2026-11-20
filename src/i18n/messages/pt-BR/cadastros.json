@@ -178,9 +178,15 @@
     "youDonTHavePermission5": "Você não tem permissão para visualizar a página de fornecedores."
   },
   "papeis": {
+    "paperStockUpdated": "Papel atualizado",
+    "paperStockAddedFrom": "Papel cadastrado a partir de {name}",
+    "paperStockAdded": "Papel cadastrado",
     "edit": "Editar {name}",
+    "duplicate": "Duplicar {name}",
     "newPaper": "Novo papel",
+    "duplicatePaperStock": "Duplicar papel",
     "editPaper": "Editar papel",
+    "aNewPaperStockWith": "Um papel novo com os dados de {name}. Troque a gramatura ou a folha e cadastre: o nome acompanha a troca.",
     "theSheetAndTheUsable": "A folha e a área útil alimentam a contagem de folhas e o aproveitamento. Medidas em milímetros.",
     "matteCoated300G": "Couché fosco 300 g",
     "chooseTheDepartment": "Escolha o setor",
@@ -196,7 +202,6 @@
     "activePaper": "Papel ativo",
     "whenInactiveThePaperNo": "Inativo, o papel deixa de aparecer nas listas e nas composições. Os orçamentos já feitos não mudam.",
     "addPaper": "Cadastrar papel",
-    "papers": "Papéis",
     "noInactivePaper": "Nenhum papel inativo",
     "toDeactivateAPaperTurn": "Para inativar um papel, desligue a chave Ativo na edição dele",
     "noPaperRegistered": "Nenhum papel cadastrado",

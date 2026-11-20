@@ -288,7 +288,10 @@ export function UnitCostInput({
     <FormItem className={cn('flex flex-col', width)}>
       {dynamicLabel && <FormLabel>{dynamicLabel}</FormLabel>}
       <FormControl>
+        {/* Largura da linha: a padrão (flex-[1_0_100px]) dentro desta coluna
+            virava 100 px de altura e abria um vão abaixo dos preços */}
         <FormBrlInput
+          width="w-full"
           name={`items.${index}.visualUnitCost`}
           placeholder={placeholder}
           className={className}

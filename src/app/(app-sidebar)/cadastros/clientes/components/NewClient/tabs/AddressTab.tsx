@@ -106,7 +106,7 @@ export function AddressTab({ context = 'client' }: { context?: Context }) {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-4 max-sm:[&>*]:col-span-full max-sm:[&>div:empty]:hidden">
               <FormInput<NewClientFormType>
                 name={`addresses.${index}.type`}
                 label="Título do endereço"

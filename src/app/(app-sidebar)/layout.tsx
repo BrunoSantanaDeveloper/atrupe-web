@@ -11,7 +11,10 @@ import type { PropsWithChildren } from 'react'
 
 export default async function AppLayout({ children }: PropsWithChildren) {
   return (
-    <div className="flex flex-col h-screen">
+    // Ocupa o que sobra abaixo da faixa de homologação (DevEnvAlert): com
+    // h-screen o bloco passava da tela pela altura da faixa e o fim de
+    // cada página (barras fixas de salvar, rodapés) ficava fora da vista
+    <div className="flex h-0 min-h-0 flex-[1_1_0px] flex-col">
       <TrialExpiredAlert />
       <PartialBlockAlert />
       <BillingPendingAlert />

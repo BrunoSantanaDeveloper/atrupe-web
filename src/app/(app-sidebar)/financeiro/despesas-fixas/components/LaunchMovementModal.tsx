@@ -146,7 +146,7 @@ export function LaunchMovementModal({
               <DialogDescription hidden></DialogDescription>
             </DialogHeader>
             <DialogBody className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-4 max-sm:grid-cols-1">
                 <FormDatePickerInput
                   name="competenceDate"
                   label="Data da competência"
