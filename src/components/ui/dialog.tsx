@@ -64,7 +64,7 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col overflow-hidden space-y-1.5 text-center sm:text-left p-4 sm:p-6 bg-gray-100 border-b border-gray-300 sm:rounded-t-xl',
+      'flex flex-col overflow-hidden space-y-1.5 text-center sm:text-left p-6 max-sm:p-4 bg-gray-100 border-b border-gray-300 sm:rounded-t-xl',
       className,
     )}
     {...props}
@@ -76,9 +76,15 @@ const DialogBody = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
+  // Margem igual dos dois lados (24 px; 16 px no celular). O padrão do
+  // computador vai sem prefixo para a classe passada pela tela (pt-0,
+  // py-4, gap-2…) continuar valendo; só o celular usa max-sm.
+  // O antigo pr-2 contava com a barra de rolagem fixa do Windows para
+  // completar a margem direita; no Mac e no celular a barra não ocupa
+  // espaço e os campos encostavam à direita
   <div
     className={cn(
-      'p-4 sm:p-6 sm:pr-2 max-h-[calc(100dvh-200px)] overflow-y-auto overflow-x-hidden',
+      'p-6 max-sm:p-4 max-h-[calc(100dvh-200px)] overflow-y-auto overflow-x-hidden',
       className,
     )}
     {...props}
@@ -92,7 +98,7 @@ const DialogFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      'flex flex-col-reverse sm:flex-row sm:justify-end gap-3 sm:gap-4 p-4 sm:p-6 border-t border-gray-300',
+      'flex flex-col-reverse sm:flex-row sm:justify-end gap-4 max-sm:gap-3 p-6 max-sm:p-4 border-t border-gray-300',
       className,
     )}
     {...props}

@@ -94,7 +94,7 @@ export function Topbar({
       >
         {/* A seta acompanha a primeira linha: no celular o título, o status
             e o cliente quebram em linhas e a seta ficava no meio do bloco */}
-        <div className="flex min-w-0 items-start gap-2">
+        <div className="flex min-w-0 items-center gap-2 max-sm:items-start">
           {previousPage ? (
             <Button
               asChild

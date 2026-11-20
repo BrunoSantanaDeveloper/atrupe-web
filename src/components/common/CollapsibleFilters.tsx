@@ -48,7 +48,7 @@ export function CollapsibleFilters({
   const searchId = useId()
 
   return (
-    <div className={cn('space-y-3', className)}>
+    <div className={cn('max-sm:space-y-3', className)}>
       <div className="flex items-center gap-2 sm:hidden">
         {search ? (
           <Button

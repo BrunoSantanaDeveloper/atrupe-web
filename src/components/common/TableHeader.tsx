@@ -87,10 +87,13 @@ export function TableFiltersHeader({
   // `sm` o wrapper some (display: contents) e a grade fica como sempre
   return (
     <CardHeader className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-end">
+      {/* Sem filtros, a coluna deles fica vazia a partir do tablet para a
+          busca continuar à direita, como antes dos filtros recolhíveis */}
+      {children ? null : <div aria-hidden className="hidden sm:block" />}
       <CollapsibleFilters
         className="sm:contents"
         contentClassName="sm:order-1"
-        searchClassName="sm:order-2"
+        searchClassName="sm:order-2 sm:mt-1.5"
         activeCount={filtersApplied}
         searchActive={!!searchParams.search}
         search={
