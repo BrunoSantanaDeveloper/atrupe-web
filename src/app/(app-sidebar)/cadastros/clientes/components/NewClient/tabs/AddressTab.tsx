@@ -1,5 +1,6 @@
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { FormInput } from '@/components/common/form/FormInput'
+import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 import { RegularizadoMark } from '../RegularizadoMark'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FormSelect } from '@/components/common/form/FormSelect'
@@ -141,11 +142,7 @@ export function AddressTab({ context = 'client' }: { context?: Context }) {
                   <div></div>
                 )}
               </div>
-              <FormInput<NewClientFormType>
-                name={`addresses.${index}.number`}
-                labelSuffix={numberMark}
-                label="Número"
-              />
+              <NumberField index={index} labelSuffix={numberMark} />
               <div className="col-span-2">
                 <FormInput<NewClientFormType>
                   name={`addresses.${index}.street`}
@@ -175,6 +172,44 @@ export function AddressTab({ context = 'client' }: { context?: Context }) {
 }
 
 // Componente auxiliar para o CEP com auto-complete
+// O número com a caixinha "S/N" (Lista Lite 19/11, item 9), como o ISENTO
+// da inscrição estadual: marcada, o campo grava "S/N" e trava, e ninguém
+// digita "sn", "s/n" ou "0" de cada jeito
+function NumberField({
+  index,
+  labelSuffix,
+}: {
+  index: number
+  labelSuffix: React.ReactNode
+}) {
+  const { setValue, watch } = useFormContext<NewClientFormType>()
+  const name = `addresses.${index}.number` as const
+  const withoutNumber = (watch(name) || '').trim().toUpperCase() === 'S/N'
+
+  return (
+    <div className="flex items-end gap-2">
+      <FormInput<NewClientFormType>
+        name={name}
+        labelSuffix={labelSuffix}
+        label="Número"
+        disabled={withoutNumber}
+        width="flex-1"
+      />
+      <div className="shrink-0 pb-[9px]">
+        <CheckboxBasic
+          name={`addresses-${index}-sem-numero`}
+          label="S/N"
+          checked={withoutNumber}
+          onCheckedChange={(checked) =>
+            setValue(name, checked ? 'S/N' : '', { shouldDirty: true })
+          }
+          className="flex items-center gap-1.5 whitespace-nowrap"
+        />
+      </div>
+    </div>
+  )
+}
+
 function ZipcodeField({ index, context }: { index: number; context: Context }) {
   const addressMark = useAddressMark(context)
   const { watch, setValue } = useFormContext<NewClientFormType>()
