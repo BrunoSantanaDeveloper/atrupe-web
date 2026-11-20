@@ -357,12 +357,10 @@ export function ProcessDialog({
                       onChange={(value) => value && setSector(String(value))}
                     />
                     <div className="flex w-full flex-col">
-                      <Label className="mb-2">
-                        Quando entra depois de outra etapa
-                      </Label>
+                      <Label className="mb-2">Origem das medidas</Label>
                       <div
                         role="radiogroup"
-                        aria-label="Quando entra depois de outra etapa"
+                        aria-label="Origem das medidas"
                         className="grid grid-cols-1 gap-3 sm:grid-cols-2"
                       >
                         {afterBaseCards.map(({ value, Icon }) => {

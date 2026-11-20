@@ -612,12 +612,17 @@ export function ProcessEditor({
           </span>
         </label>
         {baseMeasure && (
+          <p className="text-xs font-medium text-gray-700">
+            Medidas da etapa anterior
+          </p>
+        )}
+        {baseMeasure && (
           <div className="grid grid-cols-3 gap-3">
             {(
               [
-                ['quantity', 'Qtd. da base', '1'],
-                ['width', 'Larg. da base (m)', '0.01'],
-                ['height', 'Alt. da base (m)', '0.01'],
+                ['quantity', 'Qtd.', '1'],
+                ['width', 'Larg. (m)', '0.01'],
+                ['height', 'Alt. (m)', '0.01'],
               ] as const
             ).map(([key, label, step]) => (
               <div key={key} className="space-y-2">
@@ -683,7 +688,12 @@ export function ProcessEditor({
                   <SelectBasic
                     name="process-sector"
                     label="Setor"
-                    options={sectors.map((item) => ({
+                    // O setor do processo entra mesmo inativo: sem ele o campo
+                    // ficava vazio (20/11/2026)
+                    options={(meta.sector && !sectors.includes(meta.sector)
+                      ? [meta.sector, ...sectors]
+                      : sectors
+                    ).map((item) => ({
                       value: item,
                       label: item,
                     }))}
@@ -698,7 +708,7 @@ export function ProcessEditor({
                   />
                   <SelectBasic
                     name="process-after-base"
-                    label="Quando entra depois de outra etapa"
+                    label="Origem das medidas"
                     options={afterBaseOptions}
                     value={meta.afterBase}
                     onChange={(value) =>
@@ -808,8 +818,8 @@ export function ProcessEditor({
                     <Badge variant="neutralLight">{block.sector}</Badge>
                     <Badge variant="blueLight">
                       {detail.meta.afterBase === 'INHERIT'
-                        ? 'Depois de outra etapa, usa a medida da etapa anterior'
-                        : 'Depois de outra etapa, pede medida própria'}
+                        ? 'Origem das medidas: da etapa anterior'
+                        : 'Origem das medidas: medida própria'}
                     </Badge>
                     <PermissionGate
                       permissions={EDIT}

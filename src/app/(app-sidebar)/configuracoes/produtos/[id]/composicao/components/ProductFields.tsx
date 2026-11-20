@@ -242,7 +242,7 @@ export function ProductFields({
 
       <PermissionGate permissions={EDIT}>
         <div className="flex flex-wrap items-end gap-3 pt-2">
-          <div className="flex flex-col">
+          <div className="flex min-w-[160px] flex-1 flex-col">
             <label htmlFor="field-name" className="mb-2 text-sm font-medium">
               Novo campo
             </label>
@@ -250,7 +250,7 @@ export function ProductFields({
               id="field-name"
               autoComplete="off"
               value={name}
-              className="w-full sm:w-[220px]"
+              className="w-full"
               placeholder="Ex.: Número de letras"
               onChange={(event) => setName(event.target.value)}
             />
@@ -264,7 +264,7 @@ export function ProductFields({
               type="number"
               min={0}
               step={allowsFraction ? '0.01' : '1'}
-              className="w-[140px]"
+              className="w-[120px]"
               value={defaultValue}
               onChange={(event) => {
                 setDefaultValue(event.target.value)
@@ -279,6 +279,16 @@ export function ProductFields({
               aria-label="O novo campo aceita fração"
             />
             Aceita fração
+            <InfoHint title="Aceita fração">
+              <p>
+                Por padrão o campo aceita só número inteiro, como número de
+                letras ou de ilhoses: o orçamento recusa decimal.
+              </p>
+              <p>
+                Ligue &quot;Aceita fração&quot; quando o campo for uma medida,
+                como metros.
+              </p>
+            </InfoHint>
           </label>
           <Button
             type="button"
@@ -295,19 +305,6 @@ export function ProductFields({
             {newValueError || valueError}
           </p>
         )}
-        <div className="flex items-center gap-1.5 text-xs text-gray">
-          Inteiro ou fração
-          <InfoHint title="Aceita fração">
-            <p>
-              Por padrão o campo aceita só número inteiro, como número de letras
-              ou de ilhoses: o orçamento recusa decimal.
-            </p>
-            <p>
-              Ligue &quot;Aceita fração&quot; quando o campo for uma medida,
-              como metros.
-            </p>
-          </InfoHint>
-        </div>
       </PermissionGate>
     </>
   )

@@ -204,9 +204,11 @@ export const afterBaseObj: {
     badge: 'Medida própria',
     help: 'Como um serviço principal ou uma instalação: pede medida e quantidade ao vendedor, mesmo vindo depois de outra etapa.',
   },
-  // Era "Acompanha a base", que não se explicava a quem ouvia pela primeira vez
+  // Era "Acompanha a base", que não se explicava a quem ouvia pela primeira
+  // vez; depois "Usar medida da etapa anterior", curto agora que o campo se
+  // chama "Origem das medidas" (20/11/2026)
   INHERIT: {
-    label: 'Usar medida da etapa anterior',
+    label: 'Da etapa anterior',
     badge: 'Medida anterior',
     help: 'Como um acabamento (bainha, ilhós, laminação): não pede medida ao vendedor; usa a medida e a quantidade da etapa anterior.',
   },

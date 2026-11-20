@@ -18806,5 +18806,25 @@
   "38ab0a551c": {
     "es": "Perfiles y barras",
     "en": "Profiles and bars"
+  },
+  "a01b92d2f9": {
+    "es": "Origen de las medidas",
+    "en": "Size source"
+  },
+  "b9ef2a250c": {
+    "es": "De la etapa anterior",
+    "en": "From the previous step"
+  },
+  "91ae106280": {
+    "es": "Medidas de la etapa anterior",
+    "en": "Previous step sizes"
+  },
+  "d4d6b3fac7": {
+    "es": "Origen de las medidas: de la etapa anterior",
+    "en": "Size source: from the previous step"
+  },
+  "484d41e2c0": {
+    "es": "Origen de las medidas: medida propia",
+    "en": "Size source: own size"
   }
 }
