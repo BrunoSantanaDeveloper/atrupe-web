@@ -265,6 +265,17 @@ export function AccountDialog({
                   <SelectBasic
                     name="account-settlement"
                     label="Conta onde cai"
+                    labelSuffix={
+                      <InfoHint title="Banco da operadora">
+                        <p>
+                          O banco onde a operadora de cartão deposita as vendas.
+                        </p>
+                        <p>
+                          A conciliação dessa conta já sugere a operadora quando
+                          o depósito cai (liquidação).
+                        </p>
+                      </InfoHint>
+                    }
                     placeholder={
                       settlementOptions.length
                         ? 'Escolha a conta do banco'
@@ -282,18 +293,6 @@ export function AccountDialog({
                       )
                     }
                   />
-                  <div className="flex items-center gap-1.5 text-xs text-gray">
-                    Para que serve
-                    <InfoHint title="Banco da operadora">
-                      <p>
-                        O banco onde a operadora de cartão deposita as vendas.
-                      </p>
-                      <p>
-                        A conciliação dessa conta já sugere a operadora quando o
-                        depósito cai (liquidação).
-                      </p>
-                    </InfoHint>
-                  </div>
                 </div>
               )}
               {draft.kind === 'BANK' && (
@@ -321,7 +320,16 @@ export function AccountDialog({
             {canEditOpening ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="account-opening">Saldo inicial</Label>
+                  <div className="flex items-center gap-1.5">
+                    <Label htmlFor="account-opening">Saldo inicial</Label>
+                    <InfoHint title="Saldo inicial">
+                      <p>É o único saldo digitado à mão, na data escolhida.</p>
+                      <p>
+                        Daí em diante o saldo da conta é sempre calculado pelos
+                        lançamentos.
+                      </p>
+                    </InfoHint>
+                  </div>
                   <BrlInput
                     id="account-opening"
                     value={draft.openingBalance}
@@ -336,16 +344,6 @@ export function AccountDialog({
                     value={draft.openingDate}
                     onChange={(event) => set('openingDate', event.target.value)}
                   />
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-gray">
-                  Sobre o saldo inicial
-                  <InfoHint title="Saldo inicial">
-                    <p>É o único saldo digitado à mão, na data escolhida.</p>
-                    <p>
-                      Daí em diante o saldo da conta é sempre calculado pelos
-                      lançamentos.
-                    </p>
-                  </InfoHint>
                 </div>
               </div>
             ) : (

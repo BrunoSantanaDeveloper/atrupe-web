@@ -250,17 +250,10 @@ export function CostModal({
           />
 
           <div className="space-y-1.5">
-            <label htmlFor="cost-date" className="text-sm font-medium">
-              Última ocorrência (opcional)
-            </label>
-            <Input
-              id="cost-date"
-              type="date"
-              value={lastOccurrence}
-              onChange={(event) => setLastOccurrence(event.target.value)}
-            />
-            <div className="flex items-center gap-1.5 text-xs text-gray">
-              Para que serve
+            <div className="flex items-center gap-1.5">
+              <label htmlFor="cost-date" className="text-sm font-medium">
+                Última ocorrência (opcional)
+              </label>
               <InfoHint title="Próxima data">
                 <p>
                   Serve para o sistema avisar quando a próxima troca, manutenção
@@ -268,6 +261,12 @@ export function CostModal({
                 </p>
               </InfoHint>
             </div>
+            <Input
+              id="cost-date"
+              type="date"
+              value={lastOccurrence}
+              onChange={(event) => setLastOccurrence(event.target.value)}
+            />
           </div>
 
           <div className="rounded-lg border border-gray-200 p-3">

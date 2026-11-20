@@ -590,18 +590,10 @@ export function AddToItem({
               />
             </div>
             <div className="space-y-1.5">
-              <label htmlFor="loose-cost" className="text-sm font-medium">
-                Custo do fornecedor
-              </label>
-              <Input
-                id="loose-cost"
-                inputMode="decimal"
-                value={cost}
-                startAdornment={<span className="text-sm">R$</span>}
-                onChange={(event) => setCost(event.target.value)}
-              />
-              <div className="flex items-center gap-1.5 text-xs text-gray">
-                Onde o custo aparece
+              <div className="flex items-center gap-1.5">
+                <label htmlFor="loose-cost" className="text-sm font-medium">
+                  Custo do fornecedor
+                </label>
                 <InfoHint title="Custo do fornecedor">
                   <p>
                     O custo informado aqui serve para calcular o preço de venda
@@ -613,6 +605,13 @@ export function AddToItem({
                   </p>
                 </InfoHint>
               </div>
+              <Input
+                id="loose-cost"
+                inputMode="decimal"
+                value={cost}
+                startAdornment={<span className="text-sm">R$</span>}
+                onChange={(event) => setCost(event.target.value)}
+              />
             </div>
             {/* O preço de venda pelo acréscimo sobre o custo, com o percentual
                 escrito ao lado; o vendedor pode alterar (MS-16, T-4). Só para

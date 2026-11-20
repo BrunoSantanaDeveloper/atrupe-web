@@ -1,3 +1,4 @@
+import type * as React from 'react'
 // UI component Imports
 import {
   FormItem,
@@ -106,6 +107,9 @@ export function FormSelect<T extends FieldValues>({
 interface SelectBasicProps {
   name: string
   label?: string
+  // O (i) ao lado do rótulo (20/11/2026), no lugar de uma linha solta
+  // embaixo do campo
+  labelSuffix?: React.ReactNode
   placeholder?: string
   options: SelectOption[]
   disabled?: boolean
@@ -118,6 +122,7 @@ interface SelectBasicProps {
 export function SelectBasic({
   name,
   label,
+  labelSuffix,
   placeholder = label,
   options,
   className = 'flex-[1_0_100px]',
@@ -127,9 +132,16 @@ export function SelectBasic({
 }: SelectBasicProps) {
   return (
     <div className={cn('flex flex-col', className)}>
-      <Label htmlFor={name} className="mb-2">
-        {label}
-      </Label>
+      {labelSuffix ? (
+        <div className="mb-2 flex items-center gap-1.5">
+          <Label htmlFor={name}>{label}</Label>
+          {labelSuffix}
+        </div>
+      ) : (
+        <Label htmlFor={name} className="mb-2">
+          {label}
+        </Label>
+      )}
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger id={name}>
           <SelectValue placeholder={placeholder} />

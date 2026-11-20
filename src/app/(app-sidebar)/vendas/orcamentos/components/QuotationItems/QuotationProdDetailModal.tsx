@@ -973,6 +973,16 @@ export function QuotationProdDetailModal({
                     <SelectBasic
                       name="outsourced-supplier"
                       label="Fornecedor"
+                      labelSuffix={
+                        <InfoHint title="Fornecedor do terceirizado">
+                          <p>De quem a empresa compra este item.</p>
+                          <p>
+                            Quando a venda é aprovada, a conta a pagar sai para
+                            este fornecedor. Depois disso ele não muda por aqui:
+                            a mudança é feita na conta a pagar.
+                          </p>
+                        </InfoHint>
+                      }
                       options={(product?.suppliers ?? []).map((supplier) => ({
                         value: supplier.id,
                         label: supplier.name,
@@ -987,17 +997,6 @@ export function QuotationProdDetailModal({
                         value && setSupplierId(String(value))
                       }
                     />
-                    <div className="flex items-center gap-1.5 text-xs text-gray">
-                      Sobre o fornecedor
-                      <InfoHint title="Fornecedor do terceirizado">
-                        <p>De quem a empresa compra este item.</p>
-                        <p>
-                          Quando a venda é aprovada, a conta a pagar sai para
-                          este fornecedor. Depois disso ele não muda por aqui: a
-                          mudança é feita na conta a pagar.
-                        </p>
-                      </InfoHint>
-                    </div>
                   </div>
                 ) : null}
                 {/* A contagem de folhas da gráfica rápida (12/11/2026),

@@ -259,7 +259,16 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
               {/* A cor acompanha o setor em todo lugar: gerenciador, ficha,
                   agenda, composição e lista de processos */}
               <div className="w-full space-y-1.5">
-                <Label>Cor</Label>
+                <div className="flex items-center gap-1.5">
+                  <Label>Cor</Label>
+                  <InfoHint title="Cor do setor">
+                    <p>
+                      A cor identifica o setor no gerenciador de produção, na
+                      ficha de produção, na Agenda de entrega e na composição do
+                      produto.
+                    </p>
+                  </InfoHint>
+                </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <SectorIcon
                     size="lg"
@@ -298,16 +307,6 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                       />
                     </label>
                   </div>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs text-gray">
-                  Onde a cor aparece
-                  <InfoHint title="Cor do setor">
-                    <p>
-                      A cor identifica o setor no gerenciador de produção, na
-                      ficha de produção, na Agenda de entrega e na composição do
-                      produto.
-                    </p>
-                  </InfoHint>
                 </div>
               </div>
               {composition && (

@@ -184,9 +184,21 @@ export function ManagerDialog({
               }
             />
             <div className="space-y-2">
-              <Label htmlFor="manager-interval">
-                Intervalo entre tarefas (min)
-              </Label>
+              <div className="flex items-center gap-1.5">
+                <Label htmlFor="manager-interval">
+                  Intervalo entre tarefas (min)
+                </Label>
+                <InfoHint title="Intervalo entre tarefas">
+                  <p>
+                    O tempo entre uma tarefa e a seguinte no mesmo equipamento:
+                    troca de material, limpeza.
+                  </p>
+                  <p>
+                    Não é o preparo da tarefa. Quem já conta a troca dentro do
+                    preparo deixa zero.
+                  </p>
+                </InfoHint>
+              </div>
               <Input
                 id="manager-interval"
                 type="number"
@@ -199,19 +211,6 @@ export function ManagerDialog({
                   }))
                 }
               />
-              <div className="flex items-center gap-1.5 text-xs text-gray">
-                O que é
-                <InfoHint title="Intervalo entre tarefas">
-                  <p>
-                    O tempo entre uma tarefa e a seguinte no mesmo equipamento:
-                    troca de material, limpeza.
-                  </p>
-                  <p>
-                    Não é o preparo da tarefa. Quem já conta a troca dentro do
-                    preparo deixa zero.
-                  </p>
-                </InfoHint>
-              </div>
             </div>
           </div>
           <div className="space-y-2">
@@ -226,7 +225,9 @@ export function ManagerDialog({
                     setValues((current) => ({ ...current, timeMode: mode }))
                   }
                   className={cn(
-                    'rounded-lg border p-3 text-left',
+                    // O botão centraliza o conteúdo: o cartão de texto curto
+                    // começava mais baixo que o vizinho
+                    'flex flex-col justify-start rounded-lg border p-3 text-left',
                     values.timeMode === mode
                       ? 'border-brand-500 bg-brand-25 ring-1 ring-brand-500'
                       : 'border-gray-200 hover:border-gray-300',

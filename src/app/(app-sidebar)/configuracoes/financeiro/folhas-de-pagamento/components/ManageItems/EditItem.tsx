@@ -193,25 +193,9 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                 )}
 
                 {!system && (
-                  <div className="flex flex-wrap gap-4">
-                    {showIncrease && (
-                      <FormBrlInput<FormType>
-                        name="defaultIncrease"
-                        label="Acréscimo padrão"
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_160px]"
-                      />
-                    )}
-                    {showDiscount && (
-                      <FormBrlInput<FormType>
-                        name="defaultDiscount"
-                        label="Desconto padrão"
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_160px]"
-                      />
-                    )}
-                    <div className="flex items-center gap-1.5 text-xs text-gray">
-                      Sobre o valor padrão
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-medium">Valor padrão</p>
                       <InfoHint title="Valor padrão">
                         <p>
                           O valor padrão entra na folha de quem receber o item
@@ -219,6 +203,24 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                         </p>
                         <p>Quem já tem o item continua com o valor que tem.</p>
                       </InfoHint>
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                      {showIncrease && (
+                        <FormBrlInput<FormType>
+                          name="defaultIncrease"
+                          label="Acréscimo padrão"
+                          startAdornment={<>R$</>}
+                          width="flex-[1_0_160px]"
+                        />
+                      )}
+                      {showDiscount && (
+                        <FormBrlInput<FormType>
+                          name="defaultDiscount"
+                          label="Desconto padrão"
+                          startAdornment={<>R$</>}
+                          width="flex-[1_0_160px]"
+                        />
+                      )}
                     </div>
                   </div>
                 )}
