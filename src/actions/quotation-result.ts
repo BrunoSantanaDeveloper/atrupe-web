@@ -15,6 +15,9 @@ export type ResultResource = {
   quantity: number
   unitCost: number | null
   cost: number
+  // A venda sugerida do recurso no retrato; nulo quando não há (a lista
+  // informada pelo vendedor). A tela reparte o preço do item por ela
+  sale?: number | null
   // O realizado vem do apontamento (ELITE) e do consumo (FULL): nulo até lá
   actualQuantity: number | null
   actualCost: number | null
@@ -35,6 +38,11 @@ export type ResultLine = {
 export type QuotationResultData = {
   reference: string
   client: string | null
+  // O cabeçalho da Estimativa de Custos (20/11/2026); a API antiga não manda
+  seller?: string | null
+  status?: string
+  createdAt?: string
+  approvedAt?: string | null
   revenue: number
   productionCost: number
   commission: { percent: number; value: number }

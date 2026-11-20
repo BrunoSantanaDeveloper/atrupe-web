@@ -18934,5 +18934,57 @@
   "079e96ff78": {
     "es": "{registerLabel} \"{valor}\"",
     "en": "{registerLabel} \"{valor}\""
+  },
+  "0dbdf845e0": {
+    "es": "Fecha de la cotización",
+    "en": "Quote date"
+  },
+  "e5fe0538bf": {
+    "es": "Fecha de aprobación",
+    "en": "Approval date"
+  },
+  "13cc36dd24": {
+    "es": "Resumen de costos",
+    "en": "Cost summary"
+  },
+  "10337c3e60": {
+    "es": "Margen prevista",
+    "en": "Expected margin"
+  },
+  "45846d07d3": {
+    "es": "Lo que queda de la venta después del costo de producción, la comisión y los impuestos. Mientras no haya producción registrada, todo aquí es previsto.",
+    "en": "What is left of the sale after production cost, commission and taxes. Until production is logged, everything here is an estimate."
+  },
+  "5b40ca9ec1": {
+    "es": "Costos por ítem",
+    "en": "Costs per item"
+  },
+  "6ec9069885": {
+    "es": "Composición estimada",
+    "en": "Estimated build-up"
+  },
+  "a4ee2a28e0": {
+    "es": "Composición realizada",
+    "en": "Actual build-up"
+  },
+  "b9b30c0456": {
+    "es": "Margen estimada",
+    "en": "Estimated margin"
+  },
+  "f383370bfe": {
+    "es": "Margen realizada",
+    "en": "Actual margin"
+  },
+  "52687ac23e": {
+    "es": "Vendido por el precio del registro: el costo no se calcula.",
+    "en": "Sold at the registered price: the cost is not calculated."
+  },
+  "16b7e86635": {
+    "es": "Resultado del ítem: {itemResult}",
+    "en": "Item result: {itemResult}"
+  },
+  "8207844e1b": {
+    "es": "Gastos de la venta",
+    "en": "Sale expenses"
   }
 }
