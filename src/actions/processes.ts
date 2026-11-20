@@ -17,6 +17,7 @@ import type {
   ComputedBlock,
   ComputedLine,
   NewLineValues,
+  TimePrecision,
   ResourceOption,
   ResourceSummary,
   SaleRules,
@@ -105,6 +106,7 @@ type ApiLine = {
   sheetMargin: number | null
   sheetGap: number | null
   chargeWholeSheets: boolean | null
+  timePrecision?: TimePrecision | null
   overridden: boolean
   addedHere: boolean
   options: ApiOption[]
@@ -241,6 +243,7 @@ const toLine = (line: ApiLine): ComputedLine => ({
   ...(line.people !== null ? { people: line.people } : {}),
   ...(line.sheetMargin !== null ? { sheetMargin: line.sheetMargin } : {}),
   ...(line.sheetGap !== null ? { sheetGap: line.sheetGap } : {}),
+  ...(line.timePrecision ? { timePrecision: line.timePrecision } : {}),
   ...(line.chargeWholeSheets !== null
     ? { chargeWholeSheets: line.chargeWholeSheets }
     : {}),
@@ -686,6 +689,7 @@ export const addProcessLine = async ({
       fieldDefault: values.fieldDefault,
       formulaId: values.formulaId,
       people: values.kind === 'LABOR' ? values.people : undefined,
+      timePrecision: values.timePrecision,
     },
   })
   return res.success ? ok(null) : fail(res, null)
@@ -702,6 +706,7 @@ const LINE_KEYS = [
   'sheetMargin',
   'sheetGap',
   'chargeWholeSheets',
+  'timePrecision',
   'fieldName',
   'fieldDefault',
   'formulaId',

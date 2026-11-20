@@ -19,6 +19,7 @@ import type {
   ComputedLine,
   FlowStage,
   NewLineValues,
+  TimePrecision,
   NextStepCandidates,
   PriceTier,
   ProductDimension,
@@ -128,6 +129,7 @@ type ApiLine = Omit<
   | 'sheetMargin'
   | 'sheetGap'
   | 'chargeWholeSheets'
+  | 'timePrecision'
   | 'variationOverride'
   | 'cost'
   | 'sale'
@@ -140,6 +142,7 @@ type ApiLine = Omit<
   sheetMargin: number | null
   sheetGap: number | null
   chargeWholeSheets: boolean | null
+  timePrecision?: TimePrecision | null
   addedHere: boolean
   options: ApiOption[]
   selected: ApiOption | null
@@ -290,6 +293,7 @@ const toLine = (line: ApiLine): ComputedLine => ({
   ...(line.people !== null ? { people: line.people } : {}),
   ...(line.sheetMargin !== null ? { sheetMargin: line.sheetMargin } : {}),
   ...(line.sheetGap !== null ? { sheetGap: line.sheetGap } : {}),
+  ...(line.timePrecision ? { timePrecision: line.timePrecision } : {}),
   ...(line.chargeWholeSheets !== null
     ? { chargeWholeSheets: line.chargeWholeSheets }
     : {}),
@@ -896,6 +900,7 @@ export const addAssemblyLine = async ({
       fieldDefault: values.fieldDefault,
       formulaId: values.formulaId,
       people: values.kind === 'LABOR' ? values.people : undefined,
+      timePrecision: values.timePrecision,
     },
   })
   return res.success ? ok(null) : fail(res, null)
@@ -912,6 +917,7 @@ const LINE_KEYS = [
   'sheetMargin',
   'sheetGap',
   'chargeWholeSheets',
+  'timePrecision',
   'fieldName',
   'fieldDefault',
   'formulaId',

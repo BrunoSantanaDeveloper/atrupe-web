@@ -66,7 +66,10 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { durationText } from '@/components/common/DurationInput'
+import {
+  formatDuration,
+  type DurationPrecision,
+} from '@/components/common/DurationInput'
 import {
   LineDialog,
   NewLineDialog,
@@ -224,9 +227,13 @@ const num = (value: number, digits = 3) =>
 // Tempo em horas e minutos, como o legado mostra: 90 min → 1h30 (IP-33)
 // Tempo sempre em hh:mm:ss (20/11/2026): a mão de obra guarda minutos e a
 // máquina por hora, horas
-const amount = (value: number, unit: string) => {
-  if (unit === 'min') return durationText(value)
-  if (unit === 'h') return durationText(value * 60)
+const amount = (
+  value: number,
+  unit: string,
+  precision: DurationPrecision = 'hms',
+) => {
+  if (unit === 'min') return formatDuration(value, precision)
+  if (unit === 'h') return formatDuration(value * 60, precision)
   return `${num(value)} ${unit}`
 }
 
@@ -1324,7 +1331,11 @@ function AssemblyEditorBody({
                                   ? item.rules.timeFieldDefault
                                     ? `tempo informado (${amount(item.rules.timeFieldDefault, 'min')})`
                                     : `tempo padrão ${amount(line.effective.perUnit, 'min')}`
-                                  : amount(line.effective.perUnit, unit)}
+                                  : amount(
+                                      line.effective.perUnit,
+                                      unit,
+                                      line.timePrecision,
+                                    )}
                               </p>
                               {(line.effective.lossPercent > 0 ||
                                 line.effective.minimum !== null) && (
@@ -1334,7 +1345,7 @@ function AssemblyEditorBody({
                                       ? `+${num(line.effective.lossPercent, 1)}% de perda`
                                       : null,
                                     line.effective.minimum !== null
-                                      ? `mínimo ${amount(line.effective.minimum, unit)}`
+                                      ? `mínimo ${amount(line.effective.minimum, unit, line.timePrecision)}`
                                       : null,
                                   ]
                                     .filter(Boolean)
@@ -1421,7 +1432,7 @@ function AssemblyEditorBody({
                         >
                           {line.quantity === null
                             ? '-'
-                            : amount(line.quantity, unit)}
+                            : amount(line.quantity, unit, line.timePrecision)}
                           {line.minimumApplied && (
                             <span className="block text-xs text-warning-700">
                               mínimo aplicado

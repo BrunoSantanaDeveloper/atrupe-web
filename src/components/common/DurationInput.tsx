@@ -93,7 +93,8 @@ export function DurationInput({
   value,
   onChange,
   unit = 'min',
-  precision = 'hm',
+  // hh:mm:ss é o padrão de todo tempo (20/11/2026); a linha pode pedir menos
+  precision = 'hms',
   placeholder,
   onFocus,
   onBlur,

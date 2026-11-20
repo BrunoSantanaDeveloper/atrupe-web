@@ -42,6 +42,7 @@ import {
   type ProductFormula,
   type LineMode,
   type NewLineValues,
+  type TimePrecision,
   type AssemblyResource,
   type SaleRules,
   type QuantityMode,
@@ -417,6 +418,31 @@ export function FormulaDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+// O formato do tempo da linha (20/11/2026): hh:mm:ss por padrão; a linha
+// que não precisa de segundos (ou de minutos) pede menos. Fica discreto, ao
+// lado do rótulo: é configuração, o orçamento só usa
+function TimePrecisionPicker({
+  value,
+  onChange,
+}: {
+  value?: TimePrecision
+  onChange: (value: TimePrecision) => void
+}) {
+  return (
+    <select
+      aria-label="Formato do tempo"
+      title="Formato do tempo"
+      className="cursor-pointer rounded bg-transparent text-xs text-gray-400 hover:text-gray-700 focus:text-gray-700 focus:outline-none"
+      value={value ?? 'hms'}
+      onChange={(event) => onChange(event.target.value as TimePrecision)}
+    >
+      <option value="hms">hh:mm:ss</option>
+      <option value="hm">hh:mm</option>
+      <option value="h">hh</option>
+    </select>
   )
 }
 
@@ -960,16 +986,23 @@ export function NewLineDialog({
               )}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
-                  <Label htmlFor="new-line-per-unit">
-                    {isTime
-                      ? 'Tempo (hh:mm)'
-                      : hoursUnit
-                        ? 'Consumo (hh:mm)'
-                        : `Consumo${unit ? ` (${unit})` : ''}`}
-                  </Label>
+                  <div className="flex items-center justify-between gap-2">
+                    <Label htmlFor="new-line-per-unit">
+                      {isTime
+                        ? 'Tempo'
+                        : `Consumo${unit && !hoursUnit ? ` (${unit})` : ''}`}
+                    </Label>
+                    {timeField && (
+                      <TimePrecisionPicker
+                        value={values.timePrecision}
+                        onChange={(value) => set('timePrecision', value)}
+                      />
+                    )}
+                  </div>
                   {timeField ? (
                     <DurationInput
                       unit={hoursUnit ? 'h' : 'min'}
+                      precision={values.timePrecision ?? 'hms'}
                       id="new-line-per-unit"
                       value={values.perUnit}
                       onChange={(minutes) => set('perUnit', minutes ?? 0)}
@@ -1005,14 +1038,13 @@ export function NewLineDialog({
                 <div className="space-y-2">
                   <Label htmlFor="new-line-minimum">
                     {isTime
-                      ? 'Tempo mínimo (hh:mm)'
-                      : hoursUnit
-                        ? 'Mínimo (hh:mm)'
-                        : `Mínimo${unit ? ` (${unit})` : ''}`}
+                      ? 'Tempo mínimo'
+                      : `Mínimo${unit && !hoursUnit ? ` (${unit})` : ''}`}
                   </Label>
                   {timeField ? (
                     <DurationInput
                       unit={hoursUnit ? 'h' : 'min'}
+                      precision={values.timePrecision ?? 'hms'}
                       id="new-line-minimum"
                       placeholder="Sem mínimo"
                       value={values.minimum}
@@ -1116,6 +1148,7 @@ export type LineValues = {
   sheetMargin?: number
   sheetGap?: number
   chargeWholeSheets?: boolean
+  timePrecision?: TimePrecision
   // Consumo, perda e mínimo próprios de cada opção (IP-26)
   optionValues?: {
     id: string
@@ -1179,6 +1212,7 @@ export function LineDialog({
         sheetMargin: line.sheetMargin,
         sheetGap: line.sheetGap,
         chargeWholeSheets: line.chargeWholeSheets,
+        timePrecision: line.timePrecision,
         optionValues:
           line.mode === 'CHOOSE'
             ? line.options.map((option) => ({
@@ -1280,16 +1314,30 @@ export function LineDialog({
           )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="line-per-unit">
-                {isTime
-                  ? 'Tempo (hh:mm)'
-                  : hoursUnit
-                    ? 'Consumo (hh:mm)'
-                    : `Consumo (${unit})`}
-              </Label>
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="line-per-unit">
+                  {isTime
+                    ? 'Tempo'
+                    : hoursUnit
+                      ? 'Consumo'
+                      : `Consumo (${unit})`}
+                </Label>
+                {timeField && (
+                  <TimePrecisionPicker
+                    value={values.timePrecision}
+                    onChange={(value) =>
+                      setValues((current) => ({
+                        ...current,
+                        timePrecision: value,
+                      }))
+                    }
+                  />
+                )}
+              </div>
               {timeField ? (
                 <DurationInput
                   unit={hoursUnit ? 'h' : 'min'}
+                  precision={values.timePrecision ?? 'hms'}
                   id="line-per-unit"
                   value={values.perUnit}
                   onChange={(minutes) =>
@@ -1338,14 +1386,15 @@ export function LineDialog({
                 <div className="space-y-2">
                   <Label htmlFor="line-minimum">
                     {isTime
-                      ? 'Tempo mínimo (hh:mm)'
+                      ? 'Tempo mínimo'
                       : hoursUnit
-                        ? 'Mínimo (hh:mm)'
+                        ? 'Mínimo'
                         : `Mínimo (${unit})`}
                   </Label>
                   {timeField ? (
                     <DurationInput
                       unit={hoursUnit ? 'h' : 'min'}
+                      precision={values.timePrecision ?? 'hms'}
                       id="line-minimum"
                       placeholder="Sem mínimo"
                       value={values.minimum}
@@ -1524,6 +1573,7 @@ export function LineDialog({
                             {timeField ? (
                               <DurationInput
                                 unit={hoursUnit ? 'h' : 'min'}
+                                precision={values.timePrecision ?? 'hms'}
                                 aria-label={`Tempo de ${option.name}`}
                                 placeholder={formatDuration(
                                   hoursUnit
@@ -1574,6 +1624,7 @@ export function LineDialog({
                             {timeField ? (
                               <DurationInput
                                 unit={hoursUnit ? 'h' : 'min'}
+                                precision={values.timePrecision ?? 'hms'}
                                 aria-label={`Tempo mínimo de ${option.name}`}
                                 placeholder={
                                   values.minimum === null

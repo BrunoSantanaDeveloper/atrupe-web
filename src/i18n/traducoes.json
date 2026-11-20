@@ -18994,5 +18994,9 @@
   "c49f0ffed2": {
     "es": "La cotización aún no usa el costo, los campos ni los opcionales de este producto.",
     "en": "The quote does not use this product's cost, fields or optional items yet."
+  },
+  "04bae3be65": {
+    "es": "Formato del tiempo",
+    "en": "Time format"
   }
 }

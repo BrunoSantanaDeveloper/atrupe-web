@@ -14,6 +14,8 @@ import type {
 
 // Situação do produto composto (IP-14): compor leva tempo, e o vendedor não
 // pode pegar no orçamento um produto pela metade
+export type TimePrecision = 'h' | 'hm' | 'hms'
+
 export type AssemblyStatus = 'DRAFT' | 'RELEASED' | 'PART'
 
 // A cobrança segue o cadastro de produtos do START (IP-17): a unidade
@@ -220,6 +222,9 @@ export type AssemblyLine = {
   sheetMargin?: number
   sheetGap?: number
   chargeWholeSheets?: boolean
+  // Precisão do tempo na configuração da linha (20/11/2026): só hh ou
+  // hh:mm; sem ela, hh:mm:ss
+  timePrecision?: TimePrecision
 }
 
 export type AssemblyMeasure = {
@@ -591,6 +596,7 @@ export type NewLineValues = {
   formulaId?: string
   // Pessoas na mão de obra (IP-13); padrão 1
   people?: number
+  timePrecision?: TimePrecision
 }
 
 /* ---------------------------------------------------------------------------
