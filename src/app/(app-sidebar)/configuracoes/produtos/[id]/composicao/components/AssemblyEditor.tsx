@@ -427,18 +427,6 @@ function AssemblyEditorBody({
   const [savedAt, setSavedAt] = useState<Date | null>(null)
   // Ao escolher ou acrescentar uma etapa, o detalhe dela entra na vista
   const detailRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!selectedId) return
-    const timer = setTimeout(
-      () =>
-        detailRef.current?.scrollIntoView({
-          behavior: 'smooth',
-          block: 'nearest',
-        }),
-      150,
-    )
-    return () => clearTimeout(timer)
-  }, [selectedId])
 
   // A variação vista fica na URL (design.md §8): ?variacao=
   const router = useRouter()
@@ -494,6 +482,23 @@ function AssemblyEditorBody({
   })
 
   const assembly = data?.data
+  // A etapa escolhida só entra na vista quando já está na lista: a criada
+  // agora chega depois do refresh, e antes disso a escolhida caía na
+  // primeira etapa e a tela voltava para o topo (20/11/2026)
+  const selectedLoaded =
+    !!selectedId && !!assembly?.blocks.some((item) => item.id === selectedId)
+  useEffect(() => {
+    if (!selectedLoaded) return
+    const timer = setTimeout(
+      () =>
+        detailRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        }),
+      150,
+    )
+    return () => clearTimeout(timer)
+  }, [selectedId, selectedLoaded])
   const resources = resourcesRes?.data
 
   useEffect(() => {
@@ -2197,6 +2202,7 @@ function AssemblyEditorBody({
                 <div key={item.id} className="space-y-3">
                   <div
                     ref={item.id === selectedBlock?.id ? detailRef : undefined}
+                    className="scroll-mt-24"
                   >
                     {stageDetail(item)}
                   </div>
