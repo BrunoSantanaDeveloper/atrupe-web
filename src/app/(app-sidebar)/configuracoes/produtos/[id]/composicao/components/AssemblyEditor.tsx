@@ -1657,6 +1657,39 @@ function AssemblyEditorBody({
         <div className={cn(embedded && 'order-first')}>{variantTabs}</div>
       )}
 
+      {/* A composição em montagem não vale no orçamento: nem custo, nem
+          campos, nem opcionais. O botão do topo passava despercebido
+          (20/11/2026): a faixa avisa e aprova daqui */}
+      {!embedded &&
+        assembly.status === 'DRAFT' &&
+        assembly.blocks.length > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-warning-300 bg-warning-50 px-4 py-3">
+            <p className="text-sm text-warning-800">
+              <span className="font-semibold">Composição em montagem.</span> O
+              orçamento ainda não usa o custo, os campos nem os opcionais deste
+              produto.
+            </p>
+            <PermissionGate permissions={EDIT}>
+              <Button
+                type="button"
+                size="sm"
+                LeftIcon={IconCircleCheck}
+                onClick={() =>
+                  run(
+                    updateAssembly({
+                      productId,
+                      values: { status: 'RELEASED' },
+                    }),
+                    'Composição aprovada: o custo passa a valer no orçamento',
+                  )
+                }
+              >
+                Aprovar composição
+              </Button>
+            </PermissionGate>
+          </div>
+        )}
+
       {/* As abas da página (18/11/2026): a composição primeiro; simulação,
           dados de venda e descritivo cada um na sua aba */}
       {!embedded && (
