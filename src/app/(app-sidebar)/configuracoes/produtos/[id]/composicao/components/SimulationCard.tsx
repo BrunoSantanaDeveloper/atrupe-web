@@ -133,12 +133,9 @@ export function SimulationCard({
         </div>
         <PermissionGate permissions={['values:values:view']}>
           {results.length ? (
-            <div
-              className={cn(
-                'grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-3',
-                results.length > 2 && 'md:grid-cols-4',
-              )}
-            >
+            // Cada valor com largura mínima: na coluna estreita desce para a
+            // linha de baixo em vez de encavalar no vizinho (20/11/2026)
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-3 rounded-lg bg-gray-50 p-3">
               {results.map((result) => (
                 <div key={result.label}>
                   <p className="type-kpi-label">{result.label}</p>

@@ -360,10 +360,10 @@ export function ProcessEditor({
         <div
           className={cn(
             'grid grid-cols-1 gap-5',
-            !embedded && 'lg:grid-cols-3',
+            !embedded && 'xl:grid-cols-3',
           )}
         >
-          <Card className={cn(!embedded && 'lg:col-span-2')}>
+          <Card className={cn(!embedded && 'xl:col-span-2')}>
             <CardHeader>
               <Skeleton className="h-5 w-32" />
             </CardHeader>
@@ -666,11 +666,11 @@ export function ProcessEditor({
           <div
             className={cn(
               'grid grid-cols-1 gap-5',
-              !embedded && 'lg:grid-cols-3',
+              !embedded && 'xl:grid-cols-3',
             )}
           >
             {show('config') && (
-              <Card className={cn(!embedded && 'lg:col-span-2')}>
+              <Card className={cn(!embedded && 'xl:col-span-2')}>
                 <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
                   <div>
                     <div className="flex items-center gap-1.5">
