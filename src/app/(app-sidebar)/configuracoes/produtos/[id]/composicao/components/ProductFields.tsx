@@ -146,7 +146,7 @@ export function ProductFields({
   const title = 'Campos do orçamento'
   const help =
     description ||
-    'Além de largura, altura e quantidade, estes são os valores que o vendedor informa. Crie o campo aqui e ele passa a aparecer nos tipos de cálculo das linhas ("Por perímetro ÷ nome do campo"). Cada um existe uma vez e vale para todas as etapas que precisam dele.'
+    'Além de largura, altura e quantidade, estes são os valores que o vendedor informa. Crie o campo aqui e ele passa a aparecer nos tipos de cálculo das linhas ("Perímetro ÷ nome do campo"). Cada um existe uma vez e vale para todas as etapas que precisam dele.'
 
   const body = (
     <>

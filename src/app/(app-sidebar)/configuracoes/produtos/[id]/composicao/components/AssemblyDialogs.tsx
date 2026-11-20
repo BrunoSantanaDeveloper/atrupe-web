@@ -803,7 +803,7 @@ export function NewLineDialog({
           {!list && (
             <>
               {/* O campo do orçamento entra pelo nome no tipo de cálculo
-                  ("Por perímetro ÷ distância entre ilhoses") e, no fim, as
+                  ("Perímetro ÷ distância entre ilhoses") e, no fim, as
                   fórmulas escritas neste produto e "Nova fórmula…" (IP-2) */}
               <SelectBasic
                 name="new-line-formula"

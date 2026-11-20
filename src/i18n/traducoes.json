@@ -18858,5 +18858,53 @@
   "117e43135f": {
     "es": "Opcional · fuera por defecto",
     "en": "Optional · left out by default"
+  },
+  "6f6f0f6a0f": {
+    "es": "m²",
+    "en": "m²"
+  },
+  "580ce44406": {
+    "es": "Perímetro",
+    "en": "Perimeter"
+  },
+  "483791c6e8": {
+    "es": "{campo}",
+    "en": "{campo}"
+  },
+  "a6eef855be": {
+    "es": "Perímetro ÷ {campo}",
+    "en": "Perimeter ÷ {campo}"
+  },
+  "7fe746977a": {
+    "es": "Ancho × {campo}",
+    "en": "Width × {campo}"
+  },
+  "63050d544f": {
+    "es": "Altura × {campo}",
+    "en": "Height × {campo}"
+  },
+  "5eb36ccd38": {
+    "es": "{campo}, una vez",
+    "en": "{campo}, once"
+  },
+  "3487882bcf": {
+    "es": "m² ÷ {campo}",
+    "en": "m² ÷ {campo}"
+  },
+  "8037d6bbac": {
+    "es": "Perímetro × {campo}",
+    "en": "Perimeter × {campo}"
+  },
+  "3f8048f8af": {
+    "es": "m² × {campo}, una vez",
+    "en": "m² × {campo}, once"
+  },
+  "bba93bfbf4": {
+    "es": "m² × {campo}",
+    "en": "m² × {campo}"
+  },
+  "0ffb0faf38": {
+    "es": "Aprovechamiento de hoja",
+    "en": "Sheet yield"
   }
 }

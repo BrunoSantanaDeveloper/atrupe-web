@@ -17,7 +17,8 @@ export const resourceKindOptions = (
   Object.keys(resourceKindObj) as ResourceKind[]
 ).map((kind) => ({ value: kind, label: resourceKindObj[kind] }))
 
-// Nomes no lugar dos códigos de fórmula do legado (D3 §9.2)
+// Nomes no lugar dos códigos de fórmula do legado (D3 §9.2). Sem o "Por" no
+// começo (20/11/2026): o nome começa pelo que importa e fica fácil de achar
 export const formulaObj: {
   [key in FormulaKey]: { label: string; help: string }
 } = {
@@ -30,27 +31,27 @@ export const formulaObj: {
     help: 'O vendedor informa a quantidade no orçamento.',
   },
   PER_AREA: {
-    label: 'Por m²',
+    label: 'm²',
     help: 'Consumo × área do item × quantidade.',
   },
   PER_UNIT: {
-    label: 'Por unidade',
+    label: 'Unidade',
     help: 'Consumo × quantidade do item.',
   },
   PER_PERIMETER: {
-    label: 'Por perímetro',
+    label: 'Perímetro',
     help: 'Consumo × perímetro do item × quantidade.',
   },
   PER_WIDTH: {
-    label: 'Por largura',
+    label: 'Largura',
     help: 'Consumo × largura do item × quantidade.',
   },
   PER_HEIGHT: {
-    label: 'Por altura',
+    label: 'Altura',
     help: 'Consumo × altura do item × quantidade.',
   },
   PER_EXTRA: {
-    label: 'Por {campo}',
+    label: '{campo}',
     help: 'Consumo × valor de um {campo} × quantidade.',
   },
   // O tempo é da linha de mão de obra: o consumo é o tempo padrão e o
@@ -61,7 +62,7 @@ export const formulaObj: {
   },
   // A conta do ilhós: perímetro ÷ espaçamento = quantas peças (CP-14)
   PER_PERIMETER_DIV_EXTRA: {
-    label: 'Por perímetro ÷ {campo}',
+    label: 'Perímetro ÷ {campo}',
     help: 'Perímetro do item ÷ valor do {campo} × consumo × quantidade. Ex.: ilhoses a cada 50 cm.',
   },
   TIME_TIMES_EXTRA: {
@@ -73,23 +74,23 @@ export const formulaObj: {
     help: 'O tempo informado pelo vendedor, sem multiplicar pela quantidade.',
   },
   PER_WIDTH_EXTRA: {
-    label: 'Por largura × {campo}',
+    label: 'Largura × {campo}',
     help: 'Consumo × largura × {campo} × quantidade.',
   },
   PER_HEIGHT_EXTRA: {
-    label: 'Por altura × {campo}',
+    label: 'Altura × {campo}',
     help: 'Consumo × altura × {campo} × quantidade.',
   },
   EXTRA_ONLY: {
-    label: 'Por {campo}, uma vez',
+    label: '{campo}, uma vez',
     help: 'Consumo × {campo}. Não multiplica pela quantidade.',
   },
   PER_AREA_DIV_EXTRA: {
-    label: 'Por m² ÷ {campo}',
+    label: 'm² ÷ {campo}',
     help: 'Consumo × área × quantidade ÷ {campo}. Ex.: peças que cabem numa chapa.',
   },
   PER_PERIMETER_EXTRA: {
-    label: 'Por perímetro × {campo}',
+    label: 'Perímetro × {campo}',
     help: 'Consumo × perímetro × quantidade × {campo}.',
   },
   DIV_EXTRA: {
@@ -97,15 +98,15 @@ export const formulaObj: {
     help: 'Consumo ÷ {campo}, uma vez.',
   },
   AREA_EXTRA: {
-    label: 'Por m² × {campo}, uma vez',
+    label: 'm² × {campo}, uma vez',
     help: 'Consumo × área × {campo}. Não multiplica pela quantidade.',
   },
   PER_AREA_EXTRA: {
-    label: 'Por m² × {campo}',
+    label: 'm² × {campo}',
     help: 'Consumo × área × quantidade × {campo}.',
   },
   SHEET_YIELD: {
-    label: 'Por aproveitamento de folha',
+    label: 'Aproveitamento de folha',
     help: 'Quantas peças cabem na folha, nas duas posições, e quantas folhas são precisas. A folha tem a medida do material.',
   },
   // A conta escrita no produto (IP-2): o seletor mostra o nome dela
@@ -156,6 +157,22 @@ export const parseFormulaChoice = (
   return { formula: key as FormulaKey, fieldName: suffix }
 }
 
+// A ordem dos cálculos de um campo: o próprio campo, depois com a largura,
+// a altura, a área e o perímetro, e o tempo por último
+const FIELD_FORMULA_ORDER: FormulaKey[] = [
+  'PER_EXTRA',
+  'EXTRA_ONLY',
+  'DIV_EXTRA',
+  'PER_WIDTH_EXTRA',
+  'PER_HEIGHT_EXTRA',
+  'PER_AREA_EXTRA',
+  'AREA_EXTRA',
+  'PER_AREA_DIV_EXTRA',
+  'PER_PERIMETER_EXTRA',
+  'PER_PERIMETER_DIV_EXTRA',
+  'TIME_TIMES_EXTRA',
+]
+
 // As fórmulas pela medida, para cada campo do produto as que leem campo e,
 // por fim, as fórmulas escritas no produto
 export const formulaOptionsFor = (
@@ -166,8 +183,10 @@ export const formulaOptionsFor = (
   const plain = keys
     .filter((key) => key !== 'CUSTOM' && !formulaUsesField(key))
     .map((key) => ({ value: key, label: formulaObj[key].label }))
+  // Cada campo, na ordem em que foi criado, com os cálculos sempre na mesma
+  // ordem (20/11/2026)
   const byField = fields.flatMap((field) =>
-    keys.filter(formulaUsesField).map((key) => ({
+    FIELD_FORMULA_ORDER.map((key) => ({
       value: formulaChoiceValue(key, field.name),
       label: formulaLabel(key, field.name),
     })),
