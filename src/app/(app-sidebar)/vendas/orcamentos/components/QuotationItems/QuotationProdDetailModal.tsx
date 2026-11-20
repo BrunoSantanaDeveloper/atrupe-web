@@ -948,6 +948,24 @@ export function QuotationProdDetailModal({
                     API; a variação com composição própria troca o form */}
                 <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
                   <div className="w-full">
+                    {/* A composição em montagem não manda campos ao item
+                        (IP-14 revisto): sem este aviso, os campos do
+                        orçamento sumiam sem explicação (20/11/2026) */}
+                    {product?.compositionStatus === 'DRAFT' && (
+                      <p className="rounded-lg border border-warning-200 bg-warning-50 px-3 py-2 text-sm text-warning-700">
+                        A composição deste produto ainda não foi aprovada: os
+                        campos do orçamento e os opcionais aparecem aqui depois
+                        de aprovada.{' '}
+                        <a
+                          href={`/configuracoes/produtos/${product.id}/composicao`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-medium underline"
+                        >
+                          Abrir a composição
+                        </a>
+                      </p>
+                    )}
                     <SaleCompositionFields
                       key={`${data?.id || product?.id}:${itemVariationId || ''}`}
                       productId={

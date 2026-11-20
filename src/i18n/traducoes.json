@@ -18826,5 +18826,17 @@
   "484d41e2c0": {
     "es": "Origen de las medidas: medida propia",
     "en": "Size source: own size"
+  },
+  "62d060eee2": {
+    "es": "La composición de este producto aún no fue aprobada: los campos de la cotización y los opcionales aparecen aquí después de aprobada.",
+    "en": "This product's build-up has not been approved yet: the quote fields and optional items show up here once it is approved."
+  },
+  "86a6c06f63": {
+    "es": "Abrir la composición",
+    "en": "Open the build-up"
+  },
+  "f1fba813c8": {
+    "es": "Ninguna etapa usa este campo",
+    "en": "No step uses this field"
   }
 }

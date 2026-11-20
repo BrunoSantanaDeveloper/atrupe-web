@@ -35,6 +35,9 @@ export interface IProduct {
   // escolhe de qual compra (12/11/2026)
   isOutsourced?: boolean
   suppliers?: { id: string; name: string }[]
+  // A situação da composição (IP-14 revisto): só a aprovada leva os campos
+  // do orçamento ao item; nulo quando o produto não tem composição
+  compositionStatus?: 'DRAFT' | 'RELEASED' | 'PART' | null
 }
 
 const QUERY_KEY = 'product'

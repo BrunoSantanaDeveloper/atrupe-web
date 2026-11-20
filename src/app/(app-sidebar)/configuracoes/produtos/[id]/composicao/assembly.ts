@@ -618,6 +618,9 @@ export type SaleForm = {
     name: string
     kind: ExtraFieldKind
     defaultValue: number
+    // Alguma linha lê o campo? O que nenhuma etapa usa aparece desabilitado
+    // (20/11/2026); a API antiga não manda, e aí vale como usado
+    used?: boolean
   }[]
   // Campo tempo das etapas que pedem (a criação da arte), em minutos
   times: {

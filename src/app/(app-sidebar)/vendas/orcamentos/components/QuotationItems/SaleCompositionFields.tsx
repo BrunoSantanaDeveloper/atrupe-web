@@ -60,6 +60,10 @@ export const sheetUsageText = (usage: SaleSheetUsage) => {
 
 const NO_USAGE: SaleSheetUsage[] = []
 
+// O campo que nenhuma etapa usa vai à tela desabilitado e fora das escolhas
+// (20/11/2026); a API antiga não manda `used`, e aí vale como usado
+const isUsed = (extra: { used?: boolean }) => extra.used !== false
+
 const num = (value: number) =>
   value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 
@@ -99,7 +103,7 @@ export function SaleCompositionFields({
       })),
     )
     setExtras(
-      saleForm.extras.map((extra) => ({
+      saleForm.extras.filter(isUsed).map((extra) => ({
         fieldId: extra.fieldId,
         value: extra.defaultValue,
       })),
@@ -181,9 +185,9 @@ export function SaleCompositionFields({
                   time.defaultMinutes,
               )}`,
           ),
-          ...saleForm.extras.map(
-            (extra) => `${extra.name}: ${extraValue(extra.fieldId)}`,
-          ),
+          ...saleForm.extras
+            .filter(isUsed)
+            .map((extra) => `${extra.name}: ${extraValue(extra.fieldId)}`),
           ...saleForm.choices.map(
             (choice) =>
               `${choice.name}: ${
@@ -268,20 +272,35 @@ export function SaleCompositionFields({
               </div>
             ))}
             {saleForm.extras.map((extra) => (
-              <div key={extra.fieldId} className="space-y-1.5">
+              <div
+                key={extra.fieldId}
+                className="space-y-1.5"
+                title={
+                  isUsed(extra) ? undefined : 'Nenhuma etapa usa este campo'
+                }
+              >
                 <label
                   htmlFor={`extra-${extra.fieldId}`}
-                  className="text-sm font-medium"
+                  className={
+                    isUsed(extra)
+                      ? 'text-sm font-medium'
+                      : 'text-sm font-medium text-gray-400'
+                  }
                 >
                   {extra.name}
                 </label>
                 <Input
                   id={`extra-${extra.fieldId}`}
+                  disabled={!isUsed(extra)}
                   type="number"
                   min={0}
                   step={extra.kind === 'INTEGER' ? '1' : '0.01'}
                   inputMode={extra.kind === 'INTEGER' ? 'numeric' : 'decimal'}
-                  value={String(extraValue(extra.fieldId))}
+                  value={String(
+                    isUsed(extra)
+                      ? extraValue(extra.fieldId)
+                      : extra.defaultValue,
+                  )}
                   onChange={(event) => {
                     const value = Number(event.target.value || 0)
                     // Campo inteiro recusa decimal (IP-19): o valor não entra
