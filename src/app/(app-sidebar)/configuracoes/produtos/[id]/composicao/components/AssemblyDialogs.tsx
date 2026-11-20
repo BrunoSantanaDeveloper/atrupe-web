@@ -9,6 +9,8 @@ import { useEffect, useRef, useState } from 'react'
 
 // Next
 import Link from 'next/link'
+import { useQueryClient } from '@tanstack/react-query'
+import { NewMaterialModal } from '@/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial'
 
 // UI
 import {
@@ -67,6 +69,12 @@ import {
 
 // Icons
 import { IconPlus, IconTrash, IconSearch } from '@tabler/icons-react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
@@ -559,6 +567,23 @@ export function NewLineDialog({
   const [unitFilter, setUnitFilter] = useState('')
   const [formulaOpen, setFormulaOpen] = useState(false)
   const [values, setValues] = useState<NewLineValues>(emptyLine(initialKind))
+  // O recurso que falta é cadastrado daqui, sem sair da composição
+  // (20/11/2026): o material abre o cadastro por cima; máquina e mão de obra
+  // abrem o cadastro numa aba nova, e a lista se atualiza na volta
+  const queryClient = useQueryClient()
+  const [newMaterialOpen, setNewMaterialOpen] = useState(false)
+  const [pendingId, setPendingId] = useState<string | null>(null)
+  const [watchReturn, setWatchReturn] = useState(false)
+  useEffect(() => {
+    if (!watchReturn) return
+    const onFocus = () => {
+      queryClient.invalidateQueries({ queryKey: ['assembly-resources'] })
+      queryClient.invalidateQueries({ queryKey: ['process-resources'] })
+      setWatchReturn(false)
+    }
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [watchReturn, queryClient])
 
   useEffect(() => {
     if (block) {
@@ -632,6 +657,35 @@ export function NewLineDialog({
         ? values.optionIds.filter((item) => item !== id)
         : [...values.optionIds, id],
     )
+  }
+
+  // O material cadastrado agora já vem escolhido, assim que a lista o traz
+  useEffect(() => {
+    if (!pendingId || !available.some((item) => item.id === pendingId)) return
+    if (!values.optionIds.includes(pendingId)) toggle(pendingId)
+    setSearch('')
+    setUnitFilter('')
+    setPendingId(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingId, available])
+
+  // Onde se cadastra cada tipo; o terceirizado não vem de um cadastro
+  const registerPage: { [kind in ResourceKind]?: string } = {
+    MACHINE: '/configuracoes/empresa-e-sistema/patrimonios',
+    LABOR: '/configuracoes/empresa-e-sistema/setores',
+  }
+  const canRegister =
+    values.kind === 'MATERIAL' || Boolean(registerPage[values.kind])
+  const registerLabel = `Cadastrar ${resourceKindObj[values.kind].toLowerCase()}`
+  const register = () => {
+    if (values.kind === 'MATERIAL') {
+      setNewMaterialOpen(true)
+      return
+    }
+    const page = registerPage[values.kind]
+    if (!page) return
+    window.open(page, '_blank', 'noopener')
+    setWatchReturn(true)
   }
 
   // No recurso único o nome é o do próprio recurso (a impressora laser); só
@@ -760,6 +814,28 @@ export function NewLineDialog({
                   ))}
                 </div>
               )}
+              {canRegister && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="neutralOutline"
+                        aria-label={registerLabel}
+                        onClick={register}
+                      >
+                        <IconPlus size={ICON_SIZE.sm} aria-hidden="true" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {values.kind === 'MATERIAL'
+                        ? registerLabel
+                        : `${registerLabel} (abre em outra aba)`}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
             <div className="max-h-[240px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
               {visible.length ? (
@@ -782,11 +858,27 @@ export function NewLineDialog({
                   </label>
                 ))
               ) : (
-                <p className="p-2 text-sm text-gray">
-                  {available.length
-                    ? 'Nenhum recurso com essa busca. Limpe a busca ou o filtro de unidade.'
-                    : 'Nenhum recurso deste tipo na Base de custos.'}
-                </p>
+                <div className="space-y-2 p-2">
+                  <p className="text-sm text-gray">
+                    {available.length
+                      ? 'Nenhum recurso com essa busca. Limpe a busca ou o filtro de unidade.'
+                      : 'Nenhum recurso deste tipo na Base de custos.'}
+                  </p>
+                  {canRegister && (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="link"
+                      className="h-auto px-0"
+                      LeftIcon={IconPlus}
+                      onClick={register}
+                    >
+                      {search.trim()
+                        ? `${registerLabel} "${search.trim()}"`
+                        : registerLabel}
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
             {chosen.length > 0 && visible.length < available.length && (
@@ -990,6 +1082,13 @@ export function NewLineDialog({
             Adicionar {resourceKindObj[values.kind].toLowerCase()}
           </Button>
         </DialogFooter>
+        {/* O cadastro do material abre por cima; salvo, ele volta escolhido */}
+        <NewMaterialModal
+          open={newMaterialOpen}
+          onOpenChange={setNewMaterialOpen}
+          defaultName={search.trim()}
+          onCreated={(material) => setPendingId(`material:${material.id}`)}
+        />
       </DialogContent>
     </Dialog>
   )

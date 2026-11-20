@@ -18926,5 +18926,13 @@
   "5bb451dd2d": {
     "es": "{name} (hh:mm)",
     "en": "{name} (hh:mm)"
+  },
+  "e05c20e92f": {
+    "es": "{registerLabel} (se abre en otra pestaña)",
+    "en": "{registerLabel} (opens in another tab)"
+  },
+  "079e96ff78": {
+    "es": "{registerLabel} \"{valor}\"",
+    "en": "{registerLabel} \"{valor}\""
   }
 }

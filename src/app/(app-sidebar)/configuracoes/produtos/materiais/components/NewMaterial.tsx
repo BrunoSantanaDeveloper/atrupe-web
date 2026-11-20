@@ -2,7 +2,7 @@
 
 // React / Next
 import { InfoHint } from '@/components/common/InfoHint'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -107,15 +107,31 @@ const text = (value: number | null | undefined) =>
 interface Props {
   // Com o material informado, o mesmo formulário edita em vez de cadastrar
   material?: Material
+  // Aberto de fora, sem o botão (a composição cadastra o material que falta
+  // sem sair da tela, 20/11/2026): quem abre controla e recebe o cadastrado
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  defaultName?: string
+  onCreated?: (material: Material) => void
 }
 
 // Marca e cor são variações (MT-2), cadastradas aqui na edição; espessura e
 // tamanho viram materiais diferentes. Inativar e reativar também vivem aqui,
 // num botão do rodapé (05/10/2026): a linha da lista fica com editar e R$.
-export function NewMaterialModal({ material }: Props) {
+export function NewMaterialModal({
+  material,
+  open: openFromOutside,
+  onOpenChange,
+  defaultName,
+  onCreated,
+}: Props) {
   const queryClient = useQueryClient()
   const isEdit = Boolean(material)
-  const [open, setOpen] = useState(false)
+  const controlled = openFromOutside !== undefined
+  const [openHere, setOpenHere] = useState(false)
+  const open = controlled ? openFromOutside : openHere
+  const setOpen = (next: boolean) =>
+    controlled ? onOpenChange?.(next) : setOpenHere(next)
   // Material com histórico é inativado, não excluído; ao inativar, sai das
   // composições, com a lista e a confirmação no diálogo próprio
   const [statusOpen, setStatusOpen] = useState(false)
@@ -127,7 +143,12 @@ export function NewMaterialModal({ material }: Props) {
   const brandList = splitList(brands)
   const colorList = splitList(colors)
   const combinations = brandList.length * colorList.length
-  const [name, setName] = useState(material?.name || '')
+  const [name, setName] = useState(material?.name || defaultName || '')
+  // Aberto de fora com um nome (o que a pessoa buscou), o campo já vem com ele
+  useEffect(() => {
+    if (controlled && open && defaultName !== undefined) setName(defaultName)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
   // O setor vem do cadastro de setores da empresa (os ativos; o do
   // material continua na lista mesmo se foi inativado depois)
   const { data: sectorList } = useSector()
@@ -236,6 +257,10 @@ export function NewMaterialModal({ material }: Props) {
 
       toast.success(isEdit ? 'Material atualizado' : 'Material cadastrado')
       queryClient.invalidateQueries({ queryKey: ['materials'] })
+      // A composição e o processo leem os materiais pela lista de recursos
+      queryClient.invalidateQueries({ queryKey: ['assembly-resources'] })
+      queryClient.invalidateQueries({ queryKey: ['process-resources'] })
+      if (!isEdit && response.data) onCreated?.(response.data)
 
       if (!isEdit) {
         setName('')
@@ -278,7 +303,7 @@ export function NewMaterialModal({ material }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {isEdit ? (
+      {controlled ? null : isEdit ? (
         <ActionButton
           Icon={IconPencil}
           tooltip={`Editar ${material?.name}`}
