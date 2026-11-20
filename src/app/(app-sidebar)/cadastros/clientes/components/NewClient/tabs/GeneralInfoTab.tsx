@@ -46,9 +46,15 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
     context === 'client' ? (
       <RegularizadoMark hint="Telefone ou celular: pelo menos um dos dois, para o cliente regularizado." />
     ) : null
+  // A razão social não entra na regra do regularizado, mas a NF-e e a NFS-e
+  // de pessoa jurídica pedem (Lista Lite 19/11, item 9)
+  const corporateNameMark =
+    context === 'client' && hasFiscalModule() ? (
+      <RegularizadoMark hint="Para emitir NF-e e NFS-e de pessoa jurídica. Não impede o cliente regularizado." />
+    ) : null
   const fiscalMark =
     context === 'client' && hasFiscalModule() ? (
-      <RegularizadoMark hint="Quem emite nota fiscal precisa da inscrição estadual ou do ISENTO no cliente regularizado." />
+      <RegularizadoMark hint="Para emitir NF-e: a inscrição estadual quando o cliente é contribuinte do ICMS. Não impede o cliente regularizado." />
     ) : null
 
   const primaryCountry = watch('addresses.0.country')
@@ -336,7 +342,7 @@ export function GeneralInfoTab({ type, context = 'client', lookupRef }: Props) {
           <>
             <FormInput
               name="general.corporateName"
-              labelSuffix={mark}
+              labelSuffix={corporateNameMark}
               label="Razão social"
               placeholder="Digite aqui"
               className="col-span-2"

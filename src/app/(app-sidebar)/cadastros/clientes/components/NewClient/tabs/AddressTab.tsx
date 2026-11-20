@@ -1,7 +1,7 @@
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { FormInput } from '@/components/common/form/FormInput'
 import { RegularizadoMark } from '../RegularizadoMark'
-import { usePathname } from 'next/navigation'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { Button } from '@/components/ui/button'
 import { COUNTRIES } from '@/consts/country-codes'
@@ -18,15 +18,28 @@ const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({
 }))
 
 // A marca de "obrigatório para regularizado" só no cliente (a aba também
-// serve ao fornecedor): endereço completo é parte da regra (ALT-4)
-function useAddressMark() {
-  const pathname = usePathname()
-  const isClient = !!pathname?.includes('/cadastros/clientes')
-  return isClient ? <RegularizadoMark /> : null
+// serve ao fornecedor): endereço completo é parte da regra (ALT-4). Antes a
+// tela olhava o endereço da página, e o "Novo cliente" aberto no orçamento
+// ou na frente de caixa ficava sem as marcas do endereço (Lista Lite 19/11,
+// item 9): agora quem chama diz se é fornecedor
+type Context = 'client' | 'supplier'
+
+function useAddressMark(context: Context) {
+  return context === 'client' ? <RegularizadoMark /> : null
 }
 
-export function AddressTab() {
-  const addressMark = useAddressMark()
+// O número não entra na regra do regularizado, mas a NF-e pede (o "S/N"
+// vale quando o endereço não tem número)
+function useNumberMark(context: Context) {
+  const { hasFiscalModule } = usePlanFeatures()
+  return context === 'client' && hasFiscalModule() ? (
+    <RegularizadoMark hint="Para emitir NF-e: o número do endereço, ou S/N quando não houver. Não impede o cliente regularizado." />
+  ) : null
+}
+
+export function AddressTab({ context = 'client' }: { context?: Context }) {
+  const addressMark = useAddressMark(context)
+  const numberMark = useNumberMark(context)
   const { control, setValue, watch } = useFormContext<NewClientFormType>()
 
   const { fields, append, remove } = useFieldArray({
@@ -98,7 +111,11 @@ export function AddressTab() {
                 label="Título do endereço"
                 placeholder="Ex: Sede, Fábrica, Filial SP"
               />
-              {!isForeign ? <ZipcodeField index={index} /> : <div></div>}
+              {!isForeign ? (
+                <ZipcodeField index={index} context={context} />
+              ) : (
+                <div></div>
+              )}
               <div className="mt-auto">
                 <FormInput<NewClientFormType>
                   name={`addresses.${index}.state`}
@@ -126,7 +143,7 @@ export function AddressTab() {
               </div>
               <FormInput<NewClientFormType>
                 name={`addresses.${index}.number`}
-                inputMode="numeric"
+                labelSuffix={numberMark}
                 label="Número"
               />
               <div className="col-span-2">
@@ -158,8 +175,8 @@ export function AddressTab() {
 }
 
 // Componente auxiliar para o CEP com auto-complete
-function ZipcodeField({ index }: { index: number }) {
-  const addressMark = useAddressMark()
+function ZipcodeField({ index, context }: { index: number; context: Context }) {
+  const addressMark = useAddressMark(context)
   const { watch, setValue } = useFormContext<NewClientFormType>()
   const zipcode = watch(`addresses.${index}.zipcode`)
 

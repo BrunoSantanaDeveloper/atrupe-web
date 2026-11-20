@@ -103,7 +103,7 @@ export function NewSupplierForm({ activeTab, setActiveTab }: Props) {
           />
         </TabsContent>
         <TabsContent value="address">
-          <AddressTab />
+          <AddressTab context="supplier" />
         </TabsContent>
         <TabsContent value="responsibilities">
           <ResponsibilitiesTab />
