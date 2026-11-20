@@ -312,12 +312,15 @@ export function NewQuotationModal({
                   clientId={clientId}
                   disabled={!clientId}
                 />
+                {/* A empresa (CNPJ) troca enquanto o orçamento está em
+                    digitação, sem refazer o orçamento: o PDF e os dados
+                    passam a ser os da nova (Lista Lite 19/11, item 6) */}
                 {hasMultipleCompanies && (
                   <SelectCompanyField<QuotationFormType>
                     name="companyId"
                     label="Empresa"
                     width="flex-[1_0_300px]"
-                    disabled={editMode}
+                    disabled={editMode && data?.status !== 'OPEN'}
                   />
                 )}
               </form>
