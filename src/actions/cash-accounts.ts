@@ -193,12 +193,14 @@ export const reactivateBankAccount = async (id: string) => {
  * Caixa do dia
  * ------------------------------------------------------------------------- */
 
-export const getCashControl = async () => {
+// `date` (AAAA-MM-DD): só os caixas daquele dia, para consultar um
+// fechamento antigo fora dos 100 mais recentes (Lista Lite 19/11, item 15)
+export const getCashControl = async (date?: string) => {
   const [accountsRes, cashRes] = await Promise.all([
     getBankAccounts(),
     getItem({
       route: '/financial/cash-control',
-      params: { page: '1', limit: '100' },
+      params: { page: '1', limit: '100', ...(date ? { date } : {}) },
     }) as Promise<ApiResult>,
   ])
   const empty = {

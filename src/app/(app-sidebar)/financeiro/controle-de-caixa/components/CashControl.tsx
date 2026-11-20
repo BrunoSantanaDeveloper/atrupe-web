@@ -33,6 +33,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { DatePicker } from '@/components/common/date-picker'
 import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import {
   OpenDayDialog,
@@ -138,8 +139,27 @@ export function CashControl(_: SearchParamsType) {
     queryFn: () => getCashControl(),
   })
 
+  // O dia escolhido no calendário (Lista Lite 19/11, item 15): o histórico
+  // passa a mostrar só os caixas daquele dia, de qualquer data, na URL
+  const dateFilter = params.get('data') || ''
+  const setDateFilter = (date?: Date) =>
+    updateFilterParam(
+      'data',
+      date
+        ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+        : '',
+      { router, params },
+    )
+  const { data: dateData, isLoading: isLoadingDate } = useQuery({
+    queryKey: ['cash-control', 'dia', dateFilter],
+    queryFn: () => getCashControl(dateFilter),
+    enabled: !!dateFilter,
+  })
+
   const accounts = data?.data?.accounts || []
   const days = data?.data?.days || []
+  const historyDays = dateFilter ? dateData?.data?.days || [] : days
+  const historyLoading = isLoading || (!!dateFilter && isLoadingDate)
   const today = data?.data?.today || ''
 
   const accountOf = (id: string) =>
@@ -158,7 +178,7 @@ export function CashControl(_: SearchParamsType) {
     (day) => day.status === 'OPEN' && day.date < today && !day.untouched,
   )
 
-  const filtered = days.filter(
+  const filtered = historyDays.filter(
     (day) =>
       (tab === 'ALL' || day.status === tab) &&
       (accountFilter === 'all' || day.accountId === accountFilter),
@@ -179,7 +199,7 @@ export function CashControl(_: SearchParamsType) {
 
   const dialogDay =
     dialog && 'day' in dialog
-      ? days.find((day) => day.id === dialog.day.id)
+      ? [...days, ...historyDays].find((day) => day.id === dialog.day.id)
       : undefined
   const dialogAccount = dialogDay ? accountOf(dialogDay.accountId) : undefined
 
@@ -500,7 +520,30 @@ export function CashControl(_: SearchParamsType) {
               <p className="text-sm text-gray">
                 Histórico dos caixas por dia e por conta.
               </p>
-              <div className="flex items-end gap-3">
+              <div className="flex flex-wrap items-end gap-3">
+                <div className="w-full sm:w-[200px]">
+                  <DatePicker
+                    label="Dia"
+                    placeholder="Todos os dias"
+                    value={
+                      dateFilter
+                        ? new Date(`${dateFilter}T12:00:00`)
+                        : undefined
+                    }
+                    onChange={setDateFilter}
+                  />
+                </div>
+                {dateFilter ? (
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    className="h-10 px-0"
+                    onClick={() => setDateFilter()}
+                  >
+                    Todos os dias
+                  </Button>
+                ) : null}
                 <SelectBasic
                   name="account-filter"
                   label="Conta"
@@ -549,7 +592,7 @@ export function CashControl(_: SearchParamsType) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {isLoading ? (
+                  {historyLoading ? (
                     <TableSkeletonRows cols={7} rows={5} />
                   ) : (
                     dates.map((date) => (
@@ -699,7 +742,7 @@ export function CashControl(_: SearchParamsType) {
                       </Fragment>
                     ))
                   )}
-                  {!isLoading && !dates.length && (
+                  {!historyLoading && !dates.length && (
                     <TableRow>
                       <TableCell
                         colSpan={7}
