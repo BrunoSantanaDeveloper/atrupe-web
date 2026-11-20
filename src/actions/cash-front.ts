@@ -74,10 +74,15 @@ const openSessionId = async () => {
   return session?.status === 'OPEN' ? session.id : null
 }
 
-export const openCashSession = async (openingBalance: number) => {
+// `cashFrontId`: a frente escolhida por quem tem mais de uma liberada
+// (Lista Lite 19/11, item 2); sem ela, a API pega a primeira livre
+export const openCashSession = async (
+  openingBalance: number,
+  cashFrontId?: string,
+) => {
   const res: ApiResult = await createItemNew({
     route: '/financial/pdv/session',
-    data: { openingBalance },
+    data: { openingBalance, ...(cashFrontId ? { cashFrontId } : {}) },
   })
   if (!res.success) return fail(res.message, null)
   return ok<CashSession>(res.data)

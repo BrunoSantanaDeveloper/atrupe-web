@@ -32,6 +32,7 @@ import type { CashFrontValues } from '../types'
 // Actions
 import { getCashFronts, saveCashFront } from '@/actions/cash-front'
 import { getBankAccounts } from '@/actions/cash-accounts'
+import { getData } from '@/actions/_cruds'
 
 // Third-party
 import { toast } from 'sonner'
@@ -56,6 +57,7 @@ const blank: CashFrontValues = {
   drawerAccountId: null,
   pixAccountId: null,
   cardAccountId: null,
+  userIds: [],
 }
 
 export function CashFrontSettingsDialog({
@@ -83,6 +85,27 @@ export function CashFrontSettingsDialog({
     queryKey: ['bank-accounts'],
     queryFn: () => getBankAccounts(),
   })
+  // Quem pode operar a frente: os colaboradores com usuário (item 2)
+  const { data: employeesRes } = useQuery({
+    enabled: open,
+    staleTime: 60_000,
+    queryKey: ['cash-front-users'],
+    queryFn: () =>
+      getData({ route: '/employee/list', filters: { limit: '200' } }),
+  })
+  const users = (
+    (employeesRes?.data || []) as {
+      userId?: string | null
+      name?: string | null
+      isActive?: boolean
+      user?: { name?: string | null } | null
+    }[]
+  )
+    .filter((employee) => employee.userId && employee.isActive !== false)
+    .map((employee) => ({
+      id: employee.userId as string,
+      name: employee.name || employee.user?.name || 'Sem nome',
+    }))
   const fronts = useMemo(() => frontsRes?.data || [], [frontsRes])
   // A gaveta é sempre uma conta Caixa (caixa físico)
   const drawers = (accountsRes?.data || []).filter(
@@ -115,6 +138,7 @@ export function CashFrontSettingsDialog({
         drawerAccountId: front.drawerAccountId,
         pixAccountId: front.pixAccountId,
         cardAccountId: front.cardAccountId,
+        userIds: front.userIds ?? [],
       })
     }
   }, [selected, fronts])
@@ -183,6 +207,42 @@ export function CashFrontSettingsDialog({
               placeholder="Ex.: Caixa 1, Balcão"
               onChange={(event) => set('name', event.target.value)}
             />
+          </div>
+
+          {/* Quem abre e movimenta esta frente (Lista Lite 19/11, item 2).
+              Ninguém marcado: todos com a permissão da frente de caixa */}
+          <div className="space-y-2">
+            <Label>Quem opera esta frente</Label>
+            <p className="text-sm text-gray">
+              Só quem estiver marcado abre e movimenta esta frente. Sem ninguém
+              marcado, vale para todos com acesso à frente de caixa. O
+              administrador abre qualquer uma.
+            </p>
+            <div className="grid max-h-48 grid-cols-1 gap-2 overflow-y-auto rounded-lg border p-3 sm:grid-cols-2">
+              {users.length ? (
+                users.map((user) => (
+                  <label
+                    key={user.id}
+                    className="flex items-center gap-2 text-sm"
+                  >
+                    <Checkbox
+                      checked={form.userIds.includes(user.id)}
+                      onCheckedChange={(checked) =>
+                        set(
+                          'userIds',
+                          checked
+                            ? [...form.userIds, user.id]
+                            : form.userIds.filter((id) => id !== user.id),
+                        )
+                      }
+                    />
+                    {user.name}
+                  </label>
+                ))
+              ) : (
+                <p className="text-sm text-gray">Nenhum usuário encontrado.</p>
+              )}
+            </div>
           </div>
 
           <SelectBasic

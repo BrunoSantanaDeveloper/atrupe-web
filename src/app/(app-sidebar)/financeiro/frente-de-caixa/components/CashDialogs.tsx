@@ -43,6 +43,7 @@ import {
   openCashSession,
   addCashMovement,
   closeCashSession,
+  getCashFronts,
 } from '@/actions/cash-front'
 
 import { getBankAccounts } from '@/actions/cash-accounts'
@@ -80,10 +81,33 @@ interface BaseProps {
 export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
   const [balance, setBalance] = useState(0)
   const [saving, setSaving] = useState(false)
+  // As frentes liberadas para quem abre e ainda fechadas (Lista Lite 19/11,
+  // item 2). Com mais de uma, a pessoa escolhe qual abrir
+  const { data: frontsRes } = useQuery({
+    enabled: open,
+    queryKey: ['cash-fronts'],
+    queryFn: () => getCashFronts(),
+  })
+  const myFronts = (frontsRes?.data || []).filter(
+    (front) => front.isActive && front.mine !== false && !front.open,
+  )
+  const [frontId, setFrontId] = useState('')
+  useEffect(() => {
+    if (!open) return
+    setFrontId((current) =>
+      myFronts.some((front) => front.id === current)
+        ? current
+        : (myFronts[0]?.id ?? ''),
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, frontsRes])
 
   const save = async () => {
     setSaving(true)
-    const res = await openCashSession(balance)
+    const res = await openCashSession(
+      balance,
+      myFronts.length > 1 ? frontId || undefined : undefined,
+    )
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -113,7 +137,19 @@ export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
             </div>
           </div>
         </DialogHeader>
-        <DialogBody>
+        <DialogBody className="space-y-4">
+          {myFronts.length > 1 ? (
+            <SelectBasic
+              name="open-front"
+              label="Frente de caixa"
+              value={frontId}
+              onChange={setFrontId}
+              options={myFronts.map((front) => ({
+                value: front.id,
+                label: front.name,
+              }))}
+            />
+          ) : null}
           <MoneyInput
             autoFocus
             id="opening"

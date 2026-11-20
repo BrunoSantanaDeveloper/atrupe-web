@@ -220,10 +220,15 @@ export type CashFront = {
   cardAccount: string | null
   // Há caixa aberto nela agora
   open: boolean
+  // Quem pode abrir e movimentar esta frente (Lista Lite 19/11, item 2);
+  // vazia, todos com a permissão da frente de caixa
+  userIds: string[]
+  // Se quem está logado pode abrir esta frente
+  mine?: boolean
 }
 
 // O que o cadastro da frente envia
 export type CashFrontValues = Omit<
   CashFront,
-  'id' | 'open' | 'drawerAccount' | 'pixAccount' | 'cardAccount'
+  'id' | 'open' | 'drawerAccount' | 'pixAccount' | 'cardAccount' | 'mine'
 >
