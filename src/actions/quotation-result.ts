@@ -47,6 +47,11 @@ export type QuotationResultData = {
   productionCost: number
   commission: { percent: number; value: number }
   taxes: { percent: number; value: number }
+  // Despesas da venda (20/11/2026): custo da entrega, taxa da operadora das
+  // parcelas e a comissão adicionada ao orçamento; a API antiga não manda
+  delivery?: number
+  billing?: number
+  agencyCommission?: number
   result: number
   margin: number
   items: {

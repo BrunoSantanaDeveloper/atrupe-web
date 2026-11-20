@@ -156,8 +156,18 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
   }
 
   const status = result.status ? quotationsStatusObj[result.status] : null
-  const totalCost =
-    result.productionCost + result.commission.value + result.taxes.value
+  // O que a venda leva embora, na ordem da Estimativa de Custos do legado
+  const expenses: [string, number][] = [
+    [
+      `Comissão do vendedor (${percent(result.commission.percent)})`,
+      result.commission.value,
+    ],
+    ['Comissão da agência', result.agencyCommission ?? 0],
+    ['Entrega', result.delivery ?? 0],
+    ['Cobrança', result.billing ?? 0],
+    [`Tributação (${percent(result.taxes.percent)})`, result.taxes.value],
+  ]
+  const totalCost = result.revenue - result.result
   const share = (value: number) =>
     result.revenue > 0 ? percent((value / result.revenue) * 100) : '—'
   // O realizado só aparece quando existe: sem apontamento, as colunas
@@ -244,17 +254,12 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
             </CardHeader>
             <CardContent className="px-6 pb-5">
               <dl className="divide-y divide-gray-100 text-sm">
-                {[
-                  ['Custo de produção', result.productionCost],
+                {(
                   [
-                    `Comissão do vendedor (${percent(result.commission.percent)})`,
-                    result.commission.value,
-                  ],
-                  [
-                    `Tributação (${percent(result.taxes.percent)})`,
-                    result.taxes.value,
-                  ],
-                ].map(([label, value]) => (
+                    ['Custo de produção', result.productionCost],
+                    ...expenses,
+                  ] as [string, number][]
+                ).map(([label, value]) => (
                   <div
                     key={label as string}
                     className="flex items-center justify-between py-2"
@@ -501,16 +506,7 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
                     Despesas da venda
                   </TableCell>
                 </TableRow>
-                {[
-                  [
-                    `Comissão do vendedor (${percent(result.commission.percent)})`,
-                    result.commission.value,
-                  ],
-                  [
-                    `Tributação (${percent(result.taxes.percent)})`,
-                    result.taxes.value,
-                  ],
-                ].map(([label, value]) => (
+                {expenses.map(([label, value]) => (
                   <TableRow key={label as string}>
                     <TableCell className="pl-8">{label}</TableCell>
                     <TableCell numeric />
