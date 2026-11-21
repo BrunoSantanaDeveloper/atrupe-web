@@ -933,7 +933,13 @@ export function NewLineDialog({
                 options={[
                   ...formulaOptionsFor(fields, formulas),
                   ...(onCreateFormula
-                    ? [{ value: NEW_FORMULA, label: 'Nova fórmula…' }]
+                    ? [
+                        {
+                          value: NEW_FORMULA,
+                          label: 'Nova fórmula…',
+                          group: '',
+                        },
+                      ]
                     : []),
                 ]}
                 value={formulaChoiceValue(
@@ -1258,7 +1264,7 @@ export function LineDialog({
               options={[
                 ...formulaOptionsFor(fields, formulas),
                 ...(onCreateFormula
-                  ? [{ value: NEW_FORMULA, label: 'Nova fórmula…' }]
+                  ? [{ value: NEW_FORMULA, label: 'Nova fórmula…', group: '' }]
                   : []),
               ]}
               value={formulaChoiceValue(

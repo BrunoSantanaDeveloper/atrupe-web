@@ -1,4 +1,5 @@
 import type * as React from 'react'
+import { Fragment } from 'react'
 // UI component Imports
 import {
   FormItem,
@@ -14,6 +15,7 @@ import {
   SelectValue,
   SelectGroup,
   SelectLabel,
+  SelectSeparator,
   SelectContent,
   SelectTrigger,
 } from '@/components/ui/select'
@@ -30,6 +32,9 @@ export interface SelectOption {
   /** Opção visível mas não selecionável — usada para sinalizar o que ainda
    *  não é suportado, em vez de esconder e deixar o usuário procurar. */
   disabled?: boolean
+  /** O grupo da opção (20/11/2026): quando muda, a lista abre uma linha e o
+   *  título do grupo; vazio, só a linha (o "Nova fórmula…" no fim). */
+  group?: string
 }
 
 interface FormSelectProps<T extends FieldValues> {
@@ -149,11 +154,24 @@ export function SelectBasic({
         <SelectGroup>
           <SelectContent>
             {options.length ? (
-              options.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))
+              options.map((option, index) => {
+                const startsGroup =
+                  option.group !== undefined &&
+                  option.group !== options[index - 1]?.group
+                return (
+                  <Fragment key={option.value}>
+                    {startsGroup && index > 0 && <SelectSeparator />}
+                    {startsGroup && option.group && (
+                      <SelectLabel className="type-eyebrow pl-2 pt-2">
+                        {option.group}
+                      </SelectLabel>
+                    )}
+                    <SelectItem value={option.value} disabled={option.disabled}>
+                      {option.label}
+                    </SelectItem>
+                  </Fragment>
+                )
+              })
             ) : (
               <SelectLabel className="text-gray-400 cursor-not-allowed">
                 {emptyMessage}

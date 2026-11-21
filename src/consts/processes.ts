@@ -182,18 +182,25 @@ export const formulaOptionsFor = (
   const keys = Object.keys(formulaObj) as FormulaKey[]
   const plain = keys
     .filter((key) => key !== 'CUSTOM' && !formulaUsesField(key))
-    .map((key) => ({ value: key, label: formulaObj[key].label }))
+    .map((key) => ({
+      value: key,
+      label: formulaObj[key].label,
+      group: 'Padrão',
+    }))
   // Cada campo, na ordem em que foi criado, com os cálculos sempre na mesma
   // ordem (20/11/2026)
   const byField = fields.flatMap((field) =>
     FIELD_FORMULA_ORDER.map((key) => ({
       value: formulaChoiceValue(key, field.name),
       label: formulaLabel(key, field.name),
+      // Cada campo é um grupo, com o nome dele no título (20/11/2026)
+      group: field.name,
     })),
   )
   const custom = formulas.map((formula) => ({
     value: formulaChoiceValue('CUSTOM', null, formula.id),
     label: `Fórmula · ${formula.name}`,
+    group: 'Fórmulas do produto',
   }))
   return [...plain, ...byField, ...custom]
 }

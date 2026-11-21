@@ -15810,20 +15810,6 @@
    "src/components/layout/MyProfile/index.tsx:225 (jsx)"
   ]
  },
- "comum.geral.entendi": {
-  "pt": "Entendi",
-  "marcas": [
-   "fiscal-br"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/IssueInvoiceForm.tsx:391 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/nfe/components/StandaloneNfeForm.tsx:635 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/IssueNfseForm.tsx:581 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/CancelOrder.tsx:175 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/CancelOrderButton.tsx:174 (propriedade:confirmLabel)",
-   "src/hooks/usePlanErrorToast.ts:65 (propriedade:cancelLabel)"
-  ]
- },
  "comum.geral.entrada": {
   "pt": "Entrada",
   "marcas": [
@@ -16089,6 +16075,20 @@
    "src/app/(app-sidebar)/cadastros/fornecedores/page.tsx:10 (propriedade:title)",
    "src/app/sandbox/nav-menu/page.tsx:292 (propriedade:label)",
    "src/consts/nav.ts:296 (propriedade:title)"
+  ]
+ },
+ "comum.geral.gotIt": {
+  "pt": "Entendi",
+  "marcas": [
+   "fiscal-br"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/IssueInvoiceForm.tsx:391 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/nfe/components/StandaloneNfeForm.tsx:635 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/IssueNfseForm.tsx:581 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/CancelOrder.tsx:175 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/CancelOrderButton.tsx:174 (propriedade:confirmLabel)",
+   "src/hooks/usePlanErrorToast.ts:65 (propriedade:cancelLabel)"
   ]
  },
  "comum.geral.group": {
