@@ -7,6 +7,22 @@ export class SupportApiError extends Error {
   problems: Problem[] | null;
 }
 
+/** Um canal do atendimento: o número de uma rota, com o que a conferência viu e, no WhatsApp Web, o QR. */
+export interface WhatsappChannel {
+  inbox_id: number;
+  route: "oficial" | "nao_oficial";
+  phone: string | null;
+  connected: boolean;
+  status: string | null;
+  qrCode: string | null;
+  level: HealthLevel | null;
+  findings: HealthFinding[];
+}
+
+/**
+ * Os campos de cima são do canal ligado por último, como antes; channels traz um item por rota de pé, para a
+ * conta com o número oficial e o do WhatsApp Web ao mesmo tempo.
+ */
 export interface WhatsappStatus {
   connected: boolean;
   route: "oficial" | "nao_oficial" | null;
@@ -15,6 +31,7 @@ export interface WhatsappStatus {
   /** O que a conferência do número viu; null antes de conectar. */
   level: HealthLevel | null;
   findings: HealthFinding[];
+  channels?: WhatsappChannel[];
 }
 
 export interface SettingsResponse {
@@ -57,6 +74,7 @@ export function supportApi(options?: { base?: string; fetchImpl?: typeof fetch }
   connectOfficial(values: Record<string, string>): Promise<{ metaWebhook: { callbackUrl: string | null; verifyToken: string | null } }>;
   connectUnofficial(): Promise<{ ok: true }>;
   reconnect(): Promise<{ ok: true; status: string }>;
+  retireRoute(route: "oficial" | "nao_oficial"): Promise<{ ok: true }>;
   suggestions(escopo?: Scope): Promise<{ suggestions: Suggestion[] }>;
   decideSuggestion(id: string, decisao: "aprovar" | "descartar", values?: { q?: string; a?: string }): Promise<{ ok: true }>;
   teamGroups(): Promise<{ grupos: TeamGroup[]; pessoas: Array<{ chave: string; nome: string }> }>;

@@ -3,7 +3,8 @@
 // Tela "Conectar WhatsApp": o cliente escolhe a API oficial (credenciais da Meta) ou a conexão
 // não oficial (QR do WhatsApp Web, depois de ler o aviso de risco). Os passos vêm de base/ui/connect.mjs.
 // Com o número já ligado, mostra o que a conferência viu e retoma a mesma caixa quando ele para: o QR de
-// novo na não oficial, o token novo na oficial.
+// novo na não oficial, o token novo na oficial. Com o número oficial e o do WhatsApp Web ao mesmo tempo,
+// mostra um bloco por canal, e um deles pode deixar de ser usado.
 
 import { useEffect, useReducer, useState } from 'react'
 
@@ -17,6 +18,7 @@ import {
 } from '@/lib/atendimento-kit/ui/connect.mjs'
 import {
   supportApi,
+  type WhatsappChannel,
   type WhatsappStatus,
 } from '@/lib/atendimento-kit/ui/client.mjs'
 import {
@@ -42,6 +44,14 @@ const SEM_LEITURA: WhatsappStatus = {
   findings: [],
 }
 
+/** 554792621081 vira +55 47 9262-1081; o que não for número do Brasil fica como veio. */
+function numeroLegivel(phone: string) {
+  const d = phone.replace(/\D/g, '')
+  if (!d.startsWith('55') || (d.length !== 12 && d.length !== 13)) return phone
+  const local = d.slice(4)
+  return `+55 ${d.slice(2, 4)} ${local.slice(0, -4)}-${local.slice(-4)}`
+}
+
 function Achados({ itens }: { itens: WhatsappStatus['findings'] }) {
   return (
     <Stack gap={8}>
@@ -64,6 +74,9 @@ export function ConectarWhatsApp({
   const [problemas, setProblemas] = useState<Record<string, string>>({})
   const [situacao, setSituacao] = useState<WhatsappStatus | null>(null)
   const [outroNumero, setOutroNumero] = useState(false)
+  const [confirmar, setConfirmar] = useState<WhatsappChannel['route'] | null>(
+    null,
+  )
   const noInicio = state.step === 'escolher'
 
   useEffect(() => {
@@ -80,10 +93,15 @@ export function ConectarWhatsApp({
     const timer = setInterval(async () => {
       try {
         const status = await api.whatsappStatus()
+        // O QR é sempre do WhatsApp Web. Com o oficial ligado depois dele, os
+        // campos de cima são do oficial e a tela ficaria esperando para sempre.
+        const web =
+          status.channels?.find((canal) => canal.route === 'nao_oficial') ??
+          status
         dispatch({
           type: 'estado',
-          status: status.status ?? 'unknown',
-          qrCode: status.qrCode,
+          status: web.status ?? 'unknown',
+          qrCode: web.qrCode,
         })
       } catch (error) {
         dispatch({ type: 'erro', message: (error as Error).message })
@@ -125,62 +143,128 @@ export function ConectarWhatsApp({
     }
   }
 
-  if (situacao === null) return <Loading />
-  if (noInicio && situacao.route && situacao.connected) {
-    return (
-      <Card title="WhatsApp conectado">
-        <Stack>
-          <Text>
-            O número já está ligado ao atendimento. As conversas chegam no
-            painel de atendimento.
-          </Text>
-          {situacao.findings.length ? (
-            <Alert tone="warning">
-              <Achados itens={situacao.findings} />
-            </Alert>
-          ) : null}
-          <Text tone="muted">
-            {situacao.route === 'nao_oficial'
-              ? 'Conectado pelo WhatsApp Web: deixe o celular do número ligado e com internet. '
-              : ''}
-            O número é conferido a cada 15 minutos, e os superadmins recebem um
-            e-mail se ele parar.
-          </Text>
-        </Stack>
-      </Card>
-    )
+  async function deixarDeUsar(route: WhatsappChannel['route']) {
+    setConfirmar(null)
+    try {
+      await api.retireRoute(route)
+      setSituacao(await api.whatsappStatus())
+    } catch (error) {
+      dispatch({ type: 'erro', message: (error as Error).message })
+    }
   }
-  if (noInicio && situacao.route && !outroNumero) {
+
+  if (situacao === null) return <Loading />
+  // Um bloco por canal: o número oficial e o do WhatsApp Web podem estar de pé
+  // ao mesmo tempo.
+  const canais: WhatsappChannel[] =
+    situacao.channels ??
+    (situacao.route
+      ? [{ ...situacao, route: situacao.route, inbox_id: 0, phone: null }]
+      : [])
+  if (noInicio && canais.length && !outroNumero) {
     return (
-      <Card
-        title={
-          situacao.level === 'fora'
-            ? 'O WhatsApp do atendimento parou'
-            : 'O WhatsApp do atendimento pede atenção'
-        }
-      >
-        <Stack>
-          <Alert tone={situacao.level === 'fora' ? 'danger' : 'warning'}>
-            <Achados itens={situacao.findings} />
-          </Alert>
-          <Stack direction="row" gap={8}>
-            {situacao.route === 'nao_oficial' ? (
-              <Button onClick={lerQrDeNovo}>Ler o QR de novo</Button>
-            ) : (
-              <Button
-                onClick={() =>
-                  dispatch({ type: 'escolher_rota', route: 'oficial' })
-                }
-              >
-                Trocar o token da Meta
-              </Button>
-            )}
-            <Button variant="secondary" onClick={() => setOutroNumero(true)}>
-              Conectar outro número
-            </Button>
-          </Stack>
-        </Stack>
-      </Card>
+      <Stack>
+        {canais.map((canal) => {
+          const ok =
+            canal.connected &&
+            canal.level !== 'fora' &&
+            canal.level !== 'atencao'
+          const parou = canal.level === 'fora' || !canal.connected
+          const forma =
+            canal.route === 'oficial' ? 'API oficial' : 'WhatsApp Web'
+          return (
+            <Card
+              key={canal.route}
+              title={
+                ok
+                  ? 'WhatsApp conectado'
+                  : parou
+                    ? 'O WhatsApp do atendimento parou'
+                    : 'O WhatsApp do atendimento pede atenção'
+              }
+            >
+              <Stack>
+                <Text tone="muted">
+                  {canal.phone
+                    ? `${forma}, ${numeroLegivel(canal.phone)}`
+                    : forma}
+                </Text>
+                {ok ? (
+                  <Text>
+                    As conversas deste número chegam no painel de atendimento.
+                  </Text>
+                ) : null}
+                {canal.findings.length ? (
+                  <Alert tone={!ok && parou ? 'danger' : 'warning'}>
+                    <Achados itens={canal.findings} />
+                  </Alert>
+                ) : null}
+                {ok && canal.route === 'nao_oficial' ? (
+                  <Text tone="muted">
+                    Conectado pelo WhatsApp Web: deixe o celular do número
+                    ligado e com internet.
+                  </Text>
+                ) : null}
+                <Stack direction="row" gap={8}>
+                  {!ok && canal.route === 'nao_oficial' ? (
+                    <Button onClick={lerQrDeNovo}>Ler o QR de novo</Button>
+                  ) : null}
+                  {!ok && canal.route === 'oficial' ? (
+                    <Button
+                      onClick={() =>
+                        dispatch({ type: 'escolher_rota', route: 'oficial' })
+                      }
+                    >
+                      Trocar o token da Meta
+                    </Button>
+                  ) : null}
+                  {canais.length > 1 && confirmar !== canal.route ? (
+                    <Button
+                      variant="secondary"
+                      onClick={() => setConfirmar(canal.route)}
+                    >
+                      Deixar de usar este número
+                    </Button>
+                  ) : null}
+                </Stack>
+                {confirmar === canal.route ? (
+                  <Alert tone="warning">
+                    <Stack gap={8}>
+                      <Text>
+                        O número sai desta tela e da conferência. As conversas
+                        dele continuam no painel de atendimento.
+                      </Text>
+                      <Stack direction="row" gap={8}>
+                        <Button onClick={() => deixarDeUsar(canal.route)}>
+                          Deixar de usar
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          onClick={() => setConfirmar(null)}
+                        >
+                          Voltar
+                        </Button>
+                      </Stack>
+                    </Stack>
+                  </Alert>
+                ) : null}
+              </Stack>
+            </Card>
+          )
+        })}
+        <Text tone="muted">
+          {canais.length > 1
+            ? 'Para trocar um dos números, conecte outro número na mesma forma de conexão: ele toma o lugar do anterior. '
+            : 'Dá para ter também um número na outra forma de conexão, os dois ao mesmo tempo. Na mesma forma, o número novo toma o lugar do atual. '}
+          Cada número é conferido a cada 15 minutos, e os superadmins recebem um
+          e-mail se ele parar.
+        </Text>
+        <div>
+          <Button variant="secondary" onClick={() => setOutroNumero(true)}>
+            Conectar outro número
+          </Button>
+        </div>
+      </Stack>
     )
   }
 
@@ -209,6 +293,13 @@ export function ConectarWhatsApp({
                 : []),
             ]}
           />
+        ) : null}
+        {state.step === 'escolher' && canais.length ? (
+          <div>
+            <Button variant="secondary" onClick={() => setOutroNumero(false)}>
+              Voltar aos números conectados
+            </Button>
+          </div>
         ) : null}
 
         {state.step === 'formulario_oficial' ? (

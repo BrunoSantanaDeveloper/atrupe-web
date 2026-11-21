@@ -56,6 +56,10 @@ export const LEVELS: HealthLevel[];
 
 export function worstLevel(levels: HealthLevel[]): HealthLevel;
 
+/** A caixa mais recente de cada rota, sem as que saíram (retired_at), na ordem em que foram ligadas. */
+export function currentInboxes(state: SupportState | null | undefined): InboxState[];
+
+/** O canal ligado por último. Com as duas rotas de pé, use currentInboxes. */
 export function currentInbox(state: SupportState | null | undefined): InboxState | null;
 
 export function classifySession(session: Record<string, unknown> | null): HealthFinding[];

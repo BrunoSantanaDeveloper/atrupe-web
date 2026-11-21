@@ -7,6 +7,8 @@ export interface InboxState {
   session_id?: string;
   instance_id?: string;
   webhook_id?: number;
+  /** Quando a rota saiu do atendimento (retireWhatsappRoute): fora da tela e da conferência, com o histórico no painel. */
+  retired_at?: string;
 }
 
 /** Um grupo da equipe: uma caixa interna com uma conversa fixa, vista só pelos membros. */
@@ -169,6 +171,9 @@ export function updateCloudApi(input: {
   cloud: { apiKey: string; phoneNumberId?: string; businessAccountId?: string };
   fetchImpl?: FetchImpl;
 }): Promise<{ state: SupportState; inboxId: number; metaWebhook: { callbackUrl: string | null; verifyToken: string | null } }>;
+
+/** Tira uma rota do atendimento quando há as duas; lança route_invalid, route_not_connected ou last_channel. */
+export function retireWhatsappRoute(input: { state: SupportState; route: "oficial" | "nao_oficial"; now?: Date }): SupportState;
 
 export function whatsappStatus(input: { openwaUrl: string; openwaApiKey: string; sessionId: string; fetchImpl?: FetchImpl }): Promise<{
   status: string;

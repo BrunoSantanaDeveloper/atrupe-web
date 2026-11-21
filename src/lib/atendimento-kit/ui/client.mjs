@@ -33,6 +33,8 @@ export function supportApi({ base = "/api/atendimento", fetchImpl = (...args) =>
     connectUnofficial: () => call("POST", "whatsapp", { route: "nao_oficial" }),
     /** Ler o QR de novo: retoma a sessão que a caixa já tem, sem criar outra. */
     reconnect: () => call("POST", "whatsapp", { acao: "reconectar" }),
+    /** Deixa de usar a rota (oficial ou nao_oficial) quando o atendimento tem as duas. */
+    retireRoute: (route) => call("POST", "whatsapp", { acao: "deixar", route }),
     /** Perguntas e respostas sugeridas a partir das conversas que a equipe resolveu, esperando aprovação. */
     suggestions: (escopo = "cliente") => call("GET", scoped("sugestoes", escopo)),
     decideSuggestion: (id, decisao, values = {}) => call("POST", `sugestoes/${encodeURIComponent(id)}`, { decisao, ...values }),
