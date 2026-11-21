@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { IconArrowRight } from '@tabler/icons-react'
+import { toggleModuleKey } from '@/lib/module-selection'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -137,14 +138,9 @@ export function EvolutionHub({ planStates, current }: Props) {
     [publicPlans, next?.planId],
   )
 
+  // Uma faixa de espaço só (GP-48 item 27)
   const toggleModule = (key: string, checked: boolean) =>
-    setAdded((prev) =>
-      checked
-        ? prev.includes(key)
-          ? prev
-          : [...prev, key]
-        : prev.filter((k) => k !== key),
-    )
+    setAdded((prev) => toggleModuleKey(prev, key, checked))
 
   const contractComplements = () => {
     if (!hasChanges) {

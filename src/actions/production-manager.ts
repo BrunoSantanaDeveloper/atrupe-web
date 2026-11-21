@@ -793,6 +793,30 @@ export const setCurrentVersion = async ({
     : fail(res.message, null as string | null)
 }
 
+// Apagar libera o espaço dos arquivos de produção (GP-48 item 27): o anexo
+// inteiro ou uma versão; apagar a única versão apaga o anexo
+export const deleteAttachment = async ({
+  id,
+  attachmentId,
+  version,
+}: {
+  id: string
+  attachmentId: string
+  version?: number
+}) => {
+  const res: ApiResult = await deleteItemNew({
+    route:
+      version === undefined
+        ? `/production/task/${id}/attachment/${attachmentId}`
+        : `/production/task/${id}/attachment/${attachmentId}/version/${version}`,
+  })
+  return res.success
+    ? ok<string>(
+        version === undefined ? 'Anexo apagado' : `Versão ${version} apagada`,
+      )
+    : fail(res.message, null as string | null)
+}
+
 /* ---------------------------------------------------------------------------
  * Projetos: liberar, concluir, cancelar, alterar entrega (GP-8)
  * ------------------------------------------------------------------------- */

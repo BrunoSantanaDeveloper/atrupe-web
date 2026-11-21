@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { useRouter } from '@/hooks/useRouter'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
+import { toggleModuleKey } from '@/lib/module-selection'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -105,14 +106,9 @@ export function PlanTrail({ planStates }: Props) {
     [publicPlans, offer?.planId],
   )
 
+  // Uma faixa de espaço só (GP-48 item 27)
   const toggleModule = (key: string, checked: boolean) =>
-    setModules((prev) =>
-      checked
-        ? prev.includes(key)
-          ? prev
-          : [...prev, key]
-        : prev.filter((k) => k !== key),
-    )
+    setModules((prev) => toggleModuleKey(prev, key, checked))
 
   const beginContracting = () => {
     if (!offer) return

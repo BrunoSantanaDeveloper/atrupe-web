@@ -9,7 +9,8 @@
 // mesmo diálogo no gerenciador, na agenda e no projeto.
 
 // React
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 
 // UI
@@ -69,7 +70,9 @@ import {
   setTaskVehicle,
   correctTimeEntry,
   setCurrentVersion,
+  deleteAttachment,
 } from '@/actions/production-manager'
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Hooks / Store / Consts
 import {
@@ -87,7 +90,12 @@ import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 import { toast } from 'sonner'
 
 // Utils
-import { uploadProductionAttachment } from '@/lib/production-upload'
+import {
+  formatBytes,
+  type ProductionStorage,
+  fetchProductionStorage,
+  uploadProductionAttachment,
+} from '@/lib/production-upload'
 
 // Icons
 import {
@@ -103,6 +111,7 @@ import {
   IconAlertTriangle,
   IconArrowBigRight,
   IconLock,
+  IconTrash,
 } from '@tabler/icons-react'
 
 // Utils
@@ -194,8 +203,22 @@ export function TaskDetailDialog({
   const [attachOpen, setAttachOpen] = useState<string | 'new' | null>(null)
   const [attachName, setAttachName] = useState('')
   const [attachKind, setAttachKind] = useState<AttachmentKind>('ART')
-  const [attachFile, setAttachFile] = useState<File | null>(null)
+  // Vários arquivos de uma vez no anexo novo; um na versão nova
+  const [attachFiles, setAttachFiles] = useState<File[]>([])
+  const [progress, setProgress] = useState<{
+    index: number
+    total: number
+    ratio: number
+  } | null>(null)
+  const [storage, setStorage] = useState<ProductionStorage | null>(null)
   const { data: session } = useSession()
+  const alertDialog = useAlertDialog()
+  const token = session?.accessToken
+  // O espaço dos arquivos de produção da empresa (GP-48 item 27)
+  const loadStorage = useCallback(
+    () => fetchProductionStorage(token).then(setStorage),
+    [token],
+  )
   // Correção de apontamento
   const [correcting, setCorrecting] = useState<string | 'new' | null>(null)
   const [correctMinutes, setCorrectMinutes] = useState('')
@@ -224,6 +247,10 @@ export function TaskDetailDialog({
     setAttachOpen(null)
     setCorrecting(null)
   }, [task, collaborators, viewerCollaboratorId])
+
+  useEffect(() => {
+    if (task?.id) loadStorage()
+  }, [task?.id, loadStorage])
 
   if (!task) return null
 
@@ -280,29 +307,87 @@ export function TaskDetailDialog({
       }),
     )
 
-  // O arquivo vai do navegador para a API, guardado em armazenamento
-  // privado; a tela recebe o link assinado (GP-27)
-  const sendAttachment = async () => {
-    if (!attachFile) return
-    const saved = await run(
-      'attachment',
-      () =>
-        uploadProductionAttachment({
-          token: session?.accessToken,
+  // O arquivo vai do navegador direto ao armazenamento privado, um de cada
+  // vez, com o progresso; a tela recebe o link assinado (GP-27, GP-48 item 27)
+  const sendAttachment = () =>
+    track('attachment', async () => {
+      const files = attachOpen === 'new' ? attachFiles : attachFiles.slice(0, 1)
+      let sent = 0
+      for (let index = 0; index < files.length; index += 1) {
+        const file = files[index]
+        setProgress({ index, total: files.length, ratio: 0 })
+        const res = await uploadProductionAttachment({
+          token,
           taskId: task.id,
           attachmentId: attachOpen === 'new' ? null : attachOpen,
-          name: attachName,
+          // Um arquivo leva o nome digitado; vários, o nome de cada arquivo
+          name:
+            files.length === 1 && attachName.trim()
+              ? attachName.trim()
+              : file.name.replace(/\.[^.]+$/, ''),
           kind: attachKind,
-          file: attachFile,
-        }),
-      'Anexo guardado',
-    )
-    if (saved) {
-      setAttachOpen(null)
-      setAttachName('')
-      setAttachFile(null)
-    }
-  }
+          file,
+          storage,
+          onProgress: (ratio) =>
+            setProgress({ index, total: files.length, ratio }),
+        })
+        if (!res.success) {
+          toast.error(res.message)
+          break
+        }
+        sent += 1
+      }
+      setProgress(null)
+      if (sent) {
+        toast.success(
+          sent === 1 ? 'Anexo guardado' : `${sent} anexos guardados`,
+        )
+        onChanged()
+      }
+      loadStorage()
+      if (sent === files.length) {
+        setAttachOpen(null)
+        setAttachName('')
+        setAttachFiles([])
+      } else {
+        setAttachFiles(files.slice(sent))
+      }
+      return sent === files.length
+    })
+
+  // Apagar libera o espaço: o anexo inteiro ou uma versão
+  const removeAttachment = (
+    attachmentId: string,
+    label: string,
+    version?: number,
+  ) =>
+    alertDialog.open({
+      title: version === undefined ? 'Apagar o anexo?' : 'Apagar a versão?',
+      description:
+        version === undefined
+          ? `${label} e todas as versões saem da etapa e o espaço é liberado. Não dá para desfazer.`
+          : `${label} v${version} sai da etapa e o espaço é liberado. Não dá para desfazer.`,
+      confirmLabel: 'Apagar',
+      confirmVariant: 'destructive',
+      onConfirm: async () => {
+        const res = await deleteAttachment({
+          id: task.id,
+          attachmentId,
+          version,
+        })
+        if (!res.success) {
+          toast.error(res.message)
+          return
+        }
+        toast.success(res.data || 'Anexo apagado')
+        onChanged()
+        loadStorage()
+      },
+    })
+
+  const quotaRatio = storage?.quotaBytes
+    ? storage.usedBytes / storage.quotaBytes
+    : 0
 
   return (
     <Dialog open={!!task} onOpenChange={onOpenChange}>
@@ -637,6 +722,41 @@ export function TaskDetailDialog({
               <p className="text-sm font-medium text-gray-800">
                 Anexos desta etapa
               </p>
+              {storage && (
+                <div className="ml-auto flex min-w-0 items-center gap-2 text-xs text-gray">
+                  {storage.quotaBytes !== null && (
+                    <div
+                      className="h-1.5 w-24 overflow-hidden rounded-full bg-gray-100"
+                      aria-hidden
+                    >
+                      <div
+                        className={cn(
+                          'h-full rounded-full',
+                          quotaRatio >= 0.95
+                            ? 'bg-error-500'
+                            : quotaRatio >= 0.8
+                              ? 'bg-warning-500'
+                              : 'bg-brand-600',
+                        )}
+                        style={{ width: `${Math.min(quotaRatio, 1) * 100}%` }}
+                      />
+                    </div>
+                  )}
+                  <span className="whitespace-nowrap">
+                    {formatBytes(storage.usedBytes)}
+                    {storage.quotaBytes !== null &&
+                      ` de ${formatBytes(storage.quotaBytes)}`}
+                  </span>
+                  {(!storage.tier || quotaRatio >= 0.8) && (
+                    <Link
+                      href="/assinatura/contratacao?modo=complementos"
+                      className="whitespace-nowrap text-brand-700 hover:underline"
+                    >
+                      Mais espaço
+                    </Link>
+                  )}
+                </div>
+              )}
               <PermissionGate permissions={PRODUCTION_VIEW}>
                 <Button
                   type="button"
@@ -647,7 +767,7 @@ export function TaskDetailDialog({
                     setAttachOpen('new')
                     setAttachName('')
                     setAttachKind('ART')
-                    setAttachFile(null)
+                    setAttachFiles([])
                   }}
                 >
                   Anexar
@@ -692,11 +812,22 @@ export function TaskDetailDialog({
                               setAttachOpen(attachment.id)
                               setAttachName(attachment.name)
                               setAttachKind(attachment.kind)
-                              setAttachFile(null)
+                              setAttachFiles([])
                             }}
                           >
                             Nova versão
                           </Button>
+                          <button
+                            type="button"
+                            aria-label={`Apagar ${attachment.name}`}
+                            title="Apagar o anexo"
+                            className="text-gray hover:text-error-600"
+                            onClick={() =>
+                              removeAttachment(attachment.id, attachment.name)
+                            }
+                          >
+                            <Icon icon={IconTrash} size="sm" />
+                          </button>
                         </PermissionGate>
                       </div>
                       <ul className="space-y-0.5 text-xs text-gray">
@@ -749,6 +880,23 @@ export function TaskDetailDialog({
                                 </button>
                               </PermissionGate>
                             )}
+                            {attachment.versions.length > 1 && (
+                              <PermissionGate permissions={PRODUCTION_VIEW}>
+                                <button
+                                  type="button"
+                                  className="text-gray hover:text-error-600 hover:underline"
+                                  onClick={() =>
+                                    removeAttachment(
+                                      attachment.id,
+                                      attachment.name,
+                                      version.version,
+                                    )
+                                  }
+                                >
+                                  apagar
+                                </button>
+                              </PermissionGate>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -772,9 +920,13 @@ export function TaskDetailDialog({
                     <Label htmlFor="attach-name">Nome</Label>
                     <Input
                       id="attach-name"
-                      value={attachName}
-                      disabled={attachOpen !== 'new'}
-                      placeholder="Ex.: Arte final"
+                      value={attachFiles.length > 1 ? '' : attachName}
+                      disabled={attachOpen !== 'new' || attachFiles.length > 1}
+                      placeholder={
+                        attachFiles.length > 1
+                          ? 'O nome de cada arquivo'
+                          : 'Ex.: Arte final'
+                      }
                       onChange={(event) => setAttachName(event.target.value)}
                     />
                   </div>
@@ -794,28 +946,82 @@ export function TaskDetailDialog({
                     }
                   />
                   <div className="space-y-1">
-                    <Label htmlFor="attach-file">Arquivo</Label>
+                    <Label htmlFor="attach-file">
+                      {attachOpen === 'new' ? 'Arquivos' : 'Arquivo'}
+                    </Label>
                     <Input
                       id="attach-file"
                       type="file"
-                      onChange={(event) =>
-                        setAttachFile(event.target.files?.[0] || null)
-                      }
+                      multiple={attachOpen === 'new'}
+                      onChange={(event) => {
+                        const files = Array.from(event.target.files || [])
+                        setAttachFiles(files)
+                        // Um arquivo só: o nome sugerido é o do arquivo
+                        if (
+                          attachOpen === 'new' &&
+                          files.length === 1 &&
+                          !attachName.trim()
+                        ) {
+                          setAttachName(files[0].name.replace(/\.[^.]+$/, ''))
+                        }
+                      }}
                     />
                   </div>
                 </div>
+                {storage && (
+                  <p className="text-xs text-gray">
+                    Até {formatBytes(storage.maxFileBytes)} por arquivo
+                    {storage.freeBytes !== null &&
+                      ` · ${formatBytes(storage.freeBytes)} livres`}
+                    {!storage.tier &&
+                      ' · com os arquivos de produção contratados, até 2 GB por arquivo'}
+                  </p>
+                )}
+                {attachFiles.length > 1 && (
+                  <ul className="space-y-0.5 text-xs text-gray-800">
+                    {attachFiles.map((file, index) => (
+                      <li key={`${file.name}-${index}`} className="flex gap-2">
+                        <span className="truncate">{file.name}</span>
+                        <span className="text-gray">
+                          · {formatBytes(file.size)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {progress && (
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray">
+                      {progress.total > 1 &&
+                        `${progress.index + 1} de ${progress.total} · `}
+                      {Math.round(progress.ratio * 100)}%
+                    </p>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                      <div
+                        className="h-full rounded-full bg-brand-600 transition-all"
+                        style={{
+                          width: `${((progress.index + progress.ratio) / progress.total) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <Button
                     type="button"
                     size="sm"
                     isLoading={pending === 'attachment'}
                     disabled={
-                      !attachFile ||
-                      (attachOpen === 'new' && !attachName.trim())
+                      !attachFiles.length ||
+                      (attachOpen === 'new' &&
+                        attachFiles.length === 1 &&
+                        !attachName.trim())
                     }
                     onClick={sendAttachment}
                   >
-                    Guardar
+                    {attachFiles.length > 1
+                      ? `Guardar ${attachFiles.length} arquivos`
+                      : 'Guardar'}
                   </Button>
                   <Button
                     type="button"

@@ -18998,5 +18998,33 @@
   "04bae3be65": {
     "es": "Formato del tiempo",
     "en": "Time format"
+  },
+  "f454298606": {
+    "es": "Más espacio",
+    "en": "More space"
+  },
+  "935874040f": {
+    "es": "Eliminar {name}",
+    "en": "Delete {name}"
+  },
+  "c0758584c7": {
+    "es": "Eliminar el adjunto",
+    "en": "Delete the attachment"
+  },
+  "1afbc823cb": {
+    "es": "El nombre de cada archivo",
+    "en": "Each file’s name"
+  },
+  "dae42a8b8d": {
+    "es": "por archivo",
+    "en": "per file"
+  },
+  "5d42f4017c": {
+    "es": "Guardar {valor} archivos",
+    "en": "Save {valor} files"
+  },
+  "2ba2d9af10": {
+    "es": "{name} no llegó al almacenamiento. Envíelo de nuevo.",
+    "en": "{name} did not reach storage. Send it again."
   }
 }
