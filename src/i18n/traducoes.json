@@ -19302,5 +19302,57 @@
   "84b10407a9": {
     "es": "· eliminado en la limpieza del {valor}",
     "en": "· removed in the cleanup of {valor}"
+  },
+  "b32a352a3b": {
+    "es": "Archivos de la OT",
+    "en": "WO files"
+  },
+  "e9a1a4f22e": {
+    "es": "Para guardar los archivos del trabajo: imágenes, el PDF de la impresión, el proyecto. Los ve quien ve esta OT.",
+    "en": "To store the job files: images, the print PDF, the project. Anyone who can see this WO can see them."
+  },
+  "8dc180dbbd": {
+    "es": "Los archivos de cada etapa quedan en el gestor, para quien tiene acceso a él.",
+    "en": "Each stage files stay on the board, for those with access to it."
+  },
+  "49839e1173": {
+    "es": "Elegir archivos",
+    "en": "Choose files"
+  },
+  "6a10801fd3": {
+    "es": "Enviando {sending}",
+    "en": "Uploading {sending}"
+  },
+  "c8f72525e7": {
+    "es": "por archivo ·",
+    "en": "per file ·"
+  },
+  "ec99fe35b1": {
+    "es": "Ningún archivo en esta OT.",
+    "en": "No files in this WO."
+  },
+  "64cca9db5c": {
+    "es": "eliminado en la limpieza del {removedAt}",
+    "en": "removed in the cleanup of {removedAt}"
+  },
+  "27dfff34a9": {
+    "es": "Borrar archivo",
+    "en": "Delete file"
+  },
+  "0c57bc1403": {
+    "es": "Archivo borrado",
+    "en": "File deleted"
+  },
+  "80b6fdc372": {
+    "es": "{name} supera {maxBytes}.",
+    "en": "{name} is larger than {maxBytes}."
+  },
+  "188d6b8341": {
+    "es": "Archivo guardado",
+    "en": "File saved"
+  },
+  "0579b95b55": {
+    "es": "No fue posible guardar el archivo",
+    "en": "Could not save the file"
   }
 }

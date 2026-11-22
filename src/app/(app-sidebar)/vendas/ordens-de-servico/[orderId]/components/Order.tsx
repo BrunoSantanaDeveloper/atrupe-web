@@ -13,6 +13,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 // Components
 import { OrderItems } from './OrderItems'
+import { OrderFiles } from './OrderFiles'
 import { OrderFinancial } from './Financial'
 import { OrderActions } from './OrderActions'
 import { Topbar } from '@/components/common/Topbar'
@@ -159,6 +160,10 @@ export function Order({ id }: Props) {
             onOpenChange={setEditOrderOpen}
           />
           <OrderItems data={data} />
+          <OrderFiles
+            orderId={data.id}
+            canceled={data?.status === 'CANCELED'}
+          />
           <QuotationDelivery quotationData={data?.quotation} />
           <QuotationPaymentConditions quotationData={data?.quotation} />
           <OrderFinancial data={data} />

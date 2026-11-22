@@ -202,3 +202,128 @@ export async function uploadProductionAttachment({
     return { success: false, message: 'Não foi possível guardar o anexo' }
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Arquivos da O.S. (GP-49): vê quem vê a O.S.; mesmo espaço dos arquivos
+ * ------------------------------------------------------------------------- */
+
+export type OrderFile = {
+  id: string
+  fileName: string
+  size: number
+  mime: string
+  uploadedBy: string
+  uploadedAt: string
+  // Apagado na limpeza do espaço: sem link
+  removedAt: string | null
+  url: string | null
+}
+
+export async function fetchOrderFiles(
+  token: string | null | undefined,
+  orderId: string,
+): Promise<{ files: OrderFile[]; storage: ProductionStorage | null } | null> {
+  if (!token) return null
+  try {
+    const res = await api(token, `/sale/order-file/${orderId}`)
+    return res.ok
+      ? (res.payload as { files: OrderFile[]; storage: ProductionStorage })
+      : null
+  } catch {
+    return null
+  }
+}
+
+export async function deleteOrderFile(
+  token: string | null | undefined,
+  orderId: string,
+  fileId: string,
+): Promise<Result> {
+  if (!token)
+    return { success: false, message: 'Sessão expirada: entre de novo' }
+  const res = await api(token, `/sale/order-file/${orderId}/${fileId}`, {
+    method: 'DELETE',
+  })
+  return res.ok
+    ? { success: true, message: 'Arquivo apagado' }
+    : failure(res.payload, 'Não foi possível apagar o arquivo')
+}
+
+/** Envia um arquivo à O.S.: direto ao armazenamento ou pela API (20 MB). */
+export async function uploadOrderFile({
+  token,
+  orderId,
+  file,
+  storage,
+  onProgress,
+}: {
+  token: string | null | undefined
+  orderId: string
+  file: File
+  storage?: ProductionStorage | null
+  onProgress?: (ratio: number) => void
+}): Promise<Result> {
+  if (!token) {
+    return { success: false, message: 'Sessão expirada: entre de novo' }
+  }
+  const maxBytes = storage?.maxFileBytes ?? ATTACHMENT_MAX_BYTES
+  if (file.size > maxBytes) {
+    return {
+      success: false,
+      code: 'FILE_TOO_LARGE',
+      message: `${file.name} passa de ${formatBytes(maxBytes)}.`,
+    }
+  }
+  try {
+    if (storage?.directUpload) {
+      const link = await api(token, `/sale/order-file/${orderId}/upload-link`, {
+        method: 'POST',
+        body: { fileName: file.name, size: file.size },
+      })
+      if (!link.ok) {
+        return failure(link.payload, 'Não foi possível enviar o arquivo')
+      }
+      const sent = await putFile(
+        link.payload.url,
+        file,
+        link.payload.mime,
+        onProgress,
+      )
+      if (!sent) {
+        return {
+          success: false,
+          message: `${file.name} não chegou ao armazenamento. Envie de novo.`,
+        }
+      }
+      const saved = await api(token, `/sale/order-file/${orderId}/direct`, {
+        method: 'POST',
+        body: {
+          key: link.payload.key,
+          fileName: file.name,
+          mime: file.type || undefined,
+        },
+      })
+      return saved.ok
+        ? { success: true, message: 'Arquivo guardado' }
+        : failure(saved.payload, 'Não foi possível guardar o arquivo')
+    }
+    const base = (await productionUploadBase()).data
+    const form = new FormData()
+    form.append('file', file)
+    const response = await fetch(`${base}/sale/order-file/${orderId}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: form,
+    })
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null)
+      return response.status === 413
+        ? { success: false, message: 'O arquivo passa de 20 MB' }
+        : failure(payload, 'Não foi possível guardar o arquivo')
+    }
+    onProgress?.(1)
+    return { success: true, message: 'Arquivo guardado' }
+  } catch {
+    return { success: false, message: 'Não foi possível guardar o arquivo' }
+  }
+}
