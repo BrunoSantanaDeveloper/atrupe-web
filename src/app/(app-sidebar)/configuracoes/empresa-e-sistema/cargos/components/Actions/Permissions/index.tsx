@@ -168,6 +168,9 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'production.productivity': ['productivity_tracking'],
   'stock.stock': ['stock_control'],
   'stock.invoice_entry': ['invoice_entry'],
+  'stock.purchase_request': ['purchasing'],
+  'stock.purchase': ['purchasing'],
+  'stock.lot': ['purchasing'],
 }
 
 /**
@@ -183,6 +186,9 @@ const DEMO_PERMISSIONS = [
   'production.production',
   'stock.stock',
   'stock.invoice_entry',
+  'stock.purchase_request',
+  'stock.purchase',
+  'stock.lot',
 ]
 
 export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {

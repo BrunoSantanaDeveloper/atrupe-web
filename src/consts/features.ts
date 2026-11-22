@@ -62,6 +62,8 @@ export const FEATURES = {
   STOCK: {
     STOCK_CONTROL: 'stock_control',
     INVOICE_ENTRY: 'invoice_entry',
+    // Compras e lotes (ES-8 a ES-17, 22/11/2026)
+    PURCHASING: 'purchasing',
   },
 
   // Configurações Gerais

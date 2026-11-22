@@ -165,6 +165,20 @@ export const permissionsData = [
         name: 'Entrada de nota',
         key: 'invoice_entry',
       },
+      // Compras e lotes do FULL (ES-8 a ES-17): a solicitação é aberta a
+      // quem produz; cotação e pedido são de quem compra
+      {
+        name: 'Solicitação de material',
+        key: 'purchase_request',
+      },
+      {
+        name: 'Cotação e pedido de compra',
+        key: 'purchase',
+      },
+      {
+        name: 'Lotes',
+        key: 'lot',
+      },
     ],
   },
   {

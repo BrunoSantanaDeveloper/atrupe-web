@@ -19470,5 +19470,509 @@
   "a79c72f128": {
     "es": "El espacio de los archivos de la empresa: lo que ocupa, las OT que más ocupan y la limpieza.",
     "en": "The space used by the company files: what takes it up, the work orders using the most and the cleanup."
+  },
+  "5b97e937ea": {
+    "es": "Cotización retirada",
+    "en": "Quote removed"
+  },
+  "f536354163": {
+    "es": "Entrega pendiente",
+    "en": "Delivery pending"
+  },
+  "ba5b328279": {
+    "es": "Verificación",
+    "en": "Checking"
+  },
+  "935a50b1a5": {
+    "es": "Solicitudes",
+    "en": "Requests"
+  },
+  "f4185e3e2c": {
+    "es": "Nuevo pedido",
+    "en": "New order"
+  },
+  "7a4d6d91f2": {
+    "es": "Proveedor o material",
+    "en": "Supplier or material"
+  },
+  "6e48109104": {
+    "es": "Entrega prevista",
+    "en": "Expected delivery"
+  },
+  "95b81b6a47": {
+    "es": "cuentas por pagar generadas",
+    "en": "accounts payable created"
+  },
+  "a3ce1113ec": {
+    "es": "Ningún pedido aquí.",
+    "en": "No orders here."
+  },
+  "11d8f86f16": {
+    "es": "Nuevo pedido de compra",
+    "en": "New purchase order"
+  },
+  "296fe3f5cc": {
+    "es": "El pedido directo, sin pasar por la solicitud y la cotización.",
+    "en": "A direct order, without going through the request and the quote."
+  },
+  "ee16bf29aa": {
+    "es": "Ítem {valor}",
+    "en": "Item {valor}"
+  },
+  "cbf1843099": {
+    "es": "O describa el ítem",
+    "en": "Or describe the item"
+  },
+  "694f0f80b7": {
+    "es": "Precio unitario",
+    "en": "Unit price"
+  },
+  "9ce286e450": {
+    "es": "Quitar el ítem",
+    "en": "Remove the item"
+  },
+  "6edcd2d05d": {
+    "es": "Un ítem más",
+    "en": "One more item"
+  },
+  "e0bd3688aa": {
+    "es": "Total {total}",
+    "en": "Total {total}"
+  },
+  "a45cab29b4": {
+    "es": "Hacer pedido",
+    "en": "Place order"
+  },
+  "e9b227c0f2": {
+    "es": "Pedido de compra {number} · {supplierName}",
+    "en": "Purchase order {number} · {supplierName}"
+  },
+  "84bce7c41c": {
+    "es": "Motivo: {cancelReason}",
+    "en": "Reason: {cancelReason}"
+  },
+  "2f11b88a8d": {
+    "es": "Precio",
+    "en": "Price"
+  },
+  "fc527f3cff": {
+    "es": "Llegó",
+    "en": "Received"
+  },
+  "e5141c1f55": {
+    "es": "sin material: no entra al inventario",
+    "en": "no material: does not go into stock"
+  },
+  "1219dabe45": {
+    "es": "Llegó de {description}",
+    "en": "Received of {description}"
+  },
+  "908340d743": {
+    "es": "Diferencia de {description}",
+    "en": "Difference in {description}"
+  },
+  "0de856d5a2": {
+    "es": "faltó, dañado…",
+    "en": "missing, damaged…"
+  },
+  "f29f5f8ee8": {
+    "es": "Confirmar entrega",
+    "en": "Confirm delivery"
+  },
+  "bd02b7b822": {
+    "es": "Factura del proveedor (opcional)",
+    "en": "Supplier invoice (optional)"
+  },
+  "82dc1b46cb": {
+    "es": "Sin factura",
+    "en": "No invoice"
+  },
+  "c41983f657": {
+    "es": "Factura {number} · {issueDate} · {total}",
+    "en": "Invoice {number} · {issueDate} · {total}"
+  },
+  "d3d0fcde54": {
+    "es": "Ítems de la factura {number}",
+    "en": "Invoice {number} items"
+  },
+  "df33def443": {
+    "es": "· sin vínculo con material (concilie en Entrada de factura)",
+    "en": "· not linked to a material (match it in Invoice entry)"
+  },
+  "000393bfb4": {
+    "es": "Con la factura, la entrada al inventario es la de ella (el costo real), una sola vez.",
+    "en": "With the invoice, the stock entry is the invoice's (the real cost), only once."
+  },
+  "b8e01d59cf": {
+    "es": "Verificar de nuevo",
+    "en": "Check again"
+  },
+  "1d1e3fd95e": {
+    "es": "Registrar en el inventario",
+    "en": "Add to stock"
+  },
+  "b9770301de": {
+    "es": "Marque los ítems que llegan en rollos o planchas para crear los lotes, con las medidas de cada uno.",
+    "en": "Mark the items that arrive in rolls or sheets to create the lots, with the size of each one."
+  },
+  "639dc08a00": {
+    "es": "Crear lotes de",
+    "en": "Create lots of"
+  },
+  "0b02f81e12": {
+    "es": "Largo (m)",
+    "en": "Length (m)"
+  },
+  "f3e5a61640": {
+    "es": "Primer vencimiento",
+    "en": "First due date"
+  },
+  "73b0097bf2": {
+    "es": "Cada (días)",
+    "en": "Every (days)"
+  },
+  "74f3b4c250": {
+    "es": "Generar cuentas por pagar",
+    "en": "Create accounts payable"
+  },
+  "cdb385fdfd": {
+    "es": "Motivo de la cancelación",
+    "en": "Cancellation reason"
+  },
+  "62592a69e1": {
+    "es": "Cancelar pedido",
+    "en": "Cancel order"
+  },
+  "8b3b7d4eaf": {
+    "es": "Solicitada",
+    "en": "Requested"
+  },
+  "21f5f2013c": {
+    "es": "En cotización",
+    "en": "Being quoted"
+  },
+  "d0feb5a531": {
+    "es": "En pedido",
+    "en": "Ordered"
+  },
+  "c1b6feb079": {
+    "es": "Recibida",
+    "en": "Received"
+  },
+  "d7e1feb175": {
+    "es": "Rollo (ancho × largo)",
+    "en": "Roll (width × length)"
+  },
+  "4f27c7c20c": {
+    "es": "Plancha (ancho × alto)",
+    "en": "Sheet (width × height)"
+  },
+  "3e774f030b": {
+    "es": "Por cantidad",
+    "en": "By quantity"
+  },
+  "7bc540428e": {
+    "es": "Elegir el material",
+    "en": "Choose the material"
+  },
+  "2559dfeb47": {
+    "es": "Buscar material",
+    "en": "Search material"
+  },
+  "275e1a790a": {
+    "es": "Ningún material encontrado.",
+    "en": "No material found."
+  },
+  "1a85de0bce": {
+    "es": "Sin material (describir)",
+    "en": "No material (describe)"
+  },
+  "d7b72cd5bc": {
+    "es": "Elegir",
+    "en": "Choose"
+  },
+  "432afdc290": {
+    "es": "Otro (sin registro)",
+    "en": "Other (not registered)"
+  },
+  "d9798528a1": {
+    "es": "Nombre del proveedor",
+    "en": "Supplier name"
+  },
+  "35fca4cd6f": {
+    "es": "Usted no tiene permiso para ver las compras.",
+    "en": "You don't have permission to view purchases."
+  },
+  "3b438ee42c": {
+    "es": "Solicitud de material, cotización, pedido de compra con verificación y el inventario por lote.",
+    "en": "Material request, quote, purchase order with checking, and stock by lot."
+  },
+  "ce41d6e579": {
+    "es": "Finalizados y cancelados",
+    "en": "Finished and canceled"
+  },
+  "05659945d0": {
+    "es": "Lotes",
+    "en": "Lots"
+  },
+  "8a9c7d44cf": {
+    "es": "Registrar lote",
+    "en": "Add lot"
+  },
+  "da4eda2ce6": {
+    "es": "Material, proveedor, color",
+    "en": "Material, supplier, color"
+  },
+  "7530a3cd73": {
+    "es": "Lote",
+    "en": "Lot"
+  },
+  "89ad383ec5": {
+    "es": "Saldo actual",
+    "en": "Current balance"
+  },
+  "127a1d5d4b": {
+    "es": "Valor del saldo",
+    "en": "Balance value"
+  },
+  "29a4eb2920": {
+    "es": "Ningún lote aquí.",
+    "en": "No lots here."
+  },
+  "28cd6d7caf": {
+    "es": "El rollo o la plancha que ya está en el inventario. Lo que llega por el pedido de compra ya entra con los lotes.",
+    "en": "The roll or sheet already in stock. What arrives through a purchase order comes in with its lots."
+  },
+  "5bb2b1e85a": {
+    "es": "Costo del lote",
+    "en": "Lot cost"
+  },
+  "0e627e0ed9": {
+    "es": "Es una compra nueva: sumar al saldo del inventario",
+    "en": "It is a new purchase: add to the stock balance"
+  },
+  "3cf7bbe3c9": {
+    "es": "Lote {code} · {material}",
+    "en": "Lot {code} · {material}"
+  },
+  "ad56c7f83e": {
+    "es": "· entró el",
+    "en": "· came in on"
+  },
+  "413a5093e6": {
+    "es": "{unitCost} por {unit} · saldo {currentValue}",
+    "en": "{unitCost} per {unit} · balance {currentValue}"
+  },
+  "6deee8fc86": {
+    "es": "Dar de baja",
+    "en": "Write off"
+  },
+  "2c752db578": {
+    "es": "Abrir lote",
+    "en": "Open lot"
+  },
+  "69f7f0c382": {
+    "es": "Metros usados",
+    "en": "Meters used"
+  },
+  "602bc7db11": {
+    "es": "Medir el sobrante",
+    "en": "Measure the leftover"
+  },
+  "5b6ce96d4c": {
+    "es": "Metros que salieron",
+    "en": "Meters used"
+  },
+  "fd6c940bb0": {
+    "es": "Ancho que sobró (m)",
+    "en": "Leftover width (m)"
+  },
+  "6e006db3b6": {
+    "es": "Largo que sobró (m)",
+    "en": "Leftover length (m)"
+  },
+  "5eee833f55": {
+    "es": "Cuánto salió ({unit})",
+    "en": "How much was used ({unit})"
+  },
+  "fcc2552621": {
+    "es": "OT, trabajo",
+    "en": "Work order, job"
+  },
+  "b85ac416e7": {
+    "es": "Registrar baja",
+    "en": "Record write-off"
+  },
+  "c6e9d37c8a": {
+    "es": "Dividir el lote",
+    "en": "Split the lot"
+  },
+  "39e024a11f": {
+    "es": "Cortar",
+    "en": "Cut"
+  },
+  "59e85d853f": {
+    "es": "Un pedazo del largo",
+    "en": "A piece of the length"
+  },
+  "0985493927": {
+    "es": "Una franja del ancho",
+    "en": "A strip of the width"
+  },
+  "f52669592c": {
+    "es": "Una cantidad",
+    "en": "A quantity"
+  },
+  "dc88271c52": {
+    "es": "Metros",
+    "en": "Meters"
+  },
+  "5c86d790a3": {
+    "es": "Dividir",
+    "en": "Split"
+  },
+  "e232bf3458": {
+    "es": "Finalizar lote",
+    "en": "Finish lot"
+  },
+  "d8c1fcbb32": {
+    "es": "Motivo para cancelar",
+    "en": "Reason to cancel"
+  },
+  "df5bc118cd": {
+    "es": "Cancelar lote",
+    "en": "Cancel lot"
+  },
+  "a4196242b9": {
+    "es": "Usted no tiene permiso para ver los lotes.",
+    "en": "You don't have permission to view lots."
+  },
+  "bcd3132beb": {
+    "es": "Abiertas",
+    "en": "Open"
+  },
+  "1b527148bf": {
+    "es": "Solicitudes de material",
+    "en": "Material requests"
+  },
+  "46eaf07d34": {
+    "es": "Nueva solicitud",
+    "en": "New request"
+  },
+  "f8e0d98bbb": {
+    "es": "Material o quién pidió",
+    "en": "Material or requester"
+  },
+  "efdd6c825f": {
+    "es": "Solo las mías",
+    "en": "Only mine"
+  },
+  "ec2507d282": {
+    "es": "Cerrar pedido ({chosenCount})",
+    "en": "Close order ({chosenCount})"
+  },
+  "d39de57e12": {
+    "es": "Para cuándo",
+    "en": "Needed by"
+  },
+  "8041c98dc8": {
+    "es": "Quién pidió",
+    "en": "Requested by"
+  },
+  "938ffb7765": {
+    "es": "Cotizaciones",
+    "en": "Quotes"
+  },
+  "9315fec5bd": {
+    "es": "Ninguna solicitud aquí.",
+    "en": "No requests here."
+  },
+  "5d361eef55": {
+    "es": "Nueva solicitud de material",
+    "en": "New material request"
+  },
+  "c0300a9067": {
+    "es": "Queda registrado quién pidió, qué y cuándo.",
+    "en": "It records who asked, for what and when."
+  },
+  "73e5bcc2f4": {
+    "es": "O describa lo que necesita",
+    "en": "Or describe what you need"
+  },
+  "1d6055329d": {
+    "es": "un, m², caja",
+    "en": "pc, m², box"
+  },
+  "3c076825c1": {
+    "es": "Solicitar",
+    "en": "Request"
+  },
+  "97a15ab7b0": {
+    "es": "Solicitud {number} · {description}",
+    "en": "Request {number} · {description}"
+  },
+  "2bd282af9a": {
+    "es": "· pedida por",
+    "en": "· requested by"
+  },
+  "97b38031ab": {
+    "es": "Elegir {supplierName}",
+    "en": "Choose {supplierName}"
+  },
+  "e054a91512": {
+    "es": "entrega en {deliveryDays} día(s)",
+    "en": "delivery in {deliveryDays} day(s)"
+  },
+  "2e8ced3920": {
+    "es": "válida hasta {validUntil}",
+    "en": "valid until {validUntil}"
+  },
+  "f6d09933ba": {
+    "es": "Se volvió pedido",
+    "en": "Became an order"
+  },
+  "98c188a684": {
+    "es": "Todavía sin cotización.",
+    "en": "No quote yet."
+  },
+  "e1abdb6f08": {
+    "es": "Elija una cotización y use &quot;Cerrar pedido&quot; en la lista: las elegidas se vuelven un pedido por proveedor.",
+    "en": "Choose a quote and use &quot;Close order&quot; in the list: the chosen ones become one order per supplier."
+  },
+  "35129b3a38": {
+    "es": "Registrar cotización",
+    "en": "Add quote"
+  },
+  "c8ec836a15": {
+    "es": "Precio por",
+    "en": "Price per"
+  },
+  "cc65842e98": {
+    "es": "Entrega (días)",
+    "en": "Delivery (days)"
+  },
+  "1d27639669": {
+    "es": "Válida hasta",
+    "en": "Valid until"
+  },
+  "9a4d19bce0": {
+    "es": "Ej.: 30/60 días",
+    "en": "E.g.: 30/60 days"
+  },
+  "5ed0e6bb32": {
+    "es": "Cancelar solicitud",
+    "en": "Cancel request"
+  },
+  "dd3c55d0b4": {
+    "es": "Cerrar pedido",
+    "en": "Close order"
+  },
+  "f7088c50ba": {
+    "es": "{valor} cotización(es) elegida(s). Sale un pedido por proveedor, y las solicitudes pasan a &quot;En pedido&quot;.",
+    "en": "{valor} quote(s) chosen. One order per supplier is created, and the requests move to &quot;Ordered&quot;."
+  },
+  "a6917f88f0": {
+    "es": "Usted no tiene permiso para ver las solicitudes de material.",
+    "en": "You don't have permission to view material requests."
   }
 }
