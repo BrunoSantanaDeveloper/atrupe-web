@@ -14,9 +14,21 @@
 // - Feriado e dia sem expediente: a agenda deixa agendar, mas fica em
 //   vermelho (GP-49).
 // - O gerenciador sem expediente usa o da empresa (GP-49).
+// - A manutenção que bloqueia a agenda (GP-49 item 6): a sequência da
+//   máquina pula o período; o agendado à mão dentro dele fica em vermelho.
 
 import type { LiveSchedule, ManagerHours, TaskView } from './manager'
 import type { ProductionCalendar } from '@/actions/production-manager'
+
+// A manutenção do patrimônio que bloqueia a máquina (GP-49 item 6)
+export type MaintenanceBlock = {
+  costId: string
+  name: string
+  machine: string
+  date: string
+  start: string
+  minutes: number
+}
 
 // O dia é feriado ou não é de trabalho (GP-49)
 export type DayOff = 'HOLIDAY' | 'NO_WORK' | null
@@ -34,6 +46,8 @@ export type Forecast = {
   dayExcess: number
   // O dia é feriado ou não é de trabalho (GP-49)
   offDay: DayOff
+  // Cai na manutenção da máquina: o nome dela (GP-49 item 6)
+  maintenance?: string | null
 }
 
 const weekdayOf = (day: string) => new Date(`${day}T12:00:00Z`).getUTCDay()
@@ -102,6 +116,8 @@ export function forecastQueue(
     nowMinutes: number
     // O expediente da empresa: o padrão e os feriados
     calendar?: ProductionCalendar
+    // As manutenções que bloqueiam as máquinas
+    maintenance?: MaintenanceBlock[]
   },
 ): Map<string, Forecast> {
   const { intervalMinutes, liveSchedule, today, nowMinutes, calendar } = options
@@ -187,9 +203,25 @@ export function forecastQueue(
       }
       return { begin, finish, overBreak, crosses }
     }
-    const real = span(Math.max(planned, cursor), cursor > planned)
+    // A manutenção da máquina naquele dia: a sequência pula o período
+    const blocks = (options.maintenance || [])
+      .filter((block) => block.date === day && block.machine === task.machine)
+      .map((block) => ({
+        name: block.name,
+        from: toMinutes(block.start),
+        to: toMinutes(block.start) + block.minutes,
+      }))
+    const hit = (begin: number, finish: number) =>
+      blocks.find((block) => begin < block.to && finish > block.from)
+    let real = span(Math.max(planned, cursor), cursor > planned)
+    for (let guard = 0; guard < blocks.length; guard++) {
+      const block = hit(real.begin, real.finish)
+      if (!block) break
+      real = span(block.to, true)
+    }
     // Reagenda: mostra o horário novo; só avisa: o agendado, com o atraso
     const shown = liveSchedule === 'RESCHEDULE' ? real : span(planned, false)
+    const inMaintenance = hit(shown.begin, shown.finish)?.name ?? null
 
     const off = dayOff(day, calendar)
     result.set(task.id, {
@@ -200,6 +232,7 @@ export function forecastQueue(
       offDay: off,
       breakExcess: shown.overBreak,
       dayExcess: Math.max(0, shown.finish - workEnd),
+      maintenance: inMaintenance,
     })
 
     const after = real.finish + intervalMinutes

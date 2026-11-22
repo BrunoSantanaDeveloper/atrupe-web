@@ -2,6 +2,7 @@
 
 // React / Next
 import { InfoHint } from '@/components/common/InfoHint'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useEffect, useState } from 'react'
 
 // UI
@@ -34,6 +35,8 @@ import {
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { assetUnitShort, costNatureOptions } from '@/consts/assets'
+import { FEATURES } from '@/consts/features'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Third-party
 import { toast } from 'sonner'
@@ -72,6 +75,12 @@ export function CostModal({
   const [accountId, setAccountId] = useState('none')
   const [setupId, setSetupId] = useState('')
   const [lastOccurrence, setLastOccurrence] = useState('')
+  // A manutenção que bloqueia a agenda da máquina (GP-49 item 6, ELITE)
+  const { hasFeature } = usePlanFeatures()
+  const canBlock = hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+  const [blocksSchedule, setBlocksSchedule] = useState(false)
+  const [blockStart, setBlockStart] = useState('08:00')
+  const [blockMinutes, setBlockMinutes] = useState('60')
 
   // Ao abrir para editar, os campos vêm do custo
   useEffect(() => {
@@ -83,6 +92,9 @@ export function CostModal({
     setAccountId(editing.financialNatureId || 'none')
     setSetupId(editing.setupId || '')
     setLastOccurrence(editing.lastOccurrence || '')
+    setBlocksSchedule(editing.blocksSchedule)
+    setBlockStart(editing.blockStart || '08:00')
+    setBlockMinutes(String(editing.blockMinutes || 60))
   }, [open, editing])
 
   // A conta é uma subcategoria de despesa do plano de contas (P-17)
@@ -126,6 +138,11 @@ export function CostModal({
         financialNatureId: accountId === 'none' ? null : accountId,
         lastOccurrence: lastOccurrence || null,
         setupId: isSetup ? setupId || null : null,
+        ...(canBlock && {
+          blocksSchedule: isFixed && blocksSchedule,
+          blockStart,
+          blockMinutes: Number(blockMinutes) || null,
+        }),
       }
       return editing
         ? updateAssetCost({
@@ -268,6 +285,63 @@ export function CostModal({
               onChange={(event) => setLastOccurrence(event.target.value)}
             />
           </div>
+
+          {canBlock && isFixed && (
+            <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+              <label className="flex items-center gap-2 text-sm font-medium">
+                <Checkbox
+                  checked={blocksSchedule}
+                  onCheckedChange={(value) => setBlocksSchedule(value === true)}
+                />
+                Bloqueia a agenda da máquina
+                <InfoHint title="Manutenção na agenda">
+                  <p>
+                    Na próxima data (a última ocorrência mais a periodicidade),
+                    a fila do setor não põe trabalho na máquina nesse horário.
+                  </p>
+                </InfoHint>
+              </label>
+              {blocksSchedule && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="cost-block-start"
+                      className="text-sm font-medium"
+                    >
+                      Início
+                    </label>
+                    <Input
+                      id="cost-block-start"
+                      type="time"
+                      value={blockStart}
+                      onChange={(event) => setBlockStart(event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="cost-block-minutes"
+                      className="text-sm font-medium"
+                    >
+                      Duração (min)
+                    </label>
+                    <Input
+                      id="cost-block-minutes"
+                      type="number"
+                      min={1}
+                      value={blockMinutes}
+                      onChange={(event) => setBlockMinutes(event.target.value)}
+                    />
+                  </div>
+                  {!lastOccurrence && (
+                    <p className="col-span-2 text-xs text-warning-700">
+                      Informe a última ocorrência para o sistema saber a próxima
+                      data.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="rounded-lg border border-gray-200 p-3">
             <p className="text-sm text-gray">Custo mensal estimado</p>

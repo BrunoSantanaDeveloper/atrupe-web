@@ -19386,5 +19386,25 @@
   "a1828b661e": {
     "es": "Ninguna tarea agendada tiene persona asignada en los próximos días.",
     "en": "No scheduled task has a person assigned in the coming days."
+  },
+  "ea0910bb06": {
+    "es": "Bloquea la agenda de la máquina",
+    "en": "Blocks the machine schedule"
+  },
+  "d2e62eada6": {
+    "es": "Mantenimiento en la agenda",
+    "en": "Maintenance on the schedule"
+  },
+  "95230a7c4e": {
+    "es": "En la próxima fecha (la última ocurrencia más la periodicidad), la cola del sector no pone trabajo en la máquina en ese horario.",
+    "en": "On the next date (the last occurrence plus the interval), the department queue puts no work on the machine during that time."
+  },
+  "600812c4ff": {
+    "es": "Informe la última ocurrencia para que el sistema sepa la próxima fecha.",
+    "en": "Enter the last occurrence so the system knows the next date."
+  },
+  "e3338bbdc2": {
+    "es": "en mantenimiento ({maintenance})",
+    "en": "during maintenance ({maintenance})"
   }
 }

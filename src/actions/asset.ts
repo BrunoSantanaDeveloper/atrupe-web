@@ -195,6 +195,9 @@ const toRecord = (record: ApiRecord): AssetRecord => ({
     financialNatureId: cost.financialNatureId ?? null,
     chartAccount: cost.chartAccount ?? null,
     lastOccurrence: dateOf(cost.lastOccurrence),
+    blocksSchedule: !!cost.blocksSchedule,
+    blockStart: cost.blockStart ?? null,
+    blockMinutes: cost.blockMinutes ?? null,
     monthlyCost: cost.monthlyCost ?? 0,
     setupId: cost.setupId ?? null,
   })),
@@ -283,6 +286,11 @@ const costBody = (
   }),
   ...(cost.lastOccurrence !== undefined && {
     lastOccurrence: dateOf(cost.lastOccurrence),
+  }),
+  ...(cost.blocksSchedule !== undefined && {
+    blocksSchedule: cost.blocksSchedule,
+    blockStart: cost.blocksSchedule ? cost.blockStart || null : null,
+    blockMinutes: cost.blocksSchedule ? cost.blockMinutes || null : null,
   }),
 })
 

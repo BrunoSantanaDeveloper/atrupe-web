@@ -38,6 +38,7 @@ import { duration, TaskDetailDialog } from './TaskDetailDialog'
 import {
   today,
   dayLabel,
+  endTime,
   taskMatches,
   urgentFirst,
   BoardSkeleton,
@@ -353,6 +354,7 @@ export function SectorScreen({ id }: { id: string }) {
       today: today(),
       nowMinutes: now.getHours() * 60 + now.getMinutes(),
       calendar: board?.calendar,
+      maintenance: board?.maintenance,
     })
   }, [tasks, board])
 
@@ -374,15 +376,27 @@ export function SectorScreen({ id }: { id: string }) {
           },
           ...queue.days.map(({ day, tasks: inDay }) => {
             const off = dayOff(day, board?.calendar)
+            // A manutenção das máquinas do setor naquele dia (GP-49 item 6)
+            const machines = new Set(inDay.map((item) => item.machine))
+            const stops = (board?.maintenance || [])
+              .filter(
+                (block) => block.date === day && machines.has(block.machine),
+              )
+              .map(
+                (block) =>
+                  `${block.machine} em manutenção das ${block.start} às ${endTime(block.start, block.minutes)} (${block.name})`,
+              )
+            const offHint = off
+              ? off === 'HOLIDAY'
+                ? 'Feriado: dá para agendar, mas o dia fica em vermelho.'
+                : 'Dia sem expediente: dá para agendar, mas fica em vermelho.'
+              : ''
             return {
               key: day,
               title: day === today() ? 'Hoje' : dayLabel(day),
               alert: !!off,
-              hint: off
-                ? off === 'HOLIDAY'
-                  ? 'Feriado: dá para agendar, mas o dia fica em vermelho.'
-                  : 'Dia sem expediente: dá para agendar, mas fica em vermelho.'
-                : undefined,
+              hint:
+                [offHint, ...stops].filter(Boolean).join(' · ') || undefined,
               minutes: inDay.reduce(
                 (sum, item) => sum + (item.schedule?.minutes || 0),
                 0,

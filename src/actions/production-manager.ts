@@ -246,6 +246,15 @@ export const getManagerBoard = async ({ managerId }: { managerId: string }) => {
     taskTypes: (res.data.taskTypes || []) as TaskType[],
     vehicles: (res.data.vehicles || []).map(toVehicle) as Vehicle[],
     calendar: toCalendar(res.data.manager?.calendar),
+    // As manutenções que bloqueiam as máquinas (GP-49 item 6)
+    maintenance: (res.data.maintenance || []) as {
+      costId: string
+      name: string
+      machine: string
+      date: string
+      start: string
+      minutes: number
+    }[],
   })
 }
 

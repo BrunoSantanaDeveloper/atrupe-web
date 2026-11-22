@@ -52,6 +52,10 @@ export type AssetCostItem = {
   financialNatureId: string | null
   chartAccount: string | null
   lastOccurrence: string | null
+  // A manutenção que bloqueia a agenda da máquina (GP-49 item 6, ELITE)
+  blocksSchedule: boolean
+  blockStart: string | null
+  blockMinutes: number | null
   monthlyCost: number
   setupId: string | null
 }
@@ -181,6 +185,10 @@ export type AssetCostValues = {
   yieldAmount: number
   financialNatureId: string | null
   lastOccurrence: string | null
+  // A manutenção que bloqueia a agenda da máquina (GP-49 item 6, ELITE)
+  blocksSchedule?: boolean
+  blockStart?: string | null
+  blockMinutes?: number | null
   // Obrigatória no variável da configuração produtiva
   setupId: string | null
 }

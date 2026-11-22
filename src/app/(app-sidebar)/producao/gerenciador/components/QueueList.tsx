@@ -348,6 +348,11 @@ function ForecastCell({
             {excess(forecast.breakExcess)} no intervalo
           </span>
         )}
+        {forecast.maintenance && (
+          <span className="font-medium text-error-700">
+            na manutenção ({forecast.maintenance})
+          </span>
+        )}
         {forecast.offDay && (
           <span className="font-medium text-error-700">
             {forecast.offDay === 'HOLIDAY' ? 'feriado' : 'dia sem expediente'}
