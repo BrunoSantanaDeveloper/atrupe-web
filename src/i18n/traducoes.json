@@ -19026,5 +19026,153 @@
   "2ba2d9af10": {
     "es": "{name} no llegó al almacenamiento. Envíelo de nuevo.",
     "en": "{name} did not reach storage. Send it again."
+  },
+  "7aa57099a5": {
+    "es": "Solo avisa",
+    "en": "Warn only"
+  },
+  "514fc69a15": {
+    "es": "Reprograma y avisa",
+    "en": "Reschedule and warn"
+  },
+  "52b7587efe": {
+    "es": "Tiempo después de terminar (min)",
+    "en": "Wait after completion (min)"
+  },
+  "24f0ca4182": {
+    "es": "Tiempo después de terminar",
+    "en": "Wait after completion"
+  },
+  "22442ea659": {
+    "es": "La espera después de terminar antes de que empiece la etapa siguiente, como el secado de la impresión antes del acabado.",
+    "en": "The wait after completion before the next stage starts, like letting a print dry before finishing."
+  },
+  "0ff2ab42d3": {
+    "es": "Entra en la previsión de entrega. Sin espera, deje cero.",
+    "en": "Counts toward the delivery forecast. With no wait, leave zero."
+  },
+  "96ccb17a57": {
+    "es": "Horario del gestor",
+    "en": "Manager working hours"
+  },
+  "9bbb3ed2b0": {
+    "es": "El horario de este sector. La fila prevé el inicio y el fin de cada trabajo con él, y lo que pase del fin queda en rojo.",
+    "en": "This department's hours. The queue forecasts each job's start and end from them, and anything past closing time shows in red."
+  },
+  "a2702a479f": {
+    "es": "En blanco, vale el horario de la empresa. La pausa (almuerzo) es opcional.",
+    "en": "Leave blank to use the company's hours. The break (lunch) is optional."
+  },
+  "86da49af34": {
+    "es": "La máquina sigue trabajando durante la pausa",
+    "en": "The machine keeps running during the break"
+  },
+  "2b1c521055": {
+    "es": "Cuando un trabajo se atrasa",
+    "en": "When a job runs late"
+  },
+  "c6c377f57b": {
+    "es": "Arte",
+    "en": "Artwork"
+  },
+  "08c0f1560c": {
+    "es": "Previsión",
+    "en": "Forecast"
+  },
+  "885a2731a8": {
+    "es": "Cliente y OT",
+    "en": "Customer and WO"
+  },
+  "fe8dc131ce": {
+    "es": "Máquina y calidad",
+    "en": "Machine and quality"
+  },
+  "e156e4eb46": {
+    "es": "{minutes} en el día",
+    "en": "{minutes} for the day"
+  },
+  "25743a4249": {
+    "es": "Arrastre para cambiar el orden",
+    "en": "Drag to reorder"
+  },
+  "955ac37edb": {
+    "es": "Seleccionar {code}",
+    "en": "Select {code}"
+  },
+  "f44c42d508": {
+    "es": "· OT",
+    "en": "· WO"
+  },
+  "48c6b42e26": {
+    "es": "Entrega {due}",
+    "en": "Due {due}"
+  },
+  "1559d42855": {
+    "es": "faltan {valor}",
+    "en": "{valor} left"
+  },
+  "ec4da46ee5": {
+    "es": "Espera {valor}",
+    "en": "Waiting for {valor}"
+  },
+  "62b85adb8a": {
+    "es": "Sin horario",
+    "en": "No time set"
+  },
+  "7684e0e940": {
+    "es": "{breakExcess} en la pausa",
+    "en": "{breakExcess} into the break"
+  },
+  "19b2f2b393": {
+    "es": "{dayExcess} después del horario",
+    "en": "{dayExcess} past closing time"
+  },
+  "2a2ef9a3dc": {
+    "es": "era {start}",
+    "en": "was {start}"
+  },
+  "8774f85d78": {
+    "es": "se atrasa {delayMinutes}",
+    "en": "{delayMinutes} late"
+  },
+  "bd6270fafa": {
+    "es": "Terminadas y canceladas",
+    "en": "Completed and canceled"
+  },
+  "6fe23e70b6": {
+    "es": "Lo pausado continúa por el tiempo que falta.",
+    "en": "Paused jobs resume with the time left."
+  },
+  "c7e55cab06": {
+    "es": "En orden de llegada. Programe el día para entrar en la fila de la máquina.",
+    "en": "In order of arrival. Schedule the day to join the machine's queue."
+  },
+  "e1ca4b1261": {
+    "es": "{failed} terminada(s); {failed2} no se pudieron terminar",
+    "en": "{failed} completed; {failed2} could not be completed"
+  },
+  "83f42ad0f0": {
+    "es": "{valor} tarea(s) terminada(s)",
+    "en": "{valor} task(s) completed"
+  },
+  "9615fcdc3c": {
+    "es": "Orden cambiado",
+    "en": "Order changed"
+  },
+  "15c0482a84": {
+    "es": "por hacer",
+    "en": "to do"
+  },
+  "10f7e7ea58": {
+    "es": "urgente(s)",
+    "en": "urgent"
+  },
+  "306bd58ecc": {
+    "es": "{moved} trabajo(s) avanzaron en la secuencia de la máquina por un atraso. La previsión muestra el horario nuevo y el anterior.",
+    "en": "{moved} job(s) moved down the machine's sequence because of a delay. The forecast shows the new time and the previous one."
+  },
+  "46a876e466": {
+    "es": "{size} seleccionada(s)",
+    "en": "{size} selected"
   }
 }

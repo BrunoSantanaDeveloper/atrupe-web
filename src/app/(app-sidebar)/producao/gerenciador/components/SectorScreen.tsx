@@ -32,6 +32,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { PersonAvatar } from './PersonAvatar'
 import { TaskCard } from './TaskCard'
+import { QueueList, type QueueGroup } from './QueueList'
 import { ProductionFilters } from './GeneralViews'
 import { duration, TaskDetailDialog } from './TaskDetailDialog'
 import {
@@ -46,6 +47,8 @@ import {
 
 // Types
 import type { TaskView, TaskStatus, TaskAction } from '../manager'
+import { NO_HOURS } from '../manager'
+import { forecastQueue, remainingOf } from '../forecast'
 
 // Actions
 import {
@@ -53,6 +56,7 @@ import {
   getViewer,
   startWork,
   actOnTask,
+  scheduleTask,
   getManagerBoard,
 } from '@/actions/production-manager'
 
@@ -78,6 +82,7 @@ import {
   IconPlayerStop,
   IconPlayerPause,
   IconCircleCheck,
+  IconCalendarPlus,
 } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
@@ -85,6 +90,7 @@ import { Icon } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 
 type View = 'quadro' | 'fila'
+type QueueTab = 'a-fazer' | 'concluidos'
 
 const OPEN: TaskStatus[] = ['NOT_STARTED', 'IN_PROGRESS', 'PAUSED', 'PENDING']
 
@@ -102,6 +108,9 @@ export function SectorScreen({ id }: { id: string }) {
   const [period, setPeriod] = useState<Period>('todas')
   const [dragging, setDragging] = useState<string | null>(null)
   const [showClosed, setShowClosed] = useState(false)
+  const [queueTab, setQueueTab] = useState<QueueTab>('a-fazer')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [finishing, setFinishing] = useState(false)
   const isManager = hasPermission(PRODUCTION_MANAGE[0])
 
   const { data: viewerRes } = useQuery({
@@ -287,6 +296,17 @@ export function SectorScreen({ id }: { id: string }) {
             Espera {item.blockedBy || 'a etapa anterior'}
           </span>
         )}
+        {/* Sem agendamento: no lugar da previsão, Agendar (GP-48 item 7) */}
+        {!item.schedule && item.status === 'NOT_STARTED' && (
+          <Button
+            size="sm"
+            variant="neutralOutline"
+            onClick={() => setTaskId(item.id)}
+          >
+            <Icon icon={IconCalendarPlus} size="sm" />
+            Agendar
+          </Button>
+        )}
       </>
     )
   }
@@ -322,6 +342,119 @@ export function SectorScreen({ id }: { id: string }) {
       closed: tasks.filter((item) => !OPEN.includes(item.status)),
     }
   }, [tasks, timeless])
+
+  // A previsão da fila, pela sequência de cada máquina (GP-48 itens 4 e 5)
+  const forecasts = useMemo(() => {
+    const now = new Date()
+    return forecastQueue(tasks, {
+      hours: board?.manager.hours || NO_HOURS,
+      intervalMinutes: board?.manager.intervalMinutes || 0,
+      liveSchedule: board?.manager.liveSchedule || 'WARN',
+      today: today(),
+      nowMinutes: now.getHours() * 60 + now.getMinutes(),
+    })
+  }, [tasks, board])
+
+  const listGroups: QueueGroup[] =
+    queueTab === 'concluidos'
+      ? [
+          {
+            key: 'fechadas',
+            title: 'Concluídas e canceladas',
+            tasks: queue.closed,
+          },
+        ]
+      : [
+          {
+            key: 'andamento',
+            title: 'Em andamento',
+            hint: 'O pausado continua pelo tempo que falta.',
+            tasks: queue.running,
+          },
+          ...queue.days.map(({ day, tasks: inDay }) => ({
+            key: day,
+            title: day === today() ? 'Hoje' : dayLabel(day),
+            minutes: inDay.reduce(
+              (sum, item) => sum + (item.schedule?.minutes || 0),
+              0,
+            ),
+            tasks: inDay,
+            sortable: true,
+          })),
+          {
+            key: 'sem-agenda',
+            title: 'Sem agendamento',
+            hint: 'Na ordem de chegada. Agende o dia para entrar na fila da máquina.',
+            tasks: queue.unscheduled,
+          },
+        ]
+
+  const openTasks = tasks.filter((item) => OPEN.includes(item.status))
+  const totals = {
+    open: openTasks.length,
+    minutes: openTasks.reduce((sum, item) => sum + remainingOf(item), 0),
+    urgent: openTasks.filter((item) => item.priority === 'URGENT').length,
+    // Reagenda e avisa: quantos andaram pela sequência (GP-48 item 20)
+    moved: Array.from(forecasts.values()).filter(
+      (forecast) => forecast.delayMinutes > 0,
+    ).length,
+  }
+
+  const select = (taskIdToSelect: string, checked: boolean) =>
+    setSelected((current) => {
+      const next = new Set(current)
+      if (checked) next.add(taskIdToSelect)
+      else next.delete(taskIdToSelect)
+      return next
+    })
+
+  // Concluir em lote (GP-48 item 10): cada uma pela ação de concluir
+  const finishSelected = async () => {
+    const chosen = (board?.tasks || []).filter(
+      (item) => selected.has(item.id) && OPEN.includes(item.status),
+    )
+    setFinishing(true)
+    let failed = 0
+    for (const item of chosen) {
+      const res = await actOnTask({
+        id: item.id,
+        action: 'FINISH',
+        collaboratorId: meFor(item),
+      })
+      if (!res.success) failed += 1
+    }
+    setFinishing(false)
+    setSelected(new Set())
+    if (failed) {
+      toast.error(
+        `${chosen.length - failed} concluída(s); ${failed} não puderam ser concluídas`,
+      )
+    } else {
+      toast.success(`${chosen.length} tarefa(s) concluída(s)`)
+    }
+    await refresh()
+  }
+
+  // Arrastar troca as vagas: os horários ficam, os trabalhos trocam (item 6)
+  const swapSlots = async (dragged: TaskView, target: TaskView) => {
+    if (!dragged.schedule || !target.schedule) return
+    const [a, b] = await Promise.all([
+      scheduleTask({
+        id: dragged.id,
+        schedule: { ...dragged.schedule, start: target.schedule.start },
+      }),
+      scheduleTask({
+        id: target.id,
+        schedule: { ...target.schedule, start: dragged.schedule.start },
+      }),
+    ])
+    if (!a.success || !b.success) {
+      toast.error(a.success ? b.message : a.message)
+    } else {
+      toast.success('Ordem trocada')
+    }
+    await refresh()
+  }
 
   const section = (title: string, items: TaskView[], hint?: string) => (
     <Card key={title}>
@@ -438,28 +571,86 @@ export function SectorScreen({ id }: { id: string }) {
               </>
             ) : (
               <>
-                {section(
-                  'Em andamento',
-                  queue.running,
-                  'O relógio corre em quem está na tarefa; pausar ou abrir pendência para o tempo.',
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <Tabs
+                    value={queueTab}
+                    variant="pill"
+                    onValueChange={(value) => {
+                      setQueueTab(value as QueueTab)
+                      setSelected(new Set())
+                    }}
+                  >
+                    <TabsList>
+                      <TabsTrigger value="a-fazer">A fazer</TabsTrigger>
+                      <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                  <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
+                    <span>
+                      <strong className="font-semibold text-gray-900">
+                        {totals.open}
+                      </strong>{' '}
+                      a fazer
+                    </span>
+                    <span>
+                      <strong className="font-semibold text-gray-900">
+                        {duration(totals.minutes)}
+                      </strong>{' '}
+                      previstas
+                    </span>
+                    {totals.urgent > 0 && (
+                      <span className="text-error-700">
+                        <strong className="font-semibold">
+                          {totals.urgent}
+                        </strong>{' '}
+                        urgente(s)
+                      </span>
+                    )}
+                  </p>
+                </div>
+                {board.manager.liveSchedule === 'RESCHEDULE' &&
+                  totals.moved > 0 && (
+                    <p className="rounded-lg border border-warning-200 bg-warning-25 px-4 py-2 text-sm text-warning-800">
+                      {totals.moved} trabalho(s) andaram na sequência da máquina
+                      por causa de um atraso. A previsão mostra o horário novo e
+                      o que era antes.
+                    </p>
+                  )}
+                {selected.size > 0 && (
+                  <div className="flex flex-wrap items-center gap-3 rounded-lg border border-brand-200 bg-brand-25 px-4 py-2">
+                    <span className="text-sm text-gray-800">
+                      {selected.size} selecionada(s)
+                    </span>
+                    <Button
+                      size="sm"
+                      isLoading={finishing}
+                      onClick={finishSelected}
+                    >
+                      <Icon icon={IconCircleCheck} size="sm" />
+                      Concluir {selected.size}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="neutralOutline"
+                      onClick={() => setSelected(new Set())}
+                    >
+                      Limpar seleção
+                    </Button>
+                  </div>
                 )}
-                {queue.days.map(({ day, tasks: inDay }) =>
-                  section(
-                    day === today() ? 'Hoje' : dayLabel(day),
-                    inDay,
-                    day === today()
-                      ? 'Na ordem do horário agendado.'
-                      : undefined,
-                  ),
-                )}
-                {section(
-                  'Sem agendamento',
-                  queue.unscheduled,
-                  'Abra a tarefa para agendar: dia, início e duração.',
-                )}
+                <QueueList
+                  groups={listGroups}
+                  forecasts={forecasts}
+                  selected={selected}
+                  onSelect={select}
+                  onOpen={setTaskId}
+                  actions={actions}
+                  onReorder={queueTab === 'a-fazer' ? swapSlots : undefined}
+                  showForecast={queueTab === 'a-fazer'}
+                />
               </>
             )}
-            {queue.closed.length > 0 && (
+            {timeless && queue.closed.length > 0 && (
               <div className="space-y-3">
                 <Button
                   type="button"

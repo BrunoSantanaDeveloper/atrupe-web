@@ -37,7 +37,10 @@ import type {
   Collaborator,
   ProductionFlow,
   ProductionManager,
+  ManagerHours,
+  LiveSchedule,
 } from '@/app/(app-sidebar)/producao/gerenciador/manager'
+import { NO_HOURS } from '@/app/(app-sidebar)/producao/gerenciador/manager'
 
 // Hooks / Store / Consts
 import { usePending } from '@/hooks/usePending'
@@ -69,7 +72,27 @@ export type ManagerValues = {
   flowId: string
   timeMode: TimeMode
   intervalMinutes: number
+  hours: ManagerHours
+  liveSchedule: LiveSchedule
+  afterDoneMinutes: number
 }
+
+const liveScheduleOptions: {
+  value: LiveSchedule
+  text: string
+  help: string
+}[] = [
+  {
+    value: 'WARN',
+    text: 'Só avisa',
+    help: 'Mostra o atraso; quem decide reagenda.',
+  },
+  {
+    value: 'RESCHEDULE',
+    text: 'Reagenda e avisa',
+    help: 'Os trabalhos seguintes da mesma máquina andam sozinhos, e a tela avisa o que mudou.',
+  },
+]
 
 export function ManagerDialog({
   open,
@@ -96,6 +119,9 @@ export function ManagerDialog({
     flowId: '',
     timeMode: withTime ? 'PLAY_STOP' : 'NONE',
     intervalMinutes: 0,
+    hours: NO_HOURS,
+    liveSchedule: 'WARN',
+    afterDoneMinutes: 0,
   })
 
   useEffect(() => {
@@ -106,6 +132,9 @@ export function ManagerDialog({
         flowId: manager?.flowId || flows[0]?.id || '',
         timeMode: manager?.timeMode || (withTime ? 'PLAY_STOP' : 'NONE'),
         intervalMinutes: manager?.intervalMinutes || 0,
+        hours: manager?.hours || NO_HOURS,
+        liveSchedule: manager?.liveSchedule || 'WARN',
+        afterDoneMinutes: manager?.afterDoneMinutes || 0,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -249,6 +278,128 @@ export function ManagerDialog({
               </p>
             )}
           </div>
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5">
+              <Label htmlFor="manager-after-done">
+                Tempo após a conclusão (min)
+              </Label>
+              <InfoHint title="Tempo após a conclusão">
+                <p>
+                  A espera depois de concluir antes da etapa seguinte começar,
+                  como a secagem da impressão antes do acabamento.
+                </p>
+                <p>Entra na previsão da entrega. Sem espera, deixe zero.</p>
+              </InfoHint>
+            </div>
+            <Input
+              id="manager-after-done"
+              type="number"
+              min={0}
+              className="sm:max-w-[200px]"
+              value={values.afterDoneMinutes}
+              onChange={(event) =>
+                setValues((current) => ({
+                  ...current,
+                  afterDoneMinutes: Number(event.target.value) || 0,
+                }))
+              }
+            />
+          </div>
+          {values.timeMode !== 'NONE' && (
+            <>
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <Label>Expediente</Label>
+                  <InfoHint title="Expediente do gerenciador">
+                    <p>
+                      O horário deste setor. A fila prevê o início e o fim de
+                      cada trabalho por ele, e o que passar do fim fica em
+                      vermelho.
+                    </p>
+                    <p>
+                      Em branco, vale o expediente da empresa. O intervalo
+                      (almoço) é opcional.
+                    </p>
+                  </InfoHint>
+                </div>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                  {(
+                    [
+                      ['workStart', 'Início'],
+                      ['workEnd', 'Fim'],
+                      ['breakStart', 'Intervalo de'],
+                      ['breakEnd', 'Intervalo até'],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <div key={field} className="space-y-1">
+                      <Label
+                        htmlFor={`manager-${field}`}
+                        className="text-xs text-gray"
+                      >
+                        {label}
+                      </Label>
+                      <Input
+                        id={`manager-${field}`}
+                        type="time"
+                        value={values.hours[field] || ''}
+                        onChange={(event) =>
+                          setValues((current) => ({
+                            ...current,
+                            hours: {
+                              ...current.hours,
+                              [field]: event.target.value || null,
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <label className="flex items-center gap-2 text-sm text-gray-800">
+                  <Switch
+                    checked={values.hours.runsThroughBreak}
+                    onCheckedChange={(checked) =>
+                      setValues((current) => ({
+                        ...current,
+                        hours: { ...current.hours, runsThroughBreak: checked },
+                      }))
+                    }
+                  />
+                  A máquina segue trabalhando no intervalo
+                </label>
+              </div>
+              <div className="space-y-2">
+                <Label>Quando um trabalho atrasa</Label>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {liveScheduleOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() =>
+                        setValues((current) => ({
+                          ...current,
+                          liveSchedule: option.value,
+                        }))
+                      }
+                      className={cn(
+                        'flex flex-col justify-start rounded-lg border p-3 text-left',
+                        values.liveSchedule === option.value
+                          ? 'border-brand-500 bg-brand-25 ring-1 ring-brand-500'
+                          : 'border-gray-200 hover:border-gray-300',
+                      )}
+                    >
+                      <span className="block text-sm font-medium text-gray-800">
+                        {option.text}
+                      </span>
+                      <span className="block text-xs text-gray">
+                        {option.help}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </DialogBody>
         <DialogFooter>
           <Button

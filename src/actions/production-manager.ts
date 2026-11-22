@@ -21,7 +21,10 @@ import type {
   CollaboratorRole,
   ProductionManager,
   ProductionProject,
+  ManagerHours,
+  LiveSchedule,
 } from '@/app/(app-sidebar)/producao/gerenciador/manager'
+import { NO_HOURS } from '@/app/(app-sidebar)/producao/gerenciador/manager'
 
 // Actions
 import {
@@ -75,6 +78,9 @@ const toManager = (row: Raw): ProductionManager & { sectorId: string } => ({
   flowId: row.flowId || '',
   timeMode: row.timeMode,
   intervalMinutes: row.intervalMinutes ?? 0,
+  hours: { ...NO_HOURS, ...(row.hours || {}) },
+  liveSchedule: row.liveSchedule === 'RESCHEDULE' ? 'RESCHEDULE' : 'WARN',
+  afterDoneMinutes: row.afterDoneMinutes ?? 0,
   users: row.users || [],
   active: row.active ?? true,
 })
@@ -349,6 +355,9 @@ export const saveManager = async ({
     flowId: string
     timeMode: TimeMode
     intervalMinutes: number
+    hours: ManagerHours
+    liveSchedule: LiveSchedule
+    afterDoneMinutes: number
   }
 }) => {
   const sectorId = values.sector ? await sectorIdOf(values.sector) : undefined
@@ -358,6 +367,13 @@ export const saveManager = async ({
     flowId: values.flowId || undefined,
     timeMode: values.timeMode,
     intervalMinutes: Math.max(0, Math.round(values.intervalMinutes || 0)),
+    workStart: values.hours.workStart || null,
+    workEnd: values.hours.workEnd || null,
+    breakStart: values.hours.breakStart || null,
+    breakEnd: values.hours.breakEnd || null,
+    runsThroughBreak: values.hours.runsThroughBreak,
+    liveSchedule: values.liveSchedule,
+    afterDoneMinutes: Math.max(0, Math.round(values.afterDoneMinutes || 0)),
   }
   const res: ApiResult = id
     ? await putItemNew({ route: `/production/manager/${id}`, data })

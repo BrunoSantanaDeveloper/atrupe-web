@@ -24,6 +24,25 @@ export type ManagerUser = {
   onlyAssigned: boolean
 }
 
+export type LiveSchedule = 'WARN' | 'RESCHEDULE'
+
+export type ManagerHours = {
+  workStart: string | null
+  workEnd: string | null
+  breakStart: string | null
+  breakEnd: string | null
+  // A máquina segue trabalhando no intervalo (a impressora); a equipe para
+  runsThroughBreak: boolean
+}
+
+export const NO_HOURS: ManagerHours = {
+  workStart: null,
+  workEnd: null,
+  breakStart: null,
+  breakEnd: null,
+  runsThroughBreak: false,
+}
+
 export type ProductionManager = {
   id: string
   name: string
@@ -36,6 +55,13 @@ export type ProductionManager = {
   // (GP-20): capacidade que se perde, não custo. Quem já embute a troca no
   // preparo deixa zero
   intervalMinutes: number
+  // O expediente do gerenciador (GP-48 item 19): sem início e fim, vale o da
+  // empresa; o intervalo (almoço) é opcional
+  hours: ManagerHours
+  // Agenda viva (item 20): só avisa, ou reagenda em sequência e avisa
+  liveSchedule: LiveSchedule
+  // A espera depois de concluir antes da etapa seguinte, ex.: secagem (item 21)
+  afterDoneMinutes: number
   users: ManagerUser[]
   active: boolean
 }
@@ -184,6 +210,8 @@ export type ProductionTask = {
   estimatedMinutes: number
   setupMinutes: number
   machine: string | null
+  // A qualidade vendida (GP-48 item 22): a configuração da máquina
+  machineQuality?: string | null
   // A tarefa da base, quando esta é acabamento: é o que a regra de liberação
   // olha; e as tarefas de que esta depende de fato
   baseTaskId: string | null
