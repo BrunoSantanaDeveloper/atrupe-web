@@ -1110,9 +1110,11 @@ function NewProductModal({
                                         mostrar em que setor está cada pedido.
                                       </p>
                                       <p>
-                                        No PRO, a composição acima também tem as
-                                        etapas. Por enquanto a Agenda de entrega
-                                        continua lendo esta lista.
+                                        No PRO, a Agenda de entrega e as telas
+                                        dos setores seguem as etapas da
+                                        composição acima. Esta lista vale
+                                        enquanto o produto não tem composição
+                                        liberada.
                                       </p>
                                     </InfoHint>
                                   }

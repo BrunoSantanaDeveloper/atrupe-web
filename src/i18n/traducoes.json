@@ -19354,5 +19354,21 @@
   "0579b95b55": {
     "es": "No fue posible guardar el archivo",
     "en": "Could not save the file"
+  },
+  "b6310b9dea": {
+    "es": "En el PRO, la Agenda de entregas y las pantallas de los sectores siguen las etapas de la composición de arriba. Esta lista vale mientras el producto no tenga la composición liberada.",
+    "en": "On PRO, the Delivery schedule and the department screens follow the stages of the build-up above. This list applies while the product has no released build-up."
+  },
+  "95836a29ca": {
+    "es": "{start} – {minutes}",
+    "en": "{start} – {minutes}"
+  },
+  "a4be055c13": {
+    "es": "Solo el día",
+    "en": "Day only"
+  },
+  "1ee5f8de08": {
+    "es": "Solo el día, sin horario",
+    "en": "Day only, no time"
   }
 }

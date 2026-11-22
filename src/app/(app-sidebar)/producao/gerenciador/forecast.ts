@@ -139,8 +139,9 @@ export function forecastQueue(
         task.schedule.date >= today,
     )
     .sort((a, b) =>
-      `${a.schedule!.date} ${a.schedule!.start}`.localeCompare(
-        `${b.schedule!.date} ${b.schedule!.start}`,
+      // Só o dia vai depois das que têm hora (GP-49)
+      `${a.schedule!.date} ${a.schedule!.start ?? '99:99'}`.localeCompare(
+        `${b.schedule!.date} ${b.schedule!.start ?? '99:99'}`,
       ),
     )
 
@@ -161,7 +162,9 @@ export function forecastQueue(
       cursors.set(key, busy)
     }
     const cursor = cursors.get(key)!
-    const planned = toMinutes(task.schedule!.start)
+    // Só o dia: entra na sequência, a partir do início do expediente
+    const fixed = task.schedule!.start
+    const planned = fixed ? toMinutes(fixed) : Math.max(cursor, workStart)
     const duration = Math.max(
       task.schedule!.minutes || task.estimatedMinutes,
       0,

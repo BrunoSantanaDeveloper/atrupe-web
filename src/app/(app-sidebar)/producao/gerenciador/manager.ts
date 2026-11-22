@@ -238,7 +238,8 @@ export type ProductionTask = {
   }[]
   // Observação de produção deixada na venda (MS-13)
   note: string | null
-  schedule: { date: string; start: string; minutes: number } | null
+  // Sem a hora, agendada só no dia (GP-49)
+  schedule: { date: string; start: string | null; minutes: number } | null
   assigneeId: string | null
   // Impedimento descrito em texto, que sinaliza sem interromper (GP-28)
   pendency: { text: string; at: string; by: string } | null

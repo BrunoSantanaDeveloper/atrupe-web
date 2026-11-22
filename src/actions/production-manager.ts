@@ -163,6 +163,15 @@ export const DEFAULT_CALENDAR: ProductionCalendar = {
 const toCalendar = (row: Raw): ProductionCalendar =>
   row ? { ...DEFAULT_CALENDAR, ...row } : DEFAULT_CALENDAR
 
+/**
+ * O expediente da empresa, só leitura, para a Agenda de entrega pintar o
+ * feriado e o dia sem expediente (GP-49). Sem acesso, o padrão sem feriado.
+ */
+export const getProductionCalendar = async () => {
+  const res: ApiResult = await getItem({ route: '/production/calendar' })
+  return res.success ? toCalendar(res.data) : DEFAULT_CALENDAR
+}
+
 export const getManagerConfig = async () => {
   const res: ApiResult = await getItem({ route: '/production/config' })
   const empty = {
@@ -671,7 +680,12 @@ export const scheduleTask = async ({
   schedule,
 }: {
   id: string
-  schedule: { date: string; start: string; minutes: number } | null
+  // Só o dia (GP-49): start e minutes nulos
+  schedule: {
+    date: string
+    start: string | null
+    minutes: number | null
+  } | null
 }) =>
   done(
     await putItemNew({

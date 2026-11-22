@@ -151,8 +151,9 @@ export function AgendaView({
               .map((task) => (
                 <div key={task.id} className="space-y-1">
                   <p className="text-xs font-medium text-gray-700">
-                    {task.schedule!.start} –{' '}
-                    {endTime(task.schedule!.start, task.schedule!.minutes)}
+                    {task.schedule!.start
+                      ? `${task.schedule!.start} – ${endTime(task.schedule!.start, task.schedule!.minutes)}`
+                      : 'Só o dia'}
                     {task.machine ? ` · ${task.machine}` : ''}
                     {task.vehicleId ? ' · com veículo' : ''}
                   </p>
@@ -213,7 +214,9 @@ export function VehiclesView({
     const [hours, minutes] = time.split(':').map(Number)
     return hours * 60 + minutes
   }
+  // Só o dia não tem hora: não acusa conflito de horário
   const overlaps = (a: TaskView, b: TaskView) => {
+    if (!a.schedule!.start || !b.schedule!.start) return false
     const startA = toMinutes(a.schedule!.start)
     const endA = startA + a.schedule!.minutes
     const startB = toMinutes(b.schedule!.start)
@@ -271,11 +274,9 @@ export function VehiclesView({
                           )}
                         >
                           <span className="font-medium text-gray-800">
-                            {task.schedule!.start} –{' '}
-                            {endTime(
-                              task.schedule!.start,
-                              task.schedule!.minutes,
-                            )}
+                            {task.schedule!.start
+                              ? `${task.schedule!.start} – ${endTime(task.schedule!.start, task.schedule!.minutes)}`
+                              : 'Só o dia'}
                           </span>
                           <SectorIcon name={task.sector} size="sm" />
                           <span className="text-gray-800">

@@ -328,7 +328,7 @@ function ForecastCell({
   if (!forecast) {
     return (
       <span className="text-xs text-gray">
-        {item.schedule ? item.schedule.start : 'Sem horário'}
+        {item.schedule?.start ?? (item.schedule ? 'Só o dia' : 'Sem horário')}
       </span>
     )
   }
@@ -360,8 +360,9 @@ function ForecastCell({
         )}
         {forecast.delayMinutes > 0 && (
           <span className="text-gray">
-            {item.schedule?.start !== hhmm(forecast.start)
-              ? `era ${item.schedule?.start}`
+            {item.schedule?.start &&
+            item.schedule.start !== hhmm(forecast.start)
+              ? `era ${item.schedule.start}`
               : `atrasa ${duration(forecast.delayMinutes)}`}
           </span>
         )}

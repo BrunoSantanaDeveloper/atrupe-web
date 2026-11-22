@@ -48,6 +48,8 @@ import { getDataOld, getItem, updateItem } from '@/actions/_cruds'
 // Libs
 import { cn, truncateString } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
+import { getProductionCalendar } from '@/actions/production-manager'
+import { dayOff } from '@/app/(app-sidebar)/producao/gerenciador/forecast'
 
 // Third-party
 // EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
@@ -109,6 +111,18 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   const canChangeStageStatus = hasFeature(
     FEATURES.PRODUCTS.DELIVERY_STAGE_STATUS_CHANGE,
   )
+
+  // O feriado e o dia sem expediente ficam em vermelho; a agenda continua
+  // editável (GP-49). O expediente é cadastrado do PRO em diante
+  const hasCalendar =
+    hasFeature(FEATURES.PRODUCTION.SECTOR_BOARD) ||
+    hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+  const { data: calendar } = useQuery({
+    staleTime: 5 * 60 * 1000,
+    queryKey: ['production-calendar'],
+    queryFn: getProductionCalendar,
+    enabled: hasCalendar,
+  })
 
   const alertDialog = useAlertDialog()
 
@@ -238,9 +252,25 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                   ) : (
                     deliveryScheduleArray.map((group) => (
                       <Fragment key={group.date}>
-                        <TableGroupRow>
-                          {formatToWeekDate(group?.date)}
-                        </TableGroupRow>
+                        {(() => {
+                          const off = dayOff(
+                            String(group?.date || '').slice(0, 10),
+                            calendar,
+                          )
+                          return (
+                            <TableGroupRow
+                              className={cn(
+                                off && 'bg-error-50 text-error-700',
+                              )}
+                            >
+                              {formatToWeekDate(group?.date)}
+                              {off &&
+                                (off === 'HOLIDAY'
+                                  ? ' · feriado'
+                                  : ' · dia sem expediente')}
+                            </TableGroupRow>
+                          )
+                        })()}
                         {group?.deliveries?.length
                           ? group?.deliveries?.map((deliverySchedule) => {
                               const link = `/vendas/ordens-de-servico/${deliverySchedule?.order?.id}`

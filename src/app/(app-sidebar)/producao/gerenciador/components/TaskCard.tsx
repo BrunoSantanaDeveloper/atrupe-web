@@ -120,7 +120,8 @@ export function TaskCard({
           </span>
           {item.schedule && (
             <span className="text-xs text-gray">
-              {shortDate(item.schedule.date)} {item.schedule.start}
+              {shortDate(item.schedule.date)}{' '}
+              {item.schedule.start ?? 'sem horário'}
             </span>
           )}
           {item.attachments.length > 0 && (

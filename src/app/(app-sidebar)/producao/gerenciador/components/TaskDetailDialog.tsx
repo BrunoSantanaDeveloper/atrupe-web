@@ -34,6 +34,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Icon } from '@/components/ui/icon'
@@ -189,6 +190,8 @@ export function TaskDetailDialog({
     start: '08:00',
     minutes: 60,
   })
+  // Agendar só o dia, sem horário (GP-49)
+  const [dayOnly, setDayOnly] = useState(false)
   const [worker, setWorker] = useState('')
   const { pending, track } = usePending()
   const [pendencyOpen, setPendencyOpen] = useState(false)
@@ -227,13 +230,12 @@ export function TaskDetailDialog({
 
   useEffect(() => {
     if (!task) return
-    setSchedule(
-      task.schedule || {
-        date: new Date().toISOString().slice(0, 10),
-        start: '08:00',
-        minutes: task.estimatedMinutes || 60,
-      },
-    )
+    setSchedule({
+      date: task.schedule?.date || new Date().toISOString().slice(0, 10),
+      start: task.schedule?.start || '08:00',
+      minutes: task.schedule?.minutes || task.estimatedMinutes || 60,
+    })
+    setDayOnly(!!task.schedule && !task.schedule.start)
     setWorker(
       task.assigneeId || viewerCollaboratorId || collaborators[0]?.id || '',
     )
@@ -1074,6 +1076,7 @@ export function TaskDetailDialog({
                       <Input
                         id="task-start"
                         type="time"
+                        disabled={dayOnly}
                         value={schedule.start}
                         onChange={(event) =>
                           setSchedule((current) => ({
@@ -1089,6 +1092,7 @@ export function TaskDetailDialog({
                         id="task-minutes"
                         type="number"
                         min={1}
+                        disabled={dayOnly}
                         value={schedule.minutes}
                         onChange={(event) =>
                           setSchedule((current) => ({
@@ -1099,6 +1103,13 @@ export function TaskDetailDialog({
                       />
                     </div>
                   </div>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <Checkbox
+                      checked={dayOnly}
+                      onCheckedChange={(value) => setDayOnly(value === true)}
+                    />
+                    Só o dia, sem horário
+                  </label>
                   {task.machine && (
                     <p className="text-xs text-gray">
                       Ocupa {task.machine} por {duration(occupies)}: preparo de{' '}
@@ -1111,11 +1122,23 @@ export function TaskDetailDialog({
                       type="button"
                       size="sm"
                       variant="neutralOutline"
-                      disabled={!schedule.date || !schedule.minutes}
+                      disabled={
+                        !schedule.date || (!dayOnly && !schedule.minutes)
+                      }
                       onClick={() =>
                         run(
                           'schedule',
-                          () => scheduleTask({ id: task.id, schedule }),
+                          () =>
+                            scheduleTask({
+                              id: task.id,
+                              schedule: dayOnly
+                                ? {
+                                    date: schedule.date,
+                                    start: null,
+                                    minutes: null,
+                                  }
+                                : schedule,
+                            }),
                           'Tarefa agendada',
                         )
                       }
