@@ -11,8 +11,15 @@
 //   começa no turno seguinte. A equipe para no intervalo: o trabalho que o
 //   cruza termina mais tarde.
 // - O que começa fora do expediente ou passa do fim do dia fica em vermelho.
+// - Feriado e dia sem expediente: a agenda deixa agendar, mas fica em
+//   vermelho (GP-49).
+// - O gerenciador sem expediente usa o da empresa (GP-49).
 
 import type { LiveSchedule, ManagerHours, TaskView } from './manager'
+import type { ProductionCalendar } from '@/actions/production-manager'
+
+// O dia é feriado ou não é de trabalho (GP-49)
+export type DayOff = 'HOLIDAY' | 'NO_WORK' | null
 
 export type Forecast = {
   start: number
@@ -25,7 +32,37 @@ export type Forecast = {
   breakExcess: number
   // O que passa do fim do expediente
   dayExcess: number
+  // O dia é feriado ou não é de trabalho (GP-49)
+  offDay: DayOff
 }
+
+const weekdayOf = (day: string) => new Date(`${day}T12:00:00Z`).getUTCDay()
+
+/** O dia fora do expediente da empresa: feriado ou dia sem trabalho. */
+export const dayOff = (
+  day: string,
+  calendar?: Pick<ProductionCalendar, 'workDays' | 'holidays'>,
+): DayOff => {
+  if (!calendar) return null
+  if (calendar.holidays.includes(day)) return 'HOLIDAY'
+  if (!calendar.workDays.includes(weekdayOf(day))) return 'NO_WORK'
+  return null
+}
+
+/** O expediente que vale: o do gerenciador; sem ele, o da empresa. */
+export const effectiveHours = (
+  hours: ManagerHours,
+  calendar?: ProductionCalendar,
+): ManagerHours =>
+  hours.workStart || !calendar
+    ? hours
+    : {
+        workStart: calendar.startTime,
+        workEnd: calendar.endTime,
+        breakStart: hours.breakStart || calendar.breakStart,
+        breakEnd: hours.breakStart ? hours.breakEnd : calendar.breakEnd,
+        runsThroughBreak: hours.runsThroughBreak,
+      }
 
 const DEFAULT_START = '08:00'
 const DEFAULT_END = '18:00'
@@ -63,9 +100,12 @@ export function forecastQueue(
     today: string
     // Minutos do dia agora
     nowMinutes: number
+    // O expediente da empresa: o padrão e os feriados
+    calendar?: ProductionCalendar
   },
 ): Map<string, Forecast> {
-  const { hours, intervalMinutes, liveSchedule, today, nowMinutes } = options
+  const { intervalMinutes, liveSchedule, today, nowMinutes, calendar } = options
+  const hours = effectiveHours(options.hours, calendar)
   const workStart = toMinutes(hours.workStart || DEFAULT_START)
   const workEnd = toMinutes(hours.workEnd || DEFAULT_END)
   const breakStart = hours.breakStart ? toMinutes(hours.breakStart) : null
@@ -85,6 +125,7 @@ export function forecastQueue(
       outside: false,
       breakExcess: 0,
       dayExcess: Math.max(0, end - workEnd),
+      offDay: null,
     })
     const key = machineKey(task)
     busyUntil.set(key, Math.max(busyUntil.get(key) ?? 0, end))
@@ -147,11 +188,13 @@ export function forecastQueue(
     // Reagenda: mostra o horário novo; só avisa: o agendado, com o atraso
     const shown = liveSchedule === 'RESCHEDULE' ? real : span(planned, false)
 
+    const off = dayOff(day, calendar)
     result.set(task.id, {
       start: shown.begin,
       end: shown.finish,
       delayMinutes: Math.max(0, real.begin - planned),
-      outside: shown.begin < workStart || shown.begin >= workEnd,
+      outside: !!off || shown.begin < workStart || shown.begin >= workEnd,
+      offDay: off,
       breakExcess: shown.overBreak,
       dayExcess: Math.max(0, shown.finish - workEnd),
     })

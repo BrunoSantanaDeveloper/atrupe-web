@@ -41,6 +41,7 @@ import type {
   LiveSchedule,
 } from '@/app/(app-sidebar)/producao/gerenciador/manager'
 import { NO_HOURS } from '@/app/(app-sidebar)/producao/gerenciador/manager'
+import type { ProductionCalendar } from '@/actions/production-manager'
 
 // Hooks / Store / Consts
 import { usePending } from '@/hooks/usePending'
@@ -98,12 +99,15 @@ export function ManagerDialog({
   open,
   manager,
   flows,
+  calendar,
   onOpenChange,
   onSave,
 }: {
   open: boolean
   manager?: ProductionManager
   flows: ProductionFlow[]
+  // O gerenciador novo nasce com o expediente da empresa (GP-49)
+  calendar?: ProductionCalendar
   onOpenChange: (open: boolean) => void
   onSave: (values: ManagerValues) => void | Promise<unknown>
 }) {
@@ -132,7 +136,17 @@ export function ManagerDialog({
         flowId: manager?.flowId || flows[0]?.id || '',
         timeMode: manager?.timeMode || (withTime ? 'PLAY_STOP' : 'NONE'),
         intervalMinutes: manager?.intervalMinutes || 0,
-        hours: manager?.hours || NO_HOURS,
+        hours:
+          manager?.hours ||
+          (calendar
+            ? {
+                workStart: calendar.startTime,
+                workEnd: calendar.endTime,
+                breakStart: calendar.breakStart,
+                breakEnd: calendar.breakEnd,
+                runsThroughBreak: false,
+              }
+            : NO_HOURS),
         liveSchedule: manager?.liveSchedule || 'WARN',
         afterDoneMinutes: manager?.afterDoneMinutes || 0,
       })
@@ -317,8 +331,9 @@ export function ManagerDialog({
                       vermelho.
                     </p>
                     <p>
-                      Em branco, vale o expediente da empresa. O intervalo
-                      (almoço) é opcional.
+                      O gerenciador novo vem com o expediente da empresa, que
+                      pode ser editado aqui. Em branco, vale o da empresa. O
+                      intervalo (almoço) é opcional.
                     </p>
                   </InfoHint>
                 </div>

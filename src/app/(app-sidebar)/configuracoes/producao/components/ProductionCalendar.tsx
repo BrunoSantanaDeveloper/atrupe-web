@@ -107,8 +107,11 @@ export function ProductionCalendarCard({
               <CardTitle>Expediente</CardTitle>
               <InfoHint title="Expediente">
                 <p>
-                  Os dias e o horário de trabalho da produção, e os feriados. Os
-                  alertas de entrega em risco contam só esse tempo.
+                  Os dias e o horário de trabalho da empresa, o intervalo e os
+                  feriados. Cada gerenciador novo nasce com esse expediente e
+                  pode ser editado. Os alertas de entrega em risco contam só
+                  esse tempo. No feriado, a agenda deixa agendar, mas o dia fica
+                  em vermelho.
                 </p>
               </InfoHint>
             </div>
@@ -162,6 +165,32 @@ export function ProductionCalendarCard({
               value={values.endTime}
               onChange={(event) =>
                 setValues({ ...values, endTime: event.target.value })
+              }
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="calendar-break-start">Intervalo de</Label>
+            <Input
+              id="calendar-break-start"
+              type="time"
+              className="w-[140px]"
+              disabled={!canEdit}
+              value={values.breakStart ?? ''}
+              onChange={(event) =>
+                setValues({ ...values, breakStart: event.target.value || null })
+              }
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="calendar-break-end">Intervalo até</Label>
+            <Input
+              id="calendar-break-end"
+              type="time"
+              className="w-[140px]"
+              disabled={!canEdit}
+              value={values.breakEnd ?? ''}
+              onChange={(event) =>
+                setValues({ ...values, breakEnd: event.target.value || null })
               }
             />
           </div>

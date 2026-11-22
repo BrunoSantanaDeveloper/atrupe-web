@@ -19174,5 +19174,29 @@
   "46a876e466": {
     "es": "{size} seleccionada(s)",
     "en": "{size} selected"
+  },
+  "7e633f1982": {
+    "es": "Días y horario laboral, pausa y feriados. Cada sector nuevo de la producción empieza con este horario.",
+    "en": "Working days and hours, break and holidays. Each new production department starts with these hours."
+  },
+  "74e96a64e3": {
+    "es": "Los días y el horario laboral de la empresa, la pausa y los feriados. Cada gestor nuevo nace con este horario y se puede editar. Las alertas de entrega en riesgo cuentan solo este tiempo. En feriado, la agenda permite programar, pero el día queda en rojo.",
+    "en": "The company working days and hours, the break and the holidays. Each new board starts with these hours and can be edited. Delivery-at-risk alerts only count this time. On holidays, the schedule still lets you book, but the day turns red."
+  },
+  "2033c07d6b": {
+    "es": "Pausa desde",
+    "en": "Break from"
+  },
+  "81055a9b06": {
+    "es": "Pausa hasta",
+    "en": "Break until"
+  },
+  "238f9c59cf": {
+    "es": "El gestor nuevo viene con el horario laboral de la empresa, que se puede editar aquí. En blanco, vale el de la empresa. La pausa (almuerzo) es opcional.",
+    "en": "A new board comes with the company working hours, which you can edit here. Left blank, the company hours apply. The break (lunch) is optional."
+  },
+  "f3873a7b7a": {
+    "es": "día sin horario laboral",
+    "en": "non-working day"
   }
 }

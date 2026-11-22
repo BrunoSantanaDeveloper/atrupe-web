@@ -137,20 +137,31 @@ const toTask = (row: Raw): TaskView => {
  * Leitura
  * ------------------------------------------------------------------------- */
 
-/** O expediente (§4.8): dias (0 = domingo), horário e feriados. */
+/**
+ * O expediente da empresa (§4.8, GP-49): dias (0 = domingo), horário, o
+ * intervalo (almoço, opcional) e os feriados. É o padrão de cada
+ * gerenciador novo, que pode ser editado.
+ */
 export type ProductionCalendar = {
   workDays: number[]
   startTime: string
   endTime: string
+  breakStart: string | null
+  breakEnd: string | null
   holidays: string[]
 }
 
-const DEFAULT_CALENDAR: ProductionCalendar = {
+export const DEFAULT_CALENDAR: ProductionCalendar = {
   workDays: [1, 2, 3, 4, 5],
   startTime: '08:00',
   endTime: '18:00',
+  breakStart: null,
+  breakEnd: null,
   holidays: [],
 }
+
+const toCalendar = (row: Raw): ProductionCalendar =>
+  row ? { ...DEFAULT_CALENDAR, ...row } : DEFAULT_CALENDAR
 
 export const getManagerConfig = async () => {
   const res: ApiResult = await getItem({ route: '/production/config' })
@@ -169,7 +180,7 @@ export const getManagerConfig = async () => {
     taskTypes: res.data.taskTypes || [],
     collaborators: (res.data.collaborators || []).map(toCollaborator),
     vehicles: (res.data.vehicles || []).map(toVehicle),
-    calendar: res.data.calendar || DEFAULT_CALENDAR,
+    calendar: toCalendar(res.data.calendar),
   })
 }
 
@@ -225,6 +236,7 @@ export const getManagerBoard = async ({ managerId }: { managerId: string }) => {
     })) as (Collaborator & { onlyAssigned: boolean })[],
     taskTypes: (res.data.taskTypes || []) as TaskType[],
     vehicles: (res.data.vehicles || []).map(toVehicle) as Vehicle[],
+    calendar: toCalendar(res.data.manager?.calendar),
   })
 }
 
@@ -543,7 +555,11 @@ export const moveTaskStep = async ({
 export const saveCalendar = async (values: ProductionCalendar) => {
   const res: ApiResult = await putItemNew({
     route: '/production/calendar',
-    data: values,
+    data: {
+      ...values,
+      breakStart: values.breakStart || '',
+      breakEnd: values.breakEnd || '',
+    },
   })
   return res.success ? ok(null) : fail(res.message, null)
 }

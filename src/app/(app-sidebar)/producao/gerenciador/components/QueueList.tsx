@@ -45,6 +45,8 @@ export type QueueGroup = {
   tasks: TaskView[]
   // Só o dia agendado aceita arrastar para trocar a ordem
   sortable?: boolean
+  // Feriado ou dia sem expediente: o título e o aviso em vermelho (GP-49)
+  alert?: boolean
 }
 
 const COLUMNS =
@@ -101,7 +103,12 @@ export function QueueList({
         {groups.map((group) => (
           <section key={group.key}>
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-gray-100 bg-gray-25 px-4 py-2">
-              <h3 className="text-sm font-semibold text-gray-900">
+              <h3
+                className={cn(
+                  'text-sm font-semibold text-gray-900',
+                  group.alert && 'text-error-700',
+                )}
+              >
                 {group.title}
                 <span className="font-normal text-gray">
                   {' '}
@@ -114,7 +121,14 @@ export function QueueList({
                 </span>
               )}
               {group.hint && (
-                <span className="text-xs text-gray">{group.hint}</span>
+                <span
+                  className={cn(
+                    'text-xs text-gray',
+                    group.alert && 'font-medium text-error-700',
+                  )}
+                >
+                  {group.hint}
+                </span>
               )}
             </div>
 
@@ -332,6 +346,11 @@ function ForecastCell({
         {forecast.breakExcess > 0 && (
           <span className="font-medium text-warning-700">
             {excess(forecast.breakExcess)} no intervalo
+          </span>
+        )}
+        {forecast.offDay && (
+          <span className="font-medium text-error-700">
+            {forecast.offDay === 'HOLIDAY' ? 'feriado' : 'dia sem expediente'}
           </span>
         )}
         {forecast.dayExcess > 0 && (

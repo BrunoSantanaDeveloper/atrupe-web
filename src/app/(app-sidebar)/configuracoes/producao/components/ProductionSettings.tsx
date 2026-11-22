@@ -761,6 +761,7 @@ export function ProductionSettings() {
         open={dialog?.kind === 'manager'}
         manager={dialog?.kind === 'manager' ? dialog.manager : undefined}
         flows={flows}
+        calendar={config?.calendar}
         onOpenChange={() => setDialog(null)}
         onSave={async (values) => {
           const id = dialog?.kind === 'manager' ? dialog.manager?.id : undefined

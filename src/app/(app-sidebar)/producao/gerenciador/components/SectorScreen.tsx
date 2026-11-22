@@ -48,7 +48,7 @@ import {
 // Types
 import type { TaskView, TaskStatus, TaskAction } from '../manager'
 import { NO_HOURS } from '../manager'
-import { forecastQueue, remainingOf } from '../forecast'
+import { dayOff, forecastQueue, remainingOf } from '../forecast'
 
 // Actions
 import {
@@ -352,6 +352,7 @@ export function SectorScreen({ id }: { id: string }) {
       liveSchedule: board?.manager.liveSchedule || 'WARN',
       today: today(),
       nowMinutes: now.getHours() * 60 + now.getMinutes(),
+      calendar: board?.calendar,
     })
   }, [tasks, board])
 
@@ -371,16 +372,25 @@ export function SectorScreen({ id }: { id: string }) {
             hint: 'O pausado continua pelo tempo que falta.',
             tasks: queue.running,
           },
-          ...queue.days.map(({ day, tasks: inDay }) => ({
-            key: day,
-            title: day === today() ? 'Hoje' : dayLabel(day),
-            minutes: inDay.reduce(
-              (sum, item) => sum + (item.schedule?.minutes || 0),
-              0,
-            ),
-            tasks: inDay,
-            sortable: true,
-          })),
+          ...queue.days.map(({ day, tasks: inDay }) => {
+            const off = dayOff(day, board?.calendar)
+            return {
+              key: day,
+              title: day === today() ? 'Hoje' : dayLabel(day),
+              alert: !!off,
+              hint: off
+                ? off === 'HOLIDAY'
+                  ? 'Feriado: dá para agendar, mas o dia fica em vermelho.'
+                  : 'Dia sem expediente: dá para agendar, mas fica em vermelho.'
+                : undefined,
+              minutes: inDay.reduce(
+                (sum, item) => sum + (item.schedule?.minutes || 0),
+                0,
+              ),
+              tasks: inDay,
+              sortable: true,
+            }
+          }),
           {
             key: 'sem-agenda',
             title: 'Sem agendamento',

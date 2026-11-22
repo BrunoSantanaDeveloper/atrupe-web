@@ -17,6 +17,7 @@ import type { CompanySettingsType } from '../../components/CompanySettingsList'
 import {
   IconRuler2,
   IconBuilding,
+  IconCalendarTime,
   IconFileDollar,
   IconUserShield,
   IconSettingsCog,
@@ -66,6 +67,20 @@ export function CompanySettingsClient() {
                   'Defina os setores da sua empresa que serão utilizados em cadastros e etapas de produção.',
                 link: `${defaultPath}/setores`,
                 permission: 'company_settings:sectors:view',
+              },
+            ]
+          : []),
+        // O expediente da empresa é do ELITE (GP-49): o padrão de cada
+        // gerenciador novo; o cadastro fica com o da produção
+        ...(hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+          ? [
+              {
+                title: 'Expediente',
+                icon: IconCalendarTime,
+                description:
+                  'Dias e horário de trabalho, intervalo e feriados. Cada setor novo da produção começa com esse horário.',
+                link: 'producao?aba=expediente',
+                permission: 'production:production:view',
               },
             ]
           : []),
