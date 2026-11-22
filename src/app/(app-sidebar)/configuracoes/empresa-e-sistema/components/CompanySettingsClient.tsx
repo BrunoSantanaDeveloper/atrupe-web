@@ -22,6 +22,7 @@ import {
   IconUserShield,
   IconSettingsCog,
   IconBuildingWarehouse,
+  IconDatabase,
 } from '@tabler/icons-react'
 import { MeasureDefaultsDialog } from '../padrao-de-medida/components/MeasureDefaultsDialog'
 
@@ -54,6 +55,19 @@ export function CompanySettingsClient() {
                 description:
                   'Gerencie a assinatura do seu plano, usuários adicionais e faturas.',
                 link: `${defaultPath}/assinatura`,
+              },
+            ]
+          : []),
+        // O armazenamento dos arquivos, em todos os planos, como o iCloud
+        // (GP-49): só o administrador, porque a limpeza não tem volta
+        ...(isAdmin
+          ? [
+              {
+                title: 'Armazenamento',
+                icon: IconDatabase,
+                description:
+                  'O espaço dos arquivos da empresa: o que ocupa, as O.S. que mais ocupam e a limpeza.',
+                link: `${defaultPath}/armazenamento`,
               },
             ]
           : []),

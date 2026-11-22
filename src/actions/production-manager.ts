@@ -1010,9 +1010,38 @@ export type CleanupPreview = {
   auto: CleanupAuto
 }
 
+// O armazenamento da empresa (GP-49), em todos os planos: só o
+// administrador. A limpeza usa as rotas company/storage
+export type StorageOverview = {
+  storage: {
+    usedBytes: number
+    quotaBytes: number | null
+    maxFileBytes: number
+    tier: { key: string; name: string; storageGb: number } | null
+  }
+  byKind: { production: number; orders: number }
+  cleanableBytes: number
+  largest: {
+    quotationId: string
+    orderId: string | null
+    number: string
+    client: string
+    status: string | null
+    production: number
+    orders: number
+    bytes: number
+  }[]
+}
+
+export const getStorageOverview = async () => {
+  const res: ApiResult = await getItem({ route: '/company/storage' })
+  if (!res.success) return fail(res.message, null as StorageOverview | null)
+  return ok<StorageOverview | null>(res.data as StorageOverview)
+}
+
 export const getCleanupPreview = async (percent: number) => {
   const res: ApiResult = await getItem({
-    route: '/production/task/storage/cleanup',
+    route: '/company/storage/cleanup',
     params: { percent: String(percent) },
   })
   if (!res.success) return fail(res.message, null as CleanupPreview | null)
@@ -1021,7 +1050,7 @@ export const getCleanupPreview = async (percent: number) => {
 
 export const runCleanup = async (percent: number, confirm: string) => {
   const res: ApiResult = await createItemNew({
-    route: '/production/task/storage/cleanup',
+    route: '/company/storage/cleanup',
     data: { percent, confirm },
   })
   if (!res.success) return fail(res.message, null)
@@ -1030,7 +1059,7 @@ export const runCleanup = async (percent: number, confirm: string) => {
 
 export const saveCleanupAuto = async (values: CleanupAuto) => {
   const res: ApiResult = await putItemNew({
-    route: '/production/task/storage/cleanup/auto',
+    route: '/company/storage/cleanup/auto',
     data: values,
   })
   return res.success ? ok(null) : fail(res.message, null)

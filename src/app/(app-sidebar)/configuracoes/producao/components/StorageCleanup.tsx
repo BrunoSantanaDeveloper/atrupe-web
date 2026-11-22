@@ -95,6 +95,8 @@ export function StorageCleanupCard() {
     setConfirming(false)
     setTyped('')
     queryClient.invalidateQueries({ queryKey: ['production-cleanup'] })
+    // A tela do armazenamento relê o espaço e as O.S. que mais ocupam
+    queryClient.invalidateQueries({ queryKey: ['company-storage'] })
   }
 
   const saveAuto = async (next: CleanupAuto) => {

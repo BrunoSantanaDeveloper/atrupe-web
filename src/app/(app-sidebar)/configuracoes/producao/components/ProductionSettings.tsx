@@ -39,7 +39,6 @@ import {
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { ProductionCalendarCard } from './ProductionCalendar'
-import { StorageCleanupCard } from './StorageCleanup'
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
@@ -118,7 +117,6 @@ type Tab =
   | 'colaboradores'
   | 'veiculos'
   | 'expediente'
-  | 'arquivos'
 
 const tabs: { value: Tab; label: string }[] = [
   { value: 'gerenciadores', label: 'Gerenciadores' },
@@ -126,13 +124,12 @@ const tabs: { value: Tab; label: string }[] = [
   { value: 'colaboradores', label: 'Colaboradores' },
   { value: 'veiculos', label: 'Veículos' },
   { value: 'expediente', label: 'Expediente' },
-  // A limpeza do espaço (GP-49): o servidor só deixa o administrador
-  { value: 'arquivos', label: 'Arquivos' },
+  // A limpeza do espaço saiu daqui: Empresa e sistema › Armazenamento (GP-49)
 ]
 
 // Colunas da tabela de cada aba, para o esqueleto da primeira carga
 const skeletonCols: {
-  [key in Exclude<Tab, 'expediente' | 'arquivos'>]: number
+  [key in Exclude<Tab, 'expediente'>]: number
 } = {
   gerenciadores: 6,
   tipos: 5,
@@ -178,7 +175,6 @@ export function ProductionSettings() {
     colaboradores: '',
     veiculos: 'Novo veículo',
     expediente: '',
-    arquivos: '',
   }
 
   // O Topbar não depende da configuração: aparece já, também na carga
@@ -222,7 +218,7 @@ export function ProductionSettings() {
         {topbar}
         <Card>
           <CardContent>
-            {tab === 'expediente' || tab === 'arquivos' ? (
+            {tab === 'expediente' ? (
               <div className="space-y-6">
                 {Array.from({ length: 3 }, (_, index) => (
                   <div key={index} className="space-y-2">
@@ -658,8 +654,6 @@ export function ProductionSettings() {
             </CardFooter>
           </Card>
         )}
-
-        {tab === 'arquivos' && <StorageCleanupCard />}
 
         {tab === 'expediente' && (
           <ProductionCalendarCard

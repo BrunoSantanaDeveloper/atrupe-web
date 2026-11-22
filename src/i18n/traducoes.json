@@ -19406,5 +19406,69 @@
   "e3338bbdc2": {
     "es": "en mantenimiento ({maintenance})",
     "en": "during maintenance ({maintenance})"
+  },
+  "08dad21908": {
+    "es": "Archivos de producción",
+    "en": "Production files"
+  },
+  "ebb810e1ed": {
+    "es": "Artes, pruebas y versiones adjuntas en las etapas de los gestores",
+    "en": "Artwork, proofs and versions attached to the production board stages"
+  },
+  "82c2950524": {
+    "es": "Archivos de las OT",
+    "en": "Work order files"
+  },
+  "d0587cc52f": {
+    "es": "Los archivos guardados en la orden de trabajo",
+    "en": "The files kept in the work order"
+  },
+  "b598522ea0": {
+    "es": "Almacenamiento",
+    "en": "Storage"
+  },
+  "a9c0b7d7c6": {
+    "es": "Espacio incluido en el plan",
+    "en": "Space included in the plan"
+  },
+  "4bd8567828": {
+    "es": "de {quota} usados",
+    "en": "of {quota} used"
+  },
+  "d85e066610": {
+    "es": "Libre · {valor}",
+    "en": "Free · {valor}"
+  },
+  "a8d3b99cf4": {
+    "es": "Liberar hasta {cleanableBytes}",
+    "en": "Free up to {cleanableBytes}"
+  },
+  "e888e67780": {
+    "es": "Son archivos de OT concluidas o finalizadas. Nada de los registros y nada en producción.",
+    "en": "These are files from completed or finished work orders. Nothing from the records and nothing in production."
+  },
+  "b929dd9abb": {
+    "es": "Ver la limpieza",
+    "en": "See the cleanup"
+  },
+  "5f7c959f3f": {
+    "es": "OT que más ocupan",
+    "en": "Work orders using the most space"
+  },
+  "1cad47a12d": {
+    "es": "Venta {number}",
+    "en": "Sale {number}"
+  },
+  "03bca16e7f": {
+    "es": "Ningún archivo guardado todavía.",
+    "en": "No files stored yet."
+  },
+  "419599db7b": {
+    "es": "Solo el administrador de la empresa ve el almacenamiento.",
+    "en": "Only the company administrator can see the storage."
+  },
+  "a79c72f128": {
+    "es": "El espacio de los archivos de la empresa: lo que ocupa, las OT que más ocupan y la limpieza.",
+    "en": "The space used by the company files: what takes it up, the work orders using the most and the cleanup."
   }
 }
