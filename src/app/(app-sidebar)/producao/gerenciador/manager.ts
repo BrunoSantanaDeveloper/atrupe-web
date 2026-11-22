@@ -160,6 +160,8 @@ export type AttachmentVersion = {
   uploadedBy: string
   uploadedAt: string
   current: boolean
+  // Apagado na limpeza do espaço (GP-49): sem link
+  removedAt?: string | null
 }
 
 export type TaskAttachment = {

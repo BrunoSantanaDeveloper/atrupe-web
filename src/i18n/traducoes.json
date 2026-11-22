@@ -19198,5 +19198,109 @@
   "f3873a7b7a": {
     "es": "día sin horario laboral",
     "en": "non-working day"
+  },
+  "b57bd36f59": {
+    "es": "{files} archivo(s) borrado(s), {bytes} liberados",
+    "en": "{files} file(s) deleted, {bytes} freed"
+  },
+  "24b11a9abe": {
+    "es": "Espacio de los archivos",
+    "en": "File storage"
+  },
+  "e05cb55ef4": {
+    "es": "Limpieza del espacio",
+    "en": "Storage cleanup"
+  },
+  "25a8f57332": {
+    "es": "Para no tener que contratar más espacio: borra los archivos más antiguos hasta liberar el porcentaje elegido del espacio usado.",
+    "en": "So you do not need to buy more storage: deletes the oldest files until the chosen percentage of used space is freed."
+  },
+  "cdb494bd6e": {
+    "es": "Solo entran los archivos agregados a las OT entregadas y concluidas (artes, versiones editadas, pruebas, PDFs y proyectos). Nada de los registros y nada de OT en producción.",
+    "en": "Only files added to delivered and completed WOs count (artwork, edited versions, proofs, PDFs and projects). Nothing from the records and nothing from WOs in production."
+  },
+  "b67b5e88aa": {
+    "es": "de {quotaBytes}",
+    "en": "of {quotaBytes}"
+  },
+  "d9c033d2a9": {
+    "es": "{eligibleBytes} en OT entregadas y concluidas",
+    "en": "{eligibleBytes} in delivered and completed WOs"
+  },
+  "07587aa64a": {
+    "es": "Liberar (% del espacio usado)",
+    "en": "Free up (% of used space)"
+  },
+  "d32f650483": {
+    "es": "Borrar archivos antiguos",
+    "en": "Delete old files"
+  },
+  "cd11de5a61": {
+    "es": "Saldrían",
+    "en": "This would remove"
+  },
+  "f476d2d38f": {
+    "es": "{files} archivo(s)",
+    "en": "{files} file(s)"
+  },
+  "e6d06d0437": {
+    "es": "OT, enviados del",
+    "en": "WOs, uploaded from"
+  },
+  "36ccb9fe97": {
+    "es": ", liberando",
+    "en": ", freeing"
+  },
+  "1da7db963a": {
+    "es": "No hay archivos de OT entregadas y concluidas para borrar.",
+    "en": "There are no files from delivered and completed WOs to delete."
+  },
+  "59e215c09a": {
+    "es": "Borrar no tiene vuelta atrás. En la tarea, el archivo queda como &quot;eliminado en la limpieza&quot;, con la fecha.",
+    "en": "Deleting cannot be undone. In the task, the file shows as &quot;removed in cleanup&quot;, with the date."
+  },
+  "217e0a0261": {
+    "es": "Limpieza automática",
+    "en": "Automatic cleanup"
+  },
+  "5ad54ef7db": {
+    "es": "De madrugada, cuando el espacio usado pase del límite, borra los más antiguos hasta liberar el porcentaje. Viene desactivada.",
+    "en": "Overnight, when used space goes over the limit, deletes the oldest files until the percentage is freed. Off by default."
+  },
+  "b9b5bb45ef": {
+    "es": "Cuando pase de (%)",
+    "en": "When above (%)"
+  },
+  "2e74a5c5ac": {
+    "es": "Liberar (%)",
+    "en": "Free up (%)"
+  },
+  "ca1d6555d3": {
+    "es": "Limpiezas realizadas",
+    "en": "Cleanups done"
+  },
+  "a2ca2f6320": {
+    "es": "(automática)",
+    "en": "(automatic)"
+  },
+  "d19f8aacaf": {
+    "es": "archivo(s),",
+    "en": "file(s),"
+  },
+  "67c668551b": {
+    "es": "¿Borrar {files} archivo(s)?",
+    "en": "Delete {files} file(s)?"
+  },
+  "48c790b265": {
+    "es": "Libera {valor} con los archivos de {projects} OT entregadas y concluidas, enviados del {null} al {null2}. No tiene vuelta atrás.",
+    "en": "Frees {valor} with the files of {projects} delivered and completed WOs, uploaded from {null} to {null2}. This cannot be undone."
+  },
+  "1cdc534af6": {
+    "es": "Escriba APAGAR para confirmar",
+    "en": "Type APAGAR to confirm"
+  },
+  "84b10407a9": {
+    "es": "· eliminado en la limpieza del {valor}",
+    "en": "· removed in the cleanup of {valor}"
   }
 }

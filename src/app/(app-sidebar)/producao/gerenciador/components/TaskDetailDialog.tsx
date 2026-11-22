@@ -842,7 +842,11 @@ export function TaskDetailDialog({
                             <span className="font-mono">
                               v{version.version}
                             </span>
-                            {version.url ? (
+                            {version.removedAt ? (
+                              <span className="line-through">
+                                {version.fileName}
+                              </span>
+                            ) : version.url ? (
                               <a
                                 href={version.url}
                                 target="_blank"
@@ -855,6 +859,14 @@ export function TaskDetailDialog({
                               <span>{version.fileName}</span>
                             )}
                             <span>· {size(version.size)}</span>
+                            {version.removedAt && (
+                              <span className="text-warning-700">
+                                · removido na limpeza de{' '}
+                                {new Date(version.removedAt).toLocaleDateString(
+                                  'pt-BR',
+                                )}
+                              </span>
+                            )}
                             <span>
                               · {version.uploadedBy}, {when(version.uploadedAt)}
                             </span>

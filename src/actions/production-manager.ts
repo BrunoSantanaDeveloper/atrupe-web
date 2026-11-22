@@ -954,3 +954,61 @@ export const getProductivity = async (
     unsold: res.data.unsold || { minutes: 0 },
   })
 }
+
+/* ---------------------------------------------------------------------------
+ * Limpeza do espaço dos arquivos (GP-49): só o administrador
+ * ------------------------------------------------------------------------- */
+
+export type CleanupAuto = {
+  enabled: boolean
+  percent: number
+  threshold: number
+}
+
+export type CleanupPreview = {
+  usedBytes: number
+  quotaBytes: number | null
+  percent: number
+  targetBytes: number
+  eligibleBytes: number
+  files: number
+  bytes: number
+  projects: number
+  from: string | null
+  to: string | null
+  history: {
+    at: string
+    by: string
+    automatic: boolean
+    percent: number
+    files: number
+    bytes: number
+  }[]
+  auto: CleanupAuto
+}
+
+export const getCleanupPreview = async (percent: number) => {
+  const res: ApiResult = await getItem({
+    route: '/production/task/storage/cleanup',
+    params: { percent: String(percent) },
+  })
+  if (!res.success) return fail(res.message, null as CleanupPreview | null)
+  return ok<CleanupPreview | null>(res.data as CleanupPreview)
+}
+
+export const runCleanup = async (percent: number, confirm: string) => {
+  const res: ApiResult = await createItemNew({
+    route: '/production/task/storage/cleanup',
+    data: { percent, confirm },
+  })
+  if (!res.success) return fail(res.message, null)
+  return ok(res.data as { files: number; bytes: number; projects: number })
+}
+
+export const saveCleanupAuto = async (values: CleanupAuto) => {
+  const res: ApiResult = await putItemNew({
+    route: '/production/task/storage/cleanup/auto',
+    data: values,
+  })
+  return res.success ? ok(null) : fail(res.message, null)
+}
