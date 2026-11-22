@@ -19370,5 +19370,21 @@
   "1ee5f8de08": {
     "es": "Solo el día, sin horario",
     "en": "Day only, no time"
+  },
+  "27b7f1930d": {
+    "es": "Agenda del colaborador",
+    "en": "Team member schedule"
+  },
+  "596de05ae6": {
+    "es": "Elija la persona",
+    "en": "Choose the person"
+  },
+  "4bfe38cbab": {
+    "es": "Los próximos {DAYS} días, con lo que se asignó a la persona o lo que está haciendo ahora.",
+    "en": "The next {DAYS} days, with what was assigned to the person or what they are doing now."
+  },
+  "a1828b661e": {
+    "es": "Ninguna tarea agendada tiene persona asignada en los próximos días.",
+    "en": "No scheduled task has a person assigned in the coming days."
   }
 }

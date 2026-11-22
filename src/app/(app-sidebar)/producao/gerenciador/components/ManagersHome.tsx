@@ -25,6 +25,7 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 import { TaskCard } from './TaskCard'
 import { TaskDetailDialog } from './TaskDetailDialog'
 import { AgendaView, VehiclesView, ProductionFilters } from './GeneralViews'
+import { PersonAgenda } from './PersonAgenda'
 import {
   agendaRange,
   taskMatches,
@@ -54,7 +55,7 @@ import { useQuery } from '@tanstack/react-query'
 import { IconAlertTriangle, IconChevronRight } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
-type View = 'agenda' | 'veiculos'
+type View = 'agenda' | 'veiculos' | 'pessoas'
 
 export function ManagersHome() {
   const router = useRouter()
@@ -88,8 +89,10 @@ export function ManagersHome() {
   const summary = summaryRes?.data || []
 
   const { data: agendaRes, isLoading: loadingAgenda } = useQuery({
-    queryKey: ['production-agenda', period],
-    queryFn: () => getAgenda(agendaRange(period)),
+    // A agenda do colaborador mostra sempre os próximos 7 dias
+    queryKey: ['production-agenda', view === 'pessoas' ? 'semana' : period],
+    queryFn: () =>
+      getAgenda(agendaRange(view === 'pessoas' ? 'semana' : period)),
     enabled: withTime,
   })
   const agenda = agendaRes?.data
@@ -197,18 +200,27 @@ export function ManagersHome() {
               <TabsList>
                 <TabsTrigger value="agenda">Agenda viva</TabsTrigger>
                 <TabsTrigger value="veiculos">Veículos</TabsTrigger>
+                <TabsTrigger value="pessoas">Agenda do colaborador</TabsTrigger>
               </TabsList>
             </Tabs>
 
-            <ProductionFilters
-              search={search}
-              onSearch={setSearch}
-              period={period}
-              onPeriod={setPeriod}
-            />
+            {view !== 'pessoas' && (
+              <ProductionFilters
+                search={search}
+                onSearch={setSearch}
+                period={period}
+                onPeriod={setPeriod}
+              />
+            )}
 
             {loadingAgenda || !agenda ? (
               <AgendaSkeleton />
+            ) : view === 'pessoas' ? (
+              <PersonAgenda
+                scheduled={agenda.scheduled}
+                me={viewer.collaboratorId}
+                onOpen={setTaskId}
+              />
             ) : view === 'agenda' ? (
               <AgendaView
                 scheduled={agenda.scheduled.filter((item) =>
