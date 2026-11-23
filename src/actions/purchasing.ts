@@ -5,6 +5,7 @@
 
 // Types
 import type {
+  TaskLots,
   LotPlan,
   OrderInvoice,
   PurchaseOrder,
@@ -195,10 +196,14 @@ export const cancelPurchaseOrder = async (id: string, reason: string) =>
 
 export const getStockLots = async (filters: {
   view?: string
+  status?: string
+  sectorId?: string
   search?: string
 }) =>
   list<StockLot>('/stock/lot', {
     ...(filters.view ? { view: filters.view } : {}),
+    ...(filters.status ? { status: filters.status } : {}),
+    ...(filters.sectorId ? { sectorId: filters.sectorId } : {}),
     ...(filters.search ? { search: filters.search } : {}),
   })
 
@@ -216,11 +221,48 @@ export const createStockLot = async (values: {
   enterStock?: boolean
 }) => post<StockLot>('/stock/lot', values, 'Lote lançado')
 
-export const lotAction = async (id: string, action: 'open' | 'finish') =>
+export const finishStockLot = async (id: string) =>
+  post<StockLot>(`/stock/lot/${id}/finish`, {}, 'Lote finalizado')
+
+/** Abrir o lote num setor (ES-16): sem setor, o do material. */
+export const openStockLot = async (id: string, sectorId?: string | null) =>
   post<StockLot>(
-    `/stock/lot/${id}/${action}`,
-    {},
-    action === 'open' ? 'Lote aberto' : 'Lote finalizado',
+    `/stock/lot/${id}/open`,
+    { sectorId: sectorId || null },
+    'Lote aberto',
+  )
+
+export const moveStockLot = async (id: string, sectorId: string) =>
+  post<StockLot>(
+    `/stock/lot/${id}/move`,
+    { sectorId },
+    'Lote levado para o setor',
+  )
+
+/** Os rolos abertos no setor da tarefa e as baixas dela (ES-16). */
+export const getTaskLots = async (taskId: string) => {
+  const res: ApiResult = await getItem({
+    route: `/production/task/${taskId}/lots`,
+  })
+  return res.success
+    ? { success: true, data: res.data as TaskLots, message: '' }
+    : { success: false, data: null, message: res.message || '' }
+}
+
+export const registerTaskLotUse = async (
+  taskId: string,
+  values: {
+    lotId: string
+    length?: number
+    quantity?: number
+    replaces?: string | null
+    note?: string
+  },
+) =>
+  post<unknown>(
+    `/production/task/${taskId}/lot-use`,
+    values,
+    'Baixa registrada no rolo',
   )
 
 export const consumeStockLot = async (

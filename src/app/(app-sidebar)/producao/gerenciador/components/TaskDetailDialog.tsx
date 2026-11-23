@@ -35,6 +35,9 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import { TaskLotUse } from './TaskLotUse'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Icon } from '@/components/ui/icon'
@@ -185,6 +188,9 @@ export function TaskDetailDialog({
   onOpenChange,
   onChanged,
 }: Props) {
+  // Compras e lotes (FULL): o rolo aberto no setor e a baixa do impressor
+  const { hasFeature } = usePlanFeatures()
+  const canUseLots = hasFeature(FEATURES.STOCK.PURCHASING)
   const [schedule, setSchedule] = useState({
     date: '',
     start: '08:00',
@@ -717,6 +723,13 @@ export function TaskDetailDialog({
                   : ''}
             </p>
           </div>
+
+          {/* A baixa do impressor no rolo aberto no setor (ES-16, FULL) */}
+          {canUseLots &&
+            task.status !== 'DONE' &&
+            task.status !== 'CANCELED' && (
+              <TaskLotUse taskId={task.id} onChanged={onChanged} />
+            )}
 
           {/* Anexos por etapa, com versão (GP-25, GP-26) */}
           <div className="space-y-2">

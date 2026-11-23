@@ -127,6 +127,9 @@ export type StockLot = {
   currentLength: number | null
   currentValue: number
   status: LotStatus
+  // Aberto, o lote fica num setor (a impressão), disponível nas tarefas
+  sectorId: string | null
+  sectorName: string
   openedAt: string | null
   finishedAt: string | null
   cancelReason: string | null
@@ -137,6 +140,29 @@ export type StockLot = {
   events: {
     text: string
     quantity: number | null
+    byName: string
+    at: string
+  }[]
+}
+
+// A baixa do impressor na tarefa (ES-16)
+export type TaskSoldMaterial = {
+  key: string
+  materialId: string
+  variationId: string | null
+  name: string
+  quantity: number | null
+  unit: string
+}
+
+export type TaskLots = {
+  lots: (StockLot & { sold: boolean })[]
+  sold: TaskSoldMaterial[]
+  uses: {
+    lot: string
+    quantity: number
+    unit: string
+    replaces: string | null
     byName: string
     at: string
   }[]

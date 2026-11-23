@@ -5,8 +5,9 @@
 // o saldo atual guarda a sobra (o rolo de 1,22 × 50 m que está com
 // 0,50 × 47 m). Abrir, dar baixa, dividir, finalizar e cancelar.
 //
-// O saldo do estoque não muda com a baixa no lote: a baixa da venda segue a
-// composição. Ligar as duas fica com o apontamento da impressão.
+// A baixa do trabalho é do impressor, na tarefa do setor: ela vale para o
+// estoque e a baixa da venda não tira de novo aquele material (ES-16). Aqui,
+// a baixa à mão corrige o saldo (a sobra medida, a perda).
 
 // React
 import { useState } from 'react'
@@ -60,7 +61,9 @@ import {
   consumeStockLot,
   createStockLot,
   getStockLots,
-  lotAction,
+  finishStockLot,
+  moveStockLot,
+  openStockLot,
   splitStockLot,
 } from '@/actions/purchasing'
 
@@ -69,6 +72,7 @@ import type { LotMeasure, StockLot } from '../../compras/types'
 
 // Hooks
 import { useMoney } from '@/hooks/useMoney'
+import { useSector } from '@/hooks/queries/useSector'
 import { usePermissions } from '@/hooks/usePermissions'
 
 // Third-party
@@ -78,8 +82,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import { IconPlus } from '@tabler/icons-react'
 
+// Como na primeira versão: o rolo fica fechado no estoque; aberto, vai
+// para um setor (a impressão) e fica disponível nas tarefas dele (ES-16)
 const tabs = [
-  { value: 'active', label: 'Ativos' },
+  { value: 'CLOSED', label: 'Fechados no estoque' },
+  { value: 'OPEN', label: 'Abertos nos setores' },
   { value: 'closed', label: 'Finalizados e cancelados' },
   { value: 'all', label: 'Todos' },
 ]
@@ -90,14 +97,19 @@ const size = (width: number | null, length: number | null) =>
 export function Lots() {
   const money = useMoney()
   const queryClient = useQueryClient()
-  const [view, setView] = useState('active')
+  const [view, setView] = useState('CLOSED')
   const [search, setSearch] = useState('')
   const [creating, setCreating] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['stock-lots', view, search],
-    queryFn: () => getStockLots({ view, search }),
+    queryFn: () =>
+      getStockLots(
+        view === 'CLOSED' || view === 'OPEN'
+          ? { status: view, search }
+          : { view, search },
+      ),
   })
   const rows = data?.data || []
   const open = rows.find((row) => row.id === openId) || null
@@ -147,6 +159,7 @@ export function Lots() {
                 <TableHead>Lote</TableHead>
                 <TableHead>Material</TableHead>
                 <TableHead>Fornecedor</TableHead>
+                <TableHead>Setor</TableHead>
                 <TableHead>Entrada</TableHead>
                 <TableHead>Saldo atual</TableHead>
                 <TableHead>Valor do saldo</TableHead>
@@ -155,7 +168,7 @@ export function Lots() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableSkeletonRows cols={7} />
+                <TableSkeletonRows cols={8} />
               ) : rows.length ? (
                 rows.map((row) => (
                   <TableRow
@@ -173,6 +186,13 @@ export function Lots() {
                       )}
                     </TableCell>
                     <TableCell>{row.supplierName || '-'}</TableCell>
+                    <TableCell>
+                      {row.status === 'OPEN'
+                        ? row.sectorName || 'Sem setor'
+                        : row.status === 'CLOSED'
+                          ? 'No estoque'
+                          : '-'}
+                    </TableCell>
                     <TableCell>
                       {size(row.width, row.length) ||
                         `${qty(row.quantity)} ${row.unit}`}
@@ -200,7 +220,7 @@ export function Lots() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="py-8 text-center text-gray">
+                  <TableCell colSpan={8} className="py-8 text-center text-gray">
                     Nenhum lote aqui.
                   </TableCell>
                 </TableRow>
@@ -425,6 +445,9 @@ function LotDialog({
   )
   const [splitValue, setSplitValue] = useState('')
   const [cancelReason, setCancelReason] = useState('')
+  // O setor para onde o lote vai ao abrir (sem escolher, o do material)
+  const [sectorId, setSectorId] = useState('')
+  const { data: sectors = [] } = useSector({ status: 'ACTIVE' })
   const [busy, setBusy] = useState<string | null>(null)
 
   if (!lot) return null
@@ -499,21 +522,70 @@ function LotDialog({
           )}
 
           {canEdit && active && (
+            <section className="space-y-3 rounded-lg border border-gray-200 p-4">
+              <p className="text-sm font-medium text-gray-900">
+                {lot.status === 'CLOSED'
+                  ? 'Abrir: levar o rolo para o setor'
+                  : 'Mudar de setor'}
+              </p>
+              <div className="flex flex-wrap items-end gap-3">
+                <SelectBasic
+                  name="lot-sector"
+                  label="Setor"
+                  className="w-[260px]"
+                  placeholder={
+                    lot.status === 'CLOSED'
+                      ? 'O setor do material'
+                      : lot.sectorName || 'Escolher'
+                  }
+                  value={sectorId || undefined}
+                  options={(sectors || []).map((sector) => ({
+                    value: sector.id,
+                    label: sector.name,
+                  }))}
+                  onChange={(value) => setSectorId(String(value))}
+                />
+                <Button
+                  variant="neutralOutline"
+                  isLoading={busy === 'open'}
+                  disabled={lot.status === 'OPEN' && !sectorId}
+                  onClick={() =>
+                    run(
+                      'open',
+                      () =>
+                        lot.status === 'CLOSED'
+                          ? openStockLot(lot.id, sectorId || null)
+                          : moveStockLot(lot.id, sectorId),
+                      () => setSectorId(''),
+                    )
+                  }
+                >
+                  {lot.status === 'CLOSED'
+                    ? 'Abrir lote'
+                    : 'Levar para o setor'}
+                </Button>
+              </div>
+              <p className="text-xs text-gray">
+                Aberto, o rolo fica disponível nas tarefas do setor, onde o
+                impressor informa o comprimento para dar a baixa.
+              </p>
+            </section>
+          )}
+
+          {canEdit && active && (
             <>
               <section className="space-y-3 rounded-lg border border-gray-200 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-sm font-medium text-gray-900">Dar baixa</p>
-                  {lot.status === 'CLOSED' && (
-                    <Button
-                      size="sm"
-                      variant="neutralOutline"
-                      isLoading={busy === 'open'}
-                      onClick={() =>
-                        run('open', () => lotAction(lot.id, 'open'))
-                      }
-                    >
-                      Abrir lote
-                    </Button>
+                  <p className="text-sm font-medium text-gray-900">
+                    Corrigir o saldo (baixa à mão)
+                  </p>
+                  <span className="text-xs text-gray">
+                    A baixa do trabalho é feita pelo impressor, na tarefa.
+                  </span>
+                  {lot.status === 'OPEN' && (
+                    <span className="text-sm text-gray">
+                      Aberto no setor {lot.sectorName || '—'}
+                    </span>
                   )}
                 </div>
                 <Tabs
@@ -696,9 +768,7 @@ function LotDialog({
                 <Button
                   variant="neutralOutline"
                   isLoading={busy === 'finish'}
-                  onClick={() =>
-                    run('finish', () => lotAction(lot.id, 'finish'))
-                  }
+                  onClick={() => run('finish', () => finishStockLot(lot.id))}
                 >
                   Finalizar lote
                 </Button>

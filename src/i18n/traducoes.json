@@ -19974,5 +19974,101 @@
   "a6917f88f0": {
     "es": "Usted no tiene permiso para ver las solicitudes de material.",
     "en": "You don't have permission to view material requests."
+  },
+  "2681545360": {
+    "es": "El sector del material",
+    "en": "The material's department"
+  },
+  "01bcc466f3": {
+    "es": "Cerrados en el inventario",
+    "en": "Closed in stock"
+  },
+  "bee9d98794": {
+    "es": "Abiertos en los sectores",
+    "en": "Open in departments"
+  },
+  "a80ee452a8": {
+    "es": "Abrir: llevar el rollo al sector",
+    "en": "Open: take the roll to the department"
+  },
+  "9bdfc5aed0": {
+    "es": "Cambiar de sector",
+    "en": "Change department"
+  },
+  "f13a3ccb8c": {
+    "es": "Llevar al sector",
+    "en": "Take to the department"
+  },
+  "b0b69af7b8": {
+    "es": "Abierto, el rollo queda disponible en las tareas del sector, donde el impresor informa el largo para dar de baja.",
+    "en": "Once open, the roll is available in the department's tasks, where the printer enters the length to write it off."
+  },
+  "769067a961": {
+    "es": "Corregir el saldo (baja manual)",
+    "en": "Correct the balance (manual write-off)"
+  },
+  "f7c1bbed66": {
+    "es": "La baja del trabajo la hace el impresor, en la tarea.",
+    "en": "The job write-off is done by the printer, in the task."
+  },
+  "1baf69ec38": {
+    "es": "Abierto en el sector",
+    "en": "Open in the department"
+  },
+  "18793fc082": {
+    "es": "Baja del material",
+    "en": "Material write-off"
+  },
+  "6662b1dc0c": {
+    "es": "· en lugar de {replaces}",
+    "en": "· instead of {replaces}"
+  },
+  "80ebb9d47a": {
+    "es": "Ningún rollo abierto en este sector. Abra el lote en Inventario › Lotes eligiendo el sector.",
+    "en": "No open roll in this department. Open the lot in Stock › Lots choosing the department."
+  },
+  "4bc261b46d": {
+    "es": "Rollo abierto en el sector",
+    "en": "Roll open in the department"
+  },
+  "92a4a4671c": {
+    "es": "Elegir el rollo",
+    "en": "Choose the roll"
+  },
+  "cdf1e1fd98": {
+    "es": "{code} · {material}{valor} · {valor2}{valor3}",
+    "en": "{code} · {material}{valor} · {valor2}{valor3}"
+  },
+  "bee1258e5b": {
+    "es": "Largo usado (m)",
+    "en": "Length used (m)"
+  },
+  "d65a7bdf00": {
+    "es": "En el ancho del rollo, {currentWidth} m",
+    "en": "At the roll width, {currentWidth} m"
+  },
+  "a5e6853341": {
+    "es": "Cuánto usó ({unit})",
+    "en": "How much was used ({unit})"
+  },
+  "bfaf527c78": {
+    "es": "En lugar del material vendido",
+    "en": "Instead of the material sold"
+  },
+  "929d94a569": {
+    "es": "Ninguno (material extra)",
+    "en": "None (extra material)"
+  },
+  "010f434d4f": {
+    "es": "Pérdida, empalme…",
+    "en": "Waste, splice…"
+  },
+  "f127601391": {
+    "es": "Material diferente del vendido: queda registrado como cambio.",
+    "en": "Different material from the one sold: recorded as a swap."
+  },
+  "e869bcc7e9": {
+    "es": "Dar de baja en el rollo",
+    "en": "Write off from the roll"
   }
 }
