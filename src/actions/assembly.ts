@@ -681,6 +681,16 @@ const addBlock = async (
   return res.success ? ok(res.data?.id as string) : fail(res, null)
 }
 
+// PRO: o fluxo de ícones do produto vira a composição, com uma etapa por
+// setor, na ordem dos ícones (área 9; Maicol, 23/11/2026). Só no produto do
+// cadastro e na composição sem etapas
+export const createAssemblyFromFlow = async (productId: string) => {
+  const res: ApiResult = await createItemNew({
+    route: `/product/${productId}/assembly/from-flow`,
+  })
+  return res.success ? ok((res.data?.created as number) ?? 0) : fail(res, 0)
+}
+
 export const addAssemblyBlock = async ({
   productId,
   processId,

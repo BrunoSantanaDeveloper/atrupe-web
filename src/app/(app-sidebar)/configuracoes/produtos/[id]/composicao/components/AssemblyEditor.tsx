@@ -113,6 +113,7 @@ import {
   getAssembly,
   updateAssembly,
   addOwnBlock,
+  createAssemblyFromFlow,
   addAssemblyLine,
   addAssemblyBlock,
   removeAssemblyLine,
@@ -385,6 +386,19 @@ export function AssemblyEditorSkeleton({
   )
 }
 
+/** Quantos setores ativos o fluxo de ícones do produto tem (LITE). */
+const flowOf = (product: unknown) => {
+  const raw = (product as { productionStages?: unknown } | null | undefined)
+    ?.productionStages
+  const stages = typeof raw === 'string' ? JSON.parse(raw) : raw
+  return Array.isArray(stages)
+    ? stages.filter(
+        (stage: { isActive?: boolean } | null) =>
+          stage && stage.isActive !== false,
+      ).length
+    : 0
+}
+
 function AssemblyEditorBody({
   productId,
   embedded = false,
@@ -569,17 +583,37 @@ function AssemblyEditorBody({
     // Espera o cadastro e os setores, para a etapa nascer no setor certo
     if (isCatalogId && (!catalogFetched || !companySectors)) return
     autoStage.current = true
-    addOwnBlock({
-      productId,
-      name: ownSector,
-      sector: ownSector,
-      dependsOn: [],
-    }).then((res) => {
-      if (res.success && res.data) setSelectedId(res.data)
-      refresh()
-    })
+    const ownStage = () =>
+      addOwnBlock({
+        productId,
+        name: ownSector,
+        sector: ownSector,
+        dependsOn: [],
+      }).then((res) => {
+        if (res.success && res.data) setSelectedId(res.data)
+        refresh()
+      })
+    // Com o fluxo de ícones (desenhado no LITE), a composição nasce com uma
+    // etapa por setor do fluxo, na ordem dele (área 9; Maicol, 23/11/2026);
+    // sem fluxo, a etapa do setor do produto, como antes
+    const flow = flowOf(catalogProduct)
+    if (isCatalogId && flow > 0) {
+      createAssemblyFromFlow(productId).then((res) => {
+        if (res.success && res.data) refresh()
+        else ownStage()
+      })
+      return
+    }
+    ownStage()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [assembly, canEdit, catalogFetched, companySectors, ownSector])
+  }, [
+    assembly,
+    canEdit,
+    catalogFetched,
+    companySectors,
+    ownSector,
+    catalogProduct,
+  ])
 
   if (isLoading || !assembly || !measure) {
     return <AssemblyEditorSkeleton embedded={embedded} topbar={topbar} />
