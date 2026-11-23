@@ -20262,5 +20262,65 @@
   "caa3a5ed63": {
     "es": "Ningún gestor activo. Cree uno por sector en Configuración › Producción.",
     "en": "No active production board. Create one per department in Settings › Production."
+  },
+  "1dcd6bf698": {
+    "es": "Bloque 1",
+    "en": "Block 1"
+  },
+  "89c5f6070b": {
+    "es": "Bloques de agenda",
+    "en": "Schedule blocks"
+  },
+  "4f4d53362c": {
+    "es": "Agendado",
+    "en": "Scheduled"
+  },
+  "6538dad28e": {
+    "es": "· vendido",
+    "en": "· sold"
+  },
+  "709f03ef4c": {
+    "es": "· {start}",
+    "en": "· {start}"
+  },
+  "fc804984ed": {
+    "es": "Registrar quién y cuánto",
+    "en": "Log who and how much"
+  },
+  "a1f1ff3fa5": {
+    "es": "Nadie registró tiempo en este bloque.",
+    "en": "No time logged in this block."
+  },
+  "ef5a56c67a": {
+    "es": "Minutos",
+    "en": "Minutes"
+  },
+  "d9f61097ea": {
+    "es": "Dividir en dos días",
+    "en": "Split into two days"
+  },
+  "4b390c241d": {
+    "es": "Agregar tiempo",
+    "en": "Add time"
+  },
+  "46a9f3e25a": {
+    "es": "Día del resto",
+    "en": "Day for the rest"
+  },
+  "9199006144": {
+    "es": "Inicio (opcional)",
+    "en": "Start (optional)"
+  },
+  "6f947ef634": {
+    "es": "Minutos en el primer día",
+    "en": "Minutes on the first day"
+  },
+  "ea57ab7dcd": {
+    "es": "Quedan {valor} en el primer día y {valor2} pasan al otro.",
+    "en": "{valor} stay on the first day and {valor2} move to the other."
+  },
+  "cfa841d47e": {
+    "es": "Ajuste, retrabajo, falta de material…",
+    "en": "Adjustment, rework, missing material…"
   }
 }

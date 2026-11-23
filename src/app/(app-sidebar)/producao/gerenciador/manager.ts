@@ -120,6 +120,16 @@ export type Collaborator = {
 
 // Um trecho de tempo apontado por uma pessoa numa tarefa (GP-32: o relógio
 // é por pessoa, não só por tarefa)
+export type TaskSlot = {
+  id: string
+  date: string
+  start: string | null
+  minutes: number
+  kind: 'NORMAL' | 'EXTRA'
+  reason: string | null
+  by: string
+}
+
 export type TimeEntry = {
   id: string
   collaboratorId: string
@@ -131,6 +141,8 @@ export type TimeEntry = {
   // correção
   source: 'CLOCK' | 'DRAG' | 'CORRECTION'
   note: string | null
+  // O bloco de agenda em que o tempo foi feito (GP-52); nulo = o bloco 1
+  slotId?: string | null
 }
 
 // A correção de um apontamento, com o que era antes e quem mudou (GP-44)
@@ -247,6 +259,9 @@ export type ProductionTask = {
   // Impedimento descrito em texto, que sinaliza sem interromper (GP-28)
   pendency: { text: string; at: string; by: string } | null
   timeEntries: TimeEntry[]
+  // Os blocos além do agendamento da tarefa (o bloco 1), GP-52: o resto de um
+  // trabalho dividido em dois dias e o tempo extra, com motivo
+  slots?: TaskSlot[]
   corrections: TimeCorrection[]
   attachments: TaskAttachment[]
   history: TaskHistory[]

@@ -234,7 +234,22 @@
     "wasteSplice": "Waste, splice…",
     "differentMaterialFromTheOne": "Different material from the one sold: recorded as a swap.",
     "writeOffFromTheRoll": "Write off from the roll",
-    "texto7": "{asset} ·"
+    "block1": "Block 1",
+    "scheduleBlocks": "Schedule blocks",
+    "scheduled": "Scheduled",
+    "sold": "· sold",
+    "texto7": "· {start}",
+    "logWhoAndHowMuch": "Log who and how much",
+    "noTimeLoggedInThis": "No time logged in this block.",
+    "minutes": "Minutes",
+    "splitIntoTwoDays": "Split into two days",
+    "addTime": "Add time",
+    "dayForTheRest": "Day for the rest",
+    "startOptional": "Start (optional)",
+    "minutesOnTheFirstDay": "Minutes on the first day",
+    "stayOnTheFirstDay": "{valor} stay on the first day and {valor2} move to the other.",
+    "adjustmentReworkMissingMaterial": "Adjustment, rework, missing material…",
+    "texto8": "{asset} ·"
   },
   "produtividade": {
     "productivity": "Productivity",

@@ -234,7 +234,22 @@
     "wasteSplice": "Pérdida, empalme…",
     "differentMaterialFromTheOne": "Material diferente del vendido: queda registrado como cambio.",
     "writeOffFromTheRoll": "Dar de baja en el rollo",
-    "texto7": "{asset} ·"
+    "block1": "Bloque 1",
+    "scheduleBlocks": "Bloques de agenda",
+    "scheduled": "Agendado",
+    "sold": "· vendido",
+    "texto7": "· {start}",
+    "logWhoAndHowMuch": "Registrar quién y cuánto",
+    "noTimeLoggedInThis": "Nadie registró tiempo en este bloque.",
+    "minutes": "Minutos",
+    "splitIntoTwoDays": "Dividir en dos días",
+    "addTime": "Agregar tiempo",
+    "dayForTheRest": "Día del resto",
+    "startOptional": "Inicio (opcional)",
+    "minutesOnTheFirstDay": "Minutos en el primer día",
+    "stayOnTheFirstDay": "Quedan {valor} en el primer día y {valor2} pasan al otro.",
+    "adjustmentReworkMissingMaterial": "Ajuste, retrabajo, falta de material…",
+    "texto8": "{asset} ·"
   },
   "produtividade": {
     "productivity": "Productividad",

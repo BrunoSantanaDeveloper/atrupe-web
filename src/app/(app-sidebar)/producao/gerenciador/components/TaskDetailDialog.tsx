@@ -36,6 +36,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TaskLotUse } from './TaskLotUse'
+import { TaskSlots } from './TaskSlots'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
 import { Button } from '@/components/ui/button'
@@ -1180,6 +1181,14 @@ export function TaskDetailDialog({
                       </Button>
                     )}
                   </div>
+                  {/* Os blocos de agenda (GP-52): dividir em dois dias,
+                      acrescentar tempo, quem e quanto em cada bloco */}
+                  <TaskSlots
+                    task={task}
+                    collaborators={collaborators}
+                    run={run}
+                    pending={pending}
+                  />
                   {/* Frota (VS-7): a saída com veículo */}
                   {vehicles.length > 0 && (
                     <div className="space-y-2 border-t border-gray-100 pt-3">

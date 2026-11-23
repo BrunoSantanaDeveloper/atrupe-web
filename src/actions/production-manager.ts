@@ -813,18 +813,76 @@ export const addTimeEntry = async ({
   collaboratorId,
   minutes,
   note,
+  slotId,
 }: {
   id: string
   collaboratorId: string
   minutes: number
   note: string
+  // O bloco de agenda (GP-52); sem ele, o bloco 1
+  slotId?: string | null
 }) =>
   done(
     await createItemNew({
       route: `/production/task/${id}/time-entry`,
-      data: { minutes, collaboratorId, note },
+      data: { minutes, collaboratorId, note, ...(slotId ? { slotId } : {}) },
     }),
     'Tempo lançado',
+  )
+
+// Os blocos de agenda da tarefa (GP-52, ELITE)
+export const splitTask = async ({
+  id,
+  date,
+  start,
+  keepMinutes,
+}: {
+  id: string
+  date: string
+  start: string | null
+  keepMinutes: number
+}) =>
+  done(
+    await createItemNew({
+      route: `/production/task/${id}/split`,
+      data: { date, start, keepMinutes },
+    }),
+    'Dividida em dois dias',
+  )
+
+export const addTaskSlot = async ({
+  id,
+  date,
+  start,
+  minutes,
+  kind,
+  reason,
+}: {
+  id: string
+  date: string
+  start: string | null
+  minutes: number
+  kind: 'NORMAL' | 'EXTRA'
+  reason?: string
+}) =>
+  done(
+    await createItemNew({
+      route: `/production/task/${id}/slot`,
+      data: { date, start, minutes, kind, ...(reason ? { reason } : {}) },
+    }),
+    'Tempo acrescentado',
+  )
+
+export const removeTaskSlot = async ({
+  id,
+  slotId,
+}: {
+  id: string
+  slotId: string
+}) =>
+  done(
+    await deleteItemNew({ route: `/production/task/${id}/slot/${slotId}` }),
+    'Bloco tirado',
   )
 
 /**

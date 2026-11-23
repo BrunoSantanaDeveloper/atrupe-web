@@ -122,7 +122,6 @@
     "theRollOrSheetAlready": "The roll or sheet already in stock. What arrives through a purchase order comes in with its lots.",
     "lotCost": "Lot cost",
     "itIsANewPurchase": "It is a new purchase: add to the stock balance",
-    "post": "Post",
     "lot2": "Lot {code} · {material}",
     "cameInOn": "· came in on",
     "perBalance": "{unitCost} per {unit} · balance {currentValue}",

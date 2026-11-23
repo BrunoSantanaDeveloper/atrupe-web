@@ -122,7 +122,6 @@
     "theRollOrSheetAlready": "El rollo o la plancha que ya está en el inventario. Lo que llega por el pedido de compra ya entra con los lotes.",
     "lotCost": "Costo del lote",
     "itIsANewPurchase": "Es una compra nueva: sumar al saldo del inventario",
-    "post": "Registrar",
     "lot2": "Lote {code} · {material}",
     "cameInOn": "· entró el",
     "perBalance": "{unitCost} por {unit} · saldo {currentValue}",

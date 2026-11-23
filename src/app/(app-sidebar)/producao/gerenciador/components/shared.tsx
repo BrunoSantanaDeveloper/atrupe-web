@@ -51,8 +51,14 @@ export const inPeriod = (task: TaskView, period: Period) => {
   if (period === 'todas') return true
   if (period === 'sem-agenda') return !task.schedule
   if (!task.schedule) return false
-  if (period === 'hoje') return task.schedule.date === today()
-  return task.schedule.date >= today() && task.schedule.date <= addDays(7)
+  // O bloco 1 e os outros blocos de agenda (GP-52): o trabalho dividido em
+  // dois dias aparece nos dois
+  const days = [
+    task.schedule.date,
+    ...(task.slots || []).map((slot) => slot.date),
+  ]
+  if (period === 'hoje') return days.includes(today())
+  return days.some((day) => day >= today() && day <= addDays(7))
 }
 
 // O intervalo da agenda conforme o período escolhido

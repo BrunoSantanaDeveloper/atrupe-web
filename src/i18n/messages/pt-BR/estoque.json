@@ -142,7 +142,6 @@
     "theRollOrSheetAlready": "O rolo ou a chapa que já está no estoque. O que chega pelo pedido de compra já entra com os lotes.",
     "lotCost": "Custo do lote",
     "itIsANewPurchase": "É uma compra nova: somar ao saldo do estoque",
-    "post": "Lançar",
     "lot2": "Lote {code} · {material}",
     "cameInOn": "· entrou em",
     "perBalance": "{unitCost} por {unit} · saldo {currentValue}",
