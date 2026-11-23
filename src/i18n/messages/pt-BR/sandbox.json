@@ -67,7 +67,6 @@
     "oFaturamentoDaVendaNa": "O faturamento da venda na entrega ou na frente de caixa.",
     "carregandoOMapaDePlanos": "Carregando o mapa de planos",
     "semOMapaDePlanos": "Sem o mapa de planos",
-    "accountsPayable": "Contas a pagar",
     "osLancamentosAPagarCom": "Os lançamentos a pagar, com baixa, estorno e cancelamento.",
     "moduloAParteTitular": "Módulo à parte, titular",
     "aEmissaoDeNfE": "A emissão de NF-e, NFC-e e NFS-e a partir das vendas.",
@@ -212,7 +211,6 @@
   "inputs": {
     "email": "Email",
     "numeroDeTelefone": "Número de telefone",
-    "valorDeVenda": "Valor de venda",
     "website": "Website",
     "numeroDoCartao": "Número do cartão",
     "placeholder": "Placeholder",
@@ -358,7 +356,6 @@
     "esteProdutoTemAComposicao": "Este produto tem a composição com os custos do patrimônio. O custo por dia e a margem de cada período estão na aba",
     "tarefasDaLocacao": "Tarefas da locação",
     "oOrcamentoAprovadoGeraAs": "{name}. O orçamento aprovado gera as tarefas com as datas do período, cada uma no setor dela, com equipe e veículo.",
-    "aFazer": "A fazer",
     "comprovacaoDeVeiculacao": "Comprovação de veiculação",
     "conferenciaDasPecas": "Conferência das peças",
     "aInstalacaoSoConcluiCom": "A instalação só conclui com a foto do material no ponto. A foto vai para o cliente.",

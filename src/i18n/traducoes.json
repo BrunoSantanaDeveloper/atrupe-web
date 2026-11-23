@@ -20102,5 +20102,101 @@
   "e48d6eb21d": {
     "es": "{asset} ·",
     "en": "{asset} ·"
+  },
+  "ee3d9f13d5": {
+    "es": "Total programado",
+    "en": "Total scheduled"
+  },
+  "7c29bfa6e8": {
+    "es": "({count} {valor})",
+    "en": "({count} {valor})"
+  },
+  "7f7496b589": {
+    "es": "Registrado en el mes",
+    "en": "Posted this month"
+  },
+  "0f7b9d3a62": {
+    "es": "Pagado en el mes",
+    "en": "Paid this month"
+  },
+  "655e049a6c": {
+    "es": "{remainder} a plazo (de {total}, con {paid} de anticipo recibido) · va al flujo financiero, a nombre del cliente.",
+    "en": "{remainder} on credit (of {total}, with {paid} down payment received) · goes to the cash flow, under the customer's name."
+  },
+  "aa6c030ee5": {
+    "es": "Este cliente está bloqueado para facturación",
+    "en": "This customer is blocked from invoicing"
+  },
+  "b9d1c741cb": {
+    "es": "Quien puede desbloquearlo lo hace en el registro del cliente. Mientras tanto, cobre la venta en el punto de venta.",
+    "en": "Whoever can unblock does it on the customer record. In the meantime, collect the sale at the point of sale."
+  },
+  "8c6e0aa6b5": {
+    "es": "¡Atención! Límite de crédito excedido",
+    "en": "Warning: credit limit exceeded"
+  },
+  "7e82bdfeb2": {
+    "es": "Anticipo mínimo de {minEntry}",
+    "en": "Minimum down payment of {minEntry}"
+  },
+  "3e40e56c0a": {
+    "es": "El cliente no tiene límite disponible. Para concluir, cobre {remainder} al contado en el punto de venta, o pida a finanzas una revisión del límite de crédito.",
+    "en": "The customer has no credit available. To finish, collect {remainder} upfront at the point of sale, or ask finance to review the credit limit."
+  },
+  "1c640b08ae": {
+    "es": "El cliente tiene {valor} de límite disponible. Cobre al menos {minEntry} de anticipo en el punto de venta (Cobrar, monto parcial) y vuelva aquí para facturar el resto. Elegir la forma de pago no cuenta como cobrado.",
+    "en": "The customer has {valor} of credit available. Collect at least {minEntry} as a down payment at the point of sale (Receive, partial amount) and come back here to invoice the rest. Choosing the payment method doesn't count as received."
+  },
+  "959fcf6d43": {
+    "es": "Cobrar {suggested} al contado",
+    "en": "Collect {suggested} upfront"
+  },
+  "1e7be79613": {
+    "es": "Sin los R$ {linesTotal} agregados al ítem, que entran en el valor final.",
+    "en": "Without the R$ {linesTotal} added to the item, which go into the final amount."
+  },
+  "98a1adc382": {
+    "es": "+ R$ {surcharge}{surchargePercentText} sobre el valor base. Queda incluido en el valor del ítem y no cuenta como descuento.",
+    "en": "+ R$ {surcharge}{surchargePercentText} over the base amount. It's built into the item amount and doesn't count as a discount."
+  },
+  "4870d19790": {
+    "es": "Cobrar {suggestedDownPayment} al contado",
+    "en": "Collect {suggestedDownPayment} upfront"
+  },
+  "91bd5f5735": {
+    "es": "Todos los días",
+    "en": "All days"
+  },
+  "0c648b141c": {
+    "es": "Quién opera este punto de venta",
+    "en": "Who operates this point of sale"
+  },
+  "864e7f6b44": {
+    "es": "Solo quien esté marcado abre y mueve este punto de venta. Sin nadie marcado, vale para todos con acceso al punto de venta. El administrador abre cualquiera.",
+    "en": "Only the people checked can open and use this point of sale. With no one checked, it's open to everyone with point-of-sale access. The administrator can open any of them."
+  },
+  "07e706e088": {
+    "es": "No se encontró ningún usuario.",
+    "en": "No users found."
+  },
+  "eb527ac636": {
+    "es": "Ocultar imagen",
+    "en": "Hide image"
+  },
+  "cec235b47f": {
+    "es": "Imagen del producto",
+    "en": "Product image"
+  },
+  "ea8f073f0f": {
+    "es": "Cerrar la búsqueda",
+    "en": "Close search"
+  },
+  "4657a04ebe": {
+    "es": "Filtros, {activeCount} {valor}",
+    "en": "Filters, {activeCount} {valor}"
+  },
+  "d4fc26449c": {
+    "es": "Elegir estado",
+    "en": "Choose status"
   }
 }
