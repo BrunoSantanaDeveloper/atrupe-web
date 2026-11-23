@@ -4,7 +4,7 @@
 // o iCloud"), em todos os planos e só para o administrador. No alto, o
 // espaço usado numa barra dividida pelo que ocupa (arquivos de produção e
 // arquivos das O.S.); a recomendação de liberar o que está em O.S.
-// concluídas; as O.S. que mais ocupam; e a limpeza, com a prévia, a
+// entregues; as O.S. que mais ocupam; e a limpeza, com a prévia, a
 // confirmação digitada e o automático.
 
 // React / Next
@@ -158,8 +158,8 @@ export function StorageOverviewClient() {
                     Liberar até {formatBytes(overview.cleanableBytes)}
                   </p>
                   <p className="text-sm text-gray">
-                    São arquivos de O.S. concluídas ou finalizadas. Nada dos
-                    cadastros e nada em produção.
+                    São arquivos de O.S. entregues (finalizadas). Nada dos
+                    cadastros e nada de O.S. ainda não entregue.
                   </p>
                 </div>
                 <Button asChild variant="neutralOutline">

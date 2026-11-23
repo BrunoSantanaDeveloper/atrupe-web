@@ -2,9 +2,9 @@
 
 // A limpeza do espaço dos arquivos de produção (GP-49, 22/11/2026), para
 // quem não quer comprar espaço: apaga os arquivos mais antigos das O.S.
-// entregues e concluídas até liberar a porcentagem do espaço usado. Nada
+// entregues (finalizadas) até liberar a porcentagem do espaço usado. Nada
 // dos cadastros. Só o administrador, com a prévia antes e a confirmação
-// digitada. A automática vem desligada.
+// digitada. A automática vem desligada, e ligá-la pede a mesma confirmação.
 
 // React
 import { useEffect, useState } from 'react'
@@ -60,13 +60,95 @@ const day = (value: string | null) =>
 const clampPercent = (value: number) =>
   Math.min(Math.max(Math.round(value) || 1, 1), 100)
 
+const CONFIRM_WORD = 'APAGAR'
+
+/** A confirmação digitada de quem apaga: na limpeza e ao ligar a automática. */
+function ConfirmEraseDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  action,
+  busy,
+  onConfirm,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  title: string
+  description: string
+  action: string
+  busy: boolean
+  onConfirm: (typed: string) => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <ConfirmEraseForm
+          action={action}
+          busy={busy}
+          onCancel={() => onOpenChange(false)}
+          onConfirm={onConfirm}
+        />
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// Dentro do diálogo: sai da tela ao fechar, e o que foi digitado vai junto
+function ConfirmEraseForm({
+  action,
+  busy,
+  onCancel,
+  onConfirm,
+}: {
+  action: string
+  busy: boolean
+  onCancel: () => void
+  onConfirm: (typed: string) => void
+}) {
+  const [typed, setTyped] = useState('')
+
+  return (
+    <>
+      <DialogBody>
+        <Label htmlFor="cleanup-confirm">Digite APAGAR para confirmar</Label>
+        <Input
+          id="cleanup-confirm"
+          value={typed}
+          autoComplete="off"
+          onChange={(event) => setTyped(event.target.value)}
+        />
+      </DialogBody>
+      <DialogFooter>
+        <Button type="button" variant="neutralOutline" onClick={onCancel}>
+          Cancelar
+        </Button>
+        <Button
+          type="button"
+          variant="errorOutline"
+          disabled={typed.trim().toUpperCase() !== CONFIRM_WORD || busy}
+          onClick={() => onConfirm(typed)}
+        >
+          {action}
+        </Button>
+      </DialogFooter>
+    </>
+  )
+}
+
 export function StorageCleanupCard() {
   const queryClient = useQueryClient()
   const [percent, setPercent] = useState(50)
   const [confirming, setConfirming] = useState(false)
-  const [typed, setTyped] = useState('')
   const [running, setRunning] = useState(false)
   const [auto, setAuto] = useState<CleanupAuto | null>(null)
+  // O que está gravado: ligar o que estava desligado pede o APAGAR
+  const [savedEnabled, setSavedEnabled] = useState(false)
+  const [enabling, setEnabling] = useState(false)
   const [savingAuto, setSavingAuto] = useState(false)
 
   const { data, isLoading } = useQuery({
@@ -76,7 +158,10 @@ export function StorageCleanupCard() {
   const preview = data?.data
 
   useEffect(() => {
-    if (preview && !auto) setAuto(preview.auto)
+    if (preview && !auto) {
+      setAuto(preview.auto)
+      setSavedEnabled(preview.auto.enabled)
+    }
   }, [preview, auto])
 
   const usedRatio =
@@ -84,7 +169,7 @@ export function StorageCleanupCard() {
       ? Math.min(preview.usedBytes / preview.quotaBytes, 1)
       : 0
 
-  const run = async () => {
+  const run = async (typed: string) => {
     setRunning(true)
     const res = await runCleanup(percent, typed)
     setRunning(false)
@@ -93,21 +178,30 @@ export function StorageCleanupCard() {
       `${res.data.files} arquivo(s) apagado(s), ${formatBytes(res.data.bytes)} liberados`,
     )
     setConfirming(false)
-    setTyped('')
     queryClient.invalidateQueries({ queryKey: ['production-cleanup'] })
     // A tela do armazenamento relê o espaço e as O.S. que mais ocupam
     queryClient.invalidateQueries({ queryKey: ['company-storage'] })
   }
 
-  const saveAuto = async (next: CleanupAuto) => {
-    setAuto(next)
+  const saveAuto = async (next: CleanupAuto, confirm?: string) => {
     setSavingAuto(true)
-    const res = await saveCleanupAuto(next)
+    const res = await saveCleanupAuto(next, confirm)
     setSavingAuto(false)
-    if (!res.success) return toast.error(res.message)
+    if (!res.success) {
+      toast.error(res.message)
+      return false
+    }
+    setAuto(next)
+    setSavedEnabled(next.enabled)
     toast.success(
       next.enabled ? 'Limpeza automática ligada' : 'Limpeza automática salva',
     )
+    return true
+  }
+
+  const enable = async (typed: string) => {
+    if (!auto) return
+    if (await saveAuto({ ...auto, enabled: true }, typed)) setEnabling(false)
   }
 
   if (!isLoading && !data?.success) {
@@ -136,9 +230,10 @@ export function StorageCleanupCard() {
                   usado.
                 </p>
                 <p>
-                  Entram só os arquivos acrescentados às O.S. entregues e
-                  concluídas (artes, versões editadas, provas, PDFs e projetos).
-                  Nada dos cadastros e nada de O.S. em produção.
+                  Entram só os arquivos acrescentados às O.S. entregues, com o
+                  status Finalizada (artes, versões editadas, provas, PDFs e
+                  projetos). Nada dos cadastros e nada de O.S. ainda não
+                  entregue.
                 </p>
               </InfoHint>
             </div>
@@ -155,8 +250,7 @@ export function StorageCleanupCard() {
               </span>
               {preview && (
                 <span className="text-gray">
-                  {formatBytes(preview.eligibleBytes)} em O.S. entregues e
-                  concluídas
+                  {formatBytes(preview.eligibleBytes)} em O.S. entregues
                 </span>
               )}
             </div>
@@ -214,9 +308,7 @@ export function StorageCleanupCard() {
                   .
                 </p>
               ) : (
-                <p>
-                  Não há arquivos de O.S. entregues e concluídas para apagar.
-                </p>
+                <p>Não há arquivos de O.S. entregues para apagar.</p>
               )}
             </div>
           )}
@@ -245,7 +337,9 @@ export function StorageCleanupCard() {
                 checked={auto.enabled}
                 disabled={savingAuto}
                 onCheckedChange={(checked) =>
-                  saveAuto({ ...auto, enabled: checked })
+                  checked && !savedEnabled
+                    ? setEnabling(true)
+                    : saveAuto({ ...auto, enabled: checked })
                 }
               />
             </div>
@@ -319,53 +413,27 @@ export function StorageCleanupCard() {
         </Card>
       )}
 
-      <Dialog
+      <ConfirmEraseDialog
         open={confirming}
-        onOpenChange={(open) => {
-          setConfirming(open)
-          if (!open) setTyped('')
-        }}
-      >
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Apagar {preview?.files} arquivo(s)?</DialogTitle>
-            <DialogDescription>
-              Libera {formatBytes(preview?.bytes || 0)} com os arquivos de{' '}
-              {preview?.projects} O.S. entregues e concluídas, enviados de{' '}
-              {day(preview?.from ?? null)} a {day(preview?.to ?? null)}. Não tem
-              volta.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogBody>
-            <Label htmlFor="cleanup-confirm">
-              Digite APAGAR para confirmar
-            </Label>
-            <Input
-              id="cleanup-confirm"
-              value={typed}
-              autoComplete="off"
-              onChange={(event) => setTyped(event.target.value)}
-            />
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="neutralOutline"
-              onClick={() => setConfirming(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="button"
-              variant="errorOutline"
-              disabled={typed.trim().toUpperCase() !== 'APAGAR' || running}
-              onClick={run}
-            >
-              Apagar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onOpenChange={setConfirming}
+        title={`Apagar ${preview?.files} arquivo(s)?`}
+        description={`Libera ${formatBytes(preview?.bytes || 0)} com os arquivos de ${preview?.projects} O.S. entregues, enviados de ${day(preview?.from ?? null)} a ${day(preview?.to ?? null)}. Não tem volta.`}
+        action="Apagar"
+        busy={running}
+        onConfirm={run}
+      />
+
+      {auto && (
+        <ConfirmEraseDialog
+          open={enabling}
+          onOpenChange={setEnabling}
+          title="Ligar a limpeza automática?"
+          description={`De madrugada, quando o espaço usado passar de ${auto.threshold}%, os arquivos mais antigos das O.S. entregues serão apagados até liberar ${auto.percent}% do espaço usado, sem perguntar de novo. Não tem volta.`}
+          action="Ligar"
+          busy={savingAuto}
+          onConfirm={enable}
+        />
+      )}
     </div>
   )
 }

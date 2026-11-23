@@ -4,7 +4,7 @@
 // vários formatos (imagem, PDF da impressão, projeto da serralheria), com a
 // intenção maior de armazenar. Vê quem vê a O.S.; acrescenta e apaga quem
 // edita. Contam no espaço dos arquivos e entram na limpeza da O.S.
-// concluída ou finalizada. Os arquivos de cada etapa ficam nos
+// entregue (finalizada). Os arquivos de cada etapa ficam nos
 // gerenciadores, com o acesso do gerenciador.
 
 // React

@@ -49,6 +49,7 @@ import {
   qty,
   toCents,
   toNumber,
+  toOptionalNumber,
   MaterialPicker,
   measureOptions,
   lotStatusObj,
@@ -279,8 +280,8 @@ function NewLotDialog({
       variationId: material!.variationId,
       measure,
       quantity: toNumber(quantity) || suggested,
-      width: measure === 'UNIT' ? null : toNumber(width),
-      length: measure === 'UNIT' ? null : toNumber(length),
+      width: measure === 'UNIT' ? null : (toOptionalNumber(width) ?? null),
+      length: measure === 'UNIT' ? null : (toOptionalNumber(length) ?? null),
       cost: toCents(cost),
       supplierName,
       brand,
@@ -670,6 +671,19 @@ function LotDialog({
                 <Button
                   variant="neutralOutline"
                   isLoading={busy === 'use'}
+                  // A sobra pede as duas medidas maiores que zero (a sobra
+                  // 0 × 0 zeraria o lote: para encerrar, Finalizar lote); os
+                  // metros e a quantidade, o valor maior que zero
+                  disabled={
+                    mode === 'remaining' && hasArea
+                      ? !(
+                          (toOptionalNumber(remainWidth) ?? 0) > 0 &&
+                          (toOptionalNumber(remainLength) ?? 0) > 0
+                        )
+                      : mode === 'length' && hasArea
+                        ? !((toOptionalNumber(useLength) ?? 0) > 0)
+                        : !((toOptionalNumber(useQuantity) ?? 0) > 0)
+                  }
                   onClick={() =>
                     run(
                       'use',
@@ -678,13 +692,16 @@ function LotDialog({
                           lot.id,
                           mode === 'remaining' && hasArea
                             ? {
-                                remainingWidth: toNumber(remainWidth),
-                                remainingLength: toNumber(remainLength),
+                                remainingWidth: toOptionalNumber(remainWidth),
+                                remainingLength: toOptionalNumber(remainLength),
                                 note,
                               }
                             : mode === 'length' && hasArea
-                              ? { length: toNumber(useLength), note }
-                              : { quantity: toNumber(useQuantity), note },
+                              ? { length: toOptionalNumber(useLength), note }
+                              : {
+                                  quantity: toOptionalNumber(useQuantity),
+                                  note,
+                                },
                         ),
                       () => {
                         setUseLength('')

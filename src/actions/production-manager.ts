@@ -246,11 +246,14 @@ export const getManagerBoard = async ({ managerId }: { managerId: string }) => {
     taskTypes: (res.data.taskTypes || []) as TaskType[],
     vehicles: (res.data.vehicles || []).map(toVehicle) as Vehicle[],
     calendar: toCalendar(res.data.manager?.calendar),
-    // As manutenções que bloqueiam as máquinas (GP-49 item 6)
+    // As manutenções que bloqueiam as máquinas (GP-49 item 6): o bem e as
+    // configurações dele, para casar com a máquina da tarefa
     maintenance: (res.data.maintenance || []) as {
       costId: string
       name: string
+      assetId: string
       machine: string
+      setupIds: string[]
       date: string
       start: string
       minutes: number
@@ -1011,7 +1014,7 @@ export type CleanupPreview = {
 }
 
 // O armazenamento da empresa (GP-49), em todos os planos: só o
-// administrador. A limpeza usa as rotas company/storage
+// administrador. A limpeza usa as rotas company-storage
 export type StorageOverview = {
   storage: {
     usedBytes: number
@@ -1034,14 +1037,14 @@ export type StorageOverview = {
 }
 
 export const getStorageOverview = async () => {
-  const res: ApiResult = await getItem({ route: '/company/storage' })
+  const res: ApiResult = await getItem({ route: '/company-storage' })
   if (!res.success) return fail(res.message, null as StorageOverview | null)
   return ok<StorageOverview | null>(res.data as StorageOverview)
 }
 
 export const getCleanupPreview = async (percent: number) => {
   const res: ApiResult = await getItem({
-    route: '/company/storage/cleanup',
+    route: '/company-storage/cleanup',
     params: { percent: String(percent) },
   })
   if (!res.success) return fail(res.message, null as CleanupPreview | null)
@@ -1050,17 +1053,21 @@ export const getCleanupPreview = async (percent: number) => {
 
 export const runCleanup = async (percent: number, confirm: string) => {
   const res: ApiResult = await createItemNew({
-    route: '/company/storage/cleanup',
+    route: '/company-storage/cleanup',
     data: { percent, confirm },
   })
   if (!res.success) return fail(res.message, null)
   return ok(res.data as { files: number; bytes: number; projects: number })
 }
 
-export const saveCleanupAuto = async (values: CleanupAuto) => {
+// Ligar a automática pede o APAGAR digitado, como a limpeza manual
+export const saveCleanupAuto = async (
+  values: CleanupAuto,
+  confirm?: string,
+) => {
   const res: ApiResult = await putItemNew({
-    route: '/company/storage/cleanup/auto',
-    data: values,
+    route: '/company-storage/cleanup/auto',
+    data: confirm ? { ...values, confirm } : values,
   })
   return res.success ? ok(null) : fail(res.message, null)
 }

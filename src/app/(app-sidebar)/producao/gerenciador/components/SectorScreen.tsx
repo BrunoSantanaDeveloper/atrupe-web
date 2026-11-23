@@ -49,7 +49,7 @@ import {
 // Types
 import type { TaskView, TaskStatus, TaskAction } from '../manager'
 import { NO_HOURS } from '../manager'
-import { dayOff, forecastQueue, remainingOf } from '../forecast'
+import { blocksTask, dayOff, forecastQueue, remainingOf } from '../forecast'
 
 // Actions
 import {
@@ -376,11 +376,13 @@ export function SectorScreen({ id }: { id: string }) {
           },
           ...queue.days.map(({ day, tasks: inDay }) => {
             const off = dayOff(day, board?.calendar)
-            // A manutenção das máquinas do setor naquele dia (GP-49 item 6)
-            const machines = new Set(inDay.map((item) => item.machine))
+            // A manutenção das máquinas do setor naquele dia (GP-49 item 6),
+            // casada pela configuração vendida de cada tarefa
             const stops = (board?.maintenance || [])
               .filter(
-                (block) => block.date === day && machines.has(block.machine),
+                (block) =>
+                  block.date === day &&
+                  inDay.some((item) => blocksTask(block, item)),
               )
               .map(
                 (block) =>

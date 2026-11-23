@@ -350,8 +350,17 @@ export const defaultMainNavigation: MainNavigationType[] = [
     icon: IconBoxSeam,
     title: 'Estoque',
     path: '/estoque',
-    permission: 'stock:stock:view',
-    requiredFeature: 'stock_control',
+    // O grupo aparece para quem tem qualquer uma das telas (quem só tem as
+    // compras também); cada filho continua pedindo a sua chave e o seu plano
+    permission: [
+      'stock:stock:view',
+      'stock:invoice_entry:view',
+      'stock:purchase_request:view',
+      'stock:purchase:view',
+      'stock:lot:view',
+    ],
+    requireAllPermissions: false,
+    requiredFeature: ['stock_control', 'purchasing'],
     demo: true,
     children: [
       {

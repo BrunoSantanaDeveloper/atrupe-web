@@ -20,14 +20,39 @@
 import type { LiveSchedule, ManagerHours, TaskView } from './manager'
 import type { ProductionCalendar } from '@/actions/production-manager'
 
-// A manutenção do patrimônio que bloqueia a máquina (GP-49 item 6)
+// A manutenção do patrimônio que bloqueia a máquina (GP-49 item 6). A tarefa
+// não guarda o patrimônio: guarda a configuração vendida (machineSetupId) e o
+// nome da opção vendida em `machine` ("Bem · Configuração", às vezes com a
+// variação, ou o nome do grupo). Por isso o bloqueio leva o bem e as
+// configurações dele.
 export type MaintenanceBlock = {
   costId: string
   name: string
+  assetId: string
+  // O nome do bem, para a tela e para a tarefa antiga
   machine: string
+  setupIds: string[]
   date: string
   start: string
   minutes: number
+}
+
+/**
+ * A manutenção para a máquina da tarefa, como o servidor faz (blocksTask):
+ * pela configuração vendida; na tarefa antiga, sem ela, pelo nome do bem
+ * igual ou pelo prefixo "Bem · ". A tarefa do grupo de máquinas não casa.
+ */
+export const blocksTask = (
+  block: Pick<MaintenanceBlock, 'machine' | 'setupIds'>,
+  task: Pick<TaskView, 'machine' | 'machineSetupId'>,
+) => {
+  if (task.machineSetupId) {
+    return (block.setupIds || []).includes(task.machineSetupId)
+  }
+  const machine = task.machine?.trim()
+  const asset = block.machine?.trim()
+  if (!machine || !asset) return false
+  return machine === asset || machine.startsWith(`${asset} · `)
 }
 
 // O dia é feriado ou não é de trabalho (GP-49)
@@ -205,7 +230,7 @@ export function forecastQueue(
     }
     // A manutenção da máquina naquele dia: a sequência pula o período
     const blocks = (options.maintenance || [])
-      .filter((block) => block.date === day && block.machine === task.machine)
+      .filter((block) => block.date === day && blocksTask(block, task))
       .map((block) => ({
         name: block.name,
         from: toMinutes(block.start),

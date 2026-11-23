@@ -212,6 +212,9 @@ export type ProductionTask = {
   estimatedMinutes: number
   setupMinutes: number
   machine: string | null
+  // A configuração vendida (o AssetSetup do bem): a manutenção da máquina
+  // casa por ela (GP-49 item 6)
+  machineSetupId?: string | null
   // A qualidade vendida (GP-48 item 22): a configuração da máquina
   machineQuality?: string | null
   // A tarefa da base, quando esta é acabamento: é o que a regra de liberação

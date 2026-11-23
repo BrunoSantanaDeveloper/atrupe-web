@@ -45,6 +45,7 @@ import {
   qty,
   toCents,
   toNumber,
+  toOptionalNumber,
   Timeline,
   MaterialPicker,
   SupplierField,
@@ -440,7 +441,8 @@ function RequestDialog({
       supplierId: supplier.supplierId,
       supplierName: supplier.supplierName,
       unitPrice: toCents(price),
-      quantity: quantity ? toNumber(quantity) : undefined,
+      // Vazia, a cotação vale para a quantidade da solicitação
+      quantity: toOptionalNumber(quantity),
       deliveryDays: days ? Number(days) : null,
       paymentTerms: terms || null,
       validUntil: validUntil || null,

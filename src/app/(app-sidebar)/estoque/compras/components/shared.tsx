@@ -33,7 +33,6 @@ import { getMaterials } from '@/actions/materials'
 import { getSupplierOptions } from '@/actions/purchasing'
 
 // Utils
-import { parseCurrency } from '@/lib/utils'
 import { materialUnitSymbol } from '@/consts/materials'
 
 // Types
@@ -92,17 +91,48 @@ export const qty = (value: number | null | undefined) =>
     ? '-'
     : value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 
-/** "12,50" → 1250 (centavos). */
-export const toCents = (value: string) =>
-  Math.round(parseCurrency(value || '0') * 100)
+/** A quantidade no campo editável: sem o ponto do milhar ("1234,5"). */
+export const editableQty = (value: number) =>
+  value.toLocaleString('pt-BR', {
+    maximumFractionDigits: 3,
+    useGrouping: false,
+  })
 
-/** "1,22" → 1.22 */
-export const toNumber = (value: string) =>
-  Number(
-    String(value || '')
-      .replace(/\./g, '')
-      .replace(',', '.'),
-  ) || 0
+/**
+ * O valor em reais digitado → centavos. Com vírgula, ela é o decimal e o
+ * ponto é o milhar; sem vírgula, o ponto com uma ou duas casas depois é o
+ * decimal, e com três é o milhar. Sem separador, são reais inteiros.
+ * "350" → 35000; "1.234,56" → 123456; "12,5" → 1250; "12.50" → 1250;
+ * "1.234" → 123400.
+ */
+export const toCents = (value: string) => {
+  const text = String(value ?? '').replace(/R\$|\s/g, '')
+  if (!text) return 0
+  const normalized = text.includes(',')
+    ? text.replace(/\./g, '').replace(',', '.')
+    : /^\d*\.\d{1,2}$/.test(text)
+      ? text
+      : text.replace(/\./g, '')
+  const reais = Number(normalized)
+  return Number.isFinite(reais) ? Math.round(reais * 100) : 0
+}
+
+/**
+ * O número digitado (metros, quantidade), ou `undefined` quando o campo
+ * está vazio ou não é número. Com vírgula, o ponto é o milhar ("1.234,5");
+ * sem vírgula, o ponto é o decimal ("2.5").
+ */
+export const toOptionalNumber = (value: string): number | undefined => {
+  const text = String(value ?? '').trim()
+  if (!text) return undefined
+  const number = Number(
+    text.includes(',') ? text.replace(/\./g, '').replace(',', '.') : text,
+  )
+  return Number.isFinite(number) ? number : undefined
+}
+
+/** Como `toOptionalNumber`, com 0 no vazio: para contas e conferências. */
+export const toNumber = (value: string) => toOptionalNumber(value) ?? 0
 
 export function Timeline({ events }: { events: TimelineEvent[] }) {
   if (!events.length) return null
@@ -244,7 +274,16 @@ export function MaterialPicker({
 
 /* ---------------------------------------------------- fornecedor */
 
-export type SupplierChoice = { supplierId: string | null; supplierName: string }
+export type SupplierChoice = {
+  supplierId: string | null
+  supplierName: string
+  /**
+   * "Outro (sem cadastro)" escolhido: o campo do nome aparece já vazio. Fica
+   * na escolha (e não só no nome) para o campo não sumir antes de digitar, e
+   * some quando a tela volta a escolha para o vazio.
+   */
+  isOther?: boolean
+}
 
 const OTHER = '__outro'
 
@@ -260,7 +299,8 @@ export function SupplierField({
     queryKey: ['purchase-supplier-options'],
     queryFn: () => getSupplierOptions(),
   })
-  const selected = value.supplierId ?? (value.supplierName ? OTHER : '')
+  const selected =
+    value.supplierId ?? (value.isOther || value.supplierName ? OTHER : '')
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <SelectBasic
@@ -277,7 +317,8 @@ export function SupplierField({
         ]}
         onChange={(next) => {
           const id = String(next)
-          if (id === OTHER) onChange({ supplierId: null, supplierName: '' })
+          if (id === OTHER)
+            onChange({ supplierId: null, supplierName: '', isOther: true })
           else
             onChange({
               supplierId: id,
@@ -293,7 +334,11 @@ export function SupplierField({
             id="supplier-name"
             value={value.supplierName}
             onChange={(event) =>
-              onChange({ supplierId: null, supplierName: event.target.value })
+              onChange({
+                supplierId: null,
+                supplierName: event.target.value,
+                isOther: true,
+              })
             }
           />
         </div>

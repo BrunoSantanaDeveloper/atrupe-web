@@ -43,9 +43,11 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import {
   brDate,
+  editableQty,
   qty,
   toCents,
   toNumber,
+  toOptionalNumber,
   Timeline,
   MaterialPicker,
   SupplierField,
@@ -524,8 +526,13 @@ function OrderDialog({
         itemId: item.id,
         measure: lot.measure,
         count: Math.max(1, Number(lot.count) || 1),
-        width: lot.measure === 'UNIT' ? null : toNumber(lot.width),
-        length: lot.measure === 'UNIT' ? null : toNumber(lot.length),
+        // Vazio vai como sem medida (o servidor pede), nunca 0
+        width:
+          lot.measure === 'UNIT' ? null : (toOptionalNumber(lot.width) ?? null),
+        length:
+          lot.measure === 'UNIT'
+            ? null
+            : (toOptionalNumber(lot.length) ?? null),
         brand: lot.brand,
         color: lot.color,
       }
@@ -602,7 +609,7 @@ function OrderDialog({
                         className="w-[110px]"
                         value={
                           received[item.id] ??
-                          qty(item.receivedQuantity ?? item.quantity)
+                          editableQty(item.receivedQuantity ?? item.quantity)
                         }
                         onChange={(event) =>
                           setReceived((current) => ({
@@ -703,15 +710,19 @@ function OrderDialog({
               <Button
                 variant="neutralOutline"
                 isLoading={busy === 'check'}
+                // O "Chegou" apagado ou inválido não vira 0 sem querer
+                disabled={Object.values(received).some(
+                  (value) => !((toOptionalNumber(value) ?? -1) >= 0),
+                )}
                 onClick={() =>
                   run('check', () =>
                     checkPurchaseOrder(order.id, {
                       items: order.items.map((item) => ({
                         itemId: item.id,
                         receivedQuantity:
-                          received[item.id] !== undefined
-                            ? toNumber(received[item.id])
-                            : (item.receivedQuantity ?? item.quantity),
+                          toOptionalNumber(received[item.id] ?? '') ??
+                          item.receivedQuantity ??
+                          item.quantity,
                         divergence:
                           divergence[item.id] ?? item.divergence ?? null,
                       })),

@@ -71,7 +71,12 @@ export async function fetchProductionStorage(
   }
 }
 
-/** O PUT direto ao armazenamento, com o progresso (0 a 1). */
+/**
+ * O PUT direto ao armazenamento, com o progresso (0 a 1). O link assina o
+ * tamanho e o tipo: o Content-Type vai exatamente como a API devolveu com o
+ * link (não o `file.type` do navegador, que pode ser outro), e o
+ * Content-Length o navegador põe sozinho.
+ */
 const putFile = (
   url: string,
   file: File,
@@ -81,7 +86,7 @@ const putFile = (
   new Promise<boolean>((resolve) => {
     const xhr = new XMLHttpRequest()
     xhr.open('PUT', url)
-    xhr.setRequestHeader('Content-Type', file.type || mime)
+    xhr.setRequestHeader('Content-Type', mime)
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) onProgress?.(event.loaded / event.total)
     }
@@ -156,10 +161,11 @@ export async function uploadProductionAttachment({
           message: `${file.name} não chegou ao armazenamento. Envie de novo.`,
         }
       }
+      // O nome é o mesmo do pedido do link (a API confere com a chave); o
+      // tipo vale o do link
       const body = {
         key: link.payload.key,
         fileName: file.name,
-        mime: file.type || undefined,
         ...(attachmentId ? {} : { name, kind }),
       }
       const saved = await api(
@@ -295,13 +301,10 @@ export async function uploadOrderFile({
           message: `${file.name} não chegou ao armazenamento. Envie de novo.`,
         }
       }
+      // O nome é o mesmo do pedido do link (a API confere com a chave)
       const saved = await api(token, `/sale/order-file/${orderId}/direct`, {
         method: 'POST',
-        body: {
-          key: link.payload.key,
-          fileName: file.name,
-          mime: file.type || undefined,
-        },
+        body: { key: link.payload.key, fileName: file.name },
       })
       return saved.ok
         ? { success: true, message: 'Arquivo guardado' }

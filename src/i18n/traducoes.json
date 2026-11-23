@@ -23,6 +23,10 @@
     "es": "Error al crear el grupo",
     "en": "Error creating the group"
   },
+  "2681545360": {
+    "es": "El sector del material",
+    "en": "The material's department"
+  },
   "2887664858": {
     "es": "CE – Ceará",
     "en": "CE – Ceará"
@@ -19975,10 +19979,6 @@
     "es": "Usted no tiene permiso para ver las solicitudes de material.",
     "en": "You don't have permission to view material requests."
   },
-  "2681545360": {
-    "es": "El sector del material",
-    "en": "The material's department"
-  },
   "01bcc466f3": {
     "es": "Cerrados en el inventario",
     "en": "Closed in stock"
@@ -20070,5 +20070,37 @@
   "e869bcc7e9": {
     "es": "Dar de baja en el rollo",
     "en": "Write off from the roll"
+  },
+  "05490c788e": {
+    "es": "Son archivos de OT entregadas (finalizadas). Nada de los registros y nada de OT aún no entregadas.",
+    "en": "These are files from delivered work orders (closed). Nothing from the registers and nothing from work orders not yet delivered."
+  },
+  "a362263678": {
+    "es": "Entran solo los archivos añadidos a las OT entregadas, con el estado Finalizada (artes, versiones editadas, pruebas, PDF y proyectos). Nada de los registros y nada de OT aún no entregadas.",
+    "en": "Only files added to delivered work orders, with the Closed status, are included (artwork, edited versions, proofs, PDFs and projects). Nothing from the registers and nothing from work orders not yet delivered."
+  },
+  "c2bcddfd06": {
+    "es": "{eligibleBytes} en OT entregadas",
+    "en": "{eligibleBytes} in delivered work orders"
+  },
+  "96c0b2ac18": {
+    "es": "No hay archivos de OT entregadas para borrar.",
+    "en": "There are no files from delivered work orders to delete."
+  },
+  "e72d002240": {
+    "es": "Libera {valor} con los archivos de {projects} OT entregadas, enviados del {null} al {null2}. No tiene vuelta atrás.",
+    "en": "Frees {valor} with the files of {projects} delivered work orders, uploaded from {null} to {null2}. This cannot be undone."
+  },
+  "6a95170707": {
+    "es": "¿Activar la limpieza automática?",
+    "en": "Turn on automatic cleanup?"
+  },
+  "d6da4b9c20": {
+    "es": "De madrugada, cuando el espacio usado pase del {threshold}%, los archivos más antiguos de las OT entregadas se borrarán hasta liberar el {percent}% del espacio usado, sin volver a preguntar. No tiene vuelta atrás.",
+    "en": "Overnight, when the space used goes over {threshold}%, the oldest files from delivered work orders will be deleted until {percent}% of the space used is freed, without asking again. This cannot be undone."
+  },
+  "e48d6eb21d": {
+    "es": "{asset} ·",
+    "en": "{asset} ·"
   }
 }

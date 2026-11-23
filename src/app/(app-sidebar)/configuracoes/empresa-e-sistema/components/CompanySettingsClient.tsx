@@ -85,7 +85,8 @@ export function CompanySettingsClient() {
             ]
           : []),
         // O expediente da empresa é do ELITE (GP-49): o padrão de cada
-        // gerenciador novo; o cadastro fica com o da produção
+        // gerenciador novo; o cadastro fica com o da produção. A tela da
+        // produção ainda está em DEMO_ROUTES: o cartão só aparece com a flag
         ...(hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
           ? [
               {
@@ -95,6 +96,7 @@ export function CompanySettingsClient() {
                   'Dias e horário de trabalho, intervalo e feriados. Cada setor novo da produção começa com esse horário.',
                 link: 'producao?aba=expediente',
                 permission: 'production:production:view',
+                demo: true,
               },
             ]
           : []),
