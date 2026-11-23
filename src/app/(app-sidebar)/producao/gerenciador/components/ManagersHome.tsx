@@ -26,6 +26,7 @@ import { TaskCard } from './TaskCard'
 import { TaskDetailDialog } from './TaskDetailDialog'
 import { AgendaView, VehiclesView, ProductionFilters } from './GeneralViews'
 import { PersonAgenda } from './PersonAgenda'
+import { OccupancyMap } from './OccupancyMap'
 import {
   agendaRange,
   taskMatches,
@@ -55,7 +56,7 @@ import { useQuery } from '@tanstack/react-query'
 import { IconAlertTriangle, IconChevronRight } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
-type View = 'agenda' | 'veiculos' | 'pessoas'
+type View = 'agenda' | 'veiculos' | 'pessoas' | 'ocupacao'
 
 export function ManagersHome() {
   const router = useRouter()
@@ -201,10 +202,12 @@ export function ManagersHome() {
                 <TabsTrigger value="agenda">Agenda viva</TabsTrigger>
                 <TabsTrigger value="veiculos">Veículos</TabsTrigger>
                 <TabsTrigger value="pessoas">Agenda do colaborador</TabsTrigger>
+                {/* Para quando dá para agendar (GP-50) */}
+                <TabsTrigger value="ocupacao">Ocupação</TabsTrigger>
               </TabsList>
             </Tabs>
 
-            {view !== 'pessoas' && (
+            {view !== 'pessoas' && view !== 'ocupacao' && (
               <ProductionFilters
                 search={search}
                 onSearch={setSearch}
@@ -213,7 +216,9 @@ export function ManagersHome() {
               />
             )}
 
-            {loadingAgenda || !agenda ? (
+            {view === 'ocupacao' ? (
+              <OccupancyMap />
+            ) : loadingAgenda || !agenda ? (
               <AgendaSkeleton />
             ) : view === 'pessoas' ? (
               <PersonAgenda

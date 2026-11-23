@@ -1073,3 +1073,37 @@ export const saveCleanupAuto = async (
   })
   return res.success ? ok(null) : fail(res.message, null)
 }
+
+// O mapa de ocupação (GP-50, ELITE): os minutos agendados por setor e por
+// dia, só os totais. Vê quem vê a produção ou a Agenda de entrega
+export type Occupancy = {
+  from: string
+  to: string
+  calendar: ProductionCalendar
+  managers: {
+    id: string
+    name: string
+    sector: { id: string; name: string; icon: string | null } | null
+    hours: ManagerHours
+  }[]
+  days: { managerId: string; date: string; minutes: number; tasks: number }[]
+}
+
+export const getOccupancy = async ({
+  from,
+  to,
+}: {
+  from: string
+  to: string
+}) => {
+  const res: ApiResult = await getItem({
+    route: '/production/occupancy',
+    params: { from, to },
+  })
+  if (!res.success) return fail(res.message, null as Occupancy | null)
+  const data = res.data as Occupancy
+  return ok<Occupancy | null>({
+    ...data,
+    calendar: toCalendar(data.calendar),
+  })
+}

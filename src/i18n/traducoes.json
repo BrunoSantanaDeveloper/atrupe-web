@@ -20230,5 +20230,37 @@
   "fc2a46f5be": {
     "es": "Sin tipo de tarea registrado: va a Producción",
     "en": "No task type registered: goes to Production"
+  },
+  "71b07c0ffe": {
+    "es": "Ocultar la ocupación",
+    "en": "Hide occupancy"
+  },
+  "065656fa79": {
+    "es": "Ver la ocupación de los sectores",
+    "en": "See department occupancy"
+  },
+  "ec129a9573": {
+    "es": "Ocupación",
+    "en": "Occupancy"
+  },
+  "b450a71a22": {
+    "es": "Ocupación de los sectores",
+    "en": "Department occupancy"
+  },
+  "2213e155e6": {
+    "es": "Para saber para cuándo se puede agendar o prometer un servicio.",
+    "en": "To know when a job can be scheduled or promised."
+  },
+  "975e1b4242": {
+    "es": "Semana anterior",
+    "en": "Previous week"
+  },
+  "cc74a23b8c": {
+    "es": "Esta semana",
+    "en": "This week"
+  },
+  "caa3a5ed63": {
+    "es": "Ningún gestor activo. Cree uno por sector en Configuración › Producción.",
+    "en": "No active production board. Create one per department in Settings › Production."
   }
 }

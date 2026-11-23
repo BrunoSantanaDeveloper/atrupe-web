@@ -15897,7 +15897,7 @@
  "comum.geral.delivery": {
   "pt": "Entrega",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:62 (propriedade:label)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:72 (propriedade:label)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:292 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:165 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:55 (propriedade:label)",
@@ -15914,7 +15914,7 @@
   "pt": "Agenda de entrega",
   "usos": [
    "src/app/(app-sidebar)/dashboard/components/QuickAccess.tsx:29 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:109 (atributo:title)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:119 (atributo:title)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/page.tsx:10 (propriedade:title)",
    "src/consts/nav.ts:249 (propriedade:title)"
   ]
@@ -15953,6 +15953,7 @@
    "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:364 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:237 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleFilter.tsx:71 (atributo:label)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:172 (jsx)",
    "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:91 (jsx)",
    "src/components/layout/MyProfile/index.tsx:174 (atributo:label)"
   ]
@@ -16666,7 +16667,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:78 (propriedade:label)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:88 (propriedade:label)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:373 (propriedade:title)",
    "src/app/sandbox/locacao/components/RentalFinance.tsx:125 (jsx)",
    "src/consts/productionManager.ts:62 (propriedade:text)"
@@ -17697,7 +17698,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:324 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialsFilter.tsx:97 (propriedade:label)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceResultsTable.tsx:903 (jsx)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:56 (propriedade:label)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:66 (propriedade:label)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:330 (jsx)",
    "src/app/sandbox/locacao/page.tsx:116 (jsx)",
    "src/components/common/fiscal/FiscalEnvironmentBadge.tsx:74 (jsx)",
@@ -29482,7 +29483,7 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:125 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:672 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:673 (atributo:title)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:202 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:203 (jsx)"
   ]
  },
  "configuracoes.producao.waitAfterCompletion": {
@@ -37303,7 +37304,7 @@
   "pt": "Finalizados",
   "usos": [
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:90 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:84 (propriedade:label)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:94 (propriedade:label)"
   ]
  },
  "estoque.compras.closed2": {
@@ -47784,6 +47785,12 @@
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:580 (jsx)"
   ]
  },
+ "producao.agendaDeEntrega.hideOccupancy": {
+  "pt": "Esconder a ocupação",
+  "usos": [
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:135 (jsx)"
+  ]
+ },
  "producao.agendaDeEntrega.invalidTimeExpectedFormatHh": {
   "pt": "Horário inválido. Formato esperado: HH:mm.",
   "usos": [
@@ -47813,7 +47820,7 @@
  "producao.agendaDeEntrega.noDeliveriesScheduled": {
   "pt": "Nenhuma entrega agendada",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:136 (atributo:title)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:167 (atributo:title)"
   ]
  },
  "producao.agendaDeEntrega.noDeliveriesWithStatus": {
@@ -47822,7 +47829,7 @@
    "statusLabel"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:122 (atributo:title)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:153 (atributo:title)"
   ]
  },
  "producao.agendaDeEntrega.ordersSelected": {
@@ -47838,6 +47845,12 @@
   "pt": "Remover pendência",
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/Stages/StagePendingDialog.tsx:143 (jsx)"
+  ]
+ },
+ "producao.agendaDeEntrega.seeDepartmentOccupancy": {
+  "pt": "Ver a ocupação dos setores",
+  "usos": [
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:136 (jsx)"
   ]
  },
  "producao.agendaDeEntrega.selectADate": {
@@ -47930,7 +47943,7 @@
  "producao.agendaDeEntrega.toInvoice": {
   "pt": "A faturar",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:71 (propriedade:label)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:81 (propriedade:label)"
   ]
  },
  "producao.agendaDeEntrega.viewWorkOrder": {
@@ -48198,6 +48211,12 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:413 (frase)"
   ]
  },
+ "producao.gerenciador.departmentOccupancy": {
+  "pt": "Ocupação dos setores",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:115 (jsx)"
+  ]
+ },
  "producao.gerenciador.differentMaterialFromTheOne": {
   "pt": "Material diferente do vendido: fica registrado como troca.",
   "usos": [
@@ -48440,7 +48459,7 @@
  "producao.gerenciador.liveSchedule": {
   "pt": "Agenda viva",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:201 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:202 (jsx)"
   ]
  },
  "producao.gerenciador.log": {
@@ -48513,6 +48532,19 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:443 (jsx)"
   ]
  },
+ "producao.gerenciador.nextWeek": {
+  "pt": "Próxima semana",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:137 (atributo:aria-label)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/FollowUp/ContactDialog.tsx:77 (propriedade:label)"
+  ]
+ },
+ "producao.gerenciador.noActiveProductionBoardCreate": {
+  "pt": "Nenhum gerenciador ativo. Crie um por setor em Configurações › Produção.",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:163 (jsx)"
+  ]
+ },
  "producao.gerenciador.noAttachmentsTheArtworkGoes": {
   "pt": "Nenhum anexo. A arte vai na impressão, o desenho de corte no router, a foto do trabalho pronto na última etapa.",
   "usos": [
@@ -48522,7 +48554,7 @@
  "producao.gerenciador.noManagerConfiguredCreateOne": {
   "pt": "Nenhum gerenciador configurado. Crie um por setor em Configurações › Produção.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:184 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:185 (jsx)"
   ]
  },
  "producao.gerenciador.noOneHasAccessTo": {
@@ -48611,6 +48643,12 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/GeneralViews.tsx:167 (jsx)"
   ]
  },
+ "producao.gerenciador.occupancy": {
+  "pt": "Ocupação",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:206 (jsx)"
+  ]
+ },
  "producao.gerenciador.occupiesForOfSetupPlus": {
   "pt": "Ocupa {machine} por {occupies}: preparo de {setupMinutes} mais a produção.",
   "vars": [
@@ -48687,7 +48725,7 @@
    "open"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:157 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:158 (jsx)"
   ]
  },
  "producao.gerenciador.openTheTaskToSchedule": {
@@ -48755,11 +48793,17 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1294 (jsx)"
   ]
  },
+ "producao.gerenciador.previousWeek": {
+  "pt": "Semana anterior",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:125 (atributo:aria-label)"
+  ]
+ },
  "producao.gerenciador.productionBoard": {
   "pt": "Gerenciador de produção",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/[id]/page.tsx:37 (propriedade:title)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:114 (atributo:title)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:115 (atributo:title)",
    "src/app/(app-sidebar)/producao/gerenciador/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/producao/gerenciador/page.tsx:28 (propriedade:title)",
    "src/consts/nav.ts:255 (propriedade:title)"
@@ -48966,7 +49010,7 @@
  "producao.gerenciador.teamMemberSchedule": {
   "pt": "Agenda do colaborador",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:203 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:204 (jsx)"
   ]
  },
  "producao.gerenciador.texto": {
@@ -48983,13 +49027,13 @@
  "producao.gerenciador.texto1OpenTask": {
   "pt": "1 tarefa aberta",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:156 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:157 (jsx)"
   ]
  },
  "producao.gerenciador.texto1WithAlert": {
   "pt": "1 com alerta",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:167 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:168 (jsx)"
   ]
  },
  "producao.gerenciador.texto2": {
@@ -49088,6 +49132,12 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1329 (jsx)"
   ]
  },
+ "producao.gerenciador.thisWeek": {
+  "pt": "Esta semana",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:149 (jsx)"
+  ]
+ },
  "producao.gerenciador.timeEntries": {
   "pt": "Apontamentos",
   "usos": [
@@ -49104,6 +49154,12 @@
   "pt": "a fazer",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:619 (jsx)"
+  ]
+ },
+ "producao.gerenciador.toKnowWhenAJob": {
+  "pt": "Para saber para quando dá para agendar ou prometer um serviço.",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:117 (jsx)"
   ]
  },
  "producao.gerenciador.tripSKmPlanned": {
@@ -49224,7 +49280,7 @@
    "alerts"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:168 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:169 (jsx)"
   ]
  },
  "producao.gerenciador.withVehicle": {
@@ -60875,12 +60931,6 @@
   "pt": "Próximo contato salvo.",
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/components/FollowUp/NextContactDialog.tsx:94 (aviso)"
-  ]
- },
- "vendas.orcamentos.nextWeek": {
-  "pt": "Próxima semana",
-  "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/FollowUp/ContactDialog.tsx:77 (propriedade:label)"
   ]
  },
  "vendas.orcamentos.noActiveSeriesBillsOn": {

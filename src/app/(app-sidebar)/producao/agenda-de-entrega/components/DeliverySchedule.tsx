@@ -1,7 +1,10 @@
 'use client'
 
 // UI
+import { useState } from 'react'
 import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { OccupancyMap } from '@/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap'
 
 // Components
 import {
@@ -28,9 +31,16 @@ import { IconReportMoney } from '@tabler/icons-react'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
+import { FEATURES } from '@/consts/features'
 
 export function DeliverySchedule({ searchParams }: SearchParamsType) {
-  const { canManageDeliverySchedule } = usePlanFeatures()
+  const { canManageDeliverySchedule, hasFeature } = usePlanFeatures()
+  // O mapa de ocupação (GP-50, ELITE): o vendedor vê para quando prometer;
+  // quem vê a produção abre o setor pelo quadrado
+  const { hasPermission } = usePermissions()
+  const withOccupancy = hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+  const [showOccupancy, setShowOccupancy] = useState(false)
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -112,6 +122,27 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
         paramName="status"
         countsLoading={isLoading}
       />
+      {withOccupancy && (
+        <div className="space-y-3">
+          <div className="flex justify-end">
+            <Button
+              type="button"
+              variant="neutralOutline"
+              size="sm"
+              onClick={() => setShowOccupancy((value) => !value)}
+            >
+              {showOccupancy
+                ? 'Esconder a ocupação'
+                : 'Ver a ocupação dos setores'}
+            </Button>
+          </div>
+          {showOccupancy && (
+            <OccupancyMap
+              linkToSector={hasPermission('production:production:view')}
+            />
+          )}
+        </div>
+      )}
       <div className="space-y-2">
         <Card>
           {isLoading ? (
