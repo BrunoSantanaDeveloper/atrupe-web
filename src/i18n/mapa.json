@@ -14877,13 +14877,13 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:316 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1715 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2195 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2196 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1722 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2202 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2203 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:708 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsFilter.tsx:102 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:795 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:796 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:797 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:798 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:283 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:827 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:344 (jsx)",
@@ -15072,13 +15072,13 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:400 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1113 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1705 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1923 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2191 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:681 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:698 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:719 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2821 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2967 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1932 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2200 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:683 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:700 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:721 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2828 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2974 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:365 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:442 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:468 (jsx)",
@@ -15094,8 +15094,8 @@
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/InactivateMaterialDialog.tsx:142 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialFiscalDialog.tsx:213 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:798 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:471 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:486 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:473 (propriedade:cancelLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:488 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/InactivateProcessDialog.tsx:135 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:487 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento/components/Actions/Delete/index.tsx:96 (jsx)",
@@ -15774,15 +15774,15 @@
    "src/app/(app-sidebar)/admin/sistema/integracoes/components/AiUsageCard.tsx:91 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:151 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:290 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1234 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1770 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2095 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2435 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1241 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1777 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2102 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2442 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/ImportMaterialsDialog.tsx:293 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:234 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:153 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:585 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1024 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:587 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1026 (jsx)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:511 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:133 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:184 (propriedade:label)",
@@ -15945,7 +15945,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:142 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialsFilter.tsx:65 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:343 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:699 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:701 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:342 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:344 (atributo:placeholder)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:163 (jsx)",
@@ -16402,10 +16402,10 @@
    "src/app/(app-sidebar)/admin/sistema/planos/components/ComparisonEditor.tsx:159 (atributo:aria-label)",
    "src/app/(app-sidebar)/admin/sistema/planos/components/FeatureMatrix.tsx:105 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:813 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2048 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1226 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2429 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1016 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2057 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1233 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2436 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1018 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:672 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/CompositionReport.tsx:185 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:342 (jsx)",
@@ -16431,11 +16431,11 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/ActivationWizardModal.tsx:632 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:516 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:940 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2106 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2521 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2115 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2528 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:373 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:231 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1383 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1385 (jsx)",
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:441 (jsx)",
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:962 (jsx)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:836 (jsx)",
@@ -16799,8 +16799,8 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1227 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1017 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1234 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1019 (jsx)",
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:575 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:132 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:237 (jsx)",
@@ -16849,7 +16849,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:623 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:625 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:401 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:286 (propriedade:label)",
    "src/app/sandbox/fluxo/page.tsx:121 (propriedade:label)"
@@ -16897,7 +16897,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2106 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2113 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:132 (jsx)",
    "src/app/(app-sidebar)/precificacao/resumo/components/PricingSummaryView.tsx:117 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:354 (jsx)",
@@ -17714,7 +17714,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/CompositionsWarning.tsx:21 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1798 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1805 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:127 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:699 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/index.tsx:197 (jsx)",
@@ -17763,12 +17763,12 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1861 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1062 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1231 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2432 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:928 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1021 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1870 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1069 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1238 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2439 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:930 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1023 (jsx)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:294 (jsx)",
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:359 (jsx)",
    "src/app/(app-sidebar)/estoque/entrada-de-nota/components/InvoiceEntry.tsx:186 (jsx)",
@@ -17855,7 +17855,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/NewItem/index.tsx:134 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:263 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:270 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1933 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1940 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:169 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:836 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:901 (jsx)",
@@ -18036,11 +18036,11 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/CfopListClient.tsx:290 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/NaturezaListClient.tsx:301 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorListItem.tsx:638 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2021 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:697 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:718 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2820 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:485 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2030 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:699 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:720 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2827 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:487 (propriedade:confirmLabel)",
    "src/app/(app-sidebar)/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento/components/Actions/Delete/index.tsx:101 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/origens-de-contato/components/Actions/Delete/index.tsx:77 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/perfil-de-vendedor/components/Actions/DeleteProfile.tsx:88 (jsx)",
@@ -18059,8 +18059,8 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:861 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:640 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1170 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:642 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1177 (atributo:tooltip)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:307 (propriedade:label)",
    "src/app/sandbox/fluxo/page.tsx:125 (propriedade:label)"
   ]
@@ -18217,10 +18217,10 @@
  "comum.geral.sale": {
   "pt": "Venda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1236 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2438 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:587 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1026 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1243 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2445 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:589 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1028 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:446 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:512 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:269 (jsx)",
@@ -18299,15 +18299,15 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:756 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1020 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/StorageCleanup.tsx:390 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1930 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2530 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2975 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1939 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2537 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2982 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1210 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/index.tsx:226 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/NewProductGroup.tsx:179 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialFiscalDialog.tsx:223 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:806 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1391 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1393 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:497 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:508 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/acompanhamento/components/FollowUpSettingsForm.tsx:244 (jsx)",
@@ -18411,8 +18411,8 @@
   "pt": "Preço de venda",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetTabs.tsx:154 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1989 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2097 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1996 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2104 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/PriceTiersCard.tsx:168 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:272 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:237 (jsx)",
@@ -18574,7 +18574,7 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:245 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfseListClient.tsx:236 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:690 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1646 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1653 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/ImportMaterialsDialog.tsx:295 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/status-de-orcamento/components/NewItem/index.tsx:134 (atributo:label)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:166 (jsx)",
@@ -18735,7 +18735,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/CfopFormModal.tsx:177 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/NaturezaFormModal.tsx:171 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2430 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2437 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialsFilter.tsx:79 (atributo:label)",
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:661 (jsx)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:291 (jsx)",
@@ -18939,9 +18939,9 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1542 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2072 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1228 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1018 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2081 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1235 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1020 (jsx)",
    "src/app/sandbox/offset/components/OffsetItem.tsx:360 (jsx)",
    "src/consts/stock.ts:7 (propriedade:text)"
   ]
@@ -19049,7 +19049,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2866 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2873 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:441 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/MaterialItemDialog.tsx:140 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/MaterialItemDialog.tsx:143 (atributo:aria-label)",
@@ -21653,8 +21653,8 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/CompositionsWarning.tsx:21 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/InactivateMaterialDialog.tsx:131 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:686 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:687 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:688 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:689 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:275 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/Processes.tsx:121 (jsx)",
@@ -21840,7 +21840,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:203 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2887 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2894 (atributo:tooltip)"
   ]
  },
  "configuracoes.empresaESistema.repeatThePassword": {
@@ -28740,7 +28740,7 @@
   "pt": "Acrescentar",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:215 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2096 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2105 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields.tsx:300 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderFiles.tsx:137 (jsx)"
   ]
@@ -29193,8 +29193,8 @@
   "pt": "Fluxo de produção",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:218 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2301 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2302 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2308 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2309 (atributo:title)"
   ]
  },
  "configuracoes.producao.productionSettings": {
@@ -29582,7 +29582,7 @@
  "configuracoes.produtos.aDepartmentSStepThe": {
   "pt": "A etapa de um setor: a máquina, o material e a mão de obra que ele usa, cada um com o seu tipo de cálculo. O produto que incluir o processo acompanha esta montagem.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:798 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:800 (jsx)"
   ]
  },
  "configuracoes.produtos.aMvaVemDeProtocolo": {
@@ -29598,7 +29598,7 @@
  "configuracoes.produtos.aPathThatStartsOn": {
   "pt": "Um caminho que começa sozinho — a estrutura que depois se encontra com a lona na instalação. Ligue-o a uma etapa pelo menu da caixa.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2556 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2563 (atributo:description)"
   ]
  },
  "configuracoes.produtos.aPriceForEachQuantity": {
@@ -29697,13 +29697,13 @@
  "configuracoes.produtos.addOption": {
   "pt": "Acrescentar opção",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2044 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2053 (jsx)"
   ]
  },
  "configuracoes.produtos.addPart": {
   "pt": "Acrescentar parte",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2141 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2150 (jsx)"
   ]
  },
  "configuracoes.produtos.addStep": {
@@ -29721,7 +29721,7 @@
  "configuracoes.produtos.addVariant": {
   "pt": "Cadastrar variação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2976 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2983 (jsx)"
   ]
  },
  "configuracoes.produtos.addVariants": {
@@ -29765,8 +29765,8 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1248 (frase)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1471 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1210 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1478 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1212 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.adjust2": {
@@ -29787,7 +29787,7 @@
  "configuracoes.produtos.adjustedInThisProduct": {
   "pt": "· ajustada neste produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1256 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1263 (jsx)"
   ]
  },
  "configuracoes.produtos.advancedSalesSettings": {
@@ -29816,7 +29816,7 @@
    "baseText"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:594 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:596 (frase)"
   ]
  },
  "configuracoes.produtos.aliqInterna": {
@@ -29971,13 +29971,13 @@
  "configuracoes.produtos.anotherProductUsedHereWith": {
   "pt": "Outro produto usado aqui, com a composição dele (",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1203 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1210 (jsx)"
   ]
  },
  "configuracoes.produtos.anotherProductWithABuild": {
   "pt": "Outro produto com composição, usado dentro deste — o quadro de ferro da placa, a letra caixa da fachada.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2143 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2152 (jsx)"
   ]
  },
  "configuracoes.produtos.anotherProductWithABuild2": {
@@ -29998,7 +29998,7 @@
  "configuracoes.produtos.appearsOnThePrintedProposal": {
   "pt": "Aparece na proposta impressa, abaixo do nome do produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1732 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1739 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.appliesOnlyToTheVariant": {
@@ -30013,7 +30013,7 @@
  "configuracoes.produtos.appliesTheStepRulesTo": {
   "pt": "Aplica as regras da etapa na simulação: acompanhar a quantidade da base, usar a medida dela e quantas peças cabem nela.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:615 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:617 (jsx)"
   ]
  },
  "configuracoes.produtos.appliesTo": {
@@ -30029,8 +30029,8 @@
  "configuracoes.produtos.approveComposition": {
   "pt": "Aprovar composição",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1629 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1701 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1636 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1708 (jsx)"
   ]
  },
  "configuracoes.produtos.atual": {
@@ -30054,7 +30054,7 @@
  "configuracoes.produtos.backToStandard": {
   "pt": "Voltar ao padrão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2137 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2144 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/PrintCountPanel.tsx:147 (jsx)"
   ]
  },
@@ -30162,13 +30162,13 @@
  "configuracoes.produtos.buildUpSaved": {
   "pt": "Composição salva",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:671 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:673 (aviso)"
   ]
  },
  "configuracoes.produtos.buildUpStillInDraft": {
   "pt": "Composição em montagem.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1682 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1689 (jsx)"
   ]
  },
  "configuracoes.produtos.buildUps": {
@@ -30205,13 +30205,13 @@
  "configuracoes.produtos.calculatedAtThisStepS": {
   "pt": ") calculada na medida desta etapa. Para mudar o que ele leva, abra a composição dele.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1205 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1212 (jsx)"
   ]
  },
  "configuracoes.produtos.calculation": {
   "pt": "Cálculo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1229 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1236 (jsx)"
   ]
  },
  "configuracoes.produtos.calculationType": {
@@ -30219,7 +30219,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:932 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1263 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1019 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1021 (jsx)"
   ]
  },
  "configuracoes.produtos.cameFromTheProcess": {
@@ -30286,25 +30286,25 @@
  "configuracoes.produtos.changesMadeHereAreSaved": {
   "pt": "O que mudou aqui é gravado pelo Salvar do rodapé.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:778 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:780 (jsx)"
   ]
  },
  "configuracoes.produtos.changingTheProcessChangesEvery": {
   "pt": "Mudar o processo muda todos os produtos que o usam — isso se faz em",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1817 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1826 (jsx)"
   ]
  },
  "configuracoes.produtos.changingTheProcessChangesThe": {
   "pt": "Mudar o processo muda os produtos",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1290 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1292 (atributo:title)"
   ]
  },
  "configuracoes.produtos.changingTheSetupChanges1": {
   "pt": "Mudar a montagem muda 1 produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:814 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:816 (jsx)"
   ]
  },
  "configuracoes.produtos.changingTheSetupChangesProducts": {
@@ -30313,7 +30313,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:815 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:817 (jsx)"
   ]
  },
  "configuracoes.produtos.chargeForTheFullSheet": {
@@ -30333,13 +30333,13 @@
    "charged"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1421 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1428 (jsx)"
   ]
  },
  "configuracoes.produtos.checkCostPriceAndMargin": {
   "pt": "Confira custo, preço e margem numa medida. Não grava nada: o padrão do produto só muda com “Salvar como padrão”.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2088 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2095 (atributo:description)"
   ]
  },
  "configuracoes.produtos.checkTheProductSRequired": {
@@ -30351,8 +30351,8 @@
  "configuracoes.produtos.checkTheUsageForA": {
   "pt": "Confira o consumo numa medida. Não grava nada.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:578 (atributo:description)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1411 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:580 (atributo:description)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1413 (jsx)"
   ]
  },
  "configuracoes.produtos.chooseAtLeastOneSupplier": {
@@ -30376,7 +30376,7 @@
  "configuracoes.produtos.chooseTheResource": {
   "pt": "Escolha o recurso",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2049 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2058 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.chooseTheResourceTheName": {
@@ -30406,7 +30406,7 @@
  "configuracoes.produtos.chosen3": {
   "pt": "· escolhida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2009 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2018 (jsx)"
   ]
  },
  "configuracoes.produtos.code": {
@@ -30439,20 +30439,20 @@
  "configuracoes.produtos.collapse": {
   "pt": "Recolher",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2329 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2421 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2336 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2428 (jsx)"
   ]
  },
  "configuracoes.produtos.collapseAllSteps": {
   "pt": "Recolher todas as etapas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2229 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2236 (jsx)"
   ]
  },
  "configuracoes.produtos.collapseTheStep": {
   "pt": "Recolher a etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1157 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1164 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.colors": {
@@ -30509,7 +30509,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1769 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1771 (frase)"
   ]
  },
  "configuracoes.produtos.confirmationToDeactivateOrActivate": {
@@ -30600,7 +30600,7 @@
  "configuracoes.produtos.costStepSale": {
   "pt": "Custo · venda da etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1144 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1151 (jsx)"
   ]
  },
  "configuracoes.produtos.couldnTLoadTheDepartments": {
@@ -30845,7 +30845,7 @@
  "configuracoes.produtos.eGPvcTrimming": {
   "pt": "Ex.: Refile PVC",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2065 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2074 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.eGS4x0": {
@@ -30857,7 +30857,7 @@
  "configuracoes.produtos.eGSML": {
   "pt": "Ex.: P, M, G, GG",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2952 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2959 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.eGSolventPrintingHem": {
@@ -30893,7 +30893,7 @@
  "configuracoes.produtos.eachResourceOnceSummedAcross": {
   "pt": "Cada recurso uma vez, somado de todas as etapas, na medida simulada. É a lista do que o produto consome.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2408 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2415 (jsx)"
   ]
  },
  "configuracoes.produtos.eachRowIsMatchedAgainst": {
@@ -30905,7 +30905,7 @@
  "configuracoes.produtos.eachStepIsADepartment": {
   "pt": "Cada etapa é o trabalho de um setor: a máquina, o material e a mão de obra que ele usa, cada um com o seu cálculo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2198 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2205 (jsx)"
   ]
  },
  "configuracoes.produtos.eachVariantCanHaveIts": {
@@ -30977,8 +30977,8 @@
  "configuracoes.produtos.enteredAtSale": {
   "pt": "Informado na venda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1372 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1148 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1379 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1150 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:599 (jsx)"
   ]
  },
@@ -31036,21 +31036,21 @@
  "configuracoes.produtos.errorRemovingTheLine": {
   "pt": "Erro ao remover a linha",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:730 (propriedade:error)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:493 (propriedade:error)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:732 (propriedade:error)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:495 (propriedade:error)"
   ]
  },
  "configuracoes.produtos.errorRemovingTheStep": {
   "pt": "Erro ao remover a etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:707 (propriedade:error)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:709 (propriedade:error)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:329 (propriedade:error)"
   ]
  },
  "configuracoes.produtos.errorRemovingTheVariant": {
   "pt": "Erro ao remover a variação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2834 (propriedade:error)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2841 (propriedade:error)"
   ]
  },
  "configuracoes.produtos.errorTryingToProduct": {
@@ -31078,7 +31078,7 @@
  "configuracoes.produtos.existingProcess": {
   "pt": "Processo cadastrado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:977 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:984 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:181 (jsx)"
   ]
  },
@@ -31121,21 +31121,21 @@
    "secondFit"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1412 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1419 (atributo:title)"
   ]
  },
  "configuracoes.produtos.followTheProcessAgain": {
   "pt": "Voltar a acompanhar o processo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1507 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1514 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.followsTheBaseQuantity": {
   "pt": "Acompanha a quantidade da base",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1870 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1095 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:960 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1879 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1102 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:962 (jsx)"
   ]
  },
  "configuracoes.produtos.followsTheBaseQuantity2": {
@@ -31147,7 +31147,7 @@
  "configuracoes.produtos.forAnotherSizeUseSimulate": {
   "pt": "Para outra medida, use Simular.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:808 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:810 (jsx)"
   ]
  },
  "configuracoes.produtos.format": {
@@ -31165,8 +31165,8 @@
  "configuracoes.produtos.formulaCreated": {
   "pt": "Fórmula criada",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:904 (aviso)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:454 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:906 (aviso)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:456 (aviso)"
   ]
  },
  "configuracoes.produtos.formulaRemoved": {
@@ -31254,7 +31254,7 @@
  "configuracoes.produtos.howThisStepAppearsTo": {
   "pt": "Como esta etapa aparece para o vendedor no orçamento.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1771 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1773 (jsx)"
   ]
  },
  "configuracoes.produtos.howToEdit": {
@@ -31350,13 +31350,13 @@
  "configuracoes.produtos.inactiveProcess": {
   "pt": "Processo inativo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:981 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:988 (jsx)"
   ]
  },
  "configuracoes.produtos.inactiveProduct": {
   "pt": "Produto inativo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:985 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:992 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:421 (jsx)"
   ]
  },
@@ -31392,7 +31392,7 @@
  "configuracoes.produtos.itIsAlreadyTheSale": {
   "pt": "Já é o valor de venda.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1970 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1977 (jsx)"
   ]
  },
  "configuracoes.produtos.itIsHowTheQuote": {
@@ -31519,8 +31519,8 @@
  "configuracoes.produtos.leave": {
   "pt": "Sair",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:680 (propriedade:confirmLabel)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:470 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:682 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:472 (propriedade:confirmLabel)",
    "src/components/layout/MobileSidebar.tsx:434 (jsx)",
    "src/components/layout/UserDropdown.tsx:122 (jsx)"
   ]
@@ -31528,13 +31528,13 @@
  "configuracoes.produtos.leaveWithoutSavingTheDescription": {
   "pt": "Sair sem salvar o descritivo?",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:677 (propriedade:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:679 (propriedade:title)"
   ]
  },
  "configuracoes.produtos.leaveWithoutSavingTheProcess": {
   "pt": "Sair sem salvar o processo?",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:467 (propriedade:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:469 (propriedade:title)"
   ]
  },
  "configuracoes.produtos.leftOver": {
@@ -31543,21 +31543,21 @@
    "leftover"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1417 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1424 (jsx)"
   ]
  },
  "configuracoes.produtos.lineOptions": {
   "pt": "Opções da linha",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1485 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1220 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1492 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1222 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.lineRemoved": {
   "pt": "Linha removida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:730 (propriedade:success)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:493 (propriedade:success)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:732 (propriedade:success)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:495 (propriedade:success)"
   ]
  },
  "configuracoes.produtos.loadingDepartments": {
@@ -31621,7 +31621,7 @@
  "configuracoes.produtos.mToChangeItSimulate": {
   "pt": "m. Para mudar, simule outra medida e use &quot;Salvar como padrão&quot;.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2056 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2063 (jsx)"
   ]
  },
  "configuracoes.produtos.makeReadySheets": {
@@ -31652,7 +31652,7 @@
    "gapMm"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1424 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1431 (jsx)"
   ]
  },
  "configuracoes.produtos.markAsOptionalItem": {
@@ -31731,8 +31731,8 @@
  "configuracoes.produtos.minimumApplied": {
   "pt": "mínimo aplicado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1438 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1177 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1445 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1179 (jsx)"
   ]
  },
  "configuracoes.produtos.minimumQuantity": {
@@ -31816,7 +31816,7 @@
  "configuracoes.produtos.nameInThisProduct": {
   "pt": "Nome neste produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1779 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1781 (jsx)"
   ]
  },
  "configuracoes.produtos.ncm": {
@@ -31919,7 +31919,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2260 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2267 (frase)"
   ]
  },
  "configuracoes.produtos.newVariant": {
@@ -31928,7 +31928,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2933 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2940 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:177 (jsx)",
    "src/app/sandbox/locacao/components/RentalProductForm.tsx:184 (jsx)"
   ]
@@ -31936,7 +31936,7 @@
  "configuracoes.produtos.nextSteps": {
   "pt": "Etapas seguintes",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1352 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1354 (atributo:label)"
   ]
  },
  "configuracoes.produtos.noActiveProcesses": {
@@ -32023,7 +32023,7 @@
  "configuracoes.produtos.noOtherProductWithA": {
   "pt": "Nenhum outro produto com composição. Monte a composição da parte no produto dela, com a situação &quot;Parte&quot;.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2180 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2189 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:352 (jsx)"
   ]
  },
@@ -32083,7 +32083,7 @@
  "configuracoes.produtos.noProductUsesThisProcess": {
   "pt": "Nenhum produto usa este processo ainda.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1314 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1316 (jsx)"
   ]
  },
  "configuracoes.produtos.noProductUsesThisProcess2": {
@@ -32116,8 +32116,8 @@
  "configuracoes.produtos.noResourceCompleteOrRemove": {
   "pt": "Sem recurso: complete ou remova",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1268 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1055 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1275 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1057 (jsx)"
   ]
  },
  "configuracoes.produtos.noResourceMatchesThisSearch": {
@@ -32153,14 +32153,20 @@
  "configuracoes.produtos.noStepsYet": {
   "pt": "Nenhuma etapa ainda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:805 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:807 (atributo:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:520 (atributo:title)"
+  ]
+ },
+ "configuracoes.produtos.noTaskTypeRegisteredGoes": {
+  "pt": "Sem tipo de tarefa cadastrado: vai para Produção",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:980 (jsx)"
   ]
  },
  "configuracoes.produtos.notFromHere": {
   "pt": ", não daqui.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1825 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1834 (jsx)"
   ]
  },
  "configuracoes.produtos.notPaper": {
@@ -32178,7 +32184,7 @@
  "configuracoes.produtos.notesForTheSalesperson": {
   "pt": "Instruções para o vendedor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:748 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:750 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:364 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:393 (jsx)"
   ]
@@ -32205,14 +32211,14 @@
  "configuracoes.produtos.ofTheseOnlyTheChosen": {
   "pt": "Entre estas, entra no custo só a escolhida.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1993 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2002 (jsx)"
   ]
  },
  "configuracoes.produtos.ofThisOption": {
   "pt": "desta opção",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1357 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1133 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1364 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1135 (jsx)"
   ]
  },
  "configuracoes.produtos.offset": {
@@ -32248,9 +32254,9 @@
  "configuracoes.produtos.oncePerOrder": {
   "pt": "Uma vez por pedido",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1871 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1098 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:963 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1880 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1105 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:965 (jsx)"
   ]
  },
  "configuracoes.produtos.oncePerOrder2": {
@@ -32268,20 +32274,20 @@
  "configuracoes.produtos.onlyInThisProduct": {
   "pt": "· só neste produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1257 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1264 (jsx)"
   ]
  },
  "configuracoes.produtos.onlyInThisVariant": {
   "pt": "Só nesta variação",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:300 (propriedade:text)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:991 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:998 (jsx)"
   ]
  },
  "configuracoes.produtos.openAllSteps": {
   "pt": "Abrir todas as etapas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2228 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2235 (jsx)"
   ]
  },
  "configuracoes.produtos.openQuotesHaveThisProduct": {
@@ -32296,13 +32302,13 @@
  "configuracoes.produtos.openThePartSBuild": {
   "pt": "Abrir a composição da parte",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1218 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1225 (jsx)"
   ]
  },
  "configuracoes.produtos.openTheStep": {
   "pt": "Abrir a etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1157 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1164 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.opensInAnotherTab": {
@@ -32329,21 +32335,21 @@
  "configuracoes.produtos.optionAdded": {
   "pt": "Opção acrescentada",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2712 (aviso)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1467 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2719 (aviso)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1469 (aviso)"
   ]
  },
  "configuracoes.produtos.optional": {
   "pt": "(opcional)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2061 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2070 (jsx)"
   ]
  },
  "configuracoes.produtos.optionalIncludedByDefault": {
   "pt": "Opcional · incluído por padrão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1262 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1049 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1269 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1051 (jsx)"
   ]
  },
  "configuracoes.produtos.optionalItem": {
@@ -32355,8 +32361,8 @@
  "configuracoes.produtos.optionalLeftOutByDefault": {
   "pt": "Opcional · fora por padrão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1263 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1050 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1270 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1052 (jsx)"
   ]
  },
  "configuracoes.produtos.options": {
@@ -32365,7 +32371,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1990 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1999 (frase)"
   ]
  },
  "configuracoes.produtos.orAddAnExistingProcess": {
@@ -32421,7 +32427,7 @@
  "configuracoes.produtos.ownRules": {
   "pt": "Regras próprias",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1835 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1844 (atributo:title)",
    "src/consts/productAssembly.ts:34 (propriedade:text)"
   ]
  },
@@ -32443,8 +32449,8 @@
  "configuracoes.produtos.part": {
   "pt": "Parte",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2173 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:983 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2182 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:990 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:190 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:346 (jsx)",
    "src/consts/productAssembly.ts:26 (propriedade:text)"
@@ -32481,8 +32487,8 @@
    "people"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1363 (frase)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1139 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1370 (frase)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1141 (frase)"
   ]
  },
  "configuracoes.produtos.per": {
@@ -32492,7 +32498,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1962 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1969 (frase)"
   ]
  },
  "configuracoes.produtos.perOption": {
@@ -32504,7 +32510,7 @@
  "configuracoes.produtos.perSheet": {
   "pt": "por folha ·",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1414 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1421 (jsx)"
   ]
  },
  "configuracoes.produtos.perVariant": {
@@ -32541,20 +32547,20 @@
  "configuracoes.produtos.previousAndNextSteps": {
   "pt": "Etapas anteriores e seguintes",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1329 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1330 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1331 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1332 (atributo:title)"
   ]
  },
  "configuracoes.produtos.previousStepSizes": {
   "pt": "Medidas da etapa anterior",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:625 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:627 (jsx)"
   ]
  },
  "configuracoes.produtos.previousSteps": {
   "pt": "Etapas anteriores",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1343 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1345 (atributo:label)"
   ]
  },
  "configuracoes.produtos.priceByQuantity": {
@@ -32585,7 +32591,7 @@
  "configuracoes.produtos.processFormulas": {
   "pt": "Fórmulas do processo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1264 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1266 (atributo:title)"
   ]
  },
  "configuracoes.produtos.processLinesWereRemovedFrom": {
@@ -32594,32 +32600,32 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1547 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1554 (jsx)"
   ]
  },
  "configuracoes.produtos.processName": {
   "pt": "Nome do processo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:873 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:875 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:330 (jsx)"
   ]
  },
  "configuracoes.produtos.processRules": {
   "pt": "Regras do processo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1812 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1821 (jsx)"
   ]
  },
  "configuracoes.produtos.processSaved": {
   "pt": "Processo salvo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:340 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:342 (aviso)"
   ]
  },
  "configuracoes.produtos.processes": {
   "pt": "Processos",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1823 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1832 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/page.tsx:24 (propriedade:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/Processes.tsx:88 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/page.tsx:12 (propriedade:title)",
@@ -32729,7 +32735,7 @@
  "configuracoes.produtos.productTotal": {
   "pt": "Total do produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1764 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1771 (jsx)"
   ]
  },
  "configuracoes.produtos.productUpdated": {
@@ -32763,7 +32769,7 @@
  "configuracoes.produtos.productsFollowThisProcessChanging": {
   "pt": "Os produtos acompanham este processo: mudar a montagem aqui muda todos eles. O que cada produto ajustou só para ele continua como está, e os orçamentos já feitos não mudam.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1292 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1294 (jsx)"
   ]
  },
  "configuracoes.produtos.productsFollowThisProcessChanging2": {
@@ -32811,7 +32817,7 @@
  "configuracoes.produtos.quantityCostAndSaleOf": {
   "pt": "Quantidade, custo e venda das linhas calculados em",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:807 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:809 (jsx)"
   ]
  },
  "configuracoes.produtos.quantityPrices": {
@@ -32908,9 +32914,9 @@
  "configuracoes.produtos.relativeToTheBase": {
   "pt": "Em relação à base",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1868 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1088 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:953 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1877 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1095 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:955 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.remove": {
@@ -32919,9 +32925,9 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:690 (propriedade:title)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:712 (propriedade:title)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:480 (propriedade:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:692 (propriedade:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:714 (propriedade:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:482 (propriedade:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:313 (propriedade:title)"
   ]
  },
@@ -32931,8 +32937,8 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1499 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1232 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1506 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1234 (atributo:tooltip)"
   ]
  },
  "configuracoes.produtos.remove3": {
@@ -32967,7 +32973,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2817 (propriedade:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2824 (propriedade:title)"
   ]
  },
  "configuracoes.produtos.remover": {
@@ -32979,8 +32985,8 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2018 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2900 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2027 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2907 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields.tsx:229 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFormulas.tsx:214 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:281 (atributo:tooltip)",
@@ -33002,19 +33008,19 @@
  "configuracoes.produtos.renameProcess": {
   "pt": "Renomear processo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:900 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:902 (atributo:title)"
   ]
  },
  "configuracoes.produtos.renameStep": {
   "pt": "Renomear etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1028 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1035 (atributo:title)"
   ]
  },
  "configuracoes.produtos.renameVariant": {
   "pt": "Renomear variação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2932 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2939 (jsx)"
   ]
  },
  "configuracoes.produtos.replaceOrRemoveTheItem": {
@@ -33026,7 +33032,7 @@
  "configuracoes.produtos.resourceSales": {
   "pt": "Venda dos recursos",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1774 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1781 (jsx)"
   ]
  },
  "configuracoes.produtos.resourceType": {
@@ -33051,7 +33057,7 @@
  "configuracoes.produtos.restore": {
   "pt": "Restaurar",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1561 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1568 (jsx)"
   ]
  },
  "configuracoes.produtos.rowSkipped": {
@@ -33084,7 +33090,7 @@
  "configuracoes.produtos.salesDetails": {
   "pt": "Dados de venda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1717 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1724 (jsx)"
   ]
  },
  "configuracoes.produtos.salesUnitName": {
@@ -33096,8 +33102,8 @@
  "configuracoes.produtos.salespersonCanRename": {
   "pt": "Vendedor pode renomear",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1905 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1912 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1914 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1921 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.salvarRegra": {
@@ -33118,13 +33124,13 @@
  "configuracoes.produtos.saveAsStandard": {
   "pt": "Salvar como padrão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2152 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2159 (jsx)"
   ]
  },
  "configuracoes.produtos.saveDescription": {
   "pt": "Salvar descritivo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1752 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1759 (jsx)"
   ]
  },
  "configuracoes.produtos.saveFormula": {
@@ -33346,7 +33352,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:814 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:816 (atributo:title)"
   ]
  },
  "configuracoes.produtos.setUpTheStep2": {
@@ -33355,19 +33361,19 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:821 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:823 (frase)"
   ]
  },
  "configuracoes.produtos.setupHhMm": {
   "pt": "Preparo (hh:mm)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:733 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:735 (jsx)"
   ]
  },
  "configuracoes.produtos.setupIsAppliedOncePer": {
   "pt": "O preparo entra uma vez por pedido, com o custo-hora do setor.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:776 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:778 (jsx)"
   ]
  },
  "configuracoes.produtos.setupMinOncePerOrder": {
@@ -33376,13 +33382,13 @@
    "setupMinutes"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1570 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1577 (frase)"
   ]
  },
  "configuracoes.produtos.setupName": {
   "pt": "Nome da configuração",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2060 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2069 (jsx)"
   ]
  },
  "configuracoes.produtos.setupOncePerOrder": {
@@ -33391,7 +33397,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1277 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1279 (frase)"
   ]
  },
  "configuracoes.produtos.sheetBoardOrRoll": {
@@ -33451,14 +33457,14 @@
  "configuracoes.produtos.simulateAfterAnotherStep": {
   "pt": "Simular depois de outra etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:606 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:611 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:608 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:613 (jsx)"
   ]
  },
  "configuracoes.produtos.simulateWithTheRules": {
   "pt": "Simular com as regras",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:613 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:615 (atributo:title)"
   ]
  },
  "configuracoes.produtos.simulatingMTheStandardIs": {
@@ -33472,13 +33478,13 @@
    "height2"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2125 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2132 (jsx)"
   ]
  },
  "configuracoes.produtos.simulation": {
   "pt": "Simulação",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1716 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1723 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/SimulationCard.tsx:97 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/SimulationCard.tsx:98 (atributo:title)"
   ]
@@ -33489,22 +33495,22 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1409 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1411 (frase)"
   ]
  },
  "configuracoes.produtos.size": {
   "pt": "Medida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1878 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1110 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:974 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1887 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1117 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:976 (atributo:aria-label)",
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:91 (atributo:label)"
   ]
  },
  "configuracoes.produtos.sizeInTheQuote": {
   "pt": "Medida no orçamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2002 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2009 (atributo:label)"
   ]
  },
  "configuracoes.produtos.sizeMaterialAndServiceHourly": {
@@ -33516,7 +33522,7 @@
  "configuracoes.produtos.sizeSource": {
   "pt": "Origem das medidas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:720 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:722 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:360 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:363 (atributo:aria-label)"
   ]
@@ -33524,19 +33530,19 @@
  "configuracoes.produtos.sizeSourceFromThePrevious": {
   "pt": "Origem das medidas: da etapa anterior",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:830 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:832 (jsx)"
   ]
  },
  "configuracoes.produtos.sizeSourceOwnSize": {
   "pt": "Origem das medidas: medida própria",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:831 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:833 (jsx)"
   ]
  },
  "configuracoes.produtos.sizeStandard": {
   "pt": "Padrão de medidas:",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2055 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2062 (jsx)"
   ]
  },
  "configuracoes.produtos.soldDirectly": {
@@ -33564,7 +33570,7 @@
  "configuracoes.produtos.standardTimeHhMm": {
   "pt": "Tempo padrão (hh:mm)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1895 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1904 (jsx)"
   ]
  },
  "configuracoes.produtos.step": {
@@ -33582,23 +33588,23 @@
   "pt": "Nome da etapa",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:140 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1779 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1789 (atributo:title)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1005 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1781 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1791 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1012 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:286 (jsx)"
   ]
  },
  "configuracoes.produtos.stepRemoved": {
   "pt": "Etapa removida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:707 (propriedade:success)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:709 (propriedade:success)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:328 (propriedade:success)"
   ]
  },
  "configuracoes.produtos.stepsAndResourcesAreAlready": {
   "pt": "As etapas e os recursos já estão gravados. Só o descritivo técnico digitado ainda não foi salvo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:678 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:680 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.stepsAppearAfterSaving": {
@@ -33620,7 +33626,7 @@
  "configuracoes.produtos.suggestedByTheComposition": {
   "pt": "Sugerido pela composição:",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1961 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1968 (jsx)"
   ]
  },
  "configuracoes.produtos.suggestedPer": {
@@ -33629,14 +33635,14 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2101 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2108 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.summaryByResource": {
   "pt": "Resumo por recurso",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2405 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2406 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2412 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2413 (atributo:title)"
   ]
  },
  "configuracoes.produtos.supplierAndCost": {
@@ -33660,8 +33666,8 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:941 (frase)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:836 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:943 (frase)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:838 (frase)"
   ]
  },
  "configuracoes.produtos.task2": {
@@ -33670,7 +33676,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1047 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1054 (jsx)"
   ]
  },
  "configuracoes.produtos.task3": {
@@ -33682,16 +33688,16 @@
  "configuracoes.produtos.taskTypeInProduction": {
   "pt": "Tipo de tarefa na produção",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1801 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:958 (atributo:aria-label)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:852 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1803 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:960 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:854 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.technicalDescription": {
   "pt": "Descritivo técnico",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1718 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1728 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1725 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1735 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:933 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1067 (atributo:label)"
   ]
@@ -33699,7 +33705,7 @@
  "configuracoes.produtos.technicalDescriptionNotSavedYet": {
   "pt": "Descritivo técnico ainda não salvo. O resto já está gravado.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2510 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2517 (jsx)"
   ]
  },
  "configuracoes.produtos.texto": {
@@ -33887,7 +33893,7 @@
  "configuracoes.produtos.texto1ProcessLineWasRemoved": {
   "pt": "1 linha do processo foi tirada deste produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1546 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1553 (jsx)"
   ]
  },
  "configuracoes.produtos.texto2": {
@@ -33897,7 +33903,7 @@
    "unit"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2052 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2061 (propriedade:label)",
    "src/app/(app-sidebar)/estoque/compras/components/shared.tsx:227 (jsx)"
   ]
  },
@@ -33925,7 +33931,7 @@
    "unit"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2072 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2081 (jsx)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:353 (jsx)",
    "src/app/(app-sidebar)/estoque/solicitacoes/components/Requests.tsx:335 (jsx)"
   ]
@@ -33964,7 +33970,7 @@
    "valor2"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1132 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1139 (jsx)"
   ]
  },
  "configuracoes.produtos.texto400NaoTributadaPeloSimples": {
@@ -34166,7 +34172,7 @@
  "configuracoes.produtos.theAddsTheNextStep": {
   "pt": "O &quot;+&quot; acrescenta a etapa seguinte; o menu da caixa liga, desliga e troca a etapa. Dá para dividir o fluxo em caminhos que andam ao mesmo tempo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2308 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2315 (jsx)"
   ]
  },
  "configuracoes.produtos.theApiDoesNotAccept": {
@@ -34187,13 +34193,13 @@
  "configuracoes.produtos.theBoxStaysInThe": {
   "pt": "A caixa continua no mesmo lugar do fluxo, com as mesmas ligações. O que muda é a montagem: recursos, tempo e regras passam a ser os do processo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2632 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2639 (atributo:description)"
   ]
  },
  "configuracoes.produtos.theBuildUpRowsAre": {
   "pt": "As linhas da composição já estão gravadas. Só o que foi mudado no card Processo ainda não foi salvo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:468 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:470 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.theCalculationThatGivesThe": {
@@ -34217,7 +34223,7 @@
  "configuracoes.produtos.theDrawingOfTheSteps": {
   "pt": "O desenho das etapas na ordem da produção. Cada caixa é a etapa de um setor.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2304 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2311 (jsx)"
   ]
  },
  "configuracoes.produtos.theFormulaUses": {
@@ -34226,7 +34232,7 @@
    "label"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1394 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1401 (atributo:title)"
   ]
  },
  "configuracoes.produtos.theFormulaUsesAndIt": {
@@ -34235,7 +34241,7 @@
    "label"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1393 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1400 (atributo:title)"
   ]
  },
  "configuracoes.produtos.theGroupIsCreatedIn": {
@@ -34247,7 +34253,7 @@
  "configuracoes.produtos.theImageIsTheOne": {
   "pt": "A imagem é a do cadastro do produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1850 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1857 (jsx)"
   ]
  },
  "configuracoes.produtos.theItemStartsWithThat": {
@@ -34262,7 +34268,7 @@
    "perUnit"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2079 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2088 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.theMarginThePieceGets": {
@@ -34286,13 +34292,13 @@
  "configuracoes.produtos.theNameAppearsOnThe": {
   "pt": "O nome aparece na aba e na escolha do vendedor.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2937 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2944 (jsx)"
   ]
  },
  "configuracoes.produtos.theNameChangesOnlyIn": {
   "pt": "O nome muda só neste produto. O processo continua com o nome dele.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1791 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1793 (jsx)"
   ]
  },
  "configuracoes.produtos.theNewFieldAcceptsFractions": {
@@ -34322,7 +34328,7 @@
  "configuracoes.produtos.theOrderOfTheSteps": {
   "pt": "A ordem das etapas é a ordem da produção.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2201 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2208 (jsx)"
   ]
  },
  "configuracoes.produtos.theOutsourcedSupplierAndCost": {
@@ -34340,7 +34346,7 @@
  "configuracoes.produtos.theProcessCardHasnT": {
   "pt": "O card Processo ainda não foi salvo. As linhas já estão gravadas.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1372 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1374 (jsx)"
   ]
  },
  "configuracoes.produtos.theProductBecomesAvailableAgain": {
@@ -34358,7 +34364,7 @@
  "configuracoes.produtos.theProductCostIsThe": {
   "pt": "O custo do produto é a soma das etapas, na medida vendida.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2203 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2210 (jsx)"
   ]
  },
  "configuracoes.produtos.theProductFollowsTheProcess": {
@@ -34370,19 +34376,19 @@
  "configuracoes.produtos.theProductKeepsSellingAt": {
   "pt": "O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:806 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:808 (atributo:description)"
   ]
  },
  "configuracoes.produtos.theProductStartsInAnother": {
   "pt": "O produto começa em outro setor ou usa um processo cadastrado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:849 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:851 (jsx)"
   ]
  },
  "configuracoes.produtos.theQuoteDoesNotUse": {
   "pt": "O orçamento ainda não usa o custo, os campos nem os opcionais deste produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1682 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1689 (jsx)"
   ]
  },
  "configuracoes.produtos.theRangeAppliesToThe": {
@@ -34406,26 +34412,26 @@
  "configuracoes.produtos.theSalespersonEntersInThe": {
   "pt": "O vendedor informa no orçamento quanto usou de cada uma.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1994 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2003 (jsx)"
   ]
  },
  "configuracoes.produtos.theSalespersonFillsInWhat": {
   "pt": "O vendedor preenche o que usou",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1312 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1090 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1319 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1092 (jsx)"
   ]
  },
  "configuracoes.produtos.theSameFieldsAsThe": {
   "pt": "Os mesmos campos do cadastro do produto. A composição acrescenta o custo e o preço sugerido.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1801 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1808 (jsx)"
   ]
  },
  "configuracoes.produtos.theSameFieldsAsThe2": {
   "pt": "Os mesmos campos do cadastro do processo. O que a etapa usa fica na Composição.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:689 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:691 (jsx)"
   ]
  },
  "configuracoes.produtos.theSameProductInDifferent": {
@@ -34467,7 +34473,7 @@
  "configuracoes.produtos.theValuesTheSalespersonEnters": {
   "pt": "Os valores que o vendedor informa e que as linhas deste processo leem. O produto que incluir o processo ganha estes campos, uma vez cada.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:770 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:772 (atributo:description)"
   ]
  },
  "configuracoes.produtos.theVariantStartsAsA": {
@@ -34476,13 +34482,22 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2938 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2945 (jsx)"
   ]
  },
  "configuracoes.produtos.thereIsNoOtherStep": {
   "pt": "Não há outra etapa para ligar.",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:433 (jsx)"
+  ]
+ },
+ "configuracoes.produtos.thereIsNoTaskType": {
+  "pt": "Não há tipo de tarefa &quot;{taskType}&quot; em Configurações › Produção: a tarefa vai para o tipo padrão, Produção.",
+  "vars": [
+   "taskType"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1812 (frase)"
   ]
  },
  "configuracoes.produtos.thereWasAnErrorTrying": {
@@ -34497,7 +34512,7 @@
  "configuracoes.produtos.theseAreSuggestionsNotA": {
   "pt": "São sugestões, não uma ordem obrigatória. Ao montar um produto, &quot;+ etapa seguinte&quot; mostra primeiro o que está marcado aqui; o resto fica em &quot;ver todos&quot;. Marcar de um lado aparece no outro. Sem marcação, valem os acabamentos do mesmo setor.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1332 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1334 (jsx)"
   ]
  },
  "configuracoes.produtos.thisGroup": {
@@ -34512,13 +34527,13 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1243 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1245 (frase)"
   ]
  },
  "configuracoes.produtos.thisResourceIsAlreadyOn": {
   "pt": "Este recurso já está na linha: o nome diferencia as configurações.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2087 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2096 (jsx)"
   ]
  },
  "configuracoes.produtos.thisStepHasNoResources": {
@@ -34527,13 +34542,13 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1528 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1535 (frase)"
   ]
  },
  "configuracoes.produtos.thisVariantSBuildUp": {
   "pt": "A composição desta variação some. As outras variações e a composição padrão não mudam.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2818 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2825 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.tiersNotSaved": {
@@ -34557,8 +34572,8 @@
  "configuracoes.produtos.timeField": {
   "pt": "Campo tempo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1886 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1890 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1895 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1899 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.timeFormat": {
@@ -34583,7 +34598,7 @@
  "configuracoes.produtos.totalArea": {
   "pt": "Área total",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1915 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1922 (jsx)",
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:76 (atributo:label)"
   ]
  },
@@ -34642,7 +34657,7 @@
    "fiscal-br"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1864 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1871 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/ProductFiscalTab.tsx:43 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialFiscalDialog.tsx:114 (propriedade:label)",
    "src/app/(app-sidebar)/precificacao/components/EditPriceModal.tsx:376 (jsx)"
@@ -34654,7 +34669,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:631 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:633 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:294 (propriedade:label)"
   ]
  },
@@ -34670,7 +34685,7 @@
    "people"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2460 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2467 (frase)"
   ]
  },
  "configuracoes.produtos.uploadFileCsvOrTxt": {
@@ -34732,15 +34747,15 @@
  "configuracoes.produtos.useOwnRulesInThis": {
   "pt": "Usar regras próprias neste produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1833 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1846 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1842 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1855 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.useSuggestedPrice": {
   "pt": "Usar preço sugerido",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1981 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2165 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1988 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2172 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:112 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:193 (jsx)"
   ]
@@ -34762,7 +34777,7 @@
  "configuracoes.produtos.usedIn": {
   "pt": "Usado em",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1289 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1291 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/Processes.tsx:127 (jsx)"
   ]
  },
@@ -34802,7 +34817,7 @@
  "configuracoes.produtos.valuesAppearOnceThereIs": {
   "pt": "Os valores aparecem quando houver etapa com custo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2091 (atributo:emptyText)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2098 (atributo:emptyText)"
   ]
  },
  "configuracoes.produtos.variantCostAndPrice": {
@@ -34817,7 +34832,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2800 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2807 (aviso)"
   ]
  },
  "configuracoes.produtos.variantIsBackToThe": {
@@ -34832,14 +34847,14 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2946 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2953 (jsx)",
    "src/app/sandbox/locacao/components/RentalProductForm.tsx:203 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.variantRemoved": {
   "pt": "Variação removida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2833 (propriedade:success)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2840 (propriedade:success)"
   ]
  },
  "configuracoes.produtos.variantUpdated": {
@@ -34890,13 +34905,13 @@
  "configuracoes.produtos.viewAndChangeTheFlow": {
   "pt": "Ver e alterar o fluxo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2329 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2336 (jsx)"
   ]
  },
  "configuracoes.produtos.viewSummary": {
   "pt": "Ver o resumo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2421 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2428 (jsx)"
   ]
  },
  "configuracoes.produtos.viewVariantsOf": {
@@ -34949,7 +34964,7 @@
  "configuracoes.produtos.whatToAskTheCustomer": {
   "pt": "O que perguntar ao cliente, o que conferir antes de fechar",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:752 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:754 (atributo:placeholder)"
   ]
  },
  "configuracoes.produtos.whatYouAddHereExists": {
@@ -34958,7 +34973,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2208 (frase)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2215 (frase)"
   ]
  },
  "configuracoes.produtos.whenAMaterialHasVariants": {
@@ -34970,7 +34985,7 @@
  "configuracoes.produtos.whenNoReadyMadeCalculation": {
   "pt": "Quando nenhum tipo de cálculo pronto serve, escreva a conta: ela lê as medidas, a quantidade e os campos do orçamento deste processo e passa a aparecer nos tipos de cálculo das linhas. O produto que incluir o processo recebe a fórmula junto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1265 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1267 (atributo:description)"
   ]
  },
  "configuracoes.produtos.whenOffItChargesOnly": {
@@ -34988,7 +35003,7 @@
  "configuracoes.produtos.whenOffTheStepFollows": {
   "pt": "Desligado, a etapa segue as regras do processo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1839 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1848 (jsx)"
   ]
  },
  "configuracoes.produtos.whenOnItChargesThe": {
@@ -35018,7 +35033,7 @@
  "configuracoes.produtos.whenOnTheRulesApply": {
   "pt": "Ligado, as regras valem só nesta etapa deste produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1837 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1846 (jsx)"
   ]
  },
  "configuracoes.produtos.whenStartingAProductThe": {
@@ -35036,7 +35051,7 @@
  "configuracoes.produtos.whereItChanges": {
   "pt": "Onde muda",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1788 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1790 (jsx)"
   ]
  },
  "configuracoes.produtos.whichOfTheTwoSides": {
@@ -35054,13 +35069,13 @@
  "configuracoes.produtos.widthAndHeightDonT": {
   "pt": "Largura e altura não mudam o valor de venda: servem para calcular a composição.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2059 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2066 (jsx)"
   ]
  },
  "configuracoes.produtos.withANameTheSame": {
   "pt": "Com nome, o mesmo recurso pode entrar de novo com outro consumo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2088 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2097 (jsx)"
   ]
  },
  "configuracoes.produtos.withBuildUp": {
@@ -35094,7 +35109,7 @@
  "configuracoes.produtos.withoutABuildUpThe": {
   "pt": "Sem composição, o produto segue vendido pelo preço cadastrado.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:815 (atributo:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:817 (atributo:description)"
   ]
  },
  "configuracoes.produtos.withoutThisOptionTheItem": {

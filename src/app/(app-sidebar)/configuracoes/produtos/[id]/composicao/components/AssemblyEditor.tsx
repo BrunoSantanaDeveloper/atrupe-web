@@ -12,6 +12,7 @@ import Image from 'next/image'
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useRouter } from '@/hooks/useRouter'
+import { useTaskTypeOptions } from '@/hooks/useTaskTypeOptions'
 
 // UI
 import {
@@ -89,7 +90,6 @@ import {
   type QuantityMode,
   type SaleRules,
   quantityModeObj,
-  TASK_TYPES,
   unitKindObj,
   unitSymbol,
   unitSaleLabel,
@@ -398,6 +398,8 @@ function AssemblyEditorBody({
 }) {
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
+  // Os tipos de tarefa cadastrados, no lugar da lista fixa (item 22)
+  const taskTypes = useTaskTypeOptions()
 
   // A medida da simulação é da tela; a medida padrão só muda ao salvar
   const [measure, setMeasure] = useState<AssemblyMeasure>()
@@ -963,7 +965,7 @@ function AssemblyEditorBody({
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from(
-                          new Set([item.taskType, ...TASK_TYPES]),
+                          new Set([item.taskType, ...taskTypes.options]),
                         ).map((type) => (
                           <SelectItem key={type} value={type}>
                             {type}
@@ -972,6 +974,11 @@ function AssemblyEditorBody({
                       </SelectContent>
                     </Select>
                   </PermissionGate>
+                )}
+                {!inVariation && taskTypes.missing(item.taskType) && (
+                  <Badge variant="warningLight">
+                    Sem tipo de tarefa cadastrado: vai para Produção
+                  </Badge>
                 )}
                 {item.processId && (
                   <Badge variant="neutralLight">Processo cadastrado</Badge>

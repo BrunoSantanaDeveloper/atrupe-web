@@ -20222,5 +20222,13 @@
   "8d36778a4a": {
     "es": "Marcar el pedido para concluir las etapas",
     "en": "Select the order to complete its stages"
+  },
+  "e8c67c4f49": {
+    "es": "No hay tipo de tarea &quot;{taskType}&quot; en Configuración › Producción: la tarea va al tipo predeterminado, Producción.",
+    "en": "There is no task type &quot;{taskType}&quot; in Settings › Production: the task goes to the default type, Production."
+  },
+  "fc2a46f5be": {
+    "es": "Sin tipo de tarea registrado: va a Producción",
+    "en": "No task type registered: goes to Production"
   }
 }

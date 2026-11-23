@@ -6,6 +6,7 @@
 // React
 import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useRef, useState } from 'react'
+import { useTaskTypeOptions } from '@/hooks/useTaskTypeOptions'
 
 // Next
 import Link from 'next/link'
@@ -35,7 +36,6 @@ import {
 
 // Types
 import {
-  TASK_TYPES,
   lineModeObj,
   quantityModeObj,
   type QuoteField,
@@ -1742,6 +1742,8 @@ export function RulesDialog({
   const [rules, setRules] = useState<SaleRules | null>(null)
   const [name, setName] = useState('')
   const [taskType, setTaskType] = useState('')
+  // Os tipos de tarefa cadastrados, no lugar da lista fixa (item 22)
+  const taskTypes = useTaskTypeOptions(taskType)
 
   // Na etapa montada no produto, as regras são dela: não há o que sobrescrever
   const own = block?.processId === null
@@ -1799,12 +1801,19 @@ export function RulesDialog({
           <SelectBasic
             name="rules-task-type"
             label="Tipo de tarefa na produção"
-            options={Array.from(new Set([...TASK_TYPES, taskType]))
-              .filter(Boolean)
-              .map((item) => ({ value: item, label: item }))}
+            options={taskTypes.options.map((item) => ({
+              value: item,
+              label: item,
+            }))}
             value={taskType}
             onChange={(value) => value && setTaskType(String(value))}
           />
+          {taskTypes.missing(taskType) && (
+            <p className="text-sm text-warning-700">
+              Não há tipo de tarefa &quot;{taskType}&quot; em Configurações ›
+              Produção: a tarefa vai para o tipo padrão, Produção.
+            </p>
+          )}
 
           {!own && (
             <>

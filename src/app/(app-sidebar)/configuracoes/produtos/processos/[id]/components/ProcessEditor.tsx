@@ -14,6 +14,7 @@ import { InfoHint } from '@/components/common/InfoHint'
 import { RiskHint } from '@/components/common/RiskHint'
 import Link from 'next/link'
 import { useRouter } from '@/hooks/useRouter'
+import { useTaskTypeOptions } from '@/hooks/useTaskTypeOptions'
 import { useEffect, useMemo, useState } from 'react'
 
 // UI
@@ -75,7 +76,6 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Types
 import {
-  TASK_TYPES,
   formulaInputs,
   quantityModeObj,
   type SaleRules,
@@ -216,6 +216,8 @@ export function ProcessEditor({
   // O diálogo recebe o handle e põe o Salvar no rodapé dele (PAD-5)
   onSaveHandle?: (handle: ProcessSaveHandle | null) => void
 }) {
+  // Os tipos de tarefa cadastrados, no lugar da lista fixa (item 22)
+  const taskTypes = useTaskTypeOptions()
   const show = (part: ProcessSection) => !section || section === part
   const money = useMoney()
   const router = useRouter()
@@ -857,7 +859,7 @@ export function ProcessEditor({
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from(
-                            new Set([block.taskType, ...TASK_TYPES]),
+                            new Set([block.taskType, ...taskTypes.options]),
                           ).map((type) => (
                             <SelectItem key={type} value={type}>
                               {type}
