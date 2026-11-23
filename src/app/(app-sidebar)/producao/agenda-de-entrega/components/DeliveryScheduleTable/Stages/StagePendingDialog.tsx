@@ -39,9 +39,11 @@ interface Props extends SearchParamsType {
   open: boolean
   setOpen: (value: boolean) => void
   rowData?: DeliveryScheduleType['productionStages'][0]
+  /** A rota da troca: a etapa do pedido (padrão) ou a do item (§4.7) */
+  route?: string
 }
 
-export function StagePendingDialog({ open, rowData, setOpen }: Props) {
+export function StagePendingDialog({ open, rowData, setOpen, route }: Props) {
   const form = useForm<StagePendingType>({
     resolver: zodResolver(stagePendingSchema),
     defaultValues: {
@@ -62,7 +64,7 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
   const mutation = useMutation({
     mutationFn: (data: StagePendingType) =>
       updateItemNew({
-        route: `/sale/production-stage/${rowData?.id}`,
+        route: route || `/sale/production-stage/${rowData?.id}`,
         data: {
           status:
             rowData?.status === 'PENDING' ? rowData?.prevStatus : 'PENDING',

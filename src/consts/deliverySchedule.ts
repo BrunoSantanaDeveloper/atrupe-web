@@ -142,7 +142,8 @@ export const stageStatus: stageStatusType = {
   PAUSED: { tooltip: 'pausado', badge: 'pinkLight' },
   PENDING: { tooltip: 'com pendência', badge: 'warningLight' },
   DONE: { tooltip: 'finalizado', badge: 'successLight' },
-  CANCELED: { tooltip: 'cancelado', badge: 'neutralLight' },
+  // Cancelado tem cor própria (Maicol, 23/11/2026)
+  CANCELED: { tooltip: 'cancelado', badge: 'errorLight' },
   WAITING_PRODUCTION: { tooltip: 'aguardando produção', badge: 'warningLight' },
   OVERDUE: { tooltip: 'atrasada', badge: 'errorLight' },
 }
@@ -172,7 +173,7 @@ export const stageStatusChange = [
   {
     id: uuidv4(),
     text: 'Cancelar',
-    color: 'gray',
+    color: 'error',
     newStatus: 'CANCELED',
     statusToShow: ['NOT_STARTED', 'IN_PROGRESS', 'PENDING', 'PAUSED'],
   },

@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/table'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
@@ -43,7 +44,12 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld, getItem, updateItem } from '@/actions/_cruds'
+import {
+  getDataOld,
+  getItem,
+  updateItem,
+  createItemNew,
+} from '@/actions/_cruds'
 
 // Libs
 import { cn, truncateString } from '@/lib/utils'
@@ -75,6 +81,7 @@ import { IconReceitaFederal } from '@/assets/icons/pictogramas'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -100,6 +107,17 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
         : [...current, id],
     )
   const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
+
+  // Concluir tudo de uma vez (gerencial, §4.7): os pedidos marcados têm as
+  // etapas finalizadas, para quem não usou a agenda limpar e recomeçar
+  const { hasPermission } = usePermissions()
+  const [selected, setSelected] = useState<string[]>([])
+  const toggleSelected = (id: string) =>
+    setSelected((current) =>
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id],
+    )
 
   const { canManageDeliverySchedule, hasFeature } = usePlanFeatures()
   // As etapas na Agenda e a troca de status delas têm chaves próprias: a da
@@ -176,6 +194,47 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
     })
   }
 
+  const canFinishAll =
+    showProductionStages &&
+    canChangeStageStatus &&
+    hasPermission('production:delivery_schedule_finish_all:edit')
+
+  const finishAll = useMutation({
+    mutationFn: (scheduleIds: string[]) =>
+      createItemNew({
+        route: '/sale/production-stage/finish-all',
+        data: { scheduleIds },
+      }),
+    onSuccess: (res) => {
+      if (!res?.success) {
+        toast.error(res?.message || 'Ocorreu um erro')
+        return
+      }
+      const { finished = 0, skipped = 0 } = (res.data || {}) as {
+        finished?: number
+        skipped?: number
+      }
+      toast.success(
+        skipped
+          ? `Etapas concluídas em ${finished} pedidos; ${skipped} seguem o gerenciador e ficaram como estavam`
+          : `Etapas concluídas em ${finished} pedidos`,
+      )
+      setSelected([])
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
+    },
+    onError: () => toast.error('Ocorreu um erro'),
+  })
+
+  const handleFinishAll = () => {
+    alertDialog.open({
+      title: 'Concluir as etapas',
+      description: `Todas as etapas de produção dos ${selected.length} pedidos marcados, e as dos itens deles, ficam finalizadas. A entrega e o serviço continuam por finalizar. Use para limpar a agenda e começar de novo.`,
+      confirmLabel: 'Concluir as etapas',
+      onConfirm: () => finishAll.mutate(selected),
+    })
+  }
+
   const handleInvoice = () => {
     alertDialog.open({
       title: 'Nota Fiscal',
@@ -237,6 +296,33 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
         <FetchingRegion isFetching={isPlaceholderData}>
           {isLoading || hasData ? (
             <>
+              {canFinishAll && selected.length > 0 && (
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+                  <p className="text-sm text-gray-800">
+                    {selected.length === 1
+                      ? '1 pedido marcado'
+                      : `${selected.length} pedidos marcados`}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="neutralOutline"
+                      onClick={() => setSelected([])}
+                    >
+                      Desmarcar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="success"
+                      LeftIcon={IconCircleCheck}
+                      isLoading={finishAll.isPending}
+                      onClick={handleFinishAll}
+                    >
+                      Concluir as etapas
+                    </Button>
+                  </div>
+                </div>
+              )}
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -295,6 +381,24 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                   <TableRow>
                                     <TableCell>
                                       <div className="flex items-start gap-2">
+                                        {canFinishAll &&
+                                          !deliverySchedule?.managedByProduction &&
+                                          !['DONE', 'FINISHED'].includes(
+                                            deliverySchedule?.status,
+                                          ) && (
+                                            <Checkbox
+                                              className="mt-2.5"
+                                              aria-label="Marcar o pedido para concluir as etapas"
+                                              checked={selected.includes(
+                                                deliverySchedule?.id,
+                                              )}
+                                              onCheckedChange={() =>
+                                                toggleSelected(
+                                                  deliverySchedule?.id,
+                                                )
+                                              }
+                                            />
+                                          )}
                                         {items.length > 0 && (
                                           <TooltipProvider>
                                             <ActionButton
@@ -365,6 +469,29 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                         managedByProduction={
                                                           !!deliverySchedule?.managedByProduction
                                                         }
+                                                        // No LITE, a ação no
+                                                        // pedido vale para os
+                                                        // itens do setor (§4.7)
+                                                        confirmFor={(
+                                                          _next,
+                                                          label,
+                                                        ) => {
+                                                          const count =
+                                                            items.filter(
+                                                              (item) =>
+                                                                item.stages.some(
+                                                                  (itemStage) =>
+                                                                    itemStage.editable &&
+                                                                    itemStage.sectorId ===
+                                                                      stage
+                                                                        ?.stage
+                                                                        ?.id,
+                                                                ),
+                                                            ).length
+                                                          return count > 1
+                                                            ? `${label}: vale para ${stage?.stage?.name} nos ${count} itens deste pedido.`
+                                                            : null
+                                                        }}
                                                       >
                                                         <ActionButton
                                                           Icon={
@@ -605,44 +732,88 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                           {item.stages.length ? (
                                             <div className="flex gap-2">
                                               <TooltipProvider>
-                                                {item.stages.map((stage) => (
-                                                  <ActionButton
-                                                    key={stage.id}
-                                                    Icon={
-                                                      sectorIcons[
-                                                        iconOfSector(
-                                                          stage.sectorId,
-                                                        ) || ''
-                                                      ]?.icon ||
-                                                      IconQuestionMark
-                                                    }
-                                                    tooltip={`${stage.name} · ${stage.sector} ${stageStatus[stage.status]?.tooltip || ''}`}
-                                                    badge={
-                                                      stageStatus[stage.status]
-                                                        ?.badge
-                                                    }
-                                                    variant={
-                                                      stage.status === 'DONE'
-                                                        ? 'successLight'
-                                                        : 'neutralLight'
-                                                    }
-                                                    className="p-2"
-                                                    style={
-                                                      stage.status === 'DONE'
-                                                        ? undefined
-                                                        : {
-                                                            color: colorOf({
-                                                              id: stage.sectorId,
-                                                              name: stage.sector,
-                                                              icon:
-                                                                iconOfSector(
-                                                                  stage.sectorId,
-                                                                ) || null,
-                                                            }),
-                                                          }
-                                                    }
-                                                  />
-                                                ))}
+                                                {item.stages.map((stage) => {
+                                                  const button = (
+                                                    <ActionButton
+                                                      key={stage.id}
+                                                      Icon={
+                                                        sectorIcons[
+                                                          iconOfSector(
+                                                            stage.sectorId,
+                                                          ) || ''
+                                                        ]?.icon ||
+                                                        IconQuestionMark
+                                                      }
+                                                      tooltip={`${stage.name} · ${stage.sector} ${stageStatus[stage.status]?.tooltip || ''}`}
+                                                      badge={
+                                                        stageStatus[
+                                                          stage.status
+                                                        ]?.badge
+                                                      }
+                                                      variant={
+                                                        stage.status === 'DONE'
+                                                          ? 'successLight'
+                                                          : 'neutralLight'
+                                                      }
+                                                      className="p-2"
+                                                      style={
+                                                        stage.status === 'DONE'
+                                                          ? undefined
+                                                          : {
+                                                              color: colorOf({
+                                                                id: stage.sectorId,
+                                                                name: stage.sector,
+                                                                icon:
+                                                                  iconOfSector(
+                                                                    stage.sectorId,
+                                                                  ) || null,
+                                                              }),
+                                                            }
+                                                      }
+                                                    />
+                                                  )
+                                                  // A etapa do item se troca
+                                                  // aqui quando a venda não
+                                                  // segue o gerenciador (§4.7)
+                                                  return stage.editable ? (
+                                                    <StageStatusDropdown
+                                                      key={stage.id}
+                                                      currentStage={
+                                                        stage.sectorId || ''
+                                                      }
+                                                      rowData={{
+                                                        id: stage.id,
+                                                        stage: {
+                                                          id:
+                                                            stage.sectorId ||
+                                                            '',
+                                                          name: stage.sector,
+                                                          icon:
+                                                            iconOfSector(
+                                                              stage.sectorId,
+                                                            ) || '',
+                                                        },
+                                                        status: stage.status,
+                                                        prevStatus:
+                                                          stage.prevStatus ||
+                                                          '',
+                                                        notes:
+                                                          stage.notes || '',
+                                                      }}
+                                                      searchParams={
+                                                        searchParams
+                                                      }
+                                                      canChangeStatus={
+                                                        canChangeStageStatus
+                                                      }
+                                                      route={`/sale/production-stage/item/${stage.id}`}
+                                                    >
+                                                      {button}
+                                                    </StageStatusDropdown>
+                                                  ) : (
+                                                    button
+                                                  )
+                                                })}
                                               </TooltipProvider>
                                             </div>
                                           ) : (

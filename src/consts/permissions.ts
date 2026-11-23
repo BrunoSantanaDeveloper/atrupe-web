@@ -151,6 +151,11 @@ export const permissionsData = [
         name: 'Agenda de entrega',
         key: 'delivery_schedule',
       },
+      // Concluir tudo de uma vez na agenda (§4.7): a ação gerencial de limpar
+      {
+        name: 'Concluir tudo na agenda de entrega',
+        key: 'delivery_schedule_finish_all',
+      },
     ],
   },
   {

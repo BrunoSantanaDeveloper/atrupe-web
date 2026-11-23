@@ -20198,5 +20198,29 @@
   "d4fc26449c": {
     "es": "Elegir estado",
     "en": "Choose status"
+  },
+  "5f2afb5220": {
+    "es": "Concluir las etapas",
+    "en": "Complete the stages"
+  },
+  "2e76c085a6": {
+    "es": "Todas las etapas de producción de los {valor} pedidos marcados, y las de sus ítems, quedan finalizadas. La entrega y el servicio siguen por finalizar. Úselo para limpiar la agenda y empezar de nuevo.",
+    "en": "All production stages of the {valor} selected orders, and those of their items, are marked as done. Delivery and the service remain open. Use it to clear the schedule and start over."
+  },
+  "557310c1ea": {
+    "es": "1 pedido marcado",
+    "en": "1 order selected"
+  },
+  "1dc52b10a8": {
+    "es": "{valor} pedidos marcados",
+    "en": "{valor} orders selected"
+  },
+  "c626d8f818": {
+    "es": "Desmarcar",
+    "en": "Clear selection"
+  },
+  "8d36778a4a": {
+    "es": "Marcar el pedido para concluir las etapas",
+    "en": "Select the order to complete its stages"
   }
 }

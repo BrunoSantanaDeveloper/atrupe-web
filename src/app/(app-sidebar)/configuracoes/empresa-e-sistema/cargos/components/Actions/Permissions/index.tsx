@@ -147,6 +147,8 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'financial_settings.credit_limits': ['credit_limit_configuration'],
   // A Agenda de entrega não pede recurso: abre do Start em diante (PO,
   // 14/10/2026)
+  // Trocar a etapa (e concluir tudo) é recurso de plano
+  'production.delivery_schedule_finish_all': ['delivery_stage_status_change'],
   'product_settings.composition': ['product_composition'],
   'invoice.nfse': ['nota_fiscal'],
   'financial.cash_control_reopen': ['cash_control'],

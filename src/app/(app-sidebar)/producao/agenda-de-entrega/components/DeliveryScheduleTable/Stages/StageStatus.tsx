@@ -38,6 +38,7 @@ import { usePlanErrorToast } from '@/hooks/usePlanErrorToast'
 // Lib
 import { cn } from '@/lib/utils'
 import { StagePendingDialog } from './StagePendingDialog'
+import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props extends SearchParamsType, PropsWithChildren {
@@ -54,6 +55,16 @@ interface Props extends SearchParamsType, PropsWithChildren {
    * aqui, com o motivo no menu.
    */
   managedByProduction?: boolean
+  /**
+   * A rota da troca: a etapa do pedido (padrão) ou a do item
+   * (`/sale/production-stage/item/:id`, §4.7)
+   */
+  route?: string
+  /**
+   * Pede confirmação antes de trocar, quando a troca vale para mais de um
+   * item (a etapa do pedido no LITE, §4.7). Devolve o texto ou null.
+   */
+  confirmFor?: (newStatus: string, label: string) => string | null
 }
 
 export function StageStatusDropdown({
@@ -62,7 +73,11 @@ export function StageStatusDropdown({
   children,
   canChangeStatus: planAllows = true,
   managedByProduction = false,
+  route,
+  confirmFor,
 }: Props) {
+  const stageRoute = route || `/sale/production-stage/${rowData.id}`
+  const alertDialog = useAlertDialog()
   // Trocar a situação da etapa mexe na agenda: pede a permissão de editar
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission('production:delivery_schedule:edit')
@@ -91,7 +106,7 @@ export function StageStatusDropdown({
   const mutation = useMutation({
     mutationFn: (status: string) =>
       updateItemNew({
-        route: `/sale/production-stage/${rowData.id}`,
+        route: stageRoute,
         data: { status },
       }),
     onSuccess: (res) => {
@@ -101,12 +116,27 @@ export function StageStatusDropdown({
     },
   })
 
-  const handleChangeStatus = async (newStatus: string) => {
+  const handleChangeStatus = async (newStatus: string, label = '') => {
     if (newStatus === 'PENDING') {
       setOpen(true)
       return
     }
+    const question = confirmFor?.(newStatus, label)
+    if (question) {
+      alertDialog.open({
+        title: label,
+        description: question,
+        confirmLabel: label,
+        onConfirm: () => {
+          changeStatus(newStatus)
+        },
+      })
+      return
+    }
+    await changeStatus(newStatus)
+  }
 
+  const changeStatus = async (newStatus: string) => {
     const loadingToast = toast.loading('Aguarde...')
     const res = await mutation.mutateAsync(newStatus).catch(() => null)
     toast.dismiss(loadingToast)
@@ -137,7 +167,9 @@ export function StageStatusDropdown({
                 return (
                   <DropdownMenuItem
                     key={item.id}
-                    onClick={() => handleChangeStatus(item.newStatus)}
+                    onClick={() =>
+                      handleChangeStatus(item.newStatus, item.text)
+                    }
                     disabled={!canChangeStatus}
                   >
                     <Icon
@@ -164,6 +196,7 @@ export function StageStatusDropdown({
         setOpen={() => setOpen(!open)}
         rowData={rowData}
         searchParams={searchParams}
+        route={stageRoute}
       />
     </>
   )
