@@ -265,6 +265,28 @@ export const registerTaskLotUse = async (
     'Baixa registrada no rolo',
   )
 
+// A baixa conjunta (VS-2, FULL): vários trabalhos numa impressão só
+export const registerBatchLotUse = async (values: {
+  taskIds: string[]
+  lotId: string
+  length: number
+  secondLotId?: string
+  secondLength?: number
+  note?: string
+}) => {
+  const res: ApiResult = await createItemNew({
+    route: '/production/task/lot-use-batch',
+    data: values,
+  })
+  return res.success
+    ? {
+        success: true,
+        data: res.data as { message: string },
+        message: (res.data?.message as string) || 'Baixa conjunta registrada',
+      }
+    : { success: false, data: null, message: res.message || 'Não deu certo' }
+}
+
 export const consumeStockLot = async (
   id: string,
   values: {

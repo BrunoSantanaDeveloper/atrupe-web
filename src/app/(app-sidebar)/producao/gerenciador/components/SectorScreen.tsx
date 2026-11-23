@@ -33,6 +33,7 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 import { PersonAvatar } from './PersonAvatar'
 import { TaskCard } from './TaskCard'
 import { QueueList, type QueueGroup } from './QueueList'
+import { BatchPrintDialog } from './BatchPrintDialog'
 import { ProductionFilters } from './GeneralViews'
 import { duration, TaskDetailDialog } from './TaskDetailDialog'
 import {
@@ -111,6 +112,9 @@ export function SectorScreen({ id }: { id: string }) {
   const [showClosed, setShowClosed] = useState(false)
   const [queueTab, setQueueTab] = useState<QueueTab>('a-fazer')
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // A baixa conjunta no rolo (VS-2, FULL): os trabalhos marcados numa
+  // impressão só
+  const [batchOpen, setBatchOpen] = useState(false)
   const [finishing, setFinishing] = useState(false)
   const isManager = hasPermission(PRODUCTION_MANAGE[0])
 
@@ -655,6 +659,15 @@ export function SectorScreen({ id }: { id: string }) {
                       <Icon icon={IconCircleCheck} size="sm" />
                       Concluir {selected.size}
                     </Button>
+                    {hasFeature(FEATURES.STOCK.PURCHASING) && (
+                      <Button
+                        size="sm"
+                        variant="neutralOutline"
+                        onClick={() => setBatchOpen(true)}
+                      >
+                        Apontar impressão
+                      </Button>
+                    )}
                     <Button
                       size="sm"
                       variant="neutralOutline"
@@ -664,6 +677,15 @@ export function SectorScreen({ id }: { id: string }) {
                     </Button>
                   </div>
                 )}
+                <BatchPrintDialog
+                  taskIds={Array.from(selected)}
+                  open={batchOpen}
+                  onOpenChange={setBatchOpen}
+                  onDone={async () => {
+                    setSelected(new Set())
+                    await refresh()
+                  }}
+                />
                 <QueueList
                   groups={listGroups}
                   forecasts={forecasts}

@@ -15166,6 +15166,7 @@
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/Notes/index.tsx:109 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/ScheduleDate/index.tsx:186 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/Stages/StagePendingDialog.tsx:135 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:188 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:608 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1060 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1515 (jsx)",
@@ -15758,8 +15759,8 @@
   "pt": "Continuar",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/CancelSubscriptionDialog.tsx:172 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:224 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:282 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:228 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:286 (jsx)",
    "src/consts/deliverySchedule.ts:196 (propriedade:text)"
   ]
  },
@@ -16681,7 +16682,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:88 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:373 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:377 (propriedade:title)",
    "src/app/sandbox/locacao/components/RentalFinance.tsx:125 (jsx)",
    "src/consts/productionManager.ts:62 (propriedade:text)"
   ]
@@ -16877,7 +16878,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:203 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/components/ClientSelect.tsx:298 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:663 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:676 (jsx)"
   ]
  },
  "comum.geral.logradouro": {
@@ -17239,6 +17240,7 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:493 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/BillingDialog.tsx:230 (atributo:label)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/Notes/index.tsx:82 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:175 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:198 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/ItemActions/Notes/index.tsx:96 (atributo:label)"
   ]
@@ -22247,8 +22249,8 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Main.tsx:104 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:124 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:748 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:749 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:770 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:771 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.teamMembersAndUsers": {
@@ -26252,7 +26254,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/tabs/DocumentosTabs.tsx:135 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:787 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:809 (jsx)"
   ]
  },
  "configuracoes.notaFiscal.emHomologacaoAlgunsEstadosDisponibilizam": {
@@ -35723,7 +35725,7 @@
   "pt": "Ocultar",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/vendas/origens-de-contato/components/Actions/Hide/index.tsx:81 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:687 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:709 (jsx)"
   ]
  },
  "configuracoes.vendas.howItLooks": {
@@ -47988,7 +47990,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:610 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:614 (jsx)",
    "src/app/sandbox/locacao/components/RentalProduction.tsx:94 (jsx)"
   ]
  },
@@ -48033,7 +48035,7 @@
  "producao.gerenciador.anotherTask": {
   "pt": "outra tarefa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:790 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:812 (jsx)"
   ]
  },
  "producao.gerenciador.artwork": {
@@ -48049,6 +48051,15 @@
   ]
  },
  "producao.gerenciador.atTheRollWidthM": {
+  "pt": "Na largura do rolo, {valor} m",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:139 (frase)"
+  ]
+ },
+ "producao.gerenciador.atTheRollWidthM2": {
   "pt": "Na largura do rolo, {currentWidth} m",
   "vars": [
    "currentWidth"
@@ -48072,7 +48083,7 @@
  "producao.gerenciador.availableDragToATask": {
   "pt": "Disponível · arraste para uma tarefa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:819 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:841 (jsx)"
   ]
  },
  "producao.gerenciador.block1": {
@@ -48084,7 +48095,7 @@
  "producao.gerenciador.board": {
   "pt": "Quadro",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:557 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:561 (jsx)"
   ]
  },
  "producao.gerenciador.chooseThePerson": {
@@ -48096,6 +48107,8 @@
  "producao.gerenciador.chooseTheRoll": {
   "pt": "Escolher o rolo",
   "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:125 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:153 (atributo:placeholder)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:141 (atributo:placeholder)"
   ]
  },
@@ -48108,13 +48121,13 @@
  "producao.gerenciador.clockStopped": {
   "pt": "Relógio parado",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:810 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:832 (aviso)"
   ]
  },
  "producao.gerenciador.closed": {
   "pt": "Concluídos",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:611 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:615 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:66 (propriedade:label)"
   ]
  },
@@ -48147,7 +48160,7 @@
  "producao.gerenciador.completedAndCanceled": {
   "pt": "Concluídas e canceladas",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:366 (propriedade:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:370 (propriedade:title)"
   ]
  },
  "producao.gerenciador.completedCouldNotBeCompleted": {
@@ -48157,7 +48170,7 @@
    "failed2"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:455 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:459 (aviso)"
   ]
  },
  "producao.gerenciador.correctEntry": {
@@ -48204,7 +48217,7 @@
  "producao.gerenciador.dayQueue": {
   "pt": "Fila do dia",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:556 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:560 (jsx)"
   ]
  },
  "producao.gerenciador.delete": {
@@ -48321,9 +48334,9 @@
  "producao.gerenciador.finish": {
   "pt": "Concluir",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:233 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:292 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:656 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:237 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:296 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:660 (jsx)"
   ]
  },
  "producao.gerenciador.finish2": {
@@ -48338,7 +48351,7 @@
  "producao.gerenciador.finishedAndCancelled": {
   "pt": "concluídas e canceladas (",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:687 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:709 (jsx)"
   ]
  },
  "producao.gerenciador.finishedBy": {
@@ -48403,7 +48416,7 @@
  "producao.gerenciador.inOrderOfArrivalSchedule": {
   "pt": "Na ordem de chegada. Agende o dia para entrar na fila da máquina.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:413 (propriedade:hint)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:417 (propriedade:hint)"
   ]
  },
  "producao.gerenciador.insteadOf": {
@@ -48442,7 +48455,16 @@
    "moved"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:639 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:643 (frase)"
+  ]
+ },
+ "producao.gerenciador.jobsInASinglePrint": {
+  "pt": "{valor} trabalhos numa impressão só. O comprimento usado, com o refugo, é dividido pela área de cada um.",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:109 (frase)"
   ]
  },
  "producao.gerenciador.km": {
@@ -48478,16 +48500,23 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:241 (frase)"
   ]
  },
+ "producao.gerenciador.lengthOnTheSecondRoll": {
+  "pt": "Comprimento no segundo rolo (m)",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:160 (jsx)"
+  ]
+ },
  "producao.gerenciador.lengthUsedM": {
   "pt": "Comprimento usado (m)",
   "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:131 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:157 (jsx)"
   ]
  },
  "producao.gerenciador.linkYourUserToA": {
   "pt": "Ligue seu usuário a um colaborador",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:198 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:202 (aviso)"
   ]
  },
  "producao.gerenciador.liveSchedule": {
@@ -48500,6 +48529,13 @@
   "pt": "Registrar pendência",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:600 (jsx)"
+  ]
+ },
+ "producao.gerenciador.logPrintRun": {
+  "pt": "Apontar impressão",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:108 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:668 (jsx)"
   ]
  },
  "producao.gerenciador.logTime": {
@@ -48526,13 +48562,26 @@
    "actualMinutes"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:799 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:821 (jsx)"
   ]
  },
  "producao.gerenciador.logged2": {
   "pt": "· apontado",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:718 (jsx)"
+  ]
+ },
+ "producao.gerenciador.m": {
+  "pt": "{code} · {material}{valor} · {valor2} × {valor3} m",
+  "vars": [
+   "code",
+   "material",
+   "valor",
+   "valor2",
+   "valor3"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:69 (propriedade:label)"
   ]
  },
  "producao.gerenciador.machineAndQuality": {
@@ -48613,12 +48662,13 @@
  "producao.gerenciador.noOneHasAccessTo": {
   "pt": "Ninguém tem acesso a este gerenciador. Configure em Configurações › Produção.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:829 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:851 (jsx)"
   ]
  },
  "producao.gerenciador.noOpenRollInThis": {
   "pt": "Nenhum rolo aberto neste setor. Abra o lote em Estoque › Lotes escolhendo o setor.",
   "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:117 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:133 (jsx)"
   ]
  },
@@ -48676,10 +48726,20 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:192 (propriedade:label)"
   ]
  },
+ "producao.gerenciador.notEnoughMaterialMLeft": {
+  "pt": "Material insuficiente: restam {valor} m no rolo {code}. Escolha o segundo rolo para o resto.",
+  "vars": [
+   "valor",
+   "code"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:146 (frase)"
+  ]
+ },
  "producao.gerenciador.notScheduled": {
   "pt": "Sem agendamento",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:412 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:416 (propriedade:title)",
    "src/app/(app-sidebar)/producao/gerenciador/components/shared.tsx:47 (propriedade:label)"
   ]
  },
@@ -48687,13 +48747,13 @@
   "pt": "Nada aqui.",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:310 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:504 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:508 (jsx)"
   ]
  },
  "producao.gerenciador.nothingHere2": {
   "pt": "Nada aqui",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:733 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:755 (jsx)"
   ]
  },
  "producao.gerenciador.nothingScheduledInThisPeriod": {
@@ -48775,7 +48835,7 @@
  "producao.gerenciador.onlyTheirs": {
   "pt": "· só as dele",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:780 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:802 (jsx)"
   ]
  },
  "producao.gerenciador.openTasks": {
@@ -48796,7 +48856,7 @@
  "producao.gerenciador.orderChanged": {
   "pt": "Ordem trocada",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:480 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:484 (aviso)"
   ]
  },
  "producao.gerenciador.overdue": {
@@ -48824,14 +48884,14 @@
  "producao.gerenciador.pause": {
   "pt": "Pausar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:272 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:276 (jsx)",
    "src/consts/deliverySchedule.ts:189 (propriedade:text)"
   ]
  },
  "producao.gerenciador.pausedJobsResumeWithThe": {
   "pt": "O pausado continua pelo tempo que falta.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:374 (propriedade:hint)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:378 (propriedade:hint)"
   ]
  },
  "producao.gerenciador.perFile": {
@@ -48935,6 +48995,12 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1241 (jsx)"
   ]
  },
+ "producao.gerenciador.roll": {
+  "pt": "Rolo",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:124 (atributo:label)"
+  ]
+ },
  "producao.gerenciador.rollOpenInTheDepartment": {
   "pt": "Rolo aberto no setor",
   "usos": [
@@ -48959,7 +49025,7 @@
  "producao.gerenciador.schedule": {
   "pt": "Agendar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:308 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:312 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1160 (jsx)"
   ]
  },
@@ -48987,6 +49053,12 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/GeneralViews.tsx:63 (atributo:aria-label)"
   ]
  },
+ "producao.gerenciador.secondRoll": {
+  "pt": "Segundo rolo",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:152 (atributo:label)"
+  ]
+ },
  "producao.gerenciador.sectorManager": {
   "pt": "Gerenciador do setor",
   "usos": [
@@ -49008,13 +49080,13 @@
    "size"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:647 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:651 (frase)"
   ]
  },
  "producao.gerenciador.show": {
   "pt": "Mostrar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:687 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:709 (jsx)"
   ]
  },
  "producao.gerenciador.sold": {
@@ -49033,7 +49105,7 @@
  "producao.gerenciador.start": {
   "pt": "Iniciar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:252 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:256 (jsx)",
    "src/consts/deliverySchedule.ts:154 (propriedade:text)"
   ]
  },
@@ -49052,7 +49124,7 @@
  "producao.gerenciador.startTheClock": {
   "pt": "Iniciar relógio",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:262 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:266 (jsx)"
   ]
  },
  "producao.gerenciador.stayOnTheFirstDay": {
@@ -49077,7 +49149,7 @@
  "producao.gerenciador.stop": {
   "pt": "Parar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:814 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:836 (jsx)"
   ]
  },
  "producao.gerenciador.stop2": {
@@ -49089,7 +49161,7 @@
  "producao.gerenciador.stopTheClock": {
   "pt": "Parar relógio",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:262 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:266 (jsx)"
   ]
  },
  "producao.gerenciador.taskSCompleted": {
@@ -49098,13 +49170,13 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:459 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:463 (aviso)"
   ]
  },
  "producao.gerenciador.teamMemberOnTheTask": {
   "pt": "Colaborador na tarefa: o relógio começou",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:175 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:179 (aviso)"
   ]
  },
  "producao.gerenciador.teamMemberSchedule": {
@@ -49152,7 +49224,7 @@
    "stageName"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:789 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:811 (jsx)"
   ]
  },
  "producao.gerenciador.texto4": {
@@ -49262,7 +49334,7 @@
  "producao.gerenciador.toDo": {
   "pt": "a fazer",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:619 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:623 (jsx)"
   ]
  },
  "producao.gerenciador.toKnowWhenAJob": {
@@ -49312,7 +49384,7 @@
  "producao.gerenciador.urgent2": {
   "pt": "urgente(s)",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:632 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:636 (jsx)"
   ]
  },
  "producao.gerenciador.vCurrent": {
@@ -49345,8 +49417,8 @@
  "producao.gerenciador.waitsFor": {
   "pt": "Espera",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:239 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:297 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:243 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:301 (jsx)"
   ]
  },
  "producao.gerenciador.was": {
@@ -49361,6 +49433,7 @@
  "producao.gerenciador.wasteSplice": {
   "pt": "Perda, emenda…",
   "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:178 (atributo:placeholder)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:201 (atributo:placeholder)"
   ]
  },
@@ -49408,6 +49481,12 @@
   "pt": "· O.S.",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:213 (jsx)"
+  ]
+ },
+ "producao.gerenciador.writeOff": {
+  "pt": "Dar baixa",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:196 (jsx)"
   ]
  },
  "producao.gerenciador.writeOffFromTheRoll": {

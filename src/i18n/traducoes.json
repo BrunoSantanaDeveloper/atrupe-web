@@ -20322,5 +20322,37 @@
   "cfa841d47e": {
     "es": "Ajuste, retrabajo, falta de material…",
     "en": "Adjustment, rework, missing material…"
+  },
+  "183b7926db": {
+    "es": "{code} · {material}{valor} · {valor2} × {valor3} m",
+    "en": "{code} · {material}{valor} · {valor2} × {valor3} m"
+  },
+  "dab8742ba8": {
+    "es": "Registrar impresión",
+    "en": "Log print run"
+  },
+  "1b31fea0bb": {
+    "es": "{valor} trabajos en una sola impresión. El largo usado, con el desperdicio, se divide por el área de cada uno.",
+    "en": "{valor} jobs in a single print run. The length used, including waste, is split by the area of each one."
+  },
+  "56d4ddf67a": {
+    "es": "Rollo",
+    "en": "Roll"
+  },
+  "c0c22c42a6": {
+    "es": "En el ancho del rollo, {valor} m",
+    "en": "At the roll width, {valor} m"
+  },
+  "1d5a3f7012": {
+    "es": "Material insuficiente: quedan {valor} m en el rollo {code}. Elija el segundo rollo para el resto.",
+    "en": "Not enough material: {valor} m left on roll {code}. Choose the second roll for the rest."
+  },
+  "cc9327596d": {
+    "es": "Segundo rollo",
+    "en": "Second roll"
+  },
+  "dd01e1dcd1": {
+    "es": "Largo en el segundo rollo (m)",
+    "en": "Length on the second roll (m)"
   }
 }
