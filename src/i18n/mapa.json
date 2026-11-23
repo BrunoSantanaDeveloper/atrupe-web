@@ -4102,16 +4102,6 @@
    "src/app/(app-sidebar)/admin/sistema/planos/components/AvailabilityTab.tsx:227 (jsx)"
   ]
  },
- "admin.sistema.disponivel": {
-  "pt": "Disponível",
-  "marcas": [
-   "interno"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/admin/sistema/planos/components/AvailabilityTab.tsx:174 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/PaymentsTable.tsx:61 (propriedade:label)"
-  ]
- },
  "admin.sistema.disponivelPContratacao": {
   "pt": "Disponível p/ contratação",
   "marcas": [
@@ -15895,7 +15885,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/AssetReadingsCard.tsx:173 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:249 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfseListClient.tsx:240 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:290 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:310 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:240 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:395 (jsx)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollPdf.tsx:361 (jsx)",
@@ -16128,6 +16118,17 @@
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:105 (atributo:placeholder)",
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:119 (atributo:placeholder)",
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:133 (atributo:placeholder)"
+  ]
+ },
+ "comum.geral.disponivel": {
+  "pt": "Disponível",
+  "marcas": [
+   "interno"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/admin/sistema/planos/components/AvailabilityTab.tsx:174 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/PaymentsTable.tsx:61 (propriedade:label)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:158 (jsx)"
   ]
  },
  "comum.geral.downloadTemplateSpreadsheet": {
@@ -16924,7 +16925,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:229 (jsx)",
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:152 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:292 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:312 (jsx)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:161 (jsx)",
    "src/app/(app-sidebar)/estoque/solicitacoes/components/Requests.tsx:169 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:823 (jsx)",
@@ -17345,7 +17346,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/sistema/migracao/page.tsx:519 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:296 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:316 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1378 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/FiltersBar.tsx:166 (atributo:label)",
    "src/app/(app-sidebar)/relatorios/vendas/components/print/AdvancedReportDialog/index.tsx:237 (atributo:label)"
@@ -17799,7 +17800,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2473 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:930 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:1023 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:294 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:314 (jsx)",
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:359 (jsx)",
    "src/app/(app-sidebar)/estoque/entrada-de-nota/components/InvoiceEntry.tsx:186 (jsx)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:353 (jsx)",
@@ -18615,7 +18616,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1687 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/ImportMaterialsDialog.tsx:295 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/status-de-orcamento/components/NewItem/index.tsx:134 (atributo:label)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:166 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:169 (jsx)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/TransactionDetails/index.tsx:191 (jsx)",
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowFilter.tsx:161 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollMovement.tsx:73 (jsx)",
@@ -18776,7 +18777,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2471 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialsFilter.tsx:79 (atributo:label)",
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:661 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:291 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:311 (jsx)",
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:771 (atributo:label)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:321 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollItems.tsx:206 (jsx)",
@@ -20012,7 +20013,7 @@
   "pt": "Custo médio",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:144 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:161 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:164 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.baBahia": {
@@ -31725,7 +31726,7 @@
   "pt": "Mínimo",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1548 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:158 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:161 (jsx)",
    "src/app/(app-sidebar)/estoque/components/StockItemDialog.tsx:89 (jsx)"
   ]
  },
@@ -37995,7 +37996,7 @@
   "pt": "Abaixo do mínimo",
   "usos": [
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:69 (propriedade:label)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:222 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:242 (jsx)"
   ]
  },
  "estoque.inicio.countedQuantity": {
@@ -38046,21 +38047,21 @@
  "estoque.inicio.inventoryAdjustment": {
   "pt": "Ajuste de inventário",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:246 (atributo:tooltip)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:266 (atributo:tooltip)",
    "src/app/(app-sidebar)/estoque/components/StockItemDialog.tsx:76 (jsx)"
   ]
  },
  "estoque.inicio.lastReceipt": {
   "pt": "Última entrada",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:164 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:167 (jsx)"
   ]
  },
  "estoque.inicio.latestMovements": {
   "pt": "Últimas movimentações",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:277 (jsx)",
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:278 (atributo:title)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:297 (jsx)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:298 (atributo:title)"
   ]
  },
  "estoque.inicio.materialBalances": {
@@ -38073,7 +38074,7 @@
  "estoque.inicio.minimumStock": {
   "pt": "Estoque mínimo",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:238 (atributo:tooltip)",
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:258 (atributo:tooltip)",
    "src/app/(app-sidebar)/estoque/components/StockItemDialog.tsx:76 (jsx)"
   ]
  },
@@ -38086,13 +38087,13 @@
  "estoque.inicio.noReceipt": {
   "pt": "sem entrada",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:204 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:224 (jsx)"
   ]
  },
  "estoque.inicio.normal": {
   "pt": "Normal",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:226 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:246 (jsx)"
   ]
  },
  "estoque.inicio.outOfStock": {
@@ -38104,7 +38105,7 @@
  "estoque.inicio.outOfStock2": {
   "pt": "Zerado",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:218 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:238 (jsx)"
   ]
  },
  "estoque.inicio.receiptsComeFromTheReconciled": {
@@ -38122,7 +38123,17 @@
  "estoque.inicio.receiptsFromInvoicesUsageFrom": {
   "pt": "Entrada pela nota, consumo pela produção e ajustes de inventário.",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:280 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:300 (jsx)"
+  ]
+ },
+ "estoque.inicio.reserved": {
+  "pt": "reservado {reserved} {unit}",
+  "vars": [
+   "reserved",
+   "unit"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:210 (frase)"
   ]
  },
  "estoque.inicio.texto": {
@@ -38137,7 +38148,7 @@
  "estoque.inicio.theAverageCostFeedsThe": {
   "pt": "O custo médio alimenta a composição; quando a última entrada fica acima dele, o custo dos produtos ainda não reflete a compra.",
   "usos": [
-   "src/app/(app-sidebar)/estoque/components/Stock.tsx:265 (jsx)"
+   "src/app/(app-sidebar)/estoque/components/Stock.tsx:285 (jsx)"
   ]
  },
  "estoque.inicio.theBalanceShowsUpHere": {

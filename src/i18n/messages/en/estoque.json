@@ -8,6 +8,7 @@
     "noMaterialsInInventory": "No materials in inventory",
     "theBalanceShowsUpHere": "The balance shows up here after the first invoice receipt.",
     "lastReceipt": "Last receipt",
+    "reserved": "reserved {reserved} {unit}",
     "noReceipt": "no receipt",
     "outOfStock2": "Out of stock",
     "normal": "Normal",

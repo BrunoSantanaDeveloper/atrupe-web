@@ -20354,5 +20354,9 @@
   "dd01e1dcd1": {
     "es": "Largo en el segundo rollo (m)",
     "en": "Length on the second roll (m)"
+  },
+  "ff844f9d1f": {
+    "es": "reservado {reserved} {unit}",
+    "en": "reserved {reserved} {unit}"
   }
 }

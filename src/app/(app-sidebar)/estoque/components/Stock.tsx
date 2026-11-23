@@ -151,8 +151,11 @@ export function Stock({ searchParams }: SearchParamsType) {
                         <TableHead className="w-[30%] min-w-[200px]">
                           Material
                         </TableHead>
-                        <TableHead numeric className="w-[14%]">
+                        <TableHead numeric className="w-[12%]">
                           Saldo
+                        </TableHead>
+                        <TableHead numeric className="w-[12%]">
+                          Disponível
                         </TableHead>
                         <TableHead numeric className="w-[12%]">
                           Mínimo
@@ -169,7 +172,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                     </TableHeader>
                     <TableBody>
                       {isLoading ? (
-                        <TableSkeletonRows cols={7} rows={5} />
+                        <TableSkeletonRows cols={8} rows={5} />
                       ) : (
                         items.map((item) => {
                           const below = item.quantity < item.minimum
@@ -191,6 +194,23 @@ export function Stock({ searchParams }: SearchParamsType) {
                                 )}
                               >
                                 {item.quantity} {item.unit}
+                              </TableCell>
+                              {/* Saldo menos o reservado para as vendas
+                                  aprovadas em andamento (item 23) */}
+                              <TableCell className="text-right">
+                                <p
+                                  className={cn(
+                                    (item.available ?? item.quantity) < 0 &&
+                                      'text-error-700',
+                                  )}
+                                >
+                                  {item.available ?? item.quantity} {item.unit}
+                                </p>
+                                {!!item.reserved && (
+                                  <p className="text-xs text-gray">
+                                    reservado {item.reserved} {item.unit}
+                                  </p>
+                                )}
                               </TableCell>
                               <TableCell className="text-right text-gray">
                                 {item.minimum} {item.unit}

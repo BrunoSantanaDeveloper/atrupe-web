@@ -8,6 +8,7 @@
     "noMaterialsInInventory": "Ningún material en inventario",
     "theBalanceShowsUpHere": "El saldo aparece aquí después de la primera entrada de factura.",
     "lastReceipt": "Última entrada",
+    "reserved": "reservado {reserved} {unit}",
     "noReceipt": "sin entrada",
     "outOfStock2": "En cero",
     "normal": "Normal",

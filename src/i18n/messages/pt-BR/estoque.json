@@ -9,6 +9,7 @@
     "noMaterialsInInventory": "Nenhum material em estoque",
     "theBalanceShowsUpHere": "O saldo aparece aqui depois da primeira entrada de nota.",
     "lastReceipt": "Última entrada",
+    "reserved": "reservado {reserved} {unit}",
     "noReceipt": "sem entrada",
     "outOfStock2": "Zerado",
     "normal": "Normal",

@@ -9,6 +9,10 @@ export type StockItem = {
   variation: string | null
   unit: string
   quantity: number
+  // A reserva das vendas aprovadas em andamento (item 23, FULL): o
+  // disponível é o saldo menos o reservado
+  reserved?: number
+  available?: number
   minimum: number
   averageCost: number
   lastEntryCost: number | null
