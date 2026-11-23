@@ -174,14 +174,20 @@ export function TransactionsData({ type, searchParams }: Props) {
                       <Fragment key={group.date}>
                         <TableRow className="bg-gray-100">
                           <TableCell
-                            colSpan={type === 'receivable' ? 6 : 5}
-                            className="text-gray font-medium text-xs py-1 pr-1"
+                            colSpan={type === 'receivable' ? 5 : 4}
+                            className="text-gray font-medium text-xs py-1"
                           >
-                            <div className="flex justify-between items-center">
-                              <p>{formatToWeekDate(group?.date)}</p>
+                            <p>{formatToWeekDate(group?.date)}</p>
+                          </TableCell>
+                          {/* O previsto do dia fica na coluna dos ícones:
+                              mesma largura em todos os dias, começando e
+                              terminando com os ícones, e o conteúdo no meio
+                              (Maicol, 23/11/2026) */}
+                          <TableCell className="text-xs font-medium py-1">
+                            <div className="flex justify-end">
                               <div
                                 className={cn(
-                                  'flex items-center gap-5 p-1.5 pr-2 rounded-lg',
+                                  'flex w-full items-center justify-center gap-3 rounded-lg p-1.5',
                                   type === 'receivable'
                                     ? 'bg-success-200 text-success-900'
                                     : 'bg-error-200 text-error-900',
