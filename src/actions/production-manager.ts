@@ -151,7 +151,9 @@ export type ProductionCalendar = {
   holidays: string[]
 }
 
-export const DEFAULT_CALENDAR: ProductionCalendar = {
+// Sem export: num arquivo "use server" só se exportam funções assíncronas;
+// exportar a constante derrubava todas as ações deste arquivo na Vercel
+const DEFAULT_CALENDAR: ProductionCalendar = {
   workDays: [1, 2, 3, 4, 5],
   startTime: '08:00',
   endTime: '18:00',
