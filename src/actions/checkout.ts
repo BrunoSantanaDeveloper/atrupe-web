@@ -111,6 +111,21 @@ export async function fetchContractingCurrent() {
   )
 }
 
+/**
+ * Retira usuários adicionais: a assinatura passa a ter `additionalUsers`
+ * (menos que hoje). O valor sai das mensalidades ainda não pagas.
+ */
+export async function removeAdditionalUsers(
+  subscriptionId: string,
+  additionalUsers: number,
+) {
+  return call<{ id: string; additionalUsers: number; value: number }>((api) =>
+    api.patch(`/subscriptions/${subscriptionId}/additional-users`, {
+      additionalUsers,
+    }),
+  )
+}
+
 export async function fetchComplementsQuote(input: ComplementsRequest) {
   return call<ComplementsQuote>((api) =>
     api.post('/subscriptions/complements/quote', input),

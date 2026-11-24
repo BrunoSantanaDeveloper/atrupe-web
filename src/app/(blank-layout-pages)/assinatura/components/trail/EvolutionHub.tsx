@@ -344,7 +344,11 @@ export function EvolutionHub({ planStates, current }: Props) {
             disabled={!!restriction || !isPrincipalAdmin}
             onChange={setUsers}
             priceCents={sub.additionalUserPriceCents}
-            hint={`Hoje você tem ${sub.additionalUsers}`}
+            hint={
+              sub.additionalUsers > 0
+                ? `Hoje você tem ${sub.additionalUsers}. Para reduzir, use Configurações › Assinatura.`
+                : `Hoje você tem ${sub.additionalUsers}`
+            }
           />
         </AddonsSection>
 

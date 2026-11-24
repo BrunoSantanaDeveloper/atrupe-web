@@ -1,8 +1,14 @@
 'use client'
 
+// React
+import { useState } from 'react'
+
 // Next
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
+
+// Components
+import { ReduceUsersDialog } from './ReduceUsersDialog'
 
 // UI
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,7 +16,12 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 
 // Icons
-import { IconReceipt, IconPlus, IconUserPlus } from '@tabler/icons-react'
+import {
+  IconReceipt,
+  IconPlus,
+  IconMinus,
+  IconUserPlus,
+} from '@tabler/icons-react'
 
 // Logos
 import startLogo from '@/assets/images/start-logo.png'
@@ -44,14 +55,16 @@ interface SubscriptionSummaryCardsProps {
       name: string
       basePrice: number
       planType: string
+      /** Preço do usuário adicional, em centavos. */
+      additionalUserPrice?: number | null
     }
     value: number
     additionalUsers: number
     subscriptionFeatures: SubscriptionFeature[]
   }
   /**
-   * Retirar módulos e incluir usuários é do Administrador Principal da Conta
-   * (contrato 1.1, 4.2): para os demais, os atalhos não aparecem.
+   * Retirar módulos e incluir ou reduzir usuários é do Administrador Principal
+   * da Conta (contrato 1.1, 4.2): para os demais, os atalhos não aparecem.
    */
   isPrincipalAdmin?: boolean
 }
@@ -75,9 +88,13 @@ export function SubscriptionSummaryCards({
 
   const nfTotal = nfMainModule ? nfMainModule.price || 0 : 0
 
+  const [reduceOpen, setReduceOpen] = useState(false)
+
   const isTrial = subscription.plan.planType === 'TRIAL'
   const isCanceled = subscription.status !== 'ACTIVE'
   const canChange = !isTrial && !isCanceled && isPrincipalAdmin
+  const additionalUsers = subscription.additionalUsers || 0
+  const additionalUserPrice = subscription.plan.additionalUserPrice ?? 1500
 
   return (
     <>
@@ -147,29 +164,44 @@ export function SubscriptionSummaryCards({
             <FeaturedIcon variant="neutralLight" Icon={IconUserPlus} />
             <div className="min-w-0 flex-1">
               <p className="text-sm text-gray-500">
-                Usuário adicional ({subscription.additionalUsers || 0})
+                Usuário adicional ({additionalUsers})
               </p>
               <p className="text-lg font-semibold text-gray-800">
-                {formatCurrencyToBrl(
-                  (subscription.additionalUsers || 0) * 1500,
-                )}
+                {formatCurrencyToBrl(additionalUsers * additionalUserPrice)}
               </p>
             </div>
             {canChange && (
-              <Button
-                asChild
-                variant="light"
-                size="iconSm"
-                className="absolute top-3 right-3"
-              >
-                <Link href="/assinatura" aria-label="Adicionar usuários">
-                  <IconPlus size={16} />
-                </Link>
-              </Button>
+              <div className="absolute top-3 right-3 flex gap-1.5">
+                {additionalUsers > 0 && (
+                  <Button
+                    type="button"
+                    variant="light"
+                    size="iconSm"
+                    aria-label="Reduzir usuários adicionais"
+                    title="Reduzir usuários adicionais"
+                    onClick={() => setReduceOpen(true)}
+                  >
+                    <IconMinus size={16} />
+                  </Button>
+                )}
+                <Button asChild variant="light" size="iconSm">
+                  <Link
+                    href="/assinatura"
+                    aria-label="Adicionar usuários"
+                    title="Adicionar usuários"
+                  >
+                    <IconPlus size={16} />
+                  </Link>
+                </Button>
+              </div>
             )}
           </CardContent>
         </Card>
       </div>
+
+      {canChange && additionalUsers > 0 && (
+        <ReduceUsersDialog open={reduceOpen} onOpenChange={setReduceOpen} />
+      )}
     </>
   )
 }

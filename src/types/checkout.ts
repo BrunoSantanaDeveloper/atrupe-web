@@ -273,6 +273,10 @@ export interface ContractingCurrent {
     additionalUsers: number
     additionalUserPriceCents: number
     maxAdditionalUsers: number
+    /** Usuários que o plano inclui; null quando o plano não tem limite. */
+    includedUsers?: number | null
+    /** Usuários ativos hoje: a quantidade nova precisa comportá-los. */
+    usersInUse?: number
     modules: ContractedModule[]
   } | null
   availableModules?: (ContractedModule & { description: string | null })[]

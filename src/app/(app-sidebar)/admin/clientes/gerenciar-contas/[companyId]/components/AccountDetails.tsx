@@ -67,6 +67,7 @@ const CHANGE_LABELS: Record<string, string> = {
   EVOLUTION_CONTRACTED: 'Evolução de plano',
   COMPLEMENTS_ADDED: 'Complementos',
   MODULE_REMOVED: 'Módulo retirado',
+  USERS_REMOVED: 'Usuários adicionais retirados',
   PLAN_CHANGED_BY_ADMIN: 'Troca de plano pelo suporte',
   TRANSFER_RECEIVED: 'Transferência de titularidade',
 }
