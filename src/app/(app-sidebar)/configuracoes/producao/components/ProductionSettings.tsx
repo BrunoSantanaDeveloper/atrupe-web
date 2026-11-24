@@ -237,12 +237,6 @@ export function ProductionSettings() {
 
   const { flows, managers, taskTypes, collaborators, vehicles } = config
   const managerOf = (id: string) => managers.find((item) => item.id === id)
-  const stepsIn = (managerId: string) =>
-    taskTypes.flatMap((type) =>
-      type.steps
-        .filter((item) => item.managerId === managerId)
-        .map((item) => `${type.name} › ${item.name}`),
-    )
 
   return (
     <TooltipProvider>
@@ -271,13 +265,11 @@ export function ProductionSettings() {
               <Table className="min-w-[900px]">
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="w-[24%]">Gerenciador</TableHead>
-                    <TableHead className="w-[22%]">Controle de tempo</TableHead>
+                    {/* A lista das etapas saiu (24/11/2026): enchia a linha */}
+                    <TableHead className="w-[30%]">Gerenciador</TableHead>
+                    <TableHead className="w-[24%]">Controle de tempo</TableHead>
                     <TableHead className="w-[12%]">Intervalo</TableHead>
-                    <TableHead className="w-[16%]">Quem acessa</TableHead>
-                    <TableHead className="w-[18%]">
-                      Etapas que passam por ele
-                    </TableHead>
+                    <TableHead className="w-[26%]">Quem acessa</TableHead>
                     <TableHead className="w-[8%]" />
                   </TableRow>
                 </TableHeader>
@@ -285,7 +277,7 @@ export function ProductionSettings() {
                   {flows.map((flow) => (
                     <Fragment key={flow.id}>
                       <TableRow className="bg-gray-50 hover:bg-gray-50">
-                        <TableCell colSpan={6}>
+                        <TableCell colSpan={5}>
                           <span className="font-medium">
                             Fluxo · {flow.name}
                           </span>
@@ -294,7 +286,6 @@ export function ProductionSettings() {
                       {managers
                         .filter((item) => item.flowId === flow.id)
                         .map((manager) => {
-                          const steps = stepsIn(manager.id)
                           return (
                             <TableRow key={manager.id}>
                               <TableCell>
@@ -345,22 +336,6 @@ export function ProductionSettings() {
                                       )
                                       .join(', ')
                                   : 'Ninguém'}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray-700">
-                                {steps.length ? (
-                                  <div className="flex flex-wrap gap-1">
-                                    {steps.map((text) => (
-                                      <span
-                                        key={text}
-                                        className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700"
-                                      >
-                                        {text}
-                                      </span>
-                                    ))}
-                                  </div>
-                                ) : (
-                                  '-'
-                                )}
                               </TableCell>
                               <TableCell>
                                 <PermissionGate permissions={PRODUCTION_MANAGE}>
