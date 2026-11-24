@@ -99,6 +99,24 @@ interface Props {
   onApplied?: () => void
 }
 
+/**
+ * Unidades comerciais (uCom). As de medida decidem se a linha da nota sai na
+ * medida do item — M2 faz a placa de 2,50 x 1,00 m sair "2,5 M2"; as de peça
+ * fazem sair "1 UN", com o valor cheio da peça.
+ */
+const UNIDADES = [
+  { code: 'UN', label: 'UN - unidade (vende por peça)' },
+  { code: 'PC', label: 'PC - peça' },
+  { code: 'CX', label: 'CX - caixa' },
+  { code: 'KIT', label: 'KIT - kit' },
+  { code: 'M2', label: 'M2 - metro quadrado (vende por área)' },
+  { code: 'M', label: 'M - metro linear' },
+  { code: 'KG', label: 'KG - quilograma' },
+  { code: 'L', label: 'L - litro' },
+  { code: 'KM', label: 'KM - quilômetro' },
+  { code: 'H', label: 'H - hora' },
+]
+
 /** Tabela A do layout: origem da mercadoria. */
 const ORIGENS = [
   { code: '0', label: '0 - Nacional' },
@@ -134,6 +152,7 @@ export function BulkTributacaoDialog({
 }: Props) {
   const queryClient = useQueryClient()
 
+  const [unidade, setUnidade] = useState('')
   const [cst, setCst] = useState('')
   const [aliquota, setAliquota] = useState('')
   const [reducao, setReducao] = useState('')
@@ -141,11 +160,12 @@ export function BulkTributacaoDialog({
   const [cfopInterno, setCfopInterno] = useState('')
   const [cfopExterno, setCfopExterno] = useState('')
   const [mostrarOutros, setMostrarOutros] = useState(false)
-  const [somenteOutroRegime, setSomenteOutroRegime] = useState(true)
+  const [somenteOutroRegime, setSomenteOutroRegime] = useState(false)
   const [somenteSemAliquota, setSomenteSemAliquota] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const aliquotaTocada = useRef(false)
+  const regimeTocado = useRef(false)
 
   const escopoTodos = scope.kind === 'all'
   const totalDoEscopo =
@@ -194,6 +214,8 @@ export function BulkTributacaoDialog({
   useEffect(() => {
     if (!open) return
     aliquotaTocada.current = false
+    regimeTocado.current = false
+    setUnidade('')
     setCst('')
     setAliquota('')
     setReducao('')
@@ -201,10 +223,22 @@ export function BulkTributacaoDialog({
     setCfopInterno('')
     setCfopExterno('')
     setMostrarOutros(false)
-    setSomenteOutroRegime(true)
+    setSomenteOutroRegime(false)
     setSomenteSemAliquota(true)
     setError(null)
   }, [open])
+
+  /**
+   * O filtro por regime só vem ligado quando há o que filtrar.
+   *
+   * Ligado sempre, ele zerava a correção de quem não tem nenhum código do
+   * outro regime: quem queria só trocar a unidade comercial recebia "nenhum
+   * produto para corrigir" sem entender por quê.
+   */
+  useEffect(() => {
+    if (regimeTocado.current || !opcoes) return
+    setSomenteOutroRegime(opcoes.incompativeis > 0)
+  }, [opcoes])
 
   // Alíquota da UF entra como sugestão quando o CST escolhido exige uma, e
   // nunca por cima do que o usuário já mexeu — inclusive quando ele apagou o
@@ -222,6 +256,7 @@ export function BulkTributacaoDialog({
       onlyMissingRate: somenteSemAliquota,
     }
 
+    if (unidade) corpo.commercialUnit = unidade
     if (cst) corpo.icmsCst = cst
     if (origem) corpo.icmsOrigin = origem
 
@@ -253,6 +288,7 @@ export function BulkTributacaoDialog({
     }
 
     const temCampo = [
+      'commercialUnit',
       'icmsCst',
       'icmsRate',
       'icmsReducao',
@@ -264,8 +300,8 @@ export function BulkTributacaoDialog({
     if (!temCampo) {
       return {
         erro:
-          'Escolha o que corrigir: CST de ICMS, alíquota, redução da base, ' +
-          'origem da mercadoria ou CFOP.',
+          'Escolha o que corrigir: unidade comercial, CST de ICMS, alíquota, ' +
+          'redução da base, origem da mercadoria ou CFOP.',
       }
     }
 
@@ -374,6 +410,34 @@ export function BulkTributacaoDialog({
               : ' da seleção'}
             . Os campos não informados abaixo são preservados em cada produto.
           </p>
+
+          <div className="space-y-2">
+            <Label htmlFor="bulk-unidade">Unidade comercial</Label>
+            <Select
+              value={unidade}
+              onValueChange={(valor) => {
+                setUnidade(valor)
+                setError(null)
+              }}
+            >
+              <SelectTrigger id="bulk-unidade">
+                <SelectValue placeholder="Não alterar a unidade" />
+              </SelectTrigger>
+              <SelectContent>
+                {UNIDADES.map((opcao) => (
+                  <SelectItem key={opcao.code} value={opcao.code}>
+                    {opcao.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500">
+              É ela que decide como a linha sai na nota: com M2, a placa de 2,50
+              × 1,00 m vira &quot;2,5 M2&quot;; com UN, vira &quot;1 UN&quot;
+              pelo valor cheio da peça. O total da nota é o mesmo nos dois
+              casos.
+            </p>
+          </div>
 
           <div className="space-y-2">
             <Label htmlFor="bulk-cst">CST de ICMS</Label>
@@ -564,9 +628,10 @@ export function BulkTributacaoDialog({
           <label className="flex cursor-pointer items-start gap-2 rounded-md border border-gray-200 p-3">
             <Checkbox
               checked={somenteOutroRegime}
-              onCheckedChange={(checked) =>
+              onCheckedChange={(checked) => {
+                regimeTocado.current = true
                 setSomenteOutroRegime(checked === true)
-              }
+              }}
             />
             <span className="text-sm text-gray-700">
               Aplicar somente a produtos com código do outro regime
