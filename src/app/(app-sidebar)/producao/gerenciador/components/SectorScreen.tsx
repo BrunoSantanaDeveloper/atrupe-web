@@ -17,19 +17,12 @@ import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { PersonAvatar } from './PersonAvatar'
-import { TaskCard } from './TaskCard'
 import { QueueList, type QueueGroup } from './QueueList'
 import { BatchPrintDialog } from './BatchPrintDialog'
 import { ProductionFilters } from './GeneralViews'
@@ -474,28 +467,14 @@ export function SectorScreen({ id }: { id: string }) {
     await refresh()
   }
 
+  // Sem tempo (PRO) também em lista (24/11/2026): só Concluir na linha
   const section = (title: string, items: TaskView[], hint?: string) => (
-    <Card key={title}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {title.charAt(0).toUpperCase() + title.slice(1)}
-          <span className="font-normal text-gray">({items.length})</span>
-        </CardTitle>
-        {hint && <CardDescription>{hint}</CardDescription>}
-      </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-3 px-6 pb-6 lg:grid-cols-2">
-        {items.map((item) => (
-          <TaskCard
-            key={item.id}
-            item={item}
-            onOpen={setTaskId}
-            actions={actions(item)}
-            timeless={timeless}
-          />
-        ))}
-        {!items.length && <p className="text-sm text-gray">Nada aqui.</p>}
-      </CardContent>
-    </Card>
+    <QueueList
+      groups={[{ key: title, title, hint, tasks: items }]}
+      onOpen={setTaskId}
+      actions={actions}
+      showForecast={false}
+    />
   )
 
   const manager = board?.manager

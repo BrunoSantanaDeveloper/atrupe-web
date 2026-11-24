@@ -24,6 +24,7 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import type { TaskView } from '../manager'
+import { QueueList, type QueueGroup } from './QueueList'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -113,17 +114,37 @@ export function ProductionFilters({
   )
 }
 
+// A Agenda viva em lista (Maicol, 24/11/2026: todos os gerenciadores em
+// lista, como no legado): um grupo por dia, com as horas do dia, e as
+// tarefas não agendadas no fim. Os setores juntos: o setor vai na linha.
 export function AgendaView({
   scheduled,
   unscheduled,
-  card,
+  onOpen,
 }: {
   scheduled: TaskView[]
   unscheduled: TaskView[]
-  card: (item: TaskView) => JSX.Element
+  onOpen: (id: string) => void
 }) {
   const days = Array.from(new Set(scheduled.map((task) => task.schedule!.date)))
   const alerts = scheduled.filter((task) => task.alert).length
+  const groups: QueueGroup[] = [
+    ...days.map((day) => {
+      const tasks = scheduled.filter((task) => task.schedule!.date === day)
+      return {
+        key: day,
+        title: dayLabel(day),
+        minutes: tasks.reduce((sum, task) => sum + task.schedule!.minutes, 0),
+        tasks,
+      }
+    }),
+    {
+      key: 'sem-agenda',
+      title: 'Tarefas não agendadas',
+      hint: 'Abra a tarefa para agendar: dia, início e duração. O preparo ocupa a máquina junto com a produção.',
+      tasks: unscheduled,
+    },
+  ]
   return (
     <div className="space-y-4">
       {alerts > 0 && (
@@ -140,59 +161,15 @@ export function AgendaView({
           a cadeia caber no prazo. Nada é remarcado sozinho.
         </p>
       )}
-      {days.map((day) => (
-        <Card key={day}>
-          <CardHeader>
-            <CardTitle className="capitalize">{dayLabel(day)}</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-3 px-6 pb-6 md:grid-cols-2 xl:grid-cols-3">
-            {scheduled
-              .filter((task) => task.schedule!.date === day)
-              .map((task) => (
-                <div key={task.id} className="space-y-1">
-                  <p className="text-xs font-medium text-gray-700">
-                    {task.schedule!.start
-                      ? `${task.schedule!.start} – ${endTime(task.schedule!.start, task.schedule!.minutes)}`
-                      : 'Só o dia'}
-                    {task.machine ? ` · ${task.machine}` : ''}
-                    {task.vehicleId ? ' · com veículo' : ''}
-                  </p>
-                  {card(task)}
-                </div>
-              ))}
-          </CardContent>
-        </Card>
-      ))}
       {!days.length && (
         <p className="text-sm text-gray">Nada agendado neste período.</p>
       )}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Icon
-              icon={IconAlertTriangle}
-              size="sm"
-              className="text-warning-600"
-            />
-            Tarefas não agendadas
-            <span className="font-normal text-gray">
-              ({unscheduled.length})
-            </span>
-          </CardTitle>
-          <CardDescription>
-            Abra a tarefa para agendar: dia, início e duração. O preparo ocupa a
-            máquina junto com a produção.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 gap-3 px-6 pb-6 md:grid-cols-2 xl:grid-cols-3">
-          {unscheduled.map((task) => (
-            <div key={task.id}>{card(task)}</div>
-          ))}
-          {!unscheduled.length && (
-            <p className="text-sm text-gray">Tudo agendado.</p>
-          )}
-        </CardContent>
-      </Card>
+      <QueueList
+        groups={groups}
+        onOpen={onOpen}
+        showSector
+        showForecast={false}
+      />
     </div>
   )
 }

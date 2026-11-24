@@ -20782,5 +20782,9 @@
   "7ce9896033": {
     "es": "Imprenta rápida",
     "en": "Quick print"
+  },
+  "d929e23be6": {
+    "es": "{stageName} ·",
+    "en": "{stageName} ·"
   }
 }

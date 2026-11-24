@@ -22,7 +22,6 @@ import { Card, CardContent } from '@/components/ui/card'
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { SectorIcon } from '@/components/common/SectorIcon'
-import { TaskCard } from './TaskCard'
 import { TaskDetailDialog } from './TaskDetailDialog'
 import { AgendaView, VehiclesView, ProductionFilters } from './GeneralViews'
 import { PersonAgenda } from './PersonAgenda'
@@ -104,9 +103,6 @@ export function ManagersHome() {
     ...(agenda?.unscheduled || []),
   ]
   const task = allTasks.find((item) => item.id === taskId) || null
-  const card = (item: (typeof allTasks)[number]) => (
-    <TaskCard item={item} showSector onOpen={setTaskId} />
-  )
 
   return (
     <TooltipProvider>
@@ -234,7 +230,7 @@ export function ManagersHome() {
                 unscheduled={agenda.unscheduled.filter((item) =>
                   taskMatches(item, filter),
                 )}
-                card={card}
+                onOpen={setTaskId}
               />
             ) : (
               <VehiclesView

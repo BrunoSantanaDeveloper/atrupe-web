@@ -55,24 +55,31 @@ export type QueueGroup = {
 const COLUMNS =
   'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(140px,1.6fr)_minmax(120px,1.2fr)_minmax(110px,1fr)_88px_minmax(110px,0.9fr)_minmax(150px,auto)] items-center gap-3'
 
+const NO_FORECASTS = new Map<string, Forecast>()
+const NO_SELECTION = new Set<string>()
+
 export function QueueList({
   groups,
-  forecasts,
-  selected,
+  forecasts = NO_FORECASTS,
+  selected = NO_SELECTION,
   onSelect,
   onOpen,
   actions,
+  showSector = false,
   onReorder,
   showForecast = true,
   person = null,
   onDropPerson,
 }: {
   groups: QueueGroup[]
-  forecasts: Map<string, Forecast>
-  selected: Set<string>
-  onSelect: (id: string, checked: boolean) => void
+  forecasts?: Map<string, Forecast>
+  // Sem onSelect, a linha não tem a caixa de seleção (a Agenda viva)
+  selected?: Set<string>
+  onSelect?: (id: string, checked: boolean) => void
   onOpen: (id: string) => void
-  actions: (item: TaskView) => ReactNode
+  actions?: (item: TaskView) => ReactNode
+  // A Agenda viva junta todos os setores: o setor vai na linha
+  showSector?: boolean
   onReorder?: (dragged: TaskView, target: TaskView) => void
   showForecast?: boolean
   // A pessoa que está sendo arrastada do painel de colaboradores
@@ -192,13 +199,15 @@ export function QueueList({
                         className="cursor-grab text-gray-400"
                       />
                     )}
-                    <Checkbox
-                      aria-label={`Selecionar ${item.code}`}
-                      checked={selected.has(item.id)}
-                      onCheckedChange={(checked) =>
-                        onSelect(item.id, checked === true)
-                      }
-                    />
+                    {onSelect && (
+                      <Checkbox
+                        aria-label={`Selecionar ${item.code}`}
+                        checked={selected.has(item.id)}
+                        onCheckedChange={(checked) =>
+                          onSelect(item.id, checked === true)
+                        }
+                      />
+                    )}
                   </div>
 
                   {item.itemImage ? (
@@ -235,8 +244,15 @@ export function QueueList({
                   </div>
 
                   <div className="min-w-0 text-xs">
-                    <p className="truncate text-gray-800">
-                      {item.machine || item.stageName}
+                    <p className="flex items-center gap-1.5 truncate text-gray-800">
+                      {showSector && (
+                        <SectorIcon name={item.sector} size="sm" />
+                      )}
+                      <span className="truncate">
+                        {showSector ? `${item.stageName} · ` : ''}
+                        {item.machine ||
+                          (showSector ? item.sector : item.stageName)}
+                      </span>
                     </p>
                     {item.machineQuality && (
                       <p className="truncate text-gray">
@@ -317,7 +333,7 @@ export function QueueList({
                     onKeyDown={(event) => event.stopPropagation()}
                     role="presentation"
                   >
-                    {actions(item)}
+                    {actions?.(item)}
                   </div>
                 </div>
               )
