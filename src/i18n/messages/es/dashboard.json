@@ -47,7 +47,7 @@
     "salesTrend": "Evolución de ventas"
   },
   "TopClients": {
-    "noCustomersWithAnApproved": "Ningún cliente con venta aprobada en el período.",
-    "topCustomers": "Mejores clientes"
+    "topCustomers": "Mejores clientes",
+    "noCustomersWithAnApproved": "Ningún cliente con venta aprobada en el período."
   }
 }

@@ -162,7 +162,6 @@
     "quoteSources": "Orígenes de las cotizaciones",
     "px": "{LABEL_FONT_SIZE}px",
     "viewFullRanking": "Ver ranking completo",
-    "noDataInTheSelected": "Sin datos en el período seleccionado",
     "inTheSelectedPeriod": "en el período seleccionado",
     "texto": "{valor}%",
     "approved3": "{count} aprobadas ({name})",

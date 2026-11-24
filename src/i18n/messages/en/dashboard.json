@@ -47,7 +47,7 @@
     "salesTrend": "Sales trend"
   },
   "TopClients": {
-    "noCustomersWithAnApproved": "No customers with an approved sale in the period.",
-    "topCustomers": "Top customers"
+    "topCustomers": "Top customers",
+    "noCustomersWithAnApproved": "No customers with an approved sale in the period."
   }
 }

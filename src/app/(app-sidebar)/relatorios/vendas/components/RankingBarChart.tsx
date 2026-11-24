@@ -50,7 +50,7 @@ import {
 } from 'recharts'
 
 // Utils
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import {
   LABEL_FONT_SIZE,
   VALUE_LABEL_OFFSET,
@@ -81,14 +81,18 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const currencyFormatter = (value: unknown) => (
-  <div className="flex flex-1 justify-between items-center gap-4 leading-none">
-    <span className="text-gray-500">Valor</span>
-    <span className="font-mono font-medium tabular-nums text-gray-950">
-      {formatCurrencyToBrl(Number(value))}
-    </span>
-  </div>
-)
+function tooltipFormatter(format: (value: number) => string) {
+  return function TooltipValue(value: unknown) {
+    return (
+      <div className="flex flex-1 justify-between items-center gap-4 leading-none">
+        <span className="text-gray-500">Valor</span>
+        <span className="font-mono font-medium tabular-nums text-gray-950">
+          {format(Number(value))}
+        </span>
+      </div>
+    )
+  }
+}
 
 interface AxisTickProps {
   x?: number
@@ -117,7 +121,11 @@ function AxisTick({ x, y, payload, labelFor }: AxisTickProps) {
   )
 }
 
-function ValueLabel({ viewBox, value }: LabelProps) {
+function ValueLabel({
+  viewBox,
+  value,
+  toText,
+}: LabelProps & { toText: (value: number) => string }) {
   const bar = viewBox as
     | { x?: number; y?: number; width?: number; height?: number }
     | undefined
@@ -133,7 +141,7 @@ function ValueLabel({ viewBox, value }: LabelProps) {
       fontSize={LABEL_FONT_SIZE}
       className="fill-gray-600"
     >
-      {formatCompactBrl(Number(value))}
+      {toText(Number(value))}
     </text>
   )
 }
@@ -144,9 +152,27 @@ interface Props {
   nameLabel: string
   items: RankingItem[]
   isLoading: boolean
+  /** Valor da ponta da barra (padrão: compacto, "R$ 12,3 mil"). */
+  formatValue?: (value: number) => string
+  /** Valor do tooltip (padrão: exato, "R$ 12.345,67"). */
+  formatTooltip?: (value: number) => string
+  /** Sem imprimir e sem expandir (o dashboard, com os valores escondidos). */
+  hideActions?: boolean
+  emptyText?: string
+  className?: string
 }
 
-export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
+export function RankingBarChart({
+  title,
+  nameLabel,
+  items,
+  isLoading,
+  formatValue = formatCompactBrl,
+  formatTooltip = formatCurrencyToBrl,
+  hideActions = false,
+  emptyText = 'Sem dados no período selecionado',
+  className,
+}: Props) {
   const [expanded, setExpanded] = useState(false)
   const [chartEl, setChartEl] = useState<HTMLDivElement | null>(null)
   const [chartWidth, setChartWidth] = useState(0)
@@ -184,18 +210,24 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
   }, [chartEl])
 
   const layout = useMemo(
-    () => computeRankingLayout(items, chartWidth, measure ?? estimateTextWidth),
-    [items, chartWidth, measure],
+    () =>
+      computeRankingLayout(
+        items,
+        chartWidth,
+        measure ?? estimateTextWidth,
+        formatValue,
+      ),
+    [items, chartWidth, measure, formatValue],
   )
 
   const chartHeight = Math.max(items.length * ROW_HEIGHT, MIN_CHART_HEIGHT)
   const hasData = items.length > 0
 
   return (
-    <Card className="flex flex-col">
+    <Card className={cn('flex flex-col', className)}>
       <CardHeader className="flex-row items-center justify-between">
         <CardTitle>{title}</CardTitle>
-        <div className="flex items-center gap-1">
+        <div className={cn('flex items-center gap-1', hideActions && 'hidden')}>
           <RankingPrintButton
             title={title}
             nameLabel={nameLabel}
@@ -219,9 +251,7 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
         ) : !hasData ? (
           <div className="flex h-[280px] flex-col items-center justify-center gap-2 text-center">
             <FeaturedIcon tone="neutral" size="lg" Icon={IconChartBarOff} />
-            <p className="text-sm text-gray-500">
-              Sem dados no período selecionado
-            </p>
+            <p className="text-sm text-gray-500">{emptyText}</p>
           </div>
         ) : (
           <ChartContainer
@@ -258,7 +288,11 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
               />
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent formatter={currencyFormatter} />}
+                content={
+                  <ChartTooltipContent
+                    formatter={tooltipFormatter(formatTooltip)}
+                  />
+                }
               />
               <Bar
                 dataKey="value"
@@ -266,7 +300,12 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
                 radius={[0, 4, 4, 0]}
                 barSize={18}
               >
-                <LabelList dataKey="value" content={ValueLabel} />
+                <LabelList
+                  dataKey="value"
+                  content={(props) => (
+                    <ValueLabel {...props} toText={formatValue} />
+                  )}
+                />
               </Bar>
             </BarChart>
           </ChartContainer>

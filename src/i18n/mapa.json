@@ -19085,8 +19085,6 @@
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:417 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:835 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:900 (atributo:label)",
-   "src/app/(app-sidebar)/dashboard/components/TopClients/Chart.tsx:29 (propriedade:label)",
-   "src/app/(app-sidebar)/dashboard/components/TopClients/Chart.tsx:39 (jsx)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/Compensate/index.tsx:225 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/Payment/index.tsx:341 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/TransactionDetails/index.tsx:189 (jsx)",
@@ -19109,7 +19107,7 @@
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseServicosSection.tsx:66 (jsx)",
    "src/app/(app-sidebar)/relatorios/projecao-de-caixa/components/CashFlowTable.tsx:165 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:79 (propriedade:label)",
-   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:86 (jsx)",
+   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:88 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/RankingExpandedDialog.tsx:73 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Delivery/index.tsx:403 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/ImportQuotation/ImportQuotationModal.tsx:423 (jsx)",
@@ -36830,13 +36828,13 @@
  "dashboard.TopClients.noCustomersWithAnApproved": {
   "pt": "Nenhum cliente com venda aprovada no período.",
   "usos": [
-   "src/app/(app-sidebar)/dashboard/components/TopClients/Chart.tsx:58 (jsx)"
+   "src/app/(app-sidebar)/dashboard/components/TopClients/index.tsx:43 (atributo:emptyText)"
   ]
  },
  "dashboard.TopClients.topCustomers": {
   "pt": "Melhores clientes",
   "usos": [
-   "src/app/(app-sidebar)/dashboard/components/TopClients/index.tsx:18 (jsx)",
+   "src/app/(app-sidebar)/dashboard/components/TopClients/index.tsx:36 (atributo:title)",
    "src/app/(app-sidebar)/relatorios/vendas/components/TopClientsChart.tsx:41 (atributo:title)"
   ]
  },
@@ -51592,12 +51590,6 @@
    "src/app/(app-sidebar)/relatorios/vendas/components/print/RankingPrintButton.tsx:109 (aviso)"
   ]
  },
- "relatorios.vendas.noDataInTheSelected": {
-  "pt": "Sem dados no período selecionado",
-  "usos": [
-   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:223 (jsx)"
-  ]
- },
  "relatorios.vendas.noQuotesInThePeriod": {
   "pt": "Nenhum orçamento no período.",
   "usos": [
@@ -51729,8 +51721,8 @@
  "relatorios.vendas.viewFullRanking": {
   "pt": "Ver ranking completo",
   "usos": [
-   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:208 (atributo:title)",
-   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:209 (atributo:aria-label)"
+   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:240 (atributo:title)",
+   "src/app/(app-sidebar)/relatorios/vendas/components/RankingBarChart.tsx:241 (atributo:aria-label)"
   ]
  },
  "relatorios.vendas.workOrderSources": {

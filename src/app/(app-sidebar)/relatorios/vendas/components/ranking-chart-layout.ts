@@ -142,6 +142,7 @@ export function computeRankingLayout(
   items: RankingItem[],
   chartWidth: number,
   measure: MeasureText,
+  formatValue: (value: number) => string = formatCompactBrl,
 ): RankingLayout {
   const axisCap = Math.min(
     AXIS_MAX_WIDTH,
@@ -167,7 +168,7 @@ export function computeRankingLayout(
   // precisa caber inteiro na margem; os demais começam antes e cabem também.
   const widestValue = Math.max(
     0,
-    ...items.map((item) => measure(formatCompactBrl(item.value))),
+    ...items.map((item) => measure(formatValue(item.value))),
   )
 
   return {
