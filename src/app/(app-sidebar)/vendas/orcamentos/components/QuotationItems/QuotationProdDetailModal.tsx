@@ -712,86 +712,100 @@ export function QuotationProdDetailModal({
             <form
               id="new-product"
               onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col gap-5 sm:flex-row"
+              className="flex flex-col gap-5"
               noValidate
             >
-              <Button
-                type="button"
-                variant="neutralOutline"
-                size="sm"
-                LeftIcon={IconPhoto}
-                className="self-start sm:hidden"
-                aria-expanded={showImage}
-                onClick={() => setShowImage((value) => !value)}
-              >
-                {showImage ? 'Ocultar imagem' : 'Imagem do produto'}
-              </Button>
-              <div
-                className={cn(
-                  'flex h-[300px] w-full shrink-0 items-stretch justify-stretch sm:w-[300px]',
-                  !showImage && 'max-sm:hidden',
-                )}
-              >
-                <ProductImageUpload<ProductsFormType>
-                  control={control}
-                  name="imageUrl"
-                  className="w-full h-full"
-                  maxSize={1024 * 50}
-                  customHelpText="PNG ou JPG até 50KB e 200x150px"
-                />
-              </div>
-              <div className="flex-1 flex flex-wrap gap-4">
-                <FormInput<ProductsFormType>
-                  name="description"
-                  label="Descrição do item"
-                  width="flex-[1_0_100%] sm:flex-[1_0_380px]"
-                  placeholder="Digite aqui"
-                  disabled={!canEditDescription}
-                />
-                {editMode && data?.variation && (
-                  <p className="w-full text-sm text-gray-700">
-                    <span className="font-medium">Variação:</span>{' '}
-                    {data.variation.name}
-                  </p>
-                )}
-                {variations.length > 0 && (
-                  <div className="w-full space-y-2">
-                    <p className="text-sm font-medium text-gray-700">
-                      Variação
+              {/* O topo (24/11/2026): a imagem à esquerda e a descrição e a
+                  unidade comercial à direita; os campos de preenchimento
+                  embaixo, na largura toda */}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                <Button
+                  type="button"
+                  variant="neutralOutline"
+                  size="sm"
+                  LeftIcon={IconPhoto}
+                  className="self-start sm:hidden"
+                  aria-expanded={showImage}
+                  onClick={() => setShowImage((value) => !value)}
+                >
+                  {showImage ? 'Ocultar imagem' : 'Imagem do produto'}
+                </Button>
+                <div
+                  className={cn(
+                    'flex h-[200px] w-full shrink-0 items-stretch justify-stretch sm:h-[160px] sm:w-[220px]',
+                    !showImage && 'max-sm:hidden',
+                  )}
+                >
+                  <ProductImageUpload<ProductsFormType>
+                    control={control}
+                    name="imageUrl"
+                    className="w-full h-full"
+                    maxSize={1024 * 50}
+                    customHelpText="PNG ou JPG até 50KB e 200x150px"
+                  />
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-4">
+                  <FormInput<ProductsFormType>
+                    name="description"
+                    label="Descrição do item"
+                    width="w-full"
+                    placeholder="Digite aqui"
+                    disabled={!canEditDescription}
+                  />
+                  {editMode && data?.variation && (
+                    <p className="w-full text-sm text-gray-700">
+                      <span className="font-medium">Variação:</span>{' '}
+                      {data.variation.name}
                     </p>
-                    <div
-                      role="radiogroup"
-                      aria-label="Variação"
-                      className="flex flex-wrap gap-2"
-                    >
-                      {variations.map((variation) => {
-                        const selected = variationId === variation.id
-                        return (
-                          <button
-                            key={variation.id}
-                            type="button"
-                            role="radio"
-                            aria-checked={selected}
-                            onClick={() => chooseVariation(variation.id)}
-                            className={cn(
-                              'h-10 rounded-lg border px-4 text-sm font-medium transition-colors',
-                              selected
-                                ? 'border-brand bg-success-25 text-brand-700'
-                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
-                            )}
-                          >
-                            {variation.name}
-                          </button>
-                        )
-                      })}
-                    </div>
-                    {!variationId && (
-                      <p className="text-xs text-gray">
-                        Escolha a variação para o preço e o nome do item.
+                  )}
+                  {variations.length > 0 && (
+                    <div className="w-full space-y-2">
+                      <p className="text-sm font-medium text-gray-700">
+                        Variação
                       </p>
-                    )}
-                  </div>
-                )}
+                      <div
+                        role="radiogroup"
+                        aria-label="Variação"
+                        className="flex flex-wrap gap-2"
+                      >
+                        {variations.map((variation) => {
+                          const selected = variationId === variation.id
+                          return (
+                            <button
+                              key={variation.id}
+                              type="button"
+                              role="radio"
+                              aria-checked={selected}
+                              onClick={() => chooseVariation(variation.id)}
+                              className={cn(
+                                'h-10 rounded-lg border px-4 text-sm font-medium transition-colors',
+                                selected
+                                  ? 'border-brand bg-success-25 text-brand-700'
+                                  : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
+                              )}
+                            >
+                              {variation.name}
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {!variationId && (
+                        <p className="text-xs text-gray">
+                          Escolha a variação para o preço e o nome do item.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {items?.fields?.length === 1 && (
+                    <UnitOfMeasureField
+                      name="items.0.unitKind"
+                      width="w-full"
+                      disabled
+                    />
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-4">
                 {items?.fields?.length > 1 && (
                   <>
                     <FormInput<ProductsFormType>
@@ -808,13 +822,16 @@ export function QuotationProdDetailModal({
                 {items?.fields?.map((item, index) => {
                   // Os três campos entram em ordens diferentes conforme a
                   // medida do item (abaixo); por isso ficam prontos aqui
-                  const unitField = (
-                    <UnitOfMeasureField
-                      name={`items.${index}.unitKind`}
-                      width="flex-[1_0_200px]"
-                      disabled
-                    />
-                  )
+                  // Com um item só, a unidade comercial fica no topo, ao lado
+                  // da imagem
+                  const unitField =
+                    items.fields.length === 1 ? null : (
+                      <UnitOfMeasureField
+                        name={`items.${index}.unitKind`}
+                        width="flex-[1_0_200px]"
+                        disabled
+                      />
+                    )
                   const quantityField = (
                     <FormInput<ProductsFormType>
                       name={`items.${index}.quantity`}
@@ -891,7 +908,8 @@ export function QuotationProdDetailModal({
                       <span
                         className={cn(
                           'text-sm font-semibold text-gray-700 leading-4 w-[100%] my-2',
-                          items.fields.length === 1 && 'max-sm:hidden',
+                          // Com um item só, o nome repete o título e a descrição
+                          items.fields.length === 1 && 'hidden',
                         )}
                       >
                         {item?.name}
@@ -913,7 +931,9 @@ export function QuotationProdDetailModal({
                         // numa linha; quantidade, largura e altura na linha
                         // seguinte, sem quebra entre elas
                         <>
-                          <div className="flex w-full gap-4">{unitField}</div>
+                          {unitField && (
+                            <div className="flex w-full gap-4">{unitField}</div>
+                          )}
                           {/* No celular a área total desce para a linha de
                               baixo: os quatro não cabem em 390 px */}
                           <div className="flex w-full flex-wrap gap-4 sm:flex-nowrap">
