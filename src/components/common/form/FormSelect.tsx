@@ -122,12 +122,15 @@ interface SelectBasicProps {
   emptyMessage?: string
   value?: string
   onChange?: (value: string) => void
+  // Filtros compactos (24/11/2026): o rótulo fica só para o leitor de tela
+  hideLabel?: boolean
 }
 
 export function SelectBasic({
   name,
   label,
   labelSuffix,
+  hideLabel,
   placeholder = label,
   options,
   className = 'flex-[1_0_100px]',
@@ -137,7 +140,13 @@ export function SelectBasic({
 }: SelectBasicProps) {
   return (
     <div className={cn('flex flex-col', className)}>
-      {labelSuffix ? (
+      {hideLabel || !label ? (
+        label ? (
+          <Label htmlFor={name} className="sr-only">
+            {label}
+          </Label>
+        ) : null
+      ) : labelSuffix ? (
         <div className="mb-2 flex items-center gap-1.5">
           <Label htmlFor={name}>{label}</Label>
           {labelSuffix}

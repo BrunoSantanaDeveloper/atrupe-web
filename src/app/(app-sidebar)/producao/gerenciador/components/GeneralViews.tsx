@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge'
 import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardContent } from '@/components/ui/card'
 
 // Components
 import { SectorIcon } from '@/components/common/SectorIcon'
@@ -38,6 +37,8 @@ export function ProductionFilters({
   machines,
   period,
   onPeriod,
+  before,
+  after,
 }: {
   search: string
   onSearch: (value: string) => void
@@ -50,61 +51,66 @@ export function ProductionFilters({
   machines?: string[]
   period: Period
   onPeriod: (value: Period) => void
+  // O que vai na mesma linha: as abas da tela antes, o (i) depois
+  before?: React.ReactNode
+  after?: React.ReactNode
 }) {
+  // Uma linha só, sem a caixa em volta (24/11/2026: mais espaço para a
+  // agenda nas telas da produção)
   return (
-    <Card>
-      <CardContent className="flex flex-wrap items-end gap-3 p-4">
-        <Input
-          aria-label="Buscar tarefa"
-          placeholder="Código, cliente, item"
-          className="w-full sm:w-[240px]"
-          startAdornment={
-            <Icon icon={IconSearch} size="sm" className="text-gray" />
-          }
-          value={search}
-          onChange={(event) => onSearch(event.target.value)}
+    <div className="flex flex-wrap items-center gap-2">
+      {before}
+      <Input
+        aria-label="Buscar tarefa"
+        placeholder="Código, cliente, item"
+        className="w-full sm:w-[200px]"
+        startAdornment={
+          <Icon icon={IconSearch} size="sm" className="text-gray" />
+        }
+        value={search}
+        onChange={(event) => onSearch(event.target.value)}
+      />
+      {people && onPerson && (
+        <SelectBasic
+          name="board-person"
+          label=""
+          className="w-[180px]"
+          options={[
+            { value: 'todos', label: 'Todas as pessoas' },
+            ...people.map((item) => ({ value: item.id, label: item.name })),
+          ]}
+          value={person}
+          onChange={(value) => value && onPerson(String(value))}
         />
-        {people && onPerson && (
-          <SelectBasic
-            name="board-person"
-            label=""
-            className="w-[200px]"
-            options={[
-              { value: 'todos', label: 'Todas as pessoas' },
-              ...people.map((item) => ({ value: item.id, label: item.name })),
-            ]}
-            value={person}
-            onChange={(value) => value && onPerson(String(value))}
-          />
-        )}
-        {machines && machines.length > 0 && onMachine && (
-          <SelectBasic
-            name="board-machine"
-            label=""
-            className="w-[200px]"
-            options={[
-              { value: 'todas', label: 'Todas as máquinas' },
-              ...machines.map((item) => ({ value: item, label: item })),
-            ]}
-            value={machine}
-            onChange={(value) => value && onMachine(String(value))}
-          />
-        )}
-        <Tabs
-          value={period}
-          variant="pill"
-          onValueChange={(value) => onPeriod(value as Period)}
-        >
-          <TabsList>
-            {periodOptions.map((option) => (
-              <TabsTrigger key={option.value} value={option.value}>
-                {option.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </CardContent>
-    </Card>
+      )}
+      {machines && machines.length > 0 && onMachine && (
+        <SelectBasic
+          name="board-machine"
+          label=""
+          className="w-[180px]"
+          options={[
+            { value: 'todas', label: 'Todas as máquinas' },
+            ...machines.map((item) => ({ value: item, label: item })),
+          ]}
+          value={machine}
+          onChange={(value) => value && onMachine(String(value))}
+        />
+      )}
+      <Tabs
+        value={period}
+        variant="pill"
+        onValueChange={(value) => onPeriod(value as Period)}
+      >
+        <TabsList>
+          {periodOptions.map((option) => (
+            <TabsTrigger key={option.value} value={option.value}>
+              {option.label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+      {after}
+    </div>
   )
 }
 

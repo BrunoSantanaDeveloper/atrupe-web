@@ -17,11 +17,10 @@ import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
-import { SectorIcon } from '@/components/common/SectorIcon'
 import { PersonAvatar } from './PersonAvatar'
 import { QueueList, type QueueGroup } from './QueueList'
 import { BatchPrintDialog } from './BatchPrintDialog'
@@ -523,15 +522,6 @@ export function SectorScreen({ id }: { id: string }) {
       <div className="space-y-5">
         {topbar}
 
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="flex items-center gap-2 text-sm text-gray">
-            <SectorIcon name={manager!.sector} size="sm" />
-            {timeless
-              ? timeModeObj.NONE.help
-              : timeModeObj[manager!.timeMode]?.help}
-          </p>
-        </div>
-
         <ProductionFilters
           search={search}
           onSearch={setSearch}
@@ -543,22 +533,71 @@ export function SectorScreen({ id }: { id: string }) {
           machines={machines}
           period={period}
           onPeriod={setPeriod}
+          // As abas da fila e os totais na mesma linha (24/11/2026)
+          before={
+            timeless ? undefined : (
+              <Tabs
+                value={queueTab}
+                variant="pill"
+                onValueChange={(value) => {
+                  setQueueTab(value as QueueTab)
+                  setSelected(new Set())
+                }}
+              >
+                <TabsList>
+                  <TabsTrigger value="a-fazer">A fazer</TabsTrigger>
+                  <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )
+          }
+          after={
+            <>
+              {!timeless && (
+                <p className="ml-auto flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
+                  <span>
+                    <strong className="font-semibold text-gray-900">
+                      {totals.open}
+                    </strong>{' '}
+                    a fazer
+                  </span>
+                  <span>
+                    <strong className="font-semibold text-gray-900">
+                      {duration(totals.minutes)}
+                    </strong>{' '}
+                    previstas
+                  </span>
+                  {totals.urgent > 0 && (
+                    <span className="text-error-700">
+                      <strong className="font-semibold">{totals.urgent}</strong>{' '}
+                      urgente(s)
+                    </span>
+                  )}
+                </p>
+              )}
+              <InfoHint title="Como o tempo corre neste gerenciador">
+                <p>
+                  {timeless
+                    ? timeModeObj.NONE.help
+                    : timeModeObj[manager!.timeMode]?.help}
+                </p>
+              </InfoHint>
+            </>
+          }
         />
 
-        <div className="space-y-5">
+        <div className="space-y-3">
           {/* Colaboradores: disponíveis e trabalhando (GP-17), só no
                 coletivo, onde arrastar é o gesto que liga o relógio */}
           {collective && (
             <Card>
-              <CardHeader>
-                <div className="flex items-center gap-1.5">
-                  <CardTitle>Colaboradores</CardTitle>
+              <CardContent className="flex flex-wrap items-center gap-2 p-3">
+                <span className="flex items-center gap-1.5 pr-1 text-sm font-medium text-gray-800">
+                  Colaboradores
                   <InfoHint title="Colaboradores">
                     <p>{timeModeObj[board.manager.timeMode].help}</p>
                   </InfoHint>
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-2 px-4 pb-4">
+                </span>
                 {people.map((worker) => {
                   const current = board.tasks.find(
                     (item) => item.id === worker.working?.taskId,
@@ -570,7 +609,7 @@ export function SectorScreen({ id }: { id: string }) {
                       onDragStart={() => setDragging(worker.id)}
                       onDragEnd={() => setDragging(null)}
                       className={cn(
-                        'w-full rounded-lg border p-3 sm:w-[280px]',
+                        'w-full rounded-lg border px-3 py-1.5 sm:w-[260px]',
                         worker.working
                           ? 'border-success-200 bg-success-50'
                           : 'cursor-grab border-gray-200 bg-white',
@@ -658,43 +697,6 @@ export function SectorScreen({ id }: { id: string }) {
                 </>
               ) : (
                 <>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <Tabs
-                      value={queueTab}
-                      variant="pill"
-                      onValueChange={(value) => {
-                        setQueueTab(value as QueueTab)
-                        setSelected(new Set())
-                      }}
-                    >
-                      <TabsList>
-                        <TabsTrigger value="a-fazer">A fazer</TabsTrigger>
-                        <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                    <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
-                      <span>
-                        <strong className="font-semibold text-gray-900">
-                          {totals.open}
-                        </strong>{' '}
-                        a fazer
-                      </span>
-                      <span>
-                        <strong className="font-semibold text-gray-900">
-                          {duration(totals.minutes)}
-                        </strong>{' '}
-                        previstas
-                      </span>
-                      {totals.urgent > 0 && (
-                        <span className="text-error-700">
-                          <strong className="font-semibold">
-                            {totals.urgent}
-                          </strong>{' '}
-                          urgente(s)
-                        </span>
-                      )}
-                    </p>
-                  </div>
                   {board.manager.liveSchedule === 'RESCHEDULE' &&
                     totals.moved > 0 && (
                       <p className="rounded-lg border border-warning-200 bg-warning-25 px-4 py-2 text-sm text-warning-800">

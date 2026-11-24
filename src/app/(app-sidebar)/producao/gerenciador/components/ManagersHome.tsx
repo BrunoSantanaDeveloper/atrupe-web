@@ -104,6 +104,24 @@ export function ManagersHome() {
   ]
   const task = allTasks.find((item) => item.id === taskId) || null
 
+  const viewTabs = (
+    <Tabs
+      value={view}
+      variant="pill"
+      onValueChange={(value) =>
+        updateFilterParam('visao', value, { router, params })
+      }
+    >
+      <TabsList>
+        <TabsTrigger value="agenda">Agenda</TabsTrigger>
+        <TabsTrigger value="veiculos">Veículos</TabsTrigger>
+        <TabsTrigger value="pessoas">Agenda do colaborador</TabsTrigger>
+        {/* Para quando dá para agendar (GP-50) */}
+        <TabsTrigger value="ocupacao">Ocupação</TabsTrigger>
+      </TabsList>
+    </Tabs>
+  )
+
   return (
     <TooltipProvider>
       <div className="space-y-5">
@@ -124,20 +142,20 @@ export function ManagersHome() {
         {loadingSummary ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 3 }, (_, index) => (
-              <Skeleton key={index} className="h-[108px] rounded-xl" />
+              <Skeleton key={index} className="h-[76px] rounded-xl" />
             ))}
           </div>
         ) : summary.length ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {summary.map((manager) => (
               <Link
                 key={manager.id}
                 href={`/producao/gerenciador/${manager.id}`}
-                className="group flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 transition hover:border-brand-300 hover:shadow-sm"
+                className="group flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 transition hover:border-brand-300 hover:shadow-sm"
               >
-                <SectorIcon name={manager.sector} size="lg" />
+                <SectorIcon name={manager.sector} size="md" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-semibold text-gray-900">
+                  <p className="truncate text-sm font-semibold text-gray-900">
                     {manager.name}
                   </p>
                   <p className="truncate text-sm text-gray">
@@ -145,7 +163,7 @@ export function ManagersHome() {
                     {withTime &&
                       ` · ${timeModeObj[manager.timeMode]?.text ?? manager.timeMode}`}
                   </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
                     <Badge
                       variant={manager.open ? 'blueLight' : 'neutralLight'}
                     >
@@ -187,29 +205,18 @@ export function ManagersHome() {
         {/* As visões de todos os setores, com o tempo (ELITE) */}
         {withTime && (
           <>
-            <Tabs
-              value={view}
-              variant="pill"
-              onValueChange={(value) =>
-                updateFilterParam('visao', value, { router, params })
-              }
-            >
-              <TabsList>
-                <TabsTrigger value="agenda">Agenda</TabsTrigger>
-                <TabsTrigger value="veiculos">Veículos</TabsTrigger>
-                <TabsTrigger value="pessoas">Agenda do colaborador</TabsTrigger>
-                {/* Para quando dá para agendar (GP-50) */}
-                <TabsTrigger value="ocupacao">Ocupação</TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            {view !== 'pessoas' && view !== 'ocupacao' && (
+            {/* As abas e os filtros numa linha só (24/11/2026: mais espaço
+                para a agenda) */}
+            {view !== 'pessoas' && view !== 'ocupacao' ? (
               <ProductionFilters
                 search={search}
                 onSearch={setSearch}
                 period={period}
                 onPeriod={setPeriod}
+                before={viewTabs}
               />
+            ) : (
+              viewTabs
             )}
 
             {view === 'ocupacao' ? (

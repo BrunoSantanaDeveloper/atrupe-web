@@ -14,6 +14,9 @@ interface Props<T extends FieldValues> {
   label?: string
   placeholder?: string
   width?: string
+  // Filtros compactos: sem o rótulo em cima, o "todos" diz o que é
+  hideLabel?: boolean
+  allLabel?: string
   noForm?: boolean
   value?: string
   onChange?: (value: string) => void
@@ -27,6 +30,8 @@ export function SelectSellerField<T extends FieldValues>({
   value,
   onChange,
   noForm,
+  hideLabel,
+  allLabel = 'Todos',
   ...props
 }: Props<T>) {
   const { data: sellers } = useSeller()
@@ -44,7 +49,8 @@ export function SelectSellerField<T extends FieldValues>({
         name={name}
         label={label}
         placeholder={placeholder}
-        options={[{ value: 'all', label: 'Todos' }, ...(options || [])]}
+        options={[{ value: 'all', label: allLabel }, ...(options || [])]}
+        hideLabel={hideLabel}
         value={value}
         onChange={onChange}
         className={width}

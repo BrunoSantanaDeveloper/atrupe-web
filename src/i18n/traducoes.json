@@ -20850,5 +20850,9 @@
   "4b0c262499": {
     "es": "N.º {number}",
     "en": "No. {number}"
+  },
+  "dcd7caad47": {
+    "es": "Cómo corre el tiempo en este gestor de producción",
+    "en": "How time runs on this production board"
   }
 }

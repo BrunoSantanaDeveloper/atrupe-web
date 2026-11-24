@@ -54,7 +54,9 @@ export function DeliveryScheduleFilter({ searchParams }: SearchParamsType) {
         noForm
         name="serie"
         label="Série"
-        width="w-[220px]"
+        hideLabel
+        allLabel="Todas as séries"
+        width="w-[200px]"
         value={searchParams?.serieId || 'all'}
         onChange={(value) => handleFilter('serieId', value)}
       />
@@ -62,14 +64,17 @@ export function DeliveryScheduleFilter({ searchParams }: SearchParamsType) {
         noForm
         name="seller"
         label="Vendedor"
-        width="w-[220px]"
+        hideLabel
+        allLabel="Todos os vendedores"
+        width="w-[200px]"
         value={searchParams?.sellerId || 'all'}
         onChange={(value) => handleFilter('sellerId', value)}
       />
       <SelectBasic
         name="stage"
         label="Setor"
-        className="w-[220px]"
+        hideLabel
+        className="w-[200px]"
         options={sectorOptions}
         value={searchParams?.stageId || 'all'}
         onChange={(value) => handleFilter('stageId', String(value ?? 'all'))}

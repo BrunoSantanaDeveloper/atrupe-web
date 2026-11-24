@@ -125,10 +125,10 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
         activeTab={activeTab}
         paramName="status"
         countsLoading={isLoading}
-      />
-      {withOccupancy && (
-        <div className="space-y-3">
-          <div className="flex justify-end">
+        // O botão da ocupação na linha do título, não numa faixa própria
+        // (24/11/2026: mais espaço para a agenda)
+        secondaryCta={
+          withOccupancy ? (
             <Button
               type="button"
               variant="neutralOutline"
@@ -139,13 +139,13 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
                 ? 'Esconder a ocupação'
                 : 'Ver a ocupação dos setores'}
             </Button>
-          </div>
-          {showOccupancy && (
-            <OccupancyMap
-              linkToSector={hasPermission('production:production:view')}
-            />
-          )}
-        </div>
+          ) : undefined
+        }
+      />
+      {withOccupancy && showOccupancy && (
+        <OccupancyMap
+          linkToSector={hasPermission('production:production:view')}
+        />
       )}
       <div className="space-y-2">
         <Card>
@@ -159,7 +159,7 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
               />
             ) : (
               <>
-                <TableFiltersHeader searchParams={searchParams}>
+                <TableFiltersHeader searchParams={searchParams} compact>
                   <DeliveryScheduleFilter searchParams={searchParams} />
                 </TableFiltersHeader>
                 <DeliveryScheduleData searchParams={searchParams} tabs={tabs} />

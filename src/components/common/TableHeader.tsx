@@ -18,6 +18,9 @@ import { CollapsibleFilters } from '@/components/common/CollapsibleFilters'
 import { IconSearch } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
+// Utils
+import { cn } from '@/lib/utils'
+
 // Type Imports
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -26,6 +29,9 @@ interface Props extends PropsWithChildren, SearchParamsType {
   // Sem ele, conta os parâmetros da URL que não são busca, aba, página nem
   // ordenação
   activeCount?: number
+  // Uma linha só, sem os rótulos em cima (as telas da produção, 24/11/2026:
+  // mais espaço para a agenda)
+  compact?: boolean
 }
 
 // Parâmetros da URL que não são filtro: não contam no número do funil.
@@ -48,6 +54,7 @@ export function TableFiltersHeader({
   searchParams,
   children,
   activeCount,
+  compact = false,
 }: Props) {
   const [search, setSearch] = useState(searchParams.search || '')
 
@@ -86,14 +93,19 @@ export function TableFiltersHeader({
   // e a lista aparece primeiro (ajuste de mobile, 20/11/2026). A partir de
   // `sm` o wrapper some (display: contents) e a grade fica como sempre
   return (
-    <CardHeader className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-end">
+    <CardHeader
+      className={cn(
+        'grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-end',
+        compact && 'gap-3 items-center py-3',
+      )}
+    >
       {/* Sem filtros, a coluna deles fica vazia a partir do tablet para a
           busca continuar à direita, como antes dos filtros recolhíveis */}
       {children ? null : <div aria-hidden className="hidden sm:block" />}
       <CollapsibleFilters
         className="sm:contents"
         contentClassName="sm:order-1"
-        searchClassName="sm:order-2 sm:mt-1.5"
+        searchClassName={cn('sm:order-2', !compact && 'sm:mt-1.5')}
         activeCount={filtersApplied}
         searchActive={!!searchParams.search}
         search={
@@ -102,7 +114,9 @@ export function TableFiltersHeader({
             className="flex items-end gap-2 w-full lg:w-auto"
           >
             <div className="flex flex-col flex-1 lg:flex-none lg:w-64 gap-2">
-              <Label htmlFor="search">Buscar</Label>
+              <Label htmlFor="search" className={cn(compact && 'sr-only')}>
+                Buscar
+              </Label>
               <Input
                 id="search"
                 type="search"
@@ -123,7 +137,14 @@ export function TableFiltersHeader({
         }
       >
         {children ? (
-          <div className="flex flex-wrap gap-4 items-end">{children}</div>
+          <div
+            className={cn(
+              'flex flex-wrap gap-4 items-end',
+              compact && 'gap-2 items-center',
+            )}
+          >
+            {children}
+          </div>
         ) : null}
       </CollapsibleFilters>
     </CardHeader>
