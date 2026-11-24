@@ -6,6 +6,9 @@
 // tempo, situação, sinais e ações. Clicar na linha abre a janela da tarefa.
 // Arrastar dentro do mesmo dia e da mesma máquina troca a ordem: os
 // horários ficam no lugar e os trabalhos trocam de vaga.
+// No gerenciador coletivo (arrastar colaborador), soltar a pessoa na linha
+// liga o relógio dela no trabalho (Maicol, 24/11/2026: todos os
+// gerenciadores em lista, como no legado; o Quadro saiu).
 
 // React
 import { useState, type ReactNode } from 'react'
@@ -50,7 +53,7 @@ export type QueueGroup = {
 }
 
 const COLUMNS =
-  'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(160px,1.6fr)_minmax(140px,1.2fr)_minmax(110px,1fr)_88px_minmax(110px,0.9fr)_minmax(150px,auto)] items-center gap-3'
+  'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(140px,1.6fr)_minmax(120px,1.2fr)_minmax(110px,1fr)_88px_minmax(110px,0.9fr)_minmax(150px,auto)] items-center gap-3'
 
 export function QueueList({
   groups,
@@ -61,6 +64,8 @@ export function QueueList({
   actions,
   onReorder,
   showForecast = true,
+  person = null,
+  onDropPerson,
 }: {
   groups: QueueGroup[]
   forecasts: Map<string, Forecast>
@@ -70,6 +75,9 @@ export function QueueList({
   actions: (item: TaskView) => ReactNode
   onReorder?: (dragged: TaskView, target: TaskView) => void
   showForecast?: boolean
+  // A pessoa que está sendo arrastada do painel de colaboradores
+  person?: string | null
+  onDropPerson?: (item: TaskView) => void
 }) {
   const [dragging, setDragging] = useState<TaskView | null>(null)
 
@@ -82,7 +90,7 @@ export function QueueList({
 
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-      <div className="min-w-[1080px]">
+      <div className="min-w-[1020px]">
         <div
           className={cn(
             COLUMNS,
@@ -136,6 +144,11 @@ export function QueueList({
               const forecast = forecasts.get(item.id)
               const badge = taskStatusBadge(item)
               const swap = group.sortable && canSwap(item)
+              const takesPerson =
+                !!person &&
+                !!onDropPerson &&
+                item.status !== 'DONE' &&
+                item.status !== 'CANCELED'
               return (
                 <div
                   key={item.id}
@@ -144,9 +157,12 @@ export function QueueList({
                   draggable={!!group.sortable && !!onReorder}
                   onDragStart={() => setDragging(item)}
                   onDragEnd={() => setDragging(null)}
-                  onDragOver={(event) => swap && event.preventDefault()}
+                  onDragOver={(event) =>
+                    (swap || takesPerson) && event.preventDefault()
+                  }
                   onDrop={() => {
-                    if (dragging && swap) onReorder?.(dragging, item)
+                    if (takesPerson) onDropPerson?.(item)
+                    else if (dragging && swap) onReorder?.(dragging, item)
                     setDragging(null)
                   }}
                   onClick={() => onOpen(item.id)}
@@ -156,7 +172,7 @@ export function QueueList({
                   className={cn(
                     COLUMNS,
                     'cursor-pointer border-b border-gray-100 px-4 py-3 text-sm transition last:border-b-0 hover:bg-gray-25',
-                    swap &&
+                    (swap || takesPerson) &&
                       'bg-brand-25 outline-dashed outline-1 outline-brand-400',
                     selected.has(item.id) && 'bg-brand-25',
                     item.alert && 'border-l-4 border-l-error-600',

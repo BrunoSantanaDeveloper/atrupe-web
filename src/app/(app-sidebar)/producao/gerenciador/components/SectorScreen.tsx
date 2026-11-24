@@ -1,21 +1,19 @@
 'use client'
 
 // A tela de um setor (GP-45, GP-46; 29/10/2026). O modelo é do gerenciador
-// (GP-43): no coletivo (arrastar colaborador), o Quadro com as seis colunas
-// da GP-28 e a caixa de colaboradores; no individual (Play & Stop), a Fila
-// do dia: a lista das tarefas por dia com o relógio e as ações em cada uma.
-// As duas visões existem nas duas; o modelo só escolhe a que abre.
+// (GP-43), e todos ficam na Fila do dia, a lista das tarefas por dia
+// (Maicol, 24/11/2026, como no legado; o Quadro saiu). No coletivo (arrastar
+// colaborador), a caixa de colaboradores fica ao lado da lista e a pessoa é
+// solta na linha do trabalho; no individual (Play & Stop), cada um liga o
+// relógio na linha.
 // Sem controle de tempo (NONE, GP-47; o modo do PRO): só a fila, ordenada
 // pela entrega, e a tarefa só se conclui. Sem relógio, pessoas nem agenda.
 
 // React / Next
 import { InfoHint } from '@/components/common/InfoHint'
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useRouter } from '@/hooks/useRouter'
 
 // UI
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -65,14 +63,8 @@ import {
 // Hooks / Consts
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
-import { updateFilterParam } from '@/lib/filter-utils'
 import { FEATURES } from '@/consts/features'
-import {
-  timeModeObj,
-  taskStatusObj,
-  TASK_STATUS_ORDER,
-  PRODUCTION_MANAGE,
-} from '@/consts/productionManager'
+import { timeModeObj, PRODUCTION_MANAGE } from '@/consts/productionManager'
 
 // Third-party
 import { toast } from 'sonner'
@@ -91,14 +83,11 @@ import { Icon } from '@/components/ui/icon'
 // Utils
 import { cn } from '@/lib/utils'
 
-type View = 'quadro' | 'fila'
 type QueueTab = 'a-fazer' | 'concluidos'
 
 const OPEN: TaskStatus[] = ['NOT_STARTED', 'IN_PROGRESS', 'PAUSED', 'PENDING']
 
 export function SectorScreen({ id }: { id: string }) {
-  const router = useRouter()
-  const params = useSearchParams()
   const { hasPermission } = usePermissions()
   const { hasFeature } = usePlanFeatures()
   const refresh = useProductionRefresh()
@@ -140,10 +129,9 @@ export function SectorScreen({ id }: { id: string }) {
     board?.manager.timeMode === 'NONE' ||
     !hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
   const collective = !timeless && board?.manager.timeMode === 'DRAG_DROP'
-  // O modelo escolhe a visão que abre; a pessoa pode trocar (GP-45)
-  const view = timeless
-    ? 'fila'
-    : (params.get('visao') as View) || (collective ? 'quadro' : 'fila')
+  // Todos os gerenciadores em lista (Maicol, 24/11/2026, como no legado): o
+  // modo só muda como o tempo corre, arrastando a pessoa (coletivo) ou no
+  // Play & Stop de cada um. O Quadro saiu: com 20 trabalhos não funciona.
 
   const filter = { search, person, period, machine }
   const tasks = useMemo(
@@ -548,20 +536,6 @@ export function SectorScreen({ id }: { id: string }) {
         {topbar}
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          {!timeless && (
-            <Tabs
-              value={view}
-              variant="pill"
-              onValueChange={(value) =>
-                updateFilterParam('visao', value, { router, params })
-              }
-            >
-              <TabsList>
-                <TabsTrigger value="fila">Fila do dia</TabsTrigger>
-                <TabsTrigger value="quadro">Quadro</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          )}
           <p className="flex items-center gap-2 text-sm text-gray">
             <SectorIcon name={manager!.sector} size="sm" />
             {timeless
@@ -583,280 +557,236 @@ export function SectorScreen({ id }: { id: string }) {
           onPeriod={setPeriod}
         />
 
-        {view === 'fila' ? (
-          <div className="space-y-4">
-            {timeless ? (
-              <>
-                {queue.running.length > 0 &&
-                  section(
-                    'Com pendência',
-                    queue.running,
-                    'Resolva a pendência e continue; depois, conclua.',
-                  )}
-                {section(
-                  'A fazer',
-                  queue.unscheduled,
-                  'Na ordem da entrega. Concluir passa a tarefa para a próxima etapa.',
-                )}
-              </>
-            ) : (
-              <>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <Tabs
-                    value={queueTab}
-                    variant="pill"
-                    onValueChange={(value) => {
-                      setQueueTab(value as QueueTab)
-                      setSelected(new Set())
-                    }}
-                  >
-                    <TabsList>
-                      <TabsTrigger value="a-fazer">A fazer</TabsTrigger>
-                      <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
-                    </TabsList>
-                  </Tabs>
-                  <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
-                    <span>
-                      <strong className="font-semibold text-gray-900">
-                        {totals.open}
-                      </strong>{' '}
-                      a fazer
-                    </span>
-                    <span>
-                      <strong className="font-semibold text-gray-900">
-                        {duration(totals.minutes)}
-                      </strong>{' '}
-                      previstas
-                    </span>
-                    {totals.urgent > 0 && (
-                      <span className="text-error-700">
-                        <strong className="font-semibold">
-                          {totals.urgent}
-                        </strong>{' '}
-                        urgente(s)
-                      </span>
-                    )}
-                  </p>
+        <div className="space-y-5">
+          {/* Colaboradores: disponíveis e trabalhando (GP-17), só no
+                coletivo, onde arrastar é o gesto que liga o relógio */}
+          {collective && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-1.5">
+                  <CardTitle>Colaboradores</CardTitle>
+                  <InfoHint title="Colaboradores">
+                    <p>{timeModeObj[board.manager.timeMode].help}</p>
+                  </InfoHint>
                 </div>
-                {board.manager.liveSchedule === 'RESCHEDULE' &&
-                  totals.moved > 0 && (
-                    <p className="rounded-lg border border-warning-200 bg-warning-25 px-4 py-2 text-sm text-warning-800">
-                      {totals.moved} trabalho(s) andaram na sequência da máquina
-                      por causa de um atraso. A previsão mostra o horário novo e
-                      o que era antes.
-                    </p>
-                  )}
-                {selected.size > 0 && (
-                  <div className="flex flex-wrap items-center gap-3 rounded-lg border border-brand-200 bg-brand-25 px-4 py-2">
-                    <span className="text-sm text-gray-800">
-                      {selected.size} selecionada(s)
-                    </span>
-                    <Button
-                      size="sm"
-                      isLoading={finishing}
-                      onClick={finishSelected}
-                    >
-                      <Icon icon={IconCircleCheck} size="sm" />
-                      Concluir {selected.size}
-                    </Button>
-                    {hasFeature(FEATURES.STOCK.PURCHASING) && (
-                      <Button
-                        size="sm"
-                        variant="neutralOutline"
-                        onClick={() => setBatchOpen(true)}
-                      >
-                        Apontar impressão
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="neutralOutline"
-                      onClick={() => setSelected(new Set())}
-                    >
-                      Limpar seleção
-                    </Button>
-                  </div>
-                )}
-                <BatchPrintDialog
-                  taskIds={Array.from(selected)}
-                  open={batchOpen}
-                  onOpenChange={setBatchOpen}
-                  onDone={async () => {
-                    setSelected(new Set())
-                    await refresh()
-                  }}
-                />
-                <QueueList
-                  groups={listGroups}
-                  forecasts={forecasts}
-                  selected={selected}
-                  onSelect={select}
-                  onOpen={setTaskId}
-                  actions={actions}
-                  onReorder={queueTab === 'a-fazer' ? swapSlots : undefined}
-                  showForecast={queueTab === 'a-fazer'}
-                />
-              </>
-            )}
-            {timeless && queue.closed.length > 0 && (
-              <div className="space-y-3">
-                <Button
-                  type="button"
-                  variant="neutralOutline"
-                  size="sm"
-                  onClick={() => setShowClosed((value) => !value)}
-                >
-                  {showClosed ? 'Ocultar' : 'Mostrar'} concluídas e canceladas (
-                  {queue.closed.length})
-                </Button>
-                {showClosed && section('Concluídas e canceladas', queue.closed)}
-              </div>
-            )}
-          </div>
-        ) : (
-          <div
-            className={cn(
-              'grid grid-cols-1 gap-5',
-              collective && 'xl:grid-cols-4',
-            )}
-          >
-            <div className={cn('space-y-3', collective && 'xl:col-span-3')}>
-              {/* As seis colunas da GP-28 */}
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {TASK_STATUS_ORDER.map((status: TaskStatus) => {
-                  const inColumn = tasks.filter(
-                    (item) => item.status === status,
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2 px-4 pb-4">
+                {people.map((worker) => {
+                  const current = board.tasks.find(
+                    (item) => item.id === worker.working?.taskId,
                   )
                   return (
                     <div
-                      key={status}
-                      className="w-[290px] shrink-0 space-y-2 rounded-xl bg-gray-50 p-3"
-                    >
-                      <p className="flex items-center justify-between text-sm font-medium text-gray-800">
-                        <Badge variant={taskStatusObj[status].variant} status>
-                          {taskStatusObj[status].text}
-                        </Badge>
-                        <span className="text-xs text-gray">
-                          {inColumn.length}
-                        </span>
-                      </p>
-                      {inColumn.map((item) => (
-                        <TaskCard
-                          key={item.id}
-                          item={item}
-                          onOpen={setTaskId}
-                          droppable={collective}
-                          dragging={dragging}
-                          onDrop={dropOn}
-                        />
-                      ))}
-                      {!inColumn.length && (
-                        <p className="py-4 text-center text-xs text-gray">
-                          Nada aqui
-                        </p>
+                      key={worker.id}
+                      draggable={!worker.working}
+                      onDragStart={() => setDragging(worker.id)}
+                      onDragEnd={() => setDragging(null)}
+                      className={cn(
+                        'w-full rounded-lg border p-3 sm:w-[280px]',
+                        worker.working
+                          ? 'border-success-200 bg-success-50'
+                          : 'cursor-grab border-gray-200 bg-white',
                       )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <PersonAvatar name={worker.name} />
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-gray-800">
+                            {worker.name}
+                            {worker.onlyAssigned && (
+                              <span className="font-normal text-gray">
+                                {' '}
+                                · só as dele
+                              </span>
+                            )}
+                          </p>
+                          {worker.working ? (
+                            <>
+                              <p className="text-xs text-success-700">
+                                Em{' '}
+                                {current
+                                  ? `${current.code} ${current.stageName}`
+                                  : 'outra tarefa'}{' '}
+                                desde{' '}
+                                {new Date(
+                                  worker.working.since,
+                                ).toLocaleTimeString('pt-BR', {
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                })}
+                                {current
+                                  ? ` · ${duration(current.actualMinutes)} apontado`
+                                  : ''}
+                              </p>
+                              <button
+                                type="button"
+                                className="mt-1 text-xs font-medium text-error-700 hover:underline"
+                                onClick={async () => {
+                                  await stopWork({
+                                    id: worker.working?.taskId,
+                                    collaboratorId: worker.id,
+                                  })
+                                  toast.success('Relógio parado')
+                                  await refresh()
+                                }}
+                              >
+                                Parar
+                              </button>
+                            </>
+                          ) : (
+                            <p className="text-xs text-gray">
+                              Disponível · arraste para uma tarefa
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   )
                 })}
-              </div>
-            </div>
-
-            {/* Colaboradores: disponíveis e trabalhando (GP-17), só no
-                coletivo, onde arrastar é o gesto que liga o relógio */}
-            {collective && (
-              <Card className="h-fit">
-                <CardHeader>
-                  <div className="flex items-center gap-1.5">
-                    <CardTitle>Colaboradores</CardTitle>
-                    <InfoHint title="Colaboradores">
-                      <p>{timeModeObj[board.manager.timeMode].help}</p>
-                    </InfoHint>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-2 px-4 pb-4">
-                  {people.map((worker) => {
-                    const current = board.tasks.find(
-                      (item) => item.id === worker.working?.taskId,
-                    )
-                    return (
-                      <div
-                        key={worker.id}
-                        draggable={!worker.working}
-                        onDragStart={() => setDragging(worker.id)}
-                        onDragEnd={() => setDragging(null)}
-                        className={cn(
-                          'rounded-lg border p-3',
-                          worker.working
-                            ? 'border-success-200 bg-success-50'
-                            : 'cursor-grab border-gray-200 bg-white',
-                        )}
-                      >
-                        <div className="flex items-start gap-3">
-                          <PersonAvatar name={worker.name} />
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-800">
-                              {worker.name}
-                              {worker.onlyAssigned && (
-                                <span className="font-normal text-gray">
-                                  {' '}
-                                  · só as dele
-                                </span>
-                              )}
-                            </p>
-                            {worker.working ? (
-                              <>
-                                <p className="text-xs text-success-700">
-                                  Em{' '}
-                                  {current
-                                    ? `${current.code} ${current.stageName}`
-                                    : 'outra tarefa'}{' '}
-                                  desde{' '}
-                                  {new Date(
-                                    worker.working.since,
-                                  ).toLocaleTimeString('pt-BR', {
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  })}
-                                  {current
-                                    ? ` · ${duration(current.actualMinutes)} apontado`
-                                    : ''}
-                                </p>
-                                <button
-                                  type="button"
-                                  className="mt-1 text-xs font-medium text-error-700 hover:underline"
-                                  onClick={async () => {
-                                    await stopWork({
-                                      id: worker.working?.taskId,
-                                      collaboratorId: worker.id,
-                                    })
-                                    toast.success('Relógio parado')
-                                    await refresh()
-                                  }}
-                                >
-                                  Parar
-                                </button>
-                              </>
-                            ) : (
-                              <p className="text-xs text-gray">
-                                Disponível · arraste para uma tarefa
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  })}
-                  {!people.length && (
-                    <p className="text-sm text-gray">
-                      Ninguém tem acesso a este gerenciador. Configure em
-                      Configurações › Produção.
-                    </p>
+                {!people.length && (
+                  <p className="text-sm text-gray">
+                    Ninguém tem acesso a este gerenciador. Configure em
+                    Configurações › Produção.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+          <div className="min-w-0">
+            <div className="space-y-4">
+              {timeless ? (
+                <>
+                  {queue.running.length > 0 &&
+                    section(
+                      'Com pendência',
+                      queue.running,
+                      'Resolva a pendência e continue; depois, conclua.',
+                    )}
+                  {section(
+                    'A fazer',
+                    queue.unscheduled,
+                    'Na ordem da entrega. Concluir passa a tarefa para a próxima etapa.',
                   )}
-                </CardContent>
-              </Card>
-            )}
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <Tabs
+                      value={queueTab}
+                      variant="pill"
+                      onValueChange={(value) => {
+                        setQueueTab(value as QueueTab)
+                        setSelected(new Set())
+                      }}
+                    >
+                      <TabsList>
+                        <TabsTrigger value="a-fazer">A fazer</TabsTrigger>
+                        <TabsTrigger value="concluidos">Concluídos</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                    <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
+                      <span>
+                        <strong className="font-semibold text-gray-900">
+                          {totals.open}
+                        </strong>{' '}
+                        a fazer
+                      </span>
+                      <span>
+                        <strong className="font-semibold text-gray-900">
+                          {duration(totals.minutes)}
+                        </strong>{' '}
+                        previstas
+                      </span>
+                      {totals.urgent > 0 && (
+                        <span className="text-error-700">
+                          <strong className="font-semibold">
+                            {totals.urgent}
+                          </strong>{' '}
+                          urgente(s)
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  {board.manager.liveSchedule === 'RESCHEDULE' &&
+                    totals.moved > 0 && (
+                      <p className="rounded-lg border border-warning-200 bg-warning-25 px-4 py-2 text-sm text-warning-800">
+                        {totals.moved} trabalho(s) andaram na sequência da
+                        máquina por causa de um atraso. A previsão mostra o
+                        horário novo e o que era antes.
+                      </p>
+                    )}
+                  {selected.size > 0 && (
+                    <div className="flex flex-wrap items-center gap-3 rounded-lg border border-brand-200 bg-brand-25 px-4 py-2">
+                      <span className="text-sm text-gray-800">
+                        {selected.size} selecionada(s)
+                      </span>
+                      <Button
+                        size="sm"
+                        isLoading={finishing}
+                        onClick={finishSelected}
+                      >
+                        <Icon icon={IconCircleCheck} size="sm" />
+                        Concluir {selected.size}
+                      </Button>
+                      {hasFeature(FEATURES.STOCK.PURCHASING) && (
+                        <Button
+                          size="sm"
+                          variant="neutralOutline"
+                          onClick={() => setBatchOpen(true)}
+                        >
+                          Apontar impressão
+                        </Button>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="neutralOutline"
+                        onClick={() => setSelected(new Set())}
+                      >
+                        Limpar seleção
+                      </Button>
+                    </div>
+                  )}
+                  <BatchPrintDialog
+                    taskIds={Array.from(selected)}
+                    open={batchOpen}
+                    onOpenChange={setBatchOpen}
+                    onDone={async () => {
+                      setSelected(new Set())
+                      await refresh()
+                    }}
+                  />
+                  <QueueList
+                    groups={listGroups}
+                    forecasts={forecasts}
+                    selected={selected}
+                    onSelect={select}
+                    onOpen={setTaskId}
+                    actions={actions}
+                    onReorder={queueTab === 'a-fazer' ? swapSlots : undefined}
+                    showForecast={queueTab === 'a-fazer'}
+                    person={collective ? dragging : null}
+                    onDropPerson={collective ? dropOn : undefined}
+                  />
+                </>
+              )}
+              {timeless && queue.closed.length > 0 && (
+                <div className="space-y-3">
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    size="sm"
+                    onClick={() => setShowClosed((value) => !value)}
+                  >
+                    {showClosed ? 'Ocultar' : 'Mostrar'} concluídas e canceladas
+                    ({queue.closed.length})
+                  </Button>
+                  {showClosed &&
+                    section('Concluídas e canceladas', queue.closed)}
+                </div>
+              )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
 
       <TaskDetailDialog
