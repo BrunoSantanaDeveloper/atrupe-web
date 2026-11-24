@@ -15156,7 +15156,7 @@
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/Notes/index.tsx:109 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/ScheduleDate/index.tsx:186 (jsx)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/Stages/StagePendingDialog.tsx:135 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:188 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:214 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:608 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1060 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1515 (jsx)",
@@ -17241,7 +17241,7 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:493 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/BillingDialog.tsx:230 (atributo:label)",
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/Notes/index.tsx:82 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:175 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:201 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:198 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/ItemActions/Notes/index.tsx:96 (atributo:label)"
   ]
@@ -48067,7 +48067,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:139 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:153 (frase)"
   ]
  },
  "producao.gerenciador.atTheRollWidthM2": {
@@ -48118,8 +48118,8 @@
  "producao.gerenciador.chooseTheRoll": {
   "pt": "Escolher o rolo",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:125 (atributo:placeholder)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:153 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:139 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:167 (atributo:placeholder)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:141 (atributo:placeholder)"
   ]
  },
@@ -48475,7 +48475,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:109 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:123 (frase)"
   ]
  },
  "producao.gerenciador.km": {
@@ -48514,13 +48514,13 @@
  "producao.gerenciador.lengthOnTheSecondRoll": {
   "pt": "Comprimento no segundo rolo (m)",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:160 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:174 (jsx)"
   ]
  },
  "producao.gerenciador.lengthUsedM": {
   "pt": "Comprimento usado (m)",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:131 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:145 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:157 (jsx)"
   ]
  },
@@ -48545,7 +48545,7 @@
  "producao.gerenciador.logPrintRun": {
   "pt": "Apontar impressão",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:108 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:122 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:668 (jsx)"
   ]
  },
@@ -48592,7 +48592,7 @@
    "valor3"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:69 (propriedade:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:81 (propriedade:label)"
   ]
  },
  "producao.gerenciador.machineAndQuality": {
@@ -48679,7 +48679,7 @@
  "producao.gerenciador.noOpenRollInThis": {
   "pt": "Nenhum rolo aberto neste setor. Abra o lote em Estoque › Lotes escolhendo o setor.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:117 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:131 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:133 (jsx)"
   ]
  },
@@ -48744,7 +48744,7 @@
    "code"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:146 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:160 (frase)"
   ]
  },
  "producao.gerenciador.notScheduled": {
@@ -49009,7 +49009,7 @@
  "producao.gerenciador.roll": {
   "pt": "Rolo",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:124 (atributo:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:138 (atributo:label)"
   ]
  },
  "producao.gerenciador.rollOpenInTheDepartment": {
@@ -49067,7 +49067,7 @@
  "producao.gerenciador.secondRoll": {
   "pt": "Segundo rolo",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:152 (atributo:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:166 (atributo:label)"
   ]
  },
  "producao.gerenciador.sectorManager": {
@@ -49092,6 +49092,12 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:651 (frase)"
+  ]
+ },
+ "producao.gerenciador.settingUsed": {
+  "pt": "Configuração usada",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:191 (atributo:label)"
   ]
  },
  "producao.gerenciador.show": {
@@ -49444,7 +49450,7 @@
  "producao.gerenciador.wasteSplice": {
   "pt": "Perda, emenda…",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:178 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:204 (atributo:placeholder)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskLotUse.tsx:201 (atributo:placeholder)"
   ]
  },
@@ -49497,7 +49503,7 @@
  "producao.gerenciador.writeOff": {
   "pt": "Dar baixa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:196 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:222 (jsx)"
   ]
  },
  "producao.gerenciador.writeOffFromTheRoll": {

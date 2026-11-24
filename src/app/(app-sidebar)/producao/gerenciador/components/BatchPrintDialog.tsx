@@ -24,7 +24,11 @@ import {
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Actions
-import { getTaskLots, registerBatchLotUse } from '@/actions/purchasing'
+import {
+  getTaskLots,
+  getTaskSetups,
+  registerBatchLotUse,
+} from '@/actions/purchasing'
 
 // Third-party
 import { toast } from 'sonner'
@@ -59,6 +63,14 @@ export function BatchPrintDialog({
   const [secondLotId, setSecondLotId] = useState('')
   const [secondLength, setSecondLength] = useState('')
   const [note, setNote] = useState('')
+  // A configuração usada na impressão (ex.: 4 passes): pode ser outra que a
+  // vendida; o tempo não muda (item 10 do GP-48)
+  const { data: setupData } = useQuery({
+    queryKey: ['task-setups', taskIds[0]],
+    queryFn: () => getTaskSetups(taskIds[0]),
+    enabled: open && taskIds.length > 0,
+  })
+  const [setupId, setSetupId] = useState('')
   const [saving, setSaving] = useState(false)
 
   const lot = lots.find((item) => item.id === lotId)
@@ -75,6 +87,7 @@ export function BatchPrintDialog({
     setSecondLotId('')
     setSecondLength('')
     setNote('')
+    setSetupId('')
     onOpenChange(false)
   }
 
@@ -92,6 +105,7 @@ export function BatchPrintDialog({
               Math.max(num(length) - (lot?.currentLength || 0), 0),
           }
         : {}),
+      ...(setupId && setupId !== setupData?.current ? { setupId } : {}),
       note: note || undefined,
     })
     setSaving(false)
@@ -170,6 +184,18 @@ export function BatchPrintDialog({
                     />
                   </div>
                 </div>
+              )}
+              {!!setupData?.setups.length && (
+                <SelectBasic
+                  name="batch-setup"
+                  label="Configuração usada"
+                  options={setupData.setups.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                  value={setupId || setupData.current || undefined}
+                  onChange={(value) => setSetupId(String(value))}
+                />
               )}
               <div className="space-y-1">
                 <Label htmlFor="batch-note">Observação</Label>

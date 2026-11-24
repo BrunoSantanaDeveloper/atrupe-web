@@ -61,6 +61,7 @@
     "notEnoughMaterialMLeft": "Not enough material: {valor} m left on roll {code}. Choose the second roll for the rest.",
     "secondRoll": "Second roll",
     "lengthOnTheSecondRoll": "Length on the second roll (m)",
+    "settingUsed": "Setting used",
     "wasteSplice": "Waste, splice…",
     "writeOff": "Write off",
     "searchTask": "Search task",

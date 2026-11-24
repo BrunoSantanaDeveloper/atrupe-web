@@ -272,6 +272,8 @@ export const registerBatchLotUse = async (values: {
   length: number
   secondLotId?: string
   secondLength?: number
+  // A configuração produtiva usada (o tempo não muda)
+  setupId?: string
   note?: string
 }) => {
   const res: ApiResult = await createItemNew({
@@ -285,6 +287,19 @@ export const registerBatchLotUse = async (values: {
         message: (res.data?.message as string) || 'Baixa conjunta registrada',
       }
     : { success: false, data: null, message: res.message || 'Não deu certo' }
+}
+
+// As configurações produtivas da máquina da tarefa (o apontamento)
+export const getTaskSetups = async (taskId: string) => {
+  const res: ApiResult = await getItem({
+    route: `/production/task/${taskId}/setups`,
+  })
+  return res.success
+    ? (res.data as {
+        current: string | null
+        setups: { id: string; name: string }[]
+      })
+    : { current: null, setups: [] }
 }
 
 export const consumeStockLot = async (

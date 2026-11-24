@@ -20358,5 +20358,9 @@
   "ff844f9d1f": {
     "es": "reservado {reserved} {unit}",
     "en": "reserved {reserved} {unit}"
+  },
+  "552807d531": {
+    "es": "Configuración usada",
+    "en": "Setting used"
   }
 }

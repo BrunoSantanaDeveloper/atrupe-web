@@ -61,6 +61,7 @@
     "notEnoughMaterialMLeft": "Material insuficiente: quedan {valor} m en el rollo {code}. Elija el segundo rollo para el resto.",
     "secondRoll": "Segundo rollo",
     "lengthOnTheSecondRoll": "Largo en el segundo rollo (m)",
+    "settingUsed": "Configuración usada",
     "wasteSplice": "Pérdida, empalme…",
     "writeOff": "Dar de baja",
     "searchTask": "Buscar tarea",
