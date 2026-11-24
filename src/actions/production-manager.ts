@@ -98,6 +98,7 @@ const toVehicle = (row: Raw): Vehicle => ({
   name: row.name,
   plate: row.plate || '',
   active: row.active ?? true,
+  assetId: row.assetId ?? null,
 })
 
 const toTask = (row: Raw): TaskView => {
@@ -593,7 +594,7 @@ export const saveVehicle = async ({
   values,
 }: {
   id?: string
-  values: { name: string; plate: string }
+  values: { name: string; plate: string; assetId?: string | null }
 }) => {
   const res: ApiResult = id
     ? await putItemNew({ route: `/production/vehicle/${id}`, data: values })

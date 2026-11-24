@@ -63,6 +63,17 @@ export type QuotationResultData = {
     costKnown: boolean
     lines: ResultLine[]
   }[]
+  // Km do veículo nas saídas das tarefas desta venda: previsto × rodado
+  vehicleKm?: {
+    planned: number
+    driven: number
+    stops: {
+      trip: number
+      description: string
+      planned: number | null
+      driven: number | null
+    }[]
+  } | null
 }
 
 export const getQuotationResult = async ({

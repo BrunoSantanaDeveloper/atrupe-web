@@ -56,6 +56,8 @@ import { TRIP_STATUS, suggestKm, type Trip, type TripStopInput } from '../types'
 // Third-party
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
+import { uploadProductionAttachment } from '@/lib/production-upload'
 
 const SCHEDULE = ['production:vehicle_schedule:edit']
 
@@ -736,19 +738,12 @@ function TripDialog({
                   </div>
                 )}
                 {!closing && open && stop.status === 'PENDING' && (
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      className="text-xs text-brand-700 hover:underline"
-                      onClick={() =>
-                        run(() =>
-                          setStopResult(trip.id, stop.id, { status: 'DONE' }),
-                        )
-                      }
-                    >
-                      Feita
-                    </button>
-                  </div>
+                  <StopDone
+                    tripId={trip.id}
+                    stopId={stop.id}
+                    taskId={stop.kind === 'WORK' ? stop.taskId : null}
+                    onDone={onDone}
+                  />
                 )}
               </li>
             ))}
@@ -1055,5 +1050,72 @@ function WhoWas() {
         {answer && <p className="text-sm text-gray-800">{answer}</p>}
       </CardContent>
     </Card>
+  )
+}
+
+/**
+ * A parada feita no caminho. A de trabalho pede a foto do trabalho pronto
+ * (Maicol, 23/11/2026): a foto vai para os anexos da tarefa e a parada fica
+ * feita; a livre conclui direto.
+ */
+function StopDone({
+  tripId,
+  stopId,
+  taskId,
+  onDone,
+}: {
+  tripId: string
+  stopId: string
+  taskId: string | null
+  onDone: () => void
+}) {
+  const { data: session } = useSession()
+  const [busy, setBusy] = useState(false)
+
+  const finish = async () => {
+    const res = await setStopResult(tripId, stopId, { status: 'DONE' })
+    if (!res.success) return toast.error(res.message)
+    toast.success(res.message)
+    onDone()
+  }
+
+  if (!taskId) {
+    return (
+      <button
+        type="button"
+        className="text-xs text-brand-700 hover:underline"
+        onClick={finish}
+      >
+        Feita
+      </button>
+    )
+  }
+  return (
+    <label className="cursor-pointer text-xs text-brand-700 hover:underline">
+      {busy ? 'Enviando a foto…' : 'Feita (com a foto)'}
+      <input
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="sr-only"
+        disabled={busy}
+        onChange={async (event) => {
+          const file = event.target.files?.[0]
+          event.target.value = ''
+          if (!file) return
+          setBusy(true)
+          const sent = await uploadProductionAttachment({
+            token: session?.accessToken,
+            taskId,
+            name: 'Foto do trabalho pronto',
+            kind: 'PHOTO',
+            file,
+          })
+          setBusy(false)
+          if (!sent.success) return toast.error(sent.message)
+          await finish()
+        }}
+      />
+    </label>
   )
 }

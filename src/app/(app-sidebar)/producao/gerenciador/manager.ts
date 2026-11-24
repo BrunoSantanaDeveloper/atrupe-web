@@ -200,6 +200,8 @@ export type Vehicle = {
   name: string
   plate: string
   active: boolean
+  // O patrimônio do veículo (VE-1): o bem da frota
+  assetId?: string | null
 }
 
 // A tarefa é a etapa da composição do item vendido, com o consumo resolvido

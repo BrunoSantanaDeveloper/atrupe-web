@@ -35,6 +35,10 @@ import {
   rejectOrderRedo,
 } from '@/actions/order-redo'
 
+// Hooks
+import { useSector } from '@/hooks/queries/useSector'
+import { useEmployee } from '@/hooks/queries/useEmployee'
+
 // Icons
 import { IconRefresh } from '@tabler/icons-react'
 
@@ -61,6 +65,30 @@ export function RedoOrder({
   const [reason, setReason] = useState('')
   const [excess, setExcess] = useState<'CLIENT' | 'COMPANY'>('CLIENT')
   const [rejectText, setRejectText] = useState('')
+  // Quem causou a refação (a pessoa ou o setor): mede a perda por responsável
+  const [responsible, setResponsible] = useState('')
+  const { data: employees } = useEmployee()
+  const { data: sectors } = useSector()
+  const responsibleOptions = [
+    ...(sectors || [])
+      .filter((sector) => sector.isActive)
+      .map((sector) => ({
+        value: `SECTOR:${sector.id}`,
+        label: `Setor: ${sector.name}`,
+      })),
+    ...(employees || [])
+      .filter((employee) => employee.isActive)
+      .map((employee) => ({
+        value: `PERSON:${employee.id}`,
+        label: employee.name,
+      })),
+  ]
+  const responsibleData = () => {
+    const [kind, id] = responsible.split(':')
+    return kind && id
+      ? { responsibleKind: kind as 'PERSON' | 'SECTOR', responsibleId: id }
+      : {}
+  }
   const [busy, setBusy] = useState(false)
 
   const refresh = () => {
@@ -132,7 +160,11 @@ export function RedoOrder({
       {executed?.newQuotationId && (
         <div className="w-full space-y-1 rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm">
           <p className="text-gray-800">
-            Esta O.S. foi refeita ({executed.reason}).{' '}
+            Esta O.S. foi refeita ({executed.reason}
+            {executed.responsibleName
+              ? `; responsável: ${executed.responsibleName}`
+              : ''}
+            ).{' '}
             <Link
               href={`/vendas/orcamentos/${executed.newQuotationId}`}
               className="font-medium text-brand-700 underline"
@@ -185,6 +217,14 @@ export function RedoOrder({
               value={excess}
               onChange={(value) => setExcess(value as 'CLIENT' | 'COMPANY')}
             />
+            <SelectBasic
+              name="redo-responsible"
+              label="Quem causou a refação (opcional)"
+              placeholder="Ninguém (pedido do cliente)"
+              options={responsibleOptions}
+              value={responsible}
+              onChange={(value) => setResponsible(value as string)}
+            />
             <p className="text-xs text-gray">
               O que foi pago fica na O.S. cancelada; levar para a nova é feito à
               mão.
@@ -199,7 +239,11 @@ export function RedoOrder({
               disabled={!reason.trim()}
               onClick={() =>
                 act(() =>
-                  requestOrderRedo(orderId, { reason: reason.trim(), excess }),
+                  requestOrderRedo(orderId, {
+                    reason: reason.trim(),
+                    excess,
+                    ...responsibleData(),
+                  }),
                 )
               }
             >

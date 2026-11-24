@@ -26,6 +26,8 @@ import { IconComponent } from '@/components/common/Icon'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect, SelectBasic } from '@/components/common/form/FormSelect'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
+import { Checkbox } from '@/components/ui/checkbox'
+import { PRODUCTIONS } from '@/consts/productions'
 
 // Icons
 import { IconCircleCheck } from '@tabler/icons-react'
@@ -121,6 +123,8 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const printing = hasFeature(FEATURES.PRODUCTS.PAPER_REGISTER)
   const [bleedMm, setBleedMm] = useState('')
   const [setupSheets, setSetupSheets] = useState('')
+  // O que o setor produz (PS-1; Maicol, 23/11/2026)
+  const [productions, setProductions] = useState<string[]>([])
 
   useEffect(() => {
     if (!open) return
@@ -129,6 +133,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
       rowData?.setupSheets == null ? '' : String(rowData.setupSheets),
     )
     setSaleUnit(rowData?.saleUnit || 'HOUR')
+    setProductions(rowData?.productions || [])
     setHourCost(moneyText(rowData?.hourCost))
     setHourSale(moneyText(rowData?.hourSale))
   }, [open, rowData])
@@ -170,6 +175,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
         hourSale?: number | null
         bleedMm?: number | null
         setupSheets?: number | null
+        productions?: string[]
       } = { ...data }
       if (printing) {
         const bleed = bleedMm.trim() === '' ? null : Number(bleedMm)
@@ -189,6 +195,10 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
           if (cost !== (rowData?.hourCost ?? null)) body.hourCost = cost
           if (sale !== (rowData?.hourSale ?? null)) body.hourSale = sale
         }
+      }
+      const before = [...(rowData?.productions || [])].sort().join(',')
+      if ([...productions].sort().join(',') !== before) {
+        body.productions = productions
       }
       if (color !== initialColor) {
         const padrao = sectorDefaultColor({ name: data.name, icon: data.icon })
@@ -433,6 +443,33 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   </div>
                 </div>
               )}
+              {/* O que o setor produz (PS-1): as produções ligadas à mão,
+                  conforme a empresa quer controlar */}
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-800">
+                  O que este setor produz
+                </p>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {PRODUCTIONS.map((item) => (
+                    <label
+                      key={item.key}
+                      className="flex items-center gap-2 text-sm text-gray-800"
+                    >
+                      <Checkbox
+                        checked={productions.includes(item.key)}
+                        onCheckedChange={(checked) =>
+                          setProductions((current) =>
+                            checked
+                              ? [...current, item.key]
+                              : current.filter((key) => key !== item.key),
+                          )
+                        }
+                      />
+                      {item.label}
+                    </label>
+                  ))}
+                </div>
+              </div>
             </form>
           </Form>
         </DialogBody>

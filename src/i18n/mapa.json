@@ -1939,7 +1939,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/PaymentConditionsTable/PaymentConditionsData.tsx:88 (propriedade:confirmLabel)",
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/Actions/EditSubcategoryDialog/index.tsx:218 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/NewCategoryDialog/index.tsx:218 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:590 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:592 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:156 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:1177 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/grupo-de-produtos/components/DangerActionProductGroupDialog.tsx:79 (jsx)",
@@ -2194,7 +2194,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/ModulesDialog/index.tsx:54 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:497 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:499 (propriedade:label)"
   ]
  },
  "admin.clientes.notasFiscais": {
@@ -9331,7 +9331,7 @@
   "pt": "Consultar",
   "usos": [
    "src/app/(app-sidebar)/cadastros/clientes/components/SearchClient/SearchClientModal.tsx:117 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1052 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1047 (jsx)"
   ]
  },
  "cadastros.clientes.lookUpCpfCnpj": {
@@ -10101,9 +10101,9 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:370 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:506 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:717 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:168 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:647 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:979 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:170 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:649 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:994 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/NewMaterial.tsx:309 (atributo:tooltip)"
   ]
  },
@@ -10300,7 +10300,7 @@
  "comum.actions.couldnTExportTheResult": {
   "pt": "Não foi possível exportar o resultado.",
   "usos": [
-   "src/actions/quotation-result.ts:104 (propriedade:message)"
+   "src/actions/quotation-result.ts:115 (propriedade:message)"
   ]
  },
  "comum.actions.dataLoadedSuccessfully": {
@@ -13651,6 +13651,12 @@
    "src/consts/sectors.ts:72 (propriedade:text)"
   ]
  },
+ "comum.consts.cutting": {
+  "pt": "Recorte",
+  "usos": [
+   "src/consts/productions.ts:9 (propriedade:label)"
+  ]
+ },
  "comum.consts.deliveryAtInstallation": {
   "pt": "Entrega na instalação",
   "usos": [
@@ -13938,6 +13944,7 @@
  "comum.consts.metalwork": {
   "pt": "Serralheria",
   "usos": [
+   "src/consts/productions.ts:11 (propriedade:label)",
    "src/consts/sectors.ts:102 (propriedade:text)"
   ]
  },
@@ -14173,6 +14180,12 @@
    "src/consts/productionManager.ts:110 (propriedade:text)"
   ]
  },
+ "comum.consts.promotionalGifts": {
+  "pt": "Brindes",
+  "usos": [
+   "src/consts/productions.ts:13 (propriedade:label)"
+  ]
+ },
  "comum.consts.purchaseValue": {
   "pt": "Valor de aquisição",
   "usos": [
@@ -14180,6 +14193,12 @@
   ]
  },
  "comum.consts.quickPrint": {
+  "pt": "Gráfica rápida",
+  "usos": [
+   "src/consts/productions.ts:14 (propriedade:label)"
+  ]
+ },
+ "comum.consts.quickPrint2": {
   "pt": "Impressão Rápida",
   "usos": [
    "src/consts/sectors.ts:77 (propriedade:text)"
@@ -14231,6 +14250,7 @@
  "comum.consts.screenPrinting": {
   "pt": "Serigrafia",
   "usos": [
+   "src/consts/productions.ts:10 (propriedade:label)",
    "src/consts/sectors.ts:137 (propriedade:text)"
   ]
  },
@@ -14252,6 +14272,12 @@
    "src/consts/processes.ts:109 (propriedade:label)"
   ]
  },
+ "comum.consts.solventPrinting": {
+  "pt": "Impressão solvente",
+  "usos": [
+   "src/consts/productions.ts:6 (propriedade:label)"
+  ]
+ },
  "comum.consts.startsAsDone": {
   "pt": "Já nasce concluída",
   "usos": [
@@ -14262,6 +14288,12 @@
   "pt": "Saldo do estoque",
   "usos": [
    "src/consts/nav.ts:381 (propriedade:title)"
+  ]
+ },
+ "comum.consts.sublimation": {
+  "pt": "Sublimação",
+  "usos": [
+   "src/consts/productions.ts:8 (propriedade:label)"
   ]
  },
  "comum.consts.taxParameters": {
@@ -14372,6 +14404,12 @@
    "src/consts/receivables.ts:65 (propriedade:tooltip)"
   ]
  },
+ "comum.consts.uvPrinting": {
+  "pt": "Impressão UV",
+  "usos": [
+   "src/consts/productions.ts:7 (propriedade:label)"
+  ]
+ },
  "comum.consts.variable": {
   "pt": "Variável",
   "usos": [
@@ -14447,6 +14485,7 @@
  "comum.consts.woodworking": {
   "pt": "Marcenaria",
   "usos": [
+   "src/consts/productions.ts:12 (propriedade:label)",
    "src/consts/sectors.ts:97 (propriedade:text)"
   ]
  },
@@ -14552,8 +14591,8 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorListItem.tsx:693 (jsx)",
    "src/app/(app-sidebar)/dashboard/components/FiscalSetupModal.tsx:564 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseTomadorSection.tsx:114 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:522 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:523 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:524 (atributo:aria-label)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:525 (atributo:placeholder)",
    "src/app/(blank-layout-pages)/assinatura/configurar-fiscal/page.tsx:425 (jsx)",
    "src/components/fiscal/FiscalOnboardingModal.tsx:443 (jsx)",
    "src/components/layout/MyProfile/index.tsx:225 (jsx)"
@@ -14707,6 +14746,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:236 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:258 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/Assets.tsx:169 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1023 (atributo:label)",
    "src/consts/sectors.ts:127 (propriedade:text)"
   ]
  },
@@ -14894,7 +14934,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:316 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:326 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1756 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2236 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2237 (atributo:title)",
@@ -15060,7 +15100,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:373 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:376 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/NewGroup.tsx:114 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:456 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:493 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:276 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:538 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/PaymentConditionsTable/PaymentConditionsData.tsx:86 (propriedade:cancelLabel)",
@@ -15082,10 +15122,10 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorFormModal.tsx:479 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissoresListClient.tsx:454 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/InutilizarNfceDialog.tsx:206 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:425 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:582 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:748 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1012 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:427 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:584 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:750 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1045 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/StorageCleanup.tsx:128 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:199 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:400 (jsx)",
@@ -15182,9 +15222,9 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskSlots.tsx:393 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:194 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:497 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:273 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:565 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:968 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:275 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:567 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:963 (jsx)",
    "src/app/(app-sidebar)/relatorios/financeiro/components/print/AdvancedReportDialog/index.tsx:289 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/print/AdvancedReportDialog/index.tsx:299 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/ItemActions/Delete/index.tsx:77 (jsx)",
@@ -15221,7 +15261,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1140 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx:177 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/EditOrderInfo/index.tsx:338 (jsx)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:195 (jsx)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:235 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:473 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfeDialog.tsx:277 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfseButton.tsx:287 (jsx)",
@@ -15963,7 +16003,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/NewGroup.tsx:94 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Main.tsx:114 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:506 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:196 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:198 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/NextStepDialog.tsx:297 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx:739 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:270 (jsx)",
@@ -15981,7 +16021,7 @@
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleFilter.tsx:71 (atributo:label)",
    "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:172 (jsx)",
    "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:91 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:956 (atributo:label)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:951 (atributo:label)",
    "src/components/layout/MyProfile/index.tsx:174 (atributo:label)"
   ]
  },
@@ -16449,8 +16489,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/ContractModal.tsx:106 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SellAssetModal.tsx:183 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/ActivationWizardModal.tsx:632 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:516 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:940 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:518 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:942 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:2115 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2562 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ImportProduct/ImportProductModal.tsx:373 (jsx)",
@@ -16886,6 +16926,17 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:676 (jsx)"
   ]
  },
+ "comum.geral.locacao": {
+  "pt": "Locação",
+  "marcas": [
+   "vitrine"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:55 (propriedade:label)",
+   "src/app/sandbox/locacao/page.tsx:82 (jsx)",
+   "src/consts/productions.ts:16 (propriedade:label)"
+  ]
+ },
  "comum.geral.logradouro": {
   "pt": "Logradouro",
   "marcas": [
@@ -16993,7 +17044,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/RejectQuotation.tsx:153 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/ImportQuotation/ImportQuotationModal.tsx:424 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/CancelOrder.tsx:215 (jsx)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:170 (jsx)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:202 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:423 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/CancelOrderButton.tsx:211 (jsx)",
    "src/components/common/fiscal/RejectionReasonAction.tsx:48 (jsx)"
@@ -17077,12 +17128,12 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:145 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:271 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/NewGroup.tsx:83 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:256 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:266 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:274 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:180 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:660 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:893 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:988 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:182 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:662 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:895 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1003 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:303 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:752 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductVariations.tsx:192 (jsx)",
@@ -17708,7 +17759,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:383 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:393 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:83 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:84 (atributo:title)",
    "src/app/sandbox/offset/components/OffsetItem.tsx:399 (jsx)",
@@ -17879,8 +17930,8 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/CostModal.tsx:241 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SellAssetModal.tsx:205 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/NewAsset/index.tsx:315 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:353 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:370 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:363 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:380 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:197 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:402 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:409 (jsx)",
@@ -18102,7 +18153,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:861 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:863 (atributo:tooltip)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:676 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1211 (atributo:tooltip)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:307 (propriedade:label)",
@@ -18324,7 +18375,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/SetupModal.tsx:228 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:383 (jsx)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/grupos/components/AssetGroups.tsx:174 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:465 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:502 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:284 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:546 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:577 (jsx)",
@@ -18339,9 +18390,9 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/cfop/components/NaturezaFormModal.tsx:223 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorFormModal.tsx:487 (jsx)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/invoicy/components/InvoicyConfigForm.tsx:374 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:433 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:756 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1020 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:435 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:758 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1057 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/StorageCleanup.tsx:390 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1939 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2571 (jsx)",
@@ -19110,7 +19161,7 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:672 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:673 (atributo:title)",
    "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:203 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:109 (atributo:title)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:111 (atributo:title)",
    "src/app/(app-sidebar)/producao/veiculos/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/producao/veiculos/page.tsx:29 (propriedade:title)",
    "src/consts/nav.ts:275 (propriedade:title)"
@@ -19896,7 +19947,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveEmployee/index.tsx:49 (aviso)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/InactiveUser/index.tsx:64 (aviso)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/NewEmployee/index.tsx:75 (aviso)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:215 (aviso)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:225 (aviso)",
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/Actions/NewSubcategoryDialog/index.tsx:75 (aviso)",
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/NewCategoryDialog/index.tsx:92 (aviso)",
    "src/app/(app-sidebar)/configuracoes/vendas/perfil-de-vendedor/components/Actions/AddSeller/index.tsx:67 (aviso)",
@@ -20055,7 +20106,7 @@
  "configuracoes.empresaESistema.bleedPerSideMm": {
   "pt": "Sangria por lado (mm)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:403 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:413 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPrintSettings.tsx:108 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/PrintCountPanel.tsx:125 (jsx)"
   ]
@@ -20157,7 +20208,7 @@
  "configuracoes.empresaESistema.color": {
   "pt": "Cor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:263 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:273 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/VariationsModal.tsx:152 (jsx)",
    "src/app/(app-sidebar)/configuracoes/vendas/status-de-orcamento/components/NewItem/index.tsx:141 (atributo:label)",
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:835 (jsx)",
@@ -20170,7 +20221,7 @@
    "option"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:288 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:298 (atributo:aria-label)"
   ]
  },
  "configuracoes.empresaESistema.combinedPlannedVolume": {
@@ -20378,19 +20429,19 @@
  "configuracoes.empresaESistema.departmentColor": {
   "pt": "Cor do setor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:264 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:274 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.departmentPrinting": {
   "pt": "Impressão do setor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:384 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:394 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.departmentSaleAndHourlyRate": {
   "pt": "Venda e hora do setor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:317 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:327 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.departmentSettings": {
@@ -20403,7 +20454,7 @@
  "configuracoes.empresaESistema.departmentUpdated": {
   "pt": "Setor atualizado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:211 (aviso)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:221 (aviso)"
   ]
  },
  "configuracoes.empresaESistema.departments": {
@@ -20524,7 +20575,7 @@
  "configuracoes.empresaESistema.editDepartment": {
   "pt": "Editar setor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:235 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:245 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.editPosition": {
@@ -20833,13 +20884,13 @@
  "configuracoes.empresaESistema.hourlyCost": {
   "pt": "Custo da hora",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:346 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:356 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.hourlyPrice": {
   "pt": "Hora vendida",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:363 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:373 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.howItWorks": {
@@ -20866,13 +20917,13 @@
  "configuracoes.empresaESistema.howTheDepartmentSells": {
   "pt": "Como o setor vende",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:332 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:342 (atributo:label)"
   ]
  },
  "configuracoes.empresaESistema.howTheDepartmentSellsBy": {
   "pt": "Como o setor vende (por hora ou pela unidade do equipamento) e quanto vale a hora dele.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:319 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:329 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.iHaveMadeTheExports": {
@@ -20890,7 +20941,7 @@
  "configuracoes.empresaESistema.icon": {
   "pt": "Ícone",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:250 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:260 (atributo:label)"
   ]
  },
  "configuracoes.empresaESistema.instagram": {
@@ -21024,7 +21075,7 @@
  "configuracoes.empresaESistema.makeReadySheetsPerJob": {
   "pt": "Folhas de acerto por trabalho",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:421 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:431 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.manageIssuer": {
@@ -21457,7 +21508,7 @@
  "configuracoes.empresaESistema.otherColor": {
   "pt": "Outra cor",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:301 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:311 (atributo:aria-label)"
   ]
  },
  "configuracoes.empresaESistema.overdue": {
@@ -21533,25 +21584,25 @@
  "configuracoes.empresaESistema.perHour": {
   "pt": "Por hora",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:89 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:91 (propriedade:label)"
   ]
  },
  "configuracoes.empresaESistema.perKm": {
   "pt": "Por km",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:93 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:95 (propriedade:label)"
   ]
  },
  "configuracoes.empresaESistema.perMOfEquipmentOutput": {
   "pt": "Por m² do equipamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:90 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:92 (propriedade:label)"
   ]
  },
  "configuracoes.empresaESistema.perMeterOfEquipmentOutput": {
   "pt": "Por metro do equipamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:91 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:93 (propriedade:label)"
   ]
  },
  "configuracoes.empresaESistema.perMonth": {
@@ -21567,7 +21618,7 @@
  "configuracoes.empresaESistema.perUnitOfEquipmentOutput": {
   "pt": "Por unidade do equipamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:92 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:94 (propriedade:label)"
   ]
  },
  "configuracoes.empresaESistema.permissionsSaved": {
@@ -21721,7 +21772,7 @@
  "configuracoes.empresaESistema.processesAndBuildUpsUse": {
   "pt": "Os processos e as composições usam estes valores para o custo da mão de obra e do preparo, até a Base de custos calcular a hora de verdade.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:323 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:333 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.processesAreCreatedInRecords": {
@@ -22119,7 +22170,7 @@
  "configuracoes.empresaESistema.showInProductionSteps": {
   "pt": "Exibir nas etapas de produção",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:445 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:482 (atributo:label)"
   ]
  },
  "configuracoes.empresaESistema.signatureForQuotes": {
@@ -22377,13 +22428,13 @@
  "configuracoes.empresaESistema.theBleedAndMakeReady": {
   "pt": "A sangria e as folhas de acerto que valem para os produtos deste setor na contagem de folhas.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:386 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:396 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.theColorIdentifiesTheDepartment": {
   "pt": "A cor identifica o setor no gerenciador de produção, na ficha de produção, na Agenda de entrega e na composição do produto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:266 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:276 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.theCostIsRemovedFrom": {
@@ -22459,7 +22510,7 @@
  "configuracoes.empresaESistema.theProductAndTheQuote": {
   "pt": "O produto e o item do orçamento podem trocar. Vazio, vale a sangria de 2 mm por lado e nenhuma folha de acerto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:390 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:400 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.theSaleRemovesTheAsset": {
@@ -22765,6 +22816,12 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/components/AssetDialog/index.tsx:169 (propriedade:description)"
   ]
  },
+ "configuracoes.empresaESistema.whatThisDepartmentProduces": {
+  "pt": "O que este setor produz",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:450 (jsx)"
+  ]
+ },
  "configuracoes.empresaESistema.whenOffTheAssetEnters": {
   "pt": "Desligado, o bem entra no custo do setor só pela depreciação. É o caso de móveis e equipamentos que não produzem.",
   "usos": [
@@ -22864,7 +22921,7 @@
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:107 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionCalendar.tsx:108 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:126 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:326 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:328 (jsx)"
   ]
  },
  "configuracoes.empresaESistema.yieldsHowMany": {
@@ -28783,25 +28840,25 @@
  "configuracoes.producao.aNewBoardComesWith": {
   "pt": "O gerenciador novo vem com o expediente da empresa, que pode ser editado aqui. Em branco, vale o da empresa. O intervalo (almoço) é opcional.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:334 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:336 (jsx)"
   ]
  },
  "configuracoes.producao.addStep": {
   "pt": "Adicionar etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:920 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:922 (jsx)"
   ]
  },
  "configuracoes.producao.addVehicle": {
   "pt": "Cadastrar veículo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1020 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1057 (jsx)"
   ]
  },
  "configuracoes.producao.allTasks": {
   "pt": "Todas as tarefas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:498 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:500 (propriedade:label)"
   ]
  },
  "configuracoes.producao.automatic": {
@@ -28821,7 +28878,7 @@
   "pt": "Gerenciador",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:274 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:903 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:905 (atributo:label)"
   ]
  },
  "configuracoes.producao.boards": {
@@ -28848,7 +28905,13 @@
  "configuracoes.producao.cancelEditing": {
   "pt": "Cancelar edição",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:928 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:930 (jsx)"
+  ]
+ },
+ "configuracoes.producao.chooseTheFleetAsset": {
+  "pt": "Escolher o bem da frota",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1024 (atributo:placeholder)"
   ]
  },
  "configuracoes.producao.cleanupsDone": {
@@ -28860,13 +28923,13 @@
  "configuracoes.producao.clock": {
   "pt": "Relógio",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:724 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:726 (atributo:title)"
   ]
  },
  "configuracoes.producao.countsTowardTheDeliveryForecast": {
   "pt": "Entra na previsão da entrega. Sem espera, deixe zero.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:305 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:307 (jsx)"
   ]
  },
  "configuracoes.producao.deactivate": {
@@ -28886,7 +28949,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:556 (frase)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:558 (frase)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/InactivateProductDialog.tsx:90 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/InactivateMaterialDialog.tsx:87 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/InactivateProcessDialog.tsx:82 (jsx)"
@@ -28925,31 +28988,31 @@
  "configuracoes.producao.destinationBoardForTheSteps": {
   "pt": "Gerenciador de destino das etapas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:567 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:569 (atributo:label)"
   ]
  },
  "configuracoes.producao.eGFiorino": {
   "pt": "Ex.: Fiorino",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:991 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1006 (atributo:placeholder)"
   ]
  },
  "configuracoes.producao.eGPrintingMetalwork": {
   "pt": "Ex.: Impressão, Serralheria",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:183 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:185 (atributo:placeholder)"
   ]
  },
  "configuracoes.producao.eGTrimmingInspection": {
   "pt": "Ex.: Refile, Conferência",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:896 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:898 (atributo:placeholder)"
   ]
  },
  "configuracoes.producao.eGUvPrinting": {
   "pt": "Ex.: Impressão UV",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:663 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:665 (atributo:placeholder)"
   ]
  },
  "configuracoes.producao.eachDepartmentChoosesHowIt": {
@@ -28961,8 +29024,8 @@
  "configuracoes.producao.editStep": {
   "pt": "Editar etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:851 (atributo:tooltip)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:889 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:853 (atributo:tooltip)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:891 (jsx)"
   ]
  },
  "configuracoes.producao.fileS": {
@@ -28999,7 +29062,7 @@
  "configuracoes.producao.firstStepBoard": {
   "pt": "Gerenciador da primeira etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:676 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:678 (atributo:label)"
   ]
  },
  "configuracoes.producao.flow": {
@@ -29065,7 +29128,7 @@
  "configuracoes.producao.installationAndDeliveryTakeUp": {
   "pt": "A instalação e a entrega ocupam o veículo na agenda: horário, km e quem sai.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:982 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:997 (jsx)"
   ]
  },
  "configuracoes.producao.interval": {
@@ -29077,39 +29140,39 @@
  "configuracoes.producao.intervalBetweenTasks": {
   "pt": "Intervalo entre tarefas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:234 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:236 (atributo:title)"
   ]
  },
  "configuracoes.producao.intervalBetweenTasksMin": {
   "pt": "Intervalo entre tarefas (min)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:232 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:234 (jsx)"
   ]
  },
  "configuracoes.producao.itIsNotTheTask": {
   "pt": "Não é o preparo da tarefa. Quem já conta a troca dentro do preparo deixa zero.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:240 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:242 (jsx)"
   ]
  },
  "configuracoes.producao.licensePlate": {
   "pt": "Placa",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:689 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:997 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1013 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1012 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1008 (jsx)"
   ]
  },
  "configuracoes.producao.manager": {
   "pt": "· gerente",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:488 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:490 (jsx)"
   ]
  },
  "configuracoes.producao.managerWorkingHours": {
   "pt": "Expediente do gerenciador",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:327 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:329 (atributo:title)"
   ]
  },
  "configuracoes.producao.min": {
@@ -29130,37 +29193,43 @@
  "configuracoes.producao.moveDown": {
   "pt": "Descer",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:844 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:846 (atributo:tooltip)"
   ]
  },
  "configuracoes.producao.moveUp": {
   "pt": "Subir",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:837 (atributo:tooltip)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:839 (atributo:tooltip)"
   ]
  },
  "configuracoes.producao.newBoard": {
   "pt": "Novo gerenciador",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:168 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:170 (jsx)"
   ]
  },
  "configuracoes.producao.newStep": {
   "pt": "Nova etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:889 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:891 (jsx)"
   ]
  },
  "configuracoes.producao.newTaskType": {
   "pt": "Novo tipo de tarefa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:647 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:649 (jsx)"
   ]
  },
  "configuracoes.producao.newVehicle": {
   "pt": "Novo veículo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:979 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:994 (jsx)"
+  ]
+ },
+ "configuracoes.producao.noAsset": {
+  "pt": "Sem patrimônio",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:1026 (propriedade:label)"
   ]
  },
  "configuracoes.producao.noHolidaysYet": {
@@ -29206,7 +29275,7 @@
  "configuracoes.producao.onlyThoseAssignedToThem": {
   "pt": "Só as atribuídas a ele",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:499 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:501 (propriedade:label)"
   ]
  },
  "configuracoes.producao.overnightWhenTheSpaceUsed": {
@@ -29234,7 +29303,7 @@
  "configuracoes.producao.productionFlow": {
   "pt": "Fluxo de produção",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:218 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:220 (atributo:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2342 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2343 (atributo:title)"
   ]
@@ -29281,7 +29350,7 @@
  "configuracoes.producao.rescheduleAndWarn": {
   "pt": "Reagenda e avisa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:93 (propriedade:text)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:95 (propriedade:text)"
   ]
  },
  "configuracoes.producao.role": {
@@ -29301,7 +29370,7 @@
  "configuracoes.producao.saveStep": {
   "pt": "Salvar etapa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:920 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:922 (jsx)"
   ]
  },
  "configuracoes.producao.saveWorkingHours": {
@@ -29319,7 +29388,7 @@
  "configuracoes.producao.startingPausingAndTimingTasks": {
   "pt": "Iniciar, pausar e medir o tempo das tarefas são do plano Elite.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:291 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:293 (jsx)"
   ]
  },
  "configuracoes.producao.steps": {
@@ -29336,7 +29405,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:809 (frase)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:811 (frase)"
   ]
  },
  "configuracoes.producao.stepsThatGoThroughIt": {
@@ -29382,7 +29451,7 @@
   "pt": "º",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:493 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:828 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:830 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStage/ProductionStageItem.tsx:63 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:436 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:416 (jsx)"
@@ -29391,7 +29460,7 @@
  "configuracoes.producao.theBoardIsTheDepartment": {
   "pt": "O gerenciador é o setor na produção: a fila dele, o jeito de capturar o tempo e a cor, que vem do cadastro de setores.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:171 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:173 (jsx)"
   ]
  },
  "configuracoes.producao.theCompanyWorkingDaysAnd": {
@@ -29403,31 +29472,31 @@
  "configuracoes.producao.theMachineKeepsRunningDuring": {
   "pt": "A máquina segue trabalhando no intervalo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:383 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:385 (jsx)"
   ]
  },
  "configuracoes.producao.theOperatorSeesTheDepartment": {
   "pt": "O operador vê as tarefas do setor ou só as atribuídas a ele; o gerente de produção vê tudo, em qualquer gerenciador.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:473 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:475 (jsx)"
   ]
  },
  "configuracoes.producao.theStepsThatGoThrough": {
   "pt": "As etapas que passam por ele vão para outro gerenciador. Nenhuma tarefa fica sem lugar.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:558 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:560 (jsx)"
   ]
  },
  "configuracoes.producao.theTaskGoesThroughThe": {
   "pt": "A tarefa passa pelas etapas nesta ordem. Cada etapa pode estar num gerenciador diferente: a impressão na Impressão, o refile na Produção.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:811 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:813 (jsx)"
   ]
  },
  "configuracoes.producao.theTimeBetweenOneTask": {
   "pt": "O tempo entre uma tarefa e a seguinte no mesmo equipamento: troca de material, limpeza.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:236 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:238 (jsx)"
   ]
  },
  "configuracoes.producao.theTypeIsChosenIn": {
@@ -29445,7 +29514,7 @@
  "configuracoes.producao.theWaitAfterCompletionBefore": {
   "pt": "A espera depois de concluir antes da etapa seguinte começar, como a secagem da impressão antes do acabamento.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:302 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:304 (jsx)"
   ]
  },
  "configuracoes.producao.thereAreNoFilesFrom": {
@@ -29457,13 +29526,13 @@
  "configuracoes.producao.thisDepartmentSHoursThe": {
   "pt": "O horário deste setor. A fila prevê o início e o fim de cada trabalho por ele, e o que passar do fim fica em vermelho.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:329 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:331 (jsx)"
   ]
  },
  "configuracoes.producao.thisIsTheTaskType": {
   "pt": "É o &quot;tipo de tarefa&quot; das etapas da composição: diz por quais gerenciadores a tarefa passa e quando ela é liberada. A cor é a do setor de cada etapa.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:650 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:652 (jsx)"
   ]
  },
  "configuracoes.producao.thisWouldRemove": {
@@ -29482,15 +29551,15 @@
   "pt": "Controle de tempo",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:275 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:260 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:262 (jsx)"
   ]
  },
  "configuracoes.producao.tracksTime": {
   "pt": "Controla tempo",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:474 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:722 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:738 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:724 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:740 (atributo:aria-label)"
   ]
  },
  "configuracoes.producao.tuesday": {
@@ -29516,25 +29585,25 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:688 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1199 (atributo:label)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:394 (atributo:label)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:396 (atributo:label)"
   ]
  },
  "configuracoes.producao.waitAfterCompletion": {
   "pt": "Tempo após a conclusão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:300 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:302 (atributo:title)"
   ]
  },
  "configuracoes.producao.waitAfterCompletionMin": {
   "pt": "Tempo após a conclusão (min)",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:298 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:300 (jsx)"
   ]
  },
  "configuracoes.producao.warnOnly": {
   "pt": "Só avisa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:88 (propriedade:text)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:90 (propriedade:text)"
   ]
  },
  "configuracoes.producao.wednesday": {
@@ -29546,7 +29615,7 @@
  "configuracoes.producao.whenAJobRunsLate": {
   "pt": "Quando um trabalho atrasa",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:387 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:389 (jsx)"
   ]
  },
  "configuracoes.producao.whenAbove": {
@@ -29558,13 +29627,13 @@
  "configuracoes.producao.whenOnTheClockMeasures": {
   "pt": "Ligado, o relógio mede o tempo apontado nas tarefas deste tipo. É esse tempo que a produtividade compara com o vendido.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:726 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:728 (jsx)"
   ]
  },
  "configuracoes.producao.whenTheTaskIsReleased": {
   "pt": "Quando a tarefa é liberada",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:692 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:694 (jsx)"
   ]
  },
  "configuracoes.producao.whoHasAccess": {
@@ -29580,7 +29649,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:471 (frase)"
+   "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettingsDialogs.tsx:473 (frase)"
   ]
  },
  "configuracoes.producao.whoSeesWhatIsAn": {
@@ -31601,16 +31670,6 @@
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/NewProcess.tsx:348 (atributo:emptyMessage)"
   ]
  },
- "configuracoes.produtos.locacao": {
-  "pt": "Locação",
-  "marcas": [
-   "vitrine"
-  ],
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:55 (propriedade:label)",
-   "src/app/sandbox/locacao/page.tsx:82 (jsx)"
-  ]
- },
  "configuracoes.produtos.lookingForWhereItIs": {
   "pt": "Procurando onde ele é usado…",
   "usos": [
@@ -32258,7 +32317,8 @@
  "configuracoes.produtos.offset": {
   "pt": "Offset",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:49 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:49 (propriedade:label)",
+   "src/consts/productions.ts:15 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.onANewProductThe": {
@@ -37298,8 +37358,8 @@
   "usos": [
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:934 (jsx)",
    "src/app/(app-sidebar)/estoque/solicitacoes/components/Requests.tsx:655 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:817 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:818 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:812 (atributo:aria-label)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:813 (atributo:placeholder)"
   ]
  },
  "estoque.compras.check": {
@@ -37327,9 +37387,9 @@
   "pt": "Escolher",
   "usos": [
    "src/app/(app-sidebar)/estoque/compras/components/shared.tsx:309 (atributo:placeholder)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:395 (atributo:placeholder)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:406 (atributo:placeholder)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:957 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:397 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:408 (atributo:placeholder)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:952 (atributo:placeholder)"
   ]
  },
  "estoque.compras.chooseTheMaterial": {
@@ -40054,7 +40114,7 @@
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:716 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1075 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskSlots.tsx:305 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:946 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:941 (jsx)"
   ]
  },
  "financeiro.controleDeCaixa.descendingOrder": {
@@ -48666,7 +48726,7 @@
   "pt": "Próxima semana",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:137 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:144 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:146 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/FollowUp/ContactDialog.tsx:77 (propriedade:label)"
   ]
  },
@@ -48741,7 +48801,7 @@
   "pt": "Nenhum veículo cadastrado. Cadastre em Configurações › Produção › Veículos.",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/GeneralViews.tsx:230 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:152 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:154 (jsx)"
   ]
  },
  "producao.gerenciador.nonWorkingDay": {
@@ -48946,7 +49006,7 @@
   "pt": "Semana anterior",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:125 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:133 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:135 (jsx)"
   ]
  },
  "producao.gerenciador.productionBoard": {
@@ -49273,7 +49333,7 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:452 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:405 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/ficha/components/ProductionSheet.tsx:128 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:227 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:229 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx:660 (jsx)"
   ]
  },
@@ -49949,19 +50009,19 @@
  "producao.veiculos.addFreeStop": {
   "pt": "Acrescentar parada livre",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:559 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:561 (jsx)"
   ]
  },
  "producao.veiculos.bankNotaryPickUpMaterial": {
   "pt": "Banco, cartório, buscar material…",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:517 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:519 (atributo:placeholder)"
   ]
  },
  "producao.veiculos.cancelTheTrip": {
   "pt": "Cancelar a saída",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:827 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:822 (jsx)"
   ]
  },
  "producao.veiculos.canceled": {
@@ -49970,19 +50030,19 @@
    "cancelReason"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:648 (frase)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:650 (frase)"
   ]
  },
  "producao.veiculos.closeOnReturn": {
   "pt": "Fechar na volta",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:880 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:875 (jsx)"
   ]
  },
  "producao.veiculos.closeTheTrip": {
   "pt": "Fechar a saída",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:867 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:862 (jsx)"
   ]
  },
  "producao.veiculos.closed": {
@@ -49994,31 +50054,31 @@
  "producao.veiculos.customerAbsentRain": {
   "pt": "Cliente ausente, chuva…",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:703 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:705 (atributo:placeholder)"
   ]
  },
  "producao.veiculos.dayAndTime": {
   "pt": "Dia e hora",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1021 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1016 (jsx)"
   ]
  },
  "producao.veiculos.departed": {
   "pt": "Saiu",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:776 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:771 (jsx)"
   ]
  },
  "producao.veiculos.departure": {
   "pt": "Partida",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:415 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:417 (jsx)"
   ]
  },
  "producao.veiculos.destination": {
   "pt": "Destino",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:938 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:933 (jsx)",
    "src/components/ai/AiProposalCard.tsx:290 (jsx)"
   ]
  },
@@ -50028,26 +50088,32 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:674 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:676 (jsx)"
   ]
  },
  "producao.veiculos.done2": {
   "pt": "Feita",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:686 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:749 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:688 (propriedade:label)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1089 (jsx)"
   ]
  },
  "producao.veiculos.doneOrNot": {
   "pt": "Feita ou não?",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:684 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:686 (atributo:placeholder)"
+  ]
+ },
+ "producao.veiculos.doneWithPhoto": {
+  "pt": "Feita (com a foto)",
+  "usos": [
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1095 (jsx)"
   ]
  },
  "producao.veiculos.driver": {
   "pt": "Quem dirige",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:405 (atributo:label)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:407 (atributo:label)"
   ]
  },
  "producao.veiculos.drove": {
@@ -50056,92 +50122,92 @@
    "km"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:669 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:671 (jsx)"
   ]
  },
  "producao.veiculos.forWhenAFineArrives": {
   "pt": "Para quando chega uma multa: a placa, o dia e a hora.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1009 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1004 (jsx)"
   ]
  },
  "producao.veiculos.free": {
   "pt": "Livre ·",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:661 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:663 (jsx)"
   ]
  },
  "producao.veiculos.freeStop": {
   "pt": "Parada livre",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:507 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:509 (jsx)"
   ]
  },
  "producao.veiculos.kmDriven": {
   "pt": "Km rodado",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:797 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:792 (jsx)"
   ]
  },
  "producao.veiculos.kmForThisStop": {
   "pt": "Km desta parada",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:721 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:723 (jsx)"
   ]
  },
  "producao.veiculos.needATrip": {
   "pt": "Precisam de saída",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:214 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:216 (jsx)"
   ]
  },
  "producao.veiculos.newTrip": {
   "pt": "Nova saída",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:118 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:385 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:120 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:387 (jsx)"
   ]
  },
  "producao.veiculos.noOpenRequest": {
   "pt": "Nenhum pedido aberto.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:280 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:282 (jsx)"
   ]
  },
  "producao.veiculos.noTaskWithAReserved": {
   "pt": "Nenhuma tarefa com veículo reservado esperando saída.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:478 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:480 (jsx)"
   ]
  },
  "producao.veiculos.noTripsThisWeek": {
   "pt": "Sem saídas na semana.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:201 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:203 (jsx)"
   ]
  },
  "producao.veiculos.notClosed": {
   "pt": "Não fechada",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:185 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:187 (jsx)"
   ]
  },
  "producao.veiculos.notDone": {
   "pt": "Não feita",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:687 (propriedade:label)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:689 (propriedade:label)"
   ]
  },
  "producao.veiculos.nothingWaiting": {
   "pt": "Nada esperando.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:234 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:236 (jsx)"
   ]
  },
  "producao.veiculos.odometerAtDeparture": {
   "pt": "Odômetro na saída",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:760 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:755 (jsx)"
   ]
  },
  "producao.veiculos.odometerOnReturnLeftWith": {
@@ -50150,7 +50216,7 @@
    "odometerStart"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:785 (frase)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:780 (frase)"
   ]
  },
  "producao.veiculos.onRoute": {
@@ -50165,8 +50231,8 @@
    "km"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:225 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:472 (frase)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:227 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:474 (frase)"
   ]
  },
  "producao.veiculos.planned2": {
@@ -50175,62 +50241,62 @@
    "plannedKm"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:667 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:669 (jsx)"
   ]
  },
  "producao.veiculos.reasonForTheStop": {
   "pt": "Motivo da parada",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:516 (atributo:aria-label)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:518 (atributo:aria-label)"
   ]
  },
  "producao.veiculos.request": {
   "pt": "Pedir",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:988 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:983 (jsx)"
   ]
  },
  "producao.veiculos.requestAVehicle": {
   "pt": "Pedir veículo",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:113 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:921 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:115 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:916 (jsx)"
   ]
  },
  "producao.veiculos.requestingDepartment": {
   "pt": "Setor que pediu",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:530 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:532 (atributo:placeholder)"
   ]
  },
  "producao.veiculos.return": {
   "pt": "Volta",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:424 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:426 (jsx)"
   ]
  },
  "producao.veiculos.scheduleTrip": {
   "pt": "Agendar saída",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:572 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:574 (jsx)"
   ]
  },
  "producao.veiculos.stopS": {
   "pt": "parada(s)",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:194 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:196 (jsx)"
   ]
  },
  "producao.veiculos.tasksWithAReservedVehicle": {
   "pt": "As tarefas com veículo reservado que ainda não estão numa saída, e as paradas não feitas.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:216 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:218 (jsx)"
   ]
  },
  "producao.veiculos.team": {
   "pt": "Equipe",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:436 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:438 (jsx)"
   ]
  },
  "producao.veiculos.team2": {
@@ -50239,7 +50305,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:638 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:640 (jsx)"
   ]
  },
  "producao.veiculos.texto": {
@@ -50248,7 +50314,7 @@
    "plate"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:165 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:167 (jsx)"
   ]
  },
  "producao.veiculos.texto2": {
@@ -50257,7 +50323,7 @@
    "km"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:195 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:197 (jsx)"
   ]
  },
  "producao.veiculos.texto3": {
@@ -50266,7 +50332,7 @@
    "sectorName"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:259 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:261 (jsx)"
   ]
  },
  "producao.veiculos.texto4": {
@@ -50276,7 +50342,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:398 (propriedade:label)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:400 (propriedade:label)"
   ]
  },
  "producao.veiculos.texto5": {
@@ -50285,26 +50351,26 @@
    "address"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:511 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:663 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:513 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:665 (jsx)"
   ]
  },
  "producao.veiculos.theKmIsSplitAmong": {
   "pt": "O km é repartido entre as paradas de trabalho pelo previsto; as livres ficam com zero. Ajuste antes de fechar, se precisar.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:807 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:802 (jsx)"
   ]
  },
  "producao.veiculos.thePlannedReturnHasPassed": {
   "pt": "A volta prevista já passou: feche a saída para o veículo sair de novo.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:643 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:645 (jsx)"
   ]
  },
  "producao.veiculos.theVehicleWhoGoesDeparture": {
   "pt": "O veículo, quem vai, a partida, a volta e as paradas.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:387 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:389 (jsx)"
   ]
  },
  "producao.veiculos.trip": {
@@ -50313,7 +50379,7 @@
    "number"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:177 (frase)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:179 (frase)"
   ]
  },
  "producao.veiculos.trip2": {
@@ -50323,20 +50389,26 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:626 (frase)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:628 (frase)"
   ]
  },
  "producao.veiculos.tripsThisWeek": {
   "pt": "Saídas da semana",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:126 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:128 (jsx)"
+  ]
+ },
+ "producao.veiculos.uploadingThePhoto": {
+  "pt": "Enviando a foto…",
+  "usos": [
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1095 (jsx)"
   ]
  },
  "producao.veiculos.vehicleRequests": {
   "pt": "Pedidos de veículo",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:240 (jsx)",
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:486 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:242 (jsx)",
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:488 (jsx)"
   ]
  },
  "producao.veiculos.vehicleTripsWithStopsThe": {
@@ -50348,37 +50420,37 @@
  "producao.veiculos.visitACustomerBankPick": {
   "pt": "Visitar cliente, banco, buscar material…",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:932 (atributo:placeholder)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:927 (atributo:placeholder)"
   ]
  },
  "producao.veiculos.whatFor": {
   "pt": "Para quê",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:929 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:924 (jsx)"
   ]
  },
  "producao.veiculos.whoHadTheVehicle": {
   "pt": "Quem estava com o veículo?",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1007 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1002 (jsx)"
   ]
  },
  "producao.veiculos.whoeverManagesTheFleetSchedules": {
   "pt": "Quem cuida da frota agenda, encaixando numa saída ou criando uma nova.",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:923 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:918 (jsx)"
   ]
  },
  "producao.veiculos.whyItWasNotDone": {
   "pt": "Por que não foi feita",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:702 (atributo:aria-label)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:704 (atributo:aria-label)"
   ]
  },
  "producao.veiculos.workStops": {
   "pt": "Paradas de trabalho",
   "usos": [
-   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:458 (jsx)"
+   "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:460 (jsx)"
   ]
  },
  "producao.veiculos.youDoNotHavePermission": {
@@ -60797,6 +60869,12 @@
    "src/consts/quotations.ts:7 (propriedade:text)"
   ]
  },
+ "vendas.orcamentos.driven": {
+  "pt": "· Rodado:",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:540 (jsx)"
+  ]
+ },
  "vendas.orcamentos.duplicateQuote": {
   "pt": "Duplicar orçamento",
   "usos": [
@@ -61422,6 +61500,39 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:327 (jsx)"
+  ]
+ },
+ "vendas.orcamentos.km": {
+  "pt": "{planned} km",
+  "vars": [
+   "planned"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:537 (frase)"
+  ]
+ },
+ "vendas.orcamentos.km2": {
+  "pt": "{driven} km",
+  "vars": [
+   "driven"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:541 (frase)"
+  ]
+ },
+ "vendas.orcamentos.kmDriven": {
+  "pt": "{driven} km rodado",
+  "vars": [
+   "driven"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:552 (jsx)"
+  ]
+ },
+ "vendas.orcamentos.kmPlanned": {
+  "pt": "km previsto,",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:549 (jsx)"
   ]
  },
  "vendas.orcamentos.largeImage": {
@@ -62969,6 +63080,18 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderItems.tsx:143 (jsx)"
   ]
  },
+ "vendas.orcamentos.trip": {
+  "pt": "Saída #",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:548 (jsx)"
+  ]
+ },
+ "vendas.orcamentos.tripNotClosed": {
+  "pt": "saída não fechada",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:551 (jsx)"
+  ]
+ },
  "vendas.orcamentos.tryAnotherNameOrAnother": {
   "pt": "Tente outro nome ou outro setor.",
   "usos": [
@@ -63078,6 +63201,12 @@
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:753 (jsx)",
    "src/components/common/PrintQuotation/GeneratePdf.tsx:474 (jsx)"
+  ]
+ },
+ "vendas.orcamentos.vehicleKm": {
+  "pt": "Km do veículo",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:532 (jsx)"
   ]
  },
  "vendas.orcamentos.viewInFinance": {
@@ -63270,7 +63399,7 @@
  "vendas.ordensDeServico.approveAndRedo": {
   "pt": "Aprovar e refazer",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:109 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:137 (jsx)"
   ]
  },
  "vendas.ordensDeServico.askedToRedoThisWork": {
@@ -63280,7 +63409,7 @@
    "reason"
   ],
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:97 (frase)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:125 (frase)"
   ]
  },
  "vendas.ordensDeServico.attentionInstallmentsNotCanceled": {
@@ -63309,13 +63438,13 @@
  "vendas.ordensDeServico.chargeTheCustomer": {
   "pt": "(cobrar do cliente)",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:147 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:179 (jsx)"
   ]
  },
  "vendas.ordensDeServico.chargeTheCustomer2": {
   "pt": "Cobrar do cliente",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:182 (propriedade:label)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:214 (propriedade:label)"
   ]
  },
  "vendas.ordensDeServico.chaveDeAcesso": {
@@ -63345,13 +63474,13 @@
  "vendas.ordensDeServico.companyLoss": {
   "pt": "(perda da empresa)",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:148 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:180 (jsx)"
   ]
  },
  "vendas.ordensDeServico.companyLossInternalError": {
   "pt": "Perda da empresa (erro interno)",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:183 (propriedade:label)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:215 (propriedade:label)"
   ]
  },
  "vendas.ordensDeServico.completed": {
@@ -63388,7 +63517,7 @@
  "vendas.ordensDeServico.customerChangedTheQuantity": {
   "pt": "Cliente alterou a quantidade…",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:173 (atributo:placeholder)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:205 (atributo:placeholder)"
   ]
  },
  "vendas.ordensDeServico.customerCopy": {
@@ -63442,6 +63571,15 @@
   "pt": "Apagar arquivo",
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderFiles.tsx:195 (atributo:label)"
+  ]
+ },
+ "vendas.ordensDeServico.department": {
+  "pt": "Setor: {name}",
+  "vars": [
+   "name"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:77 (propriedade:label)"
   ]
  },
  "vendas.ordensDeServico.descricaoDetalhadaDoServicoPrestado": {
@@ -63618,6 +63756,12 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/Financial.tsx:66 (jsx)"
   ]
  },
+ "vendas.ordensDeServico.noOneCustomerRequest": {
+  "pt": "Ninguém (pedido do cliente)",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:223 (atributo:placeholder)"
+  ]
+ },
  "vendas.ordensDeServico.noPaymentsRecorded": {
   "pt": "Nenhum pagamento registrado",
   "usos": [
@@ -63658,7 +63802,7 @@
  "vendas.ordensDeServico.openTheNewWorkOrder": {
   "pt": "Abrir a O.S. nova",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:140 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:172 (jsx)"
   ]
  },
  "vendas.ordensDeServico.pdfNfsE": {
@@ -63696,21 +63840,21 @@
  "vendas.ordensDeServico.reasonForRejection": {
   "pt": "Motivo da recusa",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:112 (atributo:aria-label)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:113 (atributo:placeholder)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:140 (atributo:aria-label)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:141 (atributo:placeholder)"
   ]
  },
  "vendas.ordensDeServico.redo": {
   "pt": "Refazer",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:206 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:250 (jsx)"
   ]
  },
  "vendas.ordensDeServico.redoTheWorkOrder": {
   "pt": "Refazer a O.S.",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:89 (atributo:title)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:161 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:117 (atributo:title)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:193 (jsx)"
   ]
  },
  "vendas.ordensDeServico.registerTheCancellationReasons": {
@@ -63722,7 +63866,7 @@
  "vendas.ordensDeServico.reject": {
   "pt": "Recusar",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:125 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:153 (jsx)"
   ]
  },
  "vendas.ordensDeServico.removedInTheCleanupOf": {
@@ -63738,6 +63882,15 @@
   "pt": "Reprocessar aprovação",
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/ReprocessApproval.tsx:78 (atributo:title)"
+  ]
+ },
+ "vendas.ordensDeServico.responsible": {
+  "pt": "; responsável: {responsibleName}",
+  "vars": [
+   "responsibleName"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:165 (jsx)"
   ]
  },
  "vendas.ordensDeServico.saleCanceled": {
@@ -63771,7 +63924,7 @@
  "vendas.ordensDeServico.surplus": {
   "pt": "Excedente",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:145 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:177 (jsx)"
   ]
  },
  "vendas.ordensDeServico.theApprovalWasAlreadyComplete": {
@@ -63783,13 +63936,13 @@
  "vendas.ordensDeServico.theCurrentWorkOrderIs": {
   "pt": "A O.S. atual é cancelada e a nova nasce como cópia em digitação, para editar o que mudou. O que já foi produzido passa para a nova pelo item; nada é apagado.",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:163 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:195 (jsx)"
   ]
  },
  "vendas.ordensDeServico.thisWorkOrderWasRedone": {
   "pt": "Esta O.S. foi refeita (",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:135 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:163 (jsx)"
   ]
  },
  "vendas.ordensDeServico.toCancel": {
@@ -63840,13 +63993,19 @@
  "vendas.ordensDeServico.whatWasAlreadyProducedAnd": {
   "pt": "O que já foi produzido e não cabe na nova",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:180 (atributo:label)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:212 (atributo:label)"
   ]
  },
  "vendas.ordensDeServico.whatWasPaidStaysOn": {
   "pt": "O que foi pago fica na O.S. cancelada; levar para a nova é feito à mão.",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:189 (jsx)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:229 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.whoCausedTheRedoOptional": {
+  "pt": "Quem causou a refação (opcional)",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:222 (atributo:label)"
   ]
  },
  "vendas.ordensDeServico.woFiles": {

@@ -20690,5 +20690,97 @@
   "274ae2147e": {
     "es": "Rehacer",
     "en": "Redo"
+  },
+  "d1cb6ee400": {
+    "es": "Qué produce este sector",
+    "en": "What this department produces"
+  },
+  "cb362d9d22": {
+    "es": "Elegir el bien de la flota",
+    "en": "Choose the fleet asset"
+  },
+  "afdb9d39c0": {
+    "es": "Sin patrimonio",
+    "en": "No asset"
+  },
+  "44ceaab523": {
+    "es": "Enviando la foto…",
+    "en": "Uploading the photo…"
+  },
+  "14bc070218": {
+    "es": "Hecha (con la foto)",
+    "en": "Done (with photo)"
+  },
+  "a98c28b01b": {
+    "es": "Km del vehículo",
+    "en": "Vehicle km"
+  },
+  "74b069f8b0": {
+    "es": "{planned} km",
+    "en": "{planned} km"
+  },
+  "9a57e2ad73": {
+    "es": "· Recorrido:",
+    "en": "· Driven:"
+  },
+  "e5780c81f0": {
+    "es": "{driven} km",
+    "en": "{driven} km"
+  },
+  "44fbe309b9": {
+    "es": "Salida #",
+    "en": "Trip #"
+  },
+  "0713017e46": {
+    "es": "km previsto,",
+    "en": "km planned,"
+  },
+  "5ce89ca79c": {
+    "es": "salida no cerrada",
+    "en": "trip not closed"
+  },
+  "6c244d9652": {
+    "es": "{driven} km recorrido",
+    "en": "{driven} km driven"
+  },
+  "a4b61225fe": {
+    "es": "Sector: {name}",
+    "en": "Department: {name}"
+  },
+  "b625d6af99": {
+    "es": "; responsable: {responsibleName}",
+    "en": "; responsible: {responsibleName}"
+  },
+  "bec7b11a9c": {
+    "es": "Quién causó el rehacer (opcional)",
+    "en": "Who caused the redo (optional)"
+  },
+  "3210855dd9": {
+    "es": "Nadie (pedido del cliente)",
+    "en": "No one (customer request)"
+  },
+  "1f023e7546": {
+    "es": "Impresión solvente",
+    "en": "Solvent printing"
+  },
+  "50d84bb3fc": {
+    "es": "Impresión UV",
+    "en": "UV printing"
+  },
+  "97513ea5e7": {
+    "es": "Sublimación",
+    "en": "Sublimation"
+  },
+  "c021da9899": {
+    "es": "Corte",
+    "en": "Cutting"
+  },
+  "a69384aa7c": {
+    "es": "Regalos promocionales",
+    "en": "Promotional gifts"
+  },
+  "7ce9896033": {
+    "es": "Imprenta rápida",
+    "en": "Quick print"
   }
 }

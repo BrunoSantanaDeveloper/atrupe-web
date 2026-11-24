@@ -383,6 +383,8 @@
     "whoHadTheVehicle": "Who had the vehicle?",
     "forWhenAFineArrives": "For when a fine arrives: the plate, the day and the time.",
     "dayAndTime": "Day and time",
+    "uploadingThePhoto": "Uploading the photo…",
+    "doneWithPhoto": "Done (with photo)",
     "youDoNotHavePermission": "You do not have permission to view vehicles.",
     "vehicleTripsWithStopsThe": "Vehicle trips with stops, the km of each job and who had the vehicle.",
     "onRoute": "On route",

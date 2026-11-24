@@ -384,6 +384,8 @@
     "whoHadTheVehicle": "Quem estava com o veículo?",
     "forWhenAFineArrives": "Para quando chega uma multa: a placa, o dia e a hora.",
     "dayAndTime": "Dia e hora",
+    "uploadingThePhoto": "Enviando a foto…",
+    "doneWithPhoto": "Feita (com a foto)",
     "youDoNotHavePermission": "Você não tem permissão para visualizar os veículos.",
     "vehicleTripsWithStopsThe": "As saídas dos veículos com as paradas, o km de cada trabalho e quem estava com o veículo.",
     "onRoute": "Em rota",

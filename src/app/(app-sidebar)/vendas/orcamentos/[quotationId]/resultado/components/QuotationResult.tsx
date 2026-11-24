@@ -524,6 +524,38 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Km do veículo: o previsto na venda e o rodado nas saídas fechadas */}
+        {result.vehicleKm && (
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle>Km do veículo</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 px-6 pb-5 text-sm">
+              <p className="text-gray-700">
+                Previsto:{' '}
+                <span className="tabular-nums text-gray-900">
+                  {result.vehicleKm.planned} km
+                </span>{' '}
+                · Rodado:{' '}
+                <span className="tabular-nums text-gray-900">
+                  {result.vehicleKm.driven} km
+                </span>
+              </p>
+              <ul className="space-y-1 text-gray">
+                {result.vehicleKm.stops.map((stop, index) => (
+                  <li key={index}>
+                    Saída #{stop.trip} · {stop.description}:{' '}
+                    {stop.planned ?? '—'} km previsto,{' '}
+                    {stop.driven === null
+                      ? 'saída não fechada'
+                      : `${stop.driven} km rodado`}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </TooltipProvider>
   )

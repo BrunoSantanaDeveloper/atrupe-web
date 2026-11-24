@@ -7,6 +7,8 @@
 // React
 import { InfoHint } from '@/components/common/InfoHint'
 import { useEffect, useState } from 'react'
+import { getAssets } from '@/actions/asset'
+import { useQuery } from '@tanstack/react-query'
 
 // UI
 import {
@@ -958,16 +960,29 @@ export function VehicleDialog({
   open: boolean
   vehicle?: Vehicle
   onOpenChange: (open: boolean) => void
-  onSave: (values: { name: string; plate: string }) => void | Promise<unknown>
+  onSave: (values: {
+    name: string
+    plate: string
+    assetId?: string | null
+  }) => void | Promise<unknown>
 }) {
   const { pending, track } = usePending()
   const [name, setName] = useState('')
   const [plate, setPlate] = useState('')
+  // O veículo é o patrimônio (VE-1): o bem da frota, com o custo por km e
+  // a manutenção
+  const [assetId, setAssetId] = useState('')
+  const { data: assets } = useQuery({
+    queryKey: ['assets-vehicles'],
+    queryFn: () => getAssets({ filters: { kind: 'VEHICLES' } }),
+    enabled: open,
+  })
 
   useEffect(() => {
     if (open) {
       setName(vehicle?.name || '')
       setPlate(vehicle?.plate || '')
+      setAssetId(vehicle?.assetId || '')
     }
   }, [open, vehicle])
 
@@ -1002,6 +1017,24 @@ export function VehicleDialog({
               onChange={(event) => setPlate(event.target.value)}
             />
           </div>
+          <div className="sm:col-span-2">
+            <SelectBasic
+              name="vehicle-asset"
+              label="Patrimônio"
+              placeholder="Escolher o bem da frota"
+              options={[
+                { value: 'none', label: 'Sem patrimônio' },
+                ...(assets?.data || []).map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                })),
+              ]}
+              value={assetId || 'none'}
+              onChange={(value) =>
+                setAssetId(value === 'none' ? '' : String(value))
+              }
+            />
+          </div>
         </DialogBody>
         <DialogFooter>
           <Button
@@ -1015,7 +1048,11 @@ export function VehicleDialog({
             type="button"
             disabled={!name.trim()}
             isLoading={!!pending}
-            onClick={() => track('save', () => onSave({ name, plate }))}
+            onClick={() =>
+              track('save', () =>
+                onSave({ name, plate, assetId: assetId || null }),
+              )
+            }
           >
             {vehicle ? 'Salvar' : 'Cadastrar veículo'}
           </Button>

@@ -18,6 +18,7 @@ export type OrderRedo = {
   needsApproval: boolean
   produced: { tasks: number; stages: number; stockMovements: number } | null
   requestedByName: string
+  responsibleName: string | null
   approvedByName: string | null
   rejectReason: string | null
   carried: number
@@ -40,7 +41,12 @@ export const getOrderRedos = async (orderId: string) =>
 
 export const requestOrderRedo = async (
   orderId: string,
-  values: { reason: string; excess: 'CLIENT' | 'COMPANY' },
+  values: {
+    reason: string
+    excess: 'CLIENT' | 'COMPANY'
+    responsibleKind?: 'PERSON' | 'SECTOR'
+    responsibleId?: string
+  },
 ) =>
   result<OrderRedo>(
     await createItemNew({

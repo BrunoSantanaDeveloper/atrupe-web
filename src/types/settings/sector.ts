@@ -17,6 +17,8 @@ export type ListSectorDataType = {
   // a permissão de valores
   hourCost?: number | null
   hourSale?: number | null
+  // O que o setor produz (PS-1): as chaves de src/consts/productions.ts
+  productions?: string[]
 }
 
 export type ListSectorType = {
