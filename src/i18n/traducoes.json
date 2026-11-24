@@ -20862,5 +20862,21 @@
   "111491898b": {
     "es": "disponible · arrastre",
     "en": "available · drag"
+  },
+  "77b70c3e48": {
+    "es": "Pausa",
+    "en": "Pause"
+  },
+  "abed50d9f2": {
+    "es": "{name} · {valor} desde {since}{valor2}",
+    "en": "{name} · {valor} since {since}{valor2}"
+  },
+  "e13edcd39e": {
+    "es": "{name} · disponible: arrástrelo a una tarea",
+    "en": "{name} · available: drag onto a task"
+  },
+  "9b3adc8c32": {
+    "es": "Detener el reloj de {name}",
+    "en": "Stop {name}'s clock"
   }
 }

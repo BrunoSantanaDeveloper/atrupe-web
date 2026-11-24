@@ -113,6 +113,8 @@ export type Collaborator = {
   name: string
   // E-mail do usuário do sistema, para casar com a sessão
   email: string | null
+  // A foto do cadastro (24/11/2026): a bolinha no gerenciador
+  avatarUrl?: string | null
   role: CollaboratorRole
   // Trabalhando agora: em qual tarefa e desde quando (GP-17)
   working: { taskId: string; since: string } | null

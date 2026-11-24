@@ -66,8 +66,8 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import {
   IconPlayerPlay,
-  IconPlayerStop,
   IconPlayerPause,
+  IconX,
   IconCircleCheck,
   IconCalendarPlus,
 } from '@tabler/icons-react'
@@ -242,34 +242,41 @@ export function SectorScreen({ id }: { id: string }) {
             onClick={() => act(item, 'START', 'Tarefa iniciada')}
           >
             <Icon icon={IconPlayerPlay} size="sm" />
-            Iniciar
+            Play
           </Button>
         )}
-        {item.status === 'IN_PROGRESS' && (
+        {/* Iniciar e pausar num botão só (24/11/2026): quem está na tarefa
+            pausa; quem não está liga o relógio; pausada, retoma */}
+        {item.status === 'IN_PROGRESS' &&
+          (working ? (
+            <Button
+              size="sm"
+              variant="neutralOutline"
+              onClick={() => act(item, 'PAUSE', 'Tarefa pausada')}
+            >
+              <Icon icon={IconPlayerPause} size="sm" />
+              Pausa
+            </Button>
+          ) : (
+            <Button size="sm" onClick={() => clock(item)}>
+              <Icon icon={IconPlayerPlay} size="sm" />
+              Play
+            </Button>
+          ))}
+        {item.status === 'PAUSED' && (
           <Button
             size="sm"
-            variant={working ? 'error' : 'neutralOutline'}
-            onClick={() => clock(item)}
-          >
-            <Icon icon={working ? IconPlayerStop : IconPlayerPlay} size="sm" />
-            {working ? 'Parar relógio' : 'Iniciar relógio'}
-          </Button>
-        )}
-        {item.status === 'IN_PROGRESS' && (
-          <Button
-            size="sm"
-            variant="neutralOutline"
-            onClick={() => act(item, 'PAUSE', 'Tarefa pausada')}
-          >
-            <Icon icon={IconPlayerPause} size="sm" />
-            Pausar
-          </Button>
-        )}
-        {(item.status === 'PAUSED' || item.status === 'PENDING') && (
-          <Button
-            size="sm"
-            variant="neutralOutline"
             onClick={() => act(item, 'RESUME', 'Tarefa retomada')}
+          >
+            <Icon icon={IconPlayerPlay} size="sm" />
+            Play
+          </Button>
+        )}
+        {item.status === 'PENDING' && (
+          <Button
+            size="sm"
+            variant="neutralOutline"
+            onClick={() => act(item, 'RESUME', 'Pendência resolvida')}
           >
             <Icon icon={IconPlayerPlay} size="sm" />
             Continuar
@@ -595,70 +602,55 @@ export function SectorScreen({ id }: { id: string }) {
                   const current = board.tasks.find(
                     (item) => item.id === worker.working?.taskId,
                   )
+                  const since = worker.working
+                    ? new Date(worker.working.since).toLocaleTimeString(
+                        'pt-BR',
+                        { hour: '2-digit', minute: '2-digit' },
+                      )
+                    : ''
+                  // Uma bolinha com a foto (24/11/2026): verde trabalhando,
+                  // o resto no tooltip; arraste a bolinha para a tarefa
                   return (
                     <div
                       key={worker.id}
                       draggable={!worker.working}
                       onDragStart={() => setDragging(worker.id)}
                       onDragEnd={() => setDragging(null)}
-                      className={cn(
-                        'w-full rounded-lg border px-3 py-1 sm:w-auto sm:max-w-[460px]',
+                      title={
                         worker.working
-                          ? 'border-success-200 bg-success-50'
-                          : 'cursor-grab border-gray-200 bg-white',
+                          ? `${worker.name} · ${current ? `${current.code} ${current.stageName}` : 'outra tarefa'} desde ${since}${current ? ` · ${duration(current.actualMinutes)} apontado` : ''}`
+                          : `${worker.name} · disponível: arraste para uma tarefa`
+                      }
+                      className={cn(
+                        'relative rounded-full p-0.5',
+                        worker.working
+                          ? 'ring-2 ring-success-500'
+                          : 'cursor-grab ring-1 ring-gray-200 hover:ring-brand-400',
                       )}
                     >
-                      {/* Uma linha só (24/11/2026): metade da altura */}
-                      <div className="flex items-center gap-2 text-sm">
-                        <PersonAvatar name={worker.name} size="sm" />
-                        <span className="shrink-0 font-medium text-gray-800">
-                          {worker.name}
-                          {worker.onlyAssigned && (
-                            <span className="font-normal text-gray">
-                              {' '}
-                              · só as dele
-                            </span>
-                          )}
-                        </span>
-                        {worker.working ? (
-                          <>
-                            <span
-                              className="truncate text-xs text-success-700"
-                              title={
-                                current
-                                  ? `${current.code} ${current.stageName} · ${duration(current.actualMinutes)} apontado`
-                                  : undefined
-                              }
-                            >
-                              {current ? current.code : 'outra tarefa'} desde{' '}
-                              {new Date(
-                                worker.working.since,
-                              ).toLocaleTimeString('pt-BR', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })}
-                            </span>
-                            <button
-                              type="button"
-                              className="ml-auto shrink-0 text-xs font-medium text-error-700 hover:underline"
-                              onClick={async () => {
-                                await stopWork({
-                                  id: worker.working?.taskId,
-                                  collaboratorId: worker.id,
-                                })
-                                toast.success('Relógio parado')
-                                await refresh()
-                              }}
-                            >
-                              Parar
-                            </button>
-                          </>
-                        ) : (
-                          <span className="truncate text-xs text-gray">
-                            disponível · arraste
-                          </span>
-                        )}
-                      </div>
+                      <PersonAvatar
+                        name={worker.name}
+                        imageUrl={worker.avatarUrl}
+                      />
+                      {worker.working && (
+                        <button
+                          type="button"
+                          aria-label={`Parar o relógio de ${worker.name}`}
+                          title="Parar"
+                          className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-error-600 text-white hover:bg-error-700"
+                          onClick={async () => {
+                            await stopWork({
+                              id: worker.working?.taskId,
+                              collaboratorId: worker.id,
+                            })
+                            toast.success('Relógio parado')
+                            await refresh()
+                          }}
+                        >
+                          {/* eslint-disable-next-line no-restricted-syntax -- marca de controle no canto da bolinha, menor que a escala */}
+                          <IconX className="size-3" aria-hidden />
+                        </button>
+                      )}
                     </div>
                   )
                 })}
