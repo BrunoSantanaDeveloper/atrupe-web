@@ -72,7 +72,7 @@
     "openTheTaskToSchedule": "Abra la tarea para agendar: día, inicio y duración. La preparación ocupa la máquina junto con la producción.",
     "oneStepHasAnAlert": "Una etapa tiene alerta en la cadena de producción.",
     "stepsHaveAnAlertIn": "{alerts} etapas tienen alerta en la cadena de producción.",
-    "theWarningGoesAwayWhen": "El aviso desaparece cuando la etapa anterior termine o la reprogramación haga que la cadena quepa en el plazo. Nada se reprograma solo.",
+    "theWarningGoesAwayWhen": "El aviso desaparece cuando la etapa anterior termina o la agenda vuelve a caber en el plazo: a mano, o sola con la agenda en vivo (Configuración › Producción › Jornada).",
     "nothingScheduledInThisPeriod": "Nada agendado en este período.",
     "noVehiclesRegisteredAddOne": "Ningún vehículo registrado. Regístrelo en Configuración › Producción › Vehículos.",
     "noTripsScheduledInThis": "Sin salidas agendadas en este período.",

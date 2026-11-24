@@ -20878,5 +20878,9 @@
   "9b3adc8c32": {
     "es": "Detener el reloj de {name}",
     "en": "Stop {name}'s clock"
+  },
+  "182e2cedf1": {
+    "es": "El aviso desaparece cuando la etapa anterior termina o la agenda vuelve a caber en el plazo: a mano, o sola con la agenda en vivo (Configuración › Producción › Jornada).",
+    "en": "The warning goes away when the previous stage finishes or the schedule fits the deadline again: by hand, or on its own with the live schedule (Settings › Production › Working hours)."
   }
 }

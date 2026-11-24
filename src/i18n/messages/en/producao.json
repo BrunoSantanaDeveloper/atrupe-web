@@ -72,7 +72,7 @@
     "openTheTaskToSchedule": "Open the task to schedule it: day, start and duration. Setup occupies the machine along with production.",
     "oneStepHasAnAlert": "One step has an alert in the production chain.",
     "stepsHaveAnAlertIn": "{alerts} steps have an alert in the production chain.",
-    "theWarningGoesAwayWhen": "The warning goes away when the previous step finishes or rescheduling makes the chain fit the deadline. Nothing is rescheduled automatically.",
+    "theWarningGoesAwayWhen": "The warning goes away when the previous stage finishes or the schedule fits the deadline again: by hand, or on its own with the live schedule (Settings › Production › Working hours).",
     "nothingScheduledInThisPeriod": "Nothing scheduled in this period.",
     "noVehiclesRegisteredAddOne": "No vehicles registered. Add one in Settings › Production › Vehicles.",
     "noTripsScheduledInThis": "No trips scheduled in this period.",

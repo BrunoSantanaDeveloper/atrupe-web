@@ -67,11 +67,12 @@ export const taskStatusObj: { [key in TaskStatus]: BadgeType } = {
 }
 
 // As ações de cada estado (GP-28)
+// Os mesmos nomes da fila (24/11/2026): Play, Pausa e Concluir
 export const taskActionObj: { [key in TaskAction]: string } = {
-  START: 'Iniciar',
-  PAUSE: 'Pausar',
+  START: 'Play',
+  PAUSE: 'Pausa',
   RESUME: 'Continuar',
-  FINISH: 'Finalizar',
+  FINISH: 'Concluir',
   CANCEL: 'Cancelar',
   RESTART: 'Reiniciar',
 }

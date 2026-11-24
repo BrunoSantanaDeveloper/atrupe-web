@@ -157,8 +157,9 @@ export function AgendaView({
           {alerts === 1
             ? 'Uma etapa está com alerta na cadeia de produção.'
             : `${alerts} etapas estão com alerta na cadeia de produção.`}{' '}
-          O aviso some quando a etapa anterior terminar ou o reagendamento fizer
-          a cadeia caber no prazo. Nada é remarcado sozinho.
+          O aviso some quando a etapa anterior terminar ou a agenda voltar a
+          caber no prazo: à mão, ou sozinha com a agenda viva (Configurações ›
+          Produção › Expediente).
         </p>
       )}
       {!days.length && (
