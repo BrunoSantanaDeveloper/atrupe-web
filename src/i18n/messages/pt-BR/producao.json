@@ -51,6 +51,9 @@
   },
   "gerenciador": {
     "sectorManager": "Gerenciador do setor",
+    "youDonTHavePermission": "Você não tem permissão para visualizar a produção.",
+    "productionBoard": "Gerenciador de produção",
+    "eachDepartmentSQueueWith": "A fila de cada setor, com agenda, quem está trabalhando e o tempo medido.",
     "m": "{code} · {material}{valor} · {valor2} × {valor3} m",
     "logPrintRun": "Apontar impressão",
     "jobsInASinglePrint": "{valor} trabalhos numa impressão só. O comprimento usado, com o refugo, é dividido pela área de cada um.",
@@ -89,7 +92,6 @@
     "schedule": "Agenda",
     "teamMemberSchedule": "Agenda do colaborador",
     "occupancy": "Ocupação",
-    "productionBoard": "Gerenciador de produção",
     "texto1OpenTask": "1 tarefa aberta",
     "openTasks": "{open} tarefas abertas",
     "texto1WithAlert": "1 com alerta",
@@ -273,9 +275,7 @@
     "minutesOnTheFirstDay": "Minutos no primeiro dia",
     "stayOnTheFirstDay": "Ficam {valor} no primeiro dia e {valor2} vão para o outro.",
     "adjustmentReworkMissingMaterial": "Ajuste, retrabalho, falta de material…",
-    "texto7": "{asset} ·",
-    "youDonTHavePermission": "Você não tem permissão para visualizar a produção.",
-    "eachDepartmentSQueueWith": "A fila de cada setor, com agenda, quem está trabalhando e o tempo medido."
+    "texto7": "{asset} ·"
   },
   "produtividade": {
     "productivity": "Produtividade",
@@ -303,10 +303,12 @@
     "finish": "Concluir projeto",
     "theDeliveryDeadlineHasPassed": "O prazo de entrega já passou.",
     "deliveryIsAtRiskWhat": "A entrega está em risco: o que falta na cadeia não cabe até o prazo.",
+    "approval": "Aprovação",
     "changeDelivery": "Alterar entrega",
     "cancelProject": "Cancelar projeto",
     "firstDeadline": "Primeiro prazo",
     "currentDeadline": "Prazo atual",
+    "overdue": "Em atraso",
     "atRisk": "Em risco",
     "oneForEachStepOf": "Uma para cada etapa da composição dos itens, na medida vendida. O acabamento espera a base quando o tipo dele manda.",
     "typeCurrentStep": "Tipo · etapa atual",
@@ -331,8 +333,6 @@
     "noProjectsFoundFor": "Nenhum projeto encontrado para \"{search}\"",
     "noProjectsWithStatus": "Nenhum projeto para o status: {label}",
     "theProjectIsCreatedWhen2": "O projeto nasce quando a venda é aprovada.",
-    "approval": "Aprovação",
-    "overdue": "Em atraso",
     "deliveryAtRisk": "Entrega em risco",
     "open2": "Abrir {number}",
     "projectsInProduction": "Projetos em produção"

@@ -51,6 +51,9 @@
   },
   "gerenciador": {
     "sectorManager": "Sector manager",
+    "youDonTHavePermission": "You don't have permission to view production.",
+    "productionBoard": "Production board",
+    "eachDepartmentSQueueWith": "Each department's queue, with the schedule, who is working and the measured time.",
     "m": "{code} · {material}{valor} · {valor2} × {valor3} m",
     "logPrintRun": "Log print run",
     "jobsInASinglePrint": "{valor} jobs in a single print run. The length used, including waste, is split by the area of each one.",
@@ -89,7 +92,6 @@
     "schedule": "Schedule",
     "teamMemberSchedule": "Team member schedule",
     "occupancy": "Occupancy",
-    "productionBoard": "Production board",
     "texto1OpenTask": "1 open task",
     "openTasks": "{open} open tasks",
     "texto1WithAlert": "1 with alert",
@@ -272,9 +274,7 @@
     "minutesOnTheFirstDay": "Minutes on the first day",
     "stayOnTheFirstDay": "{valor} stay on the first day and {valor2} move to the other.",
     "adjustmentReworkMissingMaterial": "Adjustment, rework, missing material…",
-    "texto7": "{asset} ·",
-    "youDonTHavePermission": "You don't have permission to view production.",
-    "eachDepartmentSQueueWith": "Each department's queue, with the schedule, who is working and the measured time."
+    "texto7": "{asset} ·"
   },
   "produtividade": {
     "productivity": "Productivity",
@@ -302,10 +302,12 @@
     "finish": "Finish",
     "theDeliveryDeadlineHasPassed": "The delivery deadline has passed.",
     "deliveryIsAtRiskWhat": "Delivery is at risk: what's left in the chain doesn't fit within the deadline.",
+    "approval": "Approval",
     "changeDelivery": "Change delivery",
     "cancelProject": "Cancel project",
     "firstDeadline": "First deadline",
     "currentDeadline": "Current deadline",
+    "overdue": "Overdue",
     "atRisk": "At risk",
     "oneForEachStepOf": "One for each step of the items' build-up, in the size sold. Finishing waits for the base when its type requires it.",
     "typeCurrentStep": "Type · current step",
@@ -330,8 +332,6 @@
     "noProjectsFoundFor": "No projects found for \"{search}\"",
     "noProjectsWithStatus": "No projects with status: {label}",
     "theProjectIsCreatedWhen2": "The project is created when the sale is approved.",
-    "approval": "Approval",
-    "overdue": "Overdue",
     "deliveryAtRisk": "Delivery at risk",
     "open2": "Open {number}",
     "projectsInProduction": "Projects in production"

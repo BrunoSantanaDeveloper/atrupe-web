@@ -732,7 +732,9 @@ export function QuotationProdDetailModal({
                 </Button>
                 <div
                   className={cn(
-                    'flex h-[200px] w-full shrink-0 items-stretch justify-stretch sm:h-[160px] sm:w-[220px]',
+                    // Alta o bastante para a caixa de enviar imagem (sem imagem, ela
+                    // invadia a quantidade)
+                    'flex h-[220px] w-full shrink-0 items-stretch justify-stretch sm:w-[220px]',
                     !showImage && 'max-sm:hidden',
                   )}
                 >
