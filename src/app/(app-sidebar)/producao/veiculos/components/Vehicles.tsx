@@ -154,57 +154,62 @@ export function Vehicles() {
               Nenhum veículo cadastrado. Cadastre em Configurações › Produção ›
               Veículos.
             </p>
+          ) : !overview.trips.length ? (
+            <p className="text-sm text-gray">Sem saídas na semana.</p>
           ) : (
-            <div className="space-y-4">
-              {overview.vehicles.map((vehicle) => {
-                const trips = overview.trips.filter(
-                  (item) => item.vehicle.id === vehicle.id,
-                )
-                return (
-                  <div key={vehicle.id} className="space-y-2">
-                    <p className="text-sm font-medium text-gray-800">
-                      {vehicle.name}
-                      {vehicle.plate ? ` · ${vehicle.plate}` : ''}
-                    </p>
-                    {trips.length ? (
-                      <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
-                        {trips.map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            onClick={() => setTripId(item.id)}
-                            className="space-y-1 rounded-lg border border-gray-200 p-3 text-left transition hover:border-brand-300"
-                          >
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-sm font-medium text-gray-800">
-                                Saída {item.number}
-                              </span>
-                              <Badge variant={TRIP_STATUS[item.status].variant}>
-                                {TRIP_STATUS[item.status].label}
-                              </Badge>
-                              {item.overdue && (
-                                <Badge variant="warningLight">
-                                  Não fechada
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-xs text-gray">
-                              {when(item.departAt)} → {when(item.returnAt)}
-                            </p>
-                            <p className="text-xs text-gray">
-                              {item.driver ? item.driver.name : 'Sem motorista'}{' '}
-                              · {item.stops.length} parada(s)
-                              {item.km !== null ? ` · ${km(item.km)}` : ''}
-                            </p>
-                          </button>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray">Sem saídas na semana.</p>
-                    )}
-                  </div>
-                )
-              })}
+            // As saídas em lista (24/11/2026: listas, não cartões)
+            <div className="overflow-x-auto rounded-lg border border-gray-200">
+              <div className="min-w-[820px] divide-y divide-gray-100">
+                <div className="grid grid-cols-[90px_minmax(160px,1fr)_minmax(200px,1.2fr)_minmax(140px,1fr)_110px_120px] gap-3 bg-gray-50 px-4 py-2 text-xs font-medium text-gray">
+                  <span>Saída</span>
+                  <span>Veículo</span>
+                  <span>Saída → volta</span>
+                  <span>Motorista</span>
+                  <span>Paradas · km</span>
+                  <span>Situação</span>
+                </div>
+                {[...overview.trips]
+                  .sort((a, b) => a.departAt.localeCompare(b.departAt))
+                  .map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setTripId(item.id)}
+                      className="grid w-full grid-cols-[90px_minmax(160px,1fr)_minmax(200px,1.2fr)_minmax(140px,1fr)_110px_120px] items-center gap-3 px-4 py-3 text-left text-sm hover:bg-gray-25"
+                    >
+                      <span className="font-medium text-gray-900">
+                        Nº {item.number}
+                      </span>
+                      <span className="truncate text-gray-800">
+                        {item.vehicle.name}
+                        {item.vehicle.plate ? (
+                          <span className="text-gray">
+                            {' '}
+                            · {item.vehicle.plate}
+                          </span>
+                        ) : null}
+                      </span>
+                      <span className="text-gray-800">
+                        {when(item.departAt)} → {when(item.returnAt)}
+                      </span>
+                      <span className="truncate text-gray-800">
+                        {item.driver ? item.driver.name : 'Sem motorista'}
+                      </span>
+                      <span className="text-gray-700">
+                        {item.stops.length}
+                        {item.km !== null ? ` · ${km(item.km)}` : ''}
+                      </span>
+                      <span className="flex flex-wrap gap-1">
+                        <Badge variant={TRIP_STATUS[item.status].variant}>
+                          {TRIP_STATUS[item.status].label}
+                        </Badge>
+                        {item.overdue && (
+                          <Badge variant="warningLight">Não fechada</Badge>
+                        )}
+                      </span>
+                    </button>
+                  ))}
+              </div>
             </div>
           )}
         </CardContent>

@@ -10,13 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Components
 import { SectorIcon } from '@/components/common/SectorIcon'
@@ -200,6 +194,18 @@ export function VehiclesView({
     const endB = startB + b.schedule!.minutes
     return startA < endB && startB < endA
   }
+  // Em lista (24/11/2026: listas, não cartões): um grupo por dia, o veículo
+  // na linha; duas saídas do mesmo veículo no mesmo horário ficam em vermelho
+  const conflictOf = (task: TaskView) =>
+    withVehicle.some(
+      (other) =>
+        other.id !== task.id &&
+        other.vehicleId === task.vehicleId &&
+        other.schedule!.date === task.schedule!.date &&
+        overlaps(task, other),
+    )
+  const vehicleOf = (id: string | null) =>
+    vehicles.find((vehicle) => vehicle.id === id)
   return (
     <div className="space-y-4">
       {!vehicles.length && (
@@ -208,81 +214,90 @@ export function VehiclesView({
           Veículos.
         </p>
       )}
-      {vehicles.map((vehicle) => {
-        const own = withVehicle.filter((task) => task.vehicleId === vehicle.id)
-        const km = own.reduce((sum, task) => sum + (task.km || 0), 0)
-        return (
-          <Card key={vehicle.id}>
-            <CardHeader className="flex-row items-center justify-between gap-4 space-y-0">
-              <div className="flex items-center gap-3">
-                <SectorIcon name="Frota" size="lg" />
-                <div>
-                  <CardTitle>{vehicle.name}</CardTitle>
-                  <CardDescription>
-                    {vehicle.plate} · {own.length} saída(s) · {km} km previstos
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3 px-6 pb-6">
-              {days.map((day) => {
-                const inDay = own.filter((task) => task.schedule!.date === day)
-                if (!inDay.length) return null
-                return (
-                  <div key={day} className="space-y-1">
-                    <p className="text-sm font-medium capitalize text-gray-800">
+      {vehicles.length > 0 && !withVehicle.length && (
+        <p className="text-sm text-gray">Sem saídas agendadas neste período.</p>
+      )}
+      {withVehicle.length > 0 && (
+        <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+          <div className="min-w-[820px]">
+            <div className="grid grid-cols-[110px_minmax(150px,1fr)_minmax(200px,1.4fr)_minmax(150px,1fr)_80px] gap-3 border-b border-gray-200 bg-gray-50 px-4 py-2 text-xs font-medium text-gray">
+              <span>Horário</span>
+              <span>Veículo</span>
+              <span>Etapa e item</span>
+              <span>Cliente</span>
+              <span>Km</span>
+            </div>
+            {days.map((day) => {
+              const inDay = withVehicle.filter(
+                (task) => task.schedule!.date === day,
+              )
+              const totalKm = inDay.reduce(
+                (sum, task) => sum + (task.km || 0),
+                0,
+              )
+              return (
+                <section key={day}>
+                  <div className="flex items-baseline gap-3 border-b border-gray-100 bg-gray-25 px-4 py-2">
+                    <h3 className="text-sm font-semibold capitalize text-gray-900">
                       {dayLabel(day)}
-                    </p>
-                    {inDay.map((task) => {
-                      const conflict = inDay.some(
-                        (other) =>
-                          other.id !== task.id && overlaps(task, other),
-                      )
-                      return (
-                        <button
-                          key={task.id}
-                          type="button"
-                          onClick={() => onOpen(task.id)}
-                          className={cn(
-                            'flex w-full flex-wrap items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm hover:border-brand-300',
-                            conflict
-                              ? 'border-error-300 bg-error-50'
-                              : 'border-gray-200 bg-white',
-                          )}
-                        >
-                          <span className="font-medium text-gray-800">
-                            {task.schedule!.start
-                              ? `${task.schedule!.start} – ${endTime(task.schedule!.start, task.schedule!.minutes)}`
-                              : 'Só o dia'}
-                          </span>
-                          <SectorIcon name={task.sector} size="sm" />
-                          <span className="text-gray-800">
-                            {task.stageName} · {task.itemName}
-                          </span>
-                          <span className="text-gray">
-                            {task.project.client}
-                            {task.km ? ` · ${task.km} km` : ''}
-                          </span>
+                    </h3>
+                    <span className="text-xs text-gray-700">
+                      {inDay.length} saída(s) · {totalKm} km previstos
+                    </span>
+                  </div>
+                  {inDay.map((task) => {
+                    const conflict = conflictOf(task)
+                    const vehicle = vehicleOf(task.vehicleId)
+                    return (
+                      <button
+                        key={task.id}
+                        type="button"
+                        onClick={() => onOpen(task.id)}
+                        className={cn(
+                          'grid w-full grid-cols-[110px_minmax(150px,1fr)_minmax(200px,1.4fr)_minmax(150px,1fr)_80px] items-center gap-3 border-b border-gray-100 px-4 py-3 text-left text-sm last:border-b-0 hover:bg-gray-25',
+                          conflict && 'bg-error-50',
+                        )}
+                      >
+                        <span className="font-medium text-gray-800">
+                          {task.schedule!.start
+                            ? `${task.schedule!.start} – ${endTime(task.schedule!.start, task.schedule!.minutes)}`
+                            : 'Só o dia'}
+                        </span>
+                        <span className="truncate text-gray-800">
+                          {vehicle?.name ?? '—'}
+                          {vehicle?.plate ? (
+                            <span className="text-gray">
+                              {' '}
+                              · {vehicle.plate}
+                            </span>
+                          ) : null}
                           {conflict && (
-                            <Badge variant="errorLight">
+                            <Badge variant="errorLight" className="ml-2">
                               Duas saídas no mesmo horário
                             </Badge>
                           )}
-                        </button>
-                      )
-                    })}
-                  </div>
-                )
-              })}
-              {!own.length && (
-                <p className="text-sm text-gray">
-                  Sem saídas agendadas neste período.
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        )
-      })}
+                        </span>
+                        <span className="flex min-w-0 items-center gap-2 text-gray-800">
+                          <SectorIcon name={task.sector} size="sm" />
+                          <span className="truncate">
+                            {task.stageName} · {task.itemName}
+                          </span>
+                        </span>
+                        <span className="truncate text-gray">
+                          {task.project.client}
+                        </span>
+                        <span className="text-gray-700">
+                          {task.km ? `${task.km} km` : '—'}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </section>
+              )
+            })}
+          </div>
+        </div>
+      )}
       <p className="text-xs text-gray">
         O veículo entra na tarefa de instalação ou entrega, pelo detalhe da
         tarefa: veículo, km previstos e horário. O km é custo de deslocamento,

@@ -20814,5 +20814,41 @@
   "ea8d62eb27": {
     "es": "Bloqueada en la agenda",
     "en": "Locked on the schedule"
+  },
+  "3bd854d6d1": {
+    "es": "Horario",
+    "en": "Time"
+  },
+  "107c8adf0b": {
+    "es": "Etapa e ítem",
+    "en": "Stage and item"
+  },
+  "509f7b8efd": {
+    "es": "Km",
+    "en": "Km"
+  },
+  "8050d6207f": {
+    "es": "{valor} salida(s) · {totalKm} km previstos",
+    "en": "{valor} trip(s) · {totalKm} km planned"
+  },
+  "5d1ec3cd15": {
+    "es": "{km} km",
+    "en": "{km} km"
+  },
+  "422d0b6957": {
+    "es": "Salida → regreso",
+    "en": "Departure → return"
+  },
+  "2041d53eeb": {
+    "es": "Conductor",
+    "en": "Driver"
+  },
+  "bfe0aaf517": {
+    "es": "Paradas · km",
+    "en": "Stops · km"
+  },
+  "4b0c262499": {
+    "es": "N.º {number}",
+    "en": "No. {number}"
   }
 }
