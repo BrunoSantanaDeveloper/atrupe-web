@@ -20854,5 +20854,13 @@
   "dcd7caad47": {
     "es": "Cómo corre el tiempo en este gestor de producción",
     "en": "How time runs on this production board"
+  },
+  "01f6080f52": {
+    "es": "{code} {stageName} · {actualMinutes} registrado",
+    "en": "{code} {stageName} · {actualMinutes} logged"
+  },
+  "111491898b": {
+    "es": "disponible · arrastre",
+    "en": "available · drag"
   }
 }

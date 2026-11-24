@@ -575,13 +575,6 @@ export function SectorScreen({ id }: { id: string }) {
                   )}
                 </p>
               )}
-              <InfoHint title="Como o tempo corre neste gerenciador">
-                <p>
-                  {timeless
-                    ? timeModeObj.NONE.help
-                    : timeModeObj[manager!.timeMode]?.help}
-                </p>
-              </InfoHint>
             </>
           }
         />
@@ -591,7 +584,7 @@ export function SectorScreen({ id }: { id: string }) {
                 coletivo, onde arrastar é o gesto que liga o relógio */}
           {collective && (
             <Card>
-              <CardContent className="flex flex-wrap items-center gap-2 p-3">
+              <CardContent className="flex flex-wrap items-center gap-2 px-3 py-2">
                 <span className="flex items-center gap-1.5 pr-1 text-sm font-medium text-gray-800">
                   Colaboradores
                   <InfoHint title="Colaboradores">
@@ -609,63 +602,62 @@ export function SectorScreen({ id }: { id: string }) {
                       onDragStart={() => setDragging(worker.id)}
                       onDragEnd={() => setDragging(null)}
                       className={cn(
-                        'w-full rounded-lg border px-3 py-1.5 sm:w-[260px]',
+                        'w-full rounded-lg border px-3 py-1 sm:w-auto sm:max-w-[460px]',
                         worker.working
                           ? 'border-success-200 bg-success-50'
                           : 'cursor-grab border-gray-200 bg-white',
                       )}
                     >
-                      <div className="flex items-start gap-3">
-                        <PersonAvatar name={worker.name} />
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-800">
-                            {worker.name}
-                            {worker.onlyAssigned && (
-                              <span className="font-normal text-gray">
-                                {' '}
-                                · só as dele
-                              </span>
-                            )}
-                          </p>
-                          {worker.working ? (
-                            <>
-                              <p className="text-xs text-success-700">
-                                Em{' '}
-                                {current
-                                  ? `${current.code} ${current.stageName}`
-                                  : 'outra tarefa'}{' '}
-                                desde{' '}
-                                {new Date(
-                                  worker.working.since,
-                                ).toLocaleTimeString('pt-BR', {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                                {current
-                                  ? ` · ${duration(current.actualMinutes)} apontado`
-                                  : ''}
-                              </p>
-                              <button
-                                type="button"
-                                className="mt-1 text-xs font-medium text-error-700 hover:underline"
-                                onClick={async () => {
-                                  await stopWork({
-                                    id: worker.working?.taskId,
-                                    collaboratorId: worker.id,
-                                  })
-                                  toast.success('Relógio parado')
-                                  await refresh()
-                                }}
-                              >
-                                Parar
-                              </button>
-                            </>
-                          ) : (
-                            <p className="text-xs text-gray">
-                              Disponível · arraste para uma tarefa
-                            </p>
+                      {/* Uma linha só (24/11/2026): metade da altura */}
+                      <div className="flex items-center gap-2 text-sm">
+                        <PersonAvatar name={worker.name} size="sm" />
+                        <span className="shrink-0 font-medium text-gray-800">
+                          {worker.name}
+                          {worker.onlyAssigned && (
+                            <span className="font-normal text-gray">
+                              {' '}
+                              · só as dele
+                            </span>
                           )}
-                        </div>
+                        </span>
+                        {worker.working ? (
+                          <>
+                            <span
+                              className="truncate text-xs text-success-700"
+                              title={
+                                current
+                                  ? `${current.code} ${current.stageName} · ${duration(current.actualMinutes)} apontado`
+                                  : undefined
+                              }
+                            >
+                              {current ? current.code : 'outra tarefa'} desde{' '}
+                              {new Date(
+                                worker.working.since,
+                              ).toLocaleTimeString('pt-BR', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
+                            </span>
+                            <button
+                              type="button"
+                              className="ml-auto shrink-0 text-xs font-medium text-error-700 hover:underline"
+                              onClick={async () => {
+                                await stopWork({
+                                  id: worker.working?.taskId,
+                                  collaboratorId: worker.id,
+                                })
+                                toast.success('Relógio parado')
+                                await refresh()
+                              }}
+                            >
+                              Parar
+                            </button>
+                          </>
+                        ) : (
+                          <span className="truncate text-xs text-gray">
+                            disponível · arraste
+                          </span>
+                        )}
                       </div>
                     </div>
                   )

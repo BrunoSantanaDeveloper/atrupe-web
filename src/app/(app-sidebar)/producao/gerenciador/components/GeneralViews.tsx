@@ -9,7 +9,6 @@
 import { Badge } from '@/components/ui/badge'
 import { Icon } from '@/components/ui/icon'
 import { Input } from '@/components/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Components
 import { SectorIcon } from '@/components/common/SectorIcon'
@@ -63,7 +62,7 @@ export function ProductionFilters({
       <Input
         aria-label="Buscar tarefa"
         placeholder="Código, cliente, item"
-        className="w-full sm:w-[200px]"
+        className="w-full sm:w-[140px]"
         startAdornment={
           <Icon icon={IconSearch} size="sm" className="text-gray" />
         }
@@ -74,7 +73,7 @@ export function ProductionFilters({
         <SelectBasic
           name="board-person"
           label=""
-          className="w-[180px]"
+          className="w-[170px]"
           options={[
             { value: 'todos', label: 'Todas as pessoas' },
             ...people.map((item) => ({ value: item.id, label: item.name })),
@@ -87,7 +86,7 @@ export function ProductionFilters({
         <SelectBasic
           name="board-machine"
           label=""
-          className="w-[180px]"
+          className="w-[185px]"
           options={[
             { value: 'todas', label: 'Todas as máquinas' },
             ...machines.map((item) => ({ value: item, label: item })),
@@ -96,19 +95,20 @@ export function ProductionFilters({
           onChange={(value) => value && onMachine(String(value))}
         />
       )}
-      <Tabs
+      {/* O período num seletor, para os filtros caberem numa linha (24/11) */}
+      <SelectBasic
+        name="board-period"
+        label="Período"
+        hideLabel
+        className="w-[145px]"
+        options={periodOptions.map((option) => ({
+          value: option.value,
+          // No seletor, "Todas" sozinho não diz do que é
+          label: option.value === 'todas' ? 'Todos os dias' : option.label,
+        }))}
         value={period}
-        variant="pill"
-        onValueChange={(value) => onPeriod(value as Period)}
-      >
-        <TabsList>
-          {periodOptions.map((option) => (
-            <TabsTrigger key={option.value} value={option.value}>
-              {option.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+        onChange={(value) => value && onPeriod(value as Period)}
+      />
       {after}
     </div>
   )
