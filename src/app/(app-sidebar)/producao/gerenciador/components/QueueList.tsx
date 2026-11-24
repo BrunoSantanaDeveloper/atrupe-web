@@ -33,6 +33,8 @@ import { shortDate } from './shared'
 // Icons
 import {
   IconLock,
+  IconLockOpen,
+  IconHourglass,
   IconMessage,
   IconGripVertical,
   IconPaperclip,
@@ -66,6 +68,7 @@ export function QueueList({
   onOpen,
   actions,
   showSector = false,
+  onLock,
   onReorder,
   showForecast = true,
   person = null,
@@ -80,6 +83,8 @@ export function QueueList({
   actions?: (item: TaskView) => ReactNode
   // A Agenda viva junta todos os setores: o setor vai na linha
   showSector?: boolean
+  // O cadeado na agenda (24/11/2026): travar ou destravar o trabalho
+  onLock?: (item: TaskView) => void
   onReorder?: (dragged: TaskView, target: TaskView) => void
   showForecast?: boolean
   // A pessoa que está sendo arrastada do painel de colaboradores
@@ -225,10 +230,44 @@ export function QueueList({
                     />
                   )}
 
-                  <ForecastCell
-                    item={item}
-                    forecast={showForecast ? forecast : undefined}
-                  />
+                  <div className="flex items-start gap-1.5">
+                    {item.schedule && item.status === 'NOT_STARTED' && (
+                      <button
+                        type="button"
+                        disabled={!onLock}
+                        aria-label={
+                          item.locked
+                            ? 'Travada na agenda: clique para destravar'
+                            : 'Travar na agenda'
+                        }
+                        title={
+                          item.locked
+                            ? 'Travada na agenda: a agenda viva não adianta nem atrasa'
+                            : 'Travar na agenda'
+                        }
+                        onClick={(event) => {
+                          event.stopPropagation()
+                          onLock?.(item)
+                        }}
+                        className={cn(
+                          'mt-0.5 rounded p-0.5 disabled:cursor-default',
+                          item.locked
+                            ? 'text-brand-600'
+                            : 'text-gray-300 hover:text-gray-600',
+                          !onLock && !item.locked && 'hidden',
+                        )}
+                      >
+                        <Icon
+                          icon={item.locked ? IconLock : IconLockOpen}
+                          size="sm"
+                        />
+                      </button>
+                    )}
+                    <ForecastCell
+                      item={item}
+                      forecast={showForecast ? forecast : undefined}
+                    />
+                  </div>
 
                   <div className="min-w-0">
                     <p className="truncate font-medium text-gray-900">
@@ -305,7 +344,7 @@ export function QueueList({
                     )}
                     {item.blocked && item.status === 'NOT_STARTED' && (
                       <Icon
-                        icon={IconLock}
+                        icon={IconHourglass}
                         size="sm"
                         label={`Espera ${item.blockedBy || 'a etapa anterior'}`}
                         className="text-gray"

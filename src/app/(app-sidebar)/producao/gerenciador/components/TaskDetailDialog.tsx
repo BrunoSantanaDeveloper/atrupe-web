@@ -71,6 +71,7 @@ import {
   addComment,
   setTaskPriority,
   scheduleTask,
+  lockTask,
   addTimeEntry,
   setTaskVehicle,
   correctTimeEntry,
@@ -116,6 +117,8 @@ import {
   IconAlertTriangle,
   IconArrowBigRight,
   IconLock,
+  IconLockOpen,
+  IconHourglass,
   IconTrash,
 } from '@tabler/icons-react'
 
@@ -461,7 +464,7 @@ export function TaskDetailDialog({
           )}
           {task.blocked && task.status === 'NOT_STARTED' && (
             <p className="flex items-start gap-2 rounded-lg bg-gray-50 px-4 py-2 text-sm text-gray-700">
-              <Icon icon={IconLock} size="sm" className="mt-0.5" />
+              <Icon icon={IconHourglass} size="sm" className="mt-0.5" />
               Só começa quando {task.blockedBy} terminar ou liberar a próxima
               etapa.
             </p>
@@ -1159,6 +1162,29 @@ export function TaskDetailDialog({
                     >
                       {task.schedule ? 'Reagendar' : 'Agendar'}
                     </Button>
+                    {task.schedule && task.status === 'NOT_STARTED' && (
+                      <Button
+                        isLoading={pending === 'lock'}
+                        type="button"
+                        size="sm"
+                        variant={task.locked ? 'secondary' : 'neutralOutline'}
+                        onClick={() =>
+                          run(
+                            'lock',
+                            () => lockTask(task.id, !task.locked),
+                            task.locked
+                              ? 'Destravada na agenda'
+                              : 'Travada na agenda',
+                          )
+                        }
+                      >
+                        <Icon
+                          icon={task.locked ? IconLock : IconLockOpen}
+                          size="sm"
+                        />
+                        {task.locked ? 'Travada na agenda' : 'Travar na agenda'}
+                      </Button>
+                    )}
                     {task.schedule && (
                       <Button
                         isLoading={pending === 'unschedule'}

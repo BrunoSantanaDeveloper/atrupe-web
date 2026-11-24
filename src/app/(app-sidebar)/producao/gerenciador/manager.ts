@@ -332,6 +332,8 @@ export type TaskView = ProductionTask & {
   // liberou (PR-2, FL-13)
   blocked: boolean
   blockedBy: string | null
+  // O cadeado na agenda (24/11/2026): travada, a agenda viva não mexe
+  locked?: boolean
   assignee: Collaborator | null
   // Quem está na tarefa agora
   workers: Collaborator[]

@@ -50,6 +50,7 @@ import {
   startWork,
   actOnTask,
   scheduleTask,
+  lockTask,
   getManagerBoard,
 } from '@/actions/production-manager'
 
@@ -174,6 +175,14 @@ export function SectorScreen({ id }: { id: string }) {
       await startWork({ id: item.id, collaboratorId })
     }
     toast.success(success)
+    await refresh()
+  }
+
+  // O cadeado na agenda (24/11/2026)
+  const toggleLock = async (item: TaskView) => {
+    const res = await lockTask(item.id, !item.locked)
+    if (!res.success) return toast.error(res.message)
+    toast.success(res.message)
     await refresh()
   }
 
@@ -743,6 +752,7 @@ export function SectorScreen({ id }: { id: string }) {
                     actions={actions}
                     onReorder={queueTab === 'a-fazer' ? swapSlots : undefined}
                     showForecast={queueTab === 'a-fazer'}
+                    onLock={isManager ? toggleLock : undefined}
                     person={collective ? dragging : null}
                     onDropPerson={collective ? dropOn : undefined}
                   />

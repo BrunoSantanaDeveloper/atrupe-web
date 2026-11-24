@@ -150,6 +150,9 @@ export type ProductionCalendar = {
   breakStart: string | null
   breakEnd: string | null
   holidays: string[]
+  // Quando uma etapa atrasa (24/11/2026): só avisar a cadeia, ou avisar e
+  // reagendar (a agenda viva). Vale para a empresa inteira.
+  liveSchedule?: 'WARN' | 'RESCHEDULE'
 }
 
 // Sem export: num arquivo "use server" só se exportam funções assíncronas;
@@ -708,6 +711,17 @@ export const scheduleTask = async ({
       data: { schedule },
     }),
     schedule ? 'Agendada' : 'Tirou da agenda',
+  )
+
+// O cadeado na agenda (24/11/2026): travada, a agenda viva não adianta nem
+// atrasa; se a cadeia não chegar a tempo, acende o alerta
+export const lockTask = async (id: string, locked: boolean) =>
+  done(
+    await putItemNew({
+      route: `/production/task/${id}/lock`,
+      data: { locked },
+    }),
+    locked ? 'Travada na agenda' : 'Destravada na agenda',
   )
 
 export const assignTask = async ({

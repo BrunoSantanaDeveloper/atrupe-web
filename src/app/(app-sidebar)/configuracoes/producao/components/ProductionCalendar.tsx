@@ -44,6 +44,9 @@ import { toast } from 'sonner'
 // Icons
 import { IconCalendarTime, IconX } from '@tabler/icons-react'
 
+// Utils
+import { cn } from '@/lib/utils'
+
 const WEEKDAYS = [
   { value: 1, label: 'Segunda' },
   { value: 2, label: 'Terça' },
@@ -55,6 +58,21 @@ const WEEKDAYS = [
 ]
 
 const date = (value: string) => value.split('-').reverse().join('/')
+
+// A agenda viva (Maicol, 24/11/2026): vale para a cadeia inteira, de todos
+// os setores, por isso fica no expediente da empresa
+const liveScheduleOptions = [
+  {
+    value: 'WARN' as const,
+    text: 'Avisar o atraso em toda a cadeia',
+    help: 'As etapas seguintes mostram o atraso; quem gerencia reagenda.',
+  },
+  {
+    value: 'RESCHEDULE' as const,
+    text: 'Avisar e reagendar (agenda viva)',
+    help: 'A agenda anda sozinha: a etapa que espera a anterior vai para depois dela e outro trabalho da fila ocupa o lugar; se a anterior termina antes, as seguintes vêm para mais cedo. O trabalho com o cadeado não anda.',
+  },
+]
 
 export function ProductionCalendarCard({
   calendar,
@@ -193,6 +211,35 @@ export function ProductionCalendarCard({
                 setValues({ ...values, breakEnd: event.target.value || null })
               }
             />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>Quando uma etapa atrasa</Label>
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            {liveScheduleOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                disabled={!canEdit}
+                onClick={() =>
+                  setValues((current) => ({
+                    ...current,
+                    liveSchedule: option.value,
+                  }))
+                }
+                className={cn(
+                  'flex flex-col justify-start rounded-lg border p-3 text-left disabled:cursor-not-allowed',
+                  (values.liveSchedule ?? 'WARN') === option.value
+                    ? 'border-brand-500 bg-brand-25 ring-1 ring-brand-500'
+                    : 'border-gray-200 hover:border-gray-300',
+                )}
+              >
+                <span className="block text-sm font-medium text-gray-800">
+                  {option.text}
+                </span>
+                <span className="block text-xs text-gray">{option.help}</span>
+              </button>
+            ))}
           </div>
         </div>
         <div className="space-y-2">

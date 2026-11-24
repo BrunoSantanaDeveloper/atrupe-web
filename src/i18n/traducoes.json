@@ -20786,5 +20786,33 @@
   "d929e23be6": {
     "es": "{stageName} ·",
     "en": "{stageName} ·"
+  },
+  "25d70aee23": {
+    "es": "Avisar el retraso en toda la cadena",
+    "en": "Warn about the delay along the whole chain"
+  },
+  "560969c45d": {
+    "es": "Avisar y reprogramar (agenda en vivo)",
+    "en": "Warn and reschedule (live schedule)"
+  },
+  "d6b4b18df1": {
+    "es": "Cuando una etapa se retrasa",
+    "en": "When a stage is late"
+  },
+  "8389d8f7c9": {
+    "es": "Bloqueada en la agenda: haga clic para desbloquear",
+    "en": "Locked on the schedule: click to unlock"
+  },
+  "3a7ea29322": {
+    "es": "Bloquear en la agenda",
+    "en": "Lock on the schedule"
+  },
+  "d31cf6710b": {
+    "es": "Bloqueada en la agenda: la agenda en vivo no la adelanta ni la atrasa",
+    "en": "Locked on the schedule: the live schedule neither moves it earlier nor later"
+  },
+  "ea8d62eb27": {
+    "es": "Bloqueada en la agenda",
+    "en": "Locked on the schedule"
   }
 }

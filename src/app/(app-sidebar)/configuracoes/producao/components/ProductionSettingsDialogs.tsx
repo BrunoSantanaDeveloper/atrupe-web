@@ -80,23 +80,6 @@ export type ManagerValues = {
   afterDoneMinutes: number
 }
 
-const liveScheduleOptions: {
-  value: LiveSchedule
-  text: string
-  help: string
-}[] = [
-  {
-    value: 'WARN',
-    text: 'Só avisa',
-    help: 'Mostra o atraso; quem decide reagenda.',
-  },
-  {
-    value: 'RESCHEDULE',
-    text: 'Reagenda e avisa',
-    help: 'Os trabalhos seguintes da mesma máquina andam sozinhos, e a tela avisa o que mudou.',
-  },
-]
-
 export function ManagerDialog({
   open,
   manager,
@@ -384,36 +367,6 @@ export function ManagerDialog({
                   />
                   A máquina segue trabalhando no intervalo
                 </label>
-              </div>
-              <div className="space-y-2">
-                <Label>Quando um trabalho atrasa</Label>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {liveScheduleOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() =>
-                        setValues((current) => ({
-                          ...current,
-                          liveSchedule: option.value,
-                        }))
-                      }
-                      className={cn(
-                        'flex flex-col justify-start rounded-lg border p-3 text-left',
-                        values.liveSchedule === option.value
-                          ? 'border-brand-500 bg-brand-25 ring-1 ring-brand-500'
-                          : 'border-gray-200 hover:border-gray-300',
-                      )}
-                    >
-                      <span className="block text-sm font-medium text-gray-800">
-                        {option.text}
-                      </span>
-                      <span className="block text-xs text-gray">
-                        {option.help}
-                      </span>
-                    </button>
-                  ))}
-                </div>
               </div>
             </>
           )}

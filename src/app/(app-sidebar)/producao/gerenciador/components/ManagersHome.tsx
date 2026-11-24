@@ -195,7 +195,7 @@ export function ManagersHome() {
               }
             >
               <TabsList>
-                <TabsTrigger value="agenda">Agenda viva</TabsTrigger>
+                <TabsTrigger value="agenda">Agenda</TabsTrigger>
                 <TabsTrigger value="veiculos">Veículos</TabsTrigger>
                 <TabsTrigger value="pessoas">Agenda do colaborador</TabsTrigger>
                 {/* Para quando dá para agendar (GP-50) */}
