@@ -156,6 +156,11 @@ export const permissionsData = [
         name: 'Concluir tudo na agenda de entrega',
         key: 'delivery_schedule_finish_all',
       },
+      // Agendar, fechar e cancelar as saídas dos veículos (fase 1)
+      {
+        name: 'Agendar veículos',
+        key: 'vehicle_schedule',
+      },
     ],
   },
   {

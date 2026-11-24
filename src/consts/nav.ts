@@ -36,6 +36,7 @@ import {
   IconReportMoney,
   IconTrendingDown,
   IconBusinessplan,
+  IconTruck,
   IconTruckLoading,
   IconRefreshAlert,
   IconCashBanknote,
@@ -266,6 +267,18 @@ export const defaultMainNavigation: MainNavigationType[] = [
         permission: 'production:production:view',
         // A tela por setor do PRO (sector_board) ou o gerenciador do ELITE
         requiredFeature: ['production_manager', 'sector_board'],
+        demo: true,
+      },
+      // Veículos, fase 1 (Maicol, 23/11/2026, ELITE)
+      {
+        icon: IconTruck,
+        title: 'Veículos',
+        path: '/producao/veiculos',
+        permission: [
+          'production:production:view',
+          'production:vehicle_schedule:edit',
+        ],
+        requiredFeature: 'production_manager',
         demo: true,
       },
       {

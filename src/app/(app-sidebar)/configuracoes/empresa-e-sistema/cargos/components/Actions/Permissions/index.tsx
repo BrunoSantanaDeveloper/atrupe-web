@@ -168,6 +168,7 @@ const PERMISSION_FEATURES: Record<string, string[]> = {
   'production.production': ['production_manager', 'sector_board'],
   'production.time_entry': ['production_manager', 'sector_board'],
   'production.productivity': ['productivity_tracking'],
+  'production.vehicle_schedule': ['production_manager'],
   'stock.stock': ['stock_control'],
   'stock.invoice_entry': ['invoice_entry'],
   'stock.purchase_request': ['purchasing'],

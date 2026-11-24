@@ -20362,5 +20362,265 @@
   "552807d531": {
     "es": "Configuración usada",
     "en": "Setting used"
+  },
+  "ef764c1db7": {
+    "es": "Dirección",
+    "en": "Address"
+  },
+  "640456551f": {
+    "es": "Pedir vehículo",
+    "en": "Request a vehicle"
+  },
+  "c0e6870f65": {
+    "es": "Nueva salida",
+    "en": "New trip"
+  },
+  "cb86d12f50": {
+    "es": "Salidas de la semana",
+    "en": "Trips this week"
+  },
+  "a8171317d3": {
+    "es": "· {plate}",
+    "en": "· {plate}"
+  },
+  "7fd2a6d4bc": {
+    "es": "Salida {number}",
+    "en": "Trip {number}"
+  },
+  "06a07023e1": {
+    "es": "No cerrada",
+    "en": "Not closed"
+  },
+  "71f34d3c1a": {
+    "es": "parada(s)",
+    "en": "stop(s)"
+  },
+  "5ce0442328": {
+    "es": "· {km}",
+    "en": "· {km}"
+  },
+  "dcc5195149": {
+    "es": "Sin salidas en la semana.",
+    "en": "No trips this week."
+  },
+  "ee09637ea0": {
+    "es": "Necesitan salida",
+    "en": "Need a trip"
+  },
+  "18dc98a663": {
+    "es": "Las tareas con vehículo reservado que aún no están en una salida, y las paradas no hechas.",
+    "en": "Tasks with a reserved vehicle not yet in a trip, and stops not done."
+  },
+  "c647f54990": {
+    "es": "· previsto {km}",
+    "en": "· planned {km}"
+  },
+  "080e8a2558": {
+    "es": "Nada esperando.",
+    "en": "Nothing waiting."
+  },
+  "e6fa177f02": {
+    "es": "Pedidos de vehículo",
+    "en": "Vehicle requests"
+  },
+  "6425c4b98d": {
+    "es": "({sectorName})",
+    "en": "({sectorName})"
+  },
+  "cce39ba2ff": {
+    "es": "Ningún pedido abierto.",
+    "en": "No open request."
+  },
+  "c89abad5fa": {
+    "es": "El vehículo, quién va, la salida, el regreso y las paradas.",
+    "en": "The vehicle, who goes, departure, return and stops."
+  },
+  "7d985d859c": {
+    "es": "{name}{valor}",
+    "en": "{name}{valor}"
+  },
+  "42d45fa2d4": {
+    "es": "Quién conduce",
+    "en": "Driver"
+  },
+  "13132b43b4": {
+    "es": "Salida",
+    "en": "Departure"
+  },
+  "e04587c5be": {
+    "es": "Regreso",
+    "en": "Return"
+  },
+  "e03e3996dc": {
+    "es": "Equipo",
+    "en": "Team"
+  },
+  "8bc8d1499f": {
+    "es": "Paradas de trabajo",
+    "en": "Work stops"
+  },
+  "58434092dd": {
+    "es": "Ninguna tarea con vehículo reservado esperando salida.",
+    "en": "No task with a reserved vehicle waiting for a trip."
+  },
+  "f11a7b0d87": {
+    "es": "Parada libre",
+    "en": "Free stop"
+  },
+  "cf245f5810": {
+    "es": "· {address}",
+    "en": "· {address}"
+  },
+  "7854b34cea": {
+    "es": "Motivo de la parada",
+    "en": "Reason for the stop"
+  },
+  "62893dd568": {
+    "es": "Banco, notaría, buscar material…",
+    "en": "Bank, notary, pick up material…"
+  },
+  "0c08cb4ac0": {
+    "es": "Sector que pidió",
+    "en": "Requesting department"
+  },
+  "662f426042": {
+    "es": "Agregar parada libre",
+    "en": "Add free stop"
+  },
+  "b1cf513530": {
+    "es": "Agendar salida",
+    "en": "Schedule trip"
+  },
+  "7ea1e04397": {
+    "es": "Salida {number} · {name}",
+    "en": "Trip {number} · {name}"
+  },
+  "8d61930d69": {
+    "es": "· equipo: {valor}",
+    "en": "· team: {valor}"
+  },
+  "64665987c1": {
+    "es": "El regreso previsto ya pasó: cierre la salida para que el vehículo salga de nuevo.",
+    "en": "The planned return has passed: close the trip so the vehicle can go out again."
+  },
+  "894534af14": {
+    "es": "Cancelada: {cancelReason}",
+    "en": "Canceled: {cancelReason}"
+  },
+  "2ab0e71c1a": {
+    "es": "Libre ·",
+    "en": "Free ·"
+  },
+  "6aa2ddfede": {
+    "es": "previsto {plannedKm}",
+    "en": "planned {plannedKm}"
+  },
+  "160a085630": {
+    "es": "· recorrió {km}",
+    "en": "· drove {km}"
+  },
+  "9371900a6e": {
+    "es": "Hecha{valor}",
+    "en": "Done{valor}"
+  },
+  "d64a5f788a": {
+    "es": "¿Hecha o no?",
+    "en": "Done or not?"
+  },
+  "cceb0d1b11": {
+    "es": "Hecha",
+    "en": "Done"
+  },
+  "1787da236f": {
+    "es": "Por qué no se hizo",
+    "en": "Why it was not done"
+  },
+  "8b00c3bbf8": {
+    "es": "Cliente ausente, lluvia…",
+    "en": "Customer absent, rain…"
+  },
+  "e678fa50d3": {
+    "es": "Km de esta parada",
+    "en": "Km for this stop"
+  },
+  "523967dd4d": {
+    "es": "Odómetro en la salida",
+    "en": "Odometer at departure"
+  },
+  "3c9bb8e7b0": {
+    "es": "Salió",
+    "en": "Departed"
+  },
+  "95a56117cf": {
+    "es": "Odómetro al regreso (salió con {odometerStart})",
+    "en": "Odometer on return (left with {odometerStart})"
+  },
+  "77019dfc8d": {
+    "es": "Km recorrido",
+    "en": "Km driven"
+  },
+  "ac7650de4a": {
+    "es": "El km se reparte entre las paradas de trabajo según lo previsto; las libres quedan en cero. Ajuste antes de cerrar, si hace falta.",
+    "en": "The km is split among work stops by the planned km; free stops get zero. Adjust before closing if needed."
+  },
+  "2197271cd5": {
+    "es": "Cancelar la salida",
+    "en": "Cancel the trip"
+  },
+  "68364ecf60": {
+    "es": "Cerrar la salida",
+    "en": "Close the trip"
+  },
+  "923b34f937": {
+    "es": "Cerrar al regreso",
+    "en": "Close on return"
+  },
+  "b8ebbba1d8": {
+    "es": "Quien cuida la flota agenda, encajándolo en una salida o creando una nueva.",
+    "en": "Whoever manages the fleet schedules it, fitting it into a trip or creating a new one."
+  },
+  "3227e4b3ea": {
+    "es": "Para qué",
+    "en": "What for"
+  },
+  "affbb0b9d5": {
+    "es": "Visitar cliente, banco, buscar material…",
+    "en": "Visit a customer, bank, pick up material…"
+  },
+  "7550dbc871": {
+    "es": "Pedir",
+    "en": "Request"
+  },
+  "4961e674b2": {
+    "es": "¿Quién estaba con el vehículo?",
+    "en": "Who had the vehicle?"
+  },
+  "be0858100c": {
+    "es": "Para cuando llega una multa: la placa, el día y la hora.",
+    "en": "For when a fine arrives: the plate, the day and the time."
+  },
+  "b3def1df35": {
+    "es": "Día y hora",
+    "en": "Day and time"
+  },
+  "96012f493c": {
+    "es": "No tiene permiso para ver los vehículos.",
+    "en": "You do not have permission to view vehicles."
+  },
+  "d95b74c938": {
+    "es": "Las salidas de los vehículos con las paradas, el km de cada trabajo y quién estaba con el vehículo.",
+    "en": "Vehicle trips with stops, the km of each job and who had the vehicle."
+  },
+  "eb30b911ae": {
+    "es": "No hecha",
+    "en": "Not done"
+  },
+  "d1e7df17a6": {
+    "es": "En ruta",
+    "en": "On route"
+  },
+  "f896a588ee": {
+    "es": "Cerrada",
+    "en": "Closed"
   }
 }
