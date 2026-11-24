@@ -61203,7 +61203,7 @@
  "vendas.orcamentos.eGCustomerBringsThe": {
   "pt": "Ex.: cliente leva a arte em PDF",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:488 (atributo:placeholder)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:494 (atributo:placeholder)"
   ]
  },
  "vendas.orcamentos.eGINeed500": {
@@ -61598,7 +61598,7 @@
  "vendas.orcamentos.hideNotesForProduction": {
   "pt": "Ocultar observações para a produção",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:472 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:478 (jsx)"
   ]
  },
  "vendas.orcamentos.hideTimeline": {
@@ -62107,7 +62107,7 @@
  "vendas.orcamentos.notesForProduction": {
   "pt": "Observações para a produção",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:473 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:479 (jsx)"
   ]
  },
  "vendas.orcamentos.nothingEnteredForThisSale": {
@@ -62288,7 +62288,7 @@
  "vendas.orcamentos.piecesPerSheetInEach": {
   "pt": "Peças por folha em cada posição",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:453 (atributo:title)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:459 (atributo:title)"
   ]
  },
  "vendas.orcamentos.pngOrJpgUpTo": {
@@ -63646,7 +63646,7 @@
  "vendas.orcamentos.yield": {
   "pt": "Aproveitamento",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:446 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/SaleCompositionFields.tsx:452 (jsx)"
   ]
  },
  "vendas.orcamentos.youDonTHavePermission": {

@@ -409,16 +409,22 @@ export function SaleCompositionFields({
               · {list.stage} · informe o que este trabalho usa
             </span>
           </p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+          {/* Um material abaixo do outro, como uma lista (24/11/2026): o
+              nome à esquerda e a quantidade com a unidade à direita */}
+          <div className="divide-y divide-gray-100 rounded-lg border border-gray-200">
             {list.options.map((item) => (
-              <div key={item.id} className="space-y-1.5">
+              <div
+                key={item.id}
+                className="flex items-center justify-between gap-3 px-3 py-1.5"
+              >
                 <label
                   htmlFor={`list-${list.lineId}-${item.id}`}
-                  className="text-sm text-gray-700"
+                  className="min-w-0 flex-1 truncate text-sm text-gray-700"
                 >
                   {item.name}
                 </label>
                 <Input
+                  className="w-[160px] shrink-0"
                   id={`list-${list.lineId}-${item.id}`}
                   type="number"
                   min={0}
