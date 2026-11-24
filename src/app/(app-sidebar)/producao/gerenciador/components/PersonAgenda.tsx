@@ -15,9 +15,10 @@ import { Card, CardContent } from '@/components/ui/card'
 // Components
 import { SectorIcon } from '@/components/common/SectorIcon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { BlockBadge } from './QueueList'
 
 // Types
-import type { TaskView } from '../manager'
+import { blocksOf, type TaskView } from '../manager'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -71,8 +72,13 @@ export function PersonAgenda({
     null
 
   const days = Array.from({ length: DAYS }, (_, index) => addDays(index))
+  // Bloco a bloco (GP-52): a tarefa dividida aparece em cada dia em que tem
+  // bloco, no horário e com os minutos daquele bloco; cada coluna só mostra
+  // os blocos do dia dela
   const mine = person
-    ? scheduled.filter((task) => task.schedule && involves(task, person))
+    ? scheduled
+        .filter((task) => involves(task, person))
+        .flatMap((task) => blocksOf(task).map((block) => ({ task, block })))
     : []
   const hours = Array.from(
     { length: (GRID_END - GRID_START) / 60 },
@@ -115,8 +121,7 @@ export function PersonAgenda({
               <div />
               {days.map((day) => {
                 const dayOnly = mine.filter(
-                  (task) =>
-                    task.schedule!.date === day && !task.schedule!.start,
+                  ({ block }) => block.date === day && !block.start,
                 )
                 return (
                   <div
@@ -131,9 +136,9 @@ export function PersonAgenda({
                     >
                       {weekday(day)} {shortDate(day)}
                     </p>
-                    {dayOnly.map((task) => (
+                    {dayOnly.map(({ task, block }) => (
                       <button
-                        key={task.id}
+                        key={`${task.id}:${block.slotId ?? ''}`}
                         type="button"
                         onClick={() => onOpen(task.id)}
                         className="flex w-full items-center gap-1 truncate rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-left text-xs text-gray-800 hover:border-brand-300"
@@ -142,6 +147,7 @@ export function PersonAgenda({
                         <span className="truncate">
                           {task.stageName} · {task.itemName}
                         </span>
+                        <BlockBadge task={task} block={block} />
                       </button>
                     ))}
                   </div>
@@ -174,13 +180,10 @@ export function PersonAgenda({
                     />
                   ))}
                   {mine
-                    .filter(
-                      (task) =>
-                        task.schedule!.date === day && !!task.schedule!.start,
-                    )
-                    .map((task) => {
-                      const start = toMinutes(task.schedule!.start!)
-                      const minutes = Math.max(task.schedule!.minutes, 15)
+                    .filter(({ block }) => block.date === day && !!block.start)
+                    .map(({ task, block }) => {
+                      const start = toMinutes(block.start!)
+                      const minutes = Math.max(block.minutes, 15)
                       const top = Math.min(
                         Math.max(start - GRID_START, 0),
                         GRID_END - GRID_START - 15,
@@ -191,7 +194,7 @@ export function PersonAgenda({
                       )
                       return (
                         <button
-                          key={task.id}
+                          key={`${task.id}:${block.slotId ?? ''}`}
                           type="button"
                           onClick={() => onOpen(task.id)}
                           className={cn(
@@ -205,9 +208,9 @@ export function PersonAgenda({
                             height: (height / 60) * HOUR_HEIGHT,
                           }}
                         >
-                          <span className="block font-medium tabular-nums">
-                            {task.schedule!.start}–
-                            {endTime(task.schedule!.start!, minutes)}
+                          <span className="flex items-center gap-1 font-medium tabular-nums">
+                            {block.start}–{endTime(block.start!, minutes)}
+                            <BlockBadge task={task} block={block} />
                           </span>
                           <span className="block truncate">
                             {task.stageName} · {task.itemName}

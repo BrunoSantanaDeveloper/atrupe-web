@@ -47,6 +47,14 @@ export const periodOptions: { value: Period; label: string }[] = [
   { value: 'sem-agenda', label: 'Sem agendamento' },
 ]
 
+// O dia (de um bloco de agenda) cai no período escolhido
+export const dayInPeriod = (day: string, period: Period) => {
+  if (period === 'todas') return true
+  if (period === 'sem-agenda') return false
+  if (period === 'hoje') return day === today()
+  return day >= today() && day <= addDays(7)
+}
+
 export const inPeriod = (task: TaskView, period: Period) => {
   if (period === 'todas') return true
   if (period === 'sem-agenda') return !task.schedule
@@ -57,8 +65,7 @@ export const inPeriod = (task: TaskView, period: Period) => {
     task.schedule.date,
     ...(task.slots || []).map((slot) => slot.date),
   ]
-  if (period === 'hoje') return days.includes(today())
-  return days.some((day) => day >= today() && day <= addDays(7))
+  return days.some((day) => dayInPeriod(day, period))
 }
 
 // O intervalo da agenda conforme o período escolhido
@@ -93,7 +100,7 @@ export const taskMatches = (
 }
 
 // Urgente primeiro, mantendo a ordem de quem já está ordenado (GP-47)
-export const urgentFirst = (tasks: TaskView[]) => [
+export const urgentFirst = <T extends TaskView>(tasks: T[]) => [
   ...tasks.filter((task) => task.priority === 'URGENT'),
   ...tasks.filter((task) => task.priority !== 'URGENT'),
 ]

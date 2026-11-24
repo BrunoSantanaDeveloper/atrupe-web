@@ -20882,5 +20882,201 @@
   "182e2cedf1": {
     "es": "El aviso desaparece cuando la etapa anterior termina o la agenda vuelve a caber en el plazo: a mano, o sola con la agenda en vivo (Configuración › Producción › Jornada).",
     "en": "The warning goes away when the previous stage finishes or the schedule fits the deadline again: by hand, or on its own with the live schedule (Settings › Production › Working hours)."
+  },
+  "db32024f4f": {
+    "es": "OT rehecha: la nueva está en elaboración",
+    "en": "Work order redone: the new one is in draft"
+  },
+  "25d8fc2d06": {
+    "es": "Solicitud registrada: otra persona aprueba rehacerla",
+    "en": "Request recorded: another person approves the redo"
+  },
+  "8e759ad91f": {
+    "es": "Etapas concluidas en {finished} pedidos; {closed} ya estaban cancelados o entregados y quedaron como estaban",
+    "en": "Stages finished in {finished} orders; {closed} were already canceled or delivered and stayed as they were"
+  },
+  "3c03e876d5": {
+    "es": "Etapas concluidas en {finished} pedidos; {skipped} siguen el gestor y quedaron como estaban",
+    "en": "Stages finished in {finished} orders; {skipped} follow the production board and stayed as they were"
+  },
+  "560ac07540": {
+    "es": "Etapas concluidas en {finished} pedidos",
+    "en": "Stages finished in {finished} orders"
+  },
+  "db812bf466": {
+    "es": "{label}: vale para {name} en los {count} ítems de este pedido.",
+    "en": "{label}: applies to {name} in the {count} items of this order."
+  },
+  "486339f046": {
+    "es": "Hay espacio",
+    "en": "Has room"
+  },
+  "17a11d6c97": {
+    "es": "Por encima del 80%",
+    "en": "Above 80%"
+  },
+  "bfbd74ac67": {
+    "es": "Lleno",
+    "en": "Full"
+  },
+  "e8ba44a87e": {
+    "es": "Feriado o sin horario laboral",
+    "en": "Holiday or no working hours"
+  },
+  "f4cbe753bd": {
+    "es": "{sector}, {date}: feriado",
+    "en": "{sector}, {date}: holiday"
+  },
+  "1a1a9dbcb3": {
+    "es": "{sector}, {date}: feriado, con {booked} agendadas",
+    "en": "{sector}, {date}: holiday, with {booked} scheduled"
+  },
+  "ef13f65a8d": {
+    "es": "{sector}, {date}: sin horario laboral",
+    "en": "{sector}, {date}: no working hours"
+  },
+  "62f492c7c7": {
+    "es": "{sector}, {date}: sin horario laboral, con {booked} agendadas",
+    "en": "{sector}, {date}: no working hours, with {booked} scheduled"
+  },
+  "963fb5931c": {
+    "es": "{sector}, {date}: {booked} de {total}, excede {over}",
+    "en": "{sector}, {date}: {booked} of {total}, over by {over}"
+  },
+  "47d0256ccb": {
+    "es": "{sector}, {date}: {booked} de {total}, sobran {left}",
+    "en": "{sector}, {date}: {booked} of {total}, {left} left"
+  },
+  "8c2cf003d5": {
+    "es": "No fue posible leer la ocupación.",
+    "en": "Could not read the occupancy."
+  },
+  "2613fc96b7": {
+    "es": "Extra",
+    "en": "Extra"
+  },
+  "5b5a69a4c2": {
+    "es": "Bloque {number}",
+    "en": "Block {number}"
+  },
+  "1330ea6113": {
+    "es": "vendido {estimatedMinutes}",
+    "en": "sold {estimatedMinutes}"
+  },
+  "91cc7079bd": {
+    "es": "Use minutos enteros, como 90, u horas y minutos, como 1h30 o 1:30.",
+    "en": "Use whole minutes, like 90, or hours and minutes, like 1h30 or 1:30."
+  },
+  "83c6f93ba9": {
+    "es": "El tiempo debe ser mayor que cero.",
+    "en": "The time must be greater than zero."
+  },
+  "f909d11afc": {
+    "es": "Use menos que el bloque entero ({limit}): el resto va al otro día.",
+    "en": "Use less than the whole block ({limit}): the rest goes to the other day."
+  },
+  "6ba9298df1": {
+    "es": "Agendado {scheduled} · vendido {estimatedMinutes} · extra {extra}",
+    "en": "Scheduled {scheduled} · sold {estimatedMinutes} · extra {extra}"
+  },
+  "73d9b5bdac": {
+    "es": "Agendado {scheduled} · vendido {estimatedMinutes}",
+    "en": "Scheduled {scheduled} · sold {estimatedMinutes}"
+  },
+  "f1c5852845": {
+    "es": "90 o 1h30",
+    "en": "90 or 1h30"
+  },
+  "e965bc93c5": {
+    "es": "Sin conductor",
+    "en": "No driver"
+  },
+  "1c360595ea": {
+    "es": "Libre · {description}",
+    "en": "Free · {description}"
+  },
+  "dde2b32f3a": {
+    "es": "Hecha · {doneBy}",
+    "en": "Done · {doneBy}"
+  },
+  "68821be143": {
+    "es": "No hecha: {reason}",
+    "en": "Not done: {reason}"
+  },
+  "ce53aca16c": {
+    "es": "Por hacer",
+    "en": "To do"
+  },
+  "83b1125be9": {
+    "es": "El odómetro no es un número. Escriba como 45.320 o 45320,5.",
+    "en": "The odometer is not a number. Write it like 45.320 or 45320,5."
+  },
+  "2b530ef165": {
+    "es": "El odómetro no puede ser negativo.",
+    "en": "The odometer cannot be negative."
+  },
+  "95a87f016a": {
+    "es": "El odómetro de regreso no es un número. Escriba como 45.320 o 45320,5.",
+    "en": "The return odometer is not a number. Write it like 45.320 or 45320,5."
+  },
+  "9d64778c96": {
+    "es": "El odómetro de regreso es menor que el de salida ({start}). Revise los dos números.",
+    "en": "The return odometer is lower than the departure one ({start}). Check both numbers."
+  },
+  "4084a19edc": {
+    "es": "Los km recorridos no son un número. Escriba como 120 o 120,5.",
+    "en": "The km driven is not a number. Write it like 120 or 120,5."
+  },
+  "382face4be": {
+    "es": "Los km recorridos no pueden ser negativos.",
+    "en": "The km driven cannot be negative."
+  },
+  "c8e05caed8": {
+    "es": "Los km de alguna parada no son un número o son negativos.",
+    "en": "The km of some stop is not a number or is negative."
+  },
+  "ebd3d31630": {
+    "es": "No encontrado",
+    "en": "Not found"
+  },
+  "a7722f02a2": {
+    "es": "Ninguna salida de {vehicleName} en ese momento.",
+    "en": "No trip of {vehicleName} at that moment."
+  },
+  "026d8426eb": {
+    "es": "Sin conductor registrado",
+    "en": "No driver recorded"
+  },
+  "9d025f611c": {
+    "es": "Salida {number}, de {start} a {end}",
+    "en": "Trip {number}, from {start} to {end}"
+  },
+  "9ffb07675c": {
+    "es": "Equipo: {team}",
+    "en": "Team: {team}"
+  },
+  "4b89af5577": {
+    "es": "La OT se está rehaciendo ahora. Actualice la pantalla en unos instantes.",
+    "en": "The work order is being redone now. Refresh the screen in a moment."
+  },
+  "8f5de2a71e": {
+    "es": "Rehacer esta OT no terminó: {failReason}.",
+    "en": "Redoing this work order did not finish: {failReason}."
+  },
+  "d43d6d4885": {
+    "es": "Rehacer esta OT no terminó.",
+    "en": "Redoing this work order did not finish."
+  },
+  "18b52cb212": {
+    "es": "La copia quedó en elaboración.",
+    "en": "The copy was left in draft."
+  },
+  "6626f0e429": {
+    "es": "Abrir la copia",
+    "en": "Open the copy"
+  },
+  "2a00001e4e": {
+    "es": "Motivo de la cancelación de la OT actual",
+    "en": "Reason for canceling the current work order"
   }
 }

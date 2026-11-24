@@ -345,6 +345,28 @@ export type TaskView = ProductionTask & {
   alert: ChainAlert | null
 }
 
+/**
+ * Os blocos de agenda da tarefa (GP-52): os que a API manda em `blocks`, o
+ * bloco 1 primeiro. A API antiga não manda: vale só o agendamento, como um
+ * bloco só.
+ */
+export const blocksOf = (
+  task: Pick<ProductionTask, 'blocks' | 'schedule'>,
+): TaskBlock[] =>
+  task.blocks ??
+  (task.schedule
+    ? [
+        {
+          slotId: null,
+          date: task.schedule.date,
+          start: task.schedule.start,
+          minutes: task.schedule.minutes,
+          kind: 'NORMAL',
+          reason: null,
+        },
+      ]
+    : [])
+
 // Como a tela do quadro é aberta (GP-11): o gerente vê tudo; o operador, o
 // que o acesso dele ao gerenciador permite
 export type BoardViewer = {

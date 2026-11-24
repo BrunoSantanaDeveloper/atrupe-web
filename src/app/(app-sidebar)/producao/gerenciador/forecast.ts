@@ -16,8 +16,17 @@
 // - O gerenciador sem expediente usa o da empresa (GP-49).
 // - A manutenção que bloqueia a agenda (GP-49 item 6): a sequência da
 //   máquina pula o período; o agendado à mão dentro dele fica em vermelho.
+// - Os blocos de agenda (GP-52): a tarefa dividida entra na sequência de
+//   cada dia em que tem bloco, com os minutos daquele bloco. A previsão do
+//   bloco 1 fica na chave da tarefa; a dos outros, em forecastKey.
 
-import type { LiveSchedule, ManagerHours, TaskView } from './manager'
+import {
+  blocksOf,
+  type LiveSchedule,
+  type ManagerHours,
+  type TaskBlock,
+  type TaskView,
+} from './manager'
 import type { ProductionCalendar } from '@/actions/production-manager'
 
 // A manutenção do patrimônio que bloqueia a máquina (GP-49 item 6). A tarefa
@@ -59,6 +68,8 @@ export const blocksTask = (
 export type DayOff = 'HOLIDAY' | 'NO_WORK' | null
 
 export type Forecast = {
+  // A tarefa: a dividida tem uma previsão por bloco (GP-52)
+  taskId: string
   start: number
   end: number
   // RESCHEDULE: quanto o início andou; WARN: quanto o trabalho vai atrasar
@@ -130,6 +141,15 @@ export const remainingOf = (task: TaskView) =>
 
 const machineKey = (task: TaskView) => task.machine || ''
 
+/**
+ * A chave da previsão no mapa: o bloco 1 (e a tarefa em andamento) pelo id
+ * da tarefa; os outros blocos de agenda, pela tarefa e pelo bloco (GP-52).
+ */
+export const forecastKey = (
+  taskId: string,
+  block?: Pick<TaskBlock, 'slotId'> | null,
+) => (block?.slotId ? `${taskId}:${block.slotId}` : taskId)
+
 export function forecastQueue(
   tasks: TaskView[],
   options: {
@@ -160,6 +180,7 @@ export function forecastQueue(
     if (task.status !== 'IN_PROGRESS') continue
     const end = nowMinutes + remainingOf(task)
     result.set(task.id, {
+      taskId: task.id,
       start: nowMinutes,
       end,
       delayMinutes: 0,
@@ -172,24 +193,26 @@ export function forecastQueue(
     busyUntil.set(key, Math.max(busyUntil.get(key) ?? 0, end))
   }
 
+  // Bloco a bloco (GP-52): cada bloco no dia dele, com os minutos dele, e
+  // não o total da tarefa no primeiro dia
   const scheduled = tasks
-    .filter(
-      (task) =>
-        task.status === 'NOT_STARTED' &&
-        task.schedule &&
-        task.schedule.date >= today,
+    .filter((task) => task.status === 'NOT_STARTED')
+    .flatMap((task) =>
+      blocksOf(task)
+        .filter((block) => block.date >= today)
+        .map((block) => ({ task, block })),
     )
     .sort((a, b) =>
       // Só o dia vai depois das que têm hora (GP-49)
-      `${a.schedule!.date} ${a.schedule!.start ?? '99:99'}`.localeCompare(
-        `${b.schedule!.date} ${b.schedule!.start ?? '99:99'}`,
+      `${a.block.date} ${a.block.start ?? '99:99'}`.localeCompare(
+        `${b.block.date} ${b.block.start ?? '99:99'}`,
       ),
     )
 
   // Uma sequência por máquina e por dia
   const cursors = new Map<string, number>()
-  for (const task of scheduled) {
-    const day = task.schedule!.date
+  for (const { task, block: taskBlock } of scheduled) {
+    const day = taskBlock.date
     const key = `${machineKey(task)}|${day}`
     if (!cursors.has(key)) {
       const busy =
@@ -204,10 +227,13 @@ export function forecastQueue(
     }
     const cursor = cursors.get(key)!
     // Só o dia: entra na sequência, a partir do início do expediente
-    const fixed = task.schedule!.start
+    const fixed = taskBlock.start
     const planned = fixed ? toMinutes(fixed) : Math.max(cursor, workStart)
+    // O bloco 1 sem minutos vale o previsto; os outros, os minutos deles
     const duration = Math.max(
-      task.schedule!.minutes || task.estimatedMinutes,
+      taskBlock.slotId === null
+        ? taskBlock.minutes || task.estimatedMinutes
+        : taskBlock.minutes,
       0,
     )
 
@@ -249,7 +275,8 @@ export function forecastQueue(
     const inMaintenance = hit(shown.begin, shown.finish)?.name ?? null
 
     const off = dayOff(day, calendar)
-    result.set(task.id, {
+    result.set(forecastKey(task.id, taskBlock), {
+      taskId: task.id,
       start: shown.begin,
       end: shown.finish,
       delayMinutes: Math.max(0, real.begin - planned),

@@ -22,7 +22,7 @@ import { Card, CardContent } from '@/components/ui/card'
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { PersonAvatar } from './PersonAvatar'
-import { QueueList, type QueueGroup } from './QueueList'
+import { QueueList, type QueueGroup, type QueueRow } from './QueueList'
 import { BatchPrintDialog } from './BatchPrintDialog'
 import { ProductionFilters } from './GeneralViews'
 import { duration, TaskDetailDialog } from './TaskDetailDialog'
@@ -30,6 +30,7 @@ import {
   today,
   dayLabel,
   endTime,
+  dayInPeriod,
   taskMatches,
   urgentFirst,
   BoardSkeleton,
@@ -39,7 +40,7 @@ import {
 
 // Types
 import type { TaskView, TaskStatus, TaskAction } from '../manager'
-import { NO_HOURS } from '../manager'
+import { NO_HOURS, blocksOf } from '../manager'
 import { blocksTask, dayOff, forecastQueue, remainingOf } from '../forecast'
 
 // Actions
@@ -313,19 +314,27 @@ export function SectorScreen({ id }: { id: string }) {
   }
 
   // A fila do dia: o que está andando, depois por dia, depois sem agenda;
-  // as fechadas ficam recolhidas no fim
+  // as fechadas ficam recolhidas no fim. Por dia, bloco a bloco (GP-52): a
+  // tarefa dividida aparece em cada dia em que tem bloco no período
   const queue = useMemo(() => {
     const open = tasks.filter((item) => OPEN.includes(item.status))
     const running = open.filter((item) => item.status !== 'NOT_STARTED')
     const waiting = open.filter((item) => item.status === 'NOT_STARTED')
-    const byTime = (a: TaskView, b: TaskView) =>
-      `${a.schedule!.date} ${a.schedule!.start}`.localeCompare(
-        `${b.schedule!.date} ${b.schedule!.start}`,
+    // Só o dia vai depois das que têm hora (GP-49)
+    const byTime = (a: QueueRow, b: QueueRow) =>
+      `${a.block!.date} ${a.block!.start ?? '99:99'}`.localeCompare(
+        `${b.block!.date} ${b.block!.start ?? '99:99'}`,
       )
     const scheduled = urgentFirst(
-      waiting.filter((item) => item.schedule).sort(byTime),
+      waiting
+        .flatMap((item) =>
+          blocksOf(item)
+            .filter((block) => dayInPeriod(block.date, period))
+            .map((block): QueueRow => ({ ...item, block })),
+        )
+        .sort(byTime),
     )
-    const days = Array.from(new Set(scheduled.map((t) => t.schedule!.date)))
+    const days = Array.from(new Set(scheduled.map((t) => t.block!.date)))
     // Sem tempo não há agenda: a fila segue a entrega da ordem
     const byDue = (a: TaskView, b: TaskView) =>
       a.project.due.localeCompare(b.project.due)
@@ -333,7 +342,7 @@ export function SectorScreen({ id }: { id: string }) {
       running,
       days: days.map((day) => ({
         day,
-        tasks: scheduled.filter((item) => item.schedule!.date === day),
+        tasks: scheduled.filter((item) => item.block!.date === day),
       })),
       unscheduled: urgentFirst(
         timeless
@@ -342,7 +351,7 @@ export function SectorScreen({ id }: { id: string }) {
       ),
       closed: tasks.filter((item) => !OPEN.includes(item.status)),
     }
-  }, [tasks, timeless])
+  }, [tasks, timeless, period])
 
   // A previsão da fila, pela sequência de cada máquina (GP-48 itens 4 e 5)
   const forecasts = useMemo(() => {
@@ -399,8 +408,9 @@ export function SectorScreen({ id }: { id: string }) {
               alert: !!off,
               hint:
                 [offHint, ...stops].filter(Boolean).join(' · ') || undefined,
+              // Os minutos do bloco de cada tarefa naquele dia (GP-52)
               minutes: inDay.reduce(
-                (sum, item) => sum + (item.schedule?.minutes || 0),
+                (sum, item) => sum + (item.block?.minutes || 0),
                 0,
               ),
               tasks: inDay,
@@ -420,10 +430,13 @@ export function SectorScreen({ id }: { id: string }) {
     open: openTasks.length,
     minutes: openTasks.reduce((sum, item) => sum + remainingOf(item), 0),
     urgent: openTasks.filter((item) => item.priority === 'URGENT').length,
-    // Reagenda e avisa: quantos andaram pela sequência (GP-48 item 20)
-    moved: Array.from(forecasts.values()).filter(
-      (forecast) => forecast.delayMinutes > 0,
-    ).length,
+    // Reagenda e avisa: quantos andaram pela sequência (GP-48 item 20); a
+    // tarefa dividida conta uma vez, ande um bloco ou mais (GP-52)
+    moved: new Set(
+      Array.from(forecasts.values())
+        .filter((forecast) => forecast.delayMinutes > 0)
+        .map((forecast) => forecast.taskId),
+    ).size,
   }
 
   const select = (taskIdToSelect: string, checked: boolean) =>

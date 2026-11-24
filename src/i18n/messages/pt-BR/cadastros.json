@@ -84,10 +84,10 @@
     "customerSImported": "{successRows} cliente(s) importado(s)",
     "importCustomerSpreadsheet": "Importar planilha de clientes",
     "selectACsvFileTo": "Selecione um arquivo CSV para importar clientes em lote",
+    "fillInAllRequiredFields": "Preencha todos os campos obrigatórios",
     "insertAnotherAfterThisOne": "Inserir outro depois deste",
     "individual2": "Pessoa física",
     "company": "Pessoa jurídica",
-    "fillInAllRequiredFields": "Preencha todos os campos obrigatórios",
     "generalInformation": "Informações gerais",
     "contacts2": "Responsáveis",
     "creditLimit": "Limite de crédito",
@@ -145,7 +145,6 @@
     "enterTheCategoryName": "Informe o nome da categoria"
   },
   "fornecedores": {
-    "dadosDePagamento": "Dados de pagamento",
     "contact": "Responsável - {valor}",
     "youDonTHavePermission": "Você não tem permissão para visualizar os dados do fornecedor.",
     "youDonTHavePermission2": "Você não tem permissão para visualizar o financeiro do fornecedor.",
@@ -158,6 +157,7 @@
     "supplierSImported": "{successRows} fornecedor(es) importado(s)",
     "importSupplierSpreadsheet": "Importar planilha de fornecedores",
     "selectACsvFileTo": "Selecione um arquivo CSV para importar fornecedores em lote",
+    "dadosDePagamento": "Dados de pagamento",
     "howThisSupplierUsuallyGets": "Como este fornecedor costuma receber: chave PIX, banco, agência e conta.",
     "theseDetailsShowOnTheir": "Esses dados aparecem nas contas a pagar dele, para quem for pagar não precisar procurar.",
     "pixKey": "Chave Pix",

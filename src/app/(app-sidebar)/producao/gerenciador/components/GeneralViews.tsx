@@ -15,8 +15,8 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { TaskView } from '../manager'
-import { QueueList, type QueueGroup } from './QueueList'
+import { blocksOf, type TaskBlock, type TaskView } from '../manager'
+import { BlockBadge, QueueList, type QueueGroup } from './QueueList'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -24,6 +24,26 @@ import { dayLabel, endTime, periodOptions, type Period } from './shared'
 
 // Icons
 import { IconSearch, IconAlertTriangle } from '@tabler/icons-react'
+
+// A tarefa num dia: o bloco de agenda dela naquele dia (GP-52)
+type DayRow = TaskView & { block: TaskBlock }
+
+/**
+ * Bloco a bloco (GP-52): a tarefa em cada dia em que tem bloco entre `from`
+ * e `to` (o período pedido à API), com os minutos daquele bloco.
+ */
+const dayRows = (tasks: TaskView[], from?: string, to?: string): DayRow[] =>
+  tasks.flatMap((task) =>
+    blocksOf(task)
+      .filter(
+        (block) => (!from || block.date >= from) && (!to || block.date <= to),
+      )
+      .map((block) => ({ ...task, block })),
+  )
+
+// Só o dia vai depois das que têm hora (GP-49)
+const byStart = (a: DayRow, b: DayRow) =>
+  (a.block.start ?? '99:99').localeCompare(b.block.start ?? '99:99')
 
 export function ProductionFilters({
   search,
@@ -120,21 +140,27 @@ export function ProductionFilters({
 export function AgendaView({
   scheduled,
   unscheduled,
+  from,
+  to,
   onOpen,
 }: {
   scheduled: TaskView[]
   unscheduled: TaskView[]
+  // O período pedido à API: só os blocos de agenda dentro dele (GP-52)
+  from?: string
+  to?: string
   onOpen: (id: string) => void
 }) {
-  const days = Array.from(new Set(scheduled.map((task) => task.schedule!.date)))
+  const rows = dayRows(scheduled, from, to)
+  const days = Array.from(new Set(rows.map((row) => row.block.date))).sort()
   const alerts = scheduled.filter((task) => task.alert).length
   const groups: QueueGroup[] = [
     ...days.map((day) => {
-      const tasks = scheduled.filter((task) => task.schedule!.date === day)
+      const tasks = rows.filter((row) => row.block.date === day).sort(byStart)
       return {
         key: day,
         title: dayLabel(day),
-        minutes: tasks.reduce((sum, task) => sum + task.schedule!.minutes, 0),
+        minutes: tasks.reduce((sum, row) => sum + row.block.minutes, 0),
         tasks,
       }
     }),
@@ -178,37 +204,49 @@ export function AgendaView({
 export function VehiclesView({
   vehicles,
   scheduled,
+  from,
+  to,
   onOpen,
 }: {
   vehicles: { id: string; name: string; plate: string }[]
   scheduled: TaskView[]
+  // O período pedido à API: só os blocos de agenda dentro dele (GP-52)
+  from?: string
+  to?: string
   onOpen: (id: string) => void
 }) {
-  const withVehicle = scheduled.filter((task) => task.vehicleId)
-  const days = Array.from(
-    new Set(withVehicle.map((task) => task.schedule!.date)),
+  // A tarefa dividida usa o veículo em cada dia em que tem bloco, no
+  // horário do bloco; os km contam no bloco 1, como na API (GP-52)
+  const withVehicle = dayRows(
+    scheduled.filter((task) => task.vehicleId),
+    from,
+    to,
   )
+  const days = Array.from(
+    new Set(withVehicle.map((row) => row.block.date)),
+  ).sort()
   const toMinutes = (time: string) => {
     const [hours, minutes] = time.split(':').map(Number)
     return hours * 60 + minutes
   }
   // Só o dia não tem hora: não acusa conflito de horário
-  const overlaps = (a: TaskView, b: TaskView) => {
-    if (!a.schedule!.start || !b.schedule!.start) return false
-    const startA = toMinutes(a.schedule!.start)
-    const endA = startA + a.schedule!.minutes
-    const startB = toMinutes(b.schedule!.start)
-    const endB = startB + b.schedule!.minutes
+  const overlaps = (a: DayRow, b: DayRow) => {
+    if (!a.block.start || !b.block.start) return false
+    const startA = toMinutes(a.block.start)
+    const endA = startA + a.block.minutes
+    const startB = toMinutes(b.block.start)
+    const endB = startB + b.block.minutes
     return startA < endB && startB < endA
   }
+  const kmOf = (row: DayRow) => (row.block.slotId === null ? row.km || 0 : 0)
   // Em lista (24/11/2026: listas, não cartões): um grupo por dia, o veículo
   // na linha; duas saídas do mesmo veículo no mesmo horário ficam em vermelho
-  const conflictOf = (task: TaskView) =>
+  const conflictOf = (task: DayRow) =>
     withVehicle.some(
       (other) =>
         other.id !== task.id &&
         other.vehicleId === task.vehicleId &&
-        other.schedule!.date === task.schedule!.date &&
+        other.block.date === task.block.date &&
         overlaps(task, other),
     )
   const vehicleOf = (id: string | null) =>
@@ -235,13 +273,10 @@ export function VehiclesView({
               <span>Km</span>
             </div>
             {days.map((day) => {
-              const inDay = withVehicle.filter(
-                (task) => task.schedule!.date === day,
-              )
-              const totalKm = inDay.reduce(
-                (sum, task) => sum + (task.km || 0),
-                0,
-              )
+              const inDay = withVehicle
+                .filter((row) => row.block.date === day)
+                .sort(byStart)
+              const totalKm = inDay.reduce((sum, row) => sum + kmOf(row), 0)
               return (
                 <section key={day}>
                   <div className="flex items-baseline gap-3 border-b border-gray-100 bg-gray-25 px-4 py-2">
@@ -255,9 +290,10 @@ export function VehiclesView({
                   {inDay.map((task) => {
                     const conflict = conflictOf(task)
                     const vehicle = vehicleOf(task.vehicleId)
+                    const km = kmOf(task)
                     return (
                       <button
-                        key={task.id}
+                        key={`${task.id}:${task.block.slotId ?? ''}`}
                         type="button"
                         onClick={() => onOpen(task.id)}
                         className={cn(
@@ -266,8 +302,8 @@ export function VehiclesView({
                         )}
                       >
                         <span className="font-medium text-gray-800">
-                          {task.schedule!.start
-                            ? `${task.schedule!.start} – ${endTime(task.schedule!.start, task.schedule!.minutes)}`
+                          {task.block.start
+                            ? `${task.block.start} – ${endTime(task.block.start, task.block.minutes)}`
                             : 'Só o dia'}
                         </span>
                         <span className="truncate text-gray-800">
@@ -289,12 +325,13 @@ export function VehiclesView({
                           <span className="truncate">
                             {task.stageName} · {task.itemName}
                           </span>
+                          <BlockBadge task={task} block={task.block} />
                         </span>
                         <span className="truncate text-gray">
                           {task.project.client}
                         </span>
                         <span className="text-gray-700">
-                          {task.km ? `${task.km} km` : '—'}
+                          {km ? `${km} km` : '—'}
                         </span>
                       </button>
                     )

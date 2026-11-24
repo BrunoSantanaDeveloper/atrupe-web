@@ -94,11 +94,12 @@ export function ManagersHome() {
   })
   const summary = summaryRes?.data || []
 
+  // A agenda do colaborador mostra sempre os próximos 7 dias. As listas
+  // mostram só os blocos de agenda dentro do período pedido (GP-52)
+  const range = agendaRange(view === 'pessoas' ? 'semana' : period)
   const { data: agendaRes, isLoading: loadingAgenda } = useQuery({
-    // A agenda do colaborador mostra sempre os próximos 7 dias
     queryKey: ['production-agenda', view === 'pessoas' ? 'semana' : period],
-    queryFn: () =>
-      getAgenda(agendaRange(view === 'pessoas' ? 'semana' : period)),
+    queryFn: () => getAgenda(range),
     enabled: withTime,
   })
   const agenda = agendaRes?.data
@@ -251,6 +252,8 @@ export function ManagersHome() {
                 unscheduled={agenda.unscheduled.filter((item) =>
                   taskMatches(item, filter),
                 )}
+                from={range.from}
+                to={range.to}
                 onOpen={setTaskId}
               />
             ) : (
@@ -259,6 +262,8 @@ export function ManagersHome() {
                 scheduled={agenda.scheduled.filter((item) =>
                   taskMatches(item, filter),
                 )}
+                from={range.from}
+                to={range.to}
                 onOpen={setTaskId}
               />
             )}

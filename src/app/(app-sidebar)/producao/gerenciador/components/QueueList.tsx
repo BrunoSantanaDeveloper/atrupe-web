@@ -23,8 +23,14 @@ import { SectorIcon } from '@/components/common/SectorIcon'
 import { duration, taskStatusBadge } from './TaskDetailDialog'
 
 // Types
-import type { TaskView } from '../manager'
-import { excess, hhmm, remainingOf, type Forecast } from '../forecast'
+import { blocksOf, type TaskBlock, type TaskView } from '../manager'
+import {
+  excess,
+  forecastKey,
+  hhmm,
+  remainingOf,
+  type Forecast,
+} from '../forecast'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -41,13 +47,50 @@ import {
   IconAlertTriangle,
 } from '@tabler/icons-react'
 
+// A linha da lista: a tarefa e, no grupo de um dia, o bloco de agenda dela
+// naquele dia (GP-52). A tarefa dividida tem uma linha em cada dia
+export type QueueRow = TaskView & { block?: TaskBlock }
+
+// A linha é do bloco 1 (ou não tem bloco): o horário, o cadeado e o arrastar
+// são os do agendamento da tarefa
+const isFirstBlock = (row: QueueRow) => !row.block || row.block.slotId === null
+
+/**
+ * O selo da linha que não é do bloco 1 (GP-52), com os termos da janela da
+ * tarefa (TaskSlots): "Bloco 2" ou "Extra".
+ */
+export function BlockBadge({
+  task,
+  block,
+}: {
+  task: TaskView
+  block?: TaskBlock
+}) {
+  if (!block || block.slotId === null) return null
+  // O número como TaskSlots conta: a posição em slots, depois do bloco 1
+  const index = (task.slots || []).findIndex((slot) => slot.id === block.slotId)
+  const number =
+    index >= 0
+      ? index + 2
+      : blocksOf(task).findIndex((item) => item.slotId === block.slotId) + 1
+  return (
+    <Badge
+      variant={block.kind === 'EXTRA' ? 'warningLight' : 'neutralLight'}
+      size="sm"
+      className="shrink-0"
+    >
+      {block.kind === 'EXTRA' ? 'Extra' : `Bloco ${number}`}
+    </Badge>
+  )
+}
+
 export type QueueGroup = {
   key: string
   title: string
   hint?: string
   // O total de horas do dia (GP-48 item 3)
   minutes?: number
-  tasks: TaskView[]
+  tasks: QueueRow[]
   // Só o dia agendado aceita arrastar para trocar a ordem
   sortable?: boolean
   // Feriado ou dia sem expediente: o título e o aviso em vermelho (GP-49)
@@ -93,9 +136,11 @@ export function QueueList({
 }) {
   const [dragging, setDragging] = useState<TaskView | null>(null)
 
-  // Troca só no mesmo dia e na mesma máquina (GP-48 item 6)
-  const canSwap = (target: TaskView) =>
+  // Troca só no mesmo dia e na mesma máquina (GP-48 item 6). A troca mexe no
+  // agendamento da tarefa: só entre linhas do bloco 1 (GP-52)
+  const canSwap = (target: QueueRow) =>
     !!dragging &&
+    isFirstBlock(target) &&
     dragging.id !== target.id &&
     dragging.schedule?.date === target.schedule?.date &&
     (dragging.machine || '') === (target.machine || '')
@@ -153,9 +198,15 @@ export function QueueList({
             </div>
 
             {group.tasks.map((item) => {
-              const forecast = forecasts.get(item.id)
+              // A previsão da linha é a do próprio bloco (GP-52): o bloco 2
+              // em outro dia mostra o horário dele; o cadeado é da tarefa
+              const forecast = forecasts.get(forecastKey(item.id, item.block))
               const badge = taskStatusBadge(item)
               const swap = group.sortable && canSwap(item)
+              const sortable =
+                !!group.sortable && !!onReorder && isFirstBlock(item)
+              // A tarefa dividida: a linha mostra os minutos do bloco do dia
+              const split = !!item.block && blocksOf(item).length > 1
               const takesPerson =
                 !!person &&
                 !!onDropPerson &&
@@ -163,10 +214,14 @@ export function QueueList({
                 item.status !== 'CANCELED'
               return (
                 <div
-                  key={item.id}
+                  key={
+                    item.block?.slotId
+                      ? `${item.id}:${item.block.slotId}`
+                      : item.id
+                  }
                   role="button"
                   tabIndex={0}
-                  draggable={!!group.sortable && !!onReorder}
+                  draggable={sortable}
                   onDragStart={() => setDragging(item)}
                   onDragEnd={() => setDragging(null)}
                   onDragOver={(event) =>
@@ -196,7 +251,7 @@ export function QueueList({
                     onKeyDown={(event) => event.stopPropagation()}
                     role="presentation"
                   >
-                    {group.sortable && onReorder && (
+                    {sortable && (
                       <Icon
                         icon={IconGripVertical}
                         size="sm"
@@ -306,8 +361,17 @@ export function QueueList({
 
                   <div className="text-xs">
                     <p className="text-gray-800">
-                      {duration(item.estimatedMinutes)}
+                      {duration(
+                        split && item.block
+                          ? item.block.minutes
+                          : item.estimatedMinutes,
+                      )}
                     </p>
+                    {split && (
+                      <p className="text-gray">
+                        vendido {duration(item.estimatedMinutes)}
+                      </p>
+                    )}
                     {item.actualMinutes > 0 && (
                       <p className="text-gray">
                         falta {duration(remainingOf(item))}
@@ -319,6 +383,7 @@ export function QueueList({
                     <Badge variant={badge.variant} size="sm">
                       {badge.text}
                     </Badge>
+                    <BlockBadge task={item} block={item.block} />
                     {item.priority === 'URGENT' && (
                       <Badge variant="errorLight" size="sm">
                         Urgente
