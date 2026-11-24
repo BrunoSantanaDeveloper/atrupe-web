@@ -23,7 +23,7 @@ import { getOccupancy } from '@/actions/production-manager'
 
 // Utils
 import { cn } from '@/lib/utils'
-import { dayOff, effectiveHours, toMinutes } from '../forecast'
+import { dayOff, effectiveHours, toMinutes, type DayOff } from '../forecast'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -60,6 +60,54 @@ const LEVEL: Record<Level, string> = {
   busy: 'bg-warning-100 border-warning-200 text-warning-800',
   full: 'bg-error-100 border-error-200 text-error-800',
   off: 'bg-gray-100 border-gray-200 text-gray',
+}
+
+// A legenda, com o rótulo em "label" para a extração de textos achar (IN-7)
+const LEGEND: { level: Level; label: string }[] = [
+  { level: 'free', label: 'Tem espaço' },
+  { level: 'busy', label: 'Acima de 80%' },
+  { level: 'full', label: 'Lotado' },
+  { level: 'off', label: 'Feriado ou sem expediente' },
+]
+
+/**
+ * O detalhe do quadrado (o title ao passar o mouse), em frases inteiras: um
+ * objeto de mensagens, para a extração de textos achar cada uma (IN-7).
+ */
+const cellDetail = ({
+  sector,
+  day,
+  off,
+  minutes,
+  capacity,
+}: {
+  sector: string
+  day: string
+  off: DayOff
+  minutes: number
+  capacity: number
+}) => {
+  const booked = hm(minutes)
+  const total = hm(capacity)
+  const over = hm(minutes - capacity)
+  const left = hm(capacity - minutes)
+  const date = shortDate(day)
+  const texts = {
+    holiday: { text: `${sector}, ${date}: feriado` },
+    holidayBooked: {
+      text: `${sector}, ${date}: feriado, com ${booked} agendadas`,
+    },
+    closed: { text: `${sector}, ${date}: sem expediente` },
+    closedBooked: {
+      text: `${sector}, ${date}: sem expediente, com ${booked} agendadas`,
+    },
+    over: { text: `${sector}, ${date}: ${booked} de ${total}, passa ${over}` },
+    left: { text: `${sector}, ${date}: ${booked} de ${total}, sobram ${left}` },
+  }
+  if (off === 'HOLIDAY')
+    return minutes ? texts.holidayBooked.text : texts.holiday.text
+  if (off) return minutes ? texts.closedBooked.text : texts.closed.text
+  return minutes > capacity ? texts.over.text : texts.left.text
 }
 
 export function OccupancyMap({
@@ -156,7 +204,7 @@ export function OccupancyMap({
           <Skeleton className="h-40 w-full" />
         ) : !occupancy ? (
           <p className="text-sm text-gray">
-            {data?.message || 'Não foi possível ler a ocupação.'}
+            {data?.message ? data.message : 'Não foi possível ler a ocupação.'}
           </p>
         ) : !occupancy.managers.length ? (
           <p className="text-sm text-gray">
@@ -209,19 +257,13 @@ export function OccupancyMap({
                             : minutes >= capacity * 0.8
                               ? 'busy'
                               : 'free'
-                      const detail = off
-                        ? `${manager.name}, ${shortDate(day)}: ${
-                            dayOff(day, occupancy.calendar) === 'HOLIDAY'
-                              ? 'feriado'
-                              : 'sem expediente'
-                          }${minutes ? `, com ${hm(minutes)} agendadas` : ''}`
-                        : `${manager.name}, ${shortDate(day)}: ${hm(minutes)} de ${hm(
-                            capacity,
-                          )}, ${
-                            minutes > capacity
-                              ? `passa ${hm(minutes - capacity)}`
-                              : `sobram ${hm(capacity - minutes)}`
-                          }`
+                      const detail = cellDetail({
+                        sector: manager.name,
+                        day,
+                        off: dayOff(day, occupancy.calendar),
+                        minutes,
+                        capacity,
+                      })
                       const cell = (
                         <div
                           title={detail}
@@ -258,14 +300,7 @@ export function OccupancyMap({
               </tbody>
             </table>
             <div className="mt-3 flex flex-wrap gap-4 text-xs text-gray">
-              {(
-                [
-                  ['free', 'Tem espaço'],
-                  ['busy', 'Acima de 80%'],
-                  ['full', 'Lotado'],
-                  ['off', 'Feriado ou sem expediente'],
-                ] as [Level, string][]
-              ).map(([level, label]) => (
+              {LEGEND.map(({ level, label }) => (
                 <span key={level} className="flex items-center gap-1.5">
                   <span
                     className={cn('size-3 rounded-sm border', LEVEL[level])}

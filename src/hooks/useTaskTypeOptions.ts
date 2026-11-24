@@ -17,6 +17,9 @@ import { getManagerConfig } from '@/actions/production-manager'
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
+// Utils
+import { DEMO_DATA } from '@/lib/demo'
+
 // Consts
 import { FEATURES } from '@/consts/features'
 import { TASK_TYPES } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
@@ -25,7 +28,10 @@ const key = (name: string) => name.trim().toLowerCase()
 
 export function useTaskTypeOptions(current?: string | null) {
   const { hasFeature } = usePlanFeatures()
-  const elite = hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+  // Só com a flag de demonstração, como o resto da produção: ler
+  // /production/config cria o fluxo padrão da empresa na primeira vez. Sem
+  // ela, o seletor fica com a lista de sempre e não avisa nada
+  const elite = DEMO_DATA && hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
   const { data } = useQuery({
     queryKey: ['production-config'],
     queryFn: () => getManagerConfig(),

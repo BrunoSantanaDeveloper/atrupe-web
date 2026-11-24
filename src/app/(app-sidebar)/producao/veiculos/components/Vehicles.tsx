@@ -58,6 +58,7 @@ import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
 import { uploadProductionAttachment } from '@/lib/production-upload'
+import { parseTypedNumber } from '@/lib/typed-number'
 
 const SCHEDULE = ['production:vehicle_schedule:edit']
 
@@ -81,7 +82,6 @@ const km = (value: number | null) =>
   value === null
     ? '-'
     : `${value.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} km`
-const num = (value: string) => Number(value.replace(',', '.'))
 
 export function Vehicles() {
   const queryClient = useQueryClient()
@@ -192,8 +192,8 @@ export function Vehicles() {
                               {when(item.departAt)} → {when(item.returnAt)}
                             </p>
                             <p className="text-xs text-gray">
-                              {item.driver?.name || 'Sem motorista'} ·{' '}
-                              {item.stops.length} parada(s)
+                              {item.driver ? item.driver.name : 'Sem motorista'}{' '}
+                              · {item.stops.length} parada(s)
                               {item.km !== null ? ` · ${km(item.km)}` : ''}
                             </p>
                           </button>
@@ -300,7 +300,9 @@ export function Vehicles() {
         onOpenChange={setOpenRequest}
         onDone={refresh}
       />
+      {/* A chave pela saída: cada uma abre limpa, sem o estado da anterior */}
       <TripDialog
+        key={trip?.id ?? 'none'}
         trip={trip}
         onOpenChange={(value) => !value && setTripId(null)}
         onDone={refresh}
@@ -322,12 +324,14 @@ function NewTripDialog({
   overview: NonNullable<Awaited<ReturnType<typeof getTrips>>['data']>
   onDone: () => void
 }) {
+  // As pessoas vêm com as saídas (os colaboradores ativos); a configuração
+  // da produção fica para a API que ainda não as devolve
   const { data: config } = useQuery({
     queryKey: ['production-config'],
     queryFn: () => getManagerConfig(),
-    enabled: open,
+    enabled: open && !overview.people,
   })
-  const people = config?.data?.collaborators || []
+  const people = overview.people || config?.data?.collaborators || []
   const { data: sectors } = useSector()
   const [vehicleId, setVehicleId] = useState('')
   const [driverId, setDriverId] = useState('')
@@ -581,6 +585,15 @@ function NewTripDialog({
 
 /* ------------------------------------------------------------- a saída */
 
+/** Por que a saída não fecha (o motivo aparece em CloseIssueText) */
+type CloseIssue =
+  | 'odometer-invalid'
+  | 'odometer-lower'
+  | 'km-invalid'
+  | 'km-negative'
+  | 'allocation'
+  | null
+
 function TripDialog({
   trip,
   onOpenChange,
@@ -614,11 +627,40 @@ function TripDialog({
     onDone()
   }
 
+  // O digitado no costume brasileiro ("45.320" é 45 mil): undefined no
+  // vazio, null no que não é número, que a tela recusa com o motivo
+  const odometerValue = parseTypedNumber(odometer)
+  const closeKmValue = parseTypedNumber(closeKm)
+  const allocationOf = (stopId: string) =>
+    parseTypedNumber(allocations[stopId] ?? '')
+  const withOdometer = trip.odometerStart !== null
+  const typed = withOdometer ? odometerValue : closeKmValue
   const rodado =
-    trip.odometerStart !== null && odometer
-      ? num(odometer) - trip.odometerStart
-      : num(closeKm)
-  const suggested = suggestKm(trip.stops, rodado > 0 ? rodado : 0)
+    typeof typed !== 'number'
+      ? null
+      : withOdometer
+        ? typed - (trip.odometerStart as number)
+        : typed
+  const suggested = suggestKm(
+    trip.stops,
+    rodado !== null && rodado > 0 ? rodado : 0,
+  )
+  // Por que "Fechar a saída" não vai: o motivo aparece embaixo do campo
+  const closeIssue: CloseIssue =
+    typed === null
+      ? withOdometer
+        ? 'odometer-invalid'
+        : 'km-invalid'
+      : rodado !== null && rodado < 0
+        ? withOdometer
+          ? 'odometer-lower'
+          : 'km-negative'
+        : trip.stops.some((stop) => {
+              const value = allocationOf(stop.id)
+              return value === null || (value !== undefined && value < 0)
+            })
+          ? 'allocation'
+          : null
   const open = trip.status === 'SCHEDULED' || trip.status === 'ON_ROUTE'
 
   return (
@@ -635,7 +677,7 @@ function TripDialog({
         </DialogHeader>
         <DialogBody className="space-y-4">
           <p className="text-sm text-gray-800">
-            {trip.driver?.name || 'Sem motorista'}
+            {trip.driver ? trip.driver.name : 'Sem motorista'}
             {trip.team.length
               ? ` · equipe: ${trip.team.map((item) => item.name).join(', ')}`
               : ''}
@@ -660,8 +702,9 @@ function TripDialog({
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm text-gray-800">
-                    {stop.kind === 'FREE' ? 'Livre · ' : ''}
-                    {stop.description}
+                    {stop.kind === 'FREE'
+                      ? `Livre · ${stop.description}`
+                      : stop.description}
                     {stop.address ? ` · ${stop.address}` : ''}
                   </span>
                   <span className="text-xs text-gray">
@@ -671,13 +714,17 @@ function TripDialog({
                     {stop.km !== null ? ` · rodou ${km(stop.km)}` : ''}
                   </span>
                 </div>
-                <p className="text-xs text-gray">
-                  {stop.status === 'DONE'
-                    ? `Feita${stop.doneBy ? ` · ${stop.doneBy}` : ''}`
-                    : stop.status === 'NOT_DONE'
-                      ? `Não feita: ${stop.reason}`
-                      : 'Por fazer'}
-                </p>
+                {stop.status === 'DONE' && (
+                  <p className="text-xs text-gray">
+                    {stop.doneBy ? `Feita · ${stop.doneBy}` : 'Feita'}
+                  </p>
+                )}
+                {stop.status === 'NOT_DONE' && (
+                  <p className="text-xs text-gray">Não feita: {stop.reason}</p>
+                )}
+                {stop.status === 'PENDING' && (
+                  <p className="text-xs text-gray">Por fazer</p>
+                )}
                 {closing && stop.status === 'PENDING' && (
                   <div className="flex flex-wrap items-center gap-2">
                     <SelectBasic
@@ -737,14 +784,20 @@ function TripDialog({
                     />
                   </div>
                 )}
-                {!closing && open && stop.status === 'PENDING' && (
-                  <StopDone
-                    tripId={trip.id}
-                    stopId={stop.id}
-                    taskId={stop.kind === 'WORK' ? stop.taskId : null}
-                    onDone={onDone}
-                  />
-                )}
+                {/* O back só conclui parada com a saída em rota (e a de
+                    trabalho com a foto enviada depois da saída começar): o
+                    botão aparece depois de "Saiu" */}
+                {!closing &&
+                  open &&
+                  stop.status === 'PENDING' &&
+                  trip.status === 'ON_ROUTE' && (
+                    <StopDone
+                      tripId={trip.id}
+                      stopId={stop.id}
+                      taskId={stop.kind === 'WORK' ? stop.taskId : null}
+                      onDone={onDone}
+                    />
+                  )}
               </li>
             ))}
           </ul>
@@ -762,14 +815,32 @@ function TripDialog({
               </div>
               <Button
                 isLoading={busy}
+                disabled={
+                  odometerValue === null ||
+                  (odometerValue !== undefined && odometerValue < 0)
+                }
                 onClick={() =>
                   run(() =>
-                    startTrip(trip.id, odometer ? num(odometer) : undefined),
+                    startTrip(
+                      trip.id,
+                      typeof odometerValue === 'number'
+                        ? odometerValue
+                        : undefined,
+                    ),
                   )
                 }
               >
                 Saiu
               </Button>
+              {odometerValue === null ? (
+                <p className="w-full text-xs text-error-700">
+                  O odômetro não é um número. Escreva como 45.320 ou 45320,5.
+                </p>
+              ) : odometerValue !== undefined && odometerValue < 0 ? (
+                <p className="w-full text-xs text-error-700">
+                  O odômetro não pode ser negativo.
+                </p>
+              ) : null}
             </div>
           )}
 
@@ -802,6 +873,10 @@ function TripDialog({
                 O km é repartido entre as paradas de trabalho pelo previsto; as
                 livres ficam com zero. Ajuste antes de fechar, se precisar.
               </p>
+              <CloseIssueText
+                issue={closeIssue}
+                odometerStart={trip.odometerStart}
+              />
             </div>
           )}
 
@@ -831,21 +906,20 @@ function TripDialog({
               {closing ? (
                 <Button
                   isLoading={busy}
-                  disabled={!(rodado >= 0) || (!odometer && !closeKm)}
+                  disabled={typeof typed !== 'number' || !!closeIssue}
                   onClick={() =>
                     run(() =>
                       closeTrip(trip.id, {
-                        ...(trip.odometerStart !== null
-                          ? { odometerEnd: num(odometer) }
-                          : { km: num(closeKm) }),
+                        ...(withOdometer
+                          ? { odometerEnd: typed as number }
+                          : { km: typed as number }),
                         allocations: Object.keys(allocations).length
                           ? trip.stops.map((stop) => ({
                               stopId: stop.id,
                               km:
-                                allocations[stop.id] !== undefined &&
-                                allocations[stop.id] !== ''
-                                  ? num(allocations[stop.id])
-                                  : (suggested.get(stop.id) ?? 0),
+                                allocationOf(stop.id) ??
+                                suggested.get(stop.id) ??
+                                0,
                             }))
                           : undefined,
                         stops: Object.entries(results).map(
@@ -880,6 +954,41 @@ function TripDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  )
+}
+
+/**
+ * Por que a saída não fecha: o botão fica desligado e o motivo aparece aqui.
+ * Em JSX para a biblioteca de idiomas enxergar os textos (IN-7).
+ */
+function CloseIssueText({
+  issue,
+  odometerStart,
+}: {
+  issue: CloseIssue
+  odometerStart: number | null
+}) {
+  if (!issue) return null
+  const start = (odometerStart ?? 0).toLocaleString('pt-BR')
+  return (
+    <p className="text-xs text-error-700">
+      {issue === 'odometer-invalid' ? (
+        <>
+          O odômetro na volta não é um número. Escreva como 45.320 ou 45320,5.
+        </>
+      ) : issue === 'odometer-lower' ? (
+        <>
+          O odômetro na volta é menor que o da saída ({start}). Confira os dois
+          números.
+        </>
+      ) : issue === 'km-invalid' ? (
+        <>O km rodado não é um número. Escreva como 120 ou 120,5.</>
+      ) : issue === 'km-negative' ? (
+        <>O km rodado não pode ser negativo.</>
+      ) : (
+        <>O km de alguma parada não é um número ou está negativo.</>
+      )}
+    </p>
   )
 }
 
@@ -993,7 +1102,10 @@ function RequestDialog({
 function WhoWas() {
   const [plate, setPlate] = useState('')
   const [at, setAt] = useState('')
-  const [answer, setAnswer] = useState<string | null>(null)
+  // A resposta: o aviso da API (placa não achada) ou a saída do momento
+  const [answer, setAnswer] = useState<
+    { message: string } | { vehicleName: string; trip: Trip | null } | null
+  >(null)
   const [busy, setBusy] = useState(false)
 
   return (
@@ -1033,23 +1145,61 @@ function WhoWas() {
               )
               setBusy(false)
               if (!res.success || !res.data) {
-                setAnswer(res.message || 'Não encontrado')
+                setAnswer(
+                  res.message
+                    ? { message: res.message }
+                    : { message: 'Não encontrado' },
+                )
                 return
               }
-              const found = res.data.trip
-              setAnswer(
-                found
-                  ? `${found.driver?.name || 'Sem motorista registrado'} (saída ${found.number}, ${when(found.startedAt || found.departAt)} → ${when(found.finishedAt || found.returnAt)})${found.team.length ? `; equipe: ${found.team.map((item) => item.name).join(', ')}` : ''}`
-                  : `Nenhuma saída de ${res.data.vehicle.name} nesse momento.`,
-              )
+              setAnswer({
+                vehicleName: res.data.vehicle.name,
+                trip: res.data.trip,
+              })
             }}
           >
             Consultar
           </Button>
         </div>
-        {answer && <p className="text-sm text-gray-800">{answer}</p>}
+        {answer && <WhoWasAnswer answer={answer} />}
       </CardContent>
     </Card>
+  )
+}
+
+/**
+ * A resposta de "Quem estava com o veículo?". Em JSX, com as frases
+ * inteiras, para a biblioteca de idiomas enxergar os textos (IN-7).
+ */
+function WhoWasAnswer({
+  answer,
+}: {
+  answer: { message: string } | { vehicleName: string; trip: Trip | null }
+}) {
+  if ('message' in answer) {
+    return <p className="text-sm text-gray-800">{answer.message}</p>
+  }
+  const found = answer.trip
+  if (!found) {
+    return (
+      <p className="text-sm text-gray-800">
+        Nenhuma saída de {answer.vehicleName} nesse momento.
+      </p>
+    )
+  }
+  const start = when(found.startedAt || found.departAt)
+  const end = when(found.finishedAt || found.returnAt)
+  const team = found.team.map((item) => item.name).join(', ')
+  return (
+    <div className="space-y-0.5 text-sm">
+      <p className="font-medium text-gray-800">
+        {found.driver ? found.driver.name : 'Sem motorista registrado'}
+      </p>
+      <p className="text-gray">
+        Saída {found.number}, de {start} a {end}
+      </p>
+      {team ? <p className="text-gray">Equipe: {team}</p> : null}
+    </div>
   )
 }
 

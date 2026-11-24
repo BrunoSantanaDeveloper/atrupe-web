@@ -130,6 +130,20 @@ export type TaskSlot = {
   by: string
 }
 
+// Um bloco de agenda da tarefa como a API manda em `blocks` (GP-52): o
+// bloco 1 é o agendamento da tarefa (slotId nulo) e vem primeiro; depois, os
+// outros blocos por dia e hora. Cada um com os minutos dele
+export type TaskBlock = {
+  slotId: string | null
+  // YYYY-MM-DD
+  date: string
+  // "HH:MM"; nulo: só o dia (GP-49)
+  start: string | null
+  minutes: number
+  kind: 'NORMAL' | 'EXTRA'
+  reason: string | null
+}
+
 export type TimeEntry = {
   id: string
   collaboratorId: string
@@ -264,6 +278,10 @@ export type ProductionTask = {
   // Os blocos além do agendamento da tarefa (o bloco 1), GP-52: o resto de um
   // trabalho dividido em dois dias e o tempo extra, com motivo
   slots?: TaskSlot[]
+  // Todos os blocos de agenda, o bloco 1 primeiro, com os minutos de cada um
+  // (GP-52): a fila e a agenda mostram a tarefa em cada dia em que ela tem
+  // bloco. A API antiga não manda: vale só o agendamento (ver blocksOf)
+  blocks?: TaskBlock[]
   corrections: TimeCorrection[]
   attachments: TaskAttachment[]
   history: TaskHistory[]

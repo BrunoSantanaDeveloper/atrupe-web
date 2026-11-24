@@ -31,6 +31,9 @@ import type { Collaborator, TaskView } from '../manager'
 // Consts
 import { PRODUCTION_MANAGE } from '@/consts/productionManager'
 
+// Utils
+import { parseTypedMinutes } from '@/lib/typed-number'
+
 type Run = (
   key: string,
   action: () => Promise<{ success: boolean; message: string; data?: unknown }>,
@@ -47,6 +50,35 @@ const hm = (minutes: number) => {
 }
 
 type Form = 'split' | 'extra' | null
+
+/**
+ * Por que os minutos não valem: o back só aceita minutos inteiros. Em JSX
+ * para a biblioteca de idiomas enxergar os textos (IN-7).
+ */
+function MinutesHint({
+  value,
+  limit,
+}: {
+  /** O lido de parseTypedMinutes */
+  value: number | null | undefined
+  /** No "Dividir": o tempo do bloco 1, que o primeiro dia não alcança */
+  limit?: number
+}) {
+  if (value === undefined) return null
+  return value === null ? (
+    <p className="text-xs text-error-700">
+      Use minutos inteiros, como 90, ou horas e minutos, como 1h30 ou 1:30.
+    </p>
+  ) : value <= 0 ? (
+    <p className="text-xs text-error-700">
+      O tempo precisa ser maior que zero.
+    </p>
+  ) : limit !== undefined && value >= limit ? (
+    <p className="text-xs text-error-700">
+      Use menos que o bloco inteiro ({hm(limit)}): o resto vai para o outro dia.
+    </p>
+  ) : null
+}
 
 export function TaskSlots({
   task,
@@ -72,6 +104,14 @@ export function TaskSlots({
   const [entryMinutes, setEntryMinutes] = useState('')
 
   const firstMinutes = first?.minutes || task.estimatedMinutes || 0
+  // Minutos inteiros ou horas e minutos ("1h30", "1:30"); o decimal ("1,5",
+  // "90.5") não passa, porque o back recusa
+  const minutesValue = parseTypedMinutes(minutes)
+  const entryValue = parseTypedMinutes(entryMinutes)
+  const minutesOk =
+    typeof minutesValue === 'number' &&
+    minutesValue > 0 &&
+    (form !== 'split' || minutesValue < firstMinutes)
   const scheduled =
     firstMinutes + slots.reduce((sum, slot) => sum + slot.minutes, 0)
   const extra = slots
@@ -133,8 +173,9 @@ export function TaskSlots({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="type-eyebrow">Blocos de agenda</p>
         <p className="text-xs text-gray">
-          Agendado {hm(scheduled)} · vendido {hm(task.estimatedMinutes)}
-          {extra > 0 && ` · extra ${hm(extra)}`}
+          {extra > 0
+            ? `Agendado ${hm(scheduled)} · vendido ${hm(task.estimatedMinutes)} · extra ${hm(extra)}`
+            : `Agendado ${hm(scheduled)} · vendido ${hm(task.estimatedMinutes)}`}
         </p>
       </div>
 
@@ -221,17 +262,22 @@ export function TaskSlots({
                     </Label>
                     <Input
                       id={`slot-min-${key || 'first'}`}
-                      inputMode="numeric"
+                      placeholder="90 ou 1h30"
                       value={entryMinutes}
                       onChange={(event) => setEntryMinutes(event.target.value)}
                     />
+                    <MinutesHint value={entryValue} />
                   </div>
                   <div className="flex items-end gap-2">
                     <Button
                       type="button"
                       size="sm"
                       isLoading={pending === `slot-entry-${key}`}
-                      disabled={!who || !(Number(entryMinutes) > 0)}
+                      disabled={
+                        !who ||
+                        typeof entryValue !== 'number' ||
+                        entryValue <= 0
+                      }
                       onClick={async () => {
                         const ok = await run(
                           `slot-entry-${key}`,
@@ -239,7 +285,7 @@ export function TaskSlots({
                             addTimeEntry({
                               id: task.id,
                               collaboratorId: who,
-                              minutes: Number(entryMinutes),
+                              minutes: entryValue as number,
                               note: `Lançado no ${block.label.toLowerCase()} (${brDay(block.date)})`,
                               slotId: block.id,
                             }),
@@ -326,16 +372,20 @@ export function TaskSlots({
               </Label>
               <Input
                 id="slot-minutes"
-                inputMode="numeric"
+                placeholder="90 ou 1h30"
                 value={minutes}
                 onChange={(event) => setMinutes(event.target.value)}
               />
+              <MinutesHint
+                value={minutesValue}
+                limit={form === 'split' ? firstMinutes : undefined}
+              />
             </div>
           </div>
-          {form === 'split' && Number(minutes) > 0 && (
+          {form === 'split' && minutesOk && (
             <p className="text-xs text-gray">
-              Ficam {hm(Number(minutes))} no primeiro dia e{' '}
-              {hm(Math.max(firstMinutes - Number(minutes), 0))} vão para o
+              Ficam {hm(Number(minutesValue))} no primeiro dia e{' '}
+              {hm(Math.max(firstMinutes - Number(minutesValue), 0))} vão para o
               outro.
             </p>
           )}
@@ -356,10 +406,7 @@ export function TaskSlots({
               size="sm"
               isLoading={pending === 'slot-save'}
               disabled={
-                !date ||
-                !(Number(minutes) > 0) ||
-                (form === 'extra' && !reason.trim()) ||
-                (form === 'split' && !(Number(minutes) < firstMinutes))
+                !date || !minutesOk || (form === 'extra' && !reason.trim())
               }
               onClick={async () => {
                 const ok = await run('slot-save', () =>
@@ -368,13 +415,13 @@ export function TaskSlots({
                         id: task.id,
                         date,
                         start: start || null,
-                        keepMinutes: Number(minutes),
+                        keepMinutes: minutesValue as number,
                       })
                     : addTaskSlot({
                         id: task.id,
                         date,
                         start: start || null,
-                        minutes: Number(minutes),
+                        minutes: minutesValue as number,
                         kind: 'EXTRA',
                         reason: reason.trim(),
                       }),

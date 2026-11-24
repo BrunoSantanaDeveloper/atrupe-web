@@ -33,13 +33,17 @@ import { IconReportMoney } from '@tabler/icons-react'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePermissions } from '@/hooks/usePermissions'
 import { FEATURES } from '@/consts/features'
+import { DEMO_DATA } from '@/lib/demo'
 
 export function DeliverySchedule({ searchParams }: SearchParamsType) {
   const { canManageDeliverySchedule, hasFeature } = usePlanFeatures()
   // O mapa de ocupação (GP-50, ELITE): o vendedor vê para quando prometer;
   // quem vê a produção abre o setor pelo quadrado
   const { hasPermission } = usePermissions()
-  const withOccupancy = hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
+  // As telas da produção ainda estão em DEMO_ROUTES: sem a flag, o mapa
+  // chamaria a API e os quadrados levariam ao gerenciador, que responde 404
+  const withOccupancy =
+    DEMO_DATA && hasFeature(FEATURES.PRODUCTION.PRODUCTION_MANAGER)
   const [showOccupancy, setShowOccupancy] = useState(false)
 
   const { data, isLoading } = useQuery({

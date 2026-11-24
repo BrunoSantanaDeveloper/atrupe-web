@@ -187,6 +187,8 @@ const DEMO_PERMISSIONS = [
   'cost.base',
   'cost.pricing',
   'production.production',
+  // Agendar veículos: a tela (/producao/veiculos) está em DEMO_ROUTES
+  'production.vehicle_schedule',
   'stock.stock',
   'stock.invoice_entry',
   'stock.purchase_request',

@@ -14,9 +14,13 @@ export type OrderRedo = {
   newQuotationId: string | null
   reason: string
   excess: 'CLIENT' | 'COMPANY'
-  status: 'PENDING_APPROVAL' | 'EXECUTED' | 'REJECTED'
+  // EXECUTING: a refação está sendo feita agora; FAILED: parou no meio e
+  // `failReason` diz por quê (a cópia, se nasceu, fica em newQuotationId)
+  status: 'PENDING_APPROVAL' | 'EXECUTING' | 'EXECUTED' | 'REJECTED' | 'FAILED'
+  failReason?: string | null
   needsApproval: boolean
   produced: { tasks: number; stages: number; stockMovements: number } | null
+  requestedById: string
   requestedByName: string
   responsibleName: string | null
   approvedByName: string | null
@@ -39,6 +43,14 @@ export const getOrderRedos = async (orderId: string) =>
     '',
   )
 
+// O aviso do pedido pela situação que a API devolve: sem produção nem
+// material baixado, a O.S. é refeita na hora; com eles, outra pessoa aprova.
+// Um objeto de mensagens, para a extração de textos achar cada uma (IN-7)
+const REQUESTED = {
+  executed: { message: 'O.S. refeita: a nova está em digitação' },
+  pending: { message: 'Pedido registrado: outra pessoa aprova a refação' },
+}
+
 export const requestOrderRedo = async (
   orderId: string,
   values: {
@@ -46,20 +58,27 @@ export const requestOrderRedo = async (
     excess: 'CLIENT' | 'COMPANY'
     responsibleKind?: 'PERSON' | 'SECTOR'
     responsibleId?: string
+    /** O motivo do cancelamento da O.S. atual, dos cadastrados na empresa */
+    reasonId?: string
   },
-) =>
-  result<OrderRedo>(
-    await createItemNew({
-      route: `/sale/order-redo/order/${orderId}`,
-      data: values,
-    }),
-    'Pedido registrado',
+) => {
+  const res = await createItemNew({
+    route: `/sale/order-redo/order/${orderId}`,
+    data: values,
+  })
+  const status = (res.data as OrderRedo | undefined)?.status
+  return result<OrderRedo>(
+    res,
+    status === 'EXECUTED'
+      ? REQUESTED.executed.message
+      : REQUESTED.pending.message,
   )
+}
 
 export const approveOrderRedo = async (id: string) =>
   result<OrderRedo>(
     await createItemNew({ route: `/sale/order-redo/${id}/approve` }),
-    'O.S. refeita: a nova está em digitação',
+    REQUESTED.executed.message,
   )
 
 export const rejectOrderRedo = async (id: string, reason: string) =>

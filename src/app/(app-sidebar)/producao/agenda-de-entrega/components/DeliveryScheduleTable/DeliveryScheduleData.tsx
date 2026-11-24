@@ -210,15 +210,28 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
         toast.error(res?.message || 'Ocorreu um erro')
         return
       }
-      const { finished = 0, skipped = 0 } = (res.data || {}) as {
+      const {
+        finished = 0,
+        skipped = 0,
+        closed = 0,
+      } = (res.data || {}) as {
         finished?: number
         skipped?: number
+        closed?: number
       }
-      toast.success(
-        skipped
-          ? `Etapas concluídas em ${finished} pedidos; ${skipped} seguem o gerenciador e ficaram como estavam`
-          : `Etapas concluídas em ${finished} pedidos`,
-      )
+      // Um aviso por chamada, para a extração de textos achar cada um (IN-7).
+      // `closed`: agendas canceladas ou já entregues, que ficam como estão
+      if (closed) {
+        toast.success(
+          `Etapas concluídas em ${finished} pedidos; ${closed} já estavam cancelados ou entregues e ficaram como estavam`,
+        )
+      } else if (skipped) {
+        toast.success(
+          `Etapas concluídas em ${finished} pedidos; ${skipped} seguem o gerenciador e ficaram como estavam`,
+        )
+      } else {
+        toast.success(`Etapas concluídas em ${finished} pedidos`)
+      }
       setSelected([])
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
       queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
@@ -488,9 +501,14 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                                         ?.id,
                                                                 ),
                                                             ).length
-                                                          return count > 1
-                                                            ? `${label}: vale para ${stage?.stage?.name} nos ${count} itens deste pedido.`
-                                                            : null
+                                                          if (count <= 1)
+                                                            return null
+                                                          // Num objeto de mensagens, para a
+                                                          // extração de textos achar (IN-7)
+                                                          const confirm = {
+                                                            message: `${label}: vale para ${stage?.stage?.name} nos ${count} itens deste pedido.`,
+                                                          }
+                                                          return confirm.message
                                                         }}
                                                       >
                                                         <ActionButton

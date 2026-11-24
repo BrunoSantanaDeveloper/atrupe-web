@@ -64,6 +64,11 @@ export type TripOverview = {
   vehicles: { id: string; name: string; plate: string }[]
   requests: VehicleRequest[]
   pending: PendingTask[]
+  /**
+   * Os colaboradores ativos, para quem dirige e a equipe (24/11/2026). A API
+   * que ainda não os devolve deixa a tela ler da configuração da produção
+   */
+  people?: { id: string; name: string }[]
 }
 
 export type TripStopInput = {

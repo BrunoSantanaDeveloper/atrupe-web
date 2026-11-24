@@ -38,6 +38,8 @@ import {
 // Hooks
 import { useSector } from '@/hooks/queries/useSector'
 import { useEmployee } from '@/hooks/queries/useEmployee'
+import { useCancelReason } from '@/hooks/queries/useCancelReason'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
 import { IconRefresh } from '@tabler/icons-react'
@@ -45,6 +47,7 @@ import { IconRefresh } from '@tabler/icons-react'
 // Third-party
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 
 export function RedoOrder({
   orderId,
@@ -61,6 +64,18 @@ export function RedoOrder({
   const redos = data?.data || []
   const pending = redos.find((item) => item.status === 'PENDING_APPROVAL')
   const executed = redos.find((item) => item.status === 'EXECUTED')
+  // A refação em andamento barra outro pedido; a que falhou mostra o motivo
+  // e a cópia que tiver nascido, e não impede pedir de novo
+  const running = redos.find((item) => item.status === 'EXECUTING')
+  const failed = !executed
+    ? redos.find((item) => item.status === 'FAILED')
+    : undefined
+  // Quem pediu não aprova nem recusa o próprio pedido (o back recusa)
+  const { data: session } = useSession()
+  const mine =
+    !!pending &&
+    !!session?.user?.userId &&
+    pending.requestedById === session.user.userId
   const [open, setOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [excess, setExcess] = useState<'CLIENT' | 'COMPANY'>('CLIENT')
@@ -89,6 +104,14 @@ export function RedoOrder({
       ? { responsibleKind: kind as 'PERSON' | 'SECTOR', responsibleId: id }
       : {}
   }
+  // O motivo do cancelamento da O.S. atual, como em "Cancelar venda": com o
+  // recurso do plano e motivos cadastrados, a escolha é obrigatória
+  const { canRequestOrderCancellationReason } = usePlanFeatures()
+  const { data: reasonList } = useCancelReason('CANCELLATION')
+  const cancelReasons = canRequestOrderCancellationReason()
+    ? reasonList?.find((item) => item.type === 'CANCELLATION')?.reasons || []
+    : []
+  const [cancelReasonId, setCancelReasonId] = useState('')
   const [busy, setBusy] = useState(false)
 
   const refresh = () => {
@@ -110,7 +133,34 @@ export function RedoOrder({
 
   return (
     <>
-      {canRedo && !pending && !executed && (
+      {running && (
+        <div className="w-full rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm text-gray-800">
+          <p>A O.S. está sendo refeita agora. Atualize a tela em instantes.</p>
+        </div>
+      )}
+
+      {failed && !pending && !running && (
+        <div className="w-full space-y-1 rounded-lg border border-error-200 bg-error-25 p-3 text-sm">
+          <p className="text-error-700">
+            {failed.failReason
+              ? `A refação desta O.S. não terminou: ${failed.failReason}.`
+              : 'A refação desta O.S. não terminou.'}
+          </p>
+          {failed.newQuotationId ? (
+            <p className="text-gray-800">
+              A cópia ficou em digitação.{' '}
+              <Link
+                href={`/vendas/orcamentos/${failed.newQuotationId}`}
+                className="font-medium text-brand-700 underline"
+              >
+                Abrir a cópia
+              </Link>
+            </p>
+          ) : null}
+        </div>
+      )}
+
+      {canRedo && !pending && !executed && !running && (
         <PermissionGate permissions={['sale:order:edit']}>
           <CustomButton
             icon={IconRefresh}
@@ -127,33 +177,35 @@ export function RedoOrder({
             {pending.reason}. Já há produção ou material baixado, por isso outra
             pessoa aprova.
           </p>
-          <PermissionGate permissions={['sale:order_redo_approve:edit']}>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button
-                size="sm"
-                isLoading={busy}
-                onClick={() => act(() => approveOrderRedo(pending.id))}
-              >
-                Aprovar e refazer
-              </Button>
-              <Input
-                aria-label="Motivo da recusa"
-                placeholder="Motivo da recusa"
-                className="h-9 w-56"
-                value={rejectText}
-                onChange={(event) => setRejectText(event.target.value)}
-              />
-              <Button
-                size="sm"
-                variant="neutralOutline"
-                onClick={() =>
-                  act(() => rejectOrderRedo(pending.id, rejectText))
-                }
-              >
-                Recusar
-              </Button>
-            </div>
-          </PermissionGate>
+          {!mine && (
+            <PermissionGate permissions={['sale:order_redo_approve:edit']}>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  size="sm"
+                  isLoading={busy}
+                  onClick={() => act(() => approveOrderRedo(pending.id))}
+                >
+                  Aprovar e refazer
+                </Button>
+                <Input
+                  aria-label="Motivo da recusa"
+                  placeholder="Motivo da recusa"
+                  className="h-9 w-56"
+                  value={rejectText}
+                  onChange={(event) => setRejectText(event.target.value)}
+                />
+                <Button
+                  size="sm"
+                  variant="neutralOutline"
+                  onClick={() =>
+                    act(() => rejectOrderRedo(pending.id, rejectText))
+                  }
+                >
+                  Recusar
+                </Button>
+              </div>
+            </PermissionGate>
+          )}
         </div>
       )}
 
@@ -225,6 +277,19 @@ export function RedoOrder({
               value={responsible}
               onChange={(value) => setResponsible(value as string)}
             />
+            {cancelReasons.length > 0 && (
+              <SelectBasic
+                name="redo-cancel-reason"
+                label="Motivo do cancelamento da O.S. atual"
+                placeholder="Selecione"
+                options={cancelReasons.map((item) => ({
+                  value: item.id,
+                  label: item.reason,
+                }))}
+                value={cancelReasonId || undefined}
+                onChange={(value) => setCancelReasonId(String(value))}
+              />
+            )}
             <p className="text-xs text-gray">
               O que foi pago fica na O.S. cancelada; levar para a nova é feito à
               mão.
@@ -236,13 +301,18 @@ export function RedoOrder({
             </Button>
             <Button
               isLoading={busy}
-              disabled={!reason.trim()}
+              disabled={
+                !reason.trim() || (cancelReasons.length > 0 && !cancelReasonId)
+              }
               onClick={() =>
                 act(() =>
                   requestOrderRedo(orderId, {
                     reason: reason.trim(),
                     excess,
                     ...responsibleData(),
+                    ...(cancelReasons.length > 0 && cancelReasonId
+                      ? { reasonId: cancelReasonId }
+                      : {}),
                   }),
                 )
               }
