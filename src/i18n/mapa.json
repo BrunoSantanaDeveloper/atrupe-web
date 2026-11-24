@@ -15221,6 +15221,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1140 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx:177 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/EditOrderInfo/index.tsx:338 (jsx)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:195 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:473 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfeDialog.tsx:277 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfseButton.tsx:287 (jsx)",
@@ -16316,7 +16317,7 @@
    "src/app/(app-sidebar)/relatorios/resultado-por-setor/components/print/SectorReportPrintButton.tsx:78 (aviso)",
    "src/app/(app-sidebar)/relatorios/vendas/components/print/RankingPrintButton.tsx:101 (aviso)",
    "src/app/(app-sidebar)/relatorios/vendas/components/print/SalesReportPrintButton.tsx:96 (aviso)",
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/index.tsx:90 (aviso)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/index.tsx:91 (aviso)"
   ]
  },
  "comum.geral.errorSFoundInThe": {
@@ -16992,6 +16993,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/RejectQuotation.tsx:153 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/ImportQuotation/ImportQuotationModal.tsx:424 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/CancelOrder.tsx:215 (jsx)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:170 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/ImportOrder/ImportOrderModal.tsx:423 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/CancelOrderButton.tsx:211 (jsx)",
    "src/components/common/fiscal/RejectionReasonAction.tsx:48 (jsx)"
@@ -63265,6 +63267,22 @@
    "src/components/ai/AiChatWidget.tsx:402 (jsx)"
   ]
  },
+ "vendas.ordensDeServico.approveAndRedo": {
+  "pt": "Aprovar e refazer",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:109 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.askedToRedoThisWork": {
+  "pt": "{requestedByName} pediu para refazer esta O.S.: {reason}. Já há produção ou material baixado, por isso outra pessoa aprova.",
+  "vars": [
+   "requestedByName",
+   "reason"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:97 (frase)"
+  ]
+ },
  "vendas.ordensDeServico.attentionInstallmentsNotCanceled": {
   "pt": "Atenção: Parcelas não canceladas",
   "usos": [
@@ -63286,6 +63304,18 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/Order.tsx:147 (atributo:title)"
+  ]
+ },
+ "vendas.ordensDeServico.chargeTheCustomer": {
+  "pt": "(cobrar do cliente)",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:147 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.chargeTheCustomer2": {
+  "pt": "Cobrar do cliente",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:182 (propriedade:label)"
   ]
  },
  "vendas.ordensDeServico.chaveDeAcesso": {
@@ -63310,6 +63340,18 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfseButton.tsx:214 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.companyLoss": {
+  "pt": "(perda da empresa)",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:148 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.companyLossInternalError": {
+  "pt": "Perda da empresa (erro interno)",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:183 (propriedade:label)"
   ]
  },
  "vendas.ordensDeServico.completed": {
@@ -63343,10 +63385,16 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/Orders.tsx:316 (atributo:description)"
   ]
  },
+ "vendas.ordensDeServico.customerChangedTheQuantity": {
+  "pt": "Cliente alterou a quantidade…",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:173 (atributo:placeholder)"
+  ]
+ },
  "vendas.ordensDeServico.customerCopy": {
   "pt": "Via do cliente",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/index.tsx:115 (atributo:title)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/index.tsx:116 (atributo:title)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersData.tsx:359 (atributo:tooltip)"
   ]
  },
@@ -63607,6 +63655,12 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfseButton.tsx:195 (jsx)"
   ]
  },
+ "vendas.ordensDeServico.openTheNewWorkOrder": {
+  "pt": "Abrir a O.S. nova",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:140 (jsx)"
+  ]
+ },
  "vendas.ordensDeServico.pdfNfsE": {
   "pt": "PDF NFS-e {numero}/{serie}",
   "vars": [
@@ -63630,7 +63684,7 @@
  "vendas.ordensDeServico.productionCopy": {
   "pt": "Via de produção",
   "usos": [
-   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/index.tsx:109 (atributo:title)"
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/index.tsx:110 (atributo:title)"
   ]
  },
  "vendas.ordensDeServico.productionDelivery": {
@@ -63639,10 +63693,36 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/Orders.tsx:215 (propriedade:label)"
   ]
  },
+ "vendas.ordensDeServico.reasonForRejection": {
+  "pt": "Motivo da recusa",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:112 (atributo:aria-label)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:113 (atributo:placeholder)"
+  ]
+ },
+ "vendas.ordensDeServico.redo": {
+  "pt": "Refazer",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:206 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.redoTheWorkOrder": {
+  "pt": "Refazer a O.S.",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:89 (atributo:title)",
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:161 (jsx)"
+  ]
+ },
  "vendas.ordensDeServico.registerTheCancellationReasons": {
   "pt": "Cadastre os motivos de cancelamento",
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/CancelOrder.tsx:243 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.reject": {
+  "pt": "Recusar",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:125 (jsx)"
   ]
  },
  "vendas.ordensDeServico.removedInTheCleanupOf": {
@@ -63688,10 +63768,28 @@
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/CancelOrderButton.tsx:207 (jsx)"
   ]
  },
+ "vendas.ordensDeServico.surplus": {
+  "pt": "Excedente",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:145 (jsx)"
+  ]
+ },
  "vendas.ordensDeServico.theApprovalWasAlreadyComplete": {
   "pt": "A aprovação já estava completa: nada faltava.",
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/ReprocessApproval.tsx:71 (aviso)"
+  ]
+ },
+ "vendas.ordensDeServico.theCurrentWorkOrderIs": {
+  "pt": "A O.S. atual é cancelada e a nova nasce como cópia em digitação, para editar o que mudou. O que já foi produzido passa para a nova pelo item; nada é apagado.",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:163 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.thisWorkOrderWasRedone": {
+  "pt": "Esta O.S. foi refeita (",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:135 (jsx)"
   ]
  },
  "vendas.ordensDeServico.toCancel": {
@@ -63737,6 +63835,18 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/EmitNfseButton.tsx:246 (jsx)"
+  ]
+ },
+ "vendas.ordensDeServico.whatWasAlreadyProducedAnd": {
+  "pt": "O que já foi produzido e não cabe na nova",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:180 (atributo:label)"
+  ]
+ },
+ "vendas.ordensDeServico.whatWasPaidStaysOn": {
+  "pt": "O que foi pago fica na O.S. cancelada; levar para a nova é feito à mão.",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/RedoOrder.tsx:189 (jsx)"
   ]
  },
  "vendas.ordensDeServico.woFiles": {

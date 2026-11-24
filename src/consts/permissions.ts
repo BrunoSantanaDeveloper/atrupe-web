@@ -55,6 +55,11 @@ export const permissionsData = [
         key: 'quotation_result',
         exportable: true,
       },
+      // Aprovar o refazer da O.S. que já tem produção (GP-51)
+      {
+        name: 'Aprovar refazer a O.S.',
+        key: 'order_redo_approve',
+      },
     ],
   },
   {

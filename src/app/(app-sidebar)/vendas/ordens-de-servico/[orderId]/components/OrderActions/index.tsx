@@ -12,6 +12,7 @@ import { toast } from 'sonner'
 import { CancelOrder } from './CancelOrder'
 import { EmitNfe } from './EmitNfe'
 import { ReprocessApproval } from './ReprocessApproval'
+import { RedoOrder } from './RedoOrder'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
@@ -132,6 +133,13 @@ export function OrderActions({ data }: Props) {
             >
               <ReprocessApproval quotationId={data.quotation.id} />
             </PermissionGate>
+          ) : null}
+          {/* Refazer a O.S. (GP-51): cancela e cria a nova ligada */}
+          {data?.id ? (
+            <RedoOrder
+              orderId={data.id}
+              canRedo={canCancel && data?.status !== 'FINISHED'}
+            />
           ) : null}
           {canCancel ? (
             <PermissionGate permissions={['sale:order:edit']}>

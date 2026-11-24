@@ -20622,5 +20622,73 @@
   "f896a588ee": {
     "es": "Cerrada",
     "en": "Closed"
+  },
+  "226a87a1a7": {
+    "es": "Rehacer la OT",
+    "en": "Redo the work order"
+  },
+  "090fec5aa8": {
+    "es": "{requestedByName} pidió rehacer esta OT: {reason}. Ya hay producción o material dado de baja, por eso otra persona aprueba.",
+    "en": "{requestedByName} asked to redo this work order: {reason}. Production or material write-off already exists, so someone else approves."
+  },
+  "08e04b2d0f": {
+    "es": "Aprobar y rehacer",
+    "en": "Approve and redo"
+  },
+  "63fa823a75": {
+    "es": "Motivo del rechazo",
+    "en": "Reason for rejection"
+  },
+  "34d9f2bda1": {
+    "es": "Rechazar",
+    "en": "Reject"
+  },
+  "4a9220df30": {
+    "es": "Esta OT fue rehecha (",
+    "en": "This work order was redone ("
+  },
+  "8251ef7022": {
+    "es": "Abrir la nueva OT",
+    "en": "Open the new work order"
+  },
+  "ba973a2509": {
+    "es": "Excedente",
+    "en": "Surplus"
+  },
+  "e549415f65": {
+    "es": "(cobrar al cliente)",
+    "en": "(charge the customer)"
+  },
+  "54797efdf4": {
+    "es": "(pérdida de la empresa)",
+    "en": "(company loss)"
+  },
+  "bb978e1a76": {
+    "es": "La OT actual se cancela y la nueva nace como copia en digitación, para editar lo que cambió. Lo ya producido pasa a la nueva por el ítem; nada se borra.",
+    "en": "The current work order is canceled and the new one starts as a draft copy, to edit what changed. What was already produced moves to the new one by item; nothing is deleted."
+  },
+  "017d84d5fa": {
+    "es": "El cliente cambió la cantidad…",
+    "en": "Customer changed the quantity…"
+  },
+  "66786151c3": {
+    "es": "Lo ya producido que no cabe en la nueva",
+    "en": "What was already produced and does not fit the new one"
+  },
+  "be29bc7f6f": {
+    "es": "Cobrar al cliente",
+    "en": "Charge the customer"
+  },
+  "158d052aa7": {
+    "es": "Pérdida de la empresa (error interno)",
+    "en": "Company loss (internal error)"
+  },
+  "3d390e8fd5": {
+    "es": "Lo pagado queda en la OT cancelada; pasarlo a la nueva se hace a mano.",
+    "en": "What was paid stays on the canceled work order; moving it to the new one is manual."
+  },
+  "274ae2147e": {
+    "es": "Rehacer",
+    "en": "Redo"
   }
 }
