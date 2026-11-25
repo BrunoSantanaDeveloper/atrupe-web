@@ -1143,15 +1143,17 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                               }
 
                               if (item.type === 'ORDER') {
+                                /**
+                                 * Mesma ordem do selo de status, e pelos mesmos
+                                 * helpers: a O.S. faturada por NFS-e aparecia
+                                 * como "Emitida" sem número nenhum, porque só a
+                                 * NF-e era considerada aqui. Quem olhava a lista
+                                 * via o número do pedido e nada da nota.
+                                 */
                                 const authorizedNfe = findActiveNfe(
                                   item,
                                   activeEnvironment,
                                   ['AUTHORIZED', 'CORRECTION_SENT'],
-                                )
-                                const draftNfe = findActiveNfe(
-                                  item,
-                                  activeEnvironment,
-                                  ['DRAFT'],
                                 )
                                 if (authorizedNfe) {
                                   return (
@@ -1161,11 +1163,47 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     </span>
                                   )
                                 }
+
+                                const authorizedNfse = findActiveNfse(
+                                  item,
+                                  activeEnvironment,
+                                  ['AUTHORIZED'],
+                                )
+                                if (authorizedNfse?.numero) {
+                                  return (
+                                    <span className="text-xs text-success-700 font-medium">
+                                      NFS-e nº {authorizedNfse.numero} (Série{' '}
+                                      {authorizedNfse.serie})
+                                    </span>
+                                  )
+                                }
+
+                                const draftNfe = findActiveNfe(
+                                  item,
+                                  activeEnvironment,
+                                  ['DRAFT'],
+                                )
                                 if (draftNfe) {
                                   return (
                                     <span className="text-xs text-blue-700 font-medium">
                                       Rascunho NF-e nº {draftNfe.numero} (Série{' '}
                                       {draftNfe.serie})
+                                    </span>
+                                  )
+                                }
+
+                                // Número só aparece depois de reservado: a NFS-e
+                                // ainda em digitação pode não ter um.
+                                const emAndamentoNfse = findActiveNfse(
+                                  item,
+                                  activeEnvironment,
+                                  ['DRAFT', 'PENDING', 'PROCESSING'],
+                                )
+                                if (emAndamentoNfse?.numero) {
+                                  return (
+                                    <span className="text-xs text-blue-700 font-medium">
+                                      NFS-e nº {emAndamentoNfse.numero} (Série{' '}
+                                      {emAndamentoNfse.serie})
                                     </span>
                                   )
                                 }
