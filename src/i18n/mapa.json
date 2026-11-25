@@ -19488,8 +19488,8 @@
  "comum.lib.attachmentSaved": {
   "pt": "Anexo guardado",
   "usos": [
-   "src/lib/production-upload.ts:179 (propriedade:message)",
-   "src/lib/production-upload.ts:206 (propriedade:message)"
+   "src/lib/production-upload.ts:186 (propriedade:message)",
+   "src/lib/production-upload.ts:213 (propriedade:message)"
   ]
  },
  "comum.lib.automaticPassThroughOfFinancial": {
@@ -19513,13 +19513,13 @@
  "comum.lib.couldNotSaveTheFile": {
   "pt": "Não foi possível guardar o arquivo",
   "usos": [
-   "src/lib/production-upload.ts:330 (propriedade:message)"
+   "src/lib/production-upload.ts:337 (propriedade:message)"
   ]
  },
  "comum.lib.couldnTSaveTheAttachment": {
   "pt": "Não foi possível guardar o anexo",
   "usos": [
-   "src/lib/production-upload.ts:208 (propriedade:message)"
+   "src/lib/production-upload.ts:215 (propriedade:message)"
   ]
  },
  "comum.lib.creditCard": {
@@ -19567,8 +19567,8 @@
    "name"
   ],
   "usos": [
-   "src/lib/production-upload.ts:161 (propriedade:message)",
-   "src/lib/production-upload.ts:301 (propriedade:message)"
+   "src/lib/production-upload.ts:168 (propriedade:message)",
+   "src/lib/production-upload.ts:308 (propriedade:message)"
   ]
  },
  "comum.lib.estimatedVersusActualCosts": {
@@ -19580,14 +19580,14 @@
  "comum.lib.fileDeleted": {
   "pt": "Arquivo apagado",
   "usos": [
-   "src/lib/production-upload.ts:254 (propriedade:message)"
+   "src/lib/production-upload.ts:261 (propriedade:message)"
   ]
  },
  "comum.lib.fileSaved": {
   "pt": "Arquivo guardado",
   "usos": [
-   "src/lib/production-upload.ts:310 (propriedade:message)",
-   "src/lib/production-upload.ts:328 (propriedade:message)"
+   "src/lib/production-upload.ts:317 (propriedade:message)",
+   "src/lib/production-upload.ts:335 (propriedade:message)"
   ]
  },
  "comum.lib.fullCustomerHistory": {
@@ -19618,7 +19618,7 @@
    "maxBytes"
   ],
   "usos": [
-   "src/lib/production-upload.ts:280 (propriedade:message)"
+   "src/lib/production-upload.ts:287 (propriedade:message)"
   ]
  },
  "comum.lib.issuedEveryCycleDueWithin": {
@@ -19714,16 +19714,16 @@
  "comum.lib.sessionExpiredSignInAgain": {
   "pt": "Sessão expirada: entre de novo",
   "usos": [
-   "src/lib/production-upload.ts:129 (propriedade:message)",
-   "src/lib/production-upload.ts:249 (propriedade:message)",
-   "src/lib/production-upload.ts:273 (propriedade:message)"
+   "src/lib/production-upload.ts:136 (propriedade:message)",
+   "src/lib/production-upload.ts:256 (propriedade:message)",
+   "src/lib/production-upload.ts:280 (propriedade:message)"
   ]
  },
  "comum.lib.theFileExceeds20Mb": {
   "pt": "O arquivo passa de 20 MB",
   "usos": [
-   "src/lib/production-upload.ts:202 (propriedade:message)",
-   "src/lib/production-upload.ts:324 (propriedade:message)"
+   "src/lib/production-upload.ts:209 (propriedade:message)",
+   "src/lib/production-upload.ts:331 (propriedade:message)"
   ]
  },
  "comum.lib.trackingOfActualMaterialUsage": {

@@ -31,6 +31,13 @@ export type ProductionStorage = {
 
 type Result = { success: boolean; message: string; code?: string }
 
+/**
+ * O token da sessão já vem como "Bearer …" (src/lib/auth.ts); acrescentar de
+ * novo dava "Bearer Bearer …" e a API recusava (401) todo envio do navegador.
+ */
+const bearer = (token: string) =>
+  /^Bearer\s/i.test(token) ? token : `Bearer ${token}`
+
 const api = async (
   token: string,
   route: string,
@@ -40,7 +47,7 @@ const api = async (
   const response = await fetch(`${base}${route}`, {
     method: init.method || 'GET',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: bearer(token),
       ...(init.body ? { 'Content-Type': 'application/json' } : {}),
     },
     body: init.body ? JSON.stringify(init.body) : undefined,
@@ -193,7 +200,7 @@ export async function uploadProductionAttachment({
     }
     const response = await fetch(`${base}${route}`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: bearer(token) },
       body: form,
     })
     if (!response.ok) {
@@ -315,7 +322,7 @@ export async function uploadOrderFile({
     form.append('file', file)
     const response = await fetch(`${base}/sale/order-file/${orderId}`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: bearer(token) },
       body: form,
     })
     if (!response.ok) {
