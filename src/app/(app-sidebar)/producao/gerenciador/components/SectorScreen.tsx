@@ -837,7 +837,8 @@ export function SectorScreen({ id }: { id: string }) {
 // O espaço da linha no coletivo (25/11/2026, como no legado): quem está na
 // tarefa fica aqui. Soltar a pessoa na linha liga o relógio; arrastar para
 // fora (de volta à caixa ou para qualquer lugar) pausa; para outra linha,
-// troca de tarefa. O X faz o mesmo que tirar, para o toque e o teclado
+// troca de tarefa. Cabem várias pessoas: as bolinhas pequenas, lado a lado, como um
+// grupo de avatares. O X (ao passar o mouse) faz o mesmo que tirar
 function PersonSlot({
   item,
   highlight,
@@ -854,7 +855,7 @@ function PersonSlot({
   return (
     <div
       className={cn(
-        'flex min-h-11 flex-wrap items-center gap-1.5 rounded-lg border border-dashed px-1.5 py-1',
+        'flex min-h-10 flex-wrap items-center gap-y-1 rounded-lg border border-dashed py-1.5 pl-1.5 pr-3',
         highlight ? 'border-brand-400 bg-brand-25' : 'border-gray-300',
       )}
     >
@@ -872,14 +873,18 @@ function PersonSlot({
             onLeave(item.id, worker.id)
           }}
           title={`${worker.name}: arraste para fora para pausar`}
-          className="relative cursor-grab rounded-full p-0.5 ring-2 ring-success-500 active:cursor-grabbing"
+          className="group relative mr-0.5 cursor-grab rounded-full bg-white p-0.5 ring-2 ring-success-500 hover:z-10 active:cursor-grabbing"
         >
-          <PersonAvatar name={worker.name} imageUrl={worker.avatarUrl} />
+          <PersonAvatar
+            name={worker.name}
+            imageUrl={worker.avatarUrl}
+            size="sm"
+          />
           <button
             type="button"
             aria-label={`Tirar ${worker.name} da tarefa`}
             title="Tirar da tarefa"
-            className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-error-600 text-white hover:bg-error-700"
+            className="absolute -right-1 -top-1 hidden size-4 items-center justify-center rounded-full bg-error-600 text-white hover:bg-error-700 focus-visible:flex group-hover:flex"
             onClick={() => onRemove(item.id, worker.id)}
           >
             {/* eslint-disable-next-line no-restricted-syntax -- marca de controle no canto da bolinha, menor que a escala */}

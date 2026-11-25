@@ -103,7 +103,7 @@ const COLUMNS =
 // No coletivo, uma coluna reservada para quem está na tarefa (como no
 // legado, Maicol 25/11/2026)
 const COLUMNS_SLOT =
-  'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(140px,1.6fr)_minmax(120px,1.2fr)_minmax(90px,1fr)_80px_minmax(100px,0.9fr)_minmax(96px,0.7fr)_minmax(110px,auto)] items-center gap-3'
+  'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(120px,1.6fr)_minmax(120px,1.2fr)_minmax(90px,1fr)_80px_minmax(100px,0.9fr)_minmax(124px,0.8fr)_minmax(110px,auto)] items-center gap-3'
 
 const NO_FORECASTS = new Map<string, Forecast>()
 const NO_SELECTION = new Set<string>()

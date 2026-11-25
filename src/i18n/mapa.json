@@ -48404,7 +48404,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:874 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:875 (atributo:title)"
   ]
  },
  "producao.gerenciador.dragToReorder": {
@@ -48416,7 +48416,7 @@
  "producao.gerenciador.dropHere": {
   "pt": "Solte aqui",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:892 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:897 (jsx)"
   ]
  },
  "producao.gerenciador.dropHereToTakeOff": {
@@ -48428,7 +48428,7 @@
  "producao.gerenciador.dropToResume": {
   "pt": "Solte para retomar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:892 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:897 (jsx)"
   ]
  },
  "producao.gerenciador.due": {
@@ -49430,13 +49430,13 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:880 (atributo:aria-label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:885 (atributo:aria-label)"
   ]
  },
  "producao.gerenciador.takeOffTheTask2": {
   "pt": "Tirar da tarefa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:881 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:886 (atributo:title)"
   ]
  },
  "producao.gerenciador.taskSCompleted": {
