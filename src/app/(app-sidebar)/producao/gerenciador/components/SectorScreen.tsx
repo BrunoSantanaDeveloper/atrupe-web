@@ -287,23 +287,10 @@ export function SectorScreen({ id }: { id: string }) {
           )}
         </>
       )
-    // No coletivo, o relógio é o espaço da linha: quem está nele trabalha;
-    // soltar a pessoa liga, tirar pausa. Sem Play nem Pausa
-    const open =
-      OPEN.includes(item.status) &&
-      item.status !== 'PENDING' &&
-      !(item.blocked && item.status === 'NOT_STARTED')
+    // No coletivo, o relógio é o espaço da linha (coluna Na tarefa): quem
+    // está nele trabalha; soltar a pessoa liga, tirar pausa. Sem Play nem Pausa
     return (
       <>
-        {collective && open && (
-          <PersonSlot
-            item={item}
-            highlight={!!dragging && dragging.from !== item.id}
-            onDragPerson={dragPerson}
-            onLeave={leave}
-            onRemove={removeFrom}
-          />
-        )}
         {!collective && canStart && (
           <Button
             size="sm"
@@ -380,6 +367,20 @@ export function SectorScreen({ id }: { id: string }) {
       </>
     )
   }
+
+  // A coluna Na tarefa do coletivo: o espaço reservado de cada linha
+  const slotOf = (item: TaskView) =>
+    OPEN.includes(item.status) &&
+    item.status !== 'PENDING' &&
+    !(item.blocked && item.status === 'NOT_STARTED') ? (
+      <PersonSlot
+        item={item}
+        highlight={!!dragging && dragging.from !== item.id}
+        onDragPerson={dragPerson}
+        onLeave={leave}
+        onRemove={removeFrom}
+      />
+    ) : null
 
   // A fila do dia: o que está andando, depois por dia, depois sem agenda;
   // as fechadas ficam recolhidas no fim. Por dia, bloco a bloco (GP-52): a
@@ -698,14 +699,12 @@ export function SectorScreen({ id }: { id: string }) {
                         ? `${worker.name} está em outro setor`
                         : `${worker.name}: arraste para a linha do trabalho`
                     }
-                    className="flex cursor-grab items-center gap-1.5 rounded-full border border-gray-200 bg-white py-0.5 pl-0.5 pr-3 text-sm text-gray-800 hover:border-brand-400 active:cursor-grabbing"
+                    className="cursor-grab rounded-full p-0.5 ring-1 ring-gray-200 hover:ring-brand-400 active:cursor-grabbing"
                   >
                     <PersonAvatar
                       name={worker.name}
                       imageUrl={worker.avatarUrl}
-                      size="sm"
                     />
-                    {worker.name}
                   </div>
                 ))}
                 <span className="text-xs text-gray">
@@ -798,6 +797,7 @@ export function SectorScreen({ id }: { id: string }) {
                     onLock={isManager ? toggleLock : undefined}
                     person={collective ? (dragging?.id ?? null) : null}
                     onDropPerson={collective ? dropOn : undefined}
+                    slot={collective ? slotOf : undefined}
                   />
                 </>
               )}
@@ -854,7 +854,7 @@ function PersonSlot({
   return (
     <div
       className={cn(
-        'flex min-h-9 min-w-36 flex-wrap items-center gap-1 rounded-lg border border-dashed px-1.5 py-1',
+        'flex min-h-11 flex-wrap items-center gap-1.5 rounded-lg border border-dashed px-1.5 py-1',
         highlight ? 'border-brand-400 bg-brand-25' : 'border-gray-300',
       )}
     >
@@ -872,30 +872,24 @@ function PersonSlot({
             onLeave(item.id, worker.id)
           }}
           title={`${worker.name}: arraste para fora para pausar`}
-          className="flex cursor-grab items-center gap-1 rounded-full bg-success-50 py-0.5 pl-0.5 pr-1 text-xs font-medium text-success-800 ring-1 ring-success-500 active:cursor-grabbing"
+          className="relative cursor-grab rounded-full p-0.5 ring-2 ring-success-500 active:cursor-grabbing"
         >
-          <PersonAvatar
-            name={worker.name}
-            imageUrl={worker.avatarUrl}
-            size="sm"
-          />
-          <span className="max-w-24 truncate">{worker.name.split(' ')[0]}</span>
+          <PersonAvatar name={worker.name} imageUrl={worker.avatarUrl} />
           <button
             type="button"
             aria-label={`Tirar ${worker.name} da tarefa`}
             title="Tirar da tarefa"
-            className="rounded-full p-0.5 text-success-700 hover:bg-success-100"
+            className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-error-600 text-white hover:bg-error-700"
             onClick={() => onRemove(item.id, worker.id)}
           >
-            <Icon icon={IconX} size="sm" />
+            {/* eslint-disable-next-line no-restricted-syntax -- marca de controle no canto da bolinha, menor que a escala */}
+            <IconX className="size-3" aria-hidden />
           </button>
         </div>
       ))}
       {!item.workers.length && (
         <span className="px-1 text-xs text-gray">
-          {item.status === 'PAUSED'
-            ? 'Pausada: solte a pessoa'
-            : 'Solte a pessoa aqui'}
+          {item.status === 'PAUSED' ? 'Solte para retomar' : 'Solte aqui'}
         </span>
       )}
     </div>

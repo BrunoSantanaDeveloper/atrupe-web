@@ -100,6 +100,11 @@ export type QueueGroup = {
 const COLUMNS =
   'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(140px,1.6fr)_minmax(120px,1.2fr)_minmax(110px,1fr)_88px_minmax(110px,0.9fr)_minmax(150px,auto)] items-center gap-3'
 
+// No coletivo, uma coluna reservada para quem está na tarefa (como no
+// legado, Maicol 25/11/2026)
+const COLUMNS_SLOT =
+  'grid grid-cols-[28px_48px_minmax(96px,0.8fr)_minmax(140px,1.6fr)_minmax(120px,1.2fr)_minmax(90px,1fr)_80px_minmax(100px,0.9fr)_minmax(96px,0.7fr)_minmax(110px,auto)] items-center gap-3'
+
 const NO_FORECASTS = new Map<string, Forecast>()
 const NO_SELECTION = new Set<string>()
 
@@ -116,6 +121,7 @@ export function QueueList({
   showForecast = true,
   person = null,
   onDropPerson,
+  slot,
 }: {
   groups: QueueGroup[]
   forecasts?: Map<string, Forecast>
@@ -133,8 +139,11 @@ export function QueueList({
   // A pessoa que está sendo arrastada do painel de colaboradores
   person?: string | null
   onDropPerson?: (item: TaskView) => void
+  // A coluna reservada do coletivo: quem está na tarefa
+  slot?: (item: TaskView) => ReactNode
 }) {
   const [dragging, setDragging] = useState<TaskView | null>(null)
+  const columns = slot ? COLUMNS_SLOT : COLUMNS
 
   // Troca só no mesmo dia e na mesma máquina (GP-48 item 6). A troca mexe no
   // agendamento da tarefa: só entre linhas do bloco 1 (GP-52)
@@ -147,10 +156,10 @@ export function QueueList({
 
   return (
     <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
-      <div className="min-w-[1020px]">
+      <div className={slot ? 'min-w-[1060px]' : 'min-w-[1020px]'}>
         <div
           className={cn(
-            COLUMNS,
+            columns,
             'border-b border-gray-200 bg-gray-50 px-4 py-2 text-xs font-medium text-gray',
           )}
         >
@@ -162,6 +171,7 @@ export function QueueList({
           <span>Quantidade</span>
           <span>Tempo</span>
           <span>Situação</span>
+          {slot && <span>Na tarefa</span>}
           <span className="text-right">Ações</span>
         </div>
 
@@ -237,7 +247,7 @@ export function QueueList({
                     event.key === 'Enter' && onOpen(item.id)
                   }
                   className={cn(
-                    COLUMNS,
+                    columns,
                     'cursor-pointer border-b border-gray-100 px-4 py-3 text-sm transition last:border-b-0 hover:bg-gray-25',
                     (swap || takesPerson) &&
                       'bg-brand-25 outline-dashed outline-1 outline-brand-400',
@@ -430,6 +440,16 @@ export function QueueList({
                       />
                     )}
                   </div>
+
+                  {slot && (
+                    <div
+                      onClick={(event) => event.stopPropagation()}
+                      onKeyDown={(event) => event.stopPropagation()}
+                      role="presentation"
+                    >
+                      {slot(item)}
+                    </div>
+                  )}
 
                   <div
                     className="flex flex-wrap items-center justify-end gap-2"

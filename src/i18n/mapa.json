@@ -14569,7 +14569,7 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/emissores/components/EmissorListItem.tsx:594 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:250 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:125 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:165 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:175 (jsx)",
    "src/app/sandbox/table-cells/page.tsx:276 (jsx)"
   ]
  },
@@ -15836,7 +15836,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/CancelSubscriptionDialog.tsx:172 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:270 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:351 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:338 (jsx)",
    "src/consts/deliverySchedule.ts:196 (propriedade:text)"
   ]
  },
@@ -16751,7 +16751,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:92 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:450 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:451 (propriedade:title)",
    "src/app/sandbox/locacao/components/RentalFinance.tsx:125 (jsx)",
    "src/consts/productionManager.ts:62 (propriedade:text)"
   ]
@@ -16947,7 +16947,7 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:203 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/components/ClientSelect.tsx:298 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:776 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:775 (jsx)"
   ]
  },
  "comum.geral.locacao": {
@@ -17891,7 +17891,7 @@
    "src/app/(app-sidebar)/estoque/solicitacoes/components/Requests.tsx:592 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceItemEditDialog.tsx:394 (jsx)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/InvoiceTransport.tsx:405 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:162 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:171 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:678 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:398 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:529 (jsx)",
@@ -18640,7 +18640,7 @@
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:489 (jsx)",
    "src/app/(app-sidebar)/estoque/solicitacoes/components/Requests.tsx:174 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:243 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:164 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:173 (jsx)",
    "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:169 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:215 (jsx)",
    "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:193 (jsx)",
@@ -18844,7 +18844,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:998 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1326 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1542 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:163 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:172 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1402 (jsx)",
    "src/components/common/form/global-inputs/products/MeasurementInput.tsx:144 (atributo:label)"
   ]
@@ -22342,8 +22342,8 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Main.tsx:104 (jsx)",
    "src/app/(app-sidebar)/configuracoes/producao/components/ProductionSettings.tsx:124 (propriedade:label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:685 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:686 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:686 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:687 (atributo:title)"
   ]
  },
  "configuracoes.empresaESistema.teamMembersAndUsers": {
@@ -48137,7 +48137,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:636 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:637 (jsx)",
    "src/app/sandbox/locacao/components/RentalProduction.tsx:94 (jsx)"
   ]
  },
@@ -48182,7 +48182,7 @@
  "producao.gerenciador.artwork": {
   "pt": "Arte",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:158 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:167 (jsx)"
   ]
  },
  "producao.gerenciador.assign": {
@@ -48259,7 +48259,7 @@
  "producao.gerenciador.closed": {
   "pt": "Concluídos",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:637 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:638 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:66 (propriedade:label)"
   ]
  },
@@ -48272,7 +48272,7 @@
  "producao.gerenciador.comment": {
   "pt": "Comentários",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:397 (atributo:label)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:407 (atributo:label)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1574 (jsx)"
   ]
  },
@@ -48291,7 +48291,7 @@
  "producao.gerenciador.completedAndCanceled": {
   "pt": "Concluídas e canceladas",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:443 (propriedade:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:444 (propriedade:title)"
   ]
  },
  "producao.gerenciador.completedCouldNotBeCompleted": {
@@ -48301,7 +48301,7 @@
    "failed2"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:536 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:537 (aviso)"
   ]
  },
  "producao.gerenciador.correctEntry": {
@@ -48329,7 +48329,7 @@
  "producao.gerenciador.customerAndWo": {
   "pt": "Cliente e O.S.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:160 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:169 (jsx)"
   ]
  },
  "producao.gerenciador.dayForTheRest": {
@@ -48395,7 +48395,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:699 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:700 (atributo:title)"
   ]
  },
  "producao.gerenciador.dragOutToPause": {
@@ -48410,19 +48410,25 @@
  "producao.gerenciador.dragToReorder": {
   "pt": "Arraste para trocar a ordem",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:258 (atributo:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:268 (atributo:label)"
+  ]
+ },
+ "producao.gerenciador.dropHere": {
+  "pt": "Solte aqui",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:892 (jsx)"
   ]
  },
  "producao.gerenciador.dropHereToTakeOff": {
   "pt": "Solte aqui para tirar da tarefa e pausar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:713 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:712 (jsx)"
   ]
  },
- "producao.gerenciador.dropThePersonHere": {
-  "pt": "Solte a pessoa aqui",
+ "producao.gerenciador.dropToResume": {
+  "pt": "Solte para retomar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:898 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:892 (jsx)"
   ]
  },
  "producao.gerenciador.due": {
@@ -48431,7 +48437,7 @@
    "due"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:335 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:345 (frase)"
   ]
  },
  "producao.gerenciador.duringMaintenance": {
@@ -48440,7 +48446,7 @@
    "maintenance"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:488 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:508 (frase)"
   ]
  },
  "producao.gerenciador.eGFinalArtwork": {
@@ -48490,8 +48496,8 @@
   "pt": "Concluir",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:279 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:361 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:760 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:348 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:759 (jsx)"
   ]
  },
  "producao.gerenciador.finish2": {
@@ -48537,13 +48543,13 @@
    "minutes"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:184 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:194 (frase)"
   ]
  },
  "producao.gerenciador.forecast": {
   "pt": "Previsão",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:159 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:168 (jsx)"
   ]
  },
  "producao.gerenciador.full": {
@@ -48555,7 +48561,7 @@
  "producao.gerenciador.hasAttachments": {
   "pt": "Tem anexos",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:406 (atributo:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:416 (atributo:label)"
   ]
  },
  "producao.gerenciador.hasBeenOnTheTask": {
@@ -48609,7 +48615,7 @@
  "producao.gerenciador.inOrderOfArrivalSchedule": {
   "pt": "Na ordem de chegada. Agende o dia para entrar na fila da máquina.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:491 (propriedade:hint)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:492 (propriedade:hint)"
   ]
  },
  "producao.gerenciador.insteadOf": {
@@ -48633,7 +48639,7 @@
    "breakExcess"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:483 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:503 (frase)"
   ]
  },
  "producao.gerenciador.isInAnotherDepartment": {
@@ -48642,7 +48648,7 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:698 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:699 (atributo:title)"
   ]
  },
  "producao.gerenciador.itOnlyStartsWhen": {
@@ -48657,7 +48663,7 @@
    "moved"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:743 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:742 (frase)"
   ]
  },
  "producao.gerenciador.jobsInASinglePrint": {
@@ -48696,7 +48702,7 @@
    "delayMinutes"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:507 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:527 (jsx)"
   ]
  },
  "producao.gerenciador.left": {
@@ -48705,7 +48711,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:376 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:386 (frase)"
   ]
  },
  "producao.gerenciador.lengthOnTheSecondRoll": {
@@ -48730,8 +48736,8 @@
  "producao.gerenciador.lockOnTheSchedule": {
   "pt": "Travar na agenda",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:296 (atributo:aria-label)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:301 (atributo:title)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:306 (atributo:aria-label)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:311 (atributo:title)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1185 (jsx)"
   ]
  },
@@ -48744,13 +48750,13 @@
  "producao.gerenciador.lockedOnTheScheduleClick": {
   "pt": "Travada na agenda: clique para destravar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:295 (atributo:aria-label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:305 (atributo:aria-label)"
   ]
  },
  "producao.gerenciador.lockedOnTheScheduleThe": {
   "pt": "Travada na agenda: a agenda viva não adianta nem atrasa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:300 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:310 (atributo:title)"
   ]
  },
  "producao.gerenciador.log": {
@@ -48763,7 +48769,7 @@
   "pt": "Apontar impressão",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/BatchPrintDialog.tsx:122 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:768 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:767 (jsx)"
   ]
  },
  "producao.gerenciador.logTime": {
@@ -48806,7 +48812,7 @@
  "producao.gerenciador.machineAndQuality": {
   "pt": "Máquina e qualidade",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:161 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:170 (jsx)"
   ]
  },
  "producao.gerenciador.makeCurrent": {
@@ -48953,7 +48959,7 @@
  "producao.gerenciador.nonWorkingDay": {
   "pt": "dia sem expediente",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:494 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:514 (jsx)"
   ]
  },
  "producao.gerenciador.noneExtraMaterial": {
@@ -48975,14 +48981,14 @@
  "producao.gerenciador.notScheduled": {
   "pt": "Sem agendamento",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:490 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:491 (propriedade:title)",
    "src/app/(app-sidebar)/producao/gerenciador/components/shared.tsx:47 (propriedade:label)"
   ]
  },
  "producao.gerenciador.nothingHere": {
   "pt": "Nada aqui.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:446 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:466 (jsx)"
   ]
  },
  "producao.gerenciador.nothingScheduledInThisPeriod": {
@@ -49072,6 +49078,12 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:485 (jsx)"
   ]
  },
+ "producao.gerenciador.onTheTask": {
+  "pt": "Na tarefa",
+  "usos": [
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:174 (jsx)"
+  ]
+ },
  "producao.gerenciador.oneStepHasAnAlert": {
   "pt": "Uma etapa está com alerta na cadeia de produção.",
   "usos": [
@@ -49096,7 +49108,7 @@
  "producao.gerenciador.orderChanged": {
   "pt": "Ordem trocada",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:561 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:562 (aviso)"
   ]
  },
  "producao.gerenciador.overdue": {
@@ -49111,31 +49123,25 @@
    "dayExcess"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:498 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:518 (frase)"
   ]
  },
  "producao.gerenciador.pastThePlannedTime": {
   "pt": "Passou do horário planejado",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:424 (atributo:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:434 (atributo:label)"
   ]
  },
  "producao.gerenciador.pause": {
   "pt": "Pausa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:327 (jsx)"
-  ]
- },
- "producao.gerenciador.pausedDropThePerson": {
-  "pt": "Pausada: solte a pessoa",
-  "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:897 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:314 (jsx)"
   ]
  },
  "producao.gerenciador.pausedJobsResumeWithThe": {
   "pt": "O pausado continua pelo tempo que falta.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:451 (propriedade:hint)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:452 (propriedade:hint)"
   ]
  },
  "producao.gerenciador.perFile": {
@@ -49153,9 +49159,9 @@
  "producao.gerenciador.play": {
   "pt": "Play",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:313 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:332 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:341 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:300 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:319 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:328 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1329 (jsx)"
   ]
  },
@@ -49280,7 +49286,7 @@
  "producao.gerenciador.schedule2": {
   "pt": "Agendar",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:377 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:364 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1163 (jsx)"
   ]
  },
@@ -49335,7 +49341,7 @@
    "code"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:264 (atributo:aria-label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:274 (atributo:aria-label)"
   ]
  },
  "producao.gerenciador.selected": {
@@ -49344,7 +49350,7 @@
    "size"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:751 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:750 (frase)"
   ]
  },
  "producao.gerenciador.settingUsed": {
@@ -49365,7 +49371,7 @@
    "estimatedMinutes"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:371 (frase)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:381 (frase)"
   ]
  },
  "producao.gerenciador.splitIntoTwoDays": {
@@ -49424,13 +49430,13 @@
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:885 (atributo:aria-label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:880 (atributo:aria-label)"
   ]
  },
  "producao.gerenciador.takeOffTheTask2": {
   "pt": "Tirar da tarefa",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:886 (atributo:title)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:881 (atributo:title)"
   ]
  },
  "producao.gerenciador.taskSCompleted": {
@@ -49439,7 +49445,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:540 (aviso)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:541 (aviso)"
   ]
  },
  "producao.gerenciador.teamMemberOnTheTask": {
@@ -49482,7 +49488,7 @@
    "stageName"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:346 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:356 (jsx)"
   ]
  },
  "producao.gerenciador.texto3": {
@@ -49612,7 +49618,7 @@
  "producao.gerenciador.toDo": {
   "pt": "a fazer",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:650 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:651 (jsx)"
   ]
  },
  "producao.gerenciador.toKnowWhenAJob": {
@@ -49652,7 +49658,7 @@
  "producao.gerenciador.urgent": {
   "pt": "Urgente",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:389 (jsx)",
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:399 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:442 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:566 (jsx)"
   ]
@@ -49660,7 +49666,7 @@
  "producao.gerenciador.urgent2": {
   "pt": "urgente(s)",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:661 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:662 (jsx)"
   ]
  },
  "producao.gerenciador.useLessThanTheWhole": {
@@ -49693,7 +49699,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:414 (atributo:label)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:424 (atributo:label)"
   ]
  },
  "producao.gerenciador.waitingFor2": {
@@ -49709,7 +49715,7 @@
   "pt": "Espera",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:285 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:366 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:353 (jsx)"
   ]
  },
  "producao.gerenciador.was": {
@@ -49718,7 +49724,7 @@
    "start"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:506 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:526 (jsx)"
   ]
  },
  "producao.gerenciador.wasteSplice": {
@@ -49759,7 +49765,7 @@
  "producao.gerenciador.wo": {
   "pt": "· O.S.",
   "usos": [
-   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:332 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:342 (jsx)"
   ]
  },
  "producao.gerenciador.writeOff": {
