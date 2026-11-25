@@ -93,6 +93,34 @@ type Draft = Omit<
   id?: string
 }
 
+// Os bancos que aparecem com a lista aberta (Maicol, 25/11/2026): os
+// principais. Os outros da lista do Banco Central ficam na busca
+const MAIN_BANKS = [
+  '001', // Banco do Brasil
+  '004', // Banco do Nordeste
+  '033', // Santander
+  '041', // Banrisul
+  '070', // BRB
+  '077', // Inter
+  '104', // Caixa
+  '136', // Unicred
+  '197', // Stone
+  '208', // BTG Pactual
+  '212', // Original
+  '237', // Bradesco
+  '260', // Nubank
+  '290', // PagBank
+  '323', // Mercado Pago
+  '336', // C6 Bank
+  '341', // Itaú
+  '380', // PicPay
+  '403', // Cora
+  '422', // Safra
+  '655', // Votorantim
+  '748', // Sicredi
+  '756', // Sicoob
+]
+
 const empty = (methods: { id: string; name: string }[]): Draft => ({
   name: '',
   kind: 'BANK',
@@ -298,6 +326,7 @@ export function AccountDialog({
                   label="Banco"
                   placeholder="Busque pelo nome ou código"
                   options={bankOptions}
+                  featured={MAIN_BANKS}
                   isLoading={!bankList}
                   value={draft.bankCode}
                   onChange={(value) =>
