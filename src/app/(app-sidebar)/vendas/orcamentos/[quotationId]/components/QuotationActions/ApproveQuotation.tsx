@@ -337,6 +337,7 @@ export function ApproveQuotation({ data }: Props) {
         onFinish={handlePaymentConditionsSaved}
         submitLabel="Salvar e continuar"
         suggestedDownPayment={suggestedDownPayment || undefined}
+        fullPayment={fullPayment}
       />
 
       <AlertDialog open={open} onOpenChange={setOpen}>

@@ -86,6 +86,9 @@ interface Props {
   // A entrada que faz a venda caber no limite de crédito (PA-2, 12/11/2026),
   // em centavos: o diálogo abre com ela lançada, vencendo hoje
   suggestedDownPayment?: number
+  // Sem crédito livre (Lista Lite 24/11, item 1): a venda inteira à vista,
+  // só a entrada, sem parcelas
+  fullPayment?: boolean
 }
 
 export function PaymentConditionsDialog({
@@ -99,6 +102,7 @@ export function PaymentConditionsDialog({
   onOpenChange,
   hideTrigger,
   suggestedDownPayment,
+  fullPayment = false,
 }: Props) {
   // EC-17: desconto acima do limite do vendedor não salva
   const [exceedsDiscountLimit, setExceedsDiscountLimit] = useState(false)
@@ -154,6 +158,21 @@ export function PaymentConditionsDialog({
       setValue('hasDownPayment', 'true')
       setValue('downPayment.dueDate', new Date())
       setValue('downPayment.amount', suggestedDownPayment)
+      // O recebimento integral (Lista Lite 24/11, item 1): a entrada é a
+      // venda inteira, e as parcelas saem. Antes ficava uma parcela de R$ 0 e
+      // a validação ("a entrada não pode consumir todo o valor total") não
+      // deixava salvar
+      if (fullPayment) {
+        setValue('installments', [])
+        setValue('installmentQty', '')
+        setValue('mainAdditionalFee', 0)
+        // A forma de pagamento da venda já vem na entrada (dá para trocar)
+        const mainCondition = (initialValues as QuotationPaymentConditionsType)
+          .paymentConditionId
+        if (mainCondition) {
+          setValue('downPayment.paymentConditionId', mainCondition)
+        }
+      }
     }
 
     // O mín/máx de parcelas salvo no orçamento pode estar desatualizado
@@ -305,8 +324,16 @@ export function PaymentConditionsDialog({
             variant="info"
             icon={IconAlertTriangle}
             className="mx-6 mt-4 rounded-lg border"
-            title={`Entrada sugerida: ${formatCurrencyToBrl(suggestedDownPayment)}, vencendo hoje`}
-            description="Com esta entrada paga, o que fica a prazo cabe no limite de crédito do cliente. Escolha a forma de pagamento da entrada e salve. Ao aprovar, a venda fica pendente até a entrada ser recebida no financeiro."
+            title={
+              fullPayment
+                ? `Recebimento integral: ${formatCurrencyToBrl(suggestedDownPayment)} à vista, hoje`
+                : `Entrada sugerida: ${formatCurrencyToBrl(suggestedDownPayment)}, vencendo hoje`
+            }
+            description={
+              fullPayment
+                ? 'O limite de crédito do cliente não comporta nada a prazo: a venda inteira entra como pagamento à vista, sem parcelas. Escolha a forma de pagamento e salve. Ao aprovar, a venda fica pendente até o recebimento no financeiro.'
+                : 'Com esta entrada paga, o que fica a prazo cabe no limite de crédito do cliente. Escolha a forma de pagamento da entrada e salve. Ao aprovar, a venda fica pendente até a entrada ser recebida no financeiro.'
+            }
           />
         ) : null}
         {blocked && (
@@ -341,7 +368,8 @@ export function PaymentConditionsDialog({
 
                 <PaymentMethodAndCondition quotationData={quotationData} />
 
-                <InstallmentQty />
+                {/* À vista integral: sem parcelas (Lista Lite 24/11, item 1) */}
+                {!(fullPayment && suggestedDownPayment) && <InstallmentQty />}
 
                 <Separator className="my-2 bg-gray-300" />
 

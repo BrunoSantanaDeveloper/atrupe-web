@@ -138,6 +138,7 @@ export function CreditBanner({ data }: { data: QuotationType }) {
           onOpenChange={setOpenPayment}
           hideTrigger
           suggestedDownPayment={openPayment ? suggested : undefined}
+          fullPayment={fullPayment}
           submitLabel="Salvar a entrada"
         />
       ) : null}

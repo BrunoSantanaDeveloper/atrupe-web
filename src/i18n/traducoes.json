@@ -21122,5 +21122,13 @@
   "0d6b0771f8": {
     "es": "Suelte aquí",
     "en": "Drop here"
+  },
+  "307133668b": {
+    "es": "Cobro íntegro: {suggestedDownPayment} al contado, hoy",
+    "en": "Full payment: {suggestedDownPayment} upfront, today"
+  },
+  "59d7bac6fe": {
+    "es": "El límite de crédito del cliente no admite nada a plazo: toda la venta entra como pago al contado, sin cuotas. Elija la forma de pago y guarde. Al aprobar, la venta queda pendiente hasta el cobro en finanzas.",
+    "en": "The customer credit limit allows nothing on credit: the whole sale is paid upfront, with no installments. Choose the payment method and save. On approval, the sale stays on hold until payment is received in finance."
   }
 }

@@ -9088,7 +9088,7 @@
   "usos": [
    "src/app/(app-sidebar)/cadastros/clientes/[id]/layout.tsx:143 (atributo:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/PaymentConditions.tsx:152 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:317 (atributo:title)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:344 (atributo:title)"
   ]
  },
  "cadastros.clientes.customerGroups": {
@@ -14740,7 +14740,7 @@
   "usos": [
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:315 (jsx)",
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDetail.tsx:123 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:374 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:375 (jsx)",
    "src/app/sandbox/locacao/components/RentalQuotationItem.tsx:279 (jsx)"
   ]
  },
@@ -15257,14 +15257,14 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuickSaleCheckout.tsx:294 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuickSaleCheckout.tsx:340 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:297 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:369 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:370 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Delivery/index.tsx:418 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/DiscardQuickSale.tsx:62 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Duplicate/index.tsx:182 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:221 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/OpenQuotation.tsx:114 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/Commission.tsx:401 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:423 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:451 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/RejectQuotation.tsx:118 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/SetClient.tsx:90 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:221 (propriedade:cancelLabel)",
@@ -16339,7 +16339,7 @@
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:164 (jsx)",
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:495 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/DownPayment.tsx:80 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:334 (atributo:label)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:361 (atributo:label)",
    "src/consts/stock.ts:6 (propriedade:text)"
   ]
  },
@@ -18007,7 +18007,7 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/DownPayment.tsx:105 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/Installments.tsx:136 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/Installments.tsx:145 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:363 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:391 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationOutsourcedModal.tsx:207 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationOutsourcedModal.tsx:215 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:976 (jsx)",
@@ -18230,7 +18230,7 @@
    "src/app/(app-sidebar)/financeiro/_components/transactions/NewTransaction/schema.ts:40 (validacao)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit.tsx:88 (validacao)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Delivery/index.tsx:193 (propriedade:message)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:199 (propriedade:message)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:218 (propriedade:message)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/schema.ts:5 (validacao)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/schema.ts:7 (validacao)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/productSchema.ts:9 (propriedade:required_error)",
@@ -18624,7 +18624,7 @@
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:63 (propriedade:confirmLabel)",
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseCamposAdicionaisSection.tsx:51 (propriedade:label)",
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseDadosFiscaisSection.tsx:111 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:337 (propriedade:label)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:364 (propriedade:label)"
   ]
  },
  "comum.geral.situacao": {
@@ -18815,7 +18815,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:271 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:529 (jsx)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/NewTransaction/index.tsx:359 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:418 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:446 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/NewQuotation.tsx:348 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationProdDetailModal.tsx:1140 (jsx)"
   ]
@@ -46649,7 +46649,7 @@
   "usos": [
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseCamposAdicionaisSection.tsx:50 (propriedade:label)",
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/NfseDadosFiscaisSection.tsx:111 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:336 (propriedade:label)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:363 (propriedade:label)"
   ]
  },
  "notaFiscal.emitirNfse.naoSeraoEnviados": {
@@ -60726,7 +60726,7 @@
  "vendas.orcamentos.approveOnHold": {
   "pt": "Aprovar com pendência",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:374 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:375 (jsx)"
   ]
  },
  "vendas.orcamentos.approveQuote": {
@@ -60744,7 +60744,7 @@
  "vendas.orcamentos.approveWithPrepayment": {
   "pt": "Aprovar com pagamento antecipado?",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:353 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:354 (jsx)"
   ]
  },
  "vendas.orcamentos.approvedOnHoldOn": {
@@ -60775,7 +60775,7 @@
  "vendas.orcamentos.auxiliaryDescription": {
   "pt": "Descrição auxiliar",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:377 (atributo:label)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:405 (atributo:label)"
   ]
  },
  "vendas.orcamentos.baseValue": {
@@ -60783,7 +60783,7 @@
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/ItemActions/Values/index.tsx:261 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/Commission.tsx:309 (atributo:label)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:398 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:426 (jsx)"
   ]
  },
  "vendas.orcamentos.bleedOfMmPerSide": {
@@ -60978,7 +60978,7 @@
  "vendas.orcamentos.commissionAmount": {
   "pt": "Valor da comissão",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:362 (atributo:label)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:390 (atributo:label)"
   ]
  },
  "vendas.orcamentos.commissionTypeIsRequired": {
@@ -61276,8 +61276,8 @@
  "vendas.orcamentos.editPaymentTerms": {
   "pt": "Editar condições de pagamento",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:281 (atributo:tooltip)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:297 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:300 (atributo:tooltip)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:316 (jsx)"
   ]
  },
  "vendas.orcamentos.empty": {
@@ -61322,7 +61322,7 @@
  "vendas.orcamentos.enterTheDownPaymentMethod": {
   "pt": "Informe a forma de pagamento da entrada para continuar.",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:229 (aviso)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:248 (aviso)"
   ]
  },
  "vendas.orcamentos.enterTheItemName": {
@@ -61584,6 +61584,15 @@
   "pt": "Modalidade frete",
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Delivery/index.tsx:383 (atributo:label)"
+  ]
+ },
+ "vendas.orcamentos.fullPaymentUpfrontToday": {
+  "pt": "Recebimento integral: {suggestedDownPayment} à vista, hoje",
+  "vars": [
+   "suggestedDownPayment"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:329 (atributo:title)"
   ]
  },
  "vendas.orcamentos.generates": {
@@ -62845,7 +62854,7 @@
  "vendas.orcamentos.setUpTheQuotePayment": {
   "pt": "Configurar condições de pagamento do orçamento",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:300 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:319 (jsx)"
   ]
  },
  "vendas.orcamentos.setup": {
@@ -62969,7 +62978,7 @@
    "suggestedDownPayment"
   ],
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:308 (atributo:title)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:330 (atributo:title)"
   ]
  },
  "vendas.orcamentos.supplierCost": {
@@ -63097,6 +63106,12 @@
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/page.tsx:35 (propriedade:description)"
   ]
  },
+ "vendas.orcamentos.theCustomerCreditLimitAllows": {
+  "pt": "O limite de crédito do cliente não comporta nada a prazo: a venda inteira entra como pagamento à vista, sem parcelas. Escolha a forma de pagamento e salve. Ao aprovar, a venda fica pendente até o recebimento no financeiro.",
+  "usos": [
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:334 (atributo:description)"
+  ]
+ },
  "vendas.orcamentos.theCustomerPaysTheRemaining": {
   "pt": "O cliente paga os {remaining} restantes quando vier buscar.",
   "vars": [
@@ -63221,7 +63236,7 @@
  "vendas.orcamentos.theTermsCanBeSet": {
   "pt": "As condições podem ser definidas, mas este orçamento não é aprovado nem gera cobrança enquanto o cliente estiver bloqueado no cadastro.",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:318 (atributo:description)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:345 (atributo:description)"
   ]
  },
  "vendas.orcamentos.theWorkOrderHasAlready": {
@@ -63266,7 +63281,7 @@
    "holdAmount"
   ],
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:362 (jsx)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/ApproveQuotation.tsx:363 (jsx)"
   ]
  },
  "vendas.orcamentos.thisItemHasADeactivated": {
@@ -63628,7 +63643,7 @@
  "vendas.orcamentos.withThisDownPaymentPaid": {
   "pt": "Com esta entrada paga, o que fica a prazo cabe no limite de crédito do cliente. Escolha a forma de pagamento da entrada e salve. Ao aprovar, a venda fica pendente até a entrada ser recebida no financeiro.",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:309 (atributo:description)"
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/PaymentConditions/index.tsx:335 (atributo:description)"
   ]
  },
  "vendas.orcamentos.withoutADateTheQuote": {
