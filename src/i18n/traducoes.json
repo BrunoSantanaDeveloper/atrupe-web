@@ -21078,5 +21078,37 @@
   "2a00001e4e": {
     "es": "Motivo de la cancelación de la OT actual",
     "en": "Reason for canceling the current work order"
+  },
+  "c3d6bd0af3": {
+    "es": "{name} está en otro sector",
+    "en": "{name} is in another department"
+  },
+  "a4d2ef5966": {
+    "es": "{name}: arrastre a la fila del trabajo",
+    "en": "{name}: drag onto the job row"
+  },
+  "04db13c482": {
+    "es": "Suelte aquí para quitar de la tarea y pausar",
+    "en": "Drop here to take off the task and pause"
+  },
+  "b4951bc479": {
+    "es": "{name}: arrastre afuera para pausar",
+    "en": "{name}: drag out to pause"
+  },
+  "d85527dfe9": {
+    "es": "Quitar a {name} de la tarea",
+    "en": "Take {name} off the task"
+  },
+  "e2a667d3fc": {
+    "es": "Quitar de la tarea",
+    "en": "Take off the task"
+  },
+  "8119ededa2": {
+    "es": "Pausada: suelte a la persona",
+    "en": "Paused: drop the person"
+  },
+  "fb694e2043": {
+    "es": "Suelte a la persona aquí",
+    "en": "Drop the person here"
   }
 }

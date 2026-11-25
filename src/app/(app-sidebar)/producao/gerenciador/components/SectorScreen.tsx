@@ -3,15 +3,16 @@
 // A tela de um setor (GP-45, GP-46; 29/10/2026). O modelo é do gerenciador
 // (GP-43), e todos ficam na Fila do dia, a lista das tarefas por dia
 // (Maicol, 24/11/2026, como no legado; o Quadro saiu). No coletivo (arrastar
-// colaborador), a caixa de colaboradores fica ao lado da lista e a pessoa é
-// solta na linha do trabalho; no individual (Play & Stop), cada um liga o
-// relógio na linha.
+// colaborador), a pessoa sai da caixa de colaboradores, é solta na linha do
+// trabalho e fica no espaço da linha; tirar a pessoa do espaço pausa (como no
+// legado e na primeira versão, Maicol 25/11/2026). No individual (Play &
+// Stop), cada um liga o relógio na linha.
 // Sem controle de tempo (NONE, GP-47; o modo do PRO): só a fila, ordenada
 // pela entrega, e a tarefa só se conclui. Sem relógio, pessoas nem agenda.
 
 // React / Next
 import { InfoHint } from '@/components/common/InfoHint'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -91,7 +92,14 @@ export function SectorScreen({ id }: { id: string }) {
   const [person, setPerson] = useState('todos')
   const [machine, setMachine] = useState('todas')
   const [period, setPeriod] = useState<Period>('todas')
-  const [dragging, setDragging] = useState<string | null>(null)
+  // Quem está sendo arrastado e de qual tarefa saiu (sem from: da caixa)
+  const [dragging, setDragging] = useState<{
+    id: string
+    from?: string
+  } | null>(null)
+  // A pessoa tirada da linha e solta fora de outra linha pausa: o drop
+  // marca que alguém recebeu
+  const received = useRef(false)
   const [showClosed, setShowClosed] = useState(false)
   const [queueTab, setQueueTab] = useState<QueueTab>('a-fazer')
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -137,6 +145,11 @@ export function SectorScreen({ id }: { id: string }) {
     [board, search, person, period, machine],
   )
   const people = board?.collaborators || []
+  // Na caixa ficam os livres; quem trabalha numa tarefa daqui está na linha
+  const free = people.filter(
+    (worker) =>
+      !board?.tasks.some((item) => item.id === worker.working?.taskId),
+  )
   // As máquinas das tarefas do setor: a fila por máquina na impressão
   const machines = useMemo(
     () =>
@@ -149,17 +162,56 @@ export function SectorScreen({ id }: { id: string }) {
   )
   const task = (board?.tasks || []).find((item) => item.id === taskId) || null
 
+  // Tirar a pessoa da tarefa (25/11/2026): se era a única, a tarefa pausa;
+  // com outras pessoas, só o relógio dela para
+  const removeFrom = async (taskId: string, collaboratorId: string) => {
+    const item = board?.tasks.find((task) => task.id === taskId)
+    if (!item) return
+    const alone =
+      item.status === 'IN_PROGRESS' &&
+      item.workers.every((worker) => worker.id === collaboratorId)
+    const res = alone
+      ? await actOnTask({ id: taskId, action: 'PAUSE', collaboratorId })
+      : await stopWork({ id: taskId, collaboratorId })
+    if (!res.success) return toast.error(res.message)
+    toast.success(alone ? 'Tarefa pausada' : 'Relógio parado')
+    await refresh()
+  }
+
   const dropOn = async (target: TaskView) => {
-    if (!dragging) return
+    received.current = true
+    const moving = dragging
+    setDragging(null)
+    if (!moving || moving.from === target.id) return
     const res = await startWork({
       id: target.id,
-      collaboratorId: dragging,
+      collaboratorId: moving.id,
       source: 'DRAG',
     })
-    setDragging(null)
     if (!res.success) return toast.error(res.message)
+    // Trocou de tarefa: a de antes, sem mais ninguém, fica pausada
+    const before = moving.from
+      ? board?.tasks.find((task) => task.id === moving.from)
+      : undefined
+    if (
+      before?.status === 'IN_PROGRESS' &&
+      before.workers.every((worker) => worker.id === moving.id)
+    ) {
+      await actOnTask({ id: before.id, action: 'PAUSE' })
+    }
     toast.success('Colaborador na tarefa: o relógio começou')
     await refresh()
+  }
+
+  const dragPerson = (id: string, from?: string) => {
+    received.current = false
+    setDragging({ id, from })
+  }
+  // Fim do arrasto de quem estava numa linha: solta fora de outra linha
+  // (na caixa de colaboradores ou em qualquer lugar), pausa
+  const leave = (from: string, id: string) => {
+    setDragging(null)
+    if (!received.current) removeFrom(from, id)
   }
 
   // Na fila do dia, quem age é a pessoa da sessão; o gerente, sem
@@ -235,9 +287,24 @@ export function SectorScreen({ id }: { id: string }) {
           )}
         </>
       )
+    // No coletivo, o relógio é o espaço da linha: quem está nele trabalha;
+    // soltar a pessoa liga, tirar pausa. Sem Play nem Pausa
+    const open =
+      OPEN.includes(item.status) &&
+      item.status !== 'PENDING' &&
+      !(item.blocked && item.status === 'NOT_STARTED')
     return (
       <>
-        {canStart && (
+        {collective && open && (
+          <PersonSlot
+            item={item}
+            highlight={!!dragging && dragging.from !== item.id}
+            onDragPerson={dragPerson}
+            onLeave={leave}
+            onRemove={removeFrom}
+          />
+        )}
+        {!collective && canStart && (
           <Button
             size="sm"
             onClick={() => act(item, 'START', 'Tarefa iniciada')}
@@ -248,7 +315,8 @@ export function SectorScreen({ id }: { id: string }) {
         )}
         {/* Iniciar e pausar num botão só (24/11/2026): quem está na tarefa
             pausa; quem não está liga o relógio; pausada, retoma */}
-        {item.status === 'IN_PROGRESS' &&
+        {!collective &&
+          item.status === 'IN_PROGRESS' &&
           (working ? (
             <Button
               size="sm"
@@ -264,7 +332,7 @@ export function SectorScreen({ id }: { id: string }) {
               Play
             </Button>
           ))}
-        {item.status === 'PAUSED' && (
+        {!collective && item.status === 'PAUSED' && (
           <Button
             size="sm"
             onClick={() => act(item, 'RESUME', 'Tarefa retomada')}
@@ -600,10 +668,18 @@ export function SectorScreen({ id }: { id: string }) {
         />
 
         <div className="space-y-3">
-          {/* Colaboradores: disponíveis e trabalhando (GP-17), só no
-                coletivo, onde arrastar é o gesto que liga o relógio */}
+          {/* Colaboradores (GP-17), só no coletivo: a pessoa sai daqui e é
+              solta na linha do trabalho; quem está trabalhando fica no
+              espaço da linha. Soltar aqui de volta pausa (25/11/2026) */}
           {collective && (
-            <Card>
+            <Card
+              onDragOver={(event) => dragging?.from && event.preventDefault()}
+              className={cn(
+                'transition',
+                dragging?.from &&
+                  'bg-error-25 outline-dashed outline-1 outline-error-400',
+              )}
+            >
               <CardContent className="flex flex-wrap items-center gap-2 px-3 py-2">
                 <span className="flex items-center gap-1.5 pr-1 text-sm font-medium text-gray-800">
                   Colaboradores
@@ -611,68 +687,36 @@ export function SectorScreen({ id }: { id: string }) {
                     <p>{timeModeObj[board.manager.timeMode].help}</p>
                   </InfoHint>
                 </span>
-                {people.map((worker) => {
-                  const current = board.tasks.find(
-                    (item) => item.id === worker.working?.taskId,
-                  )
-                  const since = worker.working
-                    ? new Date(worker.working.since).toLocaleTimeString(
-                        'pt-BR',
-                        { hour: '2-digit', minute: '2-digit' },
-                      )
-                    : ''
-                  // Uma bolinha com a foto (24/11/2026): verde trabalhando,
-                  // o resto no tooltip; arraste a bolinha para a tarefa
-                  return (
-                    <div
-                      key={worker.id}
-                      draggable={!worker.working}
-                      onDragStart={() => setDragging(worker.id)}
-                      onDragEnd={() => setDragging(null)}
-                      title={
-                        worker.working
-                          ? `${worker.name} · ${current ? `${current.code} ${current.stageName}` : 'outra tarefa'} desde ${since}${current ? ` · ${duration(current.actualMinutes)} apontado` : ''}`
-                          : `${worker.name} · disponível: arraste para uma tarefa`
-                      }
-                      className={cn(
-                        'relative rounded-full p-0.5',
-                        worker.working
-                          ? 'ring-2 ring-success-500'
-                          : 'cursor-grab ring-1 ring-gray-200 hover:ring-brand-400',
-                      )}
-                    >
-                      <PersonAvatar
-                        name={worker.name}
-                        imageUrl={worker.avatarUrl}
-                      />
-                      {worker.working && (
-                        <button
-                          type="button"
-                          aria-label={`Parar o relógio de ${worker.name}`}
-                          title="Parar"
-                          className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-error-600 text-white hover:bg-error-700"
-                          onClick={async () => {
-                            await stopWork({
-                              id: worker.working?.taskId,
-                              collaboratorId: worker.id,
-                            })
-                            toast.success('Relógio parado')
-                            await refresh()
-                          }}
-                        >
-                          {/* eslint-disable-next-line no-restricted-syntax -- marca de controle no canto da bolinha, menor que a escala */}
-                          <IconX className="size-3" aria-hidden />
-                        </button>
-                      )}
-                    </div>
-                  )
-                })}
-                {!people.length && (
-                  <p className="text-sm text-gray">
-                    Ninguém tem acesso a este gerenciador. Configure em
-                    Configurações › Produção.
-                  </p>
-                )}
+                {free.map((worker) => (
+                  <div
+                    key={worker.id}
+                    draggable
+                    onDragStart={() => dragPerson(worker.id)}
+                    onDragEnd={() => setDragging(null)}
+                    title={
+                      worker.working
+                        ? `${worker.name} está em outro setor`
+                        : `${worker.name}: arraste para a linha do trabalho`
+                    }
+                    className="flex cursor-grab items-center gap-1.5 rounded-full border border-gray-200 bg-white py-0.5 pl-0.5 pr-3 text-sm text-gray-800 hover:border-brand-400 active:cursor-grabbing"
+                  >
+                    <PersonAvatar
+                      name={worker.name}
+                      imageUrl={worker.avatarUrl}
+                      size="sm"
+                    />
+                    {worker.name}
+                  </div>
+                ))}
+                <span className="text-xs text-gray">
+                  {dragging?.from
+                    ? 'Solte aqui para tirar da tarefa e pausar'
+                    : free.length
+                      ? 'Arraste a pessoa para a linha do trabalho. Para pausar, tire ela da linha.'
+                      : people.length
+                        ? 'Todos estão em alguma tarefa. Para pausar, tire a pessoa da linha.'
+                        : 'Ninguém tem acesso a este gerenciador. Configure em Configurações › Produção.'}
+                </span>
               </CardContent>
             </Card>
           )}
@@ -752,7 +796,7 @@ export function SectorScreen({ id }: { id: string }) {
                     onReorder={queueTab === 'a-fazer' ? swapSlots : undefined}
                     showForecast={queueTab === 'a-fazer'}
                     onLock={isManager ? toggleLock : undefined}
-                    person={collective ? dragging : null}
+                    person={collective ? (dragging?.id ?? null) : null}
                     onDropPerson={collective ? dropOn : undefined}
                   />
                 </>
@@ -787,5 +831,73 @@ export function SectorScreen({ id }: { id: string }) {
         onChanged={refresh}
       />
     </TooltipProvider>
+  )
+}
+
+// O espaço da linha no coletivo (25/11/2026, como no legado): quem está na
+// tarefa fica aqui. Soltar a pessoa na linha liga o relógio; arrastar para
+// fora (de volta à caixa ou para qualquer lugar) pausa; para outra linha,
+// troca de tarefa. O X faz o mesmo que tirar, para o toque e o teclado
+function PersonSlot({
+  item,
+  highlight,
+  onDragPerson,
+  onLeave,
+  onRemove,
+}: {
+  item: TaskView
+  highlight: boolean
+  onDragPerson: (id: string, from: string) => void
+  onLeave: (from: string, id: string) => void
+  onRemove: (from: string, id: string) => void
+}) {
+  return (
+    <div
+      className={cn(
+        'flex min-h-9 min-w-36 flex-wrap items-center gap-1 rounded-lg border border-dashed px-1.5 py-1',
+        highlight ? 'border-brand-400 bg-brand-25' : 'border-gray-300',
+      )}
+    >
+      {item.workers.map((worker) => (
+        <div
+          key={worker.id}
+          draggable
+          onDragStart={(event) => {
+            // A linha também arrasta (trocar a ordem): o arrasto é da pessoa
+            event.stopPropagation()
+            onDragPerson(worker.id, item.id)
+          }}
+          onDragEnd={(event) => {
+            event.stopPropagation()
+            onLeave(item.id, worker.id)
+          }}
+          title={`${worker.name}: arraste para fora para pausar`}
+          className="flex cursor-grab items-center gap-1 rounded-full bg-success-50 py-0.5 pl-0.5 pr-1 text-xs font-medium text-success-800 ring-1 ring-success-500 active:cursor-grabbing"
+        >
+          <PersonAvatar
+            name={worker.name}
+            imageUrl={worker.avatarUrl}
+            size="sm"
+          />
+          <span className="max-w-24 truncate">{worker.name.split(' ')[0]}</span>
+          <button
+            type="button"
+            aria-label={`Tirar ${worker.name} da tarefa`}
+            title="Tirar da tarefa"
+            className="rounded-full p-0.5 text-success-700 hover:bg-success-100"
+            onClick={() => onRemove(item.id, worker.id)}
+          >
+            <Icon icon={IconX} size="sm" />
+          </button>
+        </div>
+      ))}
+      {!item.workers.length && (
+        <span className="px-1 text-xs text-gray">
+          {item.status === 'PAUSED'
+            ? 'Pausada: solte a pessoa'
+            : 'Solte a pessoa aqui'}
+        </span>
+      )}
+    </div>
   )
 }
