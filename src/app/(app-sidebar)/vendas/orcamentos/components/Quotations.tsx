@@ -194,14 +194,22 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
   // Lista Lite 19/11, item 10: a venda rápida abria com a página recarregada
   // inteira (window.location), o que somava segundos. Agora navega por dentro
-  // do app e já busca o orçamento enquanto a navegação acontece: a tela dos
-  // itens abre com os dados na mão. A chave é a de Quotation.tsx
-  const openQuickSale = (id: string) => {
-    queryClient.prefetchQuery({
-      staleTime: Infinity,
-      queryKey: ['quotation-data', id],
-      queryFn: () => getItemOld({ route: 'quotationRoute', id }),
-    })
+  // do app com o orçamento já na mão. A chave é a de Quotation.tsx.
+  // Lista Lite 24/11, item 8: a busca corria junto com a navegação, e a
+  // navegação cortava a busca no meio ("Failed to fetch"); a tela ficava no
+  // esqueleto para sempre. Agora busca primeiro e navega depois
+  const openQuickSale = async (id: string) => {
+    await queryClient
+      .prefetchQuery({
+        staleTime: Infinity,
+        queryKey: ['quotation-data', id],
+        queryFn: () => getItemOld({ route: 'quotationRoute', id }),
+      })
+      .catch(() => {})
+    // Sem os dados na mão (a busca falhou), a tela busca de novo ao abrir
+    if (!queryClient.getQueryData(['quotation-data', id])) {
+      queryClient.removeQueries({ queryKey: ['quotation-data', id] })
+    }
     router.push(`/vendas/orcamentos/${id}?adicionar=1`)
   }
 
@@ -232,7 +240,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           sale?.status === 'OPEN' &&
           !(sale?.quotationItems?.length > 0)
         ) {
-          openQuickSale(previous)
+          await openQuickSale(previous)
           return
         }
         window.localStorage.removeItem(emptyKey)
@@ -255,7 +263,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
       window.localStorage.setItem(emptyKey, res.data.id)
       // Já com o modal "Qual item deseja adicionar?" aberto (VR-4)
-      openQuickSale(res.data.id)
+      await openQuickSale(res.data.id)
     }
 
     createQuickSale()

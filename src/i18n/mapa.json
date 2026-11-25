@@ -17412,7 +17412,7 @@
    "src/app/(app-sidebar)/dashboard/components/QuickAccess.tsx:25 (propriedade:label)",
    "src/app/(app-sidebar)/dashboard/components/Quotations.tsx:67 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/ConversionTables.tsx:46 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:386 (atributo:title)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:394 (atributo:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/page.tsx:10 (propriedade:title)",
    "src/app/sandbox/icones/page.tsx:107 (jsx)",
    "src/app/sandbox/nav-menu/page.tsx:243 (propriedade:label)",
@@ -17620,7 +17620,7 @@
   "usos": [
    "src/app/(app-sidebar)/dashboard/components/Quotations.tsx:41 (propriedade:label)",
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:59 (propriedade:label)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:301 (propriedade:label)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:309 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/components/Orders.tsx:209 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:65 (propriedade:text)",
    "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:67 (propriedade:text)",
@@ -17919,7 +17919,7 @@
    "src/app/(app-sidebar)/configuracoes/vendas/venda-rapida/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/configuracoes/vendas/venda-rapida/page.tsx:25 (propriedade:title)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/NewQuotation.tsx:394 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:367 (atributo:title)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:375 (atributo:title)",
    "src/components/common/QuickSaleBadge.tsx:14 (jsx)",
    "src/consts/nav.ts:108 (propriedade:title)"
   ]
@@ -18928,7 +18928,7 @@
    "src/app/(app-sidebar)/relatorios/vendas/components/print/AdvancedReportDialog/index.tsx:115 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/AddToItem.tsx:688 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationItemsModal.tsx:471 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:333 (propriedade:label)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:341 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/AwaitingFocus.tsx:29 (propriedade:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsFilter.tsx:137 (propriedade:label)",
    "src/components/common/form/global-inputs/ClientCategorySelectField.tsx:32 (propriedade:label)",
@@ -37070,7 +37070,7 @@
   "usos": [
    "src/app/(app-sidebar)/dashboard/components/FinancialOverview.tsx:102 (propriedade:label)",
    "src/app/(app-sidebar)/dashboard/components/Quotations.tsx:46 (propriedade:label)",
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:319 (propriedade:label)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:327 (propriedade:label)"
   ]
  },
  "dashboard.inicio.overdue2": {
@@ -61033,7 +61033,7 @@
  "vendas.orcamentos.createYourFirstQuote": {
   "pt": "Cadastre seu primeiro orçamento",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:455 (atributo:description)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:463 (atributo:description)"
   ]
  },
  "vendas.orcamentos.customerBlockedInTheRegistration": {
@@ -61161,7 +61161,7 @@
  "vendas.orcamentos.draft": {
   "pt": "Digitação",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:295 (propriedade:label)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:303 (propriedade:label)",
    "src/consts/quotations.ts:7 (propriedade:text)"
   ]
  },
@@ -62046,13 +62046,13 @@
  "vendas.orcamentos.noQuotesAvailableForExport": {
   "pt": "Nenhum orçamento disponível para exportação",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:399 (atributo:emptyMessage)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:407 (atributo:emptyMessage)"
   ]
  },
  "vendas.orcamentos.noQuotesRegistered": {
   "pt": "Nenhum orçamento cadastrado",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:454 (atributo:title)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:462 (atributo:title)"
   ]
  },
  "vendas.orcamentos.noQuotesWithStatus": {
@@ -62061,7 +62061,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:426 (atributo:title)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:434 (atributo:title)"
   ]
  },
  "vendas.orcamentos.noSellingPrice": {
@@ -62174,7 +62174,7 @@
  "vendas.orcamentos.onHold": {
   "pt": "⚠️ Pendente",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:311 (propriedade:label)",
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:319 (propriedade:label)",
    "src/consts/quotations.ts:13 (propriedade:text)"
   ]
  },
@@ -62577,7 +62577,7 @@
  "vendas.orcamentos.rejected2": {
   "pt": "Rejeitados",
   "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:325 (propriedade:label)"
+   "src/app/(app-sidebar)/vendas/orcamentos/components/Quotations.tsx:333 (propriedade:label)"
   ]
  },
  "vendas.orcamentos.reminder": {
