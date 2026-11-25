@@ -149,6 +149,14 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     items: NfePrepareItem[]
   } | null>(null)
   const gravandoItens = useRef(false)
+  // Gravação da cobrança (duplicatas e forma de pagamento) no rascunho, pelo
+  // mesmo caminho dos itens: só a versão mais recente espera, uma por vez.
+  const cobrancaPendente = useRef<{
+    draftId: string
+    duplicatas: NfePrepareResponse['duplicatas']
+    pagamento: NfePrepareResponse['pagamento']
+  } | null>(null)
+  const gravandoCobranca = useRef(false)
   // A linha deixou de ser rascunho (emissão tentada): não adianta gravar.
   const rascunhoFechado = useRef(false)
   const isConsolidated = Boolean(orderIds?.length)
@@ -732,6 +740,63 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     gravarItensPendentes()
   }
 
+  /**
+   * Grava no rascunho a cobrança que estiver esperando, uma gravação por vez.
+   *
+   * As duplicatas viviam só no estado da tela: nenhum rascunho da base jamais
+   * guardou uma, e bastava recarregar a página para o que o usuário digitou
+   * sumir — a nota saía sem cobrança e a DANFE sem duplicata.
+   */
+  const gravarCobrancaPendente = async () => {
+    if (gravandoCobranca.current) return
+    gravandoCobranca.current = true
+    try {
+      while (cobrancaPendente.current) {
+        const { draftId, duplicatas, pagamento } = cobrancaPendente.current
+        cobrancaPendente.current = null
+        try {
+          const result = await updateItemNew({
+            route: `/fiscal/nfe/draft/${draftId}`,
+            data: { duplicatas, ...(pagamento ? { pagamento } : {}) },
+          })
+          if (result.success) continue
+          if (result.code === 404) {
+            // A linha deixou de ser rascunho: uma emissão já foi tentada.
+            rascunhoFechado.current = true
+            cobrancaPendente.current = null
+            return
+          }
+          toast.error(
+            result.message ||
+              'Não foi possível guardar as duplicatas no rascunho da nota.',
+          )
+        } catch {
+          toast.error(
+            'Não foi possível guardar as duplicatas no rascunho da nota.',
+          )
+        }
+      }
+    } finally {
+      gravandoCobranca.current = false
+    }
+  }
+
+  // Duplicatas e forma de pagamento editadas na tela
+  const handlePaymentUpdate = (updatedData: NfePrepareResponse) => {
+    setData(updatedData)
+
+    const draftId = updatedData.draftId
+    if (!draftId || rascunhoFechado.current) return
+
+    cobrancaPendente.current = {
+      draftId,
+      duplicatas: updatedData.duplicatas || [],
+      pagamento: updatedData.pagamento,
+    }
+    // Não rejeita: as falhas viram toast lá dentro.
+    gravarCobrancaPendente()
+  }
+
   // Item editado na tabela
   const handleItemsChange = (updatedData: NfePrepareResponse) => {
     setData(updatedData)
@@ -894,7 +959,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
 
           <InvoicePayment
             data={data}
-            onUpdate={setData}
+            onUpdate={handlePaymentUpdate}
             computedValorNota={
               computedTotais?.valorNota ?? data?.totais?.valorNota ?? 0
             }
