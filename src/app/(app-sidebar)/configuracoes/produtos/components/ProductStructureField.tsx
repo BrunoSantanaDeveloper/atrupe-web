@@ -41,7 +41,10 @@ const OPTIONS: Option[] = [
   {
     value: 'SHEET',
     label: 'Impresso em folha',
-    description: 'Papel, sangria e folhas de acerto, como na gráfica rápida.',
+    // Gráfica rápida e offset numa opção só (Maicol, 25/11/2026, Lista Lite
+    // 24/11, item 2): o offset não tinha nada próprio (tiragem, cores e
+    // chapas nunca foram feitos) e abria os mesmos blocos
+    description: 'Papel, sangria e folhas de acerto: gráfica rápida ou offset.',
     Icon: IconFileText,
   },
   {
@@ -109,9 +112,12 @@ export function ProductStructureField({
 
   const options = OPTIONS.filter(
     (option) =>
-      sheetAvailable ||
-      (option.value !== 'SHEET' && option.value !== 'OFFSET') ||
-      option.value === saved,
+      // O offset saiu da escolha (item 2, 25/11/2026): só aparece no produto
+      // que já foi gravado como offset, para não mudar o que ele é
+      (option.value !== 'OFFSET' || saved === 'OFFSET') &&
+      (sheetAvailable ||
+        (option.value !== 'SHEET' && option.value !== 'OFFSET') ||
+        option.value === saved),
   )
 
   return (

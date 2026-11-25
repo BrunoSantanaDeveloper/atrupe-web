@@ -15644,7 +15644,7 @@
    "src/app/(app-sidebar)/academy/[planName]/page.tsx:284 (jsx)",
    "src/app/(app-sidebar)/admin/sistema/planos/components/FeatureMatrix.tsx:118 (jsx)",
    "src/app/(app-sidebar)/admin/sistema/planos/components/PricingTexts.tsx:170 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:186 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:192 (jsx)",
    "src/consts/plans.ts:114 (propriedade:text)",
    "src/consts/plans.ts:141 (propriedade:text)",
    "src/consts/plans.ts:179 (propriedade:text)"
@@ -16956,7 +16956,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:55 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:58 (propriedade:label)",
    "src/app/sandbox/locacao/page.tsx:82 (jsx)",
    "src/consts/productions.ts:16 (propriedade:label)"
   ]
@@ -17449,7 +17449,7 @@
  "comum.geral.outsourced": {
   "pt": "Terceirizado",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:62 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:65 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductsTable/ProductsData.tsx:329 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:416 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:599 (jsx)",
@@ -30187,7 +30187,7 @@
  "configuracoes.produtos.boughtReadyMadeFromA": {
   "pt": "Comprado pronto de um fornecedor e revendido.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:63 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:66 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.brandAndColorAreAdded": {
@@ -31482,7 +31482,7 @@
  "configuracoes.produtos.itIsNotTheProduct": {
   "pt": "Não é o tipo de produto nem o setor. A maioria dos produtos da comunicação visual é Padrão.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:128 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:134 (jsx)"
   ]
  },
  "configuracoes.produtos.itIsPartOfThe": {
@@ -32286,7 +32286,7 @@
  "configuracoes.produtos.offset": {
   "pt": "Offset",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:49 (propriedade:label)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:52 (propriedade:label)",
    "src/consts/productions.ts:15 (propriedade:label)"
   ]
  },
@@ -32494,10 +32494,10 @@
    "src/consts/productAssembly.ts:34 (propriedade:text)"
   ]
  },
- "configuracoes.produtos.paperStockBleedAndMake": {
-  "pt": "Papel, sangria e folhas de acerto, como na gráfica rápida.",
+ "configuracoes.produtos.paperBleedAndMakeReady": {
+  "pt": "Papel, sangria e folhas de acerto: gráfica rápida ou offset.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:44 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:47 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.parPar": {
@@ -32586,7 +32586,7 @@
  "configuracoes.produtos.periodScheduleAndSite": {
   "pt": "Período, agenda e ponto.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:56 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:59 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.pisCofins": {
@@ -32790,9 +32790,9 @@
  "configuracoes.produtos.productStructure": {
   "pt": "Estrutura do produto",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:120 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:121 (atributo:title)",
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:139 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:126 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:127 (atributo:title)",
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:145 (atributo:aria-label)"
   ]
  },
  "configuracoes.produtos.productTotal": {
@@ -33235,7 +33235,7 @@
  "configuracoes.produtos.saysHowTheProductIs": {
   "pt": "Diz como o produto é feito e vendido. O cadastro abre só os campos dessa estrutura: o impresso em folha pede papel, sangria e folhas de acerto; o terceirizado pede fornecedor e custo.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:123 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:129 (jsx)"
   ]
  },
  "configuracoes.produtos.searchByName": {
@@ -33490,7 +33490,7 @@
  "configuracoes.produtos.sheetPrintedWithPrintRun": {
   "pt": "Impresso em folha, com tiragem, cores e chapas.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:50 (propriedade:description)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:53 (propriedade:description)"
   ]
  },
  "configuracoes.produtos.sheetPrintingBleedAndMake": {
@@ -34250,7 +34250,7 @@
  "configuracoes.produtos.theBleedTheMakeReady": {
   "pt": "A sangria, as folhas de acerto e o papel das variações ficam guardados. Se o produto voltar a ser impresso em folha, eles voltam.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:91 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:94 (jsx)"
   ]
  },
  "configuracoes.produtos.theBoxStaysInThe": {
@@ -34397,7 +34397,7 @@
  "configuracoes.produtos.theOutsourcedSupplierAndCost": {
   "pt": "O fornecedor e o custo do terceirizado ficam guardados. Se o produto voltar a ser terceirizado, eles voltam.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:84 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:87 (jsx)"
   ]
  },
  "configuracoes.produtos.thePaperComesFromThe": {
@@ -35227,7 +35227,7 @@
  "configuracoes.produtos.youCanChangeItLater": {
   "pt": "Dá para trocar depois. O que a estrutura antiga tinha fica guardado e volta se ela voltar.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:132 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:138 (jsx)"
   ]
  },
  "configuracoes.produtos.youDonTHavePermission": {

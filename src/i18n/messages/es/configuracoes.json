@@ -1316,7 +1316,7 @@
     "noBuildUp": "Sin composición",
     "sizeMaterialAndServiceHourly": "Medida, material y servicio. También servicio por hora.",
     "sheetPrinted": "Impreso en hojas",
-    "paperStockBleedAndMake": "Papel, sangrado y hojas de arranque, como en la imprenta rápida.",
+    "paperBleedAndMakeReady": "Papel, sangrado y hojas de ajuste: imprenta rápida u offset.",
     "offset": "Offset",
     "sheetPrintedWithPrintRun": "Impreso en hojas, con tiraje, colores y planchas.",
     "periodScheduleAndSite": "Período, agenda y ubicación.",
