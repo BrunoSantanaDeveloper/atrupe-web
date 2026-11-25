@@ -523,7 +523,10 @@ export function SidebarComponent(props: Props) {
             </div>
           )}
 
-          {/* WhatsApp Link */}
+          {/* WhatsApp Link: desligado; o suporte fica no botão flutuante do
+              layout. Para religar, o link é o do número configurado no
+              superadmin: const suporte = useSuporteWhatsApp(), e só com
+              suporte não nulo. */}
           {/* <div className="border-t p-4">
             <Button
               asChild
@@ -535,7 +538,7 @@ export function SidebarComponent(props: Props) {
               )}
             >
               <a
-                href="https://wa.me/554721229194"
+                href={suporte}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4"

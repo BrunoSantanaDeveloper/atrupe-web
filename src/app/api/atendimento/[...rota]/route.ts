@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import apiInstance from '@/lib/api'
+import { SUPORTE_WHATSAPP_TAG } from '@/lib/suporte-whatsapp'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +39,15 @@ async function repassar(request: NextRequest, { params }: Context) {
       validateStatus: () => true,
       transformResponse: (raw) => raw,
     })
+    // Conectar, tirar ou escolher um número muda o que os clientes chamam:
+    // o botão do WhatsApp e as páginas leem o número novo na hora.
+    if (
+      request.method === 'POST' &&
+      rota[0] === 'whatsapp' &&
+      res.status < 400
+    ) {
+      revalidateTag(SUPORTE_WHATSAPP_TAG)
+    }
     return answer(res.status, res.data)
   } catch (error) {
     const digest = (error as { digest?: unknown })?.digest
