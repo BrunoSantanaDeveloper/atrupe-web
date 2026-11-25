@@ -47886,7 +47886,7 @@
  "producao.agendaDeEntrega.deliveryNotFound": {
   "pt": "Entrega não encontrada",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:885 (atributo:title)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:891 (atributo:title)"
   ]
  },
  "producao.agendaDeEntrega.deliveryScheduleDate": {
@@ -48065,7 +48065,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:765 (atributo:tooltip)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:771 (atributo:tooltip)"
   ]
  },
  "producao.agendaDeEntrega.texto1OrderSelected": {
@@ -48089,7 +48089,7 @@
  "producao.agendaDeEntrega.thisItemSStepsFollow": {
   "pt": "As etapas deste item seguem as da ordem.",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:840 (jsx)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:846 (jsx)"
   ]
  },
  "producao.agendaDeEntrega.thisStepFollowsTheTasks": {
@@ -48128,7 +48128,7 @@
  "producao.agendaDeEntrega.yourSearchFoundNoResults": {
   "pt": "Sua busca não encontrou nenhum resultado. Tente novamente.",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:886 (atributo:description)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:892 (atributo:description)"
   ]
  },
  "producao.gerenciador.aFazer": {

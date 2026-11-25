@@ -86,7 +86,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 // Consts
 import { FEATURES } from '@/consts/features'
 import { useSectorColor } from '@/hooks/useSectorColor'
-import { sectorIcons } from '@/consts/sectors'
+import { sectorIconByName, sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
 
 interface Props extends SearchParamsType {
@@ -760,7 +760,13 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                             stage.sectorId,
                                                           ) || ''
                                                         ]?.icon ||
-                                                        IconQuestionMark
+                                                        // O pedido sem a etapa daquele setor (a venda
+                                                        // gerenciada pela produção): o ícone pelo nome
+                                                        (stage.sector
+                                                          ? sectorIconByName(
+                                                              stage.sector,
+                                                            )
+                                                          : IconQuestionMark)
                                                       }
                                                       tooltip={`${stage.name} · ${stage.sector} ${stageStatus[stage.status]?.tooltip || ''}`}
                                                       badge={
