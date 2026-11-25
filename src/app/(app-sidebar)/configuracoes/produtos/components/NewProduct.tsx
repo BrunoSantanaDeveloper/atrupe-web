@@ -27,7 +27,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Components
-import { ProductionStages } from './ProductionStages'
 import { ProductVariations } from './ProductVariations'
 import { ProductPrintSettings } from './ProductPrintSettings'
 import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
@@ -1085,6 +1084,9 @@ function NewProductModal({
                           </>
                         </ProductFormAccordion>
                       )}
+                      {/* As etapas de produção do produto são só do LITE
+                          (Maicol, 25/11/2026). Do PRO em diante quem diz por
+                          onde o produto passa é a composição */}
                       {canShowProductionStages && !showCompositionTab && (
                         <ProductionStagesSection />
                       )}
@@ -1098,30 +1100,6 @@ function NewProductModal({
                       <TooltipProvider>
                         <div className="space-y-5">
                           <AssemblyEditor productId={productId} embedded />
-                          {canShowProductionStages && (
-                            <Form {...form}>
-                              <div className="space-y-1">
-                                <ProductionStages
-                                  hint={
-                                    <InfoHint title="Etapas de produção">
-                                      <p>
-                                        Os setores por onde o produto passa. A
-                                        Agenda de entrega usa esta lista para
-                                        mostrar em que setor está cada pedido.
-                                      </p>
-                                      <p>
-                                        No PRO, a Agenda de entrega e as telas
-                                        dos setores seguem as etapas da
-                                        composição acima. Esta lista vale
-                                        enquanto o produto não tem composição
-                                        liberada.
-                                      </p>
-                                    </InfoHint>
-                                  }
-                                />
-                              </div>
-                            </Form>
-                          )}
                         </div>
                       </TooltipProvider>
                     ) : (
