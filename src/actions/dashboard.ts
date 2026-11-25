@@ -143,7 +143,9 @@ export async function getDashboardTopClients(
     const res = await api.get('/report/sales/top-clients', {
       params: cleanFilters(filters),
     })
-    return res.data || []
+    // Só lista: um corpo de outro formato (erro, API de mentira da
+    // fronteira) derrubava o gráfico de ranking no navegador
+    return Array.isArray(res.data) ? res.data : []
   } catch (error) {
     console.error('Error fetching dashboard top clients:', error)
     return []
@@ -159,7 +161,9 @@ export async function getDashboardTopProducts(
     const res = await api.get('/report/sales/top-products', {
       params: cleanFilters(filters),
     })
-    return res.data || []
+    // Só lista: um corpo de outro formato (erro, API de mentira da
+    // fronteira) derrubava o gráfico de ranking no navegador
+    return Array.isArray(res.data) ? res.data : []
   } catch (error) {
     console.error('Error fetching dashboard top products:', error)
     return []
@@ -176,7 +180,9 @@ export async function getDashboardSalesBySeller(
       params: cleanFilters(filters),
     })
 
-    return res.data || []
+    // Só lista: um corpo de outro formato (erro, API de mentira da
+    // fronteira) derrubava o gráfico de ranking no navegador
+    return Array.isArray(res.data) ? res.data : []
   } catch (error) {
     console.error('Error fetching dashboard sales by seller:', error)
     return []
