@@ -32645,6 +32645,12 @@
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers.tsx:135 (jsx)"
   ]
  },
+ "configuracoes.produtos.printShop": {
+  "pt": "Gráfica",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:43 (propriedade:label)"
+  ]
+ },
  "configuracoes.produtos.processCreated": {
   "pt": "Processo criado",
   "usos": [
@@ -33479,12 +33485,6 @@
   "pt": "Margem da folha (mm)",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyDialogs.tsx:1461 (jsx)"
-  ]
- },
- "configuracoes.produtos.sheetPrinted": {
-  "pt": "Impresso em folha",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:43 (propriedade:label)"
   ]
  },
  "configuracoes.produtos.sheetPrintedWithPrintRun": {

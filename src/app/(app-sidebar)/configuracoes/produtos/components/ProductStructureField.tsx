@@ -40,10 +40,10 @@ const OPTIONS: Option[] = [
   },
   {
     value: 'SHEET',
-    label: 'Impresso em folha',
-    // Gráfica rápida e offset numa opção só (Maicol, 25/11/2026, Lista Lite
-    // 24/11, item 2): o offset não tinha nada próprio (tiragem, cores e
-    // chapas nunca foram feitos) e abria os mesmos blocos
+    label: 'Gráfica',
+    // Gráfica rápida e offset numa opção só, chamada só de "Gráfica" (Maicol,
+    // 25/11/2026, Lista Lite 24/11, item 2): o offset não tinha nada próprio
+    // (tiragem, cores e chapas nunca foram feitos) e abria os mesmos blocos
     description: 'Papel, sangria e folhas de acerto: gráfica rápida ou offset.',
     Icon: IconFileText,
   },
@@ -104,7 +104,7 @@ export function ProductStructureField({
 }: {
   // A estrutura gravada, na edição: avisa o que fica guardado na troca
   saved?: ProductStructure
-  // Impresso em folha e offset abrem a configuração de Papéis do plano
+  // Gráfica e offset abrem a configuração de Papéis do plano
   sheetAvailable: boolean
 }) {
   const { watch, setValue } = useFormContext<NewProductsFormType>()

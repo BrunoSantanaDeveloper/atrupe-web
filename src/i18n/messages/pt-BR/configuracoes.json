@@ -1858,7 +1858,7 @@
     "show": "Mostrar as variações",
     "noBuildUp": "Sem composição",
     "sizeMaterialAndServiceHourly": "Medida, material e serviço. Serviço por hora também.",
-    "sheetPrinted": "Impresso em folha",
+    "printShop": "Gráfica",
     "paperBleedAndMakeReady": "Papel, sangria e folhas de acerto: gráfica rápida ou offset.",
     "offset": "Offset",
     "sheetPrintedWithPrintRun": "Impresso em folha, com tiragem, cores e chapas.",

@@ -76,7 +76,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Fórmula | Fórmula | Formula | |
 | Variação | Variante | Variant | |
 | Estrutura do produto | Estructura del producto | Product structure | A primeira pergunta do cadastro: define os blocos que ele abre (EP-1, 18/11/2026). Não é o tipo de produto nem o setor. |
-| Padrão · Impresso em folha · Locação · Terceirizado (estruturas) | Estándar · Impreso en hojas · Alquiler · Tercerizado | Standard · Sheet-printed · Rental · Outsourced | As estruturas do produto (EP-2). Desde 25/11/2026, "Impresso em folha" cobre a gráfica rápida e o offset; "Offset" (Offset · Offset) só aparece no produto já gravado assim. |
+| Padrão · Gráfica · Locação · Terceirizado (estruturas) | Estándar · Imprenta · Alquiler · Tercerizado | Standard · Print shop · Rental · Outsourced | As estruturas do produto (EP-2). Desde 25/11/2026, "Gráfica" cobre a gráfica rápida e o offset (antes "Impresso em folha"); "Offset" (Offset · Offset) só aparece no produto já gravado assim. |
 | Grupo de produtos | Grupo de productos | Product group | |
 | Unidade de venda | Unidad de venta | Sales unit | |
 | un / un. | u. | pc | |
