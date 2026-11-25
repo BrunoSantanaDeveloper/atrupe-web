@@ -75,7 +75,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Simulação | Simulación | Simulation | |
 | Fórmula | Fórmula | Formula | |
 | Variação | Variante | Variant | |
-| Estrutura do produto | Estructura del producto | Product structure | A primeira pergunta do cadastro: define os blocos que ele abre (EP-1, 18/11/2026). Não é o tipo de produto nem o setor. |
+| Tipo de produto | Tipo de producto | Product type | Até 25/11/2026 se chamava "Estrutura do produto" (Estructura del producto · Product structure). Cada tipo tem a sua estrutura. A primeira pergunta do cadastro: define os blocos que ele abre (EP-1, 18/11/2026). Não é o tipo de produto nem o setor. |
 | Padrão · Gráfica · Locação · Terceirizado (estruturas) | Estándar · Imprenta · Alquiler · Tercerizado | Standard · Print shop · Rental · Outsourced | As estruturas do produto (EP-2). Desde 25/11/2026, "Gráfica" cobre a gráfica rápida e o offset (antes "Impresso em folha"); "Offset" (Offset · Offset) só aparece no produto já gravado assim. |
 | Grupo de produtos | Grupo de productos | Product group | |
 | Unidade de venda | Unidad de venta | Sales unit | |

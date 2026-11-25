@@ -1280,6 +1280,9 @@ export const getProductUsage = async ({ productId }: { productId: string }) => {
       variation: string | null
       stage: string
     }[],
+    // Em quantos itens de orçamento o produto já entrou: com algum, o tipo
+    // dele trava (25/11/2026)
+    soldCount: 0,
     openQuotations: [] as {
       quotationId: string
       reference: string | null

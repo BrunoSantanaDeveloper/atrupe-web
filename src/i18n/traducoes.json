@@ -21146,5 +21146,21 @@
   "1ad4c58cb8": {
     "es": "Imprenta",
     "en": "Print shop"
+  },
+  "2e0bb8d254": {
+    "es": "Tipo de producto",
+    "en": "Product type"
+  },
+  "f063e29574": {
+    "es": "Cada tipo tiene su estructura: el registro abre solo sus campos. Imprenta pide papel, sangrado y hojas de ajuste; Tercerizado pide proveedor y costo. La mayoría de los productos de comunicación visual es Estándar.",
+    "en": "Each type has its own structure: the form opens only its fields. Print shop asks for paper, bleed and make-ready sheets; Outsourced asks for supplier and cost. Most visual communication products are Standard."
+  },
+  "4e4e8c02a6": {
+    "es": "Se puede cambiar el tipo mientras el producto no haya entrado en ningún presupuesto; lo que tenía el tipo anterior queda guardado y vuelve si él vuelve. Después de usado, el tipo no cambia: duplique el producto o desactive este y registre uno nuevo.",
+    "en": "You can change the type while the product has not been used in any quote; what the old type had is kept and comes back if it returns. Once used, the type does not change: duplicate the product or deactivate this one and create a new one."
+  },
+  "b38242b703": {
+    "es": "Este producto ya se usó en un presupuesto, y su tipo no cambia. Para otro tipo, duplique el producto o desactive este y registre uno nuevo.",
+    "en": "This product has already been used in a quote, and its type does not change. For another type, duplicate the product or deactivate this one and create a new one."
   }
 }

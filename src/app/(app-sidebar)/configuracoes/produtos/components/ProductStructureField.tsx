@@ -101,11 +101,14 @@ function KeptNotice({
 export function ProductStructureField({
   saved,
   sheetAvailable,
+  locked,
 }: {
   // A estrutura gravada, na edição: avisa o que fica guardado na troca
   saved?: ProductStructure
   // Gráfica e offset abrem a configuração de Papéis do plano
   sheetAvailable: boolean
+  // O produto já entrou num orçamento: o tipo não muda (25/11/2026)
+  locked?: boolean
 }) {
   const { watch, setValue } = useFormContext<NewProductsFormType>()
   const current = watch('structure') || 'STANDARD'
@@ -115,6 +118,9 @@ export function ProductStructureField({
       // O offset saiu da escolha (item 2, 25/11/2026): só aparece no produto
       // que já foi gravado como offset, para não mudar o que ele é
       (option.value !== 'OFFSET' || saved === 'OFFSET') &&
+      // O que ainda não está pronto não aparece (Maicol, 25/11/2026): nada de
+      // "Em breve" sem ter sido pedido. A Locação volta com os campos dela
+      (!option.soon || saved === option.value) &&
       (sheetAvailable ||
         (option.value !== 'SHEET' && option.value !== 'OFFSET') ||
         option.value === saved),
@@ -123,31 +129,30 @@ export function ProductStructureField({
   return (
     <fieldset className="w-full space-y-3">
       <legend className="mb-3 flex items-center gap-1.5">
-        <span className="type-card-title">Estrutura do produto</span>
-        <InfoHint title="Estrutura do produto">
+        <span className="type-card-title">Tipo de produto</span>
+        <InfoHint title="Tipo de produto">
           <p>
-            Diz como o produto é feito e vendido. O cadastro abre só os campos
-            dessa estrutura: o impresso em folha pede papel, sangria e folhas de
-            acerto; o terceirizado pede fornecedor e custo.
+            Cada tipo tem a sua estrutura: o cadastro abre só os campos dele. A
+            Gráfica pede papel, sangria e folhas de acerto; o Terceirizado pede
+            fornecedor e custo. A maioria dos produtos da comunicação visual é
+            Padrão.
           </p>
           <p>
-            Não é o tipo de produto nem o setor. A maioria dos produtos da
-            comunicação visual é Padrão.
-          </p>
-          <p>
-            Dá para trocar depois. O que a estrutura antiga tinha fica guardado
-            e volta se ela voltar.
+            Dá para trocar o tipo enquanto o produto não entrou em nenhum
+            orçamento; o que o tipo antigo tinha fica guardado e volta se ele
+            voltar. Depois de usado, o tipo não muda: duplique o produto ou
+            inative este e cadastre um novo.
           </p>
         </InfoHint>
       </legend>
       <div
         role="radiogroup"
-        aria-label="Estrutura do produto"
+        aria-label="Tipo de produto"
         className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5"
       >
         {options.map(({ value, label, description, Icon, soon }) => {
           const checked = current === value
-          const disabled = !!soon && saved !== value
+          const disabled = (!!soon || !!locked) && saved !== value
           return (
             <button
               key={value}
@@ -196,7 +201,14 @@ export function ProductStructureField({
           )
         })}
       </div>
-      {saved && <KeptNotice from={saved} to={current} />}
+      {locked ? (
+        <p className="text-xs text-gray">
+          Este produto já foi usado em orçamento, e o tipo dele não muda. Para
+          outro tipo, duplique o produto ou inative este e cadastre um novo.
+        </p>
+      ) : (
+        saved && <KeptNotice from={saved} to={current} />
+      )}
     </fieldset>
   )
 }

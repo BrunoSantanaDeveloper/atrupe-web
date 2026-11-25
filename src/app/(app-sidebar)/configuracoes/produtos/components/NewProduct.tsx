@@ -49,6 +49,7 @@ import {
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 import { InactivateProductDialog } from './InactivateProductDialog'
+import { getProductUsage } from '@/actions/assembly'
 import { OutsourcedProductFields } from './OutsourcedProductFields'
 import { ProductStructureField } from './ProductStructureField'
 import { NewGroupInline } from './NewGroupInline'
@@ -206,6 +207,14 @@ function NewProductModal({
   // Inativar com "onde é usado" (PAD-7, 05/10/2026): o diálogo lista os
   // produtos em que este é parte e os orçamentos abertos que o têm
   const [inactivateOpen, setInactivateOpen] = useState(false)
+  // O tipo do produto trava depois que ele entra num orçamento (25/11/2026):
+  // a mesma consulta do "onde é usado"
+  const { data: usage } = useQuery({
+    queryKey: ['product-usage', productId],
+    queryFn: () => getProductUsage({ productId: productId as string }),
+    enabled: !!editMode && !!productId,
+  })
+  const typeLocked = !!usage?.data?.soldCount
   // Variações e faixas digitadas no cadastro novo, gravadas depois que o
   // produto existe (27/10/2026)
   const [pendingVariations, setPendingVariations] = useState<
@@ -732,6 +741,7 @@ function NewProductModal({
                       <ProductStructureField
                         saved={editMode ? savedStructure : undefined}
                         sheetAvailable={hasPaperRegister}
+                        locked={editMode && typeLocked}
                       />
                       <SelectSectorField
                         name="sectorId"
