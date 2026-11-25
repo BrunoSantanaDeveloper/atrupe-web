@@ -31,6 +31,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { SearchSelectBasic } from '@/components/common/form/SearchSelectBasic'
 
 // Types
 import {
@@ -53,23 +54,11 @@ import { IconBuildingBank, IconCash, IconCreditCard } from '@tabler/icons-react'
 
 // Hooks
 import { useMoney } from '@/hooks/useMoney'
+import { useBank } from '@/hooks/queries/useBank'
 
 // Utils
 import { cn } from '@/lib/utils'
 import { todayLocalIso } from '@/lib/formatDate'
-
-const banks = [
-  { value: '000', label: 'Empresa (dinheiro)' },
-  { value: '001', label: '001 · Banco do Brasil' },
-  { value: '033', label: '033 · Santander' },
-  { value: '077', label: '077 · Banco Inter' },
-  { value: '104', label: '104 · Caixa Econômica' },
-  { value: '237', label: '237 · Bradesco' },
-  { value: '260', label: '260 · Nubank' },
-  { value: '341', label: '341 · Itaú' },
-  { value: '748', label: '748 · Sicredi' },
-  { value: '756', label: '756 · Sicoob' },
-]
 
 const settleOptions = (Object.keys(settleModeLabel) as SettleMode[]).map(
   (value) => ({ value, label: settleModeLabel[value] }),
@@ -153,6 +142,14 @@ export function AccountDialog({
   // Custo e preço só para quem tem a permissão de valores (§9)
   const money = useMoney()
   const [draft, setDraft] = useState<Draft>(empty(methods))
+  // Os bancos do cadastro: a lista oficial do Banco Central (Lista Lite
+  // 24/11, item 9), com busca. Antes eram 10 bancos escritos aqui. A gaveta
+  // (000) e a operadora de cartão (CARD) não são banco
+  const { data: bankList } = useBank()
+  const bankOptions = (bankList ?? [])
+    .filter((bank) => /^\d+$/.test(bank.code) && bank.code !== '000')
+    .sort((a, b) => Number(a.code) - Number(b.code))
+    .map((bank) => ({ value: bank.code, label: `${bank.code} · ${bank.name}` }))
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -296,21 +293,20 @@ export function AccountDialog({
                 </div>
               )}
               {draft.kind === 'BANK' && (
-                <SelectBasic
-                  name="account-bank"
+                <SearchSelectBasic
+                  id="account-bank"
                   label="Banco"
-                  placeholder="Escolha o banco"
-                  // A gaveta (000) e a operadora de cartão (CARD) não são banco
-                  options={banks.filter(
-                    (bank) => bank.value !== '000' && bank.value !== 'CARD',
-                  )}
+                  placeholder="Busque pelo nome ou código"
+                  options={bankOptions}
+                  isLoading={!bankList}
                   value={draft.bankCode}
                   onChange={(value) =>
                     setDraft((current) => ({
                       ...current,
                       bankCode: value,
                       bankName:
-                        banks.find((bank) => bank.value === value)?.label || '',
+                        bankOptions.find((bank) => bank.value === value)
+                          ?.label || '',
                     }))
                   }
                 />

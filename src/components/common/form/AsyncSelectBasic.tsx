@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { getData } from '@/actions/_cruds'
 import { Label } from '@/components/ui/label'
 
-const classNames = {
+export const selectClassNames = {
   control: ({ isFocused }: { isFocused: boolean }) =>
     cn(
       'flex h-10 items-center w-full text-left rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2 text-sm',
@@ -100,7 +100,7 @@ export function AsyncSelectBasic({
           }
           loadingMessage={() => 'Buscando...'}
           placeholder={placeholder}
-          classNames={classNames}
+          classNames={selectClassNames}
           unstyled
           components={{
             DropdownIndicator: () => (

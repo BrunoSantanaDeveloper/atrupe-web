@@ -21130,5 +21130,17 @@
   "59d7bac6fe": {
     "es": "El límite de crédito del cliente no admite nada a plazo: toda la venta entra como pago al contado, sin cuotas. Elija la forma de pago y guarde. Al aprobar, la venta queda pendiente hasta el cobro en finanzas.",
     "en": "The customer credit limit allows nothing on credit: the whole sale is paid upfront, with no installments. Choose the payment method and save. On approval, the sale stays on hold until payment is received in finance."
+  },
+  "2249d7715c": {
+    "es": "{code} · {name}",
+    "en": "{code} · {name}"
+  },
+  "5dc960093f": {
+    "es": "Busque por nombre o código",
+    "en": "Search by name or code"
+  },
+  "a39da9984d": {
+    "es": "Papel, sangrado y hojas de ajuste: imprenta rápida u offset.",
+    "en": "Paper, bleed and make-ready sheets: quick print or offset."
   }
 }

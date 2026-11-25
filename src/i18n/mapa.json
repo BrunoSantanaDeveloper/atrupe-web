@@ -841,7 +841,7 @@
    "src/app/(app-sidebar)/admin/avaliacao/cadastros-incompletos/components/Table/Filter.tsx:13 (propriedade:label)",
    "src/app/(app-sidebar)/admin/avaliacao/contas-trial/components/Table/Filter.tsx:11 (propriedade:label)",
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Table/Filter.tsx:21 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:238 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:235 (jsx)"
   ]
  },
  "admin.avaliacao.nomeDoResponsavel": {
@@ -2340,7 +2340,7 @@
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/billing.ts:79 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/PaymentsTable.tsx:62 (propriedade:label)",
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/PaymentsTable.tsx:63 (propriedade:label)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:496 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:492 (jsx)"
   ]
  },
  "admin.clientes.paraConfirmarDigiteONome": {
@@ -14945,7 +14945,7 @@
   "pt": "Banco",
   "usos": [
    "src/app/(app-sidebar)/cadastros/fornecedores/components/NewSuppiler/PaymentTab.tsx:36 (atributo:label)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:301 (atributo:label)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:298 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/Compensate/index.tsx:210 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/Actions/Payment/index.tsx:307 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit.tsx:323 (atributo:label)"
@@ -15127,7 +15127,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:276 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:538 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/PaymentConditionsTable/PaymentConditionsData.tsx:86 (propriedade:cancelLabel)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:574 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:570 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccounts.tsx:125 (propriedade:cancelLabel)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/EditPayrollItem.tsx:272 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/ManageItems/EditItem.tsx:238 (jsx)",
@@ -15345,8 +15345,8 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:386 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:399 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:382 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:395 (atributo:aria-label)",
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccounts.tsx:353 (jsx)",
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashControl.tsx:388 (atributo:title)",
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/page.tsx:30 (propriedade:title)",
@@ -17018,7 +17018,7 @@
    "vitrine"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:493 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:489 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/PDV.tsx:646 (jsx)",
    "src/app/sandbox/locacao/components/RentalContract.tsx:351 (jsx)"
   ]
@@ -18403,7 +18403,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:502 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/config-despesas-fixas/components/EditFixedExpense.tsx:284 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx:546 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:577 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:573 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/EditPayrollItem.tsx:280 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/ManageItems/EditItem.tsx:246 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:495 (jsx)",
@@ -19046,7 +19046,7 @@
  "comum.geral.upTo": {
   "pt": "Até",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:457 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:453 (jsx)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:296 (atributo:label)",
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:1004 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderFiles.tsx:141 (jsx)"
@@ -21440,7 +21440,7 @@
   "pt": "Não informada",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/Actions/EditEmployee/index.tsx:278 (atributo:placeholder)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:285 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:282 (propriedade:label)"
   ]
  },
  "configuracoes.empresaESistema.notProvidedYet": {
@@ -23035,7 +23035,7 @@
  "configuracoes.financeiro.aNewAccountComesWith": {
   "pt": "A conta nova vem com tudo desmarcado: marque as formas que ela usa.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:483 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:479 (jsx)"
   ]
  },
  "configuracoes.financeiro.acceptsInstallments": {
@@ -23047,7 +23047,7 @@
  "configuracoes.financeiro.accountPaymentMethods": {
   "pt": "Formas de pagamento da conta",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:477 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:473 (atributo:title)"
   ]
  },
  "configuracoes.financeiro.accountReactivated": {
@@ -23074,7 +23074,7 @@
  "configuracoes.financeiro.addAccount": {
   "pt": "Cadastrar conta",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:577 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:573 (jsx)"
   ]
  },
  "configuracoes.financeiro.addRegularExpensesAccordingTo": {
@@ -23202,7 +23202,7 @@
  "configuracoes.financeiro.balanceDate": {
   "pt": "Data do saldo",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:340 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:336 (jsx)"
   ]
  },
  "configuracoes.financeiro.bankAccountSettings": {
@@ -23238,15 +23238,15 @@
  "configuracoes.financeiro.blindCount": {
   "pt": "Contagem às cegas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:408 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:426 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:404 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:422 (atributo:aria-label)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:255 (propriedade:label)"
   ]
  },
  "configuracoes.financeiro.blindCount2": {
   "pt": "Conferência às cegas",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:410 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:406 (atributo:title)"
   ]
  },
  "configuracoes.financeiro.cannotBeNegative": {
@@ -23258,13 +23258,13 @@
  "configuracoes.financeiro.cardProcessorAccount": {
   "pt": "Conta de operadora",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:369 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:365 (atributo:title)"
   ]
  },
  "configuracoes.financeiro.cardProcessorBank": {
   "pt": "Banco da operadora",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:269 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:266 (atributo:title)"
   ]
  },
  "configuracoes.financeiro.cardProcessorFee": {
@@ -23276,7 +23276,7 @@
  "configuracoes.financeiro.cashOnHandTheDrawer": {
   "pt": "Dinheiro em espécie: a gaveta, o cofre. O dia se fecha contando.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:86 (propriedade:text)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:75 (propriedade:text)"
   ]
  },
  "configuracoes.financeiro.category": {
@@ -23322,7 +23322,7 @@
  "configuracoes.financeiro.checkingOrDigitalAccountThe": {
   "pt": "Conta corrente ou digital. O dia se fecha conferindo o extrato.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:91 (propriedade:text)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:80 (propriedade:text)"
   ]
  },
  "configuracoes.financeiro.chooseADepartmentThatHas": {
@@ -23331,16 +23331,10 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/folhas-de-pagamento/components/PayrollStructure.tsx:669 (jsx)"
   ]
  },
- "configuracoes.financeiro.chooseTheBank": {
-  "pt": "Escolha o banco",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:302 (atributo:placeholder)"
-  ]
- },
  "configuracoes.financeiro.chooseTheBankAccount": {
   "pt": "Escolha a conta do banco",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:281 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:278 (atributo:placeholder)"
   ]
  },
  "configuracoes.financeiro.clt": {
@@ -23366,12 +23360,6 @@
   "usos": [
    "src/app/(app-sidebar)/configuracoes/financeiro/limite-de-credito/CreditLimit.tsx:253 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/NewClient/NewClientForm.tsx:29 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.companyCash": {
-  "pt": "Empresa (dinheiro)",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:62 (propriedade:label)"
   ]
  },
  "configuracoes.financeiro.costItemCreated": {
@@ -23407,7 +23395,7 @@
  "configuracoes.financeiro.counterRegister": {
   "pt": "Caixa do balcão",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:243 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:240 (atributo:placeholder)"
   ]
  },
  "configuracoes.financeiro.countsInTheMonthS": {
@@ -23822,7 +23810,7 @@
  "configuracoes.financeiro.fromThenOnTheAccount": {
   "pt": "Daí em diante o saldo da conta é sempre calculado pelos lançamentos.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:328 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:324 (jsx)"
   ]
  },
  "configuracoes.financeiro.hideTheCharges": {
@@ -23920,7 +23908,7 @@
  "configuracoes.financeiro.itIsTheOnlyBalance": {
   "pt": "É o único saldo digitado à mão, na data escolhida.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:326 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:322 (jsx)"
   ]
  },
  "configuracoes.financeiro.itemRemovedFromTheTeam": {
@@ -24018,7 +24006,7 @@
  "configuracoes.financeiro.newAccount": {
   "pt": "Nova conta",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:197 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:194 (jsx)",
    "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccounts.tsx:286 (jsx)"
   ]
  },
@@ -24089,7 +24077,7 @@
  "configuracoes.financeiro.noClosing": {
   "pt": "Sem fechamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:368 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:364 (jsx)"
   ]
  },
  "configuracoes.financeiro.noCostItemsYet": {
@@ -24171,7 +24159,7 @@
  "configuracoes.financeiro.offReceivesAndPaysWithout": {
   "pt": "Desligado: recebe e paga sem abrir nem fechar caixa. O saldo e o histórico continuam registrados.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:393 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:389 (jsx)"
   ]
  },
  "configuracoes.financeiro.on": {
@@ -24180,7 +24168,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:354 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:350 (jsx)"
   ]
  },
  "configuracoes.financeiro.openAndCloseEveryDay": {
@@ -24192,14 +24180,14 @@
  "configuracoes.financeiro.openingBalance": {
   "pt": "Saldo inicial",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:324 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:325 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:320 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:321 (atributo:title)"
   ]
  },
  "configuracoes.financeiro.openingBalanceOf": {
   "pt": "Saldo inicial de",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:352 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:348 (jsx)"
   ]
  },
  "configuracoes.financeiro.operating": {
@@ -24232,7 +24220,7 @@
  "configuracoes.financeiro.paymentMethods": {
   "pt": "Formas de pagamento",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:475 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:471 (jsx)"
   ]
  },
  "configuracoes.financeiro.paymentTerms": {
@@ -24281,7 +24269,7 @@
    "methodName"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:542 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:538 (atributo:aria-label)"
   ]
  },
  "configuracoes.financeiro.peopleWhoAlreadyHaveThe": {
@@ -24315,7 +24303,7 @@
  "configuracoes.financeiro.processor": {
   "pt": "Operadora",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:254 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:251 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/ConciliationDialogs.tsx:312 (atributo:label)"
   ]
  },
@@ -24357,7 +24345,7 @@
  "configuracoes.financeiro.receives": {
   "pt": "Recebe",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:494 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:490 (jsx)"
   ]
  },
  "configuracoes.financeiro.receivesIn": {
@@ -24366,13 +24354,13 @@
    "methodName"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:516 (atributo:aria-label)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:512 (atributo:aria-label)"
   ]
  },
  "configuracoes.financeiro.reconcilingThatAccountAlreadySuggests": {
   "pt": "A conciliação dessa conta já sugere a operadora quando o depósito cai (liquidação).",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:274 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:271 (jsx)"
   ]
  },
  "configuracoes.financeiro.recurrence": {
@@ -24385,7 +24373,7 @@
  "configuracoes.financeiro.redeCieloStoneGetnet": {
   "pt": "Rede, Cielo, Stone, Getnet",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:257 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:254 (atributo:placeholder)"
   ]
  },
  "configuracoes.financeiro.referenceIsRequired": {
@@ -24407,7 +24395,7 @@
  "configuracoes.financeiro.registerTheBankAccountFirst": {
   "pt": "Cadastre antes a conta do banco",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:282 (atributo:placeholder)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:279 (atributo:placeholder)"
   ]
  },
  "configuracoes.financeiro.registerTheCashRegistersAnd": {
@@ -24453,6 +24441,12 @@
    "src/components/common/TableHeader.tsx:124 (atributo:placeholder)"
   ]
  },
+ "configuracoes.financeiro.searchByNameOrCode": {
+  "pt": "Busque pelo nome ou código",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:299 (atributo:placeholder)"
+  ]
+ },
  "configuracoes.financeiro.selectLevel1": {
   "pt": "Selecione o nível 1",
   "usos": [
@@ -24480,7 +24474,7 @@
  "configuracoes.financeiro.settlementAccount": {
   "pt": "Conta onde cai",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:267 (atributo:label)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:264 (atributo:label)"
   ]
  },
  "configuracoes.financeiro.sheet": {
@@ -24492,8 +24486,8 @@
  "configuracoes.financeiro.shortageTolerance": {
   "pt": "Tolerância da quebra",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:433 (jsx)",
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:452 (atributo:aria-label)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:429 (jsx)",
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:448 (atributo:aria-label)",
    "src/app/(app-sidebar)/financeiro/frente-de-caixa/components/CashFrontSettingsDialog.tsx:267 (jsx)"
   ]
  },
@@ -24573,19 +24567,13 @@
   ]
  },
  "configuracoes.financeiro.texto": {
-  "pt": "{code} - {name}",
+  "pt": "{code} · {name}",
   "vars": [
    "code",
    "name"
   ],
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/TableData.tsx:109 (jsx)"
-  ]
- },
- "configuracoes.financeiro.texto001BancoDoBrasil": {
-  "pt": "001 · Banco do Brasil",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:63 (propriedade:label)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:152 (propriedade:label)"
   ]
  },
  "configuracoes.financeiro.texto01Administrative": {
@@ -24626,12 +24614,6 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/TableFilter.tsx:21 (propriedade:label)"
   ]
  },
- "configuracoes.financeiro.texto033Santander": {
-  "pt": "033 · Santander",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:64 (propriedade:label)"
-  ]
- },
  "configuracoes.financeiro.texto03NonOperating": {
   "pt": "03 - Não operacional",
   "usos": [
@@ -24639,19 +24621,17 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/TableFilter.tsx:22 (propriedade:label)"
   ]
  },
- "configuracoes.financeiro.texto077BancoInter": {
-  "pt": "077 · Banco Inter",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:65 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.texto104CaixaEconomica": {
-  "pt": "104 · Caixa Econômica",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:66 (propriedade:label)"
-  ]
- },
  "configuracoes.financeiro.texto2": {
+  "pt": "{code} - {name}",
+  "vars": [
+   "code",
+   "name"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/TableData.tsx:109 (jsx)"
+  ]
+ },
+ "configuracoes.financeiro.texto3": {
   "pt": "{combinedCode} - {valor}",
   "vars": [
    "combinedCode",
@@ -24661,19 +24641,7 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/TableData.tsx:129 (jsx)"
   ]
  },
- "configuracoes.financeiro.texto237Bradesco": {
-  "pt": "237 · Bradesco",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:67 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.texto260Nubank": {
-  "pt": "260 · Nubank",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:68 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.texto3": {
+ "configuracoes.financeiro.texto4": {
   "pt": "{level1}.{level2}.{code}.{code2}",
   "vars": [
    "level1",
@@ -24685,28 +24653,10 @@
    "src/app/(app-sidebar)/configuracoes/financeiro/plano-de-contas/components/TableData.tsx:182 (jsx)"
   ]
  },
- "configuracoes.financeiro.texto341Itau": {
-  "pt": "341 · Itaú",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:69 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.texto748Sicredi": {
-  "pt": "748 · Sicredi",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:70 (propriedade:label)"
-  ]
- },
- "configuracoes.financeiro.texto756Sicoob": {
-  "pt": "756 · Sicoob",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:71 (propriedade:label)"
-  ]
- },
  "configuracoes.financeiro.theAccountAlreadyHasEntries": {
   "pt": ". A conta já tem lançamentos, então o saldo inicial não se altera por aqui: o saldo é calculado pelos lançamentos.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:356 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:352 (jsx)"
   ]
  },
  "configuracoes.financeiro.theAdvanceIsPartOf": {
@@ -24727,7 +24677,7 @@
  "configuracoes.financeiro.theBankWhereTheCard": {
   "pt": "O banco onde a operadora de cartão deposita as vendas.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:271 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:268 (jsx)"
   ]
  },
  "configuracoes.financeiro.theBaseSalaryIsAlways": {
@@ -24754,7 +24704,7 @@
  "configuracoes.financeiro.theCardProcessorAccountDoes": {
   "pt": "A conta da operadora de cartão não abre nem fecha caixa: o dia mostra só o total que entrou, pelo valor cheio.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:371 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:367 (jsx)"
   ]
  },
  "configuracoes.financeiro.theCardProcessorChargesBy": {
@@ -24772,7 +24722,7 @@
  "configuracoes.financeiro.theCheckHappensAtSettlement": {
   "pt": "A conferência acontece na liquidação, quando o dinheiro cai no banco já com a taxa descontada.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:375 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:371 (jsx)"
   ]
  },
  "configuracoes.financeiro.theDeductionCoversTheAddition": {
@@ -24787,7 +24737,7 @@
  "configuracoes.financeiro.theDefaultIsTheSimple": {
   "pt": "O padrão é a conferência simples, com o esperado à vista.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:417 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:413 (jsx)"
   ]
  },
  "configuracoes.financeiro.theDefaultValueGoesInto": {
@@ -24832,7 +24782,7 @@
  "configuracoes.financeiro.thePaymentMethodsThisAccount": {
   "pt": "As formas de pagamento que esta conta recebe e paga. O dinheiro dessas formas cai aqui.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:479 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:475 (jsx)"
   ]
  },
  "configuracoes.financeiro.thePayrollToPayIs": {
@@ -24868,7 +24818,7 @@
  "configuracoes.financeiro.tolerance": {
   "pt": "Tolerância",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:435 (atributo:title)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:431 (atributo:title)"
   ]
  },
  "configuracoes.financeiro.upToInstallmentsAllowed": {
@@ -24904,25 +24854,25 @@
  "configuracoes.financeiro.whatTheProcessorStillOwes": {
   "pt": "O que a operadora ainda deve, pelo valor cheio. Não fecha o dia: confere na liquidação.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:96 (propriedade:text)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:85 (propriedade:text)"
   ]
  },
  "configuracoes.financeiro.whenOffAnyDifferenceAt": {
   "pt": "Desligada, qualquer diferença no fechamento é lançada como quebra de caixa.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:437 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:433 (jsx)"
   ]
  },
  "configuracoes.financeiro.whenOnADifferenceUp": {
   "pt": "Ligada, a diferença até o valor informado aparece no fechamento, mas não é lançada.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:441 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:437 (jsx)"
   ]
  },
  "configuracoes.financeiro.whenOnWhoeverClosesThe": {
   "pt": "Ligada, quem fecha o caixa digita o que contou sem ver quanto era esperado. Isso evita ajustar a contagem ao número da tela.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:412 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:408 (jsx)"
   ]
  },
  "configuracoes.financeiro.whenYouCheckTheOptions": {
@@ -24934,7 +24884,7 @@
  "configuracoes.financeiro.whereTheCompanySMoney": {
   "pt": "Onde o dinheiro da empresa fica: a gaveta, o cofre ou uma conta no banco.",
   "usos": [
-   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:200 (jsx)"
+   "src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/AccountDialog.tsx:197 (jsx)"
   ]
  },
  "configuracoes.financeiro.withCashControl": {
