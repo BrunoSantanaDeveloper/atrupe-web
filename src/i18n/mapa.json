@@ -15641,7 +15641,6 @@
    "interno"
   ],
   "usos": [
-   "src/app/(app-sidebar)/academy/[planName]/page.tsx:284 (jsx)",
    "src/app/(app-sidebar)/admin/sistema/planos/components/FeatureMatrix.tsx:118 (jsx)",
    "src/app/(app-sidebar)/admin/sistema/planos/components/PricingTexts.tsx:170 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductStructureField.tsx:197 (jsx)",
