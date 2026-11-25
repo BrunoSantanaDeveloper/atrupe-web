@@ -19,6 +19,7 @@ import {
 
 // Type
 import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
+import { useSuporteWhatsApp } from '@/components/suporte/SuporteWhatsApp'
 import { useState } from 'react'
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
 
 export function HelpButton({ data }: Props) {
   const [videoDialogOpen, setVideoDialogOpen] = useState(false)
+  const suporte = useSuporteWhatsApp()
   const { files, video } = data
 
   return (
@@ -69,12 +71,16 @@ export function HelpButton({ data }: Props) {
               <span>Planilha</span>
             </DropdownMenuItem>
           ) : null} */}
-          <DropdownMenuItem
-            onClick={() => window.open('https://wa.me/554721229194', '_blank')}
-          >
-            <IconBrandWhatsapp size={16} className="mr-2" />
-            <span>Suporte</span>
-          </DropdownMenuItem>
+          {suporte ? (
+            <DropdownMenuItem
+              onClick={() =>
+                window.open(suporte, '_blank', 'noopener,noreferrer')
+              }
+            >
+              <IconBrandWhatsapp size={16} className="mr-2" />
+              <span>Suporte</span>
+            </DropdownMenuItem>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
 

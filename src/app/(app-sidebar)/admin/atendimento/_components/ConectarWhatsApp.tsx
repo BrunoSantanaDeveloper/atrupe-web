@@ -44,6 +44,32 @@ const SEM_LEITURA: WhatsappStatus = {
   findings: [],
 }
 
+/**
+ * O número que os clientes chamam pelo sistema (botão do WhatsApp, "?" do topo,
+ * páginas de conta suspensa e de senha). Vem da API do Atrupe, fora do kit.
+ */
+type NumeroDosClientes = {
+  inbox_id: number | null
+  escolhido: boolean
+  numero: string | null
+}
+type SituacaoDoAtendimento = WhatsappStatus & { cliente?: NumeroDosClientes }
+
+async function escolherNumeroDosClientes(inboxId: number) {
+  const res = await fetch('/api/atendimento/whatsapp', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ acao: 'cliente', inbox_id: inboxId }),
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as {
+      message?: string
+    } | null
+    throw new Error(body?.message ?? 'Não deu para trocar o número agora.')
+  }
+}
+
 /** 554792621081 vira +55 47 9262-1081; o que não for número do Brasil fica como veio. */
 function numeroLegivel(phone: string) {
   const d = phone.replace(/\D/g, '')
@@ -72,7 +98,8 @@ export function ConectarWhatsApp({
   const [state, dispatch] = useReducer(connectReducer, initialConnectState)
   const [valores, setValores] = useState<Record<string, string>>({})
   const [problemas, setProblemas] = useState<Record<string, string>>({})
-  const [situacao, setSituacao] = useState<WhatsappStatus | null>(null)
+  const [situacao, setSituacao] = useState<SituacaoDoAtendimento | null>(null)
+  const [erroNumero, setErroNumero] = useState<string | null>(null)
   const [outroNumero, setOutroNumero] = useState(false)
   const [confirmar, setConfirmar] = useState<WhatsappChannel['route'] | null>(
     null,
@@ -153,7 +180,18 @@ export function ConectarWhatsApp({
     }
   }
 
+  async function trocarNumeroDosClientes(inboxId: number) {
+    setErroNumero(null)
+    try {
+      await escolherNumeroDosClientes(inboxId)
+      setSituacao(await api.whatsappStatus())
+    } catch (error) {
+      setErroNumero((error as Error).message)
+    }
+  }
+
   if (situacao === null) return <Loading />
+  const cliente = situacao.cliente
   // Um bloco por canal: o número oficial e o do WhatsApp Web podem estar de pé
   // ao mesmo tempo.
   const canais: WhatsappChannel[] =
@@ -252,6 +290,47 @@ export function ConectarWhatsApp({
             </Card>
           )
         })}
+        {cliente ? (
+          <Card title="Número que os clientes chamam">
+            <Stack>
+              {canais.length > 1 ? (
+                <Choice
+                  label="Qual número aparece para os clientes"
+                  value={String(cliente.inbox_id ?? '')}
+                  onChange={(value) => trocarNumeroDosClientes(Number(value))}
+                  options={canais.map((canal) => ({
+                    value: String(canal.inbox_id),
+                    label: canal.phone
+                      ? numeroLegivel(canal.phone)
+                      : 'Número ainda não lido',
+                    hint:
+                      canal.route === 'oficial'
+                        ? 'API oficial'
+                        : 'WhatsApp Web',
+                  }))}
+                />
+              ) : (
+                <Text>
+                  {cliente.numero
+                    ? `Os clientes chamam o ${numeroLegivel(cliente.numero)}.`
+                    : 'O número aparece aqui depois da primeira conferência, em até 15 minutos.'}
+                </Text>
+              )}
+              {canais.length > 1 && !cliente.escolhido ? (
+                <Text tone="muted">
+                  Enquanto ninguém escolhe, vale o número da API oficial.
+                </Text>
+              ) : null}
+              {erroNumero ? <Alert tone="danger">{erroNumero}</Alert> : null}
+              <Text tone="muted">
+                É o número do botão do WhatsApp nas telas do sistema, do
+                &quot;Suporte&quot; no &quot;?&quot; do topo e das páginas de
+                conta suspensa e de senha. A troca vale na próxima página que a
+                pessoa abrir.
+              </Text>
+            </Stack>
+          </Card>
+        ) : null}
         <Text tone="muted">
           {canais.length > 1
             ? 'Para trocar um dos números, conecte outro número na mesma forma de conexão: ele toma o lugar do anterior. '

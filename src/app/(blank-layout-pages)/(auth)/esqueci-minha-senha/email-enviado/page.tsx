@@ -15,12 +15,18 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Icons
 import { CheckCircle } from 'lucide-react'
 
+// Lib
+import { linkDoSuporte } from '@/lib/suporte-whatsapp'
+import { buscarNumeroDoSuporte } from '@/lib/suporte-whatsapp.server'
+
 export const metadata: Metadata = {
   title: 'E-mail enviado com sucesso',
   description: 'E-mail enviado com sucesso',
 }
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const numeroDoSuporte = await buscarNumeroDoSuporte()
+
   return (
     <>
       <CardHeader className="p-0 mb-1 text-center">
@@ -41,9 +47,21 @@ export default function SignupPage() {
         <p>
           Se não receber em 10 minutos, verifique a lixeira e o spam. Se o
           problema persistir, favor entrar em contato com o{' '}
-          <Link href="mailto:suporte@example.com" className="underline">
-            nosso suporte
-          </Link>
+          {numeroDoSuporte ? (
+            <a
+              href={linkDoSuporte(
+                numeroDoSuporte,
+                'Olá! Pedi a troca de senha do Atrupe e o e-mail não chegou.',
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              nosso suporte
+            </a>
+          ) : (
+            'nosso suporte'
+          )}
           .
         </p>
       </CardContent>

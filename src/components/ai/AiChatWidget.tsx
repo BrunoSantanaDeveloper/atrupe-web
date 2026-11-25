@@ -178,7 +178,8 @@ export function AiChatWidget() {
         type="button"
         size="iconLg"
         rounded="full"
-        className="fixed bottom-5 right-5 z-40 shadow-xl"
+        // A posição fica no layout, que empilha este botão com o do suporte.
+        className="shadow-xl"
         onClick={() => setOpen(true)}
         aria-label="Abrir assistente IA"
       >

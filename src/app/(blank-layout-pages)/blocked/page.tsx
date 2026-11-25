@@ -17,6 +17,10 @@ import { Logo } from '@/components/Logo'
 import { getPendingPaymentUrl } from '@/actions/subscription'
 import { TryAgainButton } from './components/TryAgainButton'
 
+// Lib
+import { linkDoSuporte } from '@/lib/suporte-whatsapp'
+import { buscarNumeroDoSuporte } from '@/lib/suporte-whatsapp.server'
+
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
@@ -26,7 +30,10 @@ export const metadata: Metadata = {
 
 export default async function BlockedPage() {
   // Get dynamic payment URL
-  const { paymentUrl } = await getPendingPaymentUrl()
+  const [{ paymentUrl }, numeroDoSuporte] = await Promise.all([
+    getPendingPaymentUrl(),
+    buscarNumeroDoSuporte(),
+  ])
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 py-8 overflow-y-auto">
@@ -92,16 +99,22 @@ export default async function BlockedPage() {
                 <TryAgainButton />
               </div>
 
-              <p className="text-xs text-gray-400 text-center">
-                Se você acredita que isso é um erro,{' '}
-                <a
-                  href="https://wa.me/554721229194"
-                  target="_blank"
-                  className="text-gray hover:underline"
-                >
-                  entre em contato conosco
-                </a>
-              </p>
+              {numeroDoSuporte ? (
+                <p className="text-xs text-gray-400 text-center">
+                  Se você acredita que isso é um erro,{' '}
+                  <a
+                    href={linkDoSuporte(
+                      numeroDoSuporte,
+                      'Olá! A conta da minha empresa no Atrupe está suspensa e preciso de ajuda.',
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray hover:underline"
+                  >
+                    entre em contato conosco
+                  </a>
+                </p>
+              ) : null}
             </CardContent>
           </Card>
         </div>
