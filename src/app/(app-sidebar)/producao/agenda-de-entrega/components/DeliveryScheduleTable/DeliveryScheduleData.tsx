@@ -519,23 +519,19 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                             IconQuestionMark
                                                           }
                                                           tooltip={tooltip}
-                                                          badge={
+                                                          variant="neutralLight"
+                                                          className={cn(
+                                                            'p-2',
                                                             stageStatus[
                                                               stage?.status
-                                                            ]?.badge
-                                                          }
-                                                          variant={
-                                                            stage?.status ===
-                                                            'DONE'
-                                                              ? 'successLight'
-                                                              : 'neutralLight'
-                                                          }
-                                                          className="p-2"
+                                                            ]?.box,
+                                                          )}
                                                           // A cor do setor no ícone
                                                           // da etapa (área 9 §4.14)
                                                           style={
-                                                            stage?.status ===
-                                                            'DONE'
+                                                            stageStatus[
+                                                              stage?.status
+                                                            ]?.box
                                                               ? undefined
                                                               : {
                                                                   color:
@@ -769,19 +765,17 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                           : IconQuestionMark)
                                                       }
                                                       tooltip={`${stage.name} · ${stage.sector} ${stageStatus[stage.status]?.tooltip || ''}`}
-                                                      badge={
+                                                      variant="neutralLight"
+                                                      className={cn(
+                                                        'p-2',
                                                         stageStatus[
                                                           stage.status
-                                                        ]?.badge
-                                                      }
-                                                      variant={
-                                                        stage.status === 'DONE'
-                                                          ? 'successLight'
-                                                          : 'neutralLight'
-                                                      }
-                                                      className="p-2"
+                                                        ]?.box,
+                                                      )}
                                                       style={
-                                                        stage.status === 'DONE'
+                                                        stageStatus[
+                                                          stage.status
+                                                        ]?.box
                                                           ? undefined
                                                           : {
                                                               color: colorOf({

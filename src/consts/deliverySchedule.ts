@@ -133,19 +133,50 @@ type stageStatusType = {
   [key: string]: {
     tooltip: string
     badge?: BadgeProps['variant']
+    // A caixa do ícone inteira na cor da situação (Lista Lite 24/11, item 4);
+    // sem caixa (não iniciado), o ícone fica na cor do setor
+    box?: string
   }
 }
 
 export const stageStatus: stageStatusType = {
   NOT_STARTED: { tooltip: 'não iniciado' },
-  IN_PROGRESS: { tooltip: 'em andamento', badge: 'blueLight' },
-  PAUSED: { tooltip: 'pausado', badge: 'pinkLight' },
-  PENDING: { tooltip: 'com pendência', badge: 'warningLight' },
-  DONE: { tooltip: 'finalizado', badge: 'successLight' },
+  IN_PROGRESS: {
+    tooltip: 'em andamento',
+    badge: 'blueLight',
+    box: 'bg-blue-100 text-blue-700 hover:bg-blue-200',
+  },
+  PAUSED: {
+    tooltip: 'pausado',
+    badge: 'pinkLight',
+    box: 'bg-pink-100 text-pink-700 hover:bg-pink-200',
+  },
+  PENDING: {
+    tooltip: 'com pendência',
+    badge: 'warningLight',
+    box: 'bg-warning-100 text-warning-700 hover:bg-warning-200',
+  },
+  DONE: {
+    tooltip: 'finalizado',
+    badge: 'successLight',
+    box: 'bg-success-100 text-success-700 hover:bg-success-200',
+  },
   // Cancelado tem cor própria (Maicol, 23/11/2026)
-  CANCELED: { tooltip: 'cancelado', badge: 'errorLight' },
-  WAITING_PRODUCTION: { tooltip: 'aguardando produção', badge: 'warningLight' },
-  OVERDUE: { tooltip: 'atrasada', badge: 'errorLight' },
+  CANCELED: {
+    tooltip: 'cancelado',
+    badge: 'errorLight',
+    box: 'bg-error-100 text-error-700 hover:bg-error-200',
+  },
+  WAITING_PRODUCTION: {
+    tooltip: 'aguardando produção',
+    badge: 'warningLight',
+    box: 'bg-warning-100 text-warning-700 hover:bg-warning-200',
+  },
+  OVERDUE: {
+    tooltip: 'atrasada',
+    badge: 'errorLight',
+    box: 'bg-error-100 text-error-700 hover:bg-error-200',
+  },
 }
 
 export const stageStatusChange = [

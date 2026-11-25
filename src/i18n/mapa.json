@@ -13869,7 +13869,7 @@
  "comum.consts.inProgress": {
   "pt": "em andamento",
   "usos": [
-   "src/consts/deliverySchedule.ts:141 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:145 (propriedade:tooltip)"
   ]
  },
  "comum.consts.inProgress2": {
@@ -13994,7 +13994,7 @@
    "fiscal-br"
   ],
   "usos": [
-   "src/consts/deliverySchedule.ts:212 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:243 (propriedade:tooltip)"
   ]
  },
  "comum.consts.nfsENaoEmitida": {
@@ -14003,7 +14003,7 @@
    "fiscal-br"
   ],
   "usos": [
-   "src/consts/deliverySchedule.ts:213 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:244 (propriedade:tooltip)"
   ]
  },
  "comum.consts.noCashRegisterToday": {
@@ -14039,7 +14039,7 @@
  "comum.consts.notStarted": {
   "pt": "não iniciado",
   "usos": [
-   "src/consts/deliverySchedule.ts:140 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:143 (propriedade:tooltip)"
   ]
  },
  "comum.consts.notStarted2": {
@@ -14061,7 +14061,7 @@
  "comum.consts.onHold": {
   "pt": "com pendência",
   "usos": [
-   "src/consts/deliverySchedule.ts:143 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:155 (propriedade:tooltip)"
   ]
  },
  "comum.consts.onHold2": {
@@ -14133,7 +14133,7 @@
  "comum.consts.pause": {
   "pt": "Pausar",
   "usos": [
-   "src/consts/deliverySchedule.ts:189 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:220 (propriedade:text)"
   ]
  },
  "comum.consts.paused": {
@@ -14247,7 +14247,7 @@
  "comum.consts.restart": {
   "pt": "Reiniciar",
   "usos": [
-   "src/consts/deliverySchedule.ts:203 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:234 (propriedade:text)"
   ]
  },
  "comum.consts.retail": {
@@ -14309,7 +14309,7 @@
  "comum.consts.start": {
   "pt": "Iniciar",
   "usos": [
-   "src/consts/deliverySchedule.ts:154 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:185 (propriedade:text)"
   ]
  },
  "comum.consts.startsAsDone": {
@@ -14453,7 +14453,7 @@
  "comum.consts.viewIssue": {
   "pt": "Ver pendência",
   "usos": [
-   "src/consts/deliverySchedule.ts:168 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:199 (propriedade:text)"
   ]
  },
  "comum.consts.waitingForARegister": {
@@ -14465,13 +14465,13 @@
  "comum.consts.waitingForBilling": {
   "pt": "Aguardando faturamento",
   "usos": [
-   "src/consts/deliverySchedule.ts:211 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:242 (propriedade:tooltip)"
   ]
  },
  "comum.consts.waitingForProduction": {
   "pt": "aguardando produção",
   "usos": [
-   "src/consts/deliverySchedule.ts:147 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:171 (propriedade:tooltip)"
   ]
  },
  "comum.consts.weDeliverOwnVehicle": {
@@ -15313,7 +15313,7 @@
    "src/components/common/form/global-inputs/NewContactModal.tsx:146 (jsx)",
    "src/components/common/form/global-inputs/PaymentMethodsSelectField.tsx:211 (jsx)",
    "src/components/common/import/ImportReviewDialog.tsx:165 (jsx)",
-   "src/consts/deliverySchedule.ts:175 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:206 (propriedade:text)"
   ]
  },
  "comum.geral.canceled": {
@@ -15837,7 +15837,7 @@
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/assinatura/components/CancelSubscriptionDialog.tsx:172 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:270 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:338 (jsx)",
-   "src/consts/deliverySchedule.ts:196 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:227 (propriedade:text)"
   ]
  },
  "comum.geral.corrigir": {
@@ -15975,7 +15975,7 @@
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:240 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:395 (jsx)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollPdf.tsx:361 (jsx)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:704 (atributo:tooltip)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:700 (atributo:tooltip)",
    "src/app/(app-sidebar)/relatorios/projecao-de-caixa/config.ts:18 (propriedade:label)",
    "src/app/(app-sidebar)/relatorios/projecao-de-caixa/config.ts:22 (propriedade:label)",
    "src/app/sandbox/forms/page.tsx:307 (atributo:label)",
@@ -16584,7 +16584,7 @@
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:190 (propriedade:confirmLabel)",
    "src/app/(blank-layout-pages)/(auth)/_components/NewPasswordForm.tsx:81 (jsx)",
-   "src/consts/deliverySchedule.ts:182 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:213 (propriedade:text)"
   ]
  },
  "comum.geral.fixedExpenses": {
@@ -17335,7 +17335,7 @@
    "src/app/(app-sidebar)/cadastros/clientes/components/NewClient/tabs/ResponsibilitiesTab.tsx:100 (atributo:label)",
    "src/app/(app-sidebar)/financeiro/_components/transactions/TransactionsTable/TransactionsData.tsx:407 (atributo:tooltip)",
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowData.tsx:470 (atributo:tooltip)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:685 (atributo:tooltip)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:681 (atributo:tooltip)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/Delivery/index.tsx:409 (atributo:label)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems.tsx:761 (jsx)",
    "src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderItems.tsx:228 (atributo:tooltip)",
@@ -17771,7 +17771,7 @@
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:167 (jsx)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollActions.tsx:177 (atributo:title)",
    "src/app/(app-sidebar)/financeiro/folha-de-pagamento/[payrollId]/components/PayrollItems.tsx:250 (atributo:tooltip)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:713 (atributo:tooltip)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:709 (atributo:tooltip)",
    "src/app/(app-sidebar)/producao/projetos/[id]/ficha/components/ProductionSheet.tsx:71 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:287 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx:500 (atributo:tooltip)",
@@ -39024,7 +39024,7 @@
    "src/app/(app-sidebar)/financeiro/_components/transactions/TransactionsTable/TransactionsData.tsx:385 (atributo:tooltip)",
    "src/app/(app-sidebar)/financeiro/despesas-fixas/components/FixedExpenses.tsx:475 (atributo:tooltip)",
    "src/app/(app-sidebar)/financeiro/fluxo-financeiro/components/FinancialFlowTable/FinancialFlowData.tsx:452 (atributo:tooltip)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:618 (atributo:tooltip)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:614 (atributo:tooltip)"
   ]
  },
  "financeiro.components.entryError": {
@@ -44583,7 +44583,7 @@
   "usos": [
    "src/app/(app-sidebar)/nota-fiscal/emitir/[orderId]/components/IssueInvoiceForm.tsx:383 (aviso)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/nfe/components/StandaloneNfeForm.tsx:626 (aviso)",
-   "src/consts/deliverySchedule.ts:214 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:245 (propriedade:tooltip)"
   ]
  },
  "notaFiscal.emitir.nfENSerie": {
@@ -46696,7 +46696,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/nota-fiscal/emitir-nfse/[orderId]/components/IssueNfseForm.tsx:572 (aviso)",
-   "src/consts/deliverySchedule.ts:215 (propriedade:tooltip)"
+   "src/consts/deliverySchedule.ts:246 (propriedade:tooltip)"
   ]
  },
  "notaFiscal.emitirNfse.oServico": {
@@ -47836,7 +47836,7 @@
   "pt": "Faturar",
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/Actions/BillService.tsx:99 (jsx)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:640 (atributo:tooltip)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:636 (atributo:tooltip)"
   ]
  },
  "producao.agendaDeEntrega.billThisService": {
@@ -47886,7 +47886,7 @@
  "producao.agendaDeEntrega.deliveryNotFound": {
   "pt": "Entrega não encontrada",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:891 (atributo:title)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:885 (atributo:title)"
   ]
  },
  "producao.agendaDeEntrega.deliveryScheduleDate": {
@@ -47911,7 +47911,7 @@
   "pt": "Finalizar serviço",
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:188 (propriedade:title)",
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:598 (jsx)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:594 (jsx)"
   ]
  },
  "producao.agendaDeEntrega.hideOccupancy": {
@@ -48065,7 +48065,7 @@
    "valor"
   ],
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:771 (atributo:tooltip)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:767 (atributo:tooltip)"
   ]
  },
  "producao.agendaDeEntrega.texto1OrderSelected": {
@@ -48089,7 +48089,7 @@
  "producao.agendaDeEntrega.thisItemSStepsFollow": {
   "pt": "As etapas deste item seguem as da ordem.",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:846 (jsx)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:840 (jsx)"
   ]
  },
  "producao.agendaDeEntrega.thisStepFollowsTheTasks": {
@@ -48107,7 +48107,7 @@
  "producao.agendaDeEntrega.viewWorkOrder": {
   "pt": "Ver ordem de serviço",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:726 (atributo:tooltip)",
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:722 (atributo:tooltip)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuickSaleQuotation.tsx:66 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Quotation.tsx:156 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Quotation.tsx:192 (jsx)"
@@ -48128,7 +48128,7 @@
  "producao.agendaDeEntrega.yourSearchFoundNoResults": {
   "pt": "Sua busca não encontrou nenhum resultado. Tente novamente.",
   "usos": [
-   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:892 (atributo:description)"
+   "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:886 (atributo:description)"
   ]
  },
  "producao.gerenciador.aFazer": {
@@ -48157,7 +48157,7 @@
   "pt": "Adicionar pendência",
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:529 (jsx)",
-   "src/consts/deliverySchedule.ts:161 (propriedade:text)"
+   "src/consts/deliverySchedule.ts:192 (propriedade:text)"
   ]
  },
  "producao.gerenciador.addTime": {
