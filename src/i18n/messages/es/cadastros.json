@@ -28,7 +28,6 @@
     "lastPurchase": "Última compra",
     "newQuoteFromTheLast": "Nuevo cotización a partir del último pedido",
     "ago": "· hace {daysSince} {valor}",
-    "order": "Pedido",
     "texto": "· {description}",
     "inNegotiation": "En negociación",
     "thisCustomerHasNotBought": "Este cliente aún no compró.",

@@ -346,6 +346,22 @@
     "open2": "Open {number}",
     "projectsInProduction": "Projects in production"
   },
+  "setores": {
+    "eachDepartmentSJobList": "Each department’s job list, to complete what belongs to it.",
+    "texto1JobToDo": "1 job to do",
+    "jobsToDo": "{open} jobs to do",
+    "noActiveProductionDepartmentTick": "No active production department. Tick the departments in Settings › Departments.",
+    "finish": "Finish",
+    "thisItemStillHasTo": "This item still has to complete: {valor}.",
+    "texto": "({openCount})",
+    "completedInTheLast30": "Completed in the last 30 days",
+    "noJobsToDoIn": "No jobs to do in this department.",
+    "noJobsCompletedInThis": "No jobs completed in this department in the last 30 days.",
+    "after": "After {valor}",
+    "readyToStart": "Ready to start",
+    "viewTheItemFlow": "View the item flow",
+    "theFlowOf": "The flow of"
+  },
   "veiculos": {
     "requestAVehicle": "Request a vehicle",
     "newTrip": "New trip",

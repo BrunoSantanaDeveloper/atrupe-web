@@ -253,7 +253,6 @@
     "registerReopened": "Caixa reaberto",
     "reopen": "Reabrir {name} · {date}",
     "theDayAcceptsEntriesAgain": "O dia volta a aceitar lançamentos e a conferência feita no fechamento é desfeita: ele precisará ser conferido e fechado de novo.",
-    "reopen2": "Reabrir",
     "whyReopen": "Por que reabrir?",
     "eGTheDayS": "Ex.: recebimento do dia lançado na conta errada",
     "forAForgottenEntryThere": "Para um lançamento esquecido, não é preciso reabrir: lance no caixa de hoje com a data certa, e ele aparece como retroativo neste dia.",

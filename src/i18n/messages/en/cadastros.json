@@ -28,7 +28,6 @@
     "lastPurchase": "Last purchase",
     "newQuoteFromTheLast": "New quote from the last order",
     "ago": "· {daysSince} {valor} ago",
-    "order": "Order",
     "texto": "· {description}",
     "inNegotiation": "In negotiation",
     "thisCustomerHasNotBought": "This customer has not bought yet.",

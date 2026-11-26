@@ -251,7 +251,6 @@
     "registerReopened": "Register reopened",
     "reopen": "Reopen {name} · {date}",
     "theDayAcceptsEntriesAgain": "The day accepts entries again and the check made at closing is undone: it will need to be checked and closed again.",
-    "reopen2": "Reopen",
     "whyReopen": "Why reopen?",
     "eGTheDayS": "E.g.: the day's receipt was posted to the wrong account",
     "forAForgottenEntryThere": "For a forgotten entry there's no need to reopen: post it in today's register with the right date, and it will show up as backdated on this day.",

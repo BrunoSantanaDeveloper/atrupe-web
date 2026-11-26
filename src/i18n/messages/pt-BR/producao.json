@@ -347,6 +347,22 @@
     "open2": "Abrir {number}",
     "projectsInProduction": "Projetos em produção"
   },
+  "setores": {
+    "eachDepartmentSJobList": "A lista de trabalhos de cada setor, para concluir o que é dele.",
+    "texto1JobToDo": "1 trabalho a fazer",
+    "jobsToDo": "{open} trabalhos a fazer",
+    "noActiveProductionDepartmentTick": "Nenhum setor de produção ativo. Marque os setores em Configurações › Setores.",
+    "finish": "Concluir mesmo assim?",
+    "thisItemStillHasTo": "Neste item, ainda falta concluir: {valor}.",
+    "texto": "({openCount})",
+    "completedInTheLast30": "Concluídos nos últimos 30 dias",
+    "noJobsToDoIn": "Nenhum trabalho a fazer neste setor.",
+    "noJobsCompletedInThis": "Nenhum trabalho concluído neste setor nos últimos 30 dias.",
+    "after": "Depois de {valor}",
+    "readyToStart": "Pode começar",
+    "viewTheItemFlow": "Ver o fluxo do item",
+    "theFlowOf": "O fluxo de"
+  },
   "veiculos": {
     "requestAVehicle": "Pedir veículo",
     "newTrip": "Nova saída",

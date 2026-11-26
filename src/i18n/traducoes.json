@@ -21254,5 +21254,57 @@
   "e3b6a8a73c": {
     "es": "¿Falta algún sector? Créelo aquí",
     "en": "Missing a department? Create it here"
+  },
+  "36f8e64915": {
+    "es": "La lista de trabajos de cada sector, para concluir lo que le corresponde.",
+    "en": "Each department’s job list, to complete what belongs to it."
+  },
+  "22fd1582b0": {
+    "es": "1 trabajo por hacer",
+    "en": "1 job to do"
+  },
+  "aa64ce87dc": {
+    "es": "{open} trabajos por hacer",
+    "en": "{open} jobs to do"
+  },
+  "8723b01fc7": {
+    "es": "Ningún sector de producción activo. Marque los sectores en Configuración › Sectores.",
+    "en": "No active production department. Tick the departments in Settings › Departments."
+  },
+  "6024fbffa2": {
+    "es": "En este ítem, aún falta concluir: {valor}.",
+    "en": "This item still has to complete: {valor}."
+  },
+  "e7fd93af6d": {
+    "es": "({openCount})",
+    "en": "({openCount})"
+  },
+  "13d88cc291": {
+    "es": "Concluidos en los últimos 30 días",
+    "en": "Completed in the last 30 days"
+  },
+  "b3b5e58830": {
+    "es": "Ningún trabajo por hacer en este sector.",
+    "en": "No jobs to do in this department."
+  },
+  "4e9263672a": {
+    "es": "Ningún trabajo concluido en este sector en los últimos 30 días.",
+    "en": "No jobs completed in this department in the last 30 days."
+  },
+  "9d18f92e6f": {
+    "es": "Después de {valor}",
+    "en": "After {valor}"
+  },
+  "63680293b9": {
+    "es": "Puede empezar",
+    "en": "Ready to start"
+  },
+  "c8eb9a185b": {
+    "es": "Ver el flujo del ítem",
+    "en": "View the item flow"
+  },
+  "5c0945c67a": {
+    "es": "El flujo de",
+    "en": "The flow of"
   }
 }

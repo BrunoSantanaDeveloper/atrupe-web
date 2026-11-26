@@ -251,6 +251,16 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/producao/agenda-de-entrega',
         permission: 'production:delivery_schedule:view',
       },
+      // A tela de cada setor no LITE (área 9 §4.16, 26/11/2026). No PRO, a
+      // tela do setor é o Gerenciador (sector_board)
+      {
+        icon: IconLayoutGrid,
+        title: 'Setores',
+        path: '/producao/setores',
+        permission: 'production:delivery_schedule:view',
+        requiredFeature: 'delivery_production_stages',
+        hiddenWithFeature: 'sector_board',
+      },
       {
         icon: IconListCheck,
         title: 'Gerenciador de produção',

@@ -251,7 +251,6 @@
     "registerReopened": "Caja reabierta",
     "reopen": "Reabrir {name} · {date}",
     "theDayAcceptsEntriesAgain": "El día vuelve a aceptar registros y se deshace la verificación hecha al cierre: deberá verificarse y cerrarse de nuevo.",
-    "reopen2": "Reabrir",
     "whyReopen": "¿Por qué reabrir?",
     "eGTheDayS": "Ej.: cobro del día registrado en la cuenta equivocada",
     "forAForgottenEntryThere": "Para un registro olvidado no hace falta reabrir: regístrelo en la caja de hoy con la fecha correcta y aparecerá como retroactivo en este día.",

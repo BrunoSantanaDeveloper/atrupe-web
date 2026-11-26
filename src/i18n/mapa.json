@@ -327,7 +327,7 @@
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Table/Filter.tsx:34 (propriedade:label)",
    "src/app/(app-sidebar)/admin/sistema/novidades/page.tsx:75 (propriedade:label)",
    "src/app/(app-sidebar)/admin/sistema/planos/components/ComparisonEditor.tsx:33 (propriedade:label)",
-   "src/consts/nav.ts:555 (propriedade:title)"
+   "src/consts/nav.ts:565 (propriedade:title)"
   ]
  },
  "admin.academy.tituloDoBotao": {
@@ -422,7 +422,7 @@
   "usos": [
    "src/app/(app-sidebar)/admin/avaliacao/cadastros-incompletos/components/Main.tsx:19 (atributo:title)",
    "src/app/(app-sidebar)/admin/avaliacao/cadastros-incompletos/page.tsx:9 (propriedade:title)",
-   "src/consts/nav.ts:590 (propriedade:title)"
+   "src/consts/nav.ts:600 (propriedade:title)"
   ]
  },
  "admin.avaliacao.celularEObrigatorio": {
@@ -1229,7 +1229,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/acessos/components/Main.tsx:113 (atributo:title)",
-   "src/consts/nav.ts:612 (propriedade:title)"
+   "src/consts/nav.ts:622 (propriedade:title)"
   ]
  },
  "admin.clientes.additionalUsers": {
@@ -1889,7 +1889,7 @@
   "usos": [
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Main.tsx:107 (atributo:title)",
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/page.tsx:9 (propriedade:title)",
-   "src/consts/nav.ts:607 (propriedade:title)"
+   "src/consts/nav.ts:617 (propriedade:title)"
   ]
  },
  "admin.clientes.get": {
@@ -9419,14 +9419,6 @@
    "src/app/(app-sidebar)/cadastros/clientes/components/NewClient/tabs/CreditLimitTab.tsx:151 (jsx)"
   ]
  },
- "cadastros.clientes.order": {
-  "pt": "Pedido",
-  "usos": [
-   "src/app/(app-sidebar)/cadastros/clientes/[id]/contatos/components/ClientContacts.tsx:123 (jsx)",
-   "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:162 (jsx)",
-   "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:576 (jsx)"
-  ]
- },
  "cadastros.clientes.pais": {
   "pt": "País",
   "marcas": [
@@ -12951,7 +12943,7 @@
   "pt": "Sistema",
   "usos": [
    "src/components/layout/theme-options.ts:26 (propriedade:label)",
-   "src/consts/nav.ts:632 (propriedade:title)"
+   "src/consts/nav.ts:642 (propriedade:title)"
   ]
  },
  "comum.components.technicalDescription": {
@@ -13708,13 +13700,13 @@
  "comum.consts.dfc": {
   "pt": "DFC",
   "usos": [
-   "src/consts/nav.ts:465 (propriedade:title)"
+   "src/consts/nav.ts:475 (propriedade:title)"
   ]
  },
  "comum.consts.discountCoupons": {
   "pt": "Cupons de desconto",
   "usos": [
-   "src/consts/nav.ts:647 (propriedade:title)"
+   "src/consts/nav.ts:657 (propriedade:title)"
   ]
  },
  "comum.consts.distribution": {
@@ -13763,7 +13755,7 @@
  "comum.consts.evaluation": {
   "pt": "Avaliação",
   "usos": [
-   "src/consts/nav.ts:585 (propriedade:title)"
+   "src/consts/nav.ts:595 (propriedade:title)"
   ]
  },
  "comum.consts.expectedTransaction": {
@@ -13906,13 +13898,13 @@
  "comum.consts.integrations": {
   "pt": "Integrações",
   "usos": [
-   "src/consts/nav.ts:637 (propriedade:title)"
+   "src/consts/nav.ts:647 (propriedade:title)"
   ]
  },
  "comum.consts.legacyMigration": {
   "pt": "Migração do legado",
   "usos": [
-   "src/consts/nav.ts:657 (propriedade:title)"
+   "src/consts/nav.ts:667 (propriedade:title)"
   ]
  },
  "comum.consts.logisticsAndTransport": {
@@ -14054,8 +14046,8 @@
    "fiscal-br"
   ],
   "usos": [
-   "src/consts/nav.ts:296 (propriedade:title)",
-   "src/consts/nav.ts:513 (propriedade:title)"
+   "src/consts/nav.ts:306 (propriedade:title)",
+   "src/consts/nav.ts:523 (propriedade:title)"
   ]
  },
  "comum.consts.onHold": {
@@ -14121,7 +14113,7 @@
  "comum.consts.page": {
   "pt": "Page",
   "usos": [
-   "src/consts/nav.ts:677 (propriedade:title)"
+   "src/consts/nav.ts:687 (propriedade:title)"
   ]
  },
  "comum.consts.painting": {
@@ -14285,7 +14277,7 @@
  "comum.consts.secondaryNavigation": {
   "pt": "Navegação secundária",
   "usos": [
-   "src/consts/nav.ts:672 (propriedade:title)"
+   "src/consts/nav.ts:682 (propriedade:title)"
   ]
  },
  "comum.consts.setByTheSalesperson": {
@@ -14321,7 +14313,7 @@
  "comum.consts.stockBalance": {
   "pt": "Saldo do estoque",
   "usos": [
-   "src/consts/nav.ts:381 (propriedade:title)"
+   "src/consts/nav.ts:391 (propriedade:title)"
   ]
  },
  "comum.consts.sublimation": {
@@ -14333,7 +14325,7 @@
  "comum.consts.taxParameters": {
   "pt": "Parâmetros fiscais",
   "usos": [
-   "src/consts/nav.ts:642 (propriedade:title)"
+   "src/consts/nav.ts:652 (propriedade:title)"
   ]
  },
  "comum.consts.texto": {
@@ -14417,7 +14409,7 @@
  "comum.consts.trialAccounts": {
   "pt": "Contas trials",
   "usos": [
-   "src/consts/nav.ts:595 (propriedade:title)"
+   "src/consts/nav.ts:605 (propriedade:title)"
   ]
  },
  "comum.consts.undefined": {
@@ -14537,9 +14529,9 @@
   "usos": [
    "src/app/(app-sidebar)/academy/[planName]/page.tsx:144 (jsx)",
    "src/app/(app-sidebar)/admin/academy/page.tsx:347 (atributo:title)",
-   "src/consts/nav.ts:550 (propriedade:title)",
-   "src/consts/nav.ts:619 (propriedade:title)",
-   "src/consts/nav.ts:624 (propriedade:title)"
+   "src/consts/nav.ts:560 (propriedade:title)",
+   "src/consts/nav.ts:629 (propriedade:title)",
+   "src/consts/nav.ts:634 (propriedade:title)"
   ]
  },
  "comum.geral.accountsPayable": {
@@ -14570,6 +14562,7 @@
    "src/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/NfeListClient.tsx:250 (jsx)",
    "src/app/(app-sidebar)/configuracoes/produtos/components/ProductionStages.tsx:177 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:175 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:170 (jsx)",
    "src/app/sandbox/table-cells/page.tsx:276 (jsx)"
   ]
  },
@@ -15529,8 +15522,8 @@
    "src/app/(app-sidebar)/cadastros/clientes/page.tsx:10 (propriedade:title)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/components/ClientSelect.tsx:360 (atributo:heading)",
    "src/app/sandbox/nav-menu/page.tsx:291 (propriedade:label)",
-   "src/consts/nav.ts:308 (propriedade:title)",
-   "src/consts/nav.ts:602 (propriedade:title)"
+   "src/consts/nav.ts:318 (propriedade:title)",
+   "src/consts/nav.ts:612 (propriedade:title)"
   ]
  },
  "comum.geral.cnae": {
@@ -15718,6 +15711,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx:463 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:301 (jsx)",
    "src/app/sandbox/table-cells/page.tsx:318 (atributo:label)",
    "src/components/ui/file-uploader.tsx:413 (jsx)",
    "src/consts/productionManager.ts:92 (propriedade:text)"
@@ -15745,7 +15739,7 @@
    "src/app/(app-sidebar)/admin/clientes/gerenciar-contas/components/Table/Data.tsx:295 (atributo:tooltip)",
    "src/app/sandbox/modal/page.tsx:472 (jsx)",
    "src/app/sandbox/nav-menu/page.tsx:305 (propriedade:label)",
-   "src/consts/nav.ts:481 (propriedade:title)"
+   "src/consts/nav.ts:491 (propriedade:title)"
   ]
  },
  "comum.geral.configurandoModuloFiscal": {
@@ -15990,6 +15984,7 @@
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:76 (propriedade:label)",
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:292 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:165 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:166 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:55 (propriedade:label)",
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:239 (jsx)",
    "src/app/(app-sidebar)/relatorios/vendas/components/SalesTable.tsx:296 (jsx)",
@@ -16045,8 +16040,21 @@
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleFilter.tsx:75 (atributo:label)",
    "src/app/(app-sidebar)/producao/gerenciador/components/OccupancyMap.tsx:220 (jsx)",
    "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:91 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/[id]/page.tsx:8 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/setores/[id]/page.tsx:24 (propriedade:title)",
    "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:1065 (atributo:label)",
    "src/components/layout/MyProfile/index.tsx:174 (atributo:label)"
+  ]
+ },
+ "comum.geral.departments": {
+  "pt": "Setores",
+  "usos": [
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanySettingsClient.tsx:78 (propriedade:title)",
+   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/page.tsx:14 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorsHome.tsx:36 (atributo:title)",
+   "src/app/(app-sidebar)/producao/setores/page.tsx:8 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/setores/page.tsx:24 (propriedade:title)",
+   "src/consts/nav.ts:258 (propriedade:title)"
   ]
  },
  "comum.geral.descartar": {
@@ -16574,8 +16582,8 @@
    "src/app/sandbox/locacao/page.tsx:114 (jsx)",
    "src/app/sandbox/nav-menu/page.tsx:264 (propriedade:label)",
    "src/consts/nav.ts:130 (propriedade:title)",
-   "src/consts/nav.ts:451 (propriedade:title)",
-   "src/consts/nav.ts:499 (propriedade:title)",
+   "src/consts/nav.ts:461 (propriedade:title)",
+   "src/consts/nav.ts:509 (propriedade:title)",
    "src/consts/plans.ts:46 (propriedade:title)"
   ]
  },
@@ -16607,7 +16615,7 @@
    "src/app/(app-sidebar)/cadastros/fornecedores/components/Suppliers.tsx:178 (atributo:title)",
    "src/app/(app-sidebar)/cadastros/fornecedores/page.tsx:10 (propriedade:title)",
    "src/app/sandbox/nav-menu/page.tsx:292 (propriedade:label)",
-   "src/consts/nav.ts:315 (propriedade:title)"
+   "src/consts/nav.ts:325 (propriedade:title)"
   ]
  },
  "comum.geral.gotIt": {
@@ -16752,6 +16760,7 @@
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx:92 (propriedade:label)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:451 (propriedade:title)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:338 (jsx)",
    "src/app/sandbox/locacao/components/RentalFinance.tsx:125 (jsx)",
    "src/consts/productionManager.ts:62 (propriedade:text)"
   ]
@@ -16888,6 +16897,7 @@
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:575 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/ApplySuggestedDialog.tsx:132 (jsx)",
    "src/app/(app-sidebar)/precificacao/components/PricingList.tsx:237 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:168 (jsx)",
    "src/app/sandbox/locacao/components/RentalContract.tsx:299 (jsx)"
   ]
  },
@@ -17419,6 +17429,15 @@
    "src/consts/nav.ts:116 (propriedade:title)"
   ]
  },
+ "comum.geral.order": {
+  "pt": "Pedido",
+  "usos": [
+   "src/app/(app-sidebar)/cadastros/clientes/[id]/contatos/components/ClientContacts.tsx:123 (jsx)",
+   "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:162 (jsx)",
+   "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:576 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:167 (jsx)"
+  ]
+ },
  "comum.geral.origem": {
   "pt": "Origem",
   "marcas": [
@@ -17523,7 +17542,7 @@
    "src/app/(app-sidebar)/cadastros/papeis/page.tsx:12 (propriedade:title)",
    "src/app/(app-sidebar)/cadastros/papeis/page.tsx:30 (propriedade:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/MaterialsFilter.tsx:83 (propriedade:label)",
-   "src/consts/nav.ts:328 (propriedade:title)"
+   "src/consts/nav.ts:338 (propriedade:title)"
   ]
  },
  "comum.geral.passwordConfirmationIsRequired": {
@@ -17699,7 +17718,7 @@
    "src/app/(app-sidebar)/admin/sistema/planos/page.tsx:39 (atributo:title)",
    "src/app/(blank-layout-pages)/assinatura/components/trail/EvolutionHub.tsx:188 (atributo:title)",
    "src/app/(blank-layout-pages)/assinatura/components/trail/PlanTrail.tsx:142 (atributo:title)",
-   "src/consts/nav.ts:652 (propriedade:title)"
+   "src/consts/nav.ts:662 (propriedade:title)"
   ]
  },
  "comum.geral.pleaseSelectCsvFilesOnly": {
@@ -17814,7 +17833,7 @@
    "src/app/sandbox/locacao/page.tsx:116 (jsx)",
    "src/components/common/fiscal/FiscalEnvironmentBadge.tsx:74 (jsx)",
    "src/consts/nav.ts:234 (propriedade:title)",
-   "src/consts/nav.ts:533 (propriedade:title)",
+   "src/consts/nav.ts:543 (propriedade:title)",
    "src/consts/sectors.ts:122 (propriedade:text)"
   ]
  },
@@ -17852,8 +17871,8 @@
    "src/app/(app-sidebar)/nota-fiscal/components/ProductSelector.tsx:217 (atributo:heading)",
    "src/app/(app-sidebar)/nota-fiscal/emitir/avulsa/nfe/components/ProductSelector.tsx:213 (atributo:heading)",
    "src/app/sandbox/nav-menu/page.tsx:310 (propriedade:label)",
-   "src/consts/nav.ts:350 (propriedade:title)",
-   "src/consts/nav.ts:444 (propriedade:title)",
+   "src/consts/nav.ts:360 (propriedade:title)",
+   "src/consts/nav.ts:454 (propriedade:title)",
    "src/consts/plans.ts:57 (propriedade:title)",
    "src/consts/pricing.ts:13 (propriedade:label)"
   ]
@@ -17865,7 +17884,7 @@
    "src/app/(app-sidebar)/estoque/compras/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/estoque/compras/page.tsx:24 (propriedade:title)",
    "src/app/(app-sidebar)/relatorios/vendas/components/InactiveClientsTable.tsx:70 (jsx)",
-   "src/consts/nav.ts:406 (propriedade:title)"
+   "src/consts/nav.ts:416 (propriedade:title)"
   ]
  },
  "comum.geral.quantidade": {
@@ -18184,6 +18203,14 @@
    "src/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:1211 (atributo:tooltip)",
    "src/app/(app-sidebar)/vendas/orcamentos/components/QuotationItems/QuotationComposeModal.tsx:307 (propriedade:label)",
    "src/app/sandbox/fluxo/page.tsx:125 (propriedade:label)"
+  ]
+ },
+ "comum.geral.reopen": {
+  "pt": "Reabrir",
+  "usos": [
+   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:561 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:244 (jsx)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/OpenQuotation.tsx:116 (jsx)"
   ]
  },
  "comum.geral.requiredField": {
@@ -18642,6 +18669,7 @@
    "src/app/(app-sidebar)/estoque/solicitacoes/components/Requests.tsx:174 (jsx)",
    "src/app/(app-sidebar)/financeiro/conciliacao/components/Conciliation.tsx:243 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/QueueList.tsx:173 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:169 (jsx)",
    "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:169 (jsx)",
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/resultado/components/QuotationResult.tsx:215 (jsx)",
    "src/app/(app-sidebar)/vendas/vendas-de-hoje/components/TodayQuickSales.tsx:193 (jsx)",
@@ -19188,7 +19216,7 @@
    "src/app/(app-sidebar)/producao/veiculos/components/Vehicles.tsx:111 (atributo:title)",
    "src/app/(app-sidebar)/producao/veiculos/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/producao/veiculos/page.tsx:29 (propriedade:title)",
-   "src/consts/nav.ts:275 (propriedade:title)"
+   "src/consts/nav.ts:285 (propriedade:title)"
   ]
  },
  "comum.geral.vencimento": {
@@ -19230,8 +19258,8 @@
    "src/app/(app-sidebar)/relatorios/vendas/components/print/SalesReportPdf.tsx:227 (jsx)",
    "src/app/sandbox/nav-menu/page.tsx:237 (propriedade:label)",
    "src/consts/nav.ts:98 (propriedade:title)",
-   "src/consts/nav.ts:437 (propriedade:title)",
-   "src/consts/nav.ts:520 (propriedade:title)",
+   "src/consts/nav.ts:447 (propriedade:title)",
+   "src/consts/nav.ts:530 (propriedade:title)",
    "src/consts/plans.ts:41 (propriedade:title)"
   ]
  },
@@ -20479,13 +20507,6 @@
   "pt": "Setor atualizado",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx:221 (aviso)"
-  ]
- },
- "configuracoes.empresaESistema.departments": {
-  "pt": "Setores",
-  "usos": [
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanySettingsClient.tsx:78 (propriedade:title)",
-   "src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/page.tsx:14 (propriedade:title)"
   ]
  },
  "configuracoes.empresaESistema.detailThisAssetSCosts": {
@@ -25024,7 +25045,7 @@
   "pt": "Importações",
   "usos": [
    "src/app/(app-sidebar)/configuracoes/importacoes/page.tsx:7 (propriedade:title)",
-   "src/consts/nav.ts:542 (propriedade:title)"
+   "src/consts/nav.ts:552 (propriedade:title)"
   ]
  },
  "configuracoes.importacoes.youDonTHavePermission": {
@@ -31764,7 +31785,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/components/Materials.tsx:169 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/page.tsx:12 (propriedade:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/materiais/page.tsx:28 (propriedade:title)",
-   "src/consts/nav.ts:336 (propriedade:title)",
+   "src/consts/nav.ts:346 (propriedade:title)",
    "src/consts/pricing.ts:12 (propriedade:label)"
   ]
  },
@@ -32715,7 +32736,7 @@
    "src/app/(app-sidebar)/configuracoes/produtos/processos/components/Processes.tsx:88 (atributo:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/page.tsx:12 (propriedade:title)",
    "src/app/(app-sidebar)/configuracoes/produtos/processos/page.tsx:28 (propriedade:title)",
-   "src/consts/nav.ts:343 (propriedade:title)"
+   "src/consts/nav.ts:353 (propriedade:title)"
   ]
  },
  "configuracoes.produtos.productBuildUp": {
@@ -37144,7 +37165,7 @@
   "pt": "Relatórios",
   "usos": [
    "src/app/(app-sidebar)/dashboard/components/QuickAccess.tsx:33 (propriedade:label)",
-   "src/consts/nav.ts:424 (propriedade:title)"
+   "src/consts/nav.ts:434 (propriedade:title)"
   ]
  },
  "dashboard.inicio.restrictedAccess": {
@@ -37751,7 +37772,7 @@
   "pt": "Solicitações",
   "usos": [
    "src/app/(app-sidebar)/estoque/compras/components/Purchases.tsx:127 (jsx)",
-   "src/consts/nav.ts:398 (propriedade:title)"
+   "src/consts/nav.ts:408 (propriedade:title)"
   ]
  },
  "estoque.compras.rollWidthLength": {
@@ -38157,7 +38178,7 @@
    "src/app/(app-sidebar)/estoque/entrada-de-nota/components/InvoiceEntry.tsx:111 (atributo:title)",
    "src/app/(app-sidebar)/estoque/entrada-de-nota/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/estoque/entrada-de-nota/page.tsx:25 (propriedade:title)",
-   "src/consts/nav.ts:389 (propriedade:title)"
+   "src/consts/nav.ts:399 (propriedade:title)"
   ]
  },
  "estoque.inicio.inventory": {
@@ -38166,7 +38187,7 @@
    "src/app/(app-sidebar)/estoque/components/Stock.tsx:108 (atributo:title)",
    "src/app/(app-sidebar)/estoque/page.tsx:12 (propriedade:title)",
    "src/app/(app-sidebar)/estoque/page.tsx:28 (propriedade:title)",
-   "src/consts/nav.ts:364 (propriedade:title)",
+   "src/consts/nav.ts:374 (propriedade:title)",
    "src/consts/sectors.ts:147 (propriedade:text)"
   ]
  },
@@ -38431,7 +38452,7 @@
    "src/app/(app-sidebar)/estoque/lotes/components/Lots.tsx:125 (atributo:title)",
    "src/app/(app-sidebar)/estoque/lotes/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/estoque/lotes/page.tsx:24 (propriedade:title)",
-   "src/consts/nav.ts:414 (propriedade:title)"
+   "src/consts/nav.ts:424 (propriedade:title)"
   ]
  },
  "estoque.lotes.materialSupplierColor": {
@@ -40491,13 +40512,6 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:551 (atributo:title)"
-  ]
- },
- "financeiro.controleDeCaixa.reopen2": {
-  "pt": "Reabrir",
-  "usos": [
-   "src/app/(app-sidebar)/financeiro/controle-de-caixa/components/CashDayDialogs.tsx:561 (jsx)",
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/OpenQuotation.tsx:116 (jsx)"
   ]
  },
  "financeiro.controleDeCaixa.reopenRegister": {
@@ -47237,7 +47251,7 @@
   "usos": [
    "src/app/(app-sidebar)/novidades/components/ReleaseNotesPage.tsx:37 (atributo:title)",
    "src/app/(app-sidebar)/novidades/page.tsx:8 (propriedade:title)",
-   "src/consts/nav.ts:664 (propriedade:title)"
+   "src/consts/nav.ts:674 (propriedade:title)"
   ]
  },
  "novidades.inicio.whenAnUpdateIsReleased": {
@@ -47994,7 +48008,9 @@
   "pt": "Pendência",
   "usos": [
    "src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/Stages/StagePendingDialog.tsx:107 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:474 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/TaskDetailDialog.tsx:474 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:219 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:315 (jsx)"
   ]
  },
  "producao.agendaDeEntrega.issueDescription": {
@@ -48218,6 +48234,7 @@
   ],
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:637 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:134 (jsx)",
    "src/app/sandbox/locacao/components/RentalProduction.tsx:94 (jsx)"
   ]
  },
@@ -48577,7 +48594,9 @@
   "usos": [
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:279 (jsx)",
    "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:348 (jsx)",
-   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:759 (jsx)"
+   "src/app/(app-sidebar)/producao/gerenciador/components/SectorScreen.tsx:759 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:118 (propriedade:confirmLabel)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:227 (jsx)"
   ]
  },
  "producao.gerenciador.finish2": {
@@ -49259,7 +49278,7 @@
    "src/app/(app-sidebar)/producao/gerenciador/components/ManagersHome.tsx:136 (atributo:title)",
    "src/app/(app-sidebar)/producao/gerenciador/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/producao/gerenciador/page.tsx:28 (propriedade:title)",
-   "src/consts/nav.ts:256 (propriedade:title)"
+   "src/consts/nav.ts:266 (propriedade:title)"
   ]
  },
  "producao.gerenciador.productionNote": {
@@ -49867,7 +49886,9 @@
    "src/app/(app-sidebar)/producao/gerenciador/page.tsx:18 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/ficha/page.tsx:26 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/[id]/page.tsx:26 (jsx)",
-   "src/app/(app-sidebar)/producao/projetos/page.tsx:18 (jsx)"
+   "src/app/(app-sidebar)/producao/projetos/page.tsx:18 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/[id]/page.tsx:17 (jsx)",
+   "src/app/(app-sidebar)/producao/setores/page.tsx:17 (jsx)"
   ]
  },
  "producao.produtividade.below100ProductionTookMore": {
@@ -49930,7 +49951,7 @@
    "src/app/(app-sidebar)/producao/produtividade/components/Productivity.tsx:191 (jsx)",
    "src/app/(app-sidebar)/producao/produtividade/page.tsx:9 (propriedade:title)",
    "src/app/(app-sidebar)/producao/produtividade/page.tsx:25 (propriedade:title)",
-   "src/consts/nav.ts:286 (propriedade:title)"
+   "src/consts/nav.ts:296 (propriedade:title)"
   ]
  },
  "producao.produtividade.productivityPerPersonIsVisible": {
@@ -50206,7 +50227,7 @@
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:105 (atributo:title)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:124 (jsx)",
    "src/app/(app-sidebar)/producao/projetos/components/Projects.tsx:125 (atributo:title)",
-   "src/consts/nav.ts:265 (propriedade:title)"
+   "src/consts/nav.ts:275 (propriedade:title)"
   ]
  },
  "producao.projetos.projectsInProduction": {
@@ -50271,6 +50292,105 @@
   "pt": "Tipo · etapa atual",
   "usos": [
    "src/app/(app-sidebar)/producao/projetos/[id]/components/ProjectDetail.tsx:369 (jsx)"
+  ]
+ },
+ "producao.setores.after": {
+  "pt": "Depois de {valor}",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:330 (frase)"
+  ]
+ },
+ "producao.setores.completedInTheLast30": {
+  "pt": "Concluídos nos últimos 30 dias",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:136 (jsx)"
+  ]
+ },
+ "producao.setores.eachDepartmentSJobList": {
+  "pt": "A lista de trabalhos de cada setor, para concluir o que é dele.",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/[id]/page.tsx:25 (propriedade:description)",
+   "src/app/(app-sidebar)/producao/setores/page.tsx:25 (propriedade:description)"
+  ]
+ },
+ "producao.setores.finish": {
+  "pt": "Concluir mesmo assim?",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:116 (propriedade:title)",
+   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:206 (jsx)"
+  ]
+ },
+ "producao.setores.jobsToDo": {
+  "pt": "{open} trabalhos a fazer",
+  "vars": [
+   "open"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorsHome.tsx:75 (atributo:title)"
+  ]
+ },
+ "producao.setores.noActiveProductionDepartmentTick": {
+  "pt": "Nenhum setor de produção ativo. Marque os setores em Configurações › Setores.",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorsHome.tsx:94 (jsx)"
+  ]
+ },
+ "producao.setores.noJobsCompletedInThis": {
+  "pt": "Nenhum trabalho concluído neste setor nos últimos 30 dias.",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:160 (jsx)"
+  ]
+ },
+ "producao.setores.noJobsToDoIn": {
+  "pt": "Nenhum trabalho a fazer neste setor.",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:159 (jsx)"
+  ]
+ },
+ "producao.setores.readyToStart": {
+  "pt": "Pode começar",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:344 (jsx)"
+  ]
+ },
+ "producao.setores.texto": {
+  "pt": "({openCount})",
+  "vars": [
+   "openCount"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:134 (jsx)"
+  ]
+ },
+ "producao.setores.texto1JobToDo": {
+  "pt": "1 trabalho a fazer",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorsHome.tsx:74 (atributo:title)"
+  ]
+ },
+ "producao.setores.theFlowOf": {
+  "pt": "O fluxo de",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:378 (jsx)"
+  ]
+ },
+ "producao.setores.thisItemStillHasTo": {
+  "pt": "Neste item, ainda falta concluir: {valor}.",
+  "vars": [
+   "valor"
+  ],
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:117 (propriedade:description)"
+  ]
+ },
+ "producao.setores.viewTheItemFlow": {
+  "pt": "Ver o fluxo do item",
+  "usos": [
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:370 (atributo:aria-label)",
+   "src/app/(app-sidebar)/producao/setores/components/SectorWork.tsx:371 (atributo:title)"
   ]
  },
  "producao.veiculos.addFreeStop": {
@@ -50909,7 +51029,7 @@
   "pt": "Comissões",
   "usos": [
    "src/app/(app-sidebar)/relatorios/comissoes/components/ComissionReport.tsx:17 (atributo:title)",
-   "src/consts/nav.ts:472 (propriedade:title)"
+   "src/consts/nav.ts:482 (propriedade:title)"
   ]
  },
  "relatorios.comissoes.commissions2": {
@@ -51645,7 +51765,7 @@
    "src/app/(app-sidebar)/relatorios/projecao-de-caixa/components/CashFlowChart.tsx:77 (jsx)",
    "src/app/(app-sidebar)/relatorios/projecao-de-caixa/components/CashFlowChart.tsx:91 (jsx)",
    "src/app/(app-sidebar)/relatorios/projecao-de-caixa/components/CashFlowReport.tsx:37 (atributo:title)",
-   "src/consts/nav.ts:458 (propriedade:title)"
+   "src/consts/nav.ts:468 (propriedade:title)"
   ]
  },
  "relatorios.projecaoDeCaixa.cashProjection2": {
@@ -51755,7 +51875,7 @@
   "pt": "Resultado por setor",
   "usos": [
    "src/app/(app-sidebar)/relatorios/resultado-por-setor/page.tsx:10 (propriedade:title)",
-   "src/consts/nav.ts:430 (propriedade:title)"
+   "src/consts/nav.ts:440 (propriedade:title)"
   ]
  },
  "relatorios.resultadoPorSetor.resultsByDepartment": {
@@ -57467,7 +57587,7 @@
   ],
   "usos": [
    "src/app/sandbox/nav-menu/page.tsx:287 (propriedade:label)",
-   "src/consts/nav.ts:303 (propriedade:title)",
+   "src/consts/nav.ts:313 (propriedade:title)",
    "src/consts/plans.ts:62 (propriedade:title)"
   ]
  },
@@ -57570,7 +57690,7 @@
   ],
   "usos": [
    "src/app/sandbox/nav-menu/page.tsx:309 (propriedade:label)",
-   "src/consts/nav.ts:486 (propriedade:title)",
+   "src/consts/nav.ts:496 (propriedade:title)",
    "src/consts/plans.ts:29 (propriedade:title)"
   ]
  },
@@ -61576,12 +61696,6 @@
   ]
  },
  "vendas.orcamentos.finish2": {
-  "pt": "Concluir mesmo assim?",
-  "usos": [
-   "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:206 (jsx)"
-  ]
- },
- "vendas.orcamentos.finish3": {
   "pt": "Concluir mesmo assim",
   "usos": [
    "src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/FinishQuotation.tsx:223 (jsx)"
