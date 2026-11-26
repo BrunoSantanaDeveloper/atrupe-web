@@ -9,7 +9,11 @@ import {
   Image as PDFImage,
 } from '@react-pdf/renderer'
 
-import type { NfePreview, NfePreviewItem } from '@/types/fiscal/nfe-preview'
+import type {
+  NfePreview,
+  NfePreviewDuplicata,
+  NfePreviewItem,
+} from '@/types/fiscal/nfe-preview'
 import { getPdfImageSrc } from '@/lib/image-proxy'
 
 /**
@@ -403,6 +407,14 @@ export function DanfePreviewPdf({ previa }: { previa: NfePreview }) {
   const t = previa.totais?.ICMStot ?? {}
   const itens = previa.itens ?? []
   const colunas = colunasProdutos(emit.CRT === 1)
+  // Fatura/duplicatas: o quadro existe na DANFE oficial entre o destinatário
+  // e o cálculo do imposto. Faltava aqui, e quem conferia a prévia concluía
+  // que a nota sairia sem cobrança — ela sai, a prévia é que não mostrava.
+  const duplicatas = previa.duplicatas ?? []
+  const duplicatasPorLinha: NfePreviewDuplicata[][] = []
+  for (let i = 0; i < duplicatas.length; i += 4) {
+    duplicatasPorLinha.push(duplicatas.slice(i, i + 4))
+  }
 
   const numero = String(doc?.numeroPrevisto ?? '').padStart(9, '0')
   const serie = doc?.serie ?? ''
@@ -692,6 +704,31 @@ export function DanfePreviewPdf({ previa }: { previa: NfePreview }) {
             />
           </Linha>
         </View>
+
+        {/* ── FATURA / DUPLICATAS ─────────────────────────────────── */}
+        {duplicatasPorLinha.length > 0 && (
+          <>
+            <Text style={styles.titulo}>FATURA / DUPLICATAS</Text>
+            <View style={styles.quadro}>
+              {duplicatasPorLinha.map((grupo, indiceLinha) => (
+                <Linha key={indiceLinha} primeira={indiceLinha === 0}>
+                  {grupo.map((dup, indice) => (
+                    <Campo
+                      key={`${dup.nDup ?? indice}`}
+                      rotulo={`DUPLICATA ${dup.nDup ?? ''} - VENC. ${dataBr(
+                        dup.dVenc,
+                      )}`}
+                      valor={brl(dup.vDup)}
+                      largura="25%"
+                      alinhamento="direita"
+                      ultimo={indice === grupo.length - 1}
+                    />
+                  ))}
+                </Linha>
+              ))}
+            </View>
+          </>
+        )}
 
         {/* ── CÁLCULO DO IMPOSTO ──────────────────────────────────── */}
         <Text style={styles.titulo}>CÁLCULO DO IMPOSTO</Text>
