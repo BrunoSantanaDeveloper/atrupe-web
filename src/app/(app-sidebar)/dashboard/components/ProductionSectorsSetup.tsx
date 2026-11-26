@@ -67,7 +67,10 @@ export function ProductionSectorsBanner() {
     queryKey: QUERY_KEY,
     queryFn: async () => {
       const res = await getItem({ route: '/sector/production-setup' })
-      return res.success ? (res.data as Setup) : null
+      const setup = res.data as Setup | undefined
+      // Só com a lista de setores: um corpo de outro formato (erro, API de
+      // mentira da fronteira) não mostra a faixa nem quebra o diálogo
+      return res.success && Array.isArray(setup?.sectors) ? setup : null
     },
     enabled,
   })

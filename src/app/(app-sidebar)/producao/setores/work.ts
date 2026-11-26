@@ -57,7 +57,18 @@ export const fetchWork = async (params: {
     },
   })
   if (!res.success) throw new Error(res.message || 'Erro ao carregar')
-  return res.data as WorkList
+  // Só o formato esperado: um corpo de outro formato (erro, API de mentira da
+  // fronteira) não derruba a tela no items.map
+  const data = (res.data ?? {}) as Partial<WorkList>
+  return {
+    counts:
+      data.counts &&
+      typeof data.counts === 'object' &&
+      !Array.isArray(data.counts)
+        ? data.counts
+        : {},
+    items: Array.isArray(data.items) ? data.items : [],
+  }
 }
 
 // Entrega e Cliente Retira são do pedido, não setores de produção
