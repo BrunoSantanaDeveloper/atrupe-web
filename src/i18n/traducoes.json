@@ -21162,5 +21162,97 @@
   "b38242b703": {
     "es": "Este producto ya se usó en un presupuesto, y su tipo no cambia. Para otro tipo, duplique el producto o desactive este y registre uno nuevo.",
     "en": "This product has already been used in a quote, and its type does not change. For another type, duplicate the product or deactivate this one and create a new one."
+  },
+  "e906439888": {
+    "es": "Cobrada en la composición",
+    "en": "Charged in the build-up"
+  },
+  "8aa3fed737": {
+    "es": "{name}: cobrada en la composición, no se desactiva",
+    "en": "{name}: charged in the build-up, cannot be turned off"
+  },
+  "004737879f": {
+    "es": "Los sectores por los que pasa el producto en la producción: los de las etapas cobradas en la composición ya entran, y usted marca los demás",
+    "en": "The departments the product goes through in production: those of the steps charged in the build-up are already in, and you tick the others"
+  },
+  "f13b27553c": {
+    "es": "No pasa por ningún sector",
+    "en": "Does not go through a department"
+  },
+  "e1d0317362": {
+    "es": "Sector de producción",
+    "en": "Production department"
+  },
+  "f085bccccb": {
+    "es": "En qué sector se hace",
+    "en": "Which department makes it"
+  },
+  "78a9ee05be": {
+    "es": "Ya existe un sector con ese nombre",
+    "en": "A department with that name already exists"
+  },
+  "b82f45ef01": {
+    "es": "Sectores de producción guardados",
+    "en": "Production departments saved"
+  },
+  "c5a242041d": {
+    "es": "Ej.: Herrería, Letras corpóreas",
+    "en": "E.g.: Metalwork, Channel letters"
+  },
+  "61f6ee7bcf": {
+    "es": "Después",
+    "en": "Later"
+  },
+  "3c8710e732": {
+    "es": "Guardar sectores",
+    "en": "Save departments"
+  },
+  "6ad618816b": {
+    "es": "{name} agregada al pedido",
+    "en": "{name} added to the order"
+  },
+  "144eef47b7": {
+    "es": "Agregar una etapa al pedido",
+    "en": "Add a step to the order"
+  },
+  "f4bb4f6c1f": {
+    "es": "También pasa por",
+    "en": "Also goes through"
+  },
+  "ef5d88c6a4": {
+    "es": "Quitar del pedido",
+    "en": "Remove from the order"
+  },
+  "ae5f02cefc": {
+    "es": "{name} sale de este pedido y de sus ítems.",
+    "en": "{name} leaves this order and its items."
+  },
+  "2719bcde47": {
+    "es": "Etapa quitada del pedido",
+    "en": "Step removed from the order"
+  },
+  "7087bce1ac": {
+    "es": "Cobrada en la composición del producto: no sale del pedido.",
+    "en": "Charged in the product build-up: it stays in the order."
+  },
+  "9de4af8e64": {
+    "es": "Arme el flujo de producción de su empresa",
+    "en": "Set up your company’s production flow"
+  },
+  "48d60e14be": {
+    "es": "Indique por qué sectores pasan los trabajos hasta la entrega. Con ellos usted sigue la producción en la Agenda de entregas.",
+    "en": "Tell us which departments the jobs go through until delivery. That is how you track production in the Delivery schedule."
+  },
+  "c4b5d0edf8": {
+    "es": "¿Por dónde pasan los trabajos?",
+    "en": "Where do the jobs go?"
+  },
+  "5c30af0629": {
+    "es": "Marque los sectores por los que pasan los trabajos de su empresa hasta la entrega, como diseño, impresión, acabado e instalación. Cada sector se convierte en una etapa en la Agenda de entregas: usted ve en qué sector está cada pedido, lo que aún falta y, filtrando por sector, su cola de trabajo. Los que no marque quedan guardados y pueden activarse después en Configuración › Sectores.",
+    "en": "Tick the departments your company’s jobs go through until delivery, such as design, printing, finishing and installation. Each department becomes a step in the Delivery schedule: you see which department each order is in, what is still missing and, filtering by department, its work queue. The ones you do not tick are kept and can be turned on later in Settings › Departments."
+  },
+  "e3b6a8a73c": {
+    "es": "¿Falta algún sector? Créelo aquí",
+    "en": "Missing a department? Create it here"
   }
 }

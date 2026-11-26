@@ -188,6 +188,15 @@ const sectorByName = (name: string) => {
   return null
 }
 
+// A chave do ícone pelo nome, para o setor criado só com o nome (a etapa
+// "Seus setores de produção", área 9 §4.16)
+export const sectorKeyByName = (name: string) => {
+  const found = sectorByName(name)
+  return found
+    ? Object.keys(sectors).find((key) => sectors[key] === found)
+    : undefined
+}
+
 // O ícone do setor pelo nome, para as caixas do fluxo da composição (FL-5):
 // a mesma figura que o modal "Qual item deseja adicionar?" usa
 export const sectorIconByName = (name: string) =>

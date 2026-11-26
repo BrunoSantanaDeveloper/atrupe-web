@@ -1,7 +1,7 @@
 import { Table, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 import { useEffect, useState, useRef } from 'react'
-import { useFieldArray, useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form'
 import { NewProductsFormType } from './schema'
 
 import { Reorder } from 'motion/react'
@@ -9,6 +9,7 @@ import { ProductionStageItem } from './ProductionStage/ProductionStageItem'
 
 import { useSector } from '@/hooks/queries/useSector'
 import { cn } from '@/lib/utils'
+import { fixedSectorIds } from './unitSectors'
 
 // Sem título dentro da sanfona (ProductionStagesSection), que já o mostra
 export function ProductionStages({
@@ -19,7 +20,7 @@ export function ProductionStages({
   // O (i) ao lado do título (18/11/2026)
   hint?: React.ReactNode
 }) {
-  const { control } = useFormContext<NewProductsFormType>()
+  const { control, setValue, getValues } = useFormContext<NewProductsFormType>()
   const [draggingIndex, setDraggingIndex] = useState<null | number>(null)
   const hasInitialized = useRef(false)
   const { data: sectors } = useSector({ isProductionStage: true })
@@ -28,6 +29,57 @@ export function ProductionStages({
     name: 'productionStages',
     control,
   })
+
+  // Os ícones fixos (área 9 §4.16): os setores das etapas de cobrança. Ficam
+  // ligados e não se desligam aqui; os outros são livres ("também passa
+  // por…")
+  const units = useWatch({ control, name: 'items' })
+  const productSector = useWatch({ control, name: 'sectorId' })
+  const productionSectorIds = new Set(
+    (sectors ?? []).filter((sector) => sector.isActive).map((s) => s.id),
+  )
+  const fixed = fixedSectorIds(units, productSector, productionSectorIds)
+  const fixedKey = fixed.join(',')
+  // Os valores do formulário: o `id` dos fields é a chave do useFieldArray,
+  // não o do setor
+  const values = useWatch({ control, name: 'productionStages' }) || []
+  const sectorIdAt = (index: number) => values[index]?.id
+
+  useEffect(() => {
+    if (!fixed.length) return
+    for (const id of fixed) {
+      const current = getValues('productionStages') || []
+      const index = current.findIndex((stage) => stage?.id === id)
+      if (index === -1) {
+        // O setor que ainda não está na lista do produto (edição): entra
+        // ligado, logo depois dos ligados
+        const sector = sectors?.find((item) => item.id === id)
+        if (!sector) continue
+        const lastActive = current.reduce(
+          (last, stage, i) => (stage?.isActive ? i : last),
+          -1,
+        )
+        stages.insert(lastActive + 1, {
+          id: sector.id,
+          name: sector.name,
+          icon: sector.icon,
+          isActive: true,
+        })
+        continue
+      }
+      if (current[index].isActive) continue
+      setValue(`productionStages.${index}.isActive`, true, {
+        shouldDirty: true,
+      })
+      // Entra logo depois dos ligados, como ao ligar à mão
+      const lastActive = current.reduce(
+        (last, stage, i) => (stage?.isActive && i !== index ? i : last),
+        -1,
+      )
+      if (lastActive + 1 < index) stages.move(index, lastActive + 1)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fixedKey, stages.fields.length, sectors])
 
   useEffect(() => {
     if (hasInitialized.current) return
@@ -142,6 +194,7 @@ export function ProductionStages({
                 key={stage.id}
                 stage={stage}
                 index={index}
+                fixed={fixed.includes(sectorIdAt(index) ?? '')}
                 isDraggingActive={
                   draggingIndex === null ? null : draggingIndex === index
                 }

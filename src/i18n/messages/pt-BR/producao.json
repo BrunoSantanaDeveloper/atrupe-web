@@ -39,6 +39,9 @@
     "thisItemSStepsFollow": "As etapas deste item seguem as da ordem.",
     "deliveryNotFound": "Entrega não encontrada",
     "yourSearchFoundNoResults": "Sua busca não encontrou nenhum resultado. Tente novamente.",
+    "addedToTheOrder": "{name} acrescentada ao pedido",
+    "addAStepToThe": "Acrescentar uma etapa ao pedido",
+    "alsoGoesThrough": "Também passa por",
     "statusChanged": "Status alterado",
     "describeTheIssue": "Descreva a pendência",
     "issue": "Pendência",
@@ -47,6 +50,10 @@
     "thisStepFollowsTheTasks": "Esta etapa segue as tarefas do Gerenciador de produção.",
     "changingTheStepStatusIsn": "Trocar o status da etapa não faz parte do seu plano.",
     "yourRoleCanTChange": "Seu cargo não pode trocar o status da etapa.",
+    "removeFromTheOrder": "Tirar do pedido",
+    "leavesThisOrderAndIts": "{name} sai deste pedido e dos itens dele.",
+    "stepRemovedFromTheOrder": "Etapa tirada do pedido",
+    "chargedInTheProductBuild": "Cobrada na composição do produto: não sai do pedido.",
     "youDonTHavePermission": "Você não tem permissão para visualizar a agenda de entrega."
   },
   "gerenciador": {

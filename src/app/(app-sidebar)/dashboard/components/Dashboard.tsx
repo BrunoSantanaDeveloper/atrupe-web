@@ -21,6 +21,7 @@ import {
 import { DashboardQuotations } from './Quotations'
 import { FollowUpToday } from './FollowUpToday'
 import { FiscalOnboardingBanner } from './FiscalOnboardingBanner'
+import { ProductionSectorsBanner } from './ProductionSectorsSetup'
 import { FinancialOverview } from './FinancialOverview'
 import { SalesOverview } from './SalesOverview'
 import { DashboardPeriod, DashboardPeriodFilter } from './DashboardPeriodFilter'
@@ -100,6 +101,8 @@ function DashboardContent() {
   return (
     <div className="space-y-4 mt-1 w-full">
       <FiscalOnboardingBanner />
+      {/* A conta que entra no LITE diz os setores de produção (§4.16) */}
+      <ProductionSectorsBanner />
       {/* "O que mudou" na primeira abertura depois de uma atualização */}
       <ReleaseAnnouncement />
 

@@ -2,7 +2,7 @@ import { Reorder, useDragControls } from 'motion/react'
 import { NewProductsFormType } from '../schema'
 import { TableCell } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { IconMenuOrder } from '@tabler/icons-react'
+import { IconLock, IconMenuOrder } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 import { Switch } from '@/components/ui/switch'
 import { ProductionStageIcon } from './ProductionStageIcon'
@@ -11,6 +11,8 @@ import { FormField } from '@/components/ui/form'
 
 interface IStageItemProps {
   index: number
+  // Vem de uma etapa de cobrança (área 9 §4.16): fica ligado
+  fixed?: boolean
   isDraggingActive: null | boolean
   stage: NewProductsFormType['productionStages'][number]
   onDragStart: () => void
@@ -24,6 +26,7 @@ const tableRowStyle =
 export function ProductionStageItem({
   stage,
   index,
+  fixed = false,
   isDraggingActive,
   onDragStart,
   onDragEnd,
@@ -69,7 +72,15 @@ export function ProductionStageItem({
           icon={stage?.icon || ''}
           isActive={stage?.isActive}
         />
-        {stage?.name}
+        <div className="flex flex-col">
+          <span>{stage?.name}</span>
+          {fixed && (
+            <span className="flex items-center gap-1 type-caption text-gray-500">
+              <Icon icon={IconLock} size="sm" />
+              Cobrada na composição
+            </span>
+          )}
+        </div>
       </TableCell>
       <TableCell>
         <FormField
@@ -77,7 +88,13 @@ export function ProductionStageItem({
           name={`productionStages.${index}.isActive`}
           render={({ field }) => (
             <Switch
-              checked={field.value}
+              checked={fixed || field.value}
+              disabled={fixed}
+              aria-label={
+                fixed
+                  ? `${stage?.name}: cobrada na composição, não se desliga`
+                  : stage?.name
+              }
               onCheckedChange={(checked) => {
                 field.onChange(checked)
                 if (checked) {

@@ -30,7 +30,7 @@ export function ProductionStagesSection() {
       description={
         stages.length
           ? `${active} de ${stages.length} etapas usadas por este produto`
-          : 'Os setores por onde o produto passa na produção'
+          : 'Os setores por onde o produto passa na produção: os das etapas cobradas na composição já entram, e você marca os outros'
       }
       open={open}
       onOpenChange={setOpen}

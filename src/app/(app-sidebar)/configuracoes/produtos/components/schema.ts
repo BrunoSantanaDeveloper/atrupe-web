@@ -67,6 +67,8 @@ export const newProductsSchema = z.object({
         .trim(),
       unitCost: z.number().optional().nullable(),
       salePrice: z.number(),
+      // O setor da etapa de cobrança (área 9 §4.16)
+      sectorId: z.string().optional().nullable(),
       width: z
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))

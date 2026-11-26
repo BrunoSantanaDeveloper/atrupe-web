@@ -39,6 +39,8 @@ import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 import { FormImageUploadBigSmall } from '@/components/common/form/global-inputs/FormImageUploadBigSmall'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
+import { UnitSectorField } from './UnitSectorField'
+import { NO_SECTOR, unitSectorOf } from './unitSectors'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
 import {
@@ -201,6 +203,11 @@ function NewProductModal({
     hasFeature,
   } = usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
+  // Os setores que são etapa de produção: o setor da etapa de cobrança
+  // precisa ser um deles (área 9 §4.16)
+  const productionSectorIds = new Set(
+    (sectors ?? []).filter((sector) => sector.isActive).map((s) => s.id),
+  )
 
   const [insertAnother, setInsertAnother] = useState(false)
   const [activeTab, setActiveTab] = useState<ProductTab>(initialTab)
@@ -502,6 +509,13 @@ function NewProductModal({
         volume: item.unitKind === 'CAPACITY' ? item.volume || null : null, // ml
         distance: item.unitKind === 'DISTANCE' ? item.distance || null : null, // metros
         duration: item.unitKind === 'DURATION' ? item.duration || null : null, // segundos
+        // O setor da etapa de cobrança: o ícone fixo do fluxo (§4.16)
+        sectorId: unitSectorOf(
+          item,
+          data.items?.length ?? 0,
+          data.sectorId,
+          productionSectorIds,
+        ),
       })),
       productionStages: data?.productionStages?.map((stage) => ({
         id: stage?.id,
@@ -528,11 +542,28 @@ function NewProductModal({
         const field = String(result.message).match(
           /property (\w+) should not exist/,
         )?.[1]
-        if (!field || !(field in payload)) break
+        // O campo de dentro da unidade de venda (items.0.sectorId)
+        const inItems =
+          !!field &&
+          !(field in payload) &&
+          Array.isArray(payload.items) &&
+          (payload.items as Record<string, unknown>[]).some(
+            (item) => field in item,
+          )
+        if (!field || (!(field in payload) && !inItems)) break
         unknown.push(field)
-        payload = Object.fromEntries(
-          Object.entries(payload).filter(([key]) => key !== field),
-        )
+        payload = inItems
+          ? {
+              ...payload,
+              items: (payload.items as Record<string, unknown>[]).map((item) =>
+                Object.fromEntries(
+                  Object.entries(item).filter(([key]) => key !== field),
+                ),
+              ),
+            }
+          : Object.fromEntries(
+              Object.entries(payload).filter(([key]) => key !== field),
+            )
         result = await send(payload)
       }
       if (result.success && unknown.length) {
@@ -644,11 +675,22 @@ function NewProductModal({
   })
 
   function handleAppendProductItems() {
+    // A etapa de cobrança nasce no setor do produto (§4.16); a primeira, que
+    // até aqui usava o setor do produto, passa a mostrar o dela
+    const productSector = form.getValues('sectorId')
+    const fallback =
+      productSector && productionSectorIds.has(productSector)
+        ? productSector
+        : null
+    if (items.fields.length === 1 && !form.getValues('items.0.sectorId')) {
+      form.setValue('items.0.sectorId', fallback ?? NO_SECTOR)
+    }
     items.append({
       name: '',
       unitKind: '',
       unitCost: 0,
       salePrice: 0,
+      sectorId: fallback ?? NO_SECTOR,
     })
   }
 
@@ -870,11 +912,14 @@ function NewProductModal({
                                 <IconTrash aria-hidden size={ICON_SIZE.sm} />
                               </Button>
                             )}
-                            <FormInput
-                              name={`items.${index}.name`}
-                              label="Nome da unidade de venda"
-                              width="flex-[1_0_100%]"
-                            />
+                            <div className="flex flex-wrap gap-4 w-full">
+                              <FormInput
+                                name={`items.${index}.name`}
+                                label="Nome da unidade de venda"
+                                width="flex-[2_0_240px]"
+                              />
+                              <UnitSectorField index={index} />
+                            </div>
 
                             {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
                             <div className="flex flex-wrap gap-4 w-full">

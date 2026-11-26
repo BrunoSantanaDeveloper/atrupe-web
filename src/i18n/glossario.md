@@ -79,6 +79,7 @@ Atrupe, START, LITE, PRO, ELITE, FULL, Super Admin, Academy, ACM, MDF, PVC, PS, 
 | Padrão · Gráfica · Locação · Terceirizado (estruturas) | Estándar · Imprenta · Alquiler · Tercerizado | Standard · Print shop · Rental · Outsourced | As estruturas do produto (EP-2). Desde 25/11/2026, "Gráfica" cobre a gráfica rápida e o offset (antes "Impresso em folha"); "Offset" (Offset · Offset) só aparece no produto já gravado assim. |
 | Grupo de produtos | Grupo de productos | Product group | |
 | Unidade de venda | Unidad de venta | Sales unit | |
+| Etapa de cobrança | Etapa de cobro | Charged step | A unidade de venda com o setor em que é feita (área 9 §4.16, 26/11/2026); o setor dela é o ícone fixo do fluxo ("Cobrada na composição"). |
 | un / un. | u. | pc | |
 | Venda direta | Venta directa | Sold directly | Material vendido sem composição. |
 | Origem das medidas: da etapa anterior / medida própria (era "Quando entra depois de outra etapa" e "Usar medida da etapa anterior", 20/11/2026; antes "Acompanha a base", 28/10) | Origen de las medidas: de la etapa anterior / medida propia | Size source: from the previous step / own size | |

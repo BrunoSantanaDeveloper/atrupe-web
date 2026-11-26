@@ -39,6 +39,9 @@
     "thisItemSStepsFollow": "This item’s steps follow the order’s steps.",
     "deliveryNotFound": "Delivery not found",
     "yourSearchFoundNoResults": "Your search found no results. Try again.",
+    "addedToTheOrder": "{name} added to the order",
+    "addAStepToThe": "Add a step to the order",
+    "alsoGoesThrough": "Also goes through",
     "statusChanged": "Status changed",
     "describeTheIssue": "Describe the issue",
     "issue": "Issue",
@@ -47,6 +50,10 @@
     "thisStepFollowsTheTasks": "This step follows the tasks in the Production board.",
     "changingTheStepStatusIsn": "Changing the step status isn't part of your plan.",
     "yourRoleCanTChange": "Your role can’t change the step status.",
+    "removeFromTheOrder": "Remove from the order",
+    "leavesThisOrderAndIts": "{name} leaves this order and its items.",
+    "stepRemovedFromTheOrder": "Step removed from the order",
+    "chargedInTheProductBuild": "Charged in the product build-up: it stays in the order.",
     "youDonTHavePermission": "You don't have permission to view the delivery schedule."
   },
   "gerenciador": {

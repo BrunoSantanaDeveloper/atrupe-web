@@ -29,6 +29,8 @@ export const productBodyFrom = (
     volume: item.volume ?? null,
     distance: item.distance ?? null,
     duration: item.duration ?? null,
+    // O setor da etapa de cobrança (área 9 §4.16)
+    ...(item.sectorId !== undefined && { sectorId: item.sectorId ?? null }),
   })),
   productionStages: (source.productionStages || []).map((stage: any) => ({
     id: stage.id,

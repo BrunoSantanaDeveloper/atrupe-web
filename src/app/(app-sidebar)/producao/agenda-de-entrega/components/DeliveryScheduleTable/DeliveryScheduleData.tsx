@@ -7,6 +7,7 @@ import { Fragment, useState } from 'react'
 // Components
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { StageStatusDropdown } from './Stages/StageStatus'
+import { AddStageButton } from './Stages/AddStage'
 import { BillServiceDialog } from '../Actions/BillService'
 import { DeliveryScheduleNotesDialog } from '../Actions/Notes'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -89,6 +90,9 @@ import { useSectorColor } from '@/hooks/useSectorColor'
 import { sectorIconByName, sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
 
+// Entrega e Cliente Retira não são etapas de produção: não saem do pedido
+const DELIVERY_STAGE_NAMES = ['Entrega', 'Cliente Retira']
+
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
 }
@@ -111,6 +115,8 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   // Concluir tudo de uma vez (gerencial, §4.7): os pedidos marcados têm as
   // etapas finalizadas, para quem não usou a agenda limpar e recomeçar
   const { hasPermission } = usePermissions()
+  // Acrescentar e tirar etapas do pedido mexe na agenda (§4.16)
+  const canEditSchedule = hasPermission('production:delivery_schedule:edit')
   const [selected, setSelected] = useState<string[]>([])
   const toggleSelected = (id: string) =>
     setSelected((current) =>
@@ -482,6 +488,14 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                         managedByProduction={
                                                           !!deliverySchedule?.managedByProduction
                                                         }
+                                                        // O ícone livre sai do
+                                                        // pedido; o fixo não (§4.16)
+                                                        removable={
+                                                          !DELIVERY_STAGE_NAMES.includes(
+                                                            stage?.stage
+                                                              ?.name ?? '',
+                                                          )
+                                                        }
                                                         // No LITE, a ação no
                                                         // pedido vale para os
                                                         // itens do setor (§4.7)
@@ -553,6 +567,22 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                     )
                                                   },
                                                 )}
+                                                {canChangeStageStatus &&
+                                                  canEditSchedule &&
+                                                  !deliverySchedule?.managedByProduction && (
+                                                    <AddStageButton
+                                                      scheduleId={
+                                                        deliverySchedule?.id
+                                                      }
+                                                      current={(
+                                                        deliverySchedule?.productionStages ??
+                                                        []
+                                                      ).map(
+                                                        (stage) =>
+                                                          stage?.stage?.id,
+                                                      )}
+                                                    />
+                                                  )}
                                               </TooltipProvider>
                                             </div>
                                           )}

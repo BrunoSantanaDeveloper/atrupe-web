@@ -29,6 +29,8 @@ export type DeliveryScheduleType = {
     status: string
     prevStatus: string
     notes: string
+    // Veio de uma etapa de cobrança do produto: não sai do pedido (§4.16)
+    fixed?: boolean
   }[]
   // O segundo nível (área 9 §4.7): os itens da ordem com a medida e as
   // etapas de cada um: as tarefas, com projeto no gerenciador; senão, as

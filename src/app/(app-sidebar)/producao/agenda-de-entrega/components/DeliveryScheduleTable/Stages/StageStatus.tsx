@@ -10,6 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuGroup,
   DropdownMenuContent,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
@@ -17,7 +18,7 @@ import {
 // import { quotationsQuotationStatusObj } from '@/consts/quotations'
 
 // Icons
-import { IconCircleFilled } from '@tabler/icons-react'
+import { IconCircleFilled, IconLock, IconX } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
 // Third-party
@@ -29,7 +30,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { DeliveryScheduleType } from '@/types/production/deliverySchedule'
 
 // Actions
-import { updateItemNew } from '@/actions/_cruds'
+import { deleteItemNew, updateItemNew } from '@/actions/_cruds'
 import { stageStatusChange } from '@/consts/deliverySchedule'
 
 // Hooks
@@ -65,6 +66,11 @@ interface Props extends SearchParamsType, PropsWithChildren {
    * item (a etapa do pedido no LITE, §4.7). Devolve o texto ou null.
    */
   confirmFor?: (newStatus: string, label: string) => string | null
+  /**
+   * Tirar o ícone do pedido (área 9 §4.16): só na etapa do pedido. O fixo,
+   * cobrado na composição, aparece travado com o motivo.
+   */
+  removable?: boolean
 }
 
 export function StageStatusDropdown({
@@ -75,6 +81,7 @@ export function StageStatusDropdown({
   managedByProduction = false,
   route,
   confirmFor,
+  removable = false,
 }: Props) {
   const stageRoute = route || `/sale/production-stage/${rowData.id}`
   const alertDialog = useAlertDialog()
@@ -115,6 +122,25 @@ export function StageStatusDropdown({
       router.refresh()
     },
   })
+
+  // Tirar o ícone livre do pedido (§4.16)
+  const handleRemove = () => {
+    alertDialog.open({
+      title: 'Tirar do pedido',
+      description: `${rowData.stage?.name} sai deste pedido e dos itens dele.`,
+      confirmLabel: 'Tirar',
+      onConfirm: async () => {
+        const res = await deleteItemNew({ route: stageRoute })
+        if (!res.success) {
+          notifyActionError(res, 'Não foi possível tirar a etapa')
+          return
+        }
+        queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+        router.refresh()
+        toast.success('Etapa tirada do pedido')
+      },
+    })
+  }
 
   const handleChangeStatus = async (newStatus: string, label = '') => {
     if (newStatus === 'PENDING') {
@@ -189,6 +215,22 @@ export function StageStatusDropdown({
               return null
             })}
           </DropdownMenuGroup>
+          {removable && canChangeStatus && (
+            <>
+              <DropdownMenuSeparator />
+              {rowData.fixed ? (
+                <DropdownMenuLabel className="flex max-w-60 items-start gap-2 text-xs font-normal text-gray-600">
+                  <Icon icon={IconLock} size="sm" className="shrink-0" />
+                  Cobrada na composição do produto: não sai do pedido.
+                </DropdownMenuLabel>
+              ) : (
+                <DropdownMenuItem onClick={handleRemove}>
+                  <Icon icon={IconX} size="md" className="mr-2" />
+                  Tirar do pedido
+                </DropdownMenuItem>
+              )}
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <StagePendingDialog
